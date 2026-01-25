@@ -384,7 +384,7 @@ def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
     return container, container_layout
 
 
-def transfer_layout_items(source_layout: QLayout, target_layout: QLayout) -> None:
+def transfer_layout_items(source_layout: QLayout, target_layout: QHBoxLayout | QVBoxLayout) -> None:
     """
     Transfer all items from a source layout to a target layout.
 
@@ -402,3 +402,11 @@ def transfer_layout_items(source_layout: QLayout, target_layout: QLayout) -> Non
             target_layout.addItem(item.spacerItem())
         elif item.layout():
             target_layout.addLayout(item.layout())
+
+
+def create_group_with_widgets(group_name: str, widget_list: list, vertical: bool = False) -> QGroupBox:
+    """create group with widgets"""
+    pw_layout = create_layout_with_widgets(widget_list=widget_list, vertical=vertical)
+    pw_group, _ = create_group_with_layout(group_name=group_name,
+                                           inner_layout=pw_layout)
+    return pw_group

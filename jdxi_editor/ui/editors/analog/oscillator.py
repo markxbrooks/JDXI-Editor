@@ -4,7 +4,7 @@ Analog Oscillator Section
 
 from typing import Callable
 
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -14,7 +14,8 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.helpers import generate_analog_wave_button, generate_analog_waveform_icon_name
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_widget_with_layout, \
+    create_group_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
@@ -67,8 +68,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
         """
-        self.pitch_env_widget = None
-        self.pwm_widget = None
+        self.pitch_env_widget: PitchEnvelopeWidget | None = None
+        self.pwm_widget: PWMWidget | None = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._on_waveform_selected = waveform_selected_callback
@@ -78,7 +79,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.analog = True
 
         super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True)
-        # Set controls after super().__init__() to avoid it being overwritten
+        # --- Set controls after super().__init__() to avoid it being overwritten
         self.controls = controls or {}
         self.build_widgets()
         self.setup_ui()
@@ -87,7 +88,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """build widgets"""
         self.oscillator_tab_widget = QTabWidget()
 
-        # Tuning Group sliders
+        # --- Tuning Group sliders
         (
             self.osc_pitch_coarse_slider,
             self.osc_pitch_fine_slider,
@@ -115,11 +116,14 @@ class AnalogOscillatorSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
+            analog=self.analog
         )
         (
             self.osc_pitch_env_velocity_sensitivity_slider,
         ) = self._build_sliders(self.SLIDER_GROUPS["env"])
-        self.env_sliders = [self.pitch_env_widget, self.osc_pitch_env_velocity_sensitivity_slider]
+        self.pitch_env_widgets = [self.pitch_env_widget, self.osc_pitch_env_velocity_sensitivity_slider]
+        # --- Only one switch, for Sub Oscillator Type
+        (self.sub_oscillator_type_switch,) = self._build_switches(self.SWITCH_SPECS)
 
     def setup_ui(self) -> None:
         """
@@ -150,8 +154,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
     def _create_tuning_pitch_widget(self) -> QWidget:
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
         pitch_layout = create_layout_with_widgets(widget_list=[self._create_pitch_env_group()])
-        pitch_widget = QWidget()
-        pitch_widget.setLayout(pitch_layout)
+        pitch_widget = create_widget_with_layout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
 
@@ -174,11 +177,6 @@ class AnalogOscillatorSection(SectionBaseWidget):
             self.controls[Analog.Param.OSC_WAVEFORM] = btn
             wave_layout_widgets.append(btn)
 
-        self.sub_oscillator_type_switch = self._create_parameter_switch(
-            Analog.Param.SUB_OSCILLATOR_TYPE,
-            Analog.Display.Name.SUB_OSCILLATOR_TYPE,
-            Analog.Display.Options.SUB_OSCILLATOR_TYPE,
-        )
         wave_layout_widgets.append(self.sub_oscillator_type_switch)
         wave_layout = create_layout_with_widgets(wave_layout_widgets)
         return wave_layout
@@ -189,11 +187,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        tuning_group = QGroupBox("Tuning")
-        tuning_layout = create_layout_with_widgets(
-            self.tuning_sliders
-        )
-        tuning_group.setLayout(tuning_layout)
+        tuning_group = create_group_with_widgets(group_name="Tuning",
+                                                 widget_list=self.tuning_sliders)
         return tuning_group
 
     def _create_pw_group(self) -> QGroupBox:
@@ -202,9 +197,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        pw_layout = create_layout_with_widgets(widget_list=[self.pwm_widget], vertical=True)
-        pw_group = QGroupBox("Pulse Width")
-        pw_group.setLayout(pw_layout)
+        pw_group = create_group_with_widgets(group_name="Pulse Width",
+                                             widget_list=[self.pwm_widget])
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         return pw_group
 
@@ -214,26 +208,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        pitch_env_group = QGroupBox("Pitch Envelope")
-        pitch_env_row_layout = QHBoxLayout()
-        pitch_env_row_layout.addStretch()
-
-        # --- Envelope/ADSR Group
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)
-        env_layout = QHBoxLayout()
-        pitch_env_row_layout.addWidget(self.pitch_env_widget)
-        pitch_env_row_layout.addWidget(
-            self._create_parameter_slider(
-                Analog.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                Analog.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                vertical=True,
-            )
-        )
-        pitch_env_row_layout.addStretch()
-        env_group.setLayout(env_layout)
-        pitch_env_group.setLayout(pitch_env_row_layout)
-        JDXi.UI.Theme.apply_adsr_style(self.pitch_env_widget, analog=True)
+        # --- Pitch Envelope Group
+        pitch_env_group = create_group_with_widgets(group_name="Pitch Envelope",
+                                                    widget_list=self.pitch_env_widgets)
         return pitch_env_group
 
     def _update_pw_controls_state(self, waveform: AnalogWaveOsc):

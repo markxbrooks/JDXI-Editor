@@ -49,6 +49,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         controls: dict[AddressParameter, QWidget] = None,
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
+        analog: bool = False
     ):
         super().__init__(
             envelope_keys=["attack_time", "decay_time", "peak_level"],
@@ -140,6 +141,8 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self.plot.set_values(self.envelope)
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
+        if analog:
+            JDXi.UI.Theme.apply_adsr_style(self, analog=True)
         self.show()
 
     def on_control_changed(self, change: dict) -> None:
