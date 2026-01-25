@@ -18,46 +18,46 @@ class DigitalLFOSection(BaseLFOSection):
 
     DEPTH_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
-            JDXi.Midi.Digital.Display.Name.LFO_PITCH_DEPTH,
+            Digital.Param.LFO_PITCH_DEPTH,
+            Digital.Display.Name.LFO_PITCH_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
-            JDXi.Midi.Digital.Display.Name.LFO_FILTER_DEPTH,
+            Digital.Param.LFO_FILTER_DEPTH,
+            Digital.Display.Name.LFO_FILTER_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
-            JDXi.Midi.Digital.Display.Name.LFO_AMP_DEPTH,
+            Digital.Param.LFO_AMP_DEPTH,
+            Digital.Display.Name.LFO_AMP_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
-            JDXi.Midi.Digital.Display.Name.LFO_PAN_DEPTH,
+            Digital.Param.LFO_PAN_DEPTH,
+            Digital.Display.Name.LFO_PAN_DEPTH,
         ),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
-            JDXi.Midi.Digital.Param.LFO_TEMPO_SYNC_SWITCH,
-            JDXi.Midi.Digital.Display.Name.LFO_TEMPO_SYNC_SWITCH,
-            JDXi.Midi.Digital.Display.Options.LFO_TEMPO_SYNC_SWITCH,
+            Digital.Param.LFO_TEMPO_SYNC_SWITCH,
+            Digital.Display.Name.LFO_TEMPO_SYNC_SWITCH,
+            Digital.Display.Options.LFO_TEMPO_SYNC_SWITCH,
         ),
         SwitchSpec(
-            JDXi.Midi.Digital.Param.LFO_TEMPO_SYNC_NOTE,
-            JDXi.Midi.Digital.Display.Name.LFO_TEMPO_SYNC_NOTE,
-            JDXi.Midi.Digital.Display.Options.LFO_TEMPO_SYNC_NOTE,
+            Digital.Param.LFO_TEMPO_SYNC_NOTE,
+            Digital.Display.Name.LFO_TEMPO_SYNC_NOTE,
+            Digital.Display.Options.LFO_TEMPO_SYNC_NOTE,
         ),
         SwitchSpec(
-            JDXi.Midi.Digital.Param.LFO_KEY_TRIGGER,
-            JDXi.Midi.Digital.Display.Name.LFO_KEY_TRIGGER,
-            JDXi.Midi.Digital.Display.Options.LFO_KEY_TRIGGER,
+            Digital.Param.LFO_KEY_TRIGGER,
+            Digital.Display.Name.LFO_KEY_TRIGGER,
+            Digital.Display.Options.LFO_KEY_TRIGGER,
         ),
     ]
     RATE_FADE_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE
+            Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_FADE_TIME,
-            JDXi.Midi.Digital.Display.Name.LFO_FADE_TIME,
+            Digital.Param.LFO_FADE_TIME,
+            Digital.Display.Name.LFO_FADE_TIME,
         ),
     ]
 
