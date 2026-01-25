@@ -89,7 +89,7 @@ class AnalogCommonSection(SectionBaseWidget):
         )
 
         self.pitch_bend_up = self._create_parameter_slider(
-            Analog.Param.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
+            Analog.Param.PITCH_BEND_UP, Analog.Display.Name.PITCH_BEND_UP, vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
             Analog.Param.PITCH_BEND_DOWN,
