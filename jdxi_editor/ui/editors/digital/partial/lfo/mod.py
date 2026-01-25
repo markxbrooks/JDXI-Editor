@@ -19,42 +19,42 @@ class DigitalModLFOSection(BaseLFOSection):
 
     RATE_FADE_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.MOD_LFO_RATE,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE,
+            Digital.Param.MOD_LFO_RATE,
+            Digital.Display.Name.MOD_LFO_RATE,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.MOD_LFO_RATE_CTRL,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_RATE_CTRL,
+            Digital.Param.MOD_LFO_RATE_CTRL,
+            Digital.Display.Name.MOD_LFO_RATE_CTRL,
         ),
     ]
     DEPTH_SLIDERS = [
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PITCH_DEPTH,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_PITCH_DEPTH,
+            Digital.Param.LFO_PITCH_DEPTH,
+            Digital.Display.Name.MOD_LFO_PITCH_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_FILTER_DEPTH,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
+            Digital.Param.LFO_FILTER_DEPTH,
+            Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_AMP_DEPTH,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_AMP_DEPTH,
+            Digital.Param.LFO_AMP_DEPTH,
+            Digital.Display.Name.MOD_LFO_AMP_DEPTH,
         ),
         SliderSpec(
-            JDXi.Midi.Digital.Param.LFO_PAN_DEPTH,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_PAN,
+            Digital.Param.LFO_PAN_DEPTH,
+            Digital.Display.Name.MOD_LFO_PAN,
         ),
     ]
     SWITCH_SPECS = [
         SwitchSpec(
-            JDXi.Midi.Digital.Param.MOD_LFO_TEMPO_SYNC_SWITCH,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_TEMPO_SYNC_SWITCH,
-            JDXi.Midi.Digital.Display.Options.MOD_LFO_TEMPO_SYNC_SWITCH,
+            Digital.Param.MOD_LFO_TEMPO_SYNC_SWITCH,
+            Digital.Display.Name.MOD_LFO_TEMPO_SYNC_SWITCH,
+            Digital.Display.Options.MOD_LFO_TEMPO_SYNC_SWITCH,
         ),
         SwitchSpec(
-            JDXi.Midi.Digital.Param.MOD_LFO_TEMPO_SYNC_NOTE,
-            JDXi.Midi.Digital.Display.Name.MOD_LFO_TEMPO_SYNC_NOTE,
-            JDXi.Midi.Digital.Display.Options.MOD_LFO_TEMPO_SYNC_NOTE,
+            Digital.Param.MOD_LFO_TEMPO_SYNC_NOTE,
+            Digital.Display.Name.MOD_LFO_TEMPO_SYNC_NOTE,
+            Digital.Display.Options.MOD_LFO_TEMPO_SYNC_NOTE,
         ),
     ]
 
