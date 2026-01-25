@@ -60,7 +60,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         self.rate_layout_widgets: list | None = None
         self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
-        self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
+        self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
 
         super().__init__(
             create_parameter_slider=create_parameter_slider,
@@ -73,7 +73,7 @@ class BaseOscillatorSection(ParameterSectionBase):
             icons_row_type=icons_row_type,
             analog=analog,
         )
-        # --- Set up waveform shapes
+        # ---  Set up waveform shapes
         self.wave_shapes = [
             JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
             JDXi.Midi.Digital.Wave.LFO.SINE,
@@ -82,7 +82,7 @@ class BaseOscillatorSection(ParameterSectionBase):
             JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
             JDXi.Midi.Digital.Wave.LFO.RANDOM,
         ]
-        # --- Map waveform shapes to icon names
+        # ---  Map waveform shapes to icon names
         self.shape_icon_map = {
             JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
             JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
@@ -105,9 +105,9 @@ class BaseOscillatorSection(ParameterSectionBase):
 
     def build_widgets(self):
         """Build the widgets"""
-        # Call parent to create buttons and other widgets from specs
+        # --- Call parent to create buttons and other widgets from specs
         super().build_widgets()
-        # Then create LFO-specific widgets (only if attributes exist)
+        # --- Then create LFO-specific widgets (only if attributes exist)
         if hasattr(self, 'RATE_FADE_SLIDERS'):
             self._create_rate_fade_layout_widgets()
         if hasattr(self, 'DEPTH_SLIDERS'):
@@ -141,24 +141,23 @@ class BaseOscillatorSection(ParameterSectionBase):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
-        from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
         
         tab_widget = QTabWidget()
-        self.tab_widget = tab_widget  # Set for _add_tab to use
+        self.tab_widget = tab_widget  # --- Set for _add_tab to use
         
         rate_widget = self._create_rate_widget()
         depths_widget = self._create_depths_widget()
         
-        # Use tab definitions - BaseOscillatorSection uses LFO-style tabs
+        # --- Use tab definitions - BaseOscillatorSection uses LFO-style tabs
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
         
         self._add_tab(key=DigitalLFOTab.RATE, widget=rate_widget)
-        # Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
+        # --- Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
         if tab_widget.tabText(0) != self.controls_tab_label:
             tab_widget.setTabText(0, self.controls_tab_label)
         
         self._add_tab(key=DigitalLFOTab.DEPTHS, widget=depths_widget)
-        # Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
+        # --- Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
         if tab_widget.tabText(1) != self.adsr_tab_label:
             tab_widget.setTabText(1, self.adsr_tab_label)
         JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
@@ -218,7 +217,7 @@ class BaseOscillatorSection(ParameterSectionBase):
         if self.analog:
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
-        # --- Send MIDI message
+        # ---  Send MIDI message
         if self.send_midi_parameter:
             if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
                 log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
