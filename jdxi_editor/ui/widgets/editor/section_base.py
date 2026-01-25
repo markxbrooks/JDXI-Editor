@@ -47,6 +47,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
+from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items, create_envelope_group
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -246,8 +247,14 @@ class SectionBaseWidget(SynthBase):
 
     def _create_adsr_group(self):
         """Create amp ADSR envelope using standardized helper"""
-        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+        self.adsr_widget = self.build_adsr_widget()
+        self.adsr_group = create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.adsr_widget,
+            analog=self.analog,
+        )
 
+    def build_adsr_widget(self) -> ADSR:
         # --- Extract parameters from ADSRSpec objects
         def get_param(spec_or_param):
             """Extract parameter from ADSRSpec or return parameter directly"""
@@ -265,7 +272,7 @@ class SectionBaseWidget(SynthBase):
         sustain_param = get_param(sustain_spec) if sustain_spec else None
         release_param = get_param(release_spec) if release_spec else None
 
-        self.amp_env_adsr_widget = ADSR(
+        amp_env_adsr_widget = ADSR(
             attack_param=attack_param,
             decay_param=decay_param,
             sustain_param=sustain_param,
@@ -274,13 +281,9 @@ class SectionBaseWidget(SynthBase):
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
             controls=self.controls,
-            analog=True,
+            analog=self.analog,
         )
-        self.adsr_group = create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.amp_env_adsr_widget,
-            analog=True,
-        )
+        return amp_env_adsr_widget
 
     def setup_ui(self) -> None:
         """

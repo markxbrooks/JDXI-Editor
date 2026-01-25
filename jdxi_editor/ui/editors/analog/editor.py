@@ -147,14 +147,14 @@ class AnalogSynthEditor(SynthEditor):
         }
         self._create_sections()
         self.adsr_mapping = {
-            Analog.Param.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_control,
-            Analog.Param.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_control,
-            Analog.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_control,
-            Analog.Param.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_control,
-            Analog.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_control,
-            Analog.Param.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_control,
-            Analog.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_control,
-            Analog.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_control,
+            Analog.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
+            Analog.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
+            Analog.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
+            Analog.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
+            Analog.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
+            Analog.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
+            Analog.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
+            Analog.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
         }
         self.pitch_env_mapping = {
             Analog.Param.OSC_PITCH_ENV_ATTACK_TIME: self.oscillator_section.pitch_env_widget.attack_control,
@@ -303,7 +303,7 @@ class AnalogSynthEditor(SynthEditor):
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
-        self.filter_section.filter_adsr_widget.setEnabled(enabled)
+        self.filter_section.adsr_widget.setEnabled(enabled)
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""

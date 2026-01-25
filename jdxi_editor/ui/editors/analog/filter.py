@@ -20,14 +20,10 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_envelope_group,
-    create_layout_with_widgets,
-)
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from picomidi.sysex.parameter.address import AddressParameter
@@ -87,7 +83,7 @@ class AnalogFilterSection(SectionBaseWidget):
     def build_widgets(self):
         """build widgets"""
         self.filter_controls_group = self._create_filter_controls_group()
-        self.adsr_env_group = self._create_filter_adsr_env_group()
+        self._create_adsr_group()
         self._create_tab_widget()
 
     def setup_ui(self):
@@ -110,7 +106,7 @@ class AnalogFilterSection(SectionBaseWidget):
         # --- Filter Controls ---
         self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.filter_controls_group)
         # --- Filter ADSR ---
-        self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_env_group)
+        self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
@@ -223,42 +219,4 @@ class AnalogFilterSection(SectionBaseWidget):
 
         return create_group_adsr_with_hlayout(
             name="Controls", hlayout=controls_layout, analog=True
-        )
-
-    def _create_filter_adsr_env_group(self):
-        """Create amp ADSR envelope using standardized helper"""
-        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-
-        # --- Extract parameters from ADSRSpec objects
-        def get_param(spec_or_param):
-            """Extract parameter from ADSRSpec or return parameter directly"""
-            if isinstance(spec_or_param, ADSRSpec):
-                return spec_or_param.param
-            return spec_or_param
-
-        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
-        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
-        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
-        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
-
-        attack_param = get_param(attack_spec) if attack_spec else None
-        decay_param = get_param(decay_spec) if decay_spec else None
-        sustain_param = get_param(sustain_spec) if sustain_spec else None
-        release_param = get_param(release_spec) if release_spec else None
-
-        self.filter_adsr_widget = ADSR(
-            attack_param=attack_param,
-            decay_param=decay_param,
-            sustain_param=sustain_param,
-            release_param=release_param,
-            midi_helper=self.midi_helper,
-            create_parameter_slider=self._create_parameter_slider,
-            address=self.address,
-            controls=self.controls,
-            analog=True,
-        )
-        return create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.filter_adsr_widget,
-            analog=True,
         )

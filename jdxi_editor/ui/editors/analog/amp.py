@@ -4,7 +4,7 @@ Amp section of the JD-Xi editor
 This section contains the controls for the amp section of the JD-Xi editor.
 """
 
-from typing import Callable, Optional, Dict, Union
+from typing import Optional, Dict, Union
 
 from PySide6.QtWidgets import (
     QTabWidget,
@@ -17,7 +17,6 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_envelope_group,
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -53,8 +52,6 @@ class AnalogAmpSection(SectionBaseWidget):
 
         # Dynamic widgets storage
         self.amp_sliders = {}
-        self.amp_adsr_group = None
-        self.amp_env_adsr_widget = None
         self.tab_widget = None
         self.layout = None
 
@@ -84,44 +81,6 @@ class AnalogAmpSection(SectionBaseWidget):
             self.amp_sliders[entry.param] = slider
             self.controls[entry.param] = slider
 
-    def _create_adsr_group(self):
-        """Create amp ADSR envelope using standardized helper"""
-        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-
-        # --- Extract parameters from ADSRSpec objects
-        def get_param(spec_or_param):
-            """Extract parameter from ADSRSpec or return parameter directly"""
-            if isinstance(spec_or_param, ADSRSpec):
-                return spec_or_param.param
-            return spec_or_param
-
-        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
-        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
-        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
-        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
-
-        attack_param = get_param(attack_spec) if attack_spec else None
-        decay_param = get_param(decay_spec) if decay_spec else None
-        sustain_param = get_param(sustain_spec) if sustain_spec else None
-        release_param = get_param(release_spec) if release_spec else None
-
-        self.amp_env_adsr_widget = ADSR(
-            attack_param=attack_param,
-            decay_param=decay_param,
-            sustain_param=sustain_param,
-            release_param=release_param,
-            midi_helper=self.midi_helper,
-            create_parameter_slider=self._create_parameter_slider,
-            address=self.address,
-            controls=self.controls,
-            analog=True,
-        )
-        self.amp_adsr_group = create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.amp_env_adsr_widget,
-            analog=True,
-        )
-
     # ------------------------------------------------------------------
     # Setup UI
     # ------------------------------------------------------------------
@@ -139,7 +98,7 @@ class AnalogAmpSection(SectionBaseWidget):
         self._add_tab(key=Analog.Amp.Tab.CONTROLS, widget=level_controls_widget)
 
         # --- ADSR Tab
-        self._add_tab(key=Analog.Amp.Tab.ADSR, widget=self.amp_adsr_group)
+        self._add_tab(key=Analog.Amp.Tab.ADSR, widget=self.adsr_group)
 
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
 
