@@ -25,7 +25,6 @@ from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
 )
@@ -254,29 +253,22 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pw_group.setLayout(pw_layout)
             self._add_tab(key=Digital.Wave.Tab.PULSE_WIDTH, widget=pw_group)
 
-        # Pitch Envelope tab
+        # --- Pitch Envelope tab
         if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
             pitch_env_group = QGroupBox("Pitch Envelope")
             pitch_env_group.setProperty("adsr", True)
-            pitch_env_layout = QHBoxLayout()
-            pitch_env_layout.addStretch()
-            pitch_env_layout.addWidget(self.pitch_env_widget)
-            pitch_env_layout.addStretch()
+            pitch_env_layout = create_layout_with_widgets(widget_list=[self.pitch_env_widget], vertical=False)
             pitch_env_group.setLayout(pitch_env_layout)
             self._add_tab(key=Digital.Wave.Tab.PITCH_ENV, widget=pitch_env_group)
 
-        # PCM tab
+        # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
             pcm_group = QGroupBox("PCM Wave")
-            pcm_layout = QVBoxLayout()
-            pcm_layout.addStretch()
-            pcm_layout.addWidget(self.pcm_wave_gain)
-            pcm_layout.addWidget(self.pcm_wave_number)
-            pcm_layout.addStretch()
+            pcm_layout = create_layout_with_widgets(widget_list=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True)
             pcm_group.setLayout(pcm_layout)
             self._add_tab(key=Digital.Wave.Tab.PCM, widget=pcm_group)
 
-        # ADSR tab (if any)
+        # --- ADSR tab (if any)
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
@@ -291,8 +283,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def setup_ui(self):
         """Override to create UI with button row layout and initialize button states"""
-        from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
-
         layout = self.get_layout()
 
         # Add button row layout if buttons exist
@@ -357,12 +347,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         )
         self.controls[Digital.Param.OSC_WAVE_VARIATION] = self.wave_variation
 
-        top_row = QHBoxLayout()
-        top_row.addStretch()
-        top_row.addLayout(create_layout_with_widgets(self.wave_layout_widgets))
-        top_row.addWidget(self.wave_variation)  # Add wave variation switch
-        top_row.addStretch()
-        return top_row
+        button_row = QHBoxLayout()
+        button_row.addStretch()
+        button_row.addLayout(create_layout_with_widgets(self.wave_layout_widgets))
+        button_row.addWidget(self.wave_variation)  # Add wave variation switch
+        button_row.addStretch()
+        return button_row
 
     def _on_button_selected(self, button_param):
         """Override to handle waveform button selection with correct MIDI parameter"""
