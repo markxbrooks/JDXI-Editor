@@ -65,7 +65,7 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
+from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
@@ -360,7 +360,7 @@ class AnalogSynthEditor(SynthEditor):
         else:
             log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
-    def _on_waveform_selected(self, waveform: AnalogOscWave):
+    def _on_waveform_selected(self, waveform: AnalogWaveOsc):
         """
         Handle waveform button selection
 
@@ -723,14 +723,14 @@ class AnalogSynthEditor(SynthEditor):
         else:
             log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
-    def _update_pw_controls_state(self, waveform: AnalogOscWave):
+    def _update_pw_controls_state(self, waveform: AnalogWaveOsc):
         """
         Enable/disable PW controls based on waveform
 
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == AnalogOscWave.PULSE
+        pw_enabled = waveform == AnalogWaveOsc.PULSE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         self.controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)

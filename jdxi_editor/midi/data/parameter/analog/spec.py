@@ -7,7 +7,7 @@ from typing import Any
 
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOWaveShape
-from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave, AnalogSubOscType
+from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc, AnalogSubOscType
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -54,7 +54,7 @@ class AnalogWave:
     """Analog Wave"""
 
     LFO: AnalogLFOWaveShape = AnalogLFOWaveShape
-    Osc: AnalogOscWave = AnalogOscWave
+    Osc: AnalogWaveOsc = AnalogWaveOsc
     SubOsc: AnalogSubOscType = AnalogSubOscType
     WaveType: WaveformType = WaveformType
 

@@ -32,6 +32,7 @@ from jdxi_editor.midi.message import (
     ProgramChangeMessage,
 )
 from jdxi_editor.midi.message.channel.message import ChannelMessage
+from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
 from picomidi.constant import Midi
@@ -212,10 +213,10 @@ class MidiOutHandler(MidiIOController):
         log.parameter("LSB", lsb)
         log.parameter("channel", channel)
         try:
-            # Bank Select MSB (CC#0)
+            # --- Bank Select MSB (CC#0)
             status = Midi.CC.STATUS | (channel & BitMask.LOW_4_BITS)
             self.send_raw_message([status, Midi.CC.BANK.MSB, msb])
-            # Bank Select LSB (CC#32)
+            # --- Bank Select LSB (CC#32)
             self.send_raw_message([status, Midi.CC.BANK.LSB, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
@@ -242,7 +243,7 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending identity_request request: {ex}")
             return False
 
-    def send_midi_message(self, sysex_message: MidiMessage) -> bool:
+    def send_midi_message(self, sysex_message: MidiMessage | JDXiSysEx) -> bool:
         """
         Send SysEx parameter change message using a MidiMessage.
 

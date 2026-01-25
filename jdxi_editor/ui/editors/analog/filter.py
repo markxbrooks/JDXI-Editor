@@ -66,15 +66,15 @@ class AnalogFilterSection(SectionBaseWidget):
         :param address: RolandSysExAddress
         """
         self.tab_widget: QTabWidget | None = None
-        self.filter_resonance = None
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._on_filter_mode_changed = on_filter_mode_changed
-        self.send_control_change = send_control_change
-        self.midi_helper = midi_helper
-        self.address = address
-        self.controls = controls
-        self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
+        self.filter_resonance: QWidget | None = None
+        self._create_parameter_slider: Callable = create_parameter_slider
+        self._create_parameter_switch: Callable = create_parameter_switch
+        self._on_filter_mode_changed: Callable = on_filter_mode_changed
+        self.send_control_change: Callable = send_control_change
+        self.midi_helper: MidiIOHelper = midi_helper
+        self.address: RolandSysExAddress = address
+        self.controls: dict = controls
+        self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
 
         super().__init__(icons_row_type=IconType.ADSR, analog=True)
         self.build_widgets()
@@ -118,16 +118,16 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
-        # Add label - store as instance attribute to prevent garbage collection
+        # --- Add label - store as instance attribute to prevent garbage collection
         self.filter_label = QLabel("Filter")
 
-        # Create buttons for each filter mode
+        # --- Create buttons for each filter mode
         filter_modes = [
             AnalogFilterType.BYPASS,
             AnalogFilterType.LPF,
         ]
 
-        # Map filter modes to icon names
+        # --- Map filter modes to icon names
         filter_icon_map = {
             AnalogFilterType.BYPASS: JDXi.UI.Icon.POWER,  # Power/off icon for bypass
             AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
@@ -137,7 +137,7 @@ class AnalogFilterSection(SectionBaseWidget):
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
-            # Add icon
+            # --- Add icon
             icon_name = filter_icon_map.get(filter_mode, JDXi.UI.Icon.FILTER)
             icon = qta.icon(
                 icon_name,
@@ -157,7 +157,7 @@ class AnalogFilterSection(SectionBaseWidget):
             self.filter_mode_buttons[filter_mode] = btn
             widgets.append(btn)
 
-        # Store the layout as instance attribute to prevent garbage collection
+        # --- Store the layout as instance attribute to prevent garbage collection
         self.filter_controls_row_layout = create_layout_with_widgets(widgets, vertical=False)
         return self.filter_controls_row_layout
 
@@ -167,18 +167,18 @@ class AnalogFilterSection(SectionBaseWidget):
 
         :param filter_mode: Analog.Filter.FilterType enum value
         """
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect_analog(btn)
 
-        # Apply active style to the selected filter mode button
+        # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
-        # Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
+        # --- Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:
             from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 
@@ -191,7 +191,7 @@ class AnalogFilterSection(SectionBaseWidget):
             if sysex_message:
                 self.midi_helper.send_midi_message(sysex_message)
 
-        # Update filter controls state
+        # --- Update filter controls state
         self._on_filter_mode_changed(filter_mode.value)
 
     def _create_filter_controls_group(self) -> QGroupBox:
@@ -214,7 +214,7 @@ class AnalogFilterSection(SectionBaseWidget):
             "Velocity",
             vertical=True,
         )
-        # Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
+        # --- Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
         controls_layout = create_layout_with_widgets(
             [
                 self.filter_widget,
@@ -223,7 +223,7 @@ class AnalogFilterSection(SectionBaseWidget):
                 self.filter_env_velocity_sens,
             ]
         )
-        # Use harmonized helper function (matching Digital Filter pattern)
+        # --- Use harmonized helper function (matching Digital Filter pattern)
         from jdxi_editor.ui.widgets.editor.helper import create_group_adsr_with_hlayout
 
         return create_group_adsr_with_hlayout(

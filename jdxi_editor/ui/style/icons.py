@@ -3,6 +3,7 @@ Icon registry for JD-Xi Editor.
 
 Provides centralized icon definitions and retrieval with fallback support.
 """
+from typing import Literal
 
 import qtawesome as qta
 from PySide6.QtGui import QIcon, Qt
@@ -268,7 +269,26 @@ class JDXiUIIconRegistry:
             return qta.icon("mdi.piano")
 
     @classmethod
-    def get_generated_icon(cls, name: str):
+    def get_generated_icon(
+        cls,
+        name: Literal[
+            "adsr",
+            "upsaw",
+            "square",
+            "pwsqu",
+            "triangle",
+            "sine",
+            "saw",
+            "spsaw",
+            "pcm",
+            "noise",
+            "lpf_filter",
+            "hpf_filter",
+            "bypass_filter",
+            "bpf_filter",
+            "filter_sine",
+        ],
+    ):
         """get generated icon"""
         icon_base64 = generate_waveform_icon(name, JDXiUIStyle.WHITE, 1.0)
         return QIcon(base64_to_pixmap(icon_base64))

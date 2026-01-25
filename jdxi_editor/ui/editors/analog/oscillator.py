@@ -2,52 +2,26 @@
 Analog Oscillator Section
 """
 
-from typing import Callable, Literal
+from typing import Callable
 
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
-from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
-from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
+from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
+from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.analog.helpers import generate_analog_wave_button, generate_analog_waveform_icon_name
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from picomidi.sysex.parameter.address import AddressParameter
-
-
-def generate_analog_wave_button(
-    icon_name: str,
-    waveform: Literal[AnalogOscWave.PULSE, AnalogOscWave.TRIANGLE, AnalogOscWave.SAW],
-) -> AnalogWaveformButton:
-    btn = AnalogWaveformButton(waveform)
-    JDXi.UI.Theme.apply_button_rect_analog(btn)
-    icon_base64 = generate_waveform_icon(icon_name, JDXi.UI.Style.WHITE, 0.7)
-    btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
-    btn.setFixedSize(
-        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
-    )
-    return btn
-
-
-def generate_analog_waveform_icon_name(waveform: AnalogOscWave) -> str:
-    # --- Set icons
-    icon_name = (
-        "upsaw"
-        if waveform == AnalogOscWave.SAW
-        else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"
-    )
-    return icon_name
 
 
 class AnalogOscillatorSection(SectionBaseWidget):
@@ -85,7 +59,15 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self.analog = True
 
         super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True)
+        self.build_widgets()
         self.setup_ui()
+
+    def build_widgets(self):
+        """build widgets"""
+        self.oscillator_tab_widget = QTabWidget()
+        # --- Tuning and Pitch tab (standardized name matching Digital) ---
+        self.tuning_widget = self._create_tuning_group()
+        self.pitch_widget = self._create_tuning_pitch_widget()
 
     def setup_ui(self) -> None:
         """
@@ -98,24 +80,17 @@ class AnalogOscillatorSection(SectionBaseWidget):
         layout.addLayout(self.create_waveform_buttons())
 
         # --- Tab widget to add pitch and PW controls to ---
-        self.oscillator_tab_widget = QTabWidget()
         JDXi.UI.Theme.apply_tabs_style(self.oscillator_tab_widget, analog=True)
         layout.addWidget(self.oscillator_tab_widget)
-
-        # --- Tuning and Pitch tab (standardized name matching Digital) ---
-        tuning_widget = self._create_tuning_group()
-        pitch_widget = self._create_tuning_pitch_widget()
         tuning_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
-        self.oscillator_tab_widget.addTab(pitch_widget, tuning_icon, "Pitch")
-        self.oscillator_tab_widget.addTab(tuning_widget, tuning_icon, "Tuning")
+        self.oscillator_tab_widget.addTab(self.pitch_widget, tuning_icon, "Pitch")
+        self.oscillator_tab_widget.addTab(self.tuning_widget, tuning_icon, "Tuning")
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        pw_icon = QIcon(
-            base64_to_pixmap(generate_waveform_icon("square", "#FFFFFF", 1.0))
-        )
+        pw_icon = JDXi.UI.Icon.get_generated_icon(name=str(WaveformType.SQUARE))
         self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         layout.addStretch()
@@ -139,21 +114,21 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """
         wave_layout_widgets = []
         for waveform in [
-            AnalogOscWave.SAW,
-            AnalogOscWave.TRIANGLE,
-            AnalogOscWave.PULSE,
+            Analog.Wave.Osc.SAW,
+            Analog.Wave.Osc.TRIANGLE,
+            Analog.Wave.Osc.PULSE,
         ]:
             icon_name = generate_analog_waveform_icon_name(waveform)
             btn = generate_analog_wave_button(icon_name, waveform)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
-            self.controls[AnalogParam.OSC_WAVEFORM] = btn
+            self.controls[Analog.Param.OSC_WAVEFORM] = btn
             wave_layout_widgets.append(btn)
 
         self.sub_oscillator_type_switch = self._create_parameter_switch(
-            AnalogParam.SUB_OSCILLATOR_TYPE,
-            AnalogDisplayName.SUB_OSCILLATOR_TYPE,
-            AnalogDisplayOptions.SUB_OSCILLATOR_TYPE,
+            Analog.Param.SUB_OSCILLATOR_TYPE,
+            Analog.Display.Name.SUB_OSCILLATOR_TYPE,
+            Analog.Display.Options.SUB_OSCILLATOR_TYPE,
         )
         wave_layout_widgets.append(self.sub_oscillator_type_switch)
         wave_layout = create_layout_with_widgets(wave_layout_widgets)
@@ -169,13 +144,13 @@ class AnalogOscillatorSection(SectionBaseWidget):
         tuning_layout = create_layout_with_widgets(
             [
                 self._create_parameter_slider(
-                    AnalogParam.OSC_PITCH_COARSE,
-                    AnalogDisplayName.OSC_PITCH_COARSE,
+                    Analog.Param.OSC_PITCH_COARSE,
+                    Analog.Display.Name.OSC_PITCH_COARSE,
                     vertical=True,
                 ),
                 self._create_parameter_slider(
-                    AnalogParam.OSC_PITCH_FINE,
-                    AnalogDisplayName.OSC_PITCH_FINE,
+                    Analog.Param.OSC_PITCH_FINE,
+                    Analog.Display.Name.OSC_PITCH_FINE,
                     vertical=True,
                 ),
             ]
@@ -196,8 +171,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pw_group.setLayout(pw_layout)
         pw_layout.addStretch()
         self.pwm_widget = PWMWidget(
-            pulse_width_param=AnalogParam.OSC_PULSE_WIDTH,
-            mod_depth_param=AnalogParam.OSC_PULSE_WIDTH_MOD_DEPTH,
+            pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
+            mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
             midi_helper=self.midi_helper,
             address=self.address,
             create_parameter_slider=self._create_parameter_slider,
@@ -222,9 +197,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_env_row_layout.addStretch()
         # --- Pitch Env Widget ---
         self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=AnalogParam.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=AnalogParam.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=AnalogParam.OSC_PITCH_ENV_DEPTH,
+            attack_param=Analog.Param.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=Analog.Param.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=Analog.Param.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
@@ -239,20 +214,20 @@ class AnalogOscillatorSection(SectionBaseWidget):
         pitch_env_row_layout.addWidget(self.pitch_env_widget)
         pitch_env_row_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParam.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                AnalogDisplayName.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                Analog.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                Analog.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
                 vertical=True,
             )
         )
         pitch_env_row_layout.addStretch()
         return pitch_env_group
 
-    def _update_pw_controls_state(self, waveform: AnalogOscWave):
+    def _update_pw_controls_state(self, waveform: AnalogWaveOsc):
         """
         Update pulse width controls enabled state based on waveform
 
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == AnalogOscWave.PULSE
+        pw_enabled = waveform == Analog.Wave.Osc.PULSE
         self.pwm_widget.setEnabled(pw_enabled)
