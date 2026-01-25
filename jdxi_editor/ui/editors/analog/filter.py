@@ -2,7 +2,7 @@
 Analog Filter Section
 """
 
-from typing import Callable
+from typing import Callable, Dict
 
 import qtawesome as qta
 from PySide6.QtCore import QSize
@@ -16,10 +16,12 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
@@ -33,6 +35,14 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 class AnalogFilterSection(SectionBaseWidget):
     """Analog Filter Section"""
+
+    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
+        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.FILTER_ENV_ATTACK_TIME),
+        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Analog.Param.FILTER_ENV_SUSTAIN_LEVEL),
+        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Analog.Param.FILTER_ENV_RELEASE_TIME),
+        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Analog.Param.FILTER_ENV_DEPTH),
+    }
 
     def __init__(
         self,
@@ -83,7 +93,8 @@ class AnalogFilterSection(SectionBaseWidget):
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
-        layout.addLayout(filter_row)
+        if filter_row:
+            layout.addLayout(filter_row)
         layout.addWidget(self.tab_widget)
 
         layout.addSpacing(JDXi.UI.Style.SPACING)
@@ -107,8 +118,8 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
-        # Add label
-        filter_label = QLabel("Filter")
+        # Add label - store as instance attribute to prevent garbage collection
+        self.filter_label = QLabel("Filter")
 
         # Create buttons for each filter mode
         filter_modes = [
@@ -122,7 +133,7 @@ class AnalogFilterSection(SectionBaseWidget):
             AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
         }
 
-        widgets = [filter_label]
+        widgets = [self.filter_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
@@ -146,13 +157,15 @@ class AnalogFilterSection(SectionBaseWidget):
             self.filter_mode_buttons[filter_mode] = btn
             widgets.append(btn)
 
-        return create_layout_with_widgets(widgets, vertical=False)
+        # Store the layout as instance attribute to prevent garbage collection
+        self.filter_controls_row_layout = create_layout_with_widgets(widgets, vertical=False)
+        return self.filter_controls_row_layout
 
-    def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
+    def _on_filter_mode_selected(self, filter_mode):
         """
         Handle filter mode button clicks
 
-        :param filter_mode: AnalogFilterType enum value
+        :param filter_mode: Analog.Filter.FilterType enum value
         """
         # Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
@@ -172,7 +185,7 @@ class AnalogFilterSection(SectionBaseWidget):
             sysex_composer = JDXiSysExComposer()
             sysex_message = sysex_composer.compose_message(
                 address=self.address,
-                param=AnalogParam.FILTER_MODE_SWITCH,
+                param=Analog.Param.FILTER_MODE_SWITCH,
                 value=filter_mode.value,
             )
             if sysex_message:
@@ -184,7 +197,7 @@ class AnalogFilterSection(SectionBaseWidget):
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
         self.filter_widget = AnalogFilterWidget(
-            cutoff_param=AnalogParam.FILTER_CUTOFF,
+            cutoff_param=Analog.Param.FILTER_CUTOFF,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
@@ -217,23 +230,40 @@ class AnalogFilterSection(SectionBaseWidget):
             name="Controls", hlayout=controls_layout, analog=True
         )
 
-    def _create_filter_adsr_env_group(self) -> QGroupBox:
-        """Create filter ADSR group (harmonized with Digital Filter, includes centered icon)"""
+    def _create_filter_adsr_env_group(self):
+        """Create amp ADSR envelope using standardized helper"""
         from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
+        # --- Extract parameters from ADSRSpec objects
+        def get_param(spec_or_param):
+            """Extract parameter from ADSRSpec or return parameter directly"""
+            if isinstance(spec_or_param, ADSRSpec):
+                return spec_or_param.param
+            return spec_or_param
+
+        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
+        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
+        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
+        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
+
+        attack_param = get_param(attack_spec) if attack_spec else None
+        decay_param = get_param(decay_spec) if decay_spec else None
+        sustain_param = get_param(sustain_spec) if sustain_spec else None
+        release_param = get_param(release_spec) if release_spec else None
+
         self.filter_adsr_widget = ADSR(
-            attack_param=AnalogParam.FILTER_ENV_ATTACK_TIME,
-            decay_param=AnalogParam.FILTER_ENV_DECAY_TIME,
-            sustain_param=AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
-            release_param=AnalogParam.FILTER_ENV_RELEASE_TIME,
-            peak_param=AnalogParam.FILTER_ENV_DEPTH,
+            attack_param=attack_param,
+            decay_param=decay_param,
+            sustain_param=sustain_param,
+            release_param=release_param,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls,
             address=self.address,
+            controls=self.controls,
             analog=True,
         )
-        # Use standardized envelope group helper (centers icon automatically)
         return create_envelope_group(
-            name="Envelope", adsr_widget=self.filter_adsr_widget, analog=True
+            name="Envelope",
+            adsr_widget=self.filter_adsr_widget,
+            analog=True,
         )
