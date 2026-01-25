@@ -30,12 +30,12 @@ from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
 from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
-from jdxi_editor.ui.editors.synth.partial import PartialEditor
+from jdxi_editor.ui.editors.synth.partial import PartialPanel
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
-class DrumPartialEditor(PartialEditor):
+class DrumPartialPanel(PartialPanel):
     """Editor for address single partial"""
 
     def __init__(
@@ -100,8 +100,6 @@ class DrumPartialEditor(PartialEditor):
 
         partial_group = DrumPartialSection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
         tab_partial_layout.addWidget(partial_group)
@@ -138,8 +136,6 @@ class DrumPartialEditor(PartialEditor):
 
         pitch_env_group = DrumPitchEnvSection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
         tab_pitch_env_layout.addWidget(pitch_env_group)
@@ -156,8 +152,6 @@ class DrumPartialEditor(PartialEditor):
 
         output_group = DrumOutputSection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
         tab_output_layout.addWidget(output_group)
@@ -172,8 +166,6 @@ class DrumPartialEditor(PartialEditor):
 
         tvf_group = DrumTVFSection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
         tab_tvf_layout.addWidget(tvf_group)
@@ -190,8 +182,6 @@ class DrumPartialEditor(PartialEditor):
 
         tva_group = DrumTVASection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
         )
         tab_tva_layout.addWidget(tva_group)

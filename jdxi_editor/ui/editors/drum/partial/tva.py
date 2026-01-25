@@ -279,22 +279,17 @@ class DrumTVASection(DrumBaseSection):
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
     ):
-        super().__init__()
+
         """
         Initialize the DrumTVASection
 
         :param controls: dict
-        :param create_parameter_combo_box: Callable
-        :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
+        super().__init__()
+        self.controls = controls or {}
         self.midi_helper = midi_helper
         self.envelope = {
             "t1_v_sens": 64,
@@ -311,6 +306,7 @@ class DrumTVASection(DrumBaseSection):
         }
         self.setup_ui()
 
+
     def setup_ui(self):
         """setup UI"""
 
@@ -322,11 +318,14 @@ class DrumTVASection(DrumBaseSection):
             widget_list=[self.tva_group, self.plot], vertical=False
         )
 
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
+        
         main_vbox_layout = create_layout_with_widgets(
             widget_list=[self.tva_level_velocity_curve_spin], vertical=True
         )
         main_vbox_layout.addLayout(main_row_hlayout)
-        self.scrolled_layout.addLayout(main_vbox_layout)
+        layout.addLayout(main_vbox_layout)
 
     def _create_tva_spin(self) -> QWidget:
         # Add TVA parameters

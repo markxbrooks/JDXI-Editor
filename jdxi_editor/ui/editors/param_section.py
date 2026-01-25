@@ -65,7 +65,7 @@ class ParameterSectionBase(SectionBaseWidget):
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self.build_widgets()
-        self.setup_ui()
+        self._setup_ui()
         if self.BUTTON_SPECS:
             self._initialize_button_states()
 
@@ -253,7 +253,7 @@ class ParameterSectionBase(SectionBaseWidget):
     # -------------------------------
     # Layout & Tabs
     # -------------------------------
-    def setup_ui(self):
+    def _setup_ui(self):
         """Assemble section UI"""
         layout = self.create_layout()
         if self.button_widgets:

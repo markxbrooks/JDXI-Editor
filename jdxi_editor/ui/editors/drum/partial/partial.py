@@ -58,8 +58,6 @@ class DrumPartialSection(DrumBaseSection):
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
     ):
         super().__init__()
@@ -71,18 +69,20 @@ class DrumPartialSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
+        self.controls = controls or {}
         self.midi_helper = midi_helper
         self.setup_ui()
 
     def setup_ui(self) -> None:
-        """setup UI"""
-        # Icons row is already added by DrumBaseSection
-        # Add tab widget to scrolled layout
+        """setup UI - follows ParameterSectionBase pattern"""
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
+        
+        # Create tab widget
         self.partial_controls_tab_widget = QTabWidget()
-        self.scrolled_layout.addWidget(self.partial_controls_tab_widget)
+        
+        # Add tab widget to the scrolled layout
+        layout.addWidget(self.partial_controls_tab_widget)
 
         controls_icon = JDXi.UI.Icon.get_icon("mdi.tune", color=JDXi.UI.Style.GREY)
         self.partial_controls_tab_widget.addTab(
@@ -109,7 +109,7 @@ class DrumPartialSection(DrumBaseSection):
         )
 
         # Add stretch to allow proper expansion
-        self.scrolled_layout.addStretch()
+        layout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:
         """create partial misc group"""

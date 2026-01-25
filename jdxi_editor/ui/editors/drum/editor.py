@@ -75,7 +75,7 @@ from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
-from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
+from jdxi_editor.ui.editors.drum.partial.panel import DrumPartialPanel
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
@@ -278,7 +278,7 @@ class DrumCommonEditor(SynthEditor):
                     f"Loading {partial_name} ({count} of {total})"
                 )
 
-            editor = DrumPartialEditor(
+            editor = DrumPartialPanel(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
                 partial_name=partial_name,

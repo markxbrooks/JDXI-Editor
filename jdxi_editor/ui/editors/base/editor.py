@@ -58,10 +58,10 @@ from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
-from jdxi_editor.ui.editors.synth.partial import PartialEditor
+from jdxi_editor.ui.editors.synth.partial import PartialPanel
 
 
-class BasePartialEditor(PartialEditor):
+class BasePartialEditor(PartialPanel):
     """Editor for a single Digital Synth partial"""
 
     SYNTH_MAP = {

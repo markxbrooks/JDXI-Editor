@@ -259,11 +259,8 @@ class DrumPitchEnvSection(DrumBaseSection):
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
     ):
-        super().__init__()
         """
         Initialize the DrumPitchEnvSection
 
@@ -272,10 +269,10 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self.midi_helper = midi_helper
+        # Initialize envelope before super().__init__() because setup_ui() will be called
+        # during super().__init__() and it needs envelope
+
+        super().__init__()
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -291,16 +288,21 @@ class DrumPitchEnvSection(DrumBaseSection):
             "level_3": 15,
             "level_4": -25,
         }
-        self.setup_ui()
+
+        self.controls = controls or {}
+        self.midi_helper = midi_helper
+        self.setup_ui()  # is already called by ParameterSectionBase.__init__(), so we don't need to call it again
 
     def setup_ui(self) -> None:
         """setup UI"""
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
 
         # --- Main container with controls and plot
         main_container = QWidget()
         main_layout = QHBoxLayout(main_container)
         main_layout.addStretch()
-        self.scrolled_layout.addWidget(main_container)
+        layout.addWidget(main_container)
 
         controls_group, controls_layout = create_group_and_grid_layout(
             group_name="Pitch Envelope Controls"

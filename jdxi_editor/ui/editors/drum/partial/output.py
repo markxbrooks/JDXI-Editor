@@ -64,14 +64,10 @@ class DrumOutputSection(DrumBaseSection):
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
     ):
         super().__init__()
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
+        self.controls = controls or {}
         self.midi_helper = midi_helper
         self.setup_ui()
 
@@ -112,5 +108,11 @@ class DrumOutputSection(DrumBaseSection):
             group_name="Output", inner_layout=output_layout
         )
         main_row_hlayout = create_layout_with_widgets([output_group], vertical=True)
-        self.scrolled_layout.addLayout(main_row_hlayout)
-        self.vlayout.addStretch()
+        
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
+        layout.addLayout(main_row_hlayout)
+        
+        # Add stretch to vlayout if it exists
+        if hasattr(self, 'vlayout') and self.vlayout:
+            self.vlayout.addStretch()
