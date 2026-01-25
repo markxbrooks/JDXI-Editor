@@ -72,9 +72,9 @@ class AnalogFilterSection(SectionBaseWidget):
 
     def build_widgets(self):
         """build widgets"""
-        self._create_tab_widget()
         self.filter_controls_group = self._create_filter_controls_group()
         self.adsr_env_group = self._create_filter_adsr_env_group()
+        self._create_tab_widget()
 
     def setup_ui(self):
         """Setup the UI (standardized method name matching Digital Filter)"""

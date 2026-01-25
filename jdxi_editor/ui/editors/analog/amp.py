@@ -4,7 +4,7 @@ Amp section of the JD-Xi editor
 This section contains the controls for the amp section of the JD-Xi editor.
 """
 
-from typing import Callable
+from typing import Callable, Dict
 
 from PySide6.QtWidgets import (
     QTabWidget,
@@ -14,7 +14,9 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
-from jdxi_editor.ui.adsr.type import ADSRType
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
@@ -27,23 +29,18 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 class AnalogAmpSection(SectionBaseWidget):
     """Amp section of the JD-Xi editor"""
 
-    AMP_LEVEL_PARAMS = [
-        {"param": AnalogParam.AMP_LEVEL, "display": AnalogDisplayName.AMP_LEVEL},
-        {
-            "param": AnalogParam.AMP_LEVEL_KEYFOLLOW,
-            "display": AnalogDisplayName.AMP_LEVEL_KEYFOLLOW,
-        },
-        {
-            "param": AnalogParam.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            "display": AnalogDisplayName.AMP_LEVEL_VELOCITY_SENSITIVITY,
-        },
+    PARAM_SPECS = [
+        SliderSpec(Analog.Param.AMP_LEVEL, Analog.Display.Name.AMP_LEVEL),
+        SliderSpec(
+            Analog.Param.AMP_LEVEL_KEYFOLLOW, Analog.Display.Name.AMP_LEVEL_KEYFOLLOW
+        ),
+        SliderSpec(Analog.Param.AMP_LEVEL_VELOCITY_SENSITIVITY, Analog.Display.Name.AMP_LEVEL_VELOCITY_SENSITIVITY),
     ]
-
-    AMP_ADSR_PARAMS = {
-        ADSRType.ATTACK: AnalogParam.AMP_ENV_ATTACK_TIME,
-        ADSRType.DECAY: AnalogParam.AMP_ENV_DECAY_TIME,
-        ADSRType.SUSTAIN: AnalogParam.AMP_ENV_SUSTAIN_LEVEL,
-        ADSRType.RELEASE: AnalogParam.AMP_ENV_RELEASE_TIME,
+    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
+        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME),
+        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.AMP_ENV_DECAY_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Analog.Param.AMP_ENV_SUSTAIN_LEVEL),
+        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Analog.Param.AMP_ENV_RELEASE_TIME),
     }
 
     def __init__(
@@ -81,22 +78,39 @@ class AnalogAmpSection(SectionBaseWidget):
 
     def _create_amp_level_sliders(self):
         """Create sliders for Level, KeyFollow, and Velocity Sensitivity"""
-        for entry in self.AMP_LEVEL_PARAMS:
+        for entry in self.PARAM_SPECS:
             slider = self._create_parameter_slider(
-                entry["param"], entry["display"], vertical=True
+                entry.param, entry.label, vertical=entry.vertical
             )
-            self.amp_sliders[entry["param"]] = slider
-            self.controls[entry["param"]] = slider
+            self.amp_sliders[entry.param] = slider
+            self.controls[entry.param] = slider
 
     def _create_amp_adsr_group(self):
         """Create amp ADSR envelope using standardized helper"""
         from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
+        # --- Extract parameters from ADSRSpec objects
+        def get_param(spec_or_param):
+            """Extract parameter from ADSRSpec or return parameter directly"""
+            if isinstance(spec_or_param, ADSRSpec):
+                return spec_or_param.param
+            return spec_or_param
+
+        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
+        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
+        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
+        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
+
+        attack_param = get_param(attack_spec) if attack_spec else None
+        decay_param = get_param(decay_spec) if decay_spec else None
+        sustain_param = get_param(sustain_spec) if sustain_spec else None
+        release_param = get_param(release_spec) if release_spec else None
+
         self.amp_env_adsr_widget = ADSR(
-            attack_param=self.AMP_ADSR_PARAMS[ADSRType.ATTACK],
-            decay_param=self.AMP_ADSR_PARAMS[ADSRType.DECAY],
-            sustain_param=self.AMP_ADSR_PARAMS[ADSRType.SUSTAIN],
-            release_param=self.AMP_ADSR_PARAMS[ADSRType.RELEASE],
+            attack_param=attack_param,
+            decay_param=decay_param,
+            sustain_param=sustain_param,
+            release_param=release_param,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
