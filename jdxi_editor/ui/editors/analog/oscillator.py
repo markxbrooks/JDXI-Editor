@@ -24,6 +24,21 @@ from picomidi.sysex.parameter.address import AddressParameter
 class AnalogOscillatorSection(SectionBaseWidget):
     """Analog Oscillator Section"""
     
+    SLIDER_GROUPS = {
+        "tuning": [
+            SliderSpec(Analog.Param.OSC_PITCH_COARSE,
+                    Analog.Display.Name.OSC_PITCH_COARSE,
+                    vertical=True),
+            SliderSpec(Analog.Param.OSC_PITCH_FINE,
+                    Analog.Display.Name.OSC_PITCH_FINE,
+                    vertical=True),
+        ]
+        "env": [
+            Analog.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                Analog.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                vertical=True,
+        ]
+    }
     SWITCH_SPECS = [
         SwitchSpec(
             Analog.Param.SUB_OSCILLATOR_TYPE,
