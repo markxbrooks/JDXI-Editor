@@ -58,21 +58,21 @@ class BaseLFOSection(SectionBaseWidget):
         super().__init__(icons_row_type=icons_row_type, analog=analog)
         # --- Set up LFO shapes
         self.wave_shapes = [
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
-            JDXi.Midi.Digital.Wave.LFO.SINE,
-            JDXi.Midi.Digital.Wave.LFO.SAW,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM,
+            Digital.Wave.LFO.TRIANGLE,
+            Digital.Wave.LFO.SINE,
+            Digital.Wave.LFO.SAW,
+            Digital.Wave.LFO.SQUARE,
+            Digital.Wave.LFO.SAMPLE_HOLD,
+            Digital.Wave.LFO.RANDOM,
         ]
         # --- Map LFO shapes to icon names
         self.shape_icon_map = {
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
-            JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            JDXi.Midi.Digital.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
+            Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
+            Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
+            Digital.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
+            Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
+            Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
 
     def setup_ui(self):
