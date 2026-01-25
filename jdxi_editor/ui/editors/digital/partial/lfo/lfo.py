@@ -53,7 +53,7 @@ class DigitalLFOSection(BaseLFOSection):
     ]
     RATE_FADE_SLIDERS = [
         SliderSpec(
-            Digital.Param.LFO_RATE, JDXi.Midi.Digital.Display.Name.LFO_RATE
+            Digital.Param.LFO_RATE, Digital.Display.Name.LFO_RATE
         ),
         SliderSpec(
             Digital.Param.LFO_FADE_TIME,
