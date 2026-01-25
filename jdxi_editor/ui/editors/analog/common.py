@@ -4,6 +4,7 @@ Common Section
 
 from typing import Callable
 
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
@@ -70,35 +71,35 @@ class AnalogCommonSection(SectionBaseWidget):
         """Create Sliders"""
         #  --- Octave Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
-            AnalogParam.OCTAVE_SHIFT,
-            AnalogDisplayName.OCTAVE_SHIFT,
-            AnalogDisplayOptions.OCTAVE_SHIFT,
-            AnalogDisplayValues.OCTAVE_SHIFT,
+            Analog.Param.OCTAVE_SHIFT,
+            Analog.Display.Name.OCTAVE_SHIFT,
+            Analog.Display.Options.OCTAVE_SHIFT,
+            Analog.Display.Values.OCTAVE_SHIFT,
         )
         self.legato_switch = self._create_parameter_switch(
-            AnalogParam.LEGATO_SWITCH,
-            AnalogDisplayName.LEGATO_SWITCH,
-            AnalogDisplayOptions.LEGATO_SWITCH,
+            Analog.Param.LEGATO_SWITCH,
+            Analog.Display.Name.LEGATO_SWITCH,
+            Analog.Display.Options.LEGATO_SWITCH,
         )
         # --- Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            AnalogParam.PORTAMENTO_SWITCH,
-            AnalogDisplayName.PORTAMENTO_SWITCH,
-            AnalogDisplayOptions.PORTAMENTO_SWITCH,
+            Analog.Param.PORTAMENTO_SWITCH,
+            Analog.Display.Name.PORTAMENTO_SWITCH,
+            Analog.Display.Options.PORTAMENTO_SWITCH,
         )
 
         self.pitch_bend_up = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
+            Analog.Param.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_DOWN,
-            AnalogDisplayName.PITCH_BEND_DOWN,
+            Analog.Param.PITCH_BEND_DOWN,
+            Analog.Display.Name.PITCH_BEND_DOWN,
             vertical=True,
         )
 
         # --- Portamento Time
         self.portamento_time = self._create_parameter_slider(
-            AnalogParam.PORTAMENTO_TIME,
-            AnalogDisplayName.PORTAMENTO_TIME,
+            Analog.Param.PORTAMENTO_TIME,
+            Analog.Display.Name.PORTAMENTO_TIME,
             vertical=True,
         )
