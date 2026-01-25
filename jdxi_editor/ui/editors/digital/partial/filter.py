@@ -14,7 +14,6 @@ from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
 )
@@ -281,7 +280,8 @@ class DigitalFilterSection(ParameterSectionBase):
                 self.filter_widget.slope_param_control.setEnabled(enabled)
             if hasattr(self.filter_widget, 'plot'):
                 self.filter_widget.plot.enabled = enabled
-                self.filter_widget.plot.update()"""
+                self.filter_widget.plot.update()
+        """
 
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)

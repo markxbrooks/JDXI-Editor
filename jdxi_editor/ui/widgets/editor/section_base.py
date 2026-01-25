@@ -45,14 +45,15 @@ from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
-from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.editors.synth.base import SynthBase
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items, create_envelope_group
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 
 
-class SectionBaseWidget(QWidget):
+class SectionBaseWidget(SynthBase):
     """
     Base widget for editor sections that automatically adds icon rows.
 
@@ -75,6 +76,7 @@ class SectionBaseWidget(QWidget):
             IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
         ] = "adsr",
         analog: bool = False,
+        midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
         Initialize the SectionBaseWidget.
@@ -82,11 +84,10 @@ class SectionBaseWidget(QWidget):
         :param parent: Parent widget
         :param icons_row_type: Type of icon row to add ("adsr", "oscillator", "generic", or "none")
         :param analog: Whether to apply analog-specific styling
+        :param midi_helper: Optional MIDI helper for communication
         """
-        super().__init__(parent)
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.address: RolandSysExAddress | None = None
-        self.midi_helper: MidiIOHelper | None = None
-        self.controls: dict | None = None
         self.analog: bool = analog
         self.icons_row_type = icons_row_type
         self._layout: Optional[QVBoxLayout] = None
@@ -392,15 +393,6 @@ class SectionBaseWidget(QWidget):
             self._create_parameter_switch(spec.param, spec.label, spec.options)
             for spec in specs
         ]
-
-    def _create_parameter_slider(self, param, label, vertical) -> QWidget:
-        pass
-
-    def _create_parameter_switch(self, param, label, options) -> QWidget:
-        pass
-
-    def _create_parameter_combo_box(self, param, label, options, values):
-        pass
 
     def _on_button_selected(self, b):
         pass

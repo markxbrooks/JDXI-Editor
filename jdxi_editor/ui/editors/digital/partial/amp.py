@@ -5,13 +5,11 @@ from typing import Dict
 
 from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
 )
@@ -44,13 +42,6 @@ class DigitalAmpSection(ParameterSectionBase):
         ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME),
         ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
     }
-
-    """ADSR_SPEC = {
-        Digital.Amp.ADSR.ATTACK: Digital.Param.AMP_ENV_ATTACK_TIME,
-        Digital.Amp.ADSR.DECAY: Digital.Param.AMP_ENV_DECAY_TIME,
-        Digital.Amp.ADSR.SUSTAIN: Digital.Param.AMP_ENV_SUSTAIN_LEVEL,
-        Digital.Amp.ADSR.RELEASE: Digital.Param.AMP_ENV_RELEASE_TIME,
-    }"""
 
     BUTTON_SPECS = []  # Digital Amp does not have waveform buttons
 

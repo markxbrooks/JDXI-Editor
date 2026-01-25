@@ -1,4 +1,4 @@
-from typing import Callable, Literal
+from typing import Callable, Literal, Dict, Union
 
 from PySide6.QtWidgets import QTabWidget, QWidget
 
@@ -42,9 +42,6 @@ class ParameterSectionBase(SectionBaseWidget):
     def __init__(
         self,
         *,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable = None,
-        create_parameter_combo_box: Callable = None,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
         controls: dict = None,
@@ -58,10 +55,6 @@ class ParameterSectionBase(SectionBaseWidget):
         self.address = address
         self.send_midi_parameter = send_midi_parameter
 
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._create_parameter_combo_box = create_parameter_combo_box
-
         self.tab_widget = None
         self.adsr_widget = None
         self.control_widgets = []
@@ -69,7 +62,7 @@ class ParameterSectionBase(SectionBaseWidget):
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
         # Set controls after super().__init__() to avoid it being overwritten
-        self.controls = controls or {}
+        self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self.build_widgets()
         self.setup_ui()

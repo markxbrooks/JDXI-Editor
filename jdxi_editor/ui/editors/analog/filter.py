@@ -2,7 +2,7 @@
 Analog Filter Section
 """
 
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional, Union
 
 import qtawesome as qta
 from PySide6.QtCore import QSize
@@ -22,9 +22,9 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
 )
@@ -44,40 +44,42 @@ class AnalogFilterSection(SectionBaseWidget):
         ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Analog.Param.FILTER_ENV_DEPTH),
     }
 
+    SLIDER_GROUPS = {
+        "filter": [
+            SliderSpec(AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True),
+            SliderSpec(AnalogParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True),
+            SliderSpec(AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True),
+        ],
+    }
+
     def __init__(
         self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        on_filter_mode_changed: Callable,
-        send_control_change: Callable,
-        midi_helper: MidiIOHelper,
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
+        on_filter_mode_changed: Callable = None,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the AnalogFilterSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
-        :param on_filter_mode_changed: Callable
-        :param send_control_change: Callable
-        :param midi_helper: MidiIOHelper Midi Helper
         :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
+        :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.tab_widget: QTabWidget | None = None
         self.filter_resonance: QWidget | None = None
-        self._create_parameter_slider: Callable = create_parameter_slider
-        self._create_parameter_switch: Callable = create_parameter_switch
-        self._on_filter_mode_changed: Callable = on_filter_mode_changed
-        self.send_control_change: Callable = send_control_change
-        self.midi_helper: MidiIOHelper = midi_helper
-        self.address: RolandSysExAddress = address
         self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
+        self._on_filter_mode_changed: Callable = on_filter_mode_changed
 
-        super().__init__(icons_row_type=IconType.ADSR, analog=True)
-        # Set controls after super().__init__() to avoid it being overwritten
-        self.controls = controls or {}
+        # Get midi_helper from parent if available
+        midi_helper = None
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
+        
+        super().__init__(icons_row_type=IconType.ADSR, analog=True, midi_helper=midi_helper)
+        # Set attributes after super().__init__() to avoid them being overwritten
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        self.address = address
 
         self.build_widgets()
         self.setup_ui()
@@ -127,7 +129,7 @@ class AnalogFilterSection(SectionBaseWidget):
             AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
         }
 
-        widgets = [self.filter_label]
+        self.filter_mode_control_button_widgets = [self.filter_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
@@ -149,10 +151,10 @@ class AnalogFilterSection(SectionBaseWidget):
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)
             )
             self.filter_mode_buttons[filter_mode] = btn
-            widgets.append(btn)
+            self.filter_mode_control_button_widgets.append(btn)
 
         # --- Store the layout as instance attribute to prevent garbage collection
-        self.filter_controls_row_layout = create_layout_with_widgets(widgets, vertical=False)
+        self.filter_controls_row_layout = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
         return self.filter_controls_row_layout
 
     def _on_filter_mode_selected(self, filter_mode):
@@ -174,10 +176,7 @@ class AnalogFilterSection(SectionBaseWidget):
 
         # --- Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:
-            from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-
-            sysex_composer = JDXiSysExComposer()
-            sysex_message = sysex_composer.compose_message(
+            sysex_message = self.sysex_composer.compose_message(
                 address=self.address,
                 param=Analog.Param.FILTER_MODE_SWITCH,
                 value=filter_mode.value,
@@ -186,7 +185,8 @@ class AnalogFilterSection(SectionBaseWidget):
                 self.midi_helper.send_midi_message(sysex_message)
 
         # --- Update filter controls state
-        self._on_filter_mode_changed(filter_mode.value)
+        if self._on_filter_mode_changed:
+            self._on_filter_mode_changed(filter_mode.value)
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
@@ -208,6 +208,7 @@ class AnalogFilterSection(SectionBaseWidget):
             "Velocity",
             vertical=True,
         )
+        # (self.filter_resonance, self.filter_cutoff_keyfollow, self.filter_env_velocity_sens) = self._build_sliders(self.SLIDER_GROUPS["filter"])
         # --- Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
         controls_layout = create_layout_with_widgets(
             [

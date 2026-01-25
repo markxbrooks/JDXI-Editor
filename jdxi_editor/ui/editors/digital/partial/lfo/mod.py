@@ -4,7 +4,6 @@ MOD LFO section of the digital partial editor.
 
 from typing import Callable, Literal
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.ui.editors.digital.partial.lfo.base import BaseLFOSection
@@ -60,9 +59,6 @@ class DigitalModLFOSection(BaseLFOSection):
 
     def __init__(
         self,
-        create_parameter_slider: Callable,
-        create_parameter_combo_box: Callable,
-        create_parameter_switch: Callable,
         on_parameter_changed: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
@@ -72,15 +68,10 @@ class DigitalModLFOSection(BaseLFOSection):
         """
         Initialize the DigitalModLFOSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_combo_box: Callable
         :param on_parameter_changed: Callable
         :param controls: dict
         :param send_midi_parameter: Callable to send MIDI parameter updates
         """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self._create_parameter_switch = create_parameter_switch
         self._on_parameter_changed = on_parameter_changed
         self.controls = controls
         self.wave_shape_buttons = {}  # Dictionary to store Mod LFO shape buttons

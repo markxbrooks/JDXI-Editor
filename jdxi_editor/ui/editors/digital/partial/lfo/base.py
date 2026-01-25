@@ -56,6 +56,9 @@ class BaseLFOSection(SectionBaseWidget):
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
+        # --- Set controls after super().__init__() to avoid it being overwritten
+        if not hasattr(self, 'controls') or self.controls is None:
+            self.controls = {}
         # --- Set up LFO shapes
         self.wave_shapes = [
             Digital.Wave.LFO.TRIANGLE,

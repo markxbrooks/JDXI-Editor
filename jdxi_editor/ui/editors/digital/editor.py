@@ -268,18 +268,12 @@ class DigitalSynthEditor(SynthEditor):
                 self._add_tab(key=Digital.Tab.PARTIAL_3, widget=editor)
         
         self.common_section = DigitalCommonSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._create_parameter_combo_box,
-            self.controls,
+            controls=self.controls,
         )
         self._add_tab(key=Digital.Tab.COMMON, widget=self.common_section)
         
         self.tone_modify_section = DigitalToneModifySection(
-            self._create_parameter_slider,
-            self._create_parameter_combo_box,
-            self._create_parameter_switch,
-            self.controls,
+            controls=self.controls,
         )
         self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
         container_layout.addWidget(self.tab_widget)
@@ -371,7 +365,7 @@ class DigitalSynthEditor(SynthEditor):
             self._update_mod_lfo_shape_buttons(partial_no, value)
             log.parameter("Updated Mod LFO shape buttons for MOD_LFO_SHAPE", value)
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """

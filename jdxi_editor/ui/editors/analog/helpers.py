@@ -19,7 +19,8 @@ def generate_analog_wave_button(
 ) -> AnalogWaveformButton:
     """generate analog wave button"""
     btn = AnalogWaveformButton(waveform)
-    JDXi.UI.Theme.apply_button_rect_analog(btn)
+    # AnalogWaveformButton already sets BUTTON_WAVEFORM_ANALOG style with blue border
+    # No need to override with BUTTON_RECT_ANALOG
     icon_base64 = generate_waveform_icon(icon_name, JDXi.UI.Style.WHITE, 0.7)
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setFixedSize(

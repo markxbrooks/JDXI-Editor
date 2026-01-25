@@ -4,7 +4,7 @@ Amp section of the JD-Xi editor
 This section contains the controls for the amp section of the JD-Xi editor.
 """
 
-from typing import Callable, Dict
+from typing import Callable, Optional, Dict, Union
 
 from PySide6.QtWidgets import (
     QTabWidget,
@@ -12,13 +12,11 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
 )
@@ -44,14 +42,14 @@ class AnalogAmpSection(SectionBaseWidget):
 
     def __init__(
         self,
-        midi_helper,
         address,
         controls: dict,
-        create_parameter_slider: Callable,
+        parent: Optional[QWidget] = None,
     ):
-        self.midi_helper = midi_helper
-        self.address = address
-        self._create_parameter_slider = create_parameter_slider
+        # Get midi_helper from parent if available
+        midi_helper = None
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
 
         # Dynamic widgets storage
         self.amp_sliders = {}
@@ -60,9 +58,10 @@ class AnalogAmpSection(SectionBaseWidget):
         self.tab_widget = None
         self.layout = None
 
-        super().__init__(icons_row_type=IconType.ADSR, analog=True)
-        # Set controls after super().__init__() to avoid it being overwritten
-        self.controls = controls or {}
+        super().__init__(icons_row_type=IconType.ADSR, analog=True, midi_helper=midi_helper)
+        # Set attributes after super().__init__() to avoid them being overwritten
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        self.address = address
 
         self.build_widgets()
         self.setup_ui()

@@ -2,9 +2,12 @@
 Digital Tone Modify Section
 """
 
-from typing import Callable
+from typing import Callable, Dict, Union
+
+from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
@@ -28,25 +31,16 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def __init__(
             self,
-            create_parameter_slider: Callable,
-            create_parameter_combo_box: Callable,
-            create_parameter_switch: Callable,
             controls: dict,
     ):
         """
             Initialize the DigitalToneModifySection
 
-            :param create_parameter_slider: Callable
-            :param create_parameter_combo_box: Callable
-            :param create_parameter_switch: Callable
             :param controls: dict
             """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self._create_parameter_switch = create_parameter_switch
-        self.controls = controls
 
         super().__init__(icons_row_type=IconType.ADSR, analog=False)
+        self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self._build_widgets()
         self.setup_ui()

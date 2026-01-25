@@ -30,6 +30,7 @@ from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -46,15 +47,17 @@ class SynthBase(QWidget):
     """base class for all synth editors"""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None
+        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None, address: Optional[RolandSysExAddress] = None
     ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
 
         :param midi_helper: Optional[MidiIOHelper] instance for MIDI communication
         :param parent: QWidget Parent widget for this editor
+        :param address: Optional[RolandSysExAddress] Address for MIDI communication (can be set later)
         """
         super().__init__(parent)
+        self.midi_channel: int | None = None  # Default to Digital
         self.tab_widget: QTabWidget | None = None
         self.preset_type = None
         self.parent = parent
@@ -67,7 +70,7 @@ class SynthBase(QWidget):
         }
         self.partial_editors = {}
         self.sysex_data = None
-        self.address = None
+        self.address: Optional[RolandSysExAddress] = address
         self.partial_number = None
         self.bipolar_parameters = []
         self.controls: Dict[AddressParameter, QWidget] = {}
@@ -175,6 +178,18 @@ class SynthBase(QWidget):
                 return ProgramCommonAddress()
 
         return None
+
+    def send_control_change(self, control_change: ControlChange, value: int):
+        """Send MIDI CC message"""
+        if self.midi_helper:
+            control_change_number = (
+                control_change.value
+                if isinstance(control_change, ControlChange)
+                else control_change
+            )
+            self.midi_helper.send_control_change(
+                control_change_number, value, self.midi_channel
+            )
 
     def send_raw_message(self, message: bytes) -> bool:
         """

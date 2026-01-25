@@ -111,6 +111,8 @@ class JDXiUIStyle:
     ICON_PIXMAP_SIZE = 30  # in px
     TRACK_ICON_PIXMAP_SIZE = 50  # in px
     BUTTON_PADDING = 1
+    BUTTON_WAVEFORM_RADIUS = 8
+    BUTTON_WAVEFORM_BORDER_WIDTH = 2
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF4400"  # Brighter red for hover
     ACCENT_ANALOG = "#00A0E9"
@@ -136,6 +138,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_RADIUS = 15
     BUTTON_RECT_RADIUS = 6
     BUTTON_BORDER_WIDTH = 4
+    BUTTON_BORDER_WIDTH_WAVEFORM = 2
     HANDLE_SIZE = "6px"
     GROOVE_WIDTH = "2px"
     ICON_SIZE = 20
@@ -236,12 +239,12 @@ class JDXiUIStyle:
     BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
-        radius=12,  # More circular
-        text_color=GREY,
-        hover="#444444",
+        radius=BUTTON_WAVEFORM_RADIUS,  # More circular
+        text_color=WHITE,
+        hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=2,  # Thinner border for waveform buttons
+        button_border_width=BUTTON_BORDER_WIDTH_WAVEFORM,  # Thinner border for waveform buttons
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
@@ -249,13 +252,13 @@ class JDXiUIStyle:
 
     BUTTON_WAVEFORM_ANALOG = generate_button_style(
         bg=BUTTON_BACKGROUND,
-        border=BACKGROUND_PRESSED,
-        radius=3,
-        text_color=GREY,
-        hover="#444444",
-        border_pressed=ACCENT_ANALOG,
+        border=ACCENT_ANALOG,
+        radius=BUTTON_WAVEFORM_RADIUS,
+        text_color=WHITE,
+        hover=ACCENT_ANALOG_HOVER,
+        border_pressed=ACCENT_ANALOG_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=BUTTON_BORDER_WIDTH,
+        button_border_width=BUTTON_BORDER_WIDTH_WAVEFORM,
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,

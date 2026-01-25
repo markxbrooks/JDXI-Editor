@@ -2,7 +2,7 @@
 Analog Oscillator Section
 """
 
-from typing import Callable
+from typing import Callable, Dict, Union
 
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QWidget
 
@@ -50,8 +50,6 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
     def __init__(
             self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
             waveform_selected_callback: Callable,
             wave_buttons: dict,
             midi_helper: MidiIOHelper,
@@ -61,8 +59,6 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """
         Initialize the AnalogOscillatorSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
         :param waveform_selected_callback: Callable
         :param wave_buttons: dict to store waveform buttons (waveform -> button mapping)
         :param midi_helper: MidiIOHelper
@@ -70,17 +66,15 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """
         self.pitch_env_widget: PitchEnvelopeWidget | None = None
         self.pwm_widget: PWMWidget | None = None
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
         self._on_waveform_selected = waveform_selected_callback
         self.waveform_buttons: dict = wave_buttons or {}
         self.midi_helper = midi_helper
-        self.address = address
-        self.analog = True
+        self.analog: bool = True
 
-        super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True)
-        # --- Set controls after super().__init__() to avoid it being overwritten
-        self.controls = controls or {}
+        super().__init__(icons_row_type=IconType.OSCILLATOR, analog=True, midi_helper=midi_helper)
+        # --- Set attributes after super().__init__() to avoid them being overwritten
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        self.address = address
         self.build_widgets()
         self.setup_ui()
 
@@ -228,3 +222,32 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """
         pw_enabled = waveform == Analog.Wave.Osc.PULSE
         self.pwm_widget.setEnabled(pw_enabled)
+
+    def _on_waveform_selected_local(self, waveform: AnalogWaveOsc):
+        """
+        Handle waveform button selection locally (for section-level handling)
+        This is separate from the editor's callback to avoid conflicts.
+
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
+        if self.midi_helper:
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address,
+                param=Analog.Param.OSC_WAVEFORM,
+                value=waveform.value,
+            )
+            self.midi_helper.send_midi_message(sysex_message)
+
+            # --- Reset all buttons to default style
+            for btn in self.waveform_buttons.values():
+                btn.setChecked(False)
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+            # --- Apply active style to the selected waveform button
+            selected_btn = self.waveform_buttons.get(waveform)
+            if selected_btn:
+                selected_btn.setChecked(True)
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            self._update_pw_controls_state(waveform)
+

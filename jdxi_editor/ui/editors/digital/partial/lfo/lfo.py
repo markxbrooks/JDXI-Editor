@@ -4,7 +4,6 @@ LFO section of the digital partial editor.
 
 from typing import Callable, Literal
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.digital.partial.lfo.base import BaseLFOSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
@@ -63,9 +62,6 @@ class DigitalLFOSection(BaseLFOSection):
 
     def __init__(
         self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        create_parameter_combo_box: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
         icons_row_type=IconType.ADSR,
@@ -74,23 +70,17 @@ class DigitalLFOSection(BaseLFOSection):
         """
         Initialize the DigitalLFOSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
-        :param create_parameter_combo_box: Callable
         :param controls: dict
         :param send_midi_parameter: Callable to send MIDI parameter updates
         """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
 
         super().__init__(
             icons_row_type=icons_row_type, analog=analog, send_midi_parameter=send_midi_parameter
         )
         self.send_midi_parameter = send_midi_parameter
-        self.wave_shape_param: Literal[JDXi.Midi.Digital.Param.LFO_SHAPE] = (
-            JDXi.Midi.Digital.Param.LFO_SHAPE
+        self.wave_shape_param: Literal[Digital.Param.LFO_SHAPE] = (
+            Digital.Param.LFO_SHAPE
         )
         self.build_widgets()
         self.setup_ui()

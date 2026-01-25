@@ -7,7 +7,6 @@ from typing import Callable
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QGroupBox,
     QHBoxLayout,
     QPushButton,
     QTabWidget,
@@ -106,17 +105,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         icons_row_type: str = IconType.ADSR,
         analog: bool = False,
         send_midi_parameter: Callable = None,
-        create_parameter_slider: Callable = None,
-        create_parameter_switch: Callable = None,
-        create_parameter_combo_box: Callable = None,
         midi_helper: MidiIOHelper = None,
         controls: dict = None,
         address: RolandSysExAddress = None,
     ):
         super().__init__(
-            create_parameter_slider=create_parameter_slider,
-            create_parameter_switch=create_parameter_switch,
-            create_parameter_combo_box=create_parameter_combo_box,
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
             controls=controls,
@@ -124,8 +117,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             icons_row_type=icons_row_type,
             analog=analog,
         )
-        # Store references for use in build_widgets
-        self._create_parameter_slider = create_parameter_slider
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget"""

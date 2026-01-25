@@ -2,10 +2,10 @@
 Analog LFO Section
 """
 
-from typing import Callable, Dict, Literal
+from typing import Callable, Dict, Literal, Union
 
 from PySide6.QtWidgets import (
-    QPushButton,
+    QPushButton, QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -61,16 +61,11 @@ class AnalogLFOSection(BaseLFOSection):
 
     def __init__(
         self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        create_parameter_combo_box: Callable,
         on_lfo_shape_changed: Callable,
         lfo_shape_buttons: Dict[int, QPushButton],
         send_midi_parameter: Callable = None,
+        controls: dict = None,
     ):
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._create_parameter_combo_box = create_parameter_combo_box
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
 
@@ -96,6 +91,8 @@ class AnalogLFOSection(BaseLFOSection):
             analog=self.analog,
             send_midi_parameter=send_midi_parameter,
         )
+        # --- Set controls after super().__init__() to avoid it being overwritten
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         # --- Set LFO shape parameter for Analog
         from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 

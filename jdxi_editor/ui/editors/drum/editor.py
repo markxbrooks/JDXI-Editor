@@ -313,7 +313,7 @@ class DrumCommonEditor(SynthEditor):
         except IndexError:
             log.message(f"Invalid partial index: {index}")
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """

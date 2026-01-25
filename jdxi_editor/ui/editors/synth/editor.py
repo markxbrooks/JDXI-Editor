@@ -35,9 +35,8 @@ from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
+    AddressOffsetTemporaryToneUMB, RolandSysExAddress,
 )
-from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
@@ -89,8 +88,9 @@ class SynthEditor(SynthBase):
         self,
         midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
+        address: Optional[RolandSysExAddress] = None,
     ):
-        super().__init__(midi_helper, parent)  # Dict of JDXiSynth Types
+        super().__init__(midi_helper=midi_helper, parent=parent, address=address)  # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_preset_list = None
@@ -110,7 +110,6 @@ class SynthEditor(SynthBase):
         self.instrument_image_label = None
         self.instrument_icon_folder = None
         self.partial_number = None
-        self.midi_channel = None
         self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
@@ -300,7 +299,7 @@ class SynthEditor(SynthBase):
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-            self._update_partial_controls(
+            self._update_controls(
                 partial_number, sysex_data, successes, failures
             )
         if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
@@ -316,13 +315,13 @@ class SynthEditor(SynthBase):
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
                 return
             log.parameter("partial_number", partial_number)
-            self._update_partial_controls(
+            self._update_controls(
                 partial_number, sysex_data, successes, failures
             )
 
         log.debug_info(successes, failures)
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
@@ -515,18 +514,6 @@ class SynthEditor(SynthBase):
             f"requesting data update"
         )
         self.data_request()
-
-    def send_control_change(self, control_change: ControlChange, value: int):
-        """Send MIDI CC message"""
-        if self.midi_helper:
-            control_change_number = (
-                control_change.value
-                if isinstance(control_change, ControlChange)
-                else control_change
-            )
-            self.midi_helper.send_control_change(
-                control_change_number, value, self.midi_channel
-            )
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""

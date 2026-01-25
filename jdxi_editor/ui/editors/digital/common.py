@@ -1,8 +1,11 @@
 """
 Common Section
 """
-from typing import Callable
+from typing import Callable, Dict, Union
 
+from PySide6.QtWidgets import QWidget
+
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType
@@ -74,26 +77,15 @@ class DigitalCommonSection(SectionBaseWidget):
 
     def __init__(
             self,
-            create_parameter_slider: Callable,
-            create_parameter_switch: Callable,
-            create_parameter_combo_box: Callable,
             controls: dict,
     ):
         """
         Initialize the DigitalCommonSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
-        :param create_parameter_combo_box: Callable
         :param controls: dict
         """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self.controls = controls
-
         super().__init__(icons_row_type=IconType.GENERIC, analog=False)
-
+        self.controls: Dict[Union[AnalogParam], QWidget] = controls or {}
         self.build_widgets()
         self.setup_ui()
 

@@ -160,9 +160,6 @@ class DigitalPartialPanel(PartialEditor):
         self._add_tab(
             key=Digital.Tab.OSCILLATOR,
             widget=DigitalOscillatorSection(
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_switch=self._create_parameter_switch,
-                create_parameter_combo_box=self._create_parameter_combo_box,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 controls=self.controls,
@@ -173,9 +170,6 @@ class DigitalPartialPanel(PartialEditor):
         self._add_tab(
             key=Digital.Tab.FILTER,
             widget=DigitalFilterSection(
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_switch=self._create_parameter_switch,
-                create_parameter_combo_box=self._create_parameter_combo_box,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 controls=self.controls,
@@ -186,9 +180,6 @@ class DigitalPartialPanel(PartialEditor):
         self._add_tab(
             key=Digital.Tab.AMP,
             widget=DigitalAmpSection(
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_switch=self._create_parameter_switch,
-                create_parameter_combo_box=self._create_parameter_combo_box,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 controls=self.controls,
@@ -199,9 +190,6 @@ class DigitalPartialPanel(PartialEditor):
         self._add_tab(
             key=Digital.Tab.LFO,
             widget=DigitalLFOSection(
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_switch=self._create_parameter_switch,
-                create_parameter_combo_box=self._create_parameter_combo_box,
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
             ),
@@ -210,9 +198,6 @@ class DigitalPartialPanel(PartialEditor):
         self._add_tab(
             key=Digital.Tab.MODLFO,
             widget=DigitalModLFOSection(
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_combo_box=self._create_parameter_combo_box,
-                create_parameter_switch=self._create_parameter_switch,
                 on_parameter_changed=self._on_parameter_changed,
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,

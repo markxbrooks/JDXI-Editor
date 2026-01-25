@@ -32,9 +32,6 @@ class BaseOscillatorSection(ParameterSectionBase):
     def __init__(
         self,
         *,
-        create_parameter_slider: Callable = None,
-        create_parameter_switch: Callable = None,
-        create_parameter_combo_box: Callable = None,
         send_midi_parameter: Callable = None,
         midi_helper=None,
         controls: dict = None,
@@ -63,9 +60,6 @@ class BaseOscillatorSection(ParameterSectionBase):
         self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
 
         super().__init__(
-            create_parameter_slider=create_parameter_slider,
-            create_parameter_switch=create_parameter_switch,
-            create_parameter_combo_box=create_parameter_combo_box,
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
             controls=controls,

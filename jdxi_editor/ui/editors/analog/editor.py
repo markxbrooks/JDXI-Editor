@@ -53,6 +53,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import AnalogTab
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
@@ -96,7 +97,7 @@ class AnalogSynthEditor(SynthEditor):
         :param preset_helper: JDXIPresetHelper
         :param parent: QWidget
         """
-        super().__init__(midi_helper, parent)
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.instrument_image_group: QGroupBox | None = None
         self.scroll: QScrollArea | None = None
         self.instrument_preset_group: QGroupBox | None = None
@@ -120,7 +121,7 @@ class AnalogSynthEditor(SynthEditor):
         # --- These will be populated after sections are created
         self.adsr_mapping = {}
         self.pitch_env_mapping = {}
-        self.pwm_mapping = []
+        self.pwm_mapping = {}
 
         self._init_parameter_mappings()
         self._init_synth_data(JDXiSynth.ANALOG_SYNTH)
@@ -160,10 +161,10 @@ class AnalogSynthEditor(SynthEditor):
             Analog.Param.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
             Analog.Param.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
-        self.pwm_mapping = [
-            Analog.Param.OSC_PULSE_WIDTH,
-            Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-        ]
+        self.pwm_mapping = {
+            Analog.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[Analog.Param.OSC_PULSE_WIDTH],
+            Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH],
+        }
         # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):
@@ -236,8 +237,6 @@ class AnalogSynthEditor(SynthEditor):
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
         self.oscillator_section = AnalogOscillatorSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
             waveform_selected_callback=self._on_waveform_selected,
             wave_buttons=self.wave_buttons,
             midi_helper=self.midi_helper,
@@ -245,32 +244,23 @@ class AnalogSynthEditor(SynthEditor):
             address=self.address,
         )
         self.filter_section = AnalogFilterSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            on_filter_mode_changed=self._on_filter_mode_changed,
-            send_control_change=self.send_control_change,
-            midi_helper=self.midi_helper,
             controls=self.controls,
             address=self.synth_data.address,
+            on_filter_mode_changed=self._on_filter_mode_changed,
+            parent=self,
         )
         self.amp_section = AnalogAmpSection(
-            midi_helper=self.midi_helper,
             address=self.synth_data.address,
-            create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
+            parent=self,
         )
         self.lfo_section = AnalogLFOSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            create_parameter_combo_box=self._create_parameter_combo_box,
             on_lfo_shape_changed=self._on_lfo_shape_changed,
             lfo_shape_buttons=self.lfo_shape_buttons,
             send_midi_parameter=self.send_midi_parameter,
+            controls=self.controls,
         )
         self.common_section = AnalogCommonSection(
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
-            create_parameter_combo_box=self._create_parameter_combo_box,
             controls=self.controls,
         )
         self._add_tab(key=Analog.Tab.PRESETS, widget=self.instrument_preset)
@@ -375,16 +365,24 @@ class AnalogSynthEditor(SynthEditor):
             )
             self.midi_helper.send_midi_message(sysex_message)
 
-            for btn in self.wave_buttons.values():
-                btn.setChecked(False)
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
+        # --- Use oscillator_section.waveform_buttons if available, fallback to wave_buttons
+        buttons_dict = self.wave_buttons
+        if self.oscillator_section and hasattr(self.oscillator_section, 'waveform_buttons'):
+            buttons_dict = self.oscillator_section.waveform_buttons
+            # --- Also sync to editor's wave_buttons for consistency
+            self.wave_buttons.update(buttons_dict)
 
-            # --- Apply active style to the selected waveform button
-            selected_btn = self.wave_buttons.get(waveform)
-            if selected_btn:
-                selected_btn.setChecked(True)
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-            self._update_pw_controls_state(waveform)
+        # --- Reset all buttons to default style
+        for btn in buttons_dict.values():
+            btn.setChecked(False)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+        # --- Apply active style to the selected waveform button
+        selected_btn = buttons_dict.get(waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+        self._update_pw_controls_state(waveform)
 
     def get_controls_as_dict(self):
         """
@@ -583,7 +581,7 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
@@ -732,12 +730,24 @@ class AnalogSynthEditor(SynthEditor):
         """
         pw_enabled = waveform == AnalogWaveOsc.PULSE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
-        self.controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-        self.controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
-        # --- Update the visual state
-        self.controls[Analog.Param.OSC_PULSE_WIDTH].setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
-        self.controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
+        # --- Access PWM controls from oscillator_section.pwm_widget.controls
+        if self.oscillator_section and self.oscillator_section.pwm_widget:
+            pwm_controls = self.oscillator_section.pwm_widget.controls
+            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
+                pwm_controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
+            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
+            
+            # --- Update the visual state (if controls are sliders)
+            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
+                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH]
+                if hasattr(control, 'setStyleSheet'):
+                    control.setStyleSheet(
+                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                    )
+            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH]
+                if hasattr(control, 'setStyleSheet'):
+                    control.setStyleSheet(
+                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                    )
