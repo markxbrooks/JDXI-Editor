@@ -22,6 +22,13 @@ from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
 
 
+class DigitalGroup:
+    """Digital GroupBox Name Definitions"""
+    ADSR: str = "Envelope"
+    PWM: str = "PWM"
+    TUNING: str = "Tuning"
+    
+    
 class TabKey(Protocol):
     """tab ley"""
 
