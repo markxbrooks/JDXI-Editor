@@ -38,8 +38,11 @@ from typing import Any, Callable, Literal, Optional
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
-from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items, create_envelope_group
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 
 
@@ -51,7 +54,7 @@ class SectionBaseWidget(QWidget):
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
     """
-
+    ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
     SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
@@ -73,10 +76,13 @@ class SectionBaseWidget(QWidget):
         :param analog: Whether to apply analog-specific styling
         """
         super().__init__(parent)
-        self.analog = analog
+        self.address: RolandSysExAddress | None = None
+        self.midi_helper: MidiIOHelper | None = None
+        self.controls: dict | None = None
+        self.analog: bool = analog
         self.icons_row_type = icons_row_type
         self._layout: Optional[QVBoxLayout] = None
-        self._icon_added = False
+        self._icon_added: bool = False
 
         self.button_widgets: dict[Any, QPushButton] = {}
         self.slider_widgets: dict[Any, QWidget] = {}
@@ -149,6 +155,44 @@ class SectionBaseWidget(QWidget):
         transfer_layout_items(icon_hlayout, icon_row_container)
 
         self._layout.addLayout(icon_row_container)
+
+    def _create_adsr_group(self):
+        """Create amp ADSR envelope using standardized helper"""
+        from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+
+        # --- Extract parameters from ADSRSpec objects
+        def get_param(spec_or_param):
+            """Extract parameter from ADSRSpec or return parameter directly"""
+            if isinstance(spec_or_param, ADSRSpec):
+                return spec_or_param.param
+            return spec_or_param
+
+        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
+        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
+        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
+        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
+
+        attack_param = get_param(attack_spec) if attack_spec else None
+        decay_param = get_param(decay_spec) if decay_spec else None
+        sustain_param = get_param(sustain_spec) if sustain_spec else None
+        release_param = get_param(release_spec) if release_spec else None
+
+        self.amp_env_adsr_widget = ADSR(
+            attack_param=attack_param,
+            decay_param=decay_param,
+            sustain_param=sustain_param,
+            release_param=release_param,
+            midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
+            address=self.address,
+            controls=self.controls,
+            analog=True,
+        )
+        self.adsr_group = create_envelope_group(
+            name="Envelope",
+            adsr_widget=self.amp_env_adsr_widget,
+            analog=True,
+        )
 
     def setup_ui(self) -> None:
         """

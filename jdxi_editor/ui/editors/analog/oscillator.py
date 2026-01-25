@@ -14,8 +14,6 @@ from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.helpers import generate_analog_wave_button, generate_analog_waveform_icon_name
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -90,7 +88,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         # --- Pulse Width tab ---
         pw_group = self._create_pw_group()
-        pw_icon = JDXi.UI.Icon.get_generated_icon(name=str(WaveformType.SQUARE))
+        pw_icon = JDXi.UI.Icon.get_generated_icon(name="square")
         self.oscillator_tab_widget.addTab(pw_group, pw_icon, "Pulse Width")
 
         layout.addStretch()
