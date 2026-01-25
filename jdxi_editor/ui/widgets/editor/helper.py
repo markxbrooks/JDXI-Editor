@@ -57,6 +57,31 @@ def create_group(title: str, layout_or_widget) -> QGroupBox:
     return group
 
 
+def create_group_from_definition(
+    key: "GroupBoxDefinitionMixin",
+    layout_or_widget,
+    set_attr: object = None,
+    attr_name: str = None,
+) -> QGroupBox:
+    """
+    Create a QGroupBox using GroupBoxDefinitionMixin pattern.
+    
+    :param key: GroupBoxDefinitionMixin enum value (e.g., Digital.GroupBox.PULSE_WIDTH)
+    :param layout_or_widget: Layout, widget, or list of widgets to add to the group
+    :param set_attr: Optional object to set attribute on (e.g., self)
+    :param attr_name: Optional custom attribute name (defaults to key.attr_name)
+    :return: Created QGroupBox
+    """
+    group = create_group(key.label, layout_or_widget)
+    
+    # Set attribute if provided
+    if set_attr is not None:
+        attr = attr_name if attr_name else key.attr_name
+        setattr(set_attr, attr, group)
+    
+    return group
+
+
 def create_icon_from_qta(icon_name: str) -> QIcon:
     """create qta icon"""
     return qta.icon(icon_name, color=JDXi.UI.Style.WHITE, icon_size=0.7)

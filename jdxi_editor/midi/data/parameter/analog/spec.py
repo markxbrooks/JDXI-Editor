@@ -14,7 +14,7 @@ from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
-from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin, GroupBoxDefinitionMixin
 from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
 
@@ -89,6 +89,21 @@ class AnalogFilter:
     Tab: AnalogFilterTab = AnalogFilterTab
 
 
+class AnalogGroupBox(GroupBoxDefinitionMixin, Enum):
+    """Definition of Analog Group Boxes"""
+
+    ENVELOPE = ("envelope", "Envelope")
+    PULSE_WIDTH = ("pulse_width", "Pulse Width")
+    PITCH_ENVELOPE = ("pitch_envelope", "Pitch Envelope")
+    TUNING = ("tuning", "Tuning")
+    CONTROLS = ("controls", "Controls")
+    COMMON = ("common", "Common")
+
+    def __init__(self, key: str, label: str):
+        self.key = key
+        self.label = label
+
+
 class AnalogWave:
     """Analog Wave"""
 
@@ -116,5 +131,6 @@ class JDXiMidiAnalog:
     Filter: AnalogFilter = AnalogFilter
     Amp: AnalogAmp = AnalogAmp
     Tab: AnalogTab = AnalogTab
+    GroupBox: AnalogGroupBox = AnalogGroupBox
     ControlChange: AnalogControlChange = AnalogControlChange
     RPN: AnalogRPN = AnalogRPN

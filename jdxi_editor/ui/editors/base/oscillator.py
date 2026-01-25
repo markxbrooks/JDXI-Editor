@@ -149,14 +149,16 @@ class BaseOscillatorSection(ParameterSectionBase):
         rate_widget = self._create_rate_widget()
         depths_widget = self._create_depths_widget()
         
-        # Use tab definitions
-        self._add_tab(key=Digital.Wave.OscillatorTab.CONTROLS, widget=rate_widget)
-        # Update label if it differs from default
+        # Use tab definitions - BaseOscillatorSection uses LFO-style tabs
+        from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
+        
+        self._add_tab(key=DigitalLFOTab.RATE, widget=rate_widget)
+        # Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
         if tab_widget.tabText(0) != self.controls_tab_label:
             tab_widget.setTabText(0, self.controls_tab_label)
         
-        self._add_tab(key=Digital.Wave.OscillatorTab.ADSR, widget=depths_widget)
-        # Update label if it differs from default
+        self._add_tab(key=DigitalLFOTab.DEPTHS, widget=depths_widget)
+        # Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
         if tab_widget.tabText(1) != self.adsr_tab_label:
             tab_widget.setTabText(1, self.adsr_tab_label)
         JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)

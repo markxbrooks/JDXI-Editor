@@ -49,6 +49,17 @@ class TabDefinitionMixin:
         return f"{self.key}_tab"
 
 
+class GroupBoxDefinitionMixin:
+    """Group Box Widget Definition"""
+
+    key: str
+    label: str
+
+    @property
+    def attr_name(self) -> str:
+        return f"{self.key}_group"
+
+
 class DigitalTab(TabDefinitionMixin, Enum):
     """Definition of Digital Editor-Level Tabs"""
 
@@ -63,18 +74,6 @@ class DigitalTab(TabDefinitionMixin, Enum):
     AMP = ("amp", "Amp", JDXiUIIconRegistry.AMPLIFIER)
     LFO = ("lfo", "LFO", JDXiUIIconRegistry.WAVE_SINE)
     MODLFO = ("mod_lfo", "Mod LFO", JDXiUIIconRegistry.WAVEFORM)
-
-    def __init__(self, key: str, label: str, icon: Any):
-        self.key = key
-        self.label = label
-        self.icon = icon
-
-
-class DigitalOscillatorTab(TabDefinitionMixin, Enum):
-    """Definition of Digital Oscillator Section Tabs (for BaseOscillatorSection)"""
-
-    CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.CLOCK)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -139,6 +138,22 @@ class DigitalOscillatorTab(TabDefinitionMixin, Enum):
         self.icon = icon
 
 
+class DigitalGroupBox(GroupBoxDefinitionMixin, Enum):
+    """Definition of Digital Group Boxes"""
+
+    ENVELOPE = ("envelope", "Envelope")
+    PULSE_WIDTH = ("pulse_width", "Pulse Width")
+    PITCH_ENVELOPE = ("pitch_envelope", "Pitch Envelope")
+    PCM_WAVE = ("pcm_wave", "PCM Wave")
+    TUNING = ("tuning", "Tuning")
+    CONTROLS = ("controls", "Controls")
+    COMMON = ("common", "Common")
+
+    def __init__(self, key: str, label: str):
+        self.key = key
+        self.label = label
+
+
 class DigitalAmp:
     """Digital Amp"""
 
@@ -194,3 +209,4 @@ class JDXiMidiDigital:
     LFO: DigitalLFO = DigitalLFO
     Amp: DigitalAmp = DigitalAmp
     Tab: DigitalTab = DigitalTab
+    GroupBox: DigitalGroupBox = DigitalGroupBox

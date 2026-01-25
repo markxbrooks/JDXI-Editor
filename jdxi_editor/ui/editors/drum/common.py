@@ -58,14 +58,17 @@ class DrumCommonSection(SectionBaseWidget):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self.address = address
+        self.controls = controls or {}
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
-        self.address.lmb = AddressOffsetProgramLMB.COMMON
 
         super().__init__(icons_row_type=IconType.GENERIC, analog=False)
+        # Set address after super().__init__() to avoid it being overwritten
+        self.address = address
+        if self.address:
+            self.address.lmb = AddressOffsetProgramLMB.COMMON
+        
         self.setup_ui()
 
     def setup_ui(self):
@@ -95,7 +98,8 @@ class DrumCommonSection(SectionBaseWidget):
         common_layout = QFormLayout()
 
         # Kit Level control
-        self.address.lmb = AddressOffsetProgramLMB.COMMON
+        if self.address:
+            self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
             DrumCommonParam.KIT_LEVEL, DrumDisplayName.KIT_LEVEL
         )

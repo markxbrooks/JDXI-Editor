@@ -236,44 +236,58 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         self.tab_widget = QTabWidget()
 
+        from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
+        
         # Controls tab
         controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.control_widgets)
         controls_widget.setLayout(controls_layout)
-        self._add_tab(key=Digital.Wave.Tab.CONTROLS, widget=controls_widget)
+        self._add_tab(key=DigitalOscillatorTab.CONTROLS, widget=controls_widget)
 
+        from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+        from jdxi_editor.ui.widgets.editor.helper import create_group_from_definition
+        
         # Pulse Width tab
         if hasattr(self, "pwm_widget") and self.pwm_widget:
-            pw_group = QGroupBox("Pulse Width")
             pw_layout = QVBoxLayout()
             pw_layout.addStretch()
             self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
             pw_layout.addWidget(self.pwm_widget)
             pw_layout.addStretch()
-            pw_group.setLayout(pw_layout)
-            self._add_tab(key=Digital.Wave.Tab.PULSE_WIDTH, widget=pw_group)
+            pw_group = create_group_from_definition(
+                key=Digital.GroupBox.PULSE_WIDTH,
+                layout_or_widget=pw_layout,
+                set_attr=self,
+            )
+            self._add_tab(key=DigitalOscillatorTab.PULSE_WIDTH, widget=pw_group)
 
         # --- Pitch Envelope tab
         if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
-            pitch_env_group = QGroupBox("Pitch Envelope")
-            pitch_env_group.setProperty("adsr", True)
             pitch_env_layout = create_layout_with_widgets(widget_list=[self.pitch_env_widget], vertical=False)
-            pitch_env_group.setLayout(pitch_env_layout)
-            self._add_tab(key=Digital.Wave.Tab.PITCH_ENV, widget=pitch_env_group)
+            pitch_env_group = create_group_from_definition(
+                key=Digital.GroupBox.PITCH_ENVELOPE,
+                layout_or_widget=pitch_env_layout,
+                set_attr=self,
+            )
+            pitch_env_group.setProperty("adsr", True)
+            self._add_tab(key=DigitalOscillatorTab.PITCH_ENV, widget=pitch_env_group)
 
         # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
-            pcm_group = QGroupBox("PCM Wave")
             pcm_layout = create_layout_with_widgets(widget_list=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True)
-            pcm_group.setLayout(pcm_layout)
-            self._add_tab(key=Digital.Wave.Tab.PCM, widget=pcm_group)
+            pcm_group = create_group_from_definition(
+                key=Digital.GroupBox.PCM_WAVE,
+                layout_or_widget=pcm_layout,
+                set_attr=self,
+            )
+            self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)
 
         # --- ADSR tab (if any)
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self._add_tab(key=Digital.Wave.Tab.ADSR, widget=adsr_group)
+            self._add_tab(key=DigitalOscillatorTab.ADSR, widget=adsr_group)
 
     def _initialize_button_states(self):
         """Override to skip initialization until after all widgets are created"""

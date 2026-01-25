@@ -171,6 +171,8 @@ class DigitalFilterSection(ParameterSectionBase):
         """Override to add FilterWidget to Controls tab"""
         self.tab_widget = QTabWidget()
 
+        from jdxi_editor.midi.data.parameter.digital.spec import DigitalFilterTab
+        
         # --- Controls tab - include FilterWidget first, then other controls
         controls_widget = QWidget()
         # --- FilterWidget includes cutoff and slope with plot
@@ -178,14 +180,14 @@ class DigitalFilterSection(ParameterSectionBase):
         all_control_widgets = [self.filter_widget] + self.control_widgets
         controls_layout = create_layout_with_widgets(all_control_widgets)
         controls_widget.setLayout(controls_layout)
-        self._add_tab(key=Digital.Filter.Tab.CONTROLS, widget=controls_widget)
+        self._add_tab(key=DigitalFilterTab.CONTROLS, widget=controls_widget)
 
         # --- ADSR tab
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 name="Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self._add_tab(key=Digital.Filter.Tab.ADSR, widget=adsr_group)
+            self._add_tab(key=DigitalFilterTab.ADSR, widget=adsr_group)
 
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable plot and ADSR"""

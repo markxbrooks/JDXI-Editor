@@ -126,12 +126,14 @@ class BaseLFOSection(SectionBaseWidget):
         depths_widget = self._create_depths_widget()
         
         # Use tab definitions
-        self._add_tab(key=Digital.LFO.Tab.RATE, widget=rate_widget)
+        from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
+        
+        self._add_tab(key=DigitalLFOTab.RATE, widget=rate_widget)
         # Update label if it differs from default
         if tab_widget.tabText(0) != self.rate_tab_label:
             tab_widget.setTabText(0, self.rate_tab_label)
         
-        self._add_tab(key=Digital.LFO.Tab.DEPTHS, widget=depths_widget)
+        self._add_tab(key=DigitalLFOTab.DEPTHS, widget=depths_widget)
         # Update label if it differs from default
         if tab_widget.tabText(1) != self.depths_tab_label:
             tab_widget.setTabText(1, self.depths_tab_label)

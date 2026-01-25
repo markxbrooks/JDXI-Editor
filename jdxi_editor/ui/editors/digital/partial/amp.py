@@ -98,12 +98,14 @@ class DigitalAmpSection(ParameterSectionBase):
         pan_layout = create_layout_with_widgets([self.pan_slider])
         controls_layout.addLayout(pan_layout)
 
+        from jdxi_editor.midi.data.parameter.digital.spec import DigitalAmpTab
+        
         controls_widget.setLayout(controls_layout)
-        self._add_tab(key=Digital.Amp.Tab.CONTROLS, widget=controls_widget)
+        self._add_tab(key=DigitalAmpTab.CONTROLS, widget=controls_widget)
 
         # --- ADSR tab if any
         if self.adsr_widget:
             adsr_group = create_envelope_group(
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
-            self._add_tab(key=Digital.Amp.Tab.ADSR, widget=adsr_group)
+            self._add_tab(key=DigitalAmpTab.ADSR, widget=adsr_group)
