@@ -1,6 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+appimagetool
 appimagetool-extracted
+os
+sys
+argparse
+subprocess
+shutil
 tests/sheep.mid
 appimagetool*
 spleeter-env
