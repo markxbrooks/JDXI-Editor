@@ -334,10 +334,10 @@ def create_scrolled_area_with_layout() -> tuple[QScrollArea, QVBoxLayout]:
     return scroll_area, scrolled_layout
 
 
-def create_form_layout_with_widgets(widget_list: list) -> QFormLayout:
+def create_form_layout_with_widgets(widgets: list) -> QFormLayout:
     """create form layout with widgets"""
     layout = QFormLayout()
-    for widget in widget_list:
+    for widget in widgets:
         layout.addRow(widget)
     return layout
 
