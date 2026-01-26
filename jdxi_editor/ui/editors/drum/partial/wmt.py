@@ -53,7 +53,6 @@ from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.param_section import ParameterSectionBase
-from jdxi_editor.ui.editors.widget_specs import SwitchSpec
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
