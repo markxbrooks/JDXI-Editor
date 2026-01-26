@@ -2,14 +2,14 @@
 Digital Tone Modify Section
 """
 
-from typing import Callable, Dict, Union
+from typing import Dict, Union
 
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, ComboBoxSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, ComboBoxSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -27,15 +27,24 @@ class DigitalToneModifySection(SectionBaseWidget):
                        Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
                        vertical=True),
         ],
-        "env_loop_mode": [
+    }
+    COMBO_BOX_GROUPS = {
+        "envelope_loop_mode": [
             ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_MODE,
-            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
-            Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,),
+                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+                         Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE, ),
         ],
         "envelope_loop_sync_note": [
             ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
-            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
-            LFOSyncNote.get_all_display_names(),
+                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+                         LFOSyncNote.get_all_display_names()),
+        ],
+    }
+    SWITCH_GROUPS = {
+        "chromatic_portamento": [
+            SwitchSpec(Digital.ModifyParam.CHROMATIC_PORTAMENTO,
+                       Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
+                       Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO),
         ],
     }
 
@@ -63,16 +72,14 @@ class DigitalToneModifySection(SectionBaseWidget):
         self.interval_sens_sliders = self._build_sliders(
             self.SLIDER_GROUPS["interval_sens"]
         )
-        self.envelope_loop_mode_combo_boxes = self._build_sliders(
-            self.SLIDER_GROUPS["envelope_loop_mode"]
+        self.envelope_loop_mode_combo_boxes = self._build_combo_boxes(
+            self.COMBO_BOX_GROUPS["envelope_loop_mode"]
         )
-        self.envelope_loop_sync_note_combo_boxes = self._build_sliders(
-            self.SLIDER_GROUPS["envelope_loop_sync_note"]
+        self.envelope_loop_sync_note_combo_boxes = self._build_combo_boxes(
+            self.COMBO_BOX_GROUPS["envelope_loop_sync_note"]
         )
-        self.chromatic_portamento = self._create_parameter_switch(
-            Digital.ModifyParam.CHROMATIC_PORTAMENTO,
-            Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
-            Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO,
+        self.chromatic_portamento_switches = self._build_switches(
+            self.SWITCH_GROUPS["chromatic_portamento"]
         )
 
     # ------------------------------------------------------------
@@ -85,6 +92,6 @@ class DigitalToneModifySection(SectionBaseWidget):
         self._add_centered_row(*self.interval_sens_sliders)
         self._add_centered_row(*self.envelope_loop_mode_combo_boxes)
         self._add_centered_row(*self.envelope_loop_sync_note_combo_boxes)
-        self._add_centered_row(self.chromatic_portamento)
+        self._add_centered_row(*self.chromatic_portamento_switches)
 
         layout.addStretch()
