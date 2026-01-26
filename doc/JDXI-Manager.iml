@@ -20,6 +20,8 @@
       <excludeFolder url="file://$MODULE_DIR$/../spleeter-env" />
       <excludeFolder url="file://$MODULE_DIR$/../.eggs" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../appimagetool-extracted" />
+      <excludeFolder url="file://$MODULE_DIR$/../snap" />
     </content>
     <content url="file://$MODULE_DIR$/../../PicoMidi">
       <excludeFolder url="file://$MODULE_DIR$/../../PicoMidi/.idea" />
