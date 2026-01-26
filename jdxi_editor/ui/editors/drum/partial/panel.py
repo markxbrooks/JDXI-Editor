@@ -116,9 +116,6 @@ class DrumPartialPanel(PartialPanel):
 
         wmt_group = DrumWMTSection(
             controls=self.controls,
-            create_parameter_combo_box=self._create_parameter_combo_box,
-            create_parameter_slider=self._create_parameter_slider,
-            create_parameter_switch=self._create_parameter_switch,
             midi_helper=self.midi_helper,
             address=self.address,
             on_parameter_changed=self._on_parameter_changed,

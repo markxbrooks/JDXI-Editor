@@ -46,10 +46,14 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.param_section import ParameterSectionBase
+from jdxi_editor.ui.editors.widget_specs import SwitchSpec
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -62,27 +66,21 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 
 
-class DrumWMTSection(QWidget):
+class DrumWMTSection(ParameterSectionBase):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        create_parameter_switch,
-        midi_helper,
-        address=None,
-        on_parameter_changed=None,
+            self,
+            controls: dict,
+            midi_helper: MidiIOHelper,
+            address: RolandSysExAddress = None,
+            on_parameter_changed: Callable = None,
     ):
         super().__init__()
         """
         Initialize the DrumWMTSection
 
         :param controls: dict
-        :param create_parameter_combo_box: Callable
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
         :param on_parameter_changed: Callable to handle parameter changes
@@ -91,13 +89,13 @@ class DrumWMTSection(QWidget):
         self.r_wave_combos = {}
         self.wmt_tab_widget = None
         self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self._create_parameter_switch = create_parameter_switch
         self.midi_helper = midi_helper
         self.address = address
         self._on_parameter_changed = on_parameter_changed
         self.setup_ui()
+
+    def _setup_ui(self):
+        pass
 
     def setup_ui(self):
         """setup UI"""
@@ -135,7 +133,7 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo = self._create_parameter_switch(
             DrumPartialParam.WMT_VELOCITY_CONTROL,
             DrumDisplayName.WMT_VELOCITY_CONTROL,
-            values=DrumDisplayOptions.WMT_VELOCITY_CONTROL,
+            DrumDisplayOptions.WMT_VELOCITY_CONTROL,
         )
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
