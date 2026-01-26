@@ -30,20 +30,12 @@ Customization:
 import numpy as np
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
-    QColor,
-    QFont,
-    QLinearGradient,
     QMouseEvent,
-    QPainter,
-    QPainterPath,
-    QPaintEvent,
-    QPen,
 )
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.plot.base import BasePlotWidget
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
 class ADSRPlot(BasePlotWidget):
@@ -131,75 +123,76 @@ class ADSRPlot(BasePlotWidget):
         self.envelope = envelope
         self.update()
 
-    def paintEvent(self, event: QPaintEvent) -> None:
-        """Paint the ADSR plot in the style of FilterPlot.
-        :param event: QPaintEvent
-        """
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-            self.draw_background(painter)
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for ADSR plot."""
+        _, _, total_time = self.envelope_parameters()
 
-            axis_pen = self.set_pen(painter)
+        # X-axis ticks (time)
+        num_ticks = 6
+        x_tick_values = [(i / num_ticks) * total_time for i in range(num_ticks + 1)]
+        x_tick_labels = [f"{t:.1f}" for t in x_tick_values]
+        self.draw_x_axis_ticks(
+            ctx,
+            tick_values=x_tick_values,
+            tick_labels=x_tick_labels,
+            tick_length=5,
+            label_offset=20,
+            position="bottom",
+            x_max=total_time,
+            config=config,
+        )
 
-            envelope, total_samples, total_time = self.envelope_parameters()
+        # Y-axis ticks (amplitude: 0.0 to 1.0 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(6)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=45,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            left_pad, plot_h, plot_w, top_pad = self.plot_dimensions()
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for ADSR plot."""
+        self.draw_grid_ctx(
+            ctx,
+            num_vertical_lines=6,
+            num_horizontal_lines=5,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            y_max, y_min = self.get_y_range()
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw ADSR envelope data."""
+        if not self.enabled:
+            return
 
-            zero_y = self.draw_axes(
-                axis_pen,
-                left_pad,
-                painter,
-                plot_h,
-                plot_w,
-                top_pad,
-                y_max,
-                y_min,
-                zero_at_bottom=True,
-            )
+        envelope, _, total_time = self.envelope_parameters()
 
-            self.draw_x_axis(left_pad, painter, plot_w, total_time, zero_y)
+        # Draw shaded fill first (this also draws the curve)
+        self.draw_shaded_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            self.draw_y_axis(left_pad, painter, plot_h, top_pad, y_max, y_min)
-
-            self.draw_title(painter, "ADSR Envelope", left_pad, plot_w, top_pad)
-
-            self.draw_x_axis_label(
-                painter, "Time (s)", left_pad, plot_w, plot_h, top_pad
-            )
-
-            self.draw_y_axis_label(painter, "Amplitude", left_pad, plot_h, top_pad)
-
-            # Background grid using base class method
-            self.draw_grid(
-                painter=painter,
-                top_pad=top_pad,
-                plot_h=plot_h,
-                left_pad=left_pad,
-                plot_w=plot_w,
-                num_vertical_lines=6,
-                num_horizontal_lines=5,
-                y_min=y_min,
-                y_max=y_max,
-            )
-
-            self.draw_envelope(
-                envelope,
-                left_pad,
-                painter,
-                plot_h,
-                plot_w,
-                top_pad,
-                total_samples,
-                total_time,
-                y_max,
-                y_min,
-                zero_y,
-            )
-        finally:
-            painter.end()
+        # Draw envelope curve on top (to ensure it's visible above the fill)
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=True,
+            config=config,
+        )
 
     def envelope_parameters(self):
         """Compute envelope segments in seconds"""
@@ -236,111 +229,32 @@ class ADSRPlot(BasePlotWidget):
         total_time = 5  # in seconds
         return envelope, total_samples, total_time
 
-    def get_y_range(self):
-        """Get Y range"""
-        y_min, y_max = 0.0, 1.0
-        return y_max, y_min
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with ADSR-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=50,
+            left_padding=80,
+            right_padding=50,
+        )
 
-    def draw_x_axis(
-        self,
-        left_pad: int,
-        painter: QPainter,
-        plot_w: int,
-        total_time: float,
-        zero_y: float,
-    ):
-        """Draw X-axis ticks and labels"""
-        font_metrics = painter.fontMetrics()
-        num_ticks = 6
-        for i in range(num_ticks + 1):
-            x = left_pad + i * plot_w / num_ticks
-            # Draw tick mark
-            painter.drawLine(x, zero_y, x, zero_y + 5)
-            # Draw label
-            time_val = i * (total_time / num_ticks)
-            label = f"{time_val:.1f}"
-            label_width = font_metrics.horizontalAdvance(label)
-            painter.drawText(x - label_width / 2, zero_y + 20, label)
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for ADSR plot (0.0 to 1.0)."""
+        return 1.0, 0.0
 
-    def draw_y_axis(
-        self,
-        left_pad: int,
-        painter: QPainter,
-        plot_h: int,
-        top_pad: int,
-        y_max: float,
-        y_min: float,
-    ):
-        """Draw Y-axis ticks and labels"""
-        font_metrics = painter.fontMetrics()
-        for i in range(6):  # 0.0 to 1.0 in 0.2 steps
-            y_val = i * 0.2
-            y = top_pad + plot_h - (y_val * plot_h)
-            painter.drawLine(left_pad - 5, y, left_pad, y)
-            label = f"{y_val:.1f}"
-            label_width = font_metrics.horizontalAdvance(label)
-            painter.drawText(
-                left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
-            )
+    def zero_at_bottom(self) -> bool:
+        """ADSR plot has zero at bottom."""
+        return True
 
-    def draw_envelope(
-        self,
-        envelope,
-        left_pad: int,
-        painter: QPainter,
-        plot_h: int,
-        plot_w: int,
-        top_pad: int,
-        total_samples: int,
-        total_time: float,
-        y_max: float,
-        y_min: float,
-        zero_y: float,
-    ):
-        """Draw envelope plot"""
-        if not self.enabled:
-            return
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "ADSR Envelope"
 
-        # Draw the envelope polyline last, on top of the grid
-        # Create a list of points for the envelope polyline.
-        points = []
-        num_points = 500
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-        for i in indices:
-            t = i / self.sample_rate  # time in seconds
-            x = left_pad + (t / total_time) * plot_w
-            y = top_pad + plot_h - (envelope[i] * plot_h)
-            points.append((x, y))
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
 
-        # Build the path for the envelope curve
-        if points:
-            # Create curve path starting from left edge at zero line
-            # This ensures proper closing when draw_shaded_curve closes it
-            curve_path = QPainterPath()
-            # Start at left edge, zero line
-            curve_path.moveTo(left_pad, zero_y)
-            # Move to first point of the curve
-            curve_path.lineTo(*points[0])
-            # Draw through all curve points
-            for pt in points[1:]:
-                curve_path.lineTo(*pt)
-            # Note: draw_shaded_curve will add the right edge and close the path
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Amplitude"
 
-            # Draw shaded fill under the curve (draw_shaded_curve will close it to zero line)
-            self.draw_shaded_curve(
-                painter=painter,
-                path=curve_path,
-                top_pad=top_pad,
-                plot_h=plot_h,
-                zero_y=zero_y,
-                left_pad=left_pad,
-                plot_w=plot_w,
-            )
-
-            # Draw the envelope polyline on top (just the curve, not the zero line edges)
-            curve_only_path = QPainterPath()
-            curve_only_path.moveTo(*points[0])
-            for pt in points[1:]:
-                curve_only_path.lineTo(*pt)
-            painter.setPen(QPen(QColor("orange"), 2))
-            painter.drawPath(curve_only_path)

@@ -33,6 +33,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 from picomidi.constant import Midi
 
 
@@ -46,7 +47,7 @@ def midi_value_to_float(value: int) -> float:
     return max(0.0, min(1.0, value / Midi.VALUE.MAX.SEVEN_BIT))
 
 
-class WMTEnvPlot(QWidget):
+class WMTEnvPlot(BasePlotWidget):
     """
     A QWidget-based plot for displaying envelope curves,
     supporting both a modern velocity-style plot and
@@ -66,11 +67,7 @@ class WMTEnvPlot(QWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-
+        self.set_dimensions(height, width)
         JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
@@ -97,173 +94,145 @@ class WMTEnvPlot(QWidget):
         self.envelope = envelope
         self.update()
 
-    def paintEvent(self, event):
-        """Paint the plot in the style of an LCD"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-            # Background gradient
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
+    def envelope_parameters(self):
+        """Generate WMT envelope from parameters."""
+        fade_lower = max(
+            self.envelope["fade_lower"] / 1000.0, 1.0
+        )  # Fade lower in seconds
+        range_lower = max(self.envelope["range_lower"] / 1000.0, 1.0)
+        depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
 
-            # Orange drawing pen
-            pen = QPen(QColor("orange"))
-            pen.setWidth(2)
-            axis_pen = QPen(QColor("white"))
-            painter.setRenderHint(QPainter.Antialiasing, False)
-            painter.setPen(pen)
-            painter.setFont(QFont("JD LCD Rounded", 10))
+        range_upper = max(self.envelope["range_upper"] / 2000.0, 0.1)
+        fade_upper = max(self.envelope["fade_upper"] / 2000.0, 0.5)
+        sustain = 2.0  # Sustain in seconds
 
-            # Envelope parameters
-            fade_lower = max(
-                self.envelope["fade_lower"] / 1000.0, 1.0
-            )  # Fade lower in seconds
-            range_lower = max(self.envelope["range_lower"] / 1000.0, 1.0)
-            depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
+        fade_lower_period = range_lower - fade_lower
+        fade_upper_period = fade_upper - range_upper
 
-            range_upper = max(self.envelope["range_upper"] / 2000.0, 0.1)
-            fade_upper = max(self.envelope["fade_upper"] / 2000.0, 0.5)
-            sustain = 2.0  # Sustain in seconds
+        fade_lower_samples = max(int(fade_lower * self.sample_rate), 1)
+        fade_lower_period_samples = max(
+            int(fade_lower_period * self.sample_rate), 1
+        )
+        fade_upper_samples = max(int(fade_upper * self.sample_rate), 1)
+        initial_level = 0.0
 
-            fade_lower_period = range_lower - fade_lower
-            fade_upper_period = fade_upper - range_upper
+        upper_fade = np.linspace(
+            depth, initial_level, fade_upper_samples, endpoint=False
+        )
+        sustain_samples = int(
+            self.sample_rate * (sustain + range_upper)
+        )  # Sustain for 2 seconds
+        sustain = np.full(sustain_samples, depth)
+        baseline = np.full(fade_lower_samples, initial_level)
+        lower_fade = np.linspace(
+            initial_level, depth, fade_lower_period_samples, endpoint=False
+        )
+        envelope = np.concatenate([baseline, lower_fade, sustain, upper_fade])
+        total_samples = len(envelope)
+        total_time = 10  # seconds
+        return envelope, total_samples, total_time
 
-            fade_lower_samples = max(int(fade_lower * self.sample_rate), 1)
-            fade_lower_period_samples = max(
-                int(fade_lower_period * self.sample_rate), 1
-            )
-            fade_upper_samples = max(int(fade_upper * self.sample_rate), 1)
-            initial_level = 0.0
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with WMT-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=80,
+            left_padding=80,
+            right_padding=50,
+        )
 
-            upper_fade = np.linspace(
-                depth, initial_level, fade_upper_samples, endpoint=False
-            )
-            sustain_samples = int(
-                self.sample_rate * (sustain + range_upper)
-            )  # Sustain for 2 seconds
-            sustain = np.full(sustain_samples, depth)
-            baseline = np.full(fade_lower_samples, initial_level)
-            lower_fade = np.linspace(
-                initial_level, depth, fade_lower_period_samples, endpoint=False
-            )
-            envelope = np.concatenate([baseline, lower_fade, sustain, upper_fade])
-            total_samples = len(envelope)
-            total_time = 10  # seconds
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for WMT plot (-0.6 to 0.6)."""
+        return 0.6, -0.6
 
-            # Plot area dimensions
-            w = self.width()
-            h = self.height()
-            top_padding = 50
-            bottom_padding = 80
-            left_padding = 80
-            right_padding = 50
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
+    def zero_at_bottom(self) -> bool:
+        """WMT plot does not have zero at bottom (uses y_max/y_min scaling)."""
+        return False
 
-            # Y range
-            y_min = -0.6
-            y_max = 0.6
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "WMT Envelope"
 
-            # Draw axes
-            painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )  # Y-axis
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
 
-            zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-            painter.drawLine(
-                left_padding, zero_y, left_padding + plot_w, zero_y
-            )  # X-axis at Y=0
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Pitch"
 
-            # X-axis labels
-            # painter.drawText(left_padding, zero_y + 20, "0")
-            # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
-            # X-axis ticks for 0, 3, 6, 9, 12, 15
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time // num_ticks)}"
-                label = f"{i * (total_time / num_ticks):.0f}"
-                painter.drawText(x - 10, zero_y + 20, label)
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for WMT plot."""
+        _, _, total_time = self.envelope_parameters()
 
-            # Y-axis ticks and labels from +0.6 to -0.6
-            for i in range(-3, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding - 5, y, left_padding, y)
-                painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
+        # X-axis ticks (time: 0, 2, 4, 6, 8, 10)
+        num_ticks = 6
+        x_tick_values = [(i / num_ticks) * total_time for i in range(num_ticks + 1)]
+        x_tick_labels = [f"{t:.0f}" for t in x_tick_values]
+        self.draw_x_axis_ticks(
+            ctx,
+            tick_values=x_tick_values,
+            tick_labels=x_tick_labels,
+            tick_length=5,
+            label_offset=20,
+            position="zero",
+            x_max=total_time,
+            config=config,
+        )
 
-            # Draw top title
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 40, top_padding / 2, "WMT Envelope"
-            )
+        # Y-axis ticks (from -0.6 to 0.6 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(-3, 4)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=40,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # Draw X-axis label
-            painter.setPen(QPen(QColor("white")))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for WMT plot with symmetric grid lines."""
+        _, _, total_time = self.envelope_parameters()
 
-            # Y-axis label rotated
-            painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-            painter.rotate(-90)
-            painter.drawText(0, 0, "Pitch")
-            painter.restore()
+        # Custom grid: vertical lines at tick positions, horizontal lines symmetric around zero
+        num_ticks = 6
+        x_ticks = [(i / num_ticks) * total_time for i in range(1, num_ticks + 1)]
+        
+        # Horizontal grid lines: symmetric around zero (positive and negative)
+        y_ticks = []
+        for i in range(1, 4):
+            y_ticks.append(i * 0.2)  # Positive
+            y_ticks.append(-i * 0.2)  # Negative
 
-            # Background grid
-            pen = QPen(Qt.GlobalColor.darkGray, 1)
-            pen.setStyle(Qt.PenStyle.DashLine)
-            painter.setPen(pen)
-            for i in range(1, 7):
-                x = left_padding + i * plot_w / 6
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(1, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
-                y_mirror = top_padding + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(
-                    left_padding, y_mirror, left_padding + plot_w, y_mirror
-                )
+        self.draw_grid_ctx(
+            ctx,
+            x_ticks=x_ticks,
+            y_ticks=y_ticks,
+            x_max=total_time,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # Draw envelope polyline
-            if self.enabled:
-                painter.setPen(QPen(QColor("orange")))
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-                for i in indices:
-                    t = i / self.sample_rate
-                    x = left_padding + (t / total_time) * plot_w
-                    y_val = envelope[i]
-                    y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append((x, y))
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw WMT envelope data."""
+        if not self.enabled:
+            return
 
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(*points[0])
-                    for pt in points[1:]:
-                        path.lineTo(*pt)
-                    painter.drawPath(path)
+        envelope, _, total_time = self.envelope_parameters()
 
-                # Draw debug points
-                # if self.debug:
-                #    painter.setPen(QPen(QColor(255, 0, 0), 4))
-                #    for x, y in screen_points:
-                #        painter.drawEllipse(int(x) - 2, int(y) - 2, 4, 4)
-        finally:
-            painter.end()
+        # Draw curve using new helper method
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=False,
+            config=config,
+        )
 
 
 if __name__ == "__main__":

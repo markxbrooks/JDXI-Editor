@@ -1405,10 +1405,11 @@ class JDXiUIStyle:
                 );
             }}
             """
+
     INSTRUMENT_SUBTITLE_LABEL = f"""
             font-family: "{FONT_FAMILY_MONOSPACE}";
             color: #FFBB33;
-            font-size: 12px;
+            font-size: 24px;
             font-weight: bold;
             """
 

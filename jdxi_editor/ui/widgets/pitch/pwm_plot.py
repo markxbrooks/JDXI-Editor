@@ -33,7 +33,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.plot.base import BasePlotWidget
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
 def generate_square_wave(
@@ -144,70 +144,36 @@ class PWMPlot(BasePlotWidget):
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def paintEvent(self, event):
-        """Paint the plot in the style of an LCD"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-            self.draw_background(painter)
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for PWMPlot."""
+        # X-axis ticks are not shown in PWMPlot (omitted)
+        
+        # Y-axis ticks (from -0.2 to 1.0 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(-1, 6)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=45,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            axis_pen = self.set_pen(painter)
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for PWMPlot with custom Y callback."""
+        def y_callback(y_val):
+            return ctx.value_to_y(y_val, zero_at_bottom=False)
 
-            envelope, total_samples, total_time = self.envelope_parameters()
-
-            left_pad, plot_h, plot_w, top_pad = self.plot_dimensions()
-
-            y_max, y_min = self.get_y_range()
-
-            zero_y = self.draw_axes(
-                axis_pen, left_pad, painter, plot_h, plot_w, top_pad, y_max, y_min
-            )
-
-            self.draw_x_axis(left_pad, painter, plot_w, total_time, zero_y)
-
-            self.draw_y_axis(left_pad, painter, plot_h, top_pad, y_max, y_min)
-
-            self.draw_title(
-                painter, "Pulse Width Modulation", left_pad, plot_w, top_pad
-            )
-
-            self.draw_x_axis_label(
-                painter, "Time (s)", left_pad, plot_w, plot_h, top_pad
-            )
-
-            self.draw_y_axis_label(painter, "Voltage (V)", left_pad, plot_h, top_pad)
-
-            # Background grid using base class method
-            def y_callback(y_val):
-                return top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-
-            self.draw_grid(
-                painter=painter,
-                top_pad=top_pad,
-                plot_h=plot_h,
-                left_pad=left_pad,
-                plot_w=plot_w,
-                num_vertical_lines=6,
-                num_horizontal_lines=5,
-                y_min=y_min,
-                y_max=y_max,
-                y_callback=y_callback,
-            )
-
-            self.draw_envelope(
-                envelope,
-                left_pad,
-                painter,
-                plot_h,
-                plot_w,
-                top_pad,
-                total_samples,
-                total_time,
-                y_max,
-                y_min,
-            )
-        finally:
-            painter.end()
+        self.draw_grid_ctx(
+            ctx,
+            num_vertical_lines=6,
+            num_horizontal_lines=5,
+            zero_at_bottom=False,
+            y_callback=y_callback,
+            config=config,
+        )
 
     def envelope_parameters(self):
         """Generate pulse width envelope"""
@@ -221,81 +187,49 @@ class PWMPlot(BasePlotWidget):
         total_time = total_samples / self.sample_rate
         return envelope, total_samples, total_time
 
-    def get_y_range(self):
-        """Get Y range"""
-        y_min, y_max = -0.2, 1.2
-        return y_max, y_min
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with PWMPlot-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=50,
+            left_padding=80,
+            right_padding=50,
+        )
 
-    def draw_x_axis(
-        self,
-        left_pad: int,
-        painter: QPainter,
-        plot_w: int,
-        total_time: float,
-        zero_y: float,
-    ):
-        """Draw X-axis ticks and labels"""
-        # X-axis ticks and labels are not shown in PWMPlot (commented out)
-        num_ticks = 6
-        for i in range(num_ticks + 1):
-            x = left_pad + i * plot_w / num_ticks
-            # Tick marks and labels are omitted
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for PWMPlot (-0.2 to 1.2)."""
+        return 1.2, -0.2
 
-    def draw_y_axis(
-        self,
-        left_pad: int,
-        painter: QPainter,
-        plot_h: int,
-        top_pad: int,
-        y_max: float,
-        y_min: float,
-    ):
-        """Draw Y-axis ticks and labels"""
-        font_metrics = painter.fontMetrics()
-        for i in range(-1, 6):
-            y_val = i * 0.2
-            y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-            painter.drawLine(left_pad - 5, y, left_pad, y)
-            label = f"{y_val:.1f}"
-            label_width = font_metrics.horizontalAdvance(label)
-            painter.drawText(
-                left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
-            )
+    def zero_at_bottom(self) -> bool:
+        """PWMPlot does not have zero at bottom (uses y_max/y_min scaling)."""
+        return False
 
-    def draw_envelope(
-        self,
-        envelope,
-        left_pad: int,
-        painter: QPainter,
-        plot_h: int,
-        plot_w: int,
-        top_pad: int,
-        total_samples: int,
-        total_time: float,
-        y_max: float,
-        y_min: float,
-    ):
-        """Draw envelope plot"""
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "Pulse Width Modulation"
+
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
+
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Voltage (V)"
+
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw PWMPlot envelope data."""
         if not self.enabled:
             return
 
-        painter.setPen(QPen(QColor("orange"), 2))
-        points = []
-        num_points = 500
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+        envelope, _, total_time = self.envelope_parameters()
 
-        for i in indices:
-            if i >= len(envelope):
-                continue
-            t = i / self.sample_rate
-            x = left_pad + (t / total_time) * plot_w
-            y_val = envelope[i]
-            y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-            points.append(QPointF(x, y))
-
-        if points:
-            path = QPainterPath()
-            path.moveTo(points[0])
-            for pt in points[1:]:
-                path.lineTo(pt)  # For smoothing: use cubicTo
-            painter.drawPath(path)
+        # Draw curve using new helper method
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=False,
+            config=config,
+        )
