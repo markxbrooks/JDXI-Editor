@@ -63,7 +63,12 @@ class DigitalToneModifySection(SectionBaseWidget):
         self.interval_sens_sliders = self._build_sliders(
             self.SLIDER_GROUPS["interval_sens"]
         )
-
+        self.envelope_loop_mode_combo_boxes = self._build_sliders(
+            self.SLIDER_GROUPS["envelope_loop_mode"]
+        )
+        self.envelope_loop_sync_note_combo_boxes = self._build_sliders(
+            self.SLIDER_GROUPS["envelope_loop_sync_note"]
+        )
         self.envelope_loop_mode = self._create_parameter_combo_box(
             Digital.ModifyParam.ENVELOPE_LOOP_MODE,
             Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
@@ -90,8 +95,8 @@ class DigitalToneModifySection(SectionBaseWidget):
         layout = self.get_layout()
 
         self._add_centered_row(*self.interval_sens_sliders)
-        self._add_centered_row(self.envelope_loop_mode)
-        self._add_centered_row(self.envelope_loop_sync_note)
+        self._add_centered_row(*self.envelope_loop_mode_combo_boxes)
+        self._add_centered_row(*self.envelope_loop_sync_note_combo_boxes)
         self._add_centered_row(self.chromatic_portamento)
 
         layout.addStretch()
