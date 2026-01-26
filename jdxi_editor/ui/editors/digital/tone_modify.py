@@ -69,18 +69,6 @@ class DigitalToneModifySection(SectionBaseWidget):
         self.envelope_loop_sync_note_combo_boxes = self._build_sliders(
             self.SLIDER_GROUPS["envelope_loop_sync_note"]
         )
-        self.envelope_loop_mode = self._create_parameter_combo_box(
-            Digital.ModifyParam.ENVELOPE_LOOP_MODE,
-            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
-            Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,
-        )
-
-        self.envelope_loop_sync_note = self._create_parameter_combo_box(
-            Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
-            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
-            LFOSyncNote.get_all_display_names(),
-        )
-
         self.chromatic_portamento = self._create_parameter_switch(
             Digital.ModifyParam.CHROMATIC_PORTAMENTO,
             Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
