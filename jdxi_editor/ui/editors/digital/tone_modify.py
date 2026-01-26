@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -26,7 +26,17 @@ class DigitalToneModifySection(SectionBaseWidget):
             SliderSpec(Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
                        Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
                        vertical=True),
-        ]
+        ],
+        "env_loop_mode": [
+            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_MODE,
+            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+            Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,),
+        ],
+        "envelope_loop_sync_note": [
+            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
+            Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+            LFOSyncNote.get_all_display_names(),
+        ],
     }
 
     def __init__(
