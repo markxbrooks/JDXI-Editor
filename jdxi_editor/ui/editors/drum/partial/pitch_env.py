@@ -271,8 +271,6 @@ class DrumPitchEnvSection(DrumBaseSection):
         """
         # Initialize envelope before super().__init__() because setup_ui() will be called
         # during super().__init__() and it needs envelope
-
-        super().__init__()
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -289,9 +287,12 @@ class DrumPitchEnvSection(DrumBaseSection):
             "level_4": -25,
         }
 
-        self.controls = controls or {}
-        self.midi_helper = midi_helper
-        self.setup_ui()  # is already called by ParameterSectionBase.__init__(), so we don't need to call it again
+        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
+        # are stored in the same dict
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
+        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
+        self.setup_ui()
 
     def setup_ui(self) -> None:
         """setup UI"""

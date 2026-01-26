@@ -76,7 +76,7 @@ class ProgramMixerWidget(SynthBase):
         # Create mixer layout and group
         self.mixer_layout = QGridLayout()
         self.mixer_group, _ = create_group_with_layout(
-            group_name="Mixer Level Settings", inner_layout=self.mixer_layout
+            label="Mixer Level Settings", child_layout=self.mixer_layout
         )
 
         # Create labels and icons

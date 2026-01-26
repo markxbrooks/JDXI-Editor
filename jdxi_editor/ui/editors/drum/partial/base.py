@@ -56,7 +56,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 class DrumBaseSection(ParameterSectionBase):
     """Drum Output Section for the JDXI Editor, giving consistent UI for drum sections"""
 
-    def __init__(self):
+    def __init__(self, controls: dict = None, midi_helper=None, **kwargs):
         from jdxi_editor.ui.widgets.editor import IconType
         
         # Initialize scrolled layout attributes
@@ -64,9 +64,13 @@ class DrumBaseSection(ParameterSectionBase):
         self.scrolled_layout: QVBoxLayout | None = None
         
         # Call super().__init__() - it will call setup_ui() which will use our overridden get_layout()
+        # Pass controls so widgets created from PARAM_SPECS are stored in the same dict
         super().__init__(
+            controls=controls,
+            midi_helper=midi_helper,
             icons_row_type=IconType.ADSR,
             analog=False,
+            **kwargs
         )
         
         # Set minimum width after initialization

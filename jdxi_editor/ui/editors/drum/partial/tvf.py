@@ -300,9 +300,7 @@ class DrumTVFSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        super().__init__()
-        self.controls = controls or {}
-        self.midi_helper = midi_helper
+        # Initialize envelope before super().__init__() because setup_ui() may need it
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -318,6 +316,11 @@ class DrumTVFSection(DrumBaseSection):
             "level_3": 70,
             "level_4": 0,
         }
+        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
+        # are stored in the same dict
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
+        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
     def setup_ui(self):

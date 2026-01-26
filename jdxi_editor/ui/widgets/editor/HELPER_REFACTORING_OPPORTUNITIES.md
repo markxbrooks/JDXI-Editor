@@ -30,18 +30,19 @@ form_layout.addRow(widget2)
 ```
 
 **Should Use:**
+
 ```python
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, create_form_layout_with_widgets
 
 # Option 1: Create group with form layout
 partial_misc_group, form_layout = create_group_with_layout(
-    group_name="Misc",
-    inner_layout=create_form_layout_with_widgets([widget1, widget2])
+    label="Misc",
+    child_layout=create_form_layout_with_widgets([widget1, widget2])
 )
 
 # Option 2: Even simpler - create form layout with widgets first
 form_layout = create_form_layout_with_widgets([widget1, widget2])
-partial_misc_group, _ = create_group_with_layout("Misc", inner_layout=form_layout)
+partial_misc_group, _ = create_group_with_layout("Misc", child_layout=form_layout)
 ```
 
 **Files Affected:**
@@ -161,12 +162,13 @@ envelope_group = create_envelope_group(
 **Purpose:** Combine `create_group_with_layout()` and `create_form_layout_with_widgets()` into one call.
 
 **Usage:**
+
 ```python
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_form_layout
 
 group, form_layout = create_group_with_form_layout(
     widgets=[widget1, widget2, widget3],
-    group_name="Controls"
+    label="Controls"
 )
 ```
 

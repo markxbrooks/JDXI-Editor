@@ -288,9 +288,7 @@ class DrumTVASection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        super().__init__()
-        self.controls = controls or {}
-        self.midi_helper = midi_helper
+        # Initialize envelope before super().__init__() because setup_ui() may need it
         self.envelope = {
             "t1_v_sens": 64,
             "t4_v_sens": 64,
@@ -304,6 +302,11 @@ class DrumTVASection(DrumBaseSection):
             "level_2": 80,
             "level_3": 70,
         }
+        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
+        # are stored in the same dict
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
+        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
 
@@ -315,14 +318,14 @@ class DrumTVASection(DrumBaseSection):
         self.plot = self._create_tva_plot()
 
         main_row_hlayout = create_layout_with_widgets(
-            widget_list=[self.tva_group, self.plot], vertical=False
+            widgets=[self.tva_group, self.plot], vertical=False
         )
 
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
         
         main_vbox_layout = create_layout_with_widgets(
-            widget_list=[self.tva_level_velocity_curve_spin], vertical=True
+            widgets=[self.tva_level_velocity_curve_spin], vertical=True
         )
         main_vbox_layout.addLayout(main_row_hlayout)
         layout.addLayout(main_vbox_layout)
@@ -341,8 +344,8 @@ class DrumTVASection(DrumBaseSection):
         """TVA Group"""
         envelope_slider_layout = QGridLayout()
         tva_group, _ = create_group_with_layout(
-            group_name="TVA",
-            inner_layout=envelope_slider_layout,
+            label="TVA",
+            child_layout=envelope_slider_layout,
             style_sheet=JDXi.UI.Style.ADSR,
         )
 

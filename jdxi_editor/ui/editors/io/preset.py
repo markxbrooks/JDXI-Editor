@@ -285,7 +285,7 @@ class PresetEditor(BasicEditor):
         """
         # --- Program controls group
         preset_group, preset_vlayout = create_group_with_layout(
-            group_name="Load a program", vertical=True
+            label="Load a program", vertical=True
         )
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()

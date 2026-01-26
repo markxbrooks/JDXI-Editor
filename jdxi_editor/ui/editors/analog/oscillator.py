@@ -151,7 +151,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
     def _create_tuning_pitch_widget(self) -> QWidget:
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
-        pitch_layout = create_layout_with_widgets(widget_list=[self._create_pitch_env_group()])
+        pitch_layout = create_layout_with_widgets(widgets=[self._create_pitch_env_group()])
         pitch_widget = create_widget_with_layout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
         return pitch_widget
@@ -187,8 +187,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        tuning_group = create_group_with_widgets(group_name="Tuning",
-                                                 widget_list=self.tuning_sliders)
+        tuning_group = create_group_with_widgets(label="Tuning",
+                                                 widgets=self.tuning_sliders)
         return tuning_group
 
     def _create_pw_group(self) -> QGroupBox:
@@ -197,8 +197,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        pw_group = create_group_with_widgets(group_name="Pulse Width",
-                                             widget_list=[self.pwm_widget])
+        pw_group = create_group_with_widgets(label="Pulse Width",
+                                             widgets=[self.pwm_widget])
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         return pw_group
 
@@ -209,8 +209,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         :return: QGroupBox
         """
         # --- Pitch Envelope Group
-        pitch_env_group = create_group_with_widgets(group_name="Pitch Envelope",
-                                                    widget_list=self.pitch_env_widgets)
+        pitch_env_group = create_group_with_widgets(label="Pitch Envelope",
+                                                    widgets=self.pitch_env_widgets)
         return pitch_env_group
 
     def _update_pw_controls_state(self, waveform: AnalogWaveOsc):

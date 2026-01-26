@@ -254,7 +254,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # --- Pitch Envelope tab
         if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
-            pitch_env_layout = create_layout_with_widgets(widget_list=[self.pitch_env_widget], vertical=False)
+            pitch_env_layout = create_layout_with_widgets(widgets=[self.pitch_env_widget], vertical=False)
             pitch_env_group = create_group_from_definition(
                 key=Digital.GroupBox.PITCH_ENVELOPE,
                 layout_or_widget=pitch_env_layout,
@@ -265,7 +265,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
-            pcm_layout = create_layout_with_widgets(widget_list=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True)
+            pcm_layout = create_layout_with_widgets(widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True)
             pcm_group = create_group_from_definition(
                 key=Digital.GroupBox.PCM_WAVE,
                 layout_or_widget=pcm_layout,

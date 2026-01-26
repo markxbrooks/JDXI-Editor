@@ -117,7 +117,7 @@ def create_widget_with_layout(inner_layout: QHBoxLayout) -> QWidget:
 
 
 def create_layout_with_widgets(
-    widget_list: list,
+    widgets: list,
     vertical: bool = False,
     top_stretch: bool = True,
     bottom_stretch: bool = True,
@@ -126,7 +126,7 @@ def create_layout_with_widgets(
     layout = create_layout(vertical=vertical)
     if top_stretch:
         layout.addStretch()
-    for widget in widget_list:
+    for widget in widgets:
         layout.addWidget(widget)
     if bottom_stretch:
         layout.addStretch()
@@ -167,19 +167,19 @@ def create_layout(vertical: bool = True) -> QVBoxLayout | QHBoxLayout:
 
 
 def create_group_with_layout(
-    group_name: str = None,
-    inner_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
+    label: str = None,
+    child_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
     vertical: bool = True,
     style_sheet: str = None,
 ) -> tuple[QGroupBox, QLayout]:
     """create Group and a layout"""
-    group = QGroupBox(group_name) if group_name is not None else QGroupBox()
-    if inner_layout is None:
-        inner_layout = create_layout(vertical=vertical)
-    group.setLayout(inner_layout)
+    group = QGroupBox(label) if label is not None else QGroupBox()
+    if child_layout is None:
+        child_layout = create_layout(vertical=vertical)
+    group.setLayout(child_layout)
     if style_sheet is not None:
         group.setStyleSheet(style_sheet)
-    return group, inner_layout
+    return group, child_layout
 
 
 def create_layout_with_inner_layout_and_widgets(
@@ -351,7 +351,7 @@ def create_group_and_grid_layout(group_name: str) -> tuple[QGroupBox, QGridLayou
 
 
 def create_group_with_form_layout(
-    widgets: list, group_name: str = None
+    widgets: list, label: str = None
 ) -> tuple[QGroupBox, QFormLayout]:
     """
     Create a group box with form layout and add widgets in one call.
@@ -360,11 +360,11 @@ def create_group_with_form_layout(
     for convenience when creating form-based groups.
 
     :param widgets: List of widgets to add as rows to the form layout
-    :param group_name: Optional name for the group box
+    :param label: Optional name for the group box
     :return: Tuple of (QGroupBox, QFormLayout)
     """
     form_layout = create_form_layout_with_widgets(widgets)
-    group, _ = create_group_with_layout(group_name, inner_layout=form_layout)
+    group, _ = create_group_with_layout(label, child_layout=form_layout)
     return group, form_layout
 
 
@@ -404,9 +404,9 @@ def transfer_layout_items(source_layout: QLayout, target_layout: QHBoxLayout | Q
             target_layout.addLayout(item.layout())
 
 
-def create_group_with_widgets(group_name: str, widget_list: list, vertical: bool = False) -> QGroupBox:
+def create_group_with_widgets(label: str, widgets: list, vertical: bool = False) -> QGroupBox:
     """create group with widgets"""
-    pw_layout = create_layout_with_widgets(widget_list=widget_list, vertical=vertical)
-    pw_group, _ = create_group_with_layout(group_name=group_name,
-                                           inner_layout=pw_layout)
+    pw_layout = create_layout_with_widgets(widgets=widgets, vertical=vertical)
+    pw_group, _ = create_group_with_layout(label=label,
+                                           child_layout=pw_layout)
     return pw_group

@@ -393,7 +393,7 @@ class DrumWMTSection(QWidget):
             self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"),
             self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="FXM")
+        group, _ = create_group_with_form_layout(widgets, label="FXM")
         return group
 
     def _create_wmt_pan_group(self, p: Callable[[Any], Any]):
@@ -413,7 +413,7 @@ class DrumWMTSection(QWidget):
                 [0, 1, 2],
             ),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="Pan")
+        group, _ = create_group_with_form_layout(widgets, label="Pan")
         return group
 
     def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
@@ -437,7 +437,7 @@ class DrumWMTSection(QWidget):
             self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"),
             self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="Tuning")
+        group, _ = create_group_with_form_layout(widgets, label="Tuning")
         return group
 
     def _on_wave_parameter_changed(self, param: DrumPartialParam, value: int) -> None:

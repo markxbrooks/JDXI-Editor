@@ -123,6 +123,7 @@ class DrumEditorDimensions(Dimensions):
     PARTIAL_TAB_MIN_WIDTH = (
         400  # Minimum width for drum partial tabs to match WMT width
     )
+    MIN_HEIGHT: Optional[int] = 300
 
 
 class WaveformIconDimensions(Dimensions):
