@@ -1,0 +1,11 @@
+nuitka \
+  --standalone \
+  --macos-create-app-bundle \
+  --enable-plugin=pyside6 \
+  --macos-app-icon=jdxi_icon.icns \
+  --include-package=jdxi_editor \
+  --include-package=rtmidi \
+  --include-data-dir=resources=resources \
+  --python-flag=-S \
+  --nofollow-import-to=site \
+  --output-dir=dist run_editor.py
