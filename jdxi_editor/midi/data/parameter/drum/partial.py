@@ -28,6 +28,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_ADDRESS_MAP,
     DRUM_GROUP_MAP,
 )
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -118,21 +119,21 @@ class DrumPartialParam(AddressParameter):
         }
 
     # Partial Name parameters
-    PARTIAL_NAME_1 = (0x00, 32, 127)
-    PARTIAL_NAME_2 = (0x01, 32, 127)
-    PARTIAL_NAME_3 = (0x02, 32, 127)
-    PARTIAL_NAME_4 = (0x03, 32, 127)
-    PARTIAL_NAME_5 = (0x04, 32, 127)
-    PARTIAL_NAME_6 = (0x05, 32, 127)
-    PARTIAL_NAME_7 = (0x06, 32, 127)
-    PARTIAL_NAME_8 = (0x07, 32, 127)
-    PARTIAL_NAME_9 = (0x08, 32, 127)
-    PARTIAL_NAME_10 = (0x09, 32, 127)
-    PARTIAL_NAME_11 = (0x0A, 32, 127)
-    PARTIAL_NAME_12 = (0x0B, 32, 127)
+    PARTIAL_NAME_1 = ParameterSpec(0x00, 32, 127)
+    PARTIAL_NAME_2 = ParameterSpec(0x01, 32, 127)
+    PARTIAL_NAME_3 = ParameterSpec(0x02, 32, 127)
+    PARTIAL_NAME_4 = ParameterSpec(0x03, 32, 127)
+    PARTIAL_NAME_5 = ParameterSpec(0x04, 32, 127)
+    PARTIAL_NAME_6 = ParameterSpec(0x05, 32, 127)
+    PARTIAL_NAME_7 = ParameterSpec(0x06, 32, 127)
+    PARTIAL_NAME_8 = ParameterSpec(0x07, 32, 127)
+    PARTIAL_NAME_9 = ParameterSpec(0x08, 32, 127)
+    PARTIAL_NAME_10 = ParameterSpec(0x09, 32, 127)
+    PARTIAL_NAME_11 = ParameterSpec(0x0A, 32, 127)
+    PARTIAL_NAME_12 = ParameterSpec(0x0B, 32, 127)
 
     # Assign Type
-    ASSIGN_TYPE = (
+    ASSIGN_TYPE = ParameterSpec(
         0x0C,
         0,
         1,
@@ -142,7 +143,7 @@ class DrumPartialParam(AddressParameter):
     )  # MULTI, SINGLE
 
     # Mute Group
-    MUTE_GROUP = (
+    MUTE_GROUP = ParameterSpec(
         0x0D,
         0,
         31,
@@ -152,7 +153,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 31
 
     # Partial Level
-    PARTIAL_LEVEL = (
+    PARTIAL_LEVEL = ParameterSpec(
         0x0E,
         0,
         127,
@@ -162,7 +163,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Coarse Tune
-    PARTIAL_COARSE_TUNE = (
+    PARTIAL_COARSE_TUNE = ParameterSpec(
         0x0F,
         0,
         127,
@@ -172,7 +173,7 @@ class DrumPartialParam(AddressParameter):
     )  # C-1 - G9
 
     # Partial Fine Tune
-    PARTIAL_FINE_TUNE = (
+    PARTIAL_FINE_TUNE = ParameterSpec(
         0x10,
         14,
         114,
@@ -182,7 +183,7 @@ class DrumPartialParam(AddressParameter):
     )  # -50 - +50
 
     # Partial Random Pitch Depth
-    PARTIAL_RANDOM_PITCH_DEPTH = (
+    PARTIAL_RANDOM_PITCH_DEPTH = ParameterSpec(
         0x11,
         0,
         30,
@@ -192,7 +193,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Pan
-    PARTIAL_PAN = (
+    PARTIAL_PAN = ParameterSpec(
         0x12,
         0,
         127,
@@ -202,7 +203,7 @@ class DrumPartialParam(AddressParameter):
     )  # L64 - 63R
 
     # Partial Random Pan Depth
-    PARTIAL_RANDOM_PAN_DEPTH = (
+    PARTIAL_RANDOM_PAN_DEPTH = ParameterSpec(
         0x13,
         0,
         63,
@@ -212,7 +213,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Alternate Pan Depth
-    PARTIAL_ALTERNATE_PAN_DEPTH = (
+    PARTIAL_ALTERNATE_PAN_DEPTH = ParameterSpec(
         0x14,
         1,
         127,
@@ -222,7 +223,7 @@ class DrumPartialParam(AddressParameter):
     )  # L63 - 63R
 
     # Partial Env Mode
-    PARTIAL_ENV_MODE = (
+    PARTIAL_ENV_MODE = ParameterSpec(
         0x15,
         0,
         1,
@@ -230,7 +231,7 @@ class DrumPartialParam(AddressParameter):
     )  # NO-SUS, SUSTAIN
 
     # Partial Output Level
-    PARTIAL_OUTPUT_LEVEL = (
+    PARTIAL_OUTPUT_LEVEL = ParameterSpec(
         0x16,
         0,
         127,
@@ -240,7 +241,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Chorus Send Level
-    PARTIAL_CHORUS_SEND_LEVEL = (
+    PARTIAL_CHORUS_SEND_LEVEL = ParameterSpec(
         0x19,
         0,
         127,
@@ -250,7 +251,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Reverb Send Level
-    PARTIAL_REVERB_SEND_LEVEL = (
+    PARTIAL_REVERB_SEND_LEVEL = ParameterSpec(
         0x1A,
         0,
         127,
@@ -260,7 +261,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Output Assign
-    PARTIAL_OUTPUT_ASSIGN = (
+    PARTIAL_OUTPUT_ASSIGN = ParameterSpec(
         0x1B,
         0,
         4,
@@ -270,7 +271,7 @@ class DrumPartialParam(AddressParameter):
     )  # EFX1, EFX2, DLY, REV, DIR
 
     # Partial Pitch Bend Range
-    PARTIAL_PITCH_BEND_RANGE = (
+    PARTIAL_PITCH_BEND_RANGE = ParameterSpec(
         0x1C,
         0,
         48,
@@ -280,7 +281,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Partial Receive Expression
-    PARTIAL_RECEIVE_EXPRESSION = (
+    PARTIAL_RECEIVE_EXPRESSION = ParameterSpec(
         0x1D,
         0,
         1,
@@ -290,7 +291,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # Partial Receive Hold-1
-    PARTIAL_RECEIVE_HOLD_1 = (
+    PARTIAL_RECEIVE_HOLD_1 = ParameterSpec(
         0x1E,
         0,
         1,
@@ -300,7 +301,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT Velocity Control
-    WMT_VELOCITY_CONTROL = (
+    WMT_VELOCITY_CONTROL = ParameterSpec(
         0x20,
         0,
         2,
@@ -310,7 +311,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON, RANDOM
 
     # WMT1 Wave Switch
-    WMT1_WAVE_SWITCH = (
+    WMT1_WAVE_SWITCH = ParameterSpec(
         0x21,
         0,
         1,
@@ -320,7 +321,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT1 Wave Group Type
-    WMT1_WAVE_GROUP_TYPE = (
+    WMT1_WAVE_GROUP_TYPE = ParameterSpec(
         0x22,
         0,
         0,
@@ -330,10 +331,10 @@ class DrumPartialParam(AddressParameter):
     )  # Only one preset_type
 
     # WMT1 Wave Group ID
-    WMT1_WAVE_GROUP_ID = (0x23, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
+    WMT1_WAVE_GROUP_ID = ParameterSpec(0x23, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
 
     # WMT1 Wave Number L (Mono)
-    WMT1_WAVE_NUMBER_L = (
+    WMT1_WAVE_NUMBER_L = ParameterSpec(
         0x27,
         0,
         16384,
@@ -343,7 +344,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT1 Wave Number R
-    WMT1_WAVE_NUMBER_R = (
+    WMT1_WAVE_NUMBER_R = ParameterSpec(
         0x2B,
         0,
         16384,
@@ -353,7 +354,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT1 Wave Gain
-    WMT1_WAVE_GAIN = (
+    WMT1_WAVE_GAIN = ParameterSpec(
         0x2F,
         0,
         3,
@@ -363,10 +364,10 @@ class DrumPartialParam(AddressParameter):
     )  # -6, 0, +6, +12 [dB]
 
     # WMT1 Wave FXM Switch
-    WMT1_WAVE_FXM_SWITCH = (0x30, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
+    WMT1_WAVE_FXM_SWITCH = ParameterSpec(0x30, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
 
     # WMT1 Wave FXM Color
-    WMT1_WAVE_FXM_COLOR = (
+    WMT1_WAVE_FXM_COLOR = ParameterSpec(
         0x31,
         0,
         3,
@@ -376,7 +377,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - 4
 
     # WMT1 Wave FXM Depth
-    WMT1_WAVE_FXM_DEPTH = (
+    WMT1_WAVE_FXM_DEPTH = ParameterSpec(
         0x32,
         0,
         16,
@@ -386,7 +387,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 16
 
     # WMT1 Wave Tempo Sync
-    WMT1_WAVE_TEMPO_SYNC = (
+    WMT1_WAVE_TEMPO_SYNC = ParameterSpec(
         0x33,
         0,
         1,
@@ -396,7 +397,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT1 Wave Coarse Tune
-    WMT1_WAVE_COARSE_TUNE = (
+    WMT1_WAVE_COARSE_TUNE = ParameterSpec(
         0x34,
         16,
         112,
@@ -406,7 +407,7 @@ class DrumPartialParam(AddressParameter):
     )  # -48 - +48
 
     # WMT1 Wave Fine Tune
-    WMT1_WAVE_FINE_TUNE = (
+    WMT1_WAVE_FINE_TUNE = ParameterSpec(
         0x35,
         14,
         114,
@@ -416,7 +417,7 @@ class DrumPartialParam(AddressParameter):
     )  # -50 - +50
 
     # WMT1 Wave Pan
-    WMT1_WAVE_PAN = (
+    WMT1_WAVE_PAN = ParameterSpec(
         0x36,
         0,
         127,
@@ -426,7 +427,7 @@ class DrumPartialParam(AddressParameter):
     )  # L64 - 63R
 
     # WMT1 Wave Random Pan Switch
-    WMT1_WAVE_RANDOM_PAN_SWITCH = (
+    WMT1_WAVE_RANDOM_PAN_SWITCH = ParameterSpec(
         0x37,
         0,
         1,
@@ -436,7 +437,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT1 Wave Alternate Pan Switch
-    WMT1_WAVE_ALTERNATE_PAN_SWITCH = (
+    WMT1_WAVE_ALTERNATE_PAN_SWITCH = ParameterSpec(
         0x38,
         0,
         2,
@@ -446,7 +447,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON, REVERSE
 
     # WMT1 Wave Level
-    WMT1_WAVE_LEVEL = (
+    WMT1_WAVE_LEVEL = ParameterSpec(
         0x39,
         0,
         127,
@@ -456,7 +457,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 127
 
     # WMT1 Velocity Range Lower
-    WMT1_VELOCITY_RANGE_LOWER = (
+    WMT1_VELOCITY_RANGE_LOWER = ParameterSpec(
         0x3A,
         1,
         127,
@@ -466,7 +467,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - UPPER
 
     # WMT1 Velocity Range Upper
-    WMT1_VELOCITY_RANGE_UPPER = (
+    WMT1_VELOCITY_RANGE_UPPER = ParameterSpec(
         0x3B,
         1,
         127,
@@ -476,7 +477,7 @@ class DrumPartialParam(AddressParameter):
     )  # LOWER - 127
 
     # WMT1 Velocity Fade Width Lower
-    WMT1_VELOCITY_FADE_WIDTH_LOWER = (
+    WMT1_VELOCITY_FADE_WIDTH_LOWER = ParameterSpec(
         0x3C,
         0,
         127,
@@ -485,7 +486,7 @@ class DrumPartialParam(AddressParameter):
         "Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
     )
     # WMT1 Velocity Fade Width Upper
-    WMT1_VELOCITY_FADE_WIDTH_UPPER = (
+    WMT1_VELOCITY_FADE_WIDTH_UPPER = ParameterSpec(
         0x3D,
         0,
         127,
@@ -495,7 +496,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT2 Wave Switch
-    WMT2_WAVE_SWITCH = (
+    WMT2_WAVE_SWITCH = ParameterSpec(
         0x3E,
         0,
         1,
@@ -505,7 +506,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT2 Wave Group Type
-    WMT2_WAVE_GROUP_TYPE = (
+    WMT2_WAVE_GROUP_TYPE = ParameterSpec(
         0x3F,
         0,
         0,
@@ -515,7 +516,7 @@ class DrumPartialParam(AddressParameter):
     )  # Only one preset_type
 
     # WMT2 Wave Group ID
-    WMT2_WAVE_GROUP_ID = (
+    WMT2_WAVE_GROUP_ID = ParameterSpec(
         0x40,
         0,
         16384,
@@ -525,7 +526,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Number L (Mono)
-    WMT2_WAVE_NUMBER_L = (
+    WMT2_WAVE_NUMBER_L = ParameterSpec(
         0x44,
         0,
         16384,
@@ -535,7 +536,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Number R
-    WMT2_WAVE_NUMBER_R = (
+    WMT2_WAVE_NUMBER_R = ParameterSpec(
         0x48,
         0,
         16384,
@@ -545,7 +546,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Gain
-    WMT2_WAVE_GAIN = (
+    WMT2_WAVE_GAIN = ParameterSpec(
         0x4C,
         0,
         3,
@@ -555,7 +556,7 @@ class DrumPartialParam(AddressParameter):
     )  # -6, 0, +6, +12 [dB]
 
     # WMT2 Wave FXM Switch
-    WMT2_WAVE_FXM_SWITCH = (
+    WMT2_WAVE_FXM_SWITCH = ParameterSpec(
         0x4D,
         0,
         1,
@@ -565,7 +566,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT2 Wave FXM Color
-    WMT2_WAVE_FXM_COLOR = (
+    WMT2_WAVE_FXM_COLOR = ParameterSpec(
         0x4E,
         0,
         3,
@@ -575,7 +576,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - 4
 
     # WMT2 Wave FXM Depth
-    WMT2_WAVE_FXM_DEPTH = (
+    WMT2_WAVE_FXM_DEPTH = ParameterSpec(
         0x4F,
         0,
         16,
@@ -585,7 +586,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 16
 
     # WMT2 Wave Tempo Sync
-    WMT2_WAVE_TEMPO_SYNC = (
+    WMT2_WAVE_TEMPO_SYNC = ParameterSpec(
         0x50,
         0,
         1,
@@ -595,7 +596,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT2 Wave Coarse Tune
-    WMT2_WAVE_COARSE_TUNE = (
+    WMT2_WAVE_COARSE_TUNE = ParameterSpec(
         0x51,
         16,
         112,
@@ -605,7 +606,7 @@ class DrumPartialParam(AddressParameter):
     )  # -48 - +48
 
     # WMT2 Wave Fine Tune
-    WMT2_WAVE_FINE_TUNE = (
+    WMT2_WAVE_FINE_TUNE = ParameterSpec(
         0x52,
         14,
         114,
@@ -615,7 +616,7 @@ class DrumPartialParam(AddressParameter):
     )  # -50 - +50
 
     # WMT2 Wave Pan
-    WMT2_WAVE_PAN = (
+    WMT2_WAVE_PAN = ParameterSpec(
         0x53,
         0,
         127,
@@ -625,7 +626,7 @@ class DrumPartialParam(AddressParameter):
     )  # L64 - 63R
 
     # WMT2 Wave Random Pan Switch
-    WMT2_WAVE_RANDOM_PAN_SWITCH = (
+    WMT2_WAVE_RANDOM_PAN_SWITCH = ParameterSpec(
         0x54,
         0,
         1,
@@ -635,7 +636,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT2 Wave Alternate Pan Switch
-    WMT2_WAVE_ALTERNATE_PAN_SWITCH = (
+    WMT2_WAVE_ALTERNATE_PAN_SWITCH = ParameterSpec(
         0x55,
         0,
         2,
@@ -645,7 +646,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON, REVERSE
 
     # WMT2 Wave Level
-    WMT2_WAVE_LEVEL = (
+    WMT2_WAVE_LEVEL = ParameterSpec(
         0x56,
         0,
         127,
@@ -655,7 +656,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 127
 
     # WMT2 Velocity Range Lower
-    WMT2_VELOCITY_RANGE_LOWER = (
+    WMT2_VELOCITY_RANGE_LOWER = ParameterSpec(
         0x57,
         1,
         127,
@@ -665,7 +666,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - UPPER
 
     # WMT2 Velocity Range Upper
-    WMT2_VELOCITY_RANGE_UPPER = (
+    WMT2_VELOCITY_RANGE_UPPER = ParameterSpec(
         0x58,
         1,
         127,
@@ -675,7 +676,7 @@ class DrumPartialParam(AddressParameter):
     )  # LOWER - 127
 
     # WMT2 Velocity Fade Width Lower
-    WMT2_VELOCITY_FADE_WIDTH_LOWER = (
+    WMT2_VELOCITY_FADE_WIDTH_LOWER = ParameterSpec(
         0x59,
         0,
         127,
@@ -685,7 +686,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT2 Velocity Fade Width Upper
-    WMT2_VELOCITY_FADE_WIDTH_UPPER = (
+    WMT2_VELOCITY_FADE_WIDTH_UPPER = ParameterSpec(
         0x5A,
         0,
         127,
@@ -695,7 +696,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT3 Wave Switch
-    WMT3_WAVE_SWITCH = (
+    WMT3_WAVE_SWITCH = ParameterSpec(
         0x5B,
         0,
         1,
@@ -705,7 +706,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT3 Wave Group Type
-    WMT3_WAVE_GROUP_TYPE = (
+    WMT3_WAVE_GROUP_TYPE = ParameterSpec(
         0x5C,
         0,
         0,
@@ -715,7 +716,7 @@ class DrumPartialParam(AddressParameter):
     )  # Only one preset_type
 
     # WMT3 Wave Group ID
-    WMT3_WAVE_GROUP_ID = (
+    WMT3_WAVE_GROUP_ID = ParameterSpec(
         0x5D,
         0,
         16384,
@@ -725,7 +726,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Number L (Mono)
-    WMT3_WAVE_NUMBER_L = (
+    WMT3_WAVE_NUMBER_L = ParameterSpec(
         0x61,
         0,
         16384,
@@ -735,7 +736,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Number R
-    WMT3_WAVE_NUMBER_R = (
+    WMT3_WAVE_NUMBER_R = ParameterSpec(
         0x65,
         0,
         16384,
@@ -745,7 +746,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Gain
-    WMT3_WAVE_GAIN = (
+    WMT3_WAVE_GAIN = ParameterSpec(
         0x69,
         0,
         3,
@@ -755,7 +756,7 @@ class DrumPartialParam(AddressParameter):
     )  # -6, 0, +6, +12 [dB]
 
     # WMT3 Wave FXM Switch
-    WMT3_WAVE_FXM_SWITCH = (
+    WMT3_WAVE_FXM_SWITCH = ParameterSpec(
         0x6A,
         0,
         1,
@@ -765,7 +766,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT3 Wave FXM Color
-    WMT3_WAVE_FXM_COLOR = (
+    WMT3_WAVE_FXM_COLOR = ParameterSpec(
         0x6B,
         0,
         3,
@@ -775,7 +776,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - 4
 
     # WMT3 Wave FXM Depth
-    WMT3_WAVE_FXM_DEPTH = (
+    WMT3_WAVE_FXM_DEPTH = ParameterSpec(
         0x6C,
         0,
         16,
@@ -785,7 +786,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 16
 
     # WMT3 Wave Tempo Sync
-    WMT3_WAVE_TEMPO_SYNC = (
+    WMT3_WAVE_TEMPO_SYNC = ParameterSpec(
         0x6D,
         0,
         1,
@@ -795,7 +796,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT3 Wave Coarse Tune
-    WMT3_WAVE_COARSE_TUNE = (
+    WMT3_WAVE_COARSE_TUNE = ParameterSpec(
         0x6E,
         16,
         112,
@@ -805,7 +806,7 @@ class DrumPartialParam(AddressParameter):
     )  # -48 - +48
 
     # WMT3 Wave Fine Tune
-    WMT3_WAVE_FINE_TUNE = (
+    WMT3_WAVE_FINE_TUNE = ParameterSpec(
         0x6F,
         14,
         114,
@@ -815,7 +816,7 @@ class DrumPartialParam(AddressParameter):
     )  # -50 - +50
 
     # WMT3 Wave Pan
-    WMT3_WAVE_PAN = (
+    WMT3_WAVE_PAN = ParameterSpec(
         0x70,
         0,
         127,
@@ -825,7 +826,7 @@ class DrumPartialParam(AddressParameter):
     )  # L64 - 63R
 
     # WMT3 Wave Random Pan Switch
-    WMT3_WAVE_RANDOM_PAN_SWITCH = (
+    WMT3_WAVE_RANDOM_PAN_SWITCH = ParameterSpec(
         0x71,
         0,
         1,
@@ -835,7 +836,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT3 Wave Alternate Pan Switch
-    WMT3_WAVE_ALTERNATE_PAN_SWITCH = (
+    WMT3_WAVE_ALTERNATE_PAN_SWITCH = ParameterSpec(
         0x72,
         0,
         2,
@@ -845,7 +846,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON, REVERSE
 
     # WMT3 Wave Level
-    WMT3_WAVE_LEVEL = (
+    WMT3_WAVE_LEVEL = ParameterSpec(
         0x73,
         0,
         127,
@@ -855,7 +856,7 @@ class DrumPartialParam(AddressParameter):
     )  # 0 - 127
 
     # WMT3 Velocity Range Lower
-    WMT3_VELOCITY_RANGE_LOWER = (
+    WMT3_VELOCITY_RANGE_LOWER = ParameterSpec(
         0x74,
         1,
         127,
@@ -865,7 +866,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - UPPER
 
     # WMT3 Velocity Range Upper
-    WMT3_VELOCITY_RANGE_UPPER = (
+    WMT3_VELOCITY_RANGE_UPPER = ParameterSpec(
         0x75,
         1,
         127,
@@ -875,7 +876,7 @@ class DrumPartialParam(AddressParameter):
     )  # LOWER - 127
 
     # WMT3 Velocity Fade Width Lower
-    WMT3_VELOCITY_FADE_WIDTH_LOWER = (
+    WMT3_VELOCITY_FADE_WIDTH_LOWER = ParameterSpec(
         0x76,
         0,
         127,
@@ -885,7 +886,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT3 Velocity Fade Width Upper
-    WMT3_VELOCITY_FADE_WIDTH_UPPER = (
+    WMT3_VELOCITY_FADE_WIDTH_UPPER = ParameterSpec(
         0x77,
         0,
         127,
@@ -895,7 +896,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT4 Wave Switch
-    WMT4_WAVE_SWITCH = (
+    WMT4_WAVE_SWITCH = ParameterSpec(
         0x78,
         0,
         1,
@@ -905,7 +906,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT4 Wave Group Type
-    WMT4_WAVE_GROUP_TYPE = (
+    WMT4_WAVE_GROUP_TYPE = ParameterSpec(
         0x79,
         0,
         0,
@@ -915,7 +916,7 @@ class DrumPartialParam(AddressParameter):
     )  # Only one preset_type
 
     # WMT4 Wave Group ID
-    WMT4_WAVE_GROUP_ID = (
+    WMT4_WAVE_GROUP_ID = ParameterSpec(
         0x7A,
         0,
         16384,
@@ -925,7 +926,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Number L (Mono)
-    WMT4_WAVE_NUMBER_L = (
+    WMT4_WAVE_NUMBER_L = ParameterSpec(
         0x7E,
         0,
         16384,
@@ -935,7 +936,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Number R
-    WMT4_WAVE_NUMBER_R = (
+    WMT4_WAVE_NUMBER_R = ParameterSpec(
         0x102,
         0,
         16384,
@@ -945,7 +946,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Gain
-    WMT4_WAVE_GAIN = (
+    WMT4_WAVE_GAIN = ParameterSpec(
         0x106,
         0,
         3,
@@ -955,7 +956,7 @@ class DrumPartialParam(AddressParameter):
     )  # -6, 0, +6, +12 [dB]
 
     # WMT4 Wave FXM Switch
-    WMT4_WAVE_FXM_SWITCH = (
+    WMT4_WAVE_FXM_SWITCH = ParameterSpec(
         0x107,
         0,
         1,
@@ -965,7 +966,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT4 Wave FXM Color
-    WMT4_WAVE_FXM_COLOR = (
+    WMT4_WAVE_FXM_COLOR = ParameterSpec(
         0x108,
         0,
         3,
@@ -975,7 +976,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - 4
 
     # WMT4 Wave FXM Depth
-    WMT4_WAVE_FXM_DEPTH = (
+    WMT4_WAVE_FXM_DEPTH = ParameterSpec(
         0x109,
         0,
         16,
@@ -985,7 +986,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - 16
 
     # WMT4 Wave Tempo Sync
-    WMT4_WAVE_TEMPO_SYNC = (
+    WMT4_WAVE_TEMPO_SYNC = ParameterSpec(
         0x10A,
         0,
         1,
@@ -995,7 +996,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT4 Wave Coarse Tune
-    WMT4_WAVE_COARSE_TUNE = (
+    WMT4_WAVE_COARSE_TUNE = ParameterSpec(
         0x10B,
         16,
         112,
@@ -1005,7 +1006,7 @@ class DrumPartialParam(AddressParameter):
     )  # -48 - +48
 
     # WMT4 Wave Fine Tune
-    WMT4_WAVE_FINE_TUNE = (
+    WMT4_WAVE_FINE_TUNE = ParameterSpec(
         0x10C,
         14,
         114,
@@ -1015,7 +1016,7 @@ class DrumPartialParam(AddressParameter):
     )  # -50 - +50
 
     # WMT4 Wave Pan
-    WMT4_WAVE_PAN = (
+    WMT4_WAVE_PAN = ParameterSpec(
         0x10D,
         0,
         127,
@@ -1025,7 +1026,7 @@ class DrumPartialParam(AddressParameter):
     )  # L64 - 63R
 
     # WMT4 Wave Random Pan Switch
-    WMT4_WAVE_RANDOM_PAN_SWITCH = (
+    WMT4_WAVE_RANDOM_PAN_SWITCH = ParameterSpec(
         0x10E,
         0,
         1,
@@ -1035,7 +1036,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # WMT4 Wave Alternate Pan Switch
-    WMT4_WAVE_ALTERNATE_PAN_SWITCH = (
+    WMT4_WAVE_ALTERNATE_PAN_SWITCH = ParameterSpec(
         0x10F,
         0,
         2,
@@ -1045,7 +1046,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON, REVERSE
 
     # WMT4 Wave Level
-    WMT4_WAVE_LEVEL = (
+    WMT4_WAVE_LEVEL = ParameterSpec(
         0x110,
         0,
         127,
@@ -1055,7 +1056,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT4 Velocity Range Lower
-    WMT4_VELOCITY_RANGE_LOWER = (
+    WMT4_VELOCITY_RANGE_LOWER = ParameterSpec(
         0x111,
         1,
         127,
@@ -1065,7 +1066,7 @@ class DrumPartialParam(AddressParameter):
     )  # 1 - UPPER
 
     # WMT4 Velocity Range Upper
-    WMT4_VELOCITY_RANGE_UPPER = (
+    WMT4_VELOCITY_RANGE_UPPER = ParameterSpec(
         0x112,
         1,
         127,
@@ -1075,7 +1076,7 @@ class DrumPartialParam(AddressParameter):
     )  # LOWER - 127
 
     # WMT4 Velocity Fade Width Lower
-    WMT4_VELOCITY_FADE_WIDTH_LOWER = (
+    WMT4_VELOCITY_FADE_WIDTH_LOWER = ParameterSpec(
         0x113,
         0,
         127,
@@ -1085,7 +1086,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # WMT4 Velocity Fade Width Upper
-    WMT4_VELOCITY_FADE_WIDTH_UPPER = (
+    WMT4_VELOCITY_FADE_WIDTH_UPPER = ParameterSpec(
         0x114,
         0,
         127,
@@ -1095,7 +1096,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Depth
-    PITCH_ENV_DEPTH = (
+    PITCH_ENV_DEPTH = ParameterSpec(
         0x115,
         52,
         76,
@@ -1105,7 +1106,7 @@ class DrumPartialParam(AddressParameter):
     )  # -12 - +12
 
     # Pitch Env Velocity Sens
-    PITCH_ENV_VELOCITY_SENS = (
+    PITCH_ENV_VELOCITY_SENS = ParameterSpec(
         0x116,
         1,
         127,
@@ -1115,7 +1116,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Time 1 Velocity Sens
-    PITCH_ENV_TIME_1_VELOCITY_SENS = (
+    PITCH_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x117,
         1,
         127,
@@ -1125,7 +1126,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Time 4 Velocity Sens
-    PITCH_ENV_TIME_4_VELOCITY_SENS = (
+    PITCH_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x118,
         1,
         127,
@@ -1135,7 +1136,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Time 1
-    PITCH_ENV_TIME_1 = (
+    PITCH_ENV_TIME_1 = ParameterSpec(
         0x119,
         0,
         127,
@@ -1145,7 +1146,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Time 2
-    PITCH_ENV_TIME_2 = (
+    PITCH_ENV_TIME_2 = ParameterSpec(
         0x11A,
         0,
         127,
@@ -1155,7 +1156,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Time 3
-    PITCH_ENV_TIME_3 = (
+    PITCH_ENV_TIME_3 = ParameterSpec(
         0x11B,
         0,
         127,
@@ -1165,7 +1166,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Time 4
-    PITCH_ENV_TIME_4 = (
+    PITCH_ENV_TIME_4 = ParameterSpec(
         0x11C,
         0,
         127,
@@ -1175,7 +1176,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Level 0
-    PITCH_ENV_LEVEL_0 = (
+    PITCH_ENV_LEVEL_0 = ParameterSpec(
         0x11D,
         1,
         127,
@@ -1185,7 +1186,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # Pitch Env Level 1
-    PITCH_ENV_LEVEL_1 = (
+    PITCH_ENV_LEVEL_1 = ParameterSpec(
         0x11E,
         1,
         127,
@@ -1195,7 +1196,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Level 2
-    PITCH_ENV_LEVEL_2 = (
+    PITCH_ENV_LEVEL_2 = ParameterSpec(
         0x11F,
         1,
         127,
@@ -1205,7 +1206,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Level 3
-    PITCH_ENV_LEVEL_3 = (
+    PITCH_ENV_LEVEL_3 = ParameterSpec(
         0x120,
         1,
         127,
@@ -1215,7 +1216,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # Pitch Env Level 4
-    PITCH_ENV_LEVEL_4 = (
+    PITCH_ENV_LEVEL_4 = ParameterSpec(
         0x121,
         1,
         127,
@@ -1225,7 +1226,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Filter Type
-    TVF_FILTER_TYPE = (
+    TVF_FILTER_TYPE = ParameterSpec(
         0x122,
         0,
         6,
@@ -1235,7 +1236,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, LPF, BPF, HPF, PKF, LPF2, LPF3
 
     # TVF Cutoff Frequency
-    TVF_CUTOFF_FREQUENCY = (
+    TVF_CUTOFF_FREQUENCY = ParameterSpec(
         0x123,
         0,
         127,
@@ -1245,7 +1246,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Cutoff Velocity Curve
-    TVF_CUTOFF_VELOCITY_CURVE = (
+    TVF_CUTOFF_VELOCITY_CURVE = ParameterSpec(
         0x124,
         0,
         7,
@@ -1255,7 +1256,7 @@ class DrumPartialParam(AddressParameter):
     )  # FIXED, 1 - 7
 
     # TVF Cutoff Velocity Sens
-    TVF_CUTOFF_VELOCITY_SENS = (
+    TVF_CUTOFF_VELOCITY_SENS = ParameterSpec(
         0x125,
         1,
         127,
@@ -1265,7 +1266,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Resonance
-    TVF_RESONANCE = (
+    TVF_RESONANCE = ParameterSpec(
         0x126,
         0,
         127,
@@ -1275,7 +1276,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Resonance Velocity Sens
-    TVF_RESONANCE_VELOCITY_SENS = (
+    TVF_RESONANCE_VELOCITY_SENS = ParameterSpec(
         0x127,
         1,
         127,
@@ -1285,7 +1286,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Env Depth
-    TVF_ENV_DEPTH = (
+    TVF_ENV_DEPTH = ParameterSpec(
         0x128,
         1,
         127,
@@ -1295,7 +1296,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Env Velocity Curve Type
-    TVF_ENV_VELOCITY_CURVE_TYPE = (
+    TVF_ENV_VELOCITY_CURVE_TYPE = ParameterSpec(
         0x129,
         0,
         7,
@@ -1305,7 +1306,7 @@ class DrumPartialParam(AddressParameter):
     )  # FIXED, 1 - 7
 
     # TVF Env Velocity Sens
-    TVF_ENV_VELOCITY_SENS = (
+    TVF_ENV_VELOCITY_SENS = ParameterSpec(
         0x137,
         1,
         127,
@@ -1315,7 +1316,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Env Time 1 Velocity Sens
-    TVF_ENV_TIME_1_VELOCITY_SENS = (
+    TVF_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x12B,
         1,
         127,
@@ -1325,7 +1326,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Env Time 4 Velocity Sens
-    TVF_ENV_TIME_4_VELOCITY_SENS = (
+    TVF_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x12C,
         1,
         127,
@@ -1335,7 +1336,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVF Env Time 1
-    TVF_ENV_TIME_1 = (
+    TVF_ENV_TIME_1 = ParameterSpec(
         0x12D,
         0,
         127,
@@ -1345,7 +1346,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Time 2
-    TVF_ENV_TIME_2 = (
+    TVF_ENV_TIME_2 = ParameterSpec(
         0x12E,
         0,
         127,
@@ -1355,7 +1356,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Time 3
-    TVF_ENV_TIME_3 = (
+    TVF_ENV_TIME_3 = ParameterSpec(
         0x12F,
         0,
         127,
@@ -1365,7 +1366,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Time 4
-    TVF_ENV_TIME_4 = (
+    TVF_ENV_TIME_4 = ParameterSpec(
         0x130,
         0,
         127,
@@ -1375,7 +1376,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Level 0
-    TVF_ENV_LEVEL_0 = (
+    TVF_ENV_LEVEL_0 = ParameterSpec(
         0x131,
         0,
         127,
@@ -1385,7 +1386,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Level 1
-    TVF_ENV_LEVEL_1 = (
+    TVF_ENV_LEVEL_1 = ParameterSpec(
         0x132,
         0,
         127,
@@ -1395,7 +1396,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Level 2
-    TVF_ENV_LEVEL_2 = (
+    TVF_ENV_LEVEL_2 = ParameterSpec(
         0x133,
         0,
         127,
@@ -1405,7 +1406,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Level 3
-    TVF_ENV_LEVEL_3 = (
+    TVF_ENV_LEVEL_3 = ParameterSpec(
         0x134,
         0,
         127,
@@ -1415,7 +1416,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVF Env Level 4
-    TVF_ENV_LEVEL_4 = (
+    TVF_ENV_LEVEL_4 = ParameterSpec(
         0x135,
         0,
         127,
@@ -1425,7 +1426,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Level Velocity Curve
-    TVA_LEVEL_VELOCITY_CURVE = (
+    TVA_LEVEL_VELOCITY_CURVE = ParameterSpec(
         0x136,
         0,
         7,
@@ -1435,7 +1436,7 @@ class DrumPartialParam(AddressParameter):
     )  # FIXED, 1 - 7
 
     # TVA Level Velocity Sens
-    TVA_LEVEL_VELOCITY_SENS = (
+    TVA_LEVEL_VELOCITY_SENS = ParameterSpec(
         0x137,
         1,
         127,
@@ -1445,7 +1446,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Time 1 Velocity Sens
-    TVA_ENV_TIME_1_VELOCITY_SENS = (
+    TVA_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x138,
         1,
         127,
@@ -1455,7 +1456,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVA Env Time 4 Velocity Sens
-    TVA_ENV_TIME_4_VELOCITY_SENS = (
+    TVA_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x139,
         1,
         127,
@@ -1465,7 +1466,7 @@ class DrumPartialParam(AddressParameter):
     )  # -63 - +63
 
     # TVA Env Time 1
-    TVA_ENV_TIME_1 = (
+    TVA_ENV_TIME_1 = ParameterSpec(
         0x13A,
         0,
         127,
@@ -1475,7 +1476,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Time 2
-    TVA_ENV_TIME_2 = (
+    TVA_ENV_TIME_2 = ParameterSpec(
         0x13B,
         0,
         127,
@@ -1485,7 +1486,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Time 3
-    TVA_ENV_TIME_3 = (
+    TVA_ENV_TIME_3 = ParameterSpec(
         0x13C,
         0,
         127,
@@ -1495,7 +1496,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Time 4
-    TVA_ENV_TIME_4 = (
+    TVA_ENV_TIME_4 = ParameterSpec(
         0x13D,
         0,
         127,
@@ -1505,7 +1506,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Level 1
-    TVA_ENV_LEVEL_1 = (
+    TVA_ENV_LEVEL_1 = ParameterSpec(
         0x13E,
         0,
         127,
@@ -1515,7 +1516,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Level 2
-    TVA_ENV_LEVEL_2 = (
+    TVA_ENV_LEVEL_2 = ParameterSpec(
         0x13F,
         0,
         127,
@@ -1525,7 +1526,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # TVA Env Level 3
-    TVA_ENV_LEVEL_3 = (
+    TVA_ENV_LEVEL_3 = ParameterSpec(
         0x140,
         0,
         127,
@@ -1535,7 +1536,7 @@ class DrumPartialParam(AddressParameter):
     )
 
     # One Shot Mode
-    ONE_SHOT_MODE = (
+    ONE_SHOT_MODE = ParameterSpec(
         0x141,
         0,
         1,
@@ -1545,7 +1546,7 @@ class DrumPartialParam(AddressParameter):
     )  # OFF, ON
 
     # Relative Level
-    RELATIVE_LEVEL = (
+    RELATIVE_LEVEL = ParameterSpec(
         0x142,
         0,
         127,
@@ -1554,9 +1555,9 @@ class DrumPartialParam(AddressParameter):
         "Sets the relative level of the drum partial. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -64 - +63
 
-    DRUM_PART = (0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5")  # Hack alert @@
+    DRUM_PART = ParameterSpec(0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5")  # Hack alert @@
 
-    DRUM_GROUP = (0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5")  # Hack alert @@
+    DRUM_GROUP = ParameterSpec(0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5")  # Hack alert @@
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)

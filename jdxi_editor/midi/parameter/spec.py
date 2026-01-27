@@ -1,3 +1,8 @@
+"""
+ParameterSpec class
+"""
+
+
 class ParameterSpec(tuple):
     """
     Parameter specification that can be used in place of tuples for Enum definitions.
