@@ -36,11 +36,11 @@ class DigitalAmpSection(ParameterSectionBase):
     ]
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
-        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME),
-        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL),
-        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME),
-        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
+        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
+        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.AMP_ENV_DECAY_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.AMP_ENV_SUSTAIN_LEVEL),
+        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.AMP_ENV_RELEASE_TIME),
+        # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
     }
 
     BUTTON_SPECS = []  # Digital Amp does not have waveform buttons

@@ -23,6 +23,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../appimagetool-extracted" />
       <excludeFolder url="file://$MODULE_DIR$/../building/apple/JD-Xi-Editor.app" />
       <excludeFolder url="file://$MODULE_DIR$/../snap" />
+      <excludeFolder url="file://$MODULE_DIR$/../building/apple/jdxi_dmg" />
     </content>
     <content url="file://$MODULE_DIR$/../../PicoMidi">
       <excludeFolder url="file://$MODULE_DIR$/../../PicoMidi/.idea" />
