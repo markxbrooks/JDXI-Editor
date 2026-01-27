@@ -41,6 +41,7 @@ Usage example:
 from typing import Optional
 
 from jdxi_editor.midi.data.address.arpeggio import ARP_GROUP
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -62,7 +63,7 @@ class ArpeggioParam(AddressParameter):
         self.tooltip = tooltip
 
     # Common parameters
-    ARPEGGIO_GRID = (
+    ARPEGGIO_GRID = ParameterSpec(
         0x01,
         0,
         8,
@@ -71,7 +72,7 @@ class ArpeggioParam(AddressParameter):
         "Specifies the time signature and “swing” of the arpeggio style.\nThe setting specifies the note value that one grid unit represents, and the degree of shuffle (none, light, or heavy).\n1/4: Eighth note (two grid sections = one beat)\n1/8: Eighth note (two grid sections = one beat)\n1/8L: Eighth note shuffle Light (two grid sections = one beat, with a light shuffle)\n1/8H: Eighth note shuffle Heavy (two grid sections = one beat, with a heavy shuffle)\n1/12: Eighth note triplet (three grid sections = one beat)\n1/16: Sixteenth note (four grid sections = one beat)\n1/16L: Sixteenth note shuffle Light (four grid sections = one beat, with a light shuffle)\n1/16H: Sixteenth note shuffle Heavy (four grid sections = one beat, with a heavy shuffle)\n1/24: Sixteenth note triplet (six grid sections = one beat)",
     )  # 04_, 08_, 08L, 08H, 08t, 16_, 16L, 16H, 16t
 
-    ARPEGGIO_DURATION = (
+    ARPEGGIO_DURATION = ParameterSpec(
         0x02,
         0,
         9,
@@ -84,8 +85,8 @@ duration that is 30% of the note value specified by the grid.
 Full: Even if the linked grid is not connected with a tie, the same note continues to sound until the point at which the
 next new sound is specified.""",
     )
-    ARPEGGIO_SWITCH = (0x03, 0, 1, 0, 1, "Arpeggio ON/OFF")  # OFF, ON
-    ARPEGGIO_STYLE = (
+    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1, "Arpeggio ON/OFF")  # OFF, ON
+    ARPEGGIO_STYLE = ParameterSpec(
         0x05,
         0,
         127,
@@ -94,7 +95,7 @@ next new sound is specified.""",
         "Specifies the style of the arpeggio style.\n1 - 128",
     )  # 1 - 128
 
-    ARPEGGIO_MOTIF = (
+    ARPEGGIO_MOTIF = ParameterSpec(
         0x06,
         0,
         11,
@@ -115,7 +116,7 @@ Rand (L) Notes will be sounded randomly for the keys you press, with only the lo
 Rand (_) Only the lowest of the keys pressed is sounded each time, the notes you press will be sounded randomly.
 Phrase Pressing just one key will play a phrase based on the pitch of that key. If you press more than one key, the key you press last will be used.""",
     )
-    ARPEGGIO_OCTAVE_RANGE = (
+    ARPEGGIO_OCTAVE_RANGE = ParameterSpec(
         0x07,
         61,
         67,
@@ -123,7 +124,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         67,
         "Specifies the range by which the arpeggio is shifted.\nThis adds an effect that shifts arpeggios one cycle at a time in octave units (octave range).\nYou can set the shift range upwards or downwards (up to three octaves up or down).",
     )  # -3 - +3
-    ARPEGGIO_ACCENT_RATE = (
+    ARPEGGIO_ACCENT_RATE = ParameterSpec(
         0x09,
         0,
         100,
@@ -131,7 +132,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         100,
         "Specifies the accent strength for the arpeggio.\nWith a setting of “100,” the arpeggiated notes will have the velocities that are programmed by the arpeggio style.\nWith a setting of “0,” all arpeggiated notes will be sounded at a fixed velocity.",
     )  # 0 - 100
-    ARPEGGIO_VELOCITY = (
+    ARPEGGIO_VELOCITY = ParameterSpec(
         0x0A,
         0,
         127,
@@ -141,22 +142,22 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
     )  # REAL, 1 - 127
 
     # Pattern parameters
-    PATTERN_1 = (0x10, 0, 127)
-    PATTERN_2 = (0x11, 0, 127)
-    PATTERN_3 = (0x12, 0, 127)
-    PATTERN_4 = (0x13, 0, 127)
+    PATTERN_1 = ParameterSpec(0x10, 0, 127)
+    PATTERN_2 = ParameterSpec(0x11, 0, 127)
+    PATTERN_3 = ParameterSpec(0x12, 0, 127)
+    PATTERN_4 = ParameterSpec(0x13, 0, 127)
 
     # Rhythm parameters
-    RHYTHM_1 = (0x20, 0, 127)
-    RHYTHM_2 = (0x21, 0, 127)
-    RHYTHM_3 = (0x22, 0, 127)
-    RHYTHM_4 = (0x23, 0, 127)
+    RHYTHM_1 = ParameterSpec(0x20, 0, 127)
+    RHYTHM_2 = ParameterSpec(0x21, 0, 127)
+    RHYTHM_3 = ParameterSpec(0x22, 0, 127)
+    RHYTHM_4 = ParameterSpec(0x23, 0, 127)
 
     # Note parameters
-    NOTE_1 = (0x30, 0, 127)
-    NOTE_2 = (0x31, 0, 127)
-    NOTE_3 = (0x32, 0, 127)
-    NOTE_4 = (0x33, 0, 127)
+    NOTE_1 = ParameterSpec(0x30, 0, 127)
+    NOTE_2 = ParameterSpec(0x31, 0, 127)
+    NOTE_3 = ParameterSpec(0x32, 0, 127)
+    NOTE_4 = ParameterSpec(0x33, 0, 127)
 
     def get_address_for_partial(self, partial_number: int = 0):
         return ARP_GROUP, 0x00

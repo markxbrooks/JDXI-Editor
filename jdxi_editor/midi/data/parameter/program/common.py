@@ -34,6 +34,7 @@ switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -54,8 +55,8 @@ class SystemCommonParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
 
-    MASTER_TUNE = (0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
-    MASTER_KEY_SHIFT = (
+    MASTER_TUNE = ParameterSpec(0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
+    MASTER_KEY_SHIFT = ParameterSpec(
         0x04,
         40,
         88,
@@ -63,7 +64,7 @@ class SystemCommonParam(AddressParameter):
         24,
         "Volume of the program",
     )  # Program Level (0-127)
-    MASTER_LEVEL = (
+    MASTER_LEVEL = ParameterSpec(
         0x05,
         0,
         127,
@@ -173,20 +174,20 @@ class ProgramCommonParam(AddressParameter):
         self.tooltip = tooltip if tooltip is not None else ""
 
     # Program name parameters (12 ASCII characters)
-    TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
-    TONE_NAME_2 = (0x01, 32, 127)  # ASCII character 2
-    TONE_NAME_3 = (0x02, 32, 127)  # ASCII character 3
-    TONE_NAME_4 = (0x03, 32, 127)  # ASCII character 4
-    TONE_NAME_5 = (0x04, 32, 127)  # ASCII character 5
-    TONE_NAME_6 = (0x05, 32, 127)  # ASCII character 6
-    TONE_NAME_7 = (0x06, 32, 127)  # ASCII character 7
-    TONE_NAME_8 = (0x07, 32, 127)  # ASCII character 8
-    TONE_NAME_9 = (0x08, 32, 127)  # ASCII character 9
-    TONE_NAME_10 = (0x09, 32, 127)  # ASCII character 10
-    TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
-    TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
+    TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
+    TONE_NAME_2 = ParameterSpec(0x01, 32, 127)  # ASCII character 2
+    TONE_NAME_3 = ParameterSpec(0x02, 32, 127)  # ASCII character 3
+    TONE_NAME_4 = ParameterSpec(0x03, 32, 127)  # ASCII character 4
+    TONE_NAME_5 = ParameterSpec(0x04, 32, 127)  # ASCII character 5
+    TONE_NAME_6 = ParameterSpec(0x05, 32, 127)  # ASCII character 6
+    TONE_NAME_7 = ParameterSpec(0x06, 32, 127)  # ASCII character 7
+    TONE_NAME_8 = ParameterSpec(0x07, 32, 127)  # ASCII character 8
+    TONE_NAME_9 = ParameterSpec(0x08, 32, 127)  # ASCII character 9
+    TONE_NAME_10 = ParameterSpec(0x09, 32, 127)  # ASCII character 10
+    TONE_NAME_11 = ParameterSpec(0x0A, 32, 127)  # ASCII character 11
+    TONE_NAME_12 = ParameterSpec(0x0B, 32, 127)  # ASCII character 12
 
-    PROGRAM_LEVEL = (
+    PROGRAM_LEVEL = ParameterSpec(
         0x10,
         0,
         127,
@@ -194,7 +195,7 @@ class ProgramCommonParam(AddressParameter):
         127,
         "Volume of the program",
     )  # Program Level (0-127)
-    PROGRAM_TEMPO = (
+    PROGRAM_TEMPO = ParameterSpec(
         0x11,
         500,
         30000,
@@ -206,16 +207,16 @@ If the SYSTEM parameter Sync Mode is set to SLAVE, only “MIDI” can be select
 (Since the tempo is synchronized to an external device, it’s not possible to change the tempo
 from the JD-Xi.)""",
     )  # Program Tempo (500-30000: 5.00-300.00 BPM)
-    VOCAL_EFFECT = (
+    VOCAL_EFFECT = ParameterSpec(
         0x16,
         0,
         2,
         0,
         2,
     )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
-    VOCAL_EFFECT_NUMBER = (0x1C, 0, 20, 0, 20)  # Vocal Effect Number (0-20: 1-21)
-    VOCAL_EFFECT_PART = (0x1D, 0, 1, 0, 1)  # Vocal Effect Part (0: Part 1, 1: Part 2)
-    AUTO_NOTE_SWITCH = (0x1E, 0, 1, 0, 1)  # Auto Note Switch (0: OFF, 1: ON)
+    VOCAL_EFFECT_NUMBER = ParameterSpec(0x1C, 0, 20, 0, 20)  # Vocal Effect Number (0-20: 1-21)
+    VOCAL_EFFECT_PART = ParameterSpec(0x1D, 0, 1, 0, 1)  # Vocal Effect Part (0: Part 1, 1: Part 2)
+    AUTO_NOTE_SWITCH = ParameterSpec(0x1E, 0, 1, 0, 1)  # Auto Note Switch (0: OFF, 1: ON)
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""

@@ -97,5 +97,7 @@ class AnalogLFOSection(BaseLFOSection):
         from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 
         self.lfo_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
+        # Also set wave_shape_param for BaseLFOSection._on_wave_shape_selected
+        self.wave_shape_param = AnalogParam.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()

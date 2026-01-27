@@ -91,6 +91,7 @@ Param 3	00 19	(possibly unused or Level)
 from typing import Optional, Tuple
 
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -121,7 +122,7 @@ class Effect1Param(AddressParameter):
         return self.display_min, self.display_max
 
     # EFX1 Parameters
-    EFX1_TYPE = (
+    EFX1_TYPE = ParameterSpec(
         0x00,
         0,
         4,
@@ -129,8 +130,8 @@ class Effect1Param(AddressParameter):
         4,
         "Selects the type of effect to be applied:\n00: Thru\n01: Distortion\n02: Fuzz\n03: Compressor\n04: Bit Crusher ",
     )
-    EFX1_LEVEL = (0x01, 0, 127, 0, 127, "Sets the level of the effect.")
-    EFX1_DELAY_SEND_LEVEL = (
+    EFX1_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "Sets the level of the effect.")
+    EFX1_DELAY_SEND_LEVEL = ParameterSpec(
         0x02,
         0,
         127,
@@ -138,7 +139,7 @@ class Effect1Param(AddressParameter):
         127,
         "Depth of delay applied to the sound from effect 1.",
     )
-    EFX1_REVERB_SEND_LEVEL = (
+    EFX1_REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
         0,
         127,
@@ -146,7 +147,7 @@ class Effect1Param(AddressParameter):
         127,
         "Depth of reverb applied to the sound from effect 1.",
     )
-    EFX1_OUTPUT_ASSIGN = (
+    EFX1_OUTPUT_ASSIGN = ParameterSpec(
         0x04,
         0,
         1,
@@ -154,7 +155,7 @@ class Effect1Param(AddressParameter):
         1,
         "Selects the output destination for the sound from effect 1.\nDIR: Output to the Output jacks.\nEFX2: Output to Effect 2.\nIf you want to use EFX1 and EFX2 separately for each part, set this parameter to DIR. For details, refer to the effect block diagram.",
     )
-    EFX1_PARAM_1 = (
+    EFX1_PARAM_1 = ParameterSpec(
         0x11,
         32768,
         32895,
@@ -162,7 +163,7 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the first parameter of the effect.",
     )
-    EFX1_PARAM_1_BITCRUSHER_LEVEL = (
+    EFX1_PARAM_1_BITCRUSHER_LEVEL = ParameterSpec(
         0x11,
         32768,
         32895,
@@ -170,9 +171,9 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the output volume.",
     )
-    EFX1_PARAM_1_FUZZ_LEVEL = (0x11, 32767, 32894, 0, 127, "Adjusts the volume.")
-    EFX1_PARAM_1_DISTORTION_LEVEL = (0x11, 32768, 32895, 0, 127, "Adjusts the volume.")
-    EFX1_PARAM_1_COMPRESSOR_THRESHOLD = (
+    EFX1_PARAM_1_FUZZ_LEVEL = ParameterSpec(0x11, 32767, 32894, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_1_DISTORTION_LEVEL = ParameterSpec(0x11, 32768, 32895, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_1_COMPRESSOR_THRESHOLD = ParameterSpec(
         0x11,
         32768,
         32895,
@@ -180,7 +181,7 @@ class Effect1Param(AddressParameter):
         127,
         "Level at which compression is applied",
     )
-    EFX1_PARAM_2 = (
+    EFX1_PARAM_2 = ParameterSpec(
         0x15,
         32767,
         32894,
@@ -188,7 +189,7 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the second parameter of the effect.",
     )
-    EFX1_PARAM_2_BITCRUSHER_RATE = (
+    EFX1_PARAM_2_BITCRUSHER_RATE = ParameterSpec(
         0x15,
         32767,
         32894,
@@ -196,7 +197,7 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the sampling frequency.",
     )
-    EFX1_PARAM_2_FUZZ_DRIVE = (
+    EFX1_PARAM_2_FUZZ_DRIVE = ParameterSpec(
         0x15,
         32767,
         32894,
@@ -204,7 +205,7 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the second parameter of the effect.",
     )
-    EFX1_PARAM_2_DISTORTION_DRIVE = (
+    EFX1_PARAM_2_DISTORTION_DRIVE = ParameterSpec(
         0x15,
         32768,
         32895,
@@ -212,12 +213,12 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the depth of distortion",
     )
-    EFX1_PARAM_2_COMPRESSOR_RATIO = (0x15, 32768, 32887, 0, 19, "Compression ratio")
-    EFX1_PARAM_3 = (0x19, 32768, 32895, 0, 127)
-    EFX1_PARAM_3_BITCRUSHER_DEPTH = (0x19, 32768, 32895, 0, 127)
-    EFX1_PARAM_3_DISTORTION_TYPE = (0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
-    EFX1_PARAM_3_FUZZ_TYPE = (0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
-    EFX1_PARAM_3_COMPRESSOR_ATTACK = (
+    EFX1_PARAM_2_COMPRESSOR_RATIO = ParameterSpec(0x15, 32768, 32887, 0, 19, "Compression ratio")
+    EFX1_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127)
+    EFX1_PARAM_3_BITCRUSHER_DEPTH = ParameterSpec(0x19, 32768, 32895, 0, 127)
+    EFX1_PARAM_3_DISTORTION_TYPE = ParameterSpec(0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
+    EFX1_PARAM_3_FUZZ_TYPE = ParameterSpec(0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
+    EFX1_PARAM_3_COMPRESSOR_ATTACK = ParameterSpec(
         0x19,
         32822,
         32854,
@@ -225,8 +226,8 @@ class Effect1Param(AddressParameter):
         32,
         "Attack time (ms)",
     )  # 32822 = 08 00 03 06
-    EFX1_PARAM_4 = (0x1D, 32768, 32895, 0, 127)
-    EFX1_PARAM_4_BITCRUSHER_FILTER = (
+    EFX1_PARAM_4 = ParameterSpec(0x1D, 32768, 32895, 0, 127)
+    EFX1_PARAM_4_BITCRUSHER_FILTER = ParameterSpec(
         0x1D,
         32768,
         32895,
@@ -234,12 +235,12 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the filter depth",
     )
-    EFX1_PARAM_4_COMPRESSOR_RELEASE = (0x1D, 32822, 32854, 0, 32, "Release time (ms)")
-    EFX1_PARAM_5 = (0x21, 32768, 32895, 0, 127, "")
-    EFX1_PARAM_5_COMPRESSOR_LEVEL = (0x21, 32768, 32895, 0, 127, "Adjusts the volume.")
-    EFX1_PARAM_6 = (0x25, 32768, 32895, 0, 127)
-    EFX1_PARAM_7 = (0x29, 32768, 32895, 0, 127)
-    EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL = (
+    EFX1_PARAM_4_COMPRESSOR_RELEASE = ParameterSpec(0x1D, 32822, 32854, 0, 32, "Release time (ms)")
+    EFX1_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127, "")
+    EFX1_PARAM_5_COMPRESSOR_LEVEL = ParameterSpec(0x21, 32768, 32895, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_6 = ParameterSpec(0x25, 32768, 32895, 0, 127)
+    EFX1_PARAM_7 = ParameterSpec(0x29, 32768, 32895, 0, 127)
+    EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL = ParameterSpec(
         0x29,
         32768,
         32895,
@@ -247,8 +248,8 @@ class Effect1Param(AddressParameter):
         127,
         "Side level which to be applied",
     )
-    EFX1_PARAM_8 = (0x2D, 32768, 32895, 0, 127)
-    EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE = (
+    EFX1_PARAM_8 = ParameterSpec(0x2D, 32768, 32895, 0, 127)
+    EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE = ParameterSpec(
         0x2D,
         32768,
         32895,
@@ -256,8 +257,8 @@ class Effect1Param(AddressParameter):
         127,
         "Side note to be applied",
     )
-    EFX1_PARAM_9 = (0x31, 32768, 32895, 0, 127)
-    EFX1_PARAM_9_COMPRESSOR_SIDE_TIME = (
+    EFX1_PARAM_9 = ParameterSpec(0x31, 32768, 32895, 0, 127)
+    EFX1_PARAM_9_COMPRESSOR_SIDE_TIME = ParameterSpec(
         0x31,
         32768,
         32895,
@@ -265,8 +266,8 @@ class Effect1Param(AddressParameter):
         127,
         "Side time to be applied",
     )
-    EFX1_PARAM_10 = (0x35, 32768, 32895, 0, 127)
-    EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE = (
+    EFX1_PARAM_10 = ParameterSpec(0x35, 32768, 32895, 0, 127)
+    EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE = ParameterSpec(
         0x35,
         32768,
         32895,
@@ -274,19 +275,19 @@ class Effect1Param(AddressParameter):
         127,
         "Side release to be applied",
     )
-    EFX1_PARAM_11 = (
+    EFX1_PARAM_11 = ParameterSpec(
         0x39,
         32768,
         32895,
         0,
         127,
     )  # for posterity 12768, 52768, @@ -20000, 20000
-    EFX1_PARAM_12 = (0x3D, 32768, 32895, 0, 127)
-    EFX1_PARAM_13 = (0x41, 32768, 32895, 0, 127)
-    EFX1_PARAM_14 = (0x45, 32768, 32895, 0, 127)
-    EFX1_PARAM_15 = (0x49, 32768, 32895, 0, 127)
-    EFX1_PARAM_16 = (0x4D, 32768, 32895, 0, 127)
-    EFX1_PARAM_32 = (
+    EFX1_PARAM_12 = ParameterSpec(0x3D, 32768, 32895, 0, 127)
+    EFX1_PARAM_13 = ParameterSpec(0x41, 32768, 32895, 0, 127)
+    EFX1_PARAM_14 = ParameterSpec(0x45, 32768, 32895, 0, 127)
+    EFX1_PARAM_15 = ParameterSpec(0x49, 32768, 32895, 0, 127)
+    EFX1_PARAM_16 = ParameterSpec(0x4D, 32768, 32895, 0, 127)
+    EFX1_PARAM_32 = ParameterSpec(
         0x1D,
         32768,
         32895,
@@ -294,7 +295,7 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the third parameter of the effect.",
     )
-    EFX1_PARAM_32_DISTORTION_PRESENCE = (
+    EFX1_PARAM_32_DISTORTION_PRESENCE = ParameterSpec(
         0x1D,
         32768,
         32895,
@@ -302,7 +303,7 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the character of the ultra-high-frequency region",
     )
-    EFX1_PARAM_32_FUZZ_PRESENCE = (
+    EFX1_PARAM_32_FUZZ_PRESENCE = ParameterSpec(
         0x1D,
         32768,
         32895,
@@ -430,12 +431,12 @@ class Effect2Param(AddressParameter):
         return self.display_min, self.display_max
 
     # EFX2 Parameters
-    EFX2_TYPE = (0x00, 0, 8, 0, 8)
-    EFX2_LEVEL = (0x01, 0, 127, 0, 127)
-    EFX2_DELAY_SEND_LEVEL = (0x02, 0, 127, 0, 127)
-    EFX2_REVERB_SEND_LEVEL = (0x03, 0, 127, 0, 127)
-    EFX2_PARAM_1 = (0x11, 32768, 32895, 0, 127)
-    EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH = (
+    EFX2_TYPE = ParameterSpec(0x00, 0, 8, 0, 8)
+    EFX2_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127)
+    EFX2_DELAY_SEND_LEVEL = ParameterSpec(0x02, 0, 127, 0, 127)
+    EFX2_REVERB_SEND_LEVEL = ParameterSpec(0x03, 0, 127, 0, 127)
+    EFX2_PARAM_1 = ParameterSpec(0x11, 32768, 32895, 0, 127)
+    EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH = ParameterSpec(
         0x11,
         32768,
         32869,
@@ -443,7 +444,7 @@ class Effect2Param(AddressParameter):
         1,
         "[Rate] / [Note] Switch",
     )
-    EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH = (
+    EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH = ParameterSpec(
         0x11,
         32768,
         32869,
@@ -451,17 +452,17 @@ class Effect2Param(AddressParameter):
         1,
         "[Rate] / [Note] Switch",
     )
-    EFX2_PARAM_2 = (0x15, 32768, 32895, 0, 127)
-    EFX2_PARAM_2_FLANGER_RATE = (0x15, 32768, 32895, 0, 127, "Frequency of modulation")
-    EFX2_PARAM_2_PHASER_RATE = (0x15, 32768, 32895, 0, 127, "Frequency of modulation")
-    EFX2_PARAM_3 = (0x19, 32768, 32895, 0, 127)
-    EFX2_PARAM_3_FLANGER_NOTE = (0x19, 32768, 32895, 0, 127, "Note used for modulation")
-    EFX2_PARAM_3_PHASER_NOTE = (0x19, 32768, 32895, 0, 127, "Note used for modulation")
-    EFX2_PARAM_4 = (0x1D, 32768, 32895, 0, 127)
-    EFX2_PARAM_4_FLANGER_DEPTH = (0x1D, 32768, 32895, 0, 127, "Depth of modulation")
-    EFX2_PARAM_4_PHASER_DEPTH = (0x1D, 32768, 32895, 0, 127, "Depth of modulation")
-    EFX2_PARAM_5 = (0x21, 32768, 32895, 0, 127)
-    EFX2_PARAM_5_FLANGER_FEEDBACK = (
+    EFX2_PARAM_2 = ParameterSpec(0x15, 32768, 32895, 0, 127)
+    EFX2_PARAM_2_FLANGER_RATE = ParameterSpec(0x15, 32768, 32895, 0, 127, "Frequency of modulation")
+    EFX2_PARAM_2_PHASER_RATE = ParameterSpec(0x15, 32768, 32895, 0, 127, "Frequency of modulation")
+    EFX2_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127)
+    EFX2_PARAM_3_FLANGER_NOTE = ParameterSpec(0x19, 32768, 32895, 0, 127, "Note used for modulation")
+    EFX2_PARAM_3_PHASER_NOTE = ParameterSpec(0x19, 32768, 32895, 0, 127, "Note used for modulation")
+    EFX2_PARAM_4 = ParameterSpec(0x1D, 32768, 32895, 0, 127)
+    EFX2_PARAM_4_FLANGER_DEPTH = ParameterSpec(0x1D, 32768, 32895, 0, 127, "Depth of modulation")
+    EFX2_PARAM_4_PHASER_DEPTH = ParameterSpec(0x1D, 32768, 32895, 0, 127, "Depth of modulation")
+    EFX2_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127)
+    EFX2_PARAM_5_FLANGER_FEEDBACK = ParameterSpec(
         0x21,
         32768,
         32895,
@@ -469,7 +470,7 @@ class Effect2Param(AddressParameter):
         127,
         "Proportion of the flanger sound that is returned to the input",
     )
-    EFX2_PARAM_5_PHASER_CENTER_FREQ = (
+    EFX2_PARAM_5_PHASER_CENTER_FREQ = ParameterSpec(
         0x21,
         32768,
         32895,
@@ -477,8 +478,8 @@ class Effect2Param(AddressParameter):
         127,
         "Proportion of the flanger sound that is returned to the input",
     )
-    EFX2_PARAM_6 = (0x25, 32768, 32895, 0, 127)
-    EFX2_PARAM_6_FLANGER_MANUAL = (
+    EFX2_PARAM_6 = ParameterSpec(0x25, 32768, 32895, 0, 127)
+    EFX2_PARAM_6_FLANGER_MANUAL = ParameterSpec(
         0x25,
         32768,
         32895,
@@ -486,8 +487,8 @@ class Effect2Param(AddressParameter):
         127,
         "Adjusts the basic frequency from which the sound will be modulated.",
     )
-    EFX2_PARAM_7 = (0x29, 32768, 32895, 0, 127)
-    EFX2_PARAM_7_FLANGER_DRY_WET = (
+    EFX2_PARAM_7 = ParameterSpec(0x29, 32768, 32895, 0, 127)
+    EFX2_PARAM_7_FLANGER_DRY_WET = ParameterSpec(
         0x29,
         32768,
         32895,
@@ -495,27 +496,27 @@ class Effect2Param(AddressParameter):
         127,
         "Volume balance between the direct sound (D) and the effect sound (W)",
     )
-    EFX2_PARAM_8 = (0x2D, 32768, 32895, 0, 127)
-    EFX2_PARAM_8_FLANGER_LEVEL = (0x2D, 32768, 32895, 0, 127, "Output volume")
-    EFX2_PARAM_9 = (0x31, 32768, 32895, 0, 127)
-    EFX2_PARAM_10 = (0x35, 32768, 32895, 0, 127)
-    EFX2_PARAM_11 = (0x39, 32768, 32895, 0, 127)
-    EFX2_PARAM_12 = (0x3D, 32768, 32895, 0, 127)
-    EFX2_PARAM_13 = (0x41, 32768, 32895, 0, 127)
-    EFX2_PARAM_14 = (0x45, 32768, 32895, 0, 127)
-    EFX2_PARAM_15 = (0x49, 32768, 32895, 0, 127)
-    EFX2_PARAM_16 = (0x4D, 32768, 32895, 0, 127)
-    EFX2_PARAM_17 = (0x51, 32768, 32895, 0, 127)
-    EFX2_PARAM_18 = (0x55, 32768, 32895, 0, 127)
-    EFX2_PARAM_19 = (0x59, 32768, 32895, 0, 127)
-    EFX2_PARAM_20 = (0x5D, 32768, 32895, 0, 127)
-    EFX2_PARAM_21 = (0x61, 32768, 32895, 0, 127)
-    EFX2_PARAM_22 = (0x65, 32768, 32895, 0, 127)
-    EFX2_PARAM_23 = (0x69, 32768, 32895, 0, 127)
-    EFX2_PARAM_24 = (0x6D, 32768, 32895, 0, 127)
-    EFX2_PARAM_25 = (0x71, 32768, 32895, 0, 127)
-    EFX2_PARAM_32 = (0x0D, 32768, 32895, 0, 127)
-    EFX2_PARAM_32_PHASER_EFFECT_LEVEL = (0x0D, 32768, 32895, 0, 127)
+    EFX2_PARAM_8 = ParameterSpec(0x2D, 32768, 32895, 0, 127)
+    EFX2_PARAM_8_FLANGER_LEVEL = ParameterSpec(0x2D, 32768, 32895, 0, 127, "Output volume")
+    EFX2_PARAM_9 = ParameterSpec(0x31, 32768, 32895, 0, 127)
+    EFX2_PARAM_10 = ParameterSpec(0x35, 32768, 32895, 0, 127)
+    EFX2_PARAM_11 = ParameterSpec(0x39, 32768, 32895, 0, 127)
+    EFX2_PARAM_12 = ParameterSpec(0x3D, 32768, 32895, 0, 127)
+    EFX2_PARAM_13 = ParameterSpec(0x41, 32768, 32895, 0, 127)
+    EFX2_PARAM_14 = ParameterSpec(0x45, 32768, 32895, 0, 127)
+    EFX2_PARAM_15 = ParameterSpec(0x49, 32768, 32895, 0, 127)
+    EFX2_PARAM_16 = ParameterSpec(0x4D, 32768, 32895, 0, 127)
+    EFX2_PARAM_17 = ParameterSpec(0x51, 32768, 32895, 0, 127)
+    EFX2_PARAM_18 = ParameterSpec(0x55, 32768, 32895, 0, 127)
+    EFX2_PARAM_19 = ParameterSpec(0x59, 32768, 32895, 0, 127)
+    EFX2_PARAM_20 = ParameterSpec(0x5D, 32768, 32895, 0, 127)
+    EFX2_PARAM_21 = ParameterSpec(0x61, 32768, 32895, 0, 127)
+    EFX2_PARAM_22 = ParameterSpec(0x65, 32768, 32895, 0, 127)
+    EFX2_PARAM_23 = ParameterSpec(0x69, 32768, 32895, 0, 127)
+    EFX2_PARAM_24 = ParameterSpec(0x6D, 32768, 32895, 0, 127)
+    EFX2_PARAM_25 = ParameterSpec(0x71, 32768, 32895, 0, 127)
+    EFX2_PARAM_32 = ParameterSpec(0x0D, 32768, 32895, 0, 127)
+    EFX2_PARAM_32_PHASER_EFFECT_LEVEL = ParameterSpec(0x0D, 32768, 32895, 0, 127)
 
     @classmethod
     def get_address_by_name(cls, name: str) -> Optional[int]:
@@ -649,8 +650,8 @@ class DelayParam(AddressParameter):
         return self.display_min, self.display_max
 
     # Delay Parameters
-    DELAY_LEVEL = (0x01, 0, 127, 0, 127, "Sets the level of the delay effect.")
-    DELAY_PARAM_1 = (
+    DELAY_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "Sets the level of the delay effect.")
+    DELAY_PARAM_1 = ParameterSpec(
         0x08,
         32768,
         32895,
@@ -658,7 +659,7 @@ class DelayParam(AddressParameter):
         127,
         "Sets the first parameter of the delay effect.",
     )
-    DELAY_PARAM_2 = (
+    DELAY_PARAM_2 = ParameterSpec(
         0x0C,
         32768,
         32895,
@@ -666,7 +667,7 @@ class DelayParam(AddressParameter):
         127,
         "Sets the second parameter of the delay effect.",
     )
-    DELAY_PARAM_24 = (
+    DELAY_PARAM_24 = ParameterSpec(
         0x60,
         32768,
         32895,
@@ -674,7 +675,7 @@ class DelayParam(AddressParameter):
         127,
         "Sets the third parameter of the delay effect.",
     )
-    DELAY_REVERB_SEND_LEVEL = (
+    DELAY_REVERB_SEND_LEVEL = ParameterSpec(
         0x06,
         0,
         127,
@@ -800,8 +801,8 @@ class ReverbParam(AddressParameter):
         return self.display_min, self.display_max
 
     # Reverb Parameters
-    REVERB_LEVEL = (0x03, 0, 127, 0, 127, "Sets the level of the reverb effect.")
-    REVERB_PARAM_1 = (
+    REVERB_LEVEL = ParameterSpec(0x03, 0, 127, 0, 127, "Sets the level of the reverb effect.")
+    REVERB_PARAM_1 = ParameterSpec(
         0x07,
         32768,
         32895,
@@ -809,7 +810,7 @@ class ReverbParam(AddressParameter):
         127,
         "Sets the first parameter of the reverb effect.",
     )
-    REVERB_PARAM_2 = (
+    REVERB_PARAM_2 = ParameterSpec(
         0x0B,
         32768,
         32895,
@@ -817,7 +818,7 @@ class ReverbParam(AddressParameter):
         127,
         "Sets the second parameter of the reverb effect.",
     )
-    REVERB_PARAM_24 = (
+    REVERB_PARAM_24 = ParameterSpec(
         0x5F,
         32768,
         32895,

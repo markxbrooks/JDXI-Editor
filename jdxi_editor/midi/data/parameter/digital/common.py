@@ -40,6 +40,7 @@ Usage example:
 from typing import Optional
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -48,29 +49,46 @@ class DigitalCommonParam(AddressParameter):
     These parameters are shared across all partials.
     """
 
-    def __init__(self, address: int, min_val: int, max_val: int, tooltip: str = ""):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+        description: Optional[str] = None,
+    ):
+        """
+        Initialize the digital common parameter with address and value range.
+        
+        Accepts 6 arguments when unpacked from ParameterSpec tuple:
+        (address, min_val, max_val, min_display, max_display, description)
+        """
         super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
-        self.tooltip = tooltip
+        # Use description as tooltip if provided
+        self.tooltip = description if description is not None else ""
+        self.display_min = display_min if display_min is not None else min_val
+        self.display_max = display_max if display_max is not None else max_val
 
     # Tone name parameters (12 ASCII characters)
-    TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
-    TONE_NAME_2 = (0x01, 32, 127)  # ASCII character 2
-    TONE_NAME_3 = (0x02, 32, 127)  # ASCII character 3
-    TONE_NAME_4 = (0x03, 32, 127)  # ASCII character 4
-    TONE_NAME_5 = (0x04, 32, 127)  # ASCII character 5
-    TONE_NAME_6 = (0x05, 32, 127)  # ASCII character 6
-    TONE_NAME_7 = (0x06, 32, 127)  # ASCII character 7
-    TONE_NAME_8 = (0x07, 32, 127)  # ASCII character 8
-    TONE_NAME_9 = (0x08, 32, 127)  # ASCII character 9
-    TONE_NAME_10 = (0x09, 32, 127)  # ASCII character 10
-    TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
-    TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
+    TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
+    TONE_NAME_2 = ParameterSpec(0x01, 32, 127)  # ASCII character 2
+    TONE_NAME_3 = ParameterSpec(0x02, 32, 127)  # ASCII character 3
+    TONE_NAME_4 = ParameterSpec(0x03, 32, 127)  # ASCII character 4
+    TONE_NAME_5 = ParameterSpec(0x04, 32, 127)  # ASCII character 5
+    TONE_NAME_6 = ParameterSpec(0x05, 32, 127)  # ASCII character 6
+    TONE_NAME_7 = ParameterSpec(0x06, 32, 127)  # ASCII character 7
+    TONE_NAME_8 = ParameterSpec(0x07, 32, 127)  # ASCII character 8
+    TONE_NAME_9 = ParameterSpec(0x08, 32, 127)  # ASCII character 9
+    TONE_NAME_10 = ParameterSpec(0x09, 32, 127)  # ASCII character 10
+    TONE_NAME_11 = ParameterSpec(0x0A, 32, 127)  # ASCII character 11
+    TONE_NAME_12 = ParameterSpec(0x0B, 32, 127)  # ASCII character 12
 
     # Tone level
-    TONE_LEVEL = (
+    TONE_LEVEL = ParameterSpec(
         0x0C,
         0,
         127,
@@ -78,37 +96,37 @@ class DigitalCommonParam(AddressParameter):
     )  # Overall tone level
 
     # Performance parameters
-    PORTAMENTO_SWITCH = (
+    PORTAMENTO_SWITCH = ParameterSpec(
         0x12,
         0,
         1,
         "Specifies whether the portamento effect will be applied (ON) or not applied (OFF)",
     )  # Portamento Switch (OFF, ON)
-    PORTAMENTO_TIME = (
+    PORTAMENTO_TIME = ParameterSpec(
         0x13,
         0,
         127,
         "Specifies the time taken for the pitch to change when playing portamento. Higher values \nlengthen the time over which the pitch will change to the next note.",
     )  # Portamento Time (CC# 5)
-    MONO_SWITCH = (
+    MONO_SWITCH = ParameterSpec(
         0x14,
         0,
         1,
         "Specifies whether notes will sound polyphonically (POLY) or monophonically (MONO)",
     )  # Mono Switch (OFF, ON)
-    OCTAVE_SHIFT = (
+    OCTAVE_SHIFT = ParameterSpec(
         0x15,
         61,
         67,
         "Specifies the octave of the tone",
     )  # Octave Shift (-3 to +3)
-    PITCH_BEND_UP = (
+    PITCH_BEND_UP = ParameterSpec(
         0x16,
         0,
         24,
         "Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is \nmoved all the way up.",
     )  # Pitch Bend Range Up (semitones)
-    PITCH_BEND_DOWN = (
+    PITCH_BEND_DOWN = ParameterSpec(
         0x17,
         0,
         24,
@@ -116,37 +134,37 @@ class DigitalCommonParam(AddressParameter):
     )  # Pitch Bend Range Down (semitones)
 
     # Partial switches
-    PARTIAL1_SWITCH = (
+    PARTIAL1_SWITCH = ParameterSpec(
         0x19,
         0,
         1,
         "Partial 1 turn on (OFF, ON)",
     )  # Partial 1 Switch (OFF, ON)
-    PARTIAL1_SELECT = (
+    PARTIAL1_SELECT = ParameterSpec(
         0x1A,
         0,
         1,
         "Partial 1 select and edit (OFF, ON)",
     )  # Partial 1 Select (OFF, ON)
-    PARTIAL2_SWITCH = (
+    PARTIAL2_SWITCH = ParameterSpec(
         0x1B,
         0,
         1,
         "Partial 2 turn on (OFF, ON)",
     )  # Partial 2 Switch (OFF, ON)
-    PARTIAL2_SELECT = (
+    PARTIAL2_SELECT = ParameterSpec(
         0x1C,
         0,
         1,
         "Partial 2 select and edit (OFF, ON)",
     )  # Partial 2 Select (OFF, ON)
-    PARTIAL3_SWITCH = (
+    PARTIAL3_SWITCH = ParameterSpec(
         0x1D,
         0,
         1,
         "Partial 1 turn on (OFF, ON)",
     )  # Partial 3 Switch (OFF, ON)
-    PARTIAL3_SELECT = (
+    PARTIAL3_SELECT = ParameterSpec(
         0x1E,
         0,
         1,
@@ -154,44 +172,44 @@ class DigitalCommonParam(AddressParameter):
     )  # Partial 3 Select (OFF, ON)
 
     # Additional parameters
-    RING_SWITCH = (
+    RING_SWITCH = ParameterSpec(
         0x1F,
         0,
         2,
         "Turns ring modulator on/off. \nBy multiplying partial 1’s OSC and partial 2’s OSC, this creates a complex, metallic-sounding waveform like that of a bell. \nIf Ring Switch is turned on, the OSC Pulse Width Mod Depth, OSC Pulse Width, and SUPER SAW\nDetune of partial 1 and partial 2 cannot be used.\nIn addition, if an asymmetrical square wave is selected as the OSC waveform, the OSC variation\nwill be ignored, and there will be a slight difference in sound compared to the originally selected\n waveform (OFF, ON)",
     )  # OFF(0), ---(1), ON(2)
-    UNISON_SWITCH = (
+    UNISON_SWITCH = ParameterSpec(
         0x2E,
         0,
         1,
         "This layers a single sound.\nIf the Unison Switch is on, the number of notes layered on one key will change according to the\nnumber of keys you play.",
     )  # OFF, ON
-    PORTAMENTO_MODE = (
+    PORTAMENTO_MODE = ParameterSpec(
         0x31,
         0,
         1,
         "NORMAL: Portamento will always be applied.\nLEGATO: Portamento will be applied only when you play legato (i.e., when you press the next\nkey before releasing the previous key).",
     )  # NORMAL, LEGATO
-    LEGATO_SWITCH = (
+    LEGATO_SWITCH = ParameterSpec(
         0x32,
         0,
         1,
         "Specifies the time taken for the pitch to change when playing portamento. Higher values\nlengthen the time over which the pitch will change to the next note.",
     )  # OFF, ON
-    ANALOG_FEEL = (
+    ANALOG_FEEL = ParameterSpec(
         0x34,
         0,
         127,
         "Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many\nnatural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by \nmany people.\nBy applying “1/f fluctuation” you can create the natural-sounding instability that is\ncharacteristic of an analog synthesizer.",
     )  # Analog Feel amount
-    WAVE_SHAPE = (
+    WAVE_SHAPE = ParameterSpec(
         0x35,
         0,
         127,
         "Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.",
     )  # Wave Shape amount
-    TONE_CATEGORY = (0x36, 0, 127, "Selects the tone’s category.")  # Tone Category
-    UNISON_SIZE = (
+    TONE_CATEGORY = ParameterSpec(0x36, 0, 127, "Selects the tone’s category.")  # Tone Category
+    UNISON_SIZE = ParameterSpec(
         0x3C,
         0,
         3,

@@ -35,6 +35,7 @@ switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -55,8 +56,8 @@ class ProgramZoneParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.partial_number = partial_number
 
-    ARPEGGIO_SWITCH = (0x03, 0, 1, 0, 1)  # Arpeggio OFF, ON
-    ZONAL_OCTAVE_SHIFT = (0x19, 61, 67, -3, +3)  # Octave shift
+    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1)  # Arpeggio OFF, ON
+    ZONAL_OCTAVE_SHIFT = ParameterSpec(0x19, 61, 67, -3, +3)  # Octave shift
 
     def get_display_value(self) -> Tuple[int, int]:
         """
