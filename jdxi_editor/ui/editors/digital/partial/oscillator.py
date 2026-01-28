@@ -160,6 +160,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
+        
+        # Store SuperSaw Detune widget as attribute for BUTTON_ENABLE_RULES
+        # This allows _update_button_enabled_states to find it by name
+        if Digital.Param.SUPER_SAW_DETUNE in self.controls:
+            self.super_saw_detune = self.controls[Digital.Param.SUPER_SAW_DETUNE]
+            # Initially disable it (will be enabled when SuperSaw is selected)
+            self.super_saw_detune.setEnabled(False)
 
         # Create PCM Wave controls (Gain and Number) after parent builds widgets
         # These will be added to a separate "PCM" tab, not the Controls tab
@@ -304,6 +311,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         layout.addStretch()
 
         # Now that all widgets are created, initialize button states
+        # This will also enable/disable SuperSaw Detune based on selected waveform
         if self.BUTTON_SPECS:
             first_param = self.BUTTON_SPECS[0].param
             self._on_button_selected(first_param)

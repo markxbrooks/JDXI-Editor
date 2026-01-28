@@ -51,6 +51,7 @@ from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout, create_group_with_widgets, create_layout_with_widgets,
+    create_group_with_widgets_in_hlayout,
 )
 
 
@@ -78,14 +79,17 @@ class DrumPartialSection(DrumBaseSection):
         SliderSpec(
             DrumPartialParam.PARTIAL_PAN,
             DrumDisplayName.PARTIAL_PAN,
+            vertical=False,
         ),
         SliderSpec(
             DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
             DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
+            vertical=False,
         ),
         SliderSpec(
             DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
             DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
+            vertical=False,
         ),
         # Misc
         ComboBoxSpec(
@@ -220,7 +224,7 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_RECEIVE_HOLD_1],
             self.controls[DrumPartialParam.ONE_SHOT_MODE],
         ]
-        group = create_group_with_widgets(widgets=widgets, label="Modes", vertical=True)
+        group = create_group_with_widgets_in_hlayout(widgets=widgets, label="Modes", vertical=True)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
@@ -234,7 +238,7 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH],
             self.controls[DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH],
         ]
-        group = create_group_with_widgets(widgets=widgets, label="Pan", vertical=False)
+        group = create_group_with_widgets_in_hlayout(widgets=widgets, label="Pan", vertical=True)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)

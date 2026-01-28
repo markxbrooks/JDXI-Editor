@@ -810,6 +810,11 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         else:
             log.warning("Waveform button not found for: %s", selected_waveform)
+        
+        # Update enabled states of dependent widgets (e.g., SuperSaw Detune)
+        oscillator_section = self.partial_editors[partial_number].oscillator_tab
+        if hasattr(oscillator_section, '_update_button_enabled_states'):
+            oscillator_section._update_button_enabled_states(selected_waveform)
 
     def _update_filter_mode_buttons(self, partial_number: int, value: int):
         """

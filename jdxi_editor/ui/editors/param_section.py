@@ -128,7 +128,7 @@ class ParameterSectionBase(SectionBaseWidget):
 
             if isinstance(spec, SliderSpec):
                 widget = self._create_parameter_slider(
-                    spec.param, spec.label, vertical=True
+                    spec.param, spec.label, vertical=spec.vertical
                 )
                 if is_filter_env_depth and is_filter_section:
                     log.message(
