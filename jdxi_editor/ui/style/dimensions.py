@@ -307,6 +307,12 @@ class EffectsButtonDimensions(Dimensions):
     HEIGHT = 120
 
 
+class RoundButtonDimensions(Dimensions):
+    """Button Dimensions"""
+    WIDTH = 30
+    HEIGHT = 30
+
+
 class ToneButtonDimensions(Dimensions):
     """Tone button dimensions"""
 
@@ -360,6 +366,7 @@ class JDXiUIDimensions(Dimensions):
 
     # --- Widgets
     PWM_WIDGET: PWMWidgetDimensions = PWMWidgetDimensions
+    BUTTON_ROUND: RoundButtonDimensions = RoundButtonDimensions
     CHART: ChartMetrics = ChartMetrics
     LED: LEDDisplayDimensions = LEDDisplayDimensions
     DIGITAL_TITLE: DigitalTitleDimensions = DigitalTitleDimensions

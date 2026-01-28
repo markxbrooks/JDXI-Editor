@@ -89,9 +89,9 @@ class ProgramMixerWidget(SynthBase):
         self._populate_layout()
 
         # Apply styling
-        JDXi.UI.Theme.apply_adsr_style(self.mixer_group)
+        JDXi.UI.Theme.apply_adsr_style(widget=self.mixer_group)
         if self.analog_level_slider:
-            JDXi.UI.Theme.apply_adsr_style(self.analog_level_slider, analog=True)
+            JDXi.UI.Theme.apply_adsr_style(widget=self.analog_level_slider)
 
         return self.mixer_group
 

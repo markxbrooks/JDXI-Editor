@@ -112,14 +112,20 @@ class PresetEditor(BasicEditor):
         self.digital_preset_label = None
         self.category_combo_box = None
         self.preset_type = None
+        # Initialize label attributes to None - they will be created in setup_ui()
+        self.digital_synth_1_current_label = None
+        self.digital_synth_2_current_label = None
+        self.drum_kit_current_label = None
+        self.analog_synth_current_label = None
+        self.presets = {}  # Maps program names to numbers
+        self.setup_ui()
+        # Create synth_label_map after setup_ui() so labels exist
         self.synth_label_map = {
             JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
             JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
             JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
             JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
         }
-        self.presets = {}  # Maps program names to numbers
-        self.setup_ui()
         # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):

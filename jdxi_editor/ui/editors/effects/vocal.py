@@ -252,7 +252,7 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        JDXi.UI.Theme.apply_adsr_style(vocoder_group)
+        JDXi.UI.Theme.apply_adsr_style(widget=vocoder_group)
         layout.addStretch()
         return vocal_effect_section
 

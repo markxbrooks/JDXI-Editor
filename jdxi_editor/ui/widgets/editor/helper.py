@@ -171,7 +171,7 @@ def create_group_with_layout(
         child_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
         vertical: bool = True,
         style_sheet: str = None,
-) -> tuple[QGroupBox, QLayout]:
+) -> tuple[QGroupBox, QHBoxLayout | QVBoxLayout]:
     """create Group and a layout"""
     group = QGroupBox(label) if label is not None else QGroupBox()
     if child_layout is None:
@@ -259,11 +259,7 @@ def create_group_adsr_with_hlayout(
     """create ADSR Group with an hlayout (harmonized for Digital and Analog)"""
     controls_group = QGroupBox(name)
     controls_group.setLayout(hlayout)
-    if analog:
-
-        JDXi.UI.Theme.apply_adsr_style(controls_group, analog=True)
-    else:
-        controls_group.setStyleSheet(JDXi.UI.Style.ADSR)
+    JDXi.UI.Theme.apply_adsr_style(controls_group, analog=analog)
     return controls_group
 
 
@@ -312,7 +308,7 @@ def create_envelope_group(
 def create_button_with_tooltip(tooltip: str) -> QPushButton:
     """create button with tooltip"""
     button = QPushButton()
-    button.setFixedSize(30, 30)
+    button.setFixedSize(JDXi.UI.Dimensions.BUTTON_ROUND.WIDTH, JDXi.UI.Dimensions.BUTTON_ROUND.HEIGHT)
     button.setCheckable(True)
     button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
     button.setToolTip(tooltip)

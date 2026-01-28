@@ -131,7 +131,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         controls_group, controls_layout = create_group_and_grid_layout(
             group_name="Pitch Envelope Controls"
         )
-        JDXi.UI.Theme.apply_adsr_style(controls_group)
+        JDXi.UI.Theme.apply_adsr_style(widget=controls_group, analog=self.analog)
         main_layout.addWidget(controls_group)
         self.create_sliders(controls_layout)
 

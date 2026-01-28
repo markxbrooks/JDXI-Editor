@@ -243,7 +243,7 @@ class JDXiWindow(QMainWindow):
 
         load_preset_action = QAction("Load Preset...", self)
         load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
-        file_menu.addAction(load_preset_action)
+        # file_menu.addAction(load_preset_action)
 
         load_action = QAction("Load Patch...", self)
         load_action.triggered.connect(self._patch_load)
@@ -400,7 +400,7 @@ class JDXiWindow(QMainWindow):
         # --- Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)
         main_editor_action.triggered.connect(self._show_main_editor)
-        self.help_menu.addAction(main_editor_action)
+        # self.help_menu.addAction(main_editor_action)
 
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
