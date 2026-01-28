@@ -151,17 +151,15 @@ class JDXiUIStyle:
 
     # Fonts
     if platform.system() == "Windows":
-        FONT_FAMILY = "Orbitron"
         FONT_SIZE = "10px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     elif platform.system() == "Darwin":
-        FONT_FAMILY = "Orbitron"  # "Myriad Pro"
         FONT_SIZE = "11px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
-        FONT_FAMILY = "Orbitron"
-
+        FONT_SIZE = "11px"
         FONT_SIZE_SPLASH_SCREEN = "36px"
+    FONT_FAMILY = "Segoe UI"
     FONT_FAMILY_MONOSPACE = "Consolas"
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
@@ -188,7 +186,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
-        radius=BUTTON_ROUND_RADIUS,
+        border_radius=BUTTON_ROUND_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -196,7 +194,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_SMALL = generate_button_style(
         bg=BORDER,
         border="black",
-        radius=10,
+        border_radius=10,
         text_color="#AAAAAA",
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -213,7 +211,7 @@ class JDXiUIStyle:
     BUTTON_RECT_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
-        radius=BUTTON_RECT_RADIUS,
+        border_radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -231,7 +229,7 @@ class JDXiUIStyle:
     BUTTON_ANALOG_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_ANALOG,
-        radius=BUTTON_RECT_RADIUS,
+        border_radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
@@ -239,7 +237,7 @@ class JDXiUIStyle:
     BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
-        radius=BUTTON_WAVEFORM_RADIUS,  # More circular
+        border_radius=BUTTON_WAVEFORM_RADIUS,  # More circular
         text_color=WHITE,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -253,7 +251,7 @@ class JDXiUIStyle:
     BUTTON_WAVEFORM_ANALOG = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_ANALOG,
-        radius=BUTTON_WAVEFORM_RADIUS,
+        border_radius=BUTTON_WAVEFORM_RADIUS,
         text_color=WHITE,
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
@@ -494,7 +492,7 @@ class JDXiUIStyle:
             }
         """
 
-    MIDI_MESSAGE_MONITOR = f"""
+    WINDOW_MIDI_MESSAGE_MONITOR = f"""
             QTextEdit {{
                 font-family: 'Consolas', 'Courier New', monospace;
                 background-color: #1E1E1E;
@@ -1598,7 +1596,7 @@ class JDXiUIStyle:
         }}
     """
 
-    DEBUGGER = f"""
+    WINDOW_DEBUGGER = f"""
             QMainWindow {{
                 background-color: #2E2E2E;
             }}
