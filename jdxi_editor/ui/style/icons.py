@@ -3,17 +3,33 @@ Icon registry for JD-Xi Editor.
 
 Provides centralized icon definitions and retrieval with fallback support.
 """
+from typing import Literal
 
 import qtawesome as qta
 from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.ui.image.utils import base64_to_pixmap
+from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 
 class JDXiUIIconRegistry:
     """Centralized icon definitions and retrieval"""
+
+    Wave: WaveformType = WaveformType
+    # Waveform/Synth icons
+    WAVE_TRIANGLE = "mdi.triangle-wave"
+    WAVE_SINE = "mdi.sine-wave"
+    WAVE_SAW: str = "mdi.sawtooth-wave"
+    WAVE_SQUARE: str = "mdi.square-wave"
+    WAVE_RANDOM: str = "mdi.wave"
+    WAVEFORM: str = "mdi.waveform"
+    FILTER = "ri.filter-3-fill"
+    POWER: str = "mdi.power"
+    AMPLIFIER = "mdi.amplifier"
 
     # Action icons
     CLEAR = "ei.broom"
@@ -105,12 +121,6 @@ class JDXiUIIconRegistry:
     SERVER_PROCESS = "msc.server-process"
     REPORT: str = "msc.report"
 
-    # Waveform/Synth icons
-    TRIANGLE_WAVE = "mdi.triangle-wave"
-    SINE_WAVE = "mdi.sine-wave"
-    FILTER = "ri.filter-3-fill"
-    AMPLIFIER = "mdi.amplifier"
-    WAVEFORM = "mdi.waveform"
 
     @staticmethod
     def get_icon(
@@ -257,3 +267,28 @@ class JDXiUIIconRegistry:
             return qta.icon(name, color, scale_factor)
         except Exception as ex:
             return qta.icon("mdi.piano")
+
+    @classmethod
+    def get_generated_icon(
+        cls,
+        name: Literal[
+            "adsr",
+            "upsaw",
+            "square",
+            "pwsqu",
+            "triangle",
+            "sine",
+            "saw",
+            "spsaw",
+            "pcm",
+            "noise",
+            "lpf_filter",
+            "hpf_filter",
+            "bypass_filter",
+            "bpf_filter",
+            "filter_sine",
+        ],
+    ):
+        """get generated icon"""
+        icon_base64 = generate_waveform_icon(name, JDXiUIStyle.WHITE, 1.0)
+        return QIcon(base64_to_pixmap(icon_base64))

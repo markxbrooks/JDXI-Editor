@@ -1,11 +1,16 @@
+"""
+Analog Display Names
+"""
+
+
 class AnalogDisplayName:
     """Analog UI Display Names"""
 
-    # Widgets
+    # --- Widgets
     CONTROLS = "Controls"
     ADSR = "ADSR"
 
-    # Amp Parameters
+    # --- Amp Parameters
     AMP_LEVEL = "Level"
     AMP_LEVEL_KEYFOLLOW = "Keyfollow"
     AMP_LEVEL_VELOCITY_SENSITIVITY = "Velocity"
@@ -18,7 +23,7 @@ class AnalogDisplayName:
     PITCH_BEND_DOWN = "Pitch Bend Down"
     PORTAMENTO_TIME = "Portamento Time"
 
-    # LFO Parameters
+    # --- LFO Parameters
     LFO_TEMPO_SYNC_NOTE = "Sync Note"
     LFO_TEMPO_SYNC_SWITCH = "Tempo Sync"
     LFO_KEY_TRIGGER = "Key Trigger"
@@ -32,7 +37,7 @@ class AnalogDisplayName:
     LFO_AMP_DEPTH = "Amp Depth"
     LFO_AMP_MODULATION_CONTROL = "Amp Modulation"
 
-    # Oscillator Parameters
+    # --- Oscillator Parameters
     SUB_OSCILLATOR_TYPE = "Type"
     OSC_PITCH_COARSE = "Coarse (1/2 tones)"
     OSC_PITCH_FINE = "Fine (cents)"
@@ -42,11 +47,3 @@ class AnalogDisplayName:
     OSC_PITCH_ENV_ATTACK_TIME = "Attack Time"
     OSC_PITCH_ENV_DECAY_TIME = "Decay Time"
     OSC_PITCH_ENV_DEPTH = "Depth"
-
-    # Common Parameters
-    OCTAVE_SHIFT = "Octave Shift"
-    LEGATO_SWITCH = "Legato"
-    PORTAMENTO_SWITCH = "Portamento"
-    PORTAMENTO_TIME = "Portamento Time"
-    PITCH_BEND_UP = "Pitch Bend Up"
-    PITCH_BEND_DOWN = "Pitch Bend Down"

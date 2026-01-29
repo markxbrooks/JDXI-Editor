@@ -30,7 +30,7 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 from picomidi.sysex.parameter.address import AddressParameter
 
 
-class PartialEditor(SynthBase):
+class PartialPanel(SynthBase):
     """Editor for address single partial"""
 
     def __init__(

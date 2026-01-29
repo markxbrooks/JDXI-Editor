@@ -43,14 +43,17 @@ Example:
 from typing import Callable
 
 from PySide6.QtWidgets import (
-    QWidget,
+    QWidget, QVBoxLayout,
 )
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.editors.widget_specs import ComboBoxSpec, SliderSpec
+from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_form_layout_with_widgets,
     create_group_with_layout,
@@ -61,56 +64,66 @@ from jdxi_editor.ui.widgets.editor.helper import (
 class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
-    def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
-        midi_helper: MidiIOHelper,
-    ):
-        super().__init__()
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self.midi_helper = midi_helper
-        self.setup_ui()
-
-    def setup_ui(self) -> None:
-        """setup UI"""
-        # --- Create sliders
-        partial_output_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_OUTPUT_LEVEL, DrumDisplayName.PARTIAL_OUTPUT_LEVEL
-        )
-
-        partial_chorus_send_level_slider = self._create_parameter_slider(
+    PARAM_SPECS = [
+        SliderSpec(
             DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL,
             DrumDisplayName.PARTIAL_CHORUS_SEND_LEVEL,
-        )
-
-        partial_reverb_send_level_slider = self._create_parameter_slider(
-            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
-            DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
-        )
-
-        partial_output_assign_combo = self._create_parameter_combo_box(
+        ),
+        ComboBoxSpec(
             DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
             DrumDisplayName.PARTIAL_OUTPUT_ASSIGN,
             options=DrumDisplayOptions.PARTIAL_OUTPUT_ASSIGN,
             values=[0, 1, 2, 3, 4],
-        )
+        ),
+        SliderSpec(
+            DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
+            DrumDisplayName.PARTIAL_OUTPUT_LEVEL,
+        ),
+        SliderSpec(
+            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
+            DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
+        ),
+    ]
 
-        output_layout = create_form_layout_with_widgets(
-            [
-                partial_chorus_send_level_slider,
-                partial_output_assign_combo,
-                partial_output_level_slider,
-                partial_reverb_send_level_slider,
-            ]
-        )
+    def __init__(
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+    ):
+        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
+        # are stored in the same dict
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
+        self.setup_ui()
 
-        output_group, _ = create_group_with_layout(
-            group_name="Output", inner_layout=output_layout
+    def setup_ui(self) -> None:
+        """setup UI"""
+        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Access them from self.controls or self.control_widgets
+        
+        # Get widgets in the order they appear in PARAM_SPECS
+        widgets = [
+            self.controls[DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL],
+            self.controls[DrumPartialParam.PARTIAL_OUTPUT_LEVEL],
+            self.controls[DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL],
+        ]
+        row_layout = QVBoxLayout()
+        output_layout = create_layout_with_widgets(widgets=[self.controls[DrumPartialParam.PARTIAL_OUTPUT_ASSIGN]], vertical=False)
+        slider_layout = create_layout_with_widgets(widgets=widgets)
+        row_layout.addLayout(output_layout)
+        row_layout.addLayout(slider_layout)
+        group, layout = create_group_with_layout(
+            label="Output", child_layout=row_layout
         )
-        main_row_hlayout = create_layout_with_widgets([output_group], vertical=True)
-        self.scrolled_layout.addLayout(main_row_hlayout)
-        self.vlayout.addStretch()
+        group.setStyleSheet(JDXiUIStyle.ADSR)
+        group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
+        group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
+        main_row_hlayout = create_layout_with_widgets([group], vertical=True)
+        
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
+        layout.addLayout(main_row_hlayout)
+        
+        # Add stretch to vlayout if it exists
+        if hasattr(self, 'vlayout') and self.vlayout:
+            self.vlayout.addStretch()

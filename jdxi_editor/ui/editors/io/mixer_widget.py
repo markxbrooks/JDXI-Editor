@@ -15,14 +15,14 @@ from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi.sysex.parameter.address import AddressParameter
@@ -76,7 +76,7 @@ class ProgramMixerWidget(SynthBase):
         # Create mixer layout and group
         self.mixer_layout = QGridLayout()
         self.mixer_group, _ = create_group_with_layout(
-            group_name="Mixer Level Settings", inner_layout=self.mixer_layout
+            label="Mixer Level Settings", child_layout=self.mixer_layout
         )
 
         # Create labels and icons
@@ -89,9 +89,9 @@ class ProgramMixerWidget(SynthBase):
         self._populate_layout()
 
         # Apply styling
-        JDXi.UI.ThemeManager.apply_adsr_style(self.mixer_group)
+        JDXi.UI.Theme.apply_adsr_style(widget=self.mixer_group)
         if self.analog_level_slider:
-            JDXi.UI.ThemeManager.apply_adsr_style(self.analog_level_slider, analog=True)
+            JDXi.UI.Theme.apply_adsr_style(widget=self.analog_level_slider)
 
         return self.mixer_group
 
@@ -100,52 +100,50 @@ class ProgramMixerWidget(SynthBase):
         # Master Level
         self.master_level_icon = QLabel()
         self.master_level_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.KEYBOARD).pixmap(40, 40)
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD).pixmap(40, 40)
         )
         self.master_level_current_label = QLabel("Current Program")
-        JDXi.UI.ThemeManager.apply_mixer_label(self.master_level_current_label)
+        JDXi.UI.Theme.apply_mixer_label(self.master_level_current_label)
 
         # Digital Synth 1
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_1_current_label = QLabel("Current Synth:")
-        JDXi.UI.ThemeManager.apply_mixer_label(self.digital_synth_1_current_label)
+        JDXi.UI.Theme.apply_mixer_label(self.digital_synth_1_current_label)
 
         # Digital Synth 2
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_2_current_label = QLabel("Current Synth:")
-        JDXi.UI.ThemeManager.apply_mixer_label(self.digital_synth_2_current_label)
+        JDXi.UI.Theme.apply_mixer_label(self.digital_synth_2_current_label)
 
         # Drum Kit
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.drum_kit_current_label = QLabel("Current Synth:")
-        JDXi.UI.ThemeManager.apply_mixer_label(self.drum_kit_current_label)
+        JDXi.UI.Theme.apply_mixer_label(self.drum_kit_current_label)
 
         # Analog Synth
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.analog_synth_current_label = QLabel("Current Synth:")
-        JDXi.UI.ThemeManager.apply_mixer_label(
-            self.analog_synth_current_label, analog=True
-        )
+        JDXi.UI.Theme.apply_mixer_label(self.analog_synth_current_label, analog=True)
 
     def _create_sliders(self) -> None:
         """Create all mixer sliders."""

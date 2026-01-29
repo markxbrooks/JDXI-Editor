@@ -110,7 +110,7 @@ def generate_sequencer_button_style(active: bool) -> str:
 def generate_button_style(
     bg: str,
     border: str,
-    radius: int,
+    border_radius: int,
     text_color: str,
     hover: str,
     border_pressed: str,
@@ -131,7 +131,7 @@ def generate_button_style(
     :param font_family: str The font family
     :param bg: str The background color
     :param border: str The border color
-    :param radius: int The radius of the button
+    :param border_radius: int The radius of the button
     :param text_color: str The text color
     :param hover: str The hover color
     """
@@ -140,7 +140,7 @@ def generate_button_style(
                 font-family: {FONT_FAMILY};
                 background-color: {bg};
                 border: {button_border_width}px solid {border};
-                border-radius: {radius}px;
+                border-radius: {border_radius}px;
                 color: {text_color};
                 font-family: "{font_family}";
                 font-size: {font_size};

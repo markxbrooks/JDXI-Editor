@@ -44,7 +44,7 @@ from jdxi_editor.ui.widgets.editor import IconType
 
 class DigitalFilterSection(SectionBaseWidget):
     def __init__(self, ...):
-        super().__init__(icon_type=IconType.ADSR, analog=False)
+        super().__init__(icons_row_type=IconType.ADSR, analog=False)
         # ... initialization ...
         self.setup_ui()
 

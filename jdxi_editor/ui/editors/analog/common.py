@@ -2,12 +2,12 @@
 Common Section
 """
 
-from typing import Callable
+from typing import Union, Dict
 
-from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
-from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
-from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
+from PySide6.QtWidgets import QWidget
+
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec, ComboBoxSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -16,89 +16,80 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 class AnalogCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
 
+    SLIDER_GROUPS = {
+        "all": [
+            SliderSpec(Analog.Param.PITCH_BEND_UP, Analog.Display.Name.PITCH_BEND_UP, vertical=True),
+            SliderSpec(Analog.Param.PITCH_BEND_DOWN,
+                       Analog.Display.Name.PITCH_BEND_DOWN,
+                       vertical=True),
+            SliderSpec(Analog.Param.PORTAMENTO_TIME,
+                       Analog.Display.Name.PORTAMENTO_TIME,
+                       vertical=True)
+        ]
+    }
+    SWITCH_SPECS = [
+        SwitchSpec(
+            Analog.Param.LEGATO_SWITCH,
+            Analog.Display.Name.LEGATO_SWITCH,
+            Analog.Display.Options.LEGATO_SWITCH
+        ),
+        SwitchSpec(
+            Analog.Param.PORTAMENTO_SWITCH,
+            Analog.Display.Name.PORTAMENTO_SWITCH,
+            Analog.Display.Options.PORTAMENTO_SWITCH,
+        ),
+    ]
+    COMBO_BOXES = [
+        ComboBoxSpec(Analog.Param.OCTAVE_SHIFT,
+                     Analog.Display.Name.OCTAVE_SHIFT,
+                     Analog.Display.Options.OCTAVE_SHIFT,
+                     Analog.Display.Values.OCTAVE_SHIFT, )
+    ]
+
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        create_parameter_combo_box: Callable,
-        controls: dict,
+            self,
+            controls: dict,
     ):
         """
         Initialize the AnalogCommonSection
-
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
-        :param create_parameter_combo_box: Callable
         :param controls: dict
         """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self.controls = controls
 
-        super().__init__(icon_type=IconType.GENERIC, analog=True)
-        self.init_ui()
+        super().__init__(icons_row_type=IconType.GENERIC, analog=True)
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        self.build_widgets()
+        self.setup_ui()
 
-    def init_ui(self):
+    def setup_ui(self):
         """
-        init ui
+        setup ui
         """
-        main_rows_vlayout = self.get_layout()
+        layout = self.get_layout()
 
-        self.create_sliders()
-
-        # --- Octave Switch
+        # --- Octave Switch row
         octave_shift_switch_row = create_layout_with_widgets([self.octave_shift_switch])
-        main_rows_vlayout.addLayout(octave_shift_switch_row)
+        layout.addLayout(octave_shift_switch_row)
 
-        # --- Legato Switch
+        # --- Legato Switch row
         legato_row = create_layout_with_widgets([self.legato_switch])
-        main_rows_vlayout.addLayout(legato_row)
+        layout.addLayout(legato_row)
 
-        # --- Portamento Switch
+        # --- Portamento row
         portamento_switch_row = create_layout_with_widgets([self.portamento_switch])
-        main_rows_vlayout.addLayout(portamento_switch_row)
+        layout.addLayout(portamento_switch_row)
 
-        # --- Pitch Bend
+        # --- Pitch Bend etc
         pitch_bend_row = create_layout_with_widgets(
             [self.pitch_bend_up, self.pitch_bend_down, self.portamento_time]
         )
-        main_rows_vlayout.addLayout(pitch_bend_row)
-        main_rows_vlayout.addStretch()
+        layout.addLayout(pitch_bend_row)
+        layout.addStretch()
 
-    def create_sliders(self):
+    def build_widgets(self):
         """Create Sliders"""
         #  --- Octave Switch
-        self.octave_shift_switch = self._create_parameter_combo_box(
-            AnalogParam.OCTAVE_SHIFT,
-            AnalogDisplayName.OCTAVE_SHIFT,
-            AnalogDisplayOptions.OCTAVE_SHIFT,
-            AnalogDisplayValues.OCTAVE_SHIFT,
-        )
-        self.legato_switch = self._create_parameter_switch(
-            AnalogParam.LEGATO_SWITCH,
-            AnalogDisplayName.LEGATO_SWITCH,
-            AnalogDisplayOptions.LEGATO_SWITCH,
-        )
-        # --- Portamento Switch
-        self.portamento_switch = self._create_parameter_switch(
-            AnalogParam.PORTAMENTO_SWITCH,
-            AnalogDisplayName.PORTAMENTO_SWITCH,
-            AnalogDisplayOptions.PORTAMENTO_SWITCH,
-        )
+        (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
 
-        self.pitch_bend_up = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_UP, AnalogDisplayName.PITCH_BEND_UP, vertical=True
-        )
-        self.pitch_bend_down = self._create_parameter_slider(
-            AnalogParam.PITCH_BEND_DOWN,
-            AnalogDisplayName.PITCH_BEND_DOWN,
-            vertical=True,
-        )
+        (self.legato_switch, self.portamento_switch) = self._build_switches(self.SWITCH_SPECS)
 
-        # --- Portamento Time
-        self.portamento_time = self._create_parameter_slider(
-            AnalogParam.PORTAMENTO_TIME,
-            AnalogDisplayName.PORTAMENTO_TIME,
-            vertical=True,
-        )
+        (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = self._build_sliders(self.SLIDER_GROUPS["all"])

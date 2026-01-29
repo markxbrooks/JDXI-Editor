@@ -42,6 +42,7 @@ Usage example:
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -62,8 +63,8 @@ class VocalFXParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip
 
-    LEVEL = (0x00, 0, 127, 0, 127, "Sets the level of the vocal FX.")  # Level (0-127)
-    PAN = (
+    LEVEL = ParameterSpec(0x00, 0, 127, 0, 127, "Sets the level of the vocal FX.")  # Level (0-127)
+    PAN = ParameterSpec(
         0x01,
         -64,
         63,
@@ -71,7 +72,7 @@ class VocalFXParam(AddressParameter):
         63,
         "Sets the pan of the vocal FX.",
     )  # Pan (-64 to +63, centered at 64)
-    DELAY_SEND_LEVEL = (
+    DELAY_SEND_LEVEL = ParameterSpec(
         0x02,
         0,
         127,
@@ -79,7 +80,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the level of the delay send.",
     )  # Delay send level (0-127)
-    REVERB_SEND_LEVEL = (
+    REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
         0,
         127,
@@ -87,7 +88,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the level of the reverb send.",
     )  # Reverb send level (0-127)
-    OUTPUT_ASSIGN = (
+    OUTPUT_ASSIGN = ParameterSpec(
         0x04,
         0,
         4,
@@ -95,7 +96,7 @@ class VocalFXParam(AddressParameter):
         4,
         "Sets the output assignment.",
     )  # Output assignment (0-4)
-    AUTO_PITCH_SWITCH = (
+    AUTO_PITCH_SWITCH = ParameterSpec(
         0x05,
         0,
         1,
@@ -103,7 +104,7 @@ class VocalFXParam(AddressParameter):
         1,
         "Sets the auto note on/off.",
     )  # Auto Note on/off (0-1)
-    AUTO_PITCH_TYPE = (
+    AUTO_PITCH_TYPE = ParameterSpec(
         0x06,
         0,
         3,
@@ -111,7 +112,7 @@ class VocalFXParam(AddressParameter):
         3,
         "Sets the auto pitch preset_type.",
     )  # Auto Pitch preset_type (0-3)
-    AUTO_PITCH_SCALE = (
+    AUTO_PITCH_SCALE = ParameterSpec(
         0x07,
         0,
         1,
@@ -119,7 +120,7 @@ class VocalFXParam(AddressParameter):
         1,
         "Sets the auto pitch scale.",
     )  # Scale CHROMATIC, Maj(Min)
-    AUTO_PITCH_KEY = (
+    AUTO_PITCH_KEY = ParameterSpec(
         0x08,
         0,
         23,
@@ -127,7 +128,7 @@ class VocalFXParam(AddressParameter):
         23,
         "Sets the auto pitch key.",
     )  # Auto Pitch key (0-23) C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B, Cm, C#m, Dm, D#m, Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm
-    AUTO_PITCH_NOTE = (
+    AUTO_PITCH_NOTE = ParameterSpec(
         0x09,
         0,
         11,
@@ -135,7 +136,7 @@ class VocalFXParam(AddressParameter):
         11,
         "Sets the auto pitch note.",
     )  # Auto Pitch note (0-11)
-    AUTO_PITCH_GENDER = (
+    AUTO_PITCH_GENDER = ParameterSpec(
         0x0A,
         -10,
         10,
@@ -143,7 +144,7 @@ class VocalFXParam(AddressParameter):
         10,
         "Sets the auto pitch gender.",
     )  # Gender (-10 to +10, centered at 0)
-    AUTO_PITCH_OCTAVE = (
+    AUTO_PITCH_OCTAVE = ParameterSpec(
         0x0B,
         -1,
         1,
@@ -151,7 +152,7 @@ class VocalFXParam(AddressParameter):
         1,
         "Sets the auto pitch octave.",
     )  # Octave (-1 to +1: 0-2)
-    AUTO_PITCH_BALANCE = (
+    AUTO_PITCH_BALANCE = ParameterSpec(
         0x0C,
         0,
         100,
@@ -159,7 +160,7 @@ class VocalFXParam(AddressParameter):
         100,
         "Sets the auto pitch balance.",
     )  # Dry/Wet Balance (0-100)
-    VOCODER_SWITCH = (
+    VOCODER_SWITCH = ParameterSpec(
         0x0D,
         0,
         1,
@@ -167,7 +168,7 @@ class VocalFXParam(AddressParameter):
         1,
         "Sets the vocoder on/off.",
     )  # Vocoder on/off (0-1)
-    VOCODER_ENVELOPE = (
+    VOCODER_ENVELOPE = ParameterSpec(
         0x0E,
         0,
         2,
@@ -175,7 +176,7 @@ class VocalFXParam(AddressParameter):
         2,
         "Sets the vocoder envelope preset_type.",
     )  # Vocoder envelope preset_type (0-2)
-    VOCODER_LEVEL = (
+    VOCODER_LEVEL = ParameterSpec(
         0x0F,
         0,
         127,
@@ -183,7 +184,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the vocoder level.",
     )  # Vocoder level (0-127)
-    VOCODER_MIC_SENS = (
+    VOCODER_MIC_SENS = ParameterSpec(
         0x10,
         0,
         127,
@@ -191,7 +192,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the vocoder mic sensitivity.",
     )  # Vocoder mic sensitivity (0-127)
-    VOCODER_SYNTH_LEVEL = (
+    VOCODER_SYNTH_LEVEL = ParameterSpec(
         0x11,
         0,
         127,
@@ -199,7 +200,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the vocoder synth level.",
     )  # Vocoder synth level (0-127)
-    VOCODER_MIC_MIX = (
+    VOCODER_MIC_MIX = ParameterSpec(
         0x12,
         0,
         127,
@@ -207,7 +208,7 @@ class VocalFXParam(AddressParameter):
         127,
         "Sets the vocoder mic mix level.",
     )  # Vocoder mic mix level (0-127)
-    VOCODER_MIC_HPF = (
+    VOCODER_MIC_HPF = ParameterSpec(
         0x13,
         0,
         13,

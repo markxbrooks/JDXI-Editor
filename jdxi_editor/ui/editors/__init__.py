@@ -10,10 +10,11 @@ from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
 from jdxi_editor.ui.editors.effects.common import EffectsCommonEditor
 from jdxi_editor.ui.editors.effects.vocal import VocalFXEditor
 from jdxi_editor.ui.editors.io.program import ProgramEditor
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
+
+# from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 __all__ = [
-    "SynthEditor",
+    # "SynthEditor",
     "AnalogSynthEditor",
     "DigitalSynthEditor",
     "DrumCommonEditor",

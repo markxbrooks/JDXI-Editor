@@ -122,14 +122,14 @@ class InstrumentPresetWidget(QWidget):
             normal_preset_widget, normal_preset_layout = create_scroll_container()
             self._add_normal_preset_content(normal_preset_layout, synth_type)
             try:
-                analog_presets_icon = JDXi.UI.IconRegistry.get_icon(
-                    JDXi.UI.IconRegistry.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
+                analog_presets_icon = JDXi.UI.Icon.get_icon(
+                    JDXi.UI.Icon.MUSIC_NOTE_MULTIPLE, color=JDXi.UI.Style.GREY
                 )
                 if analog_presets_icon is None or analog_presets_icon.isNull():
                     raise ValueError("Icon is null")
             except:
-                analog_presets_icon = JDXi.UI.IconRegistry.get_icon(
-                    JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+                analog_presets_icon = JDXi.UI.Icon.get_icon(
+                    JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
                 )
             preset_tabs.addTab(
                 normal_preset_widget, analog_presets_icon, "Analog Presets"
@@ -138,8 +138,8 @@ class InstrumentPresetWidget(QWidget):
             # === Tab 2: Cheat Presets (Digital Synth presets on Analog channel) ===
             cheat_preset_widget, cheat_preset_layout = create_scroll_container()
             self._add_cheat_preset_content(cheat_preset_layout)
-            cheat_presets_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.CODE_BRACES, color=JDXi.UI.Style.GREY
+            cheat_presets_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.CODE_BRACES, color=JDXi.UI.Style.GREY
             )
             preset_tabs.addTab(cheat_preset_widget, cheat_presets_icon, "Cheat Presets")
         else:
@@ -154,7 +154,7 @@ class InstrumentPresetWidget(QWidget):
         # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
@@ -282,7 +282,7 @@ class InstrumentPresetWidget(QWidget):
         # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
         icon_row_container = QHBoxLayout()
         icon_row_container.addStretch()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         icon_row_container.addStretch()
@@ -332,8 +332,8 @@ class InstrumentPresetWidget(QWidget):
 
         # Load Button
         self.cheat_load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Preset",
         )

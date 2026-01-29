@@ -62,7 +62,7 @@ class PlaylistWidget(QWidget):
 
         # Add icon row at the top (transfer items to avoid "already has a parent" errors)
         icon_row_container = QHBoxLayout()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -70,8 +70,8 @@ class PlaylistWidget(QWidget):
         # Button layout for create/delete actions
         button_layout = QHBoxLayout()
         self.create_playlist_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PLUS_CIRCLE, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.PLUS_CIRCLE, color=JDXi.UI.Style.FOREGROUND
             ),
             "New Playlist",
         )
@@ -79,8 +79,8 @@ class PlaylistWidget(QWidget):
         button_layout.addWidget(self.create_playlist_button)
 
         self.delete_playlist_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
             ),
             "Delete Playlist",
         )
@@ -88,9 +88,7 @@ class PlaylistWidget(QWidget):
         button_layout.addWidget(self.delete_playlist_button)
 
         self.refresh_playlist_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.REFRESH, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.REFRESH, color=JDXi.UI.Style.FOREGROUND),
             "Refresh Playlist",
         )
         self.refresh_playlist_button.clicked.connect(self.refresh_playlists)

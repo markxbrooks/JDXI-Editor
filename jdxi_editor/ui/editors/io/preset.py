@@ -53,11 +53,11 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
@@ -112,14 +112,20 @@ class PresetEditor(BasicEditor):
         self.digital_preset_label = None
         self.category_combo_box = None
         self.preset_type = None
+        # Initialize label attributes to None - they will be created in setup_ui()
+        self.digital_synth_1_current_label = None
+        self.digital_synth_2_current_label = None
+        self.drum_kit_current_label = None
+        self.analog_synth_current_label = None
+        self.presets = {}  # Maps program names to numbers
+        self.setup_ui()
+        # Create synth_label_map after setup_ui() so labels exist
         self.synth_label_map = {
             JDXiSynth.DIGITAL_SYNTH_1: self.digital_synth_1_current_label,
             JDXiSynth.DIGITAL_SYNTH_2: self.digital_synth_2_current_label,
             JDXiSynth.DRUM_KIT: self.drum_kit_current_label,
             JDXiSynth.ANALOG_SYNTH: self.analog_synth_current_label,
         }
-        self.presets = {}  # Maps program names to numbers
-        self.setup_ui()
         # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):
@@ -158,8 +164,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
@@ -187,8 +193,8 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
@@ -216,8 +222,8 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon_pixmap(
-                JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND, size=40
+            JDXi.UI.Icon.get_icon_pixmap(
+                JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND, size=40
             )
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
@@ -244,8 +250,8 @@ class PresetEditor(BasicEditor):
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PIANO, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND
             ).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
@@ -285,7 +291,7 @@ class PresetEditor(BasicEditor):
         """
         # --- Program controls group
         preset_group, preset_vlayout = create_group_with_layout(
-            group_name="Load a program", vertical=True
+            label="Load a program", vertical=True
         )
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
@@ -325,8 +331,8 @@ class PresetEditor(BasicEditor):
         preset_vlayout.addWidget(self.category_combo_box)
         # Load button
         self.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Preset",
         )
@@ -343,17 +349,28 @@ class PresetEditor(BasicEditor):
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+            self.instrument_icon_folder = "digital_synths"
+            self.instrument_default_image = "jdxi_vector.png"
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+            self.instrument_icon_folder = "digital_synths"
+            self.instrument_default_image = "jdxi_vector.png"
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
+            self.instrument_icon_folder = "drum_kits"
+            self.instrument_default_image = "drums.png"
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
+            self.instrument_icon_folder = "analog_synths"
+            self.instrument_default_image = "analog.png"
         self._populate_presets()
         self.update_category_combo_box_categories()
+        # Update image when preset type changes
+        if hasattr(self, "update_instrument_image"):
+            self.update_instrument_image()
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
@@ -412,6 +429,20 @@ class PresetEditor(BasicEditor):
             pc - 1,  # Convert 1-based PC to 0-based
         )
         self.data_request()
+        
+        # Update the instrument image based on the selected preset
+        self.update_instrument_image()
+    
+    def _get_selected_instrument_text(self) -> str:
+        """
+        Override to use preset_combo_box instead of instrument_selection_combo.
+        
+        :return: str The selected preset text from preset_combo_box
+        """
+        if hasattr(self, "preset_combo_box") and self.preset_combo_box:
+            return self.preset_combo_box.currentText()
+        log.error("Preset combo box is missing or malformed.")
+        return ""
 
     def _populate_presets(self, search_text: str = ""):
         """

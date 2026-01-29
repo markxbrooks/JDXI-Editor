@@ -1,11 +1,14 @@
-"""Utility functions for the JDXI editor UI.
+"""
+Utility functions for the JDXI editor UI.
 
 These functions are used to display messages, handle MIDI communication
-and manage MIDI input/output ports."""
+and manage MIDI input/output ports.
+"""
 
 from PySide6.QtWidgets import QMessageBox
 
 from decologr import Decologr as log
+from jdxi_editor.ui.style import JDXiUIStyle
 
 
 def show_message_box(
@@ -14,6 +17,7 @@ def show_message_box(
     """Helper method to display a QMessageBox."""
     log.message(text)
     msg_box = QMessageBox()
+    msg_box.setStyleSheet(JDXiUIStyle.WINDOW_DEBUGGER)
     msg_box.setIcon(icon)
     msg_box.setWindowTitle(title)
     msg_box.setText(text)

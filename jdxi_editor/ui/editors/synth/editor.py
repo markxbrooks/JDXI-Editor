@@ -23,7 +23,8 @@ Dependencies:
 import json
 import os
 import re
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, Iterable
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
@@ -35,17 +36,13 @@ from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
+    AddressOffsetTemporaryToneUMB, RolandSysExAddress,
 )
-from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
-
-# from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.resources import resource_path
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.digital.utils import (
     filter_sysex_keys,
     get_area,
@@ -53,7 +50,174 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
+
+
+@dataclass(frozen=True)
+class InstrumentDescriptor:
+    """
+    Canonical description of a JD-Xi instrument preset.
+    """
+    category: str           # "synth" | "drum"
+    family: str            # e.g. "piano", "pad", "bass"
+    engine: Optional[str]  # e.g. "fm", "jd"
+    raw_text: str          # original label (for logging/debug)
+
+
+@dataclass(frozen=True)
+class InstrumentFamilySpec:
+    family: str
+    keywords: Iterable[str]
+
+
+@dataclass(frozen=True)
+class DrumKitSpec:
+    engine: str
+    keywords: tuple[str, ...]
+    family: str = "kit"
+
+
+DRUM_KIT_SPECS = [
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-909", "909"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-808", "808"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-707", "707"),
+    ),
+    DrumKitSpec(
+        engine="cr",
+        keywords=("cr-78", "cr78"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-606", "606"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-626", "626"),
+    ),
+]
+
+
+INSTRUMENT_FAMILY_SPECS = [
+    # Piano/Keyboard - highest priority for keyboard category
+    InstrumentFamilySpec("piano", [
+        "piano", "e. piano", "e.p", "ep", "e.piano", "grand", 
+        "wurly", "clav", "vibraphone", "harp", "steel drum", "trem ep"
+    ]),
+    InstrumentFamilySpec("jupiter", [
+        "jp8", "jupiter", "jupiter8",
+    ]),
+    # Pad - pad-specific terms (check before strings to prioritize pad when "pad" is in name)
+    InstrumentFamilySpec("pad", [
+        "hollow pad", "lfo pad", "sweep pad", "boreal pad", 
+        "bright pad", "soft pad", "hpf pad", "organ pad", "bell pad",
+        "vox pad", "s-saw pad", "hpf sweep", "fltsweep pd", "koff pad",
+        "trnssweeppad", "lfo carvepd", "lfo resopad", "pls pad",
+        "reso s&h pd", "sidechainpd", "pxzoon", "psychoscilo",
+        "fantasy", "dreaming", "syn sniper", "pad"  # "pad" at end as fallback
+    ]),
+    # Strings - specific string terms (after pad to avoid conflicts)
+    InstrumentFamilySpec("strings", [
+        "jp8 strings", "strings", "string", "str", "juno str", "brite str", 
+        "oct strings", "hybrid str", "analog str",
+        "d-50 pizz", "d-50 stack"
+    ]),
+    InstrumentFamilySpec("bass guitar", [
+        "bass guitar", "bassgtr", "bassgtr1", "bassgtr2", "bassgtr3", "bassgtr4", "bassgtr5",
+        "bassgtr6", "bassgtr7", "bassgtr8", "bassgtr9", "bassgtr10", "fretless bass", "picked bass", "fingerd bs",
+    ]),
+    # Bass
+    InstrumentFamilySpec("bass", [
+        "bass", "bs", "bass1", "bass2", "bass3", "bass4", "bass5",
+        "seq bass", "reso bass", "tb bass", "106 bass", "low bass",
+        "kick bass", "organ bass", "growl bass", "talking bs",
+        "lfo bass", "crack bass", "wobble bs", "sidechainbs",
+        "house bass", "fm bass", "ac. bass", "fingerd bs",
+        "picked bass", "fretless bs", "slap bass", "r&b bass",
+        "wide bass", "chow bass", "sqrfilterbs", "filter bass",
+        "seqfltenvbs", "dnb bass", "unisonsynbs", "modular bs",
+        "monster bs", "square bs", "5th stac bs", "sqrstacsynbs",
+        "mc-202 bs", "sh-101 bs", "mg bass", "tri bass", "bpf syn bs",
+        "sindetunebs", "resrubber bs", "resosawsynbs", "syn bass",
+        "filterenvbs", "juno sqr bs", "detune bs", "mks-50 bass",
+        "sweep bass", "4op fm bass"
+    ]),
+    # Lead
+    InstrumentFamilySpec("lead", [
+        "lead", "ld", "ld1", "ld2", "ld3", "ld4", "tekno lead",
+        "osc-syncld", "waveshapeld", "buzz lead", "sawbuzz ld",
+        "sqr buzz ld", "dist flt tb", "dist tb sqr", "glideator",
+        "vintager", "hover lead", "saw lead", "saw+tri lead",
+        "portasaw ld", "reso saw ld", "sawtrap ld", "fat gr lead",
+        "pulstar ld", "slow lead", "anavox lead", "square ld",
+        "sqr lead", "sqr trap ld", "sine lead", "tri lead",
+        "tri stac ld", "5th sawlead", "sweet 5th", "4th syn lead",
+        "maj stack ld", "minstack ld", "chubby lead", "cuttinglead",
+        "s-sawstacld", "bend lead"
+    ]),
+    # Brass
+    InstrumentFamilySpec("brass", [
+        "brass", "brs", "analog brass", "reso brass", "soft brass",
+        "fm brass", "syn brass", "jp8 brass", "soft synbrs",
+        "epicslow brs", "juno brass", "poly brass"
+    ]),
+    # Organ
+    InstrumentFamilySpec("organ", [
+        "organ", "org", "house org", "70's e.organ", "e.organ",
+        "organ bell", "organ bass", "organ pad"
+    ]),
+    # Guitar
+    InstrumentFamilySpec("guitar", [
+        "guitar", "gtr", "strat", "ac. guitar", "bright strat",
+        "funk guitar", "jazz guitar", "dist guitar", "d. mute gtr",
+        "e. sitar", "sitar drone", "sitar"
+    ]),
+    # FX/Other - Voc, FX, Hits, etc.
+    InstrumentFamilySpec("synth", [
+        "fx", "voc", "hit", "vox", "vp-330", "voc:", "voc:ensemble",
+        "voc:5thstack", "voc:robot", "voc:saw", "voc:sqr",
+        "voc:rise up", "voc:auto vib", "voc:pitchenv", "voc:vp-330",
+        "voc:noise", "orch hit", "philly hit", "house hit",
+        "o'skool hit", "punch hit", "tao hit", "syn vox",
+        "jd softvox", "vox pad", "vp-330 chr", "tuned winds",
+        "bend lead", "riser", "rising seq", "scream saw",
+        "noise seq", "init tone"
+    ]),
+    # Seq/Sequence - plucks, sequences
+    InstrumentFamilySpec("synth", [
+        "seq", "pluck", "plk", "seq saw", "seq sqr", "seq tri",
+        "sqr reso plk", "pluck synth", "paperclip", "sonar pluck",
+        "sqrtrapplk", "tb saw seq", "tb sqr seq", "juno key",
+        "analog poly", "juno octavr", "edm synth", "super saw",
+        "s-saw poly", "trance key", "s-sawstc syn", "7th stac syn"
+    ]),
+    # General synth/saw
+    InstrumentFamilySpec("synth", [
+        "synth", "saw", "super saw", "s-saw", "sawstac", "sawstc",
+        "sawpoly", "saw trap", "saw buzz", "saw lead", "saw seq",
+        "sawsynbs", "sawsyn", "sawpad"
+    ]),
+]
+
+ENGINE_KEYWORDS = {
+    "jupiter": ["jupiter", "jp8", "jupiter8"],
+    "fm": ["fm", "4op fm"],
+    "juno": ["juno", "jn"],
+    "jd": ["jd"],
+    "tb": ["tb", "tb-303", "303"],
+    "mg": ["mg", "minimoog"],
+    "sh": ["sh", "sh-101", "101"],
+    "d-50": ["d-50", "d50"],
+    "vp-330": ["vp-330", "vp330"],
+    "mks": ["mks", "mks-50"],
+    "mc": ["mc", "mc-202", "202"],
+}
 
 
 def log_changes(previous_data, current_data):
@@ -93,8 +257,9 @@ class SynthEditor(SynthBase):
         self,
         midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
+        address: Optional[RolandSysExAddress] = None,
     ):
-        super().__init__(midi_helper, parent)  # Dict of JDXiSynth Types
+        super().__init__(midi_helper=midi_helper, parent=parent, address=address)  # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_preset_list = None
@@ -114,7 +279,6 @@ class SynthEditor(SynthBase):
         self.instrument_image_label = None
         self.instrument_icon_folder = None
         self.partial_number = None
-        self.midi_channel = None
         self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
@@ -132,19 +296,18 @@ class SynthEditor(SynthBase):
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
-        # Apply common style
+        # --- Apply common style
+        JDXi.UI.Theme.apply_editor_style(self)
 
-        JDXi.UI.ThemeManager.apply_editor_style(self)
-
-        # Add keyboard shortcuts
+        # --- Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-        # Add close window shortcut
+        # --- Add close window shortcut
         self.close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
         self.close_shortcut.activated.connect(self.close)
 
-        # Common minimum size for all editors
+        # --- Common minimum size for all editors
         self.setMinimumSize(200, 200)
 
         # Connect to program change signal if MIDI helper exists
@@ -155,28 +318,28 @@ class SynthEditor(SynthBase):
             from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
             self.preset_loader = JDXiPresetHelper(
-                self.midi_helper, JDXiUIPreset.Digital.ENUMERATED
+                self.midi_helper, JDXi.UI.Preset.Digital.ENUMERATED
             )
             # Initialize preset handlers dynamically
             preset_configs = [
                 (
-                    JDXiSynth.DIGITAL_SYNTH_1,
-                    JDXiUIPreset.Digital.ENUMERATED,
+                    JDXi.Synth.DIGITAL_SYNTH_1,
+                    JDXi.UI.Preset.Digital.ENUMERATED,
                     MidiChannel.DIGITAL_SYNTH_1,
                 ),
                 (
-                    JDXiSynth.DIGITAL_SYNTH_2,
-                    JDXiUIPreset.Digital.ENUMERATED,
+                    JDXi.Synth.DIGITAL_SYNTH_2,
+                    JDXi.UI.Preset.Digital.ENUMERATED,
                     MidiChannel.DIGITAL_SYNTH_2,
                 ),
                 (
-                    JDXiSynth.ANALOG_SYNTH,
-                    JDXiUIPreset.Analog.ENUMERATED,
+                    JDXi.Synth.ANALOG_SYNTH,
+                    JDXi.UI.Preset.Analog.ENUMERATED,
                     MidiChannel.ANALOG_SYNTH,
                 ),
                 (
-                    JDXiSynth.DRUM_KIT,
-                    JDXiUIPreset.Drum.ENUMERATED,
+                    JDXi.Synth.DRUM_KIT,
+                    JDXi.UI.Preset.Drum.ENUMERATED,
                     MidiChannel.DRUM_KIT,
                 ),
             ]
@@ -199,11 +362,11 @@ class SynthEditor(SynthBase):
 
     def _init_synth_data(
         self,
-        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+        synth_type: str = JDXi.Synth.DIGITAL_SYNTH_1,
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.synth.factory import create_synth_data
+        from jdxi_editor.core.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
@@ -266,7 +429,7 @@ class SynthEditor(SynthBase):
             log.warning(
                 f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
-            return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback
+            return self.preset_helpers[JDXi.Synth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
@@ -305,7 +468,7 @@ class SynthEditor(SynthBase):
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-            self._update_partial_controls(
+            self._update_controls(
                 partial_number, sysex_data, successes, failures
             )
         if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
@@ -321,13 +484,13 @@ class SynthEditor(SynthBase):
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
                 return
             log.parameter("partial_number", partial_number)
-            self._update_partial_controls(
+            self._update_controls(
                 partial_number, sysex_data, successes, failures
             )
 
         log.debug_info(successes, failures)
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
@@ -444,17 +607,17 @@ class SynthEditor(SynthBase):
 
             # Determine preset list based on preset_type
             if (
-                self.preset_type == JDXiSynth.DIGITAL_SYNTH_1
-                or self.preset_type == JDXiSynth.DIGITAL_SYNTH_2
+                self.preset_type == JDXi.Synth.DIGITAL_SYNTH_1
+                or self.preset_type == JDXi.Synth.DIGITAL_SYNTH_2
             ):
-                self.preset_preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
-            elif self.preset_type == JDXiSynth.ANALOG_SYNTH:
-                self.preset_preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
-            elif self.preset_type == JDXiSynth.DRUM_KIT:
-                self.preset_preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
+                self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+            elif self.preset_type == JDXi.Synth.ANALOG_SYNTH:
+                self.preset_preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
+            elif self.preset_type == JDXi.Synth.DRUM_KIT:
+                self.preset_preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
             else:
                 # Default to digital preset list
-                self.preset_preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+                self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
                 log.warning(
                     f"Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
                 )
@@ -478,10 +641,10 @@ class SynthEditor(SynthBase):
         if self.midi_channel is None:
             # --- Try to determine channel from preset_type
             channel_map = {
-                JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
-                JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
-                JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
-                JDXiSynth.DRUM_KIT: MidiChannel.DRUM_KIT,
+                JDXi.Synth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
+                JDXi.Synth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
+                JDXi.Synth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
+                JDXi.Synth.DRUM_KIT: MidiChannel.DRUM_KIT,
             }
             if self.preset_type in channel_map:
                 self.midi_channel = channel_map[self.preset_type]
@@ -521,24 +684,16 @@ class SynthEditor(SynthBase):
         )
         self.data_request()
 
-    def send_control_change(self, control_change: ControlChange, value: int):
-        """Send MIDI CC message"""
-        if self.midi_helper:
-            control_change_number = (
-                control_change.value
-                if isinstance(control_change, ControlChange)
-                else control_change
-            )
-            self.midi_helper.send_control_change(
-                control_change_number, value, self.midi_channel
-            )
-
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
+        log.debug(f"load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}")
+        
         if image_path and os.path.exists(image_path):
             file_to_load = image_path
+            log.debug(f"Using primary image path: {file_to_load}")
         elif secondary_image_path and os.path.exists(secondary_image_path):
             file_to_load = secondary_image_path
+            log.debug(f"Using secondary image path: {file_to_load}")
         else:
             # --- Fallback to default image using resource_path
             if hasattr(self, "instrument_icon_folder") and hasattr(
@@ -551,9 +706,10 @@ class SynthEditor(SynthBase):
                         self.instrument_default_image,
                     )
                 )
+                log.debug(f"Falling back to default image: {file_to_load}")
             else:
                 log.error(
-                    "Cannot load image: missing instrument_icon_folder or instrument_default_image"
+                    f"Cannot load image: missing instrument_icon_folder ({getattr(self, 'instrument_icon_folder', None)}) or instrument_default_image ({getattr(self, 'instrument_default_image', None)})"
                 )
                 image_label = self._get_instrument_image_label()
                 if image_label:
@@ -600,7 +756,74 @@ class SynthEditor(SynthBase):
             self._fallback_to_default_image("No instrument text selected.")
             return
 
-        name, type_ = self._parse_instrument_text(selected_text)
+        descriptor = self._parse_instrument_text(selected_text)
+        if descriptor is None:
+            self._fallback_to_default_image("Failed to parse instrument text.")
+            return
+        
+        # Extract name and type from InstrumentDescriptor
+        # Use engine as name (e.g., "fm", "jd") or extract from raw_text
+        name = descriptor.engine
+        
+        # Special handling for drum kits: Extract model number (e.g., "909", "808", "707", "cr-78")
+        if descriptor.category == "drum":
+            text_lower = descriptor.raw_text.lower()
+            # Look for drum model numbers in the text
+            import re
+            # First, try to match "cr-78" pattern (special case for CR-78)
+            if "cr-78" in text_lower or "cr78" in text_lower:
+                name = "cr-78"
+            # Then try to match "tr-XXX" pattern (e.g., "tr-909", "tr-808")
+            elif re.search(r'tr-(\d{3})', text_lower):
+                tr_match = re.search(r'tr-(\d{3})', text_lower)
+                name = tr_match.group(1)  # Extract the 3-digit number after "tr-"
+            else:
+                # Fallback: look for known drum model numbers in the text
+                # Match standalone 3-digit numbers that are drum models
+                known_models = ["909", "808", "707", "727", "606", "626"]
+                for model in known_models:
+                    if model in text_lower:
+                        name = model
+                        break
+                else:
+                    # No model found, use engine name
+                    name = descriptor.engine
+        
+        # Special handling: Check for specific engine names in raw_text that might not be detected
+        # This ensures "JP8" matches "jp8.png" even if engine is "jupiter"
+        text_lower = descriptor.raw_text.lower()
+        engine_name_patterns = {
+            "jp8": ["jp8", "jupiter8"],
+            "juno": ["juno", "jn"],
+            "jd": ["jd"],
+            "fm": ["fm"],
+            "tb": ["tb", "tb-303", "303"],
+            "mg": ["mg", "minimoog"],
+            "sh": ["sh", "sh-101", "101"],
+            "d-50": ["d-50", "d50"],
+            "vp-330": ["vp-330", "vp330"],
+            "mks": ["mks", "mks-50"],
+            "mc": ["mc", "mc-202", "202"],
+        }
+        
+        # Check if any engine name pattern matches in the text (only for non-drum)
+        if descriptor.category != "drum":
+            for engine_name, patterns in engine_name_patterns.items():
+                if any(pattern in text_lower for pattern in patterns):
+                    name = engine_name
+                    break
+        
+        if not name:
+            # Extract first word after number and dash as fallback name
+            words = descriptor.raw_text.split()
+            for i, word in enumerate(words):
+                if i > 0 and word != "-" and not word.isdigit():
+                    name = word.lower().replace("&", "_").split("_")[0]
+                    break
+        
+        # Use family as type (e.g., "piano", "pad", "bass")
+        type_ = descriptor.family
+        
         if name and type_:
             image_loaded = self._try_load_specific_or_generic_image(name, type_)
         else:
@@ -655,37 +878,138 @@ class SynthEditor(SynthBase):
         log.error("Instrument combo box is missing or malformed.")
         return ""
 
-    def _parse_instrument_text(self, text: str) -> tuple:
-        """
-        _parse_instrument_text
-        :param text: str
-        :return: tuple name, type_
-        """
-        match = re.search(r"(\d{3}) - (\S+)\s(\S+)+", text, re.IGNORECASE)
-        if not match:
-            log.warning("Instrument text did not match expected pattern.")
-            return None, None
-        try:
-            name = match.group(2).lower().replace("&", "_").split("_")[0]
-            type_ = match.group(3).lower().replace("&", "_").split("_")[0]
-            log.parameter("Parsed instrument name:", name)
-            log.parameter("Parsed instrument type:", type_)
-            return name, type_
-        except Exception as ex:
-            log.error(f"Error parsing instrument name/type: {ex}")
-            return None, None
+    def _parse_instrument_text(self, text: str) -> Optional[InstrumentDescriptor]:
+        text_lower = text.lower()
+
+        # --------------------------------------------------
+        # 1. Drum kits (highest priority)
+        # --------------------------------------------------
+        for spec in DRUM_KIT_SPECS:
+            if any(kw in text_lower for kw in spec.keywords):
+                return InstrumentDescriptor(
+                    category="drum",
+                    family=spec.family,
+                    engine=spec.engine,
+                    raw_text=text,
+                )
+
+        # --------------------------------------------------
+        # 2. Detect synth engine
+        # --------------------------------------------------
+        engine = None
+        for engine_name, keywords in ENGINE_KEYWORDS.items():
+            if any(kw in text_lower for kw in keywords):
+                engine = engine_name
+                break
+
+        # --------------------------------------------------
+        # 3. Detect synth family
+        # --------------------------------------------------
+        for spec in INSTRUMENT_FAMILY_SPECS:
+            if any(kw in text_lower for kw in spec.keywords):
+                return InstrumentDescriptor(
+                    category="synth",
+                    family=spec.family,
+                    engine=engine,
+                    raw_text=text,
+                )
+
+        log.warning(f"Unrecognized instrument preset: {text}")
+        return None
 
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
-            specific_path = resource_path(
-                os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
-            )
-            generic_path = resource_path(
-                os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
-            )
-            return self.load_and_set_image(specific_path, generic_path)
+            if not self.instrument_icon_folder:
+                log.error(f"Instrument icon folder not set. Cannot load image for {name}/{type_}")
+                return False
+            
+            # Build list of paths to try (in order of preference)
+            paths_to_try = []
+            
+            # Special case: For piano family, prioritize piano.png over engine-specific images
+            # This ensures "JD Piano 1" matches piano.png instead of jd.png
+            if type_ == "piano":
+                # 1. Try piano.png first (family image)
+                paths_to_try.append(
+                    resource_path(
+                        os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                    )
+                )
+                # 2. Then try specific name image as fallback (e.g., "jd.png")
+                if name:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                        )
+                    )
+            # Special case: For guitar family, prioritize strat.png over other images
+            # This ensures guitar presets (179-184) match strat.png
+            elif type_ == "guitar":
+                # 1. Try strat.png first
+                paths_to_try.append(
+                    resource_path(
+                        os.path.join("resources", self.instrument_icon_folder, "strat.png")
+                    )
+                )
+                # 2. Then try specific name image as fallback
+                if name:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                        )
+                    )
+                # 3. Finally try generic guitar.png as fallback
+                paths_to_try.append(
+                    resource_path(
+                        os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                    )
+                )
+            # Special case: For FM engine synths, prioritize fm.png over family images
+            # This ensures FM synths (155, 156, 237) match fm.png instead of bass.png or brass.png
+            elif name == "fm":
+                # 1. Try fm.png first (engine image)
+                paths_to_try.append(
+                    resource_path(
+                        os.path.join("resources", self.instrument_icon_folder, "fm.png")
+                    )
+                )
+                # 2. Then try generic type image as fallback (e.g., "bass.png", "brass.png")
+                if type_:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                        )
+                    )
+            else:
+                # Default behavior: Try specific name image first, then generic type image
+                # 1. Try specific name image (e.g., "trem.png")
+                if name:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                        )
+                    )
+                
+                # 2. Try generic type image (e.g., "pad.png" if type_ is "pad")
+                if type_:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                        )
+                    )
+            
+            log.debug(f"Trying to load images (in order): {paths_to_try}")
+            log.debug(f"Instrument icon folder: {self.instrument_icon_folder}")
+            
+            # Try primary path first, then secondary, etc.
+            primary_path = paths_to_try[0] if paths_to_try else None
+            secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
+            
+            return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:
             log.error(f"Error loading specific/generic images: {ex}")
+            import traceback
+            log.error(traceback.format_exc())
             return False
 
     def _fallback_to_default_image(self, reason: str):

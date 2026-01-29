@@ -72,7 +72,7 @@ class UserProgramsWidget(QWidget):
 
         # Add icon row at the top (transfer items to avoid "already has a parent" errors)
         icon_row_container = QHBoxLayout()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         layout.addLayout(icon_row_container)
@@ -162,8 +162,8 @@ class UserProgramsWidget(QWidget):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         self.save_user_programs_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FLOPPY_DISK, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.FLOPPY_DISK, color=JDXi.UI.Style.FOREGROUND
             ),
             "Save Changes",
         )

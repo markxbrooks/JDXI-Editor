@@ -2,7 +2,7 @@
 Analog Filter Section
 """
 
-from typing import Callable
+from typing import Callable, Dict, Optional, Union
 
 import qtawesome as qta
 from PySide6.QtCore import QSize
@@ -16,17 +16,14 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
-    create_envelope_group,
-    create_layout_with_widgets,
-)
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from picomidi.sysex.parameter.address import AddressParameter
@@ -35,92 +32,105 @@ from picomidi.sysex.parameter.address import AddressParameter
 class AnalogFilterSection(SectionBaseWidget):
     """Analog Filter Section"""
 
+    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
+        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.FILTER_ENV_ATTACK_TIME),
+        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Analog.Param.FILTER_ENV_SUSTAIN_LEVEL),
+        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Analog.Param.FILTER_ENV_RELEASE_TIME),
+        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Analog.Param.FILTER_ENV_DEPTH),
+    }
+
+    SLIDER_GROUPS = {
+        "filter": [
+            SliderSpec(AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True),
+            SliderSpec(AnalogParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True),
+            SliderSpec(AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True),
+        ],
+    }
+
     def __init__(
         self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        on_filter_mode_changed: Callable,
-        send_control_change: Callable,
-        midi_helper: MidiIOHelper,
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
+        on_filter_mode_changed: Callable = None,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the AnalogFilterSection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
-        :param on_filter_mode_changed: Callable
-        :param send_control_change: Callable
-        :param midi_helper: MidiIOHelper Midi Helper
         :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
+        :param on_filter_mode_changed: Optional callback for filter mode changes
         """
-        self.analog_filter_tab_widget: QTabWidget | None = None
-        self.filter_resonance = None
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_switch = create_parameter_switch
-        self._on_filter_mode_changed = on_filter_mode_changed
-        self.send_control_change = send_control_change
-        self.midi_helper = midi_helper
-        self.address = address
-        self.controls = controls
-        self.filter_mode_buttons = {}  # Dictionary to store filter mode buttons
+        self.tab_widget: QTabWidget | None = None
+        self.filter_resonance: QWidget | None = None
+        self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
+        self._on_filter_mode_changed: Callable = on_filter_mode_changed
 
-        super().__init__(icon_type=IconType.ADSR, analog=True)
+        # Get midi_helper from parent if available
+        midi_helper = None
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
+        
+        super().__init__(icons_row_type=IconType.ADSR, analog=True, midi_helper=midi_helper)
+        # Set attributes after super().__init__() to avoid them being overwritten
+        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        self.address = address
+
+        self.build_widgets()
         self.setup_ui()
+
+    def build_widgets(self):
+        """build widgets"""
+        self.filter_controls_group = self._create_filter_controls_group()
+        self._create_adsr_group()
+        self._create_tab_widget()
 
     def setup_ui(self):
         """Setup the UI (standardized method name matching Digital Filter)"""
         layout = self.get_layout()
-
-        self.analog_filter_tab_widget = QTabWidget()
-        JDXi.UI.ThemeManager.apply_tabs_style(
-            self.analog_filter_tab_widget, analog=True
-        )
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
 
         # --- Filter Selection Buttons ---
         filter_row = self._create_filter_controls_row()
-        layout.addLayout(filter_row)
-        layout.addWidget(self.analog_filter_tab_widget)
-        # --- Filter Controls ---
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
-        )
-        self.analog_filter_tab_widget.addTab(
-            self._create_filter_controls_group(), controls_icon, "Controls"
-        )
-        # --- Filter ADSR ---
-        adsr_icon = create_adsr_icon()
-        self.analog_filter_tab_widget.addTab(
-            self._create_filter_adsr_env_group(), adsr_icon, "ADSR"
-        )
+        if filter_row:
+            layout.addLayout(filter_row)
+        layout.addWidget(self.tab_widget)
+
         layout.addSpacing(JDXi.UI.Style.SPACING)
         layout.addStretch()
 
+    def _create_tab_widget(self):
+        """create tab widget"""
+        self.tab_widget = QTabWidget()
+        # --- Filter Controls ---
+        self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.filter_controls_group)
+        # --- Filter ADSR ---
+        self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
+
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
-        # Add label
-        filter_label = QLabel("Filter")
+        # --- Add label - store as instance attribute to prevent garbage collection
+        self.filter_label = QLabel("Filter")
 
-        # Create buttons for each filter mode
+        # --- Create buttons for each filter mode
         filter_modes = [
             AnalogFilterType.BYPASS,
             AnalogFilterType.LPF,
         ]
 
-        # Map filter modes to icon names
+        # --- Map filter modes to icon names
         filter_icon_map = {
-            AnalogFilterType.BYPASS: "mdi.power",  # Power/off icon for bypass
-            AnalogFilterType.LPF: "ri.filter-3-fill",  # Filter icon for LPF
+            AnalogFilterType.BYPASS: JDXi.UI.Icon.POWER,  # Power/off icon for bypass
+            AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
         }
 
-        widgets = [filter_label]
+        self.filter_mode_control_button_widgets = [self.filter_label]
         for filter_mode in filter_modes:
             btn = QPushButton(filter_mode.name)
             btn.setCheckable(True)
-            # Add icon
-            icon_name = filter_icon_map.get(filter_mode, "ri.filter-3-fill")
+            # --- Add icon
+            icon_name = filter_icon_map.get(filter_mode, JDXi.UI.Icon.FILTER)
             icon = qta.icon(
                 icon_name,
                 color=JDXi.UI.Style.WHITE,
@@ -128,7 +138,7 @@ class AnalogFilterSection(SectionBaseWidget):
             )
             btn.setIcon(icon)
             btn.setIconSize(QSize(20, 20))
-            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
             btn.setFixedSize(
                 JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
                 JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
@@ -137,47 +147,47 @@ class AnalogFilterSection(SectionBaseWidget):
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)
             )
             self.filter_mode_buttons[filter_mode] = btn
-            widgets.append(btn)
+            self.filter_mode_control_button_widgets.append(btn)
 
-        return create_layout_with_widgets(widgets, vertical=False)
+        # --- Store the layout as instance attribute to prevent garbage collection
+        self.filter_controls_row_layout = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
+        return self.filter_controls_row_layout
 
-    def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
+    def _on_filter_mode_selected(self, filter_mode):
         """
         Handle filter mode button clicks
 
-        :param filter_mode: AnalogFilterType enum value
+        :param filter_mode: Analog.Filter.FilterType enum value
         """
-        # Reset all buttons to default style
+        # --- Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.ThemeManager.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
 
-        # Apply active style to the selected filter mode button
+        # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.ThemeManager.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
-        # Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
+        # --- Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:
-            from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-
-            sysex_composer = JDXiSysExComposer()
-            sysex_message = sysex_composer.compose_message(
+            sysex_message = self.sysex_composer.compose_message(
                 address=self.address,
-                param=AnalogParam.FILTER_MODE_SWITCH,
+                param=Analog.Param.FILTER_MODE_SWITCH,
                 value=filter_mode.value,
             )
             if sysex_message:
                 self.midi_helper.send_midi_message(sysex_message)
 
-        # Update filter controls state
-        self._on_filter_mode_changed(filter_mode.value)
+        # --- Update filter controls state
+        if self._on_filter_mode_changed:
+            self._on_filter_mode_changed(filter_mode.value)
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
         self.filter_widget = AnalogFilterWidget(
-            cutoff_param=AnalogParam.FILTER_CUTOFF,
+            cutoff_param=Analog.Param.FILTER_CUTOFF,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
@@ -194,7 +204,8 @@ class AnalogFilterSection(SectionBaseWidget):
             "Velocity",
             vertical=True,
         )
-        # Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
+        # (self.filter_resonance, self.filter_cutoff_keyfollow, self.filter_env_velocity_sens) = self._build_sliders(self.SLIDER_GROUPS["filter"])
+        # --- Standardized order: FilterWidget first, then Resonance, KeyFollow, Velocity
         controls_layout = create_layout_with_widgets(
             [
                 self.filter_widget,
@@ -203,28 +214,9 @@ class AnalogFilterSection(SectionBaseWidget):
                 self.filter_env_velocity_sens,
             ]
         )
-        # Use harmonized helper function (matching Digital Filter pattern)
+        # --- Use harmonized helper function (matching Digital Filter pattern)
         from jdxi_editor.ui.widgets.editor.helper import create_group_adsr_with_hlayout
 
         return create_group_adsr_with_hlayout(
             name="Controls", hlayout=controls_layout, analog=True
-        )
-
-    def _create_filter_adsr_env_group(self) -> QGroupBox:
-        """Create filter ADSR group (harmonized with Digital Filter, includes centered icon)"""
-        self.filter_adsr_widget = ADSR(
-            attack_param=AnalogParam.FILTER_ENV_ATTACK_TIME,
-            decay_param=AnalogParam.FILTER_ENV_DECAY_TIME,
-            sustain_param=AnalogParam.FILTER_ENV_SUSTAIN_LEVEL,
-            release_param=AnalogParam.FILTER_ENV_RELEASE_TIME,
-            peak_param=AnalogParam.FILTER_ENV_DEPTH,
-            midi_helper=self.midi_helper,
-            create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls,
-            address=self.address,
-            analog=True,
-        )
-        # Use standardized envelope group helper (centers icon automatically)
-        return create_envelope_group(
-            name="Envelope", adsr_widget=self.filter_adsr_widget, analog=True
         )

@@ -61,7 +61,7 @@ class JDXiUIThemeManager(QObject):
     @staticmethod
     def apply_midi_monitor(widget: QWidget) -> None:
         """Apply MIDI message monitor style"""
-        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.MIDI_MESSAGE_MONITOR)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.WINDOW_MIDI_MESSAGE_MONITOR)
 
     @staticmethod
     def apply_status_indicator_active(widget: QWidget, analog: bool = False) -> None:
@@ -191,7 +191,7 @@ class JDXiUIThemeManager(QObject):
     @staticmethod
     def apply_debugger_window(widget: QWidget) -> None:
         """Apply debugger window style"""
-        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.DEBUGGER)
+        JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.WINDOW_DEBUGGER)
 
     @staticmethod
     def apply_combo_box(widget: QWidget, analog: bool = False) -> None:

@@ -3,6 +3,7 @@ from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.digital import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -63,7 +64,9 @@ class PartialController(QObject):
             control = self.partial_controls[partial_number].get(param)
             if control:
                 control.blockSignals(True)
-                control.setValue(value)  # Update slider or UI element without triggering MIDI send
+                control.setValue(
+                    value
+                )  # Update slider or UI element without triggering MIDI send
                 control.blockSignals(False)
                 # Log parameter change
                 self._log_partial_parameter_change(partial_number, param, value)
@@ -113,7 +116,7 @@ class PartialController(QObject):
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
     def set_partial_state(
-        self, partial: DigitalPartialParam, enabled: bool = True, selected: bool = True
+        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).

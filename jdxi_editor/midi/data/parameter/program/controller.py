@@ -26,7 +26,7 @@ Classes:
   raw values to human-readable strings.
 
 """
-
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -34,14 +34,14 @@ class ProgramControllerParam(AddressParameter):
     """Program Controller parameters"""
 
     # Arpeggio parameters
-    ARPEGGIO_GRID = (0x01, 0, 8)  # Arpeggio Grid (0-8)
-    ARPEGGIO_DURATION = (0x02, 0, 9)  # Arpeggio Duration (0-9)
-    ARPEGGIO_SWITCH = (0x03, 0, 1)  # Arpeggio Switch (0-1)
-    ARPEGGIO_STYLE = (0x05, 0, 127)  # Arpeggio Style (0-127)
-    ARPEGGIO_MOTIF = (0x06, 0, 11)  # Arpeggio Motif (0-11)
-    ARPEGGIO_OCTAVE_RANGE = (0x07, -3, 3)  # Arpeggio Octave Range (-3/+3)
-    ARPEGGIO_ACCENT_RATE = (0x09, 0, 100)  # Arpeggio Accent Rate (0-100)
-    ARPEGGIO_VELOCITY = (0x0A, 0, 127)  # Arpeggio Velocity (0-127, 0=REAL)
+    ARPEGGIO_GRID = ParameterSpec(0x01, 0, 8)  # Arpeggio Grid (0-8)
+    ARPEGGIO_DURATION = ParameterSpec(0x02, 0, 9)  # Arpeggio Duration (0-9)
+    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1)  # Arpeggio Switch (0-1)
+    ARPEGGIO_STYLE = ParameterSpec(0x05, 0, 127)  # Arpeggio Style (0-127)
+    ARPEGGIO_MOTIF = ParameterSpec(0x06, 0, 11)  # Arpeggio Motif (0-11)
+    ARPEGGIO_OCTAVE_RANGE = ParameterSpec(0x07, -3, 3)  # Arpeggio Octave Range (-3/+3)
+    ARPEGGIO_ACCENT_RATE = ParameterSpec(0x09, 0, 100)  # Arpeggio Accent Rate (0-100)
+    ARPEGGIO_VELOCITY = ParameterSpec(0x0A, 0, 127)  # Arpeggio Velocity (0-127, 0=REAL)
 
     """ 
     # Grid values

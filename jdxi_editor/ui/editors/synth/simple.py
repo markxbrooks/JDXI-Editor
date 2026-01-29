@@ -40,8 +40,11 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address_map import address
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -50,8 +53,8 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 class BasicEditor(SynthEditor):
     """Simple Editor Window with small instrument image"""
 
-    def __init__(self, midi_helper: MidiIOHelper, parent=None):
-        super().__init__(midi_helper=midi_helper, parent=parent)
+    def __init__(self, midi_helper: MidiIOHelper, parent: QWidget = None, address: RolandSysExAddress = None):
+        super().__init__(midi_helper=midi_helper, parent=parent, address=address)
         self.default_image = None
         self.preset_image_label = None
         self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_BASIC.WIDTH)

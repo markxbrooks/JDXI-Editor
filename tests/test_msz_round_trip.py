@@ -97,7 +97,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         """
         for param_name, value in test_values.items():
             # Find the parameter in controls
-            for param, widget in editor.controls.items():
+            for param, widget in editor.lfo_depth_controls.items():
                 if param.name == param_name:
                     if hasattr(widget, 'setValue'):
                         widget.blockSignals(True)
@@ -113,7 +113,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         :return: Dictionary of parameter names to values
         """
         values = {}
-        for param, widget in editor.controls.items():
+        for param, widget in editor.lfo_depth_controls.items():
             if hasattr(widget, 'value'):
                 values[param.name] = widget.value()
         return values

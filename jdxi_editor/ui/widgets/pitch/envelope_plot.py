@@ -27,15 +27,18 @@ Customization:
 - The time is represented in seconds, and the amplitude in address range from 0 to 1.
 """
 
+from typing import Any
+
 import numpy as np
-from PySide6.QtCore import QPointF, Qt
-from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
+from numpy import dtype, floating, ndarray
+from PySide6.QtCore import QPointF
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
-class PitchEnvPlot(QWidget):
+class PitchEnvPlot(BasePlotWidget):
     def __init__(
         self,
         width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -49,13 +52,8 @@ class PitchEnvPlot(QWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        self.set_dimensions(height, width)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -119,147 +117,123 @@ class PitchEnvPlot(QWidget):
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def paintEvent(self, event):
-        """Paint the plot in the style of an LCD"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-            # Background gradient
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with PitchEnvPlot-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=80,
+            left_padding=80,
+            right_padding=50,
+        )
 
-            # Orange drawing pen
-            pen = QPen(QColor("orange"))
-            pen.setWidth(2)
-            axis_pen = QPen(QColor("white"))
-            painter.setRenderHint(QPainter.Antialiasing, False)
-            painter.setPen(pen)
-            painter.setFont(QFont("JD LCD Rounded", 10))
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for PitchEnvPlot (-0.6 to 0.6)."""
+        return 0.6, -0.6
 
-            # Envelope parameters
-            attack_time = self.envelope["attack_time"] / 1000.0
-            decay_time = self.envelope["decay_time"] / 1000.0
-            peak_level = self.envelope["peak_level"]
-            initial_level = self.envelope["initial_level"]
+    def zero_at_bottom(self) -> bool:
+        """PitchEnvPlot does not have zero at bottom (uses y_max/y_min scaling)."""
+        return False
 
-            attack_samples = max(int(attack_time * self.sample_rate), 1)
-            decay_samples = max(int(decay_time * self.sample_rate), 1)
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "Pitch Envelope"
 
-            attack = np.linspace(
-                initial_level, peak_level, attack_samples, endpoint=False
-            )
-            decay = np.linspace(
-                peak_level, initial_level, decay_samples, endpoint=False
-            )
-            envelope = np.concatenate([attack, decay])
-            total_samples = len(envelope)
-            total_time = 10  # seconds
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
 
-            # Plot area dimensions
-            w = self.width()
-            h = self.height()
-            top_padding = 50
-            bottom_padding = 80
-            left_padding = 80
-            right_padding = 50
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Pitch"
 
-            # Y range
-            y_min = -0.6
-            y_max = 0.6
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for PitchEnvPlot."""
+        _, _, total_time = self.envelope_parameters()
 
-            # Draw axes
-            painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )  # Y-axis
+        # X-axis ticks (time: 0, 2, 4, 6, 8, 10)
+        num_ticks = 6
+        x_tick_values = [(i / num_ticks) * total_time for i in range(num_ticks + 1)]
+        x_tick_labels = [f"{t:.0f}" for t in x_tick_values]
+        self.draw_x_axis_ticks(
+            ctx,
+            tick_values=x_tick_values,
+            tick_labels=x_tick_labels,
+            tick_length=5,
+            label_offset=20,
+            position="zero",
+            x_max=total_time,
+            config=config,
+        )
 
-            zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-            painter.drawLine(
-                left_padding, zero_y, left_padding + plot_w, zero_y
-            )  # X-axis at Y=0
+        # Y-axis ticks (from -0.6 to 0.6 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(-3, 4)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=40,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # X-axis labels
-            # painter.drawText(left_padding, zero_y + 20, "0")
-            # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
-            # X-axis ticks for 0, 3, 6, 9, 12, 15
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time // num_ticks)}"
-                label = f"{i * (total_time / num_ticks):.0f}"
-                painter.drawText(x - 10, zero_y + 20, label)
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for PitchEnvPlot with symmetric grid lines."""
+        _, _, total_time = self.envelope_parameters()
 
-            # Y-axis ticks and labels from +0.6 to -0.6
-            for i in range(-3, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding - 5, y, left_padding, y)
-                painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
+        # Custom grid: vertical lines at tick positions, horizontal lines symmetric around zero
+        num_ticks = 6
+        x_ticks = [(i / num_ticks) * total_time for i in range(1, num_ticks + 1)]
+        
+        # Horizontal grid lines: symmetric around zero (positive and negative)
+        y_ticks = []
+        for i in range(1, 4):
+            y_ticks.append(i * 0.2)  # Positive: 0.2, 0.4, 0.6
+            y_ticks.append(-i * 0.2)  # Negative: -0.2, -0.4, -0.6
 
-            # Draw top title
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope"
-            )
+        self.draw_grid_ctx(
+            ctx,
+            x_ticks=x_ticks,
+            y_ticks=y_ticks,
+            x_max=total_time,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # Draw X-axis label
-            painter.setPen(QPen(QColor("white")))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw PitchEnvPlot envelope data."""
+        if not self.enabled:
+            return
 
-            # Y-axis label rotated
-            painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-            painter.rotate(-90)
-            painter.drawText(0, 0, "Pitch")
-            painter.restore()
+        envelope, _, total_time = self.envelope_parameters()
 
-            # Background grid
-            pen = QPen(Qt.GlobalColor.darkGray, 1)
-            pen.setStyle(Qt.PenStyle.DashLine)
-            painter.setPen(pen)
-            for i in range(1, 7):
-                x = left_padding + i * plot_w / 6
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(1, 4):
-                y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
-                y_mirror = top_padding + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(
-                    left_padding, y_mirror, left_padding + plot_w, y_mirror
-                )
+        # Draw curve using new helper method
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # Draw envelope polyline
-            if self.enabled:
-                painter.setPen(QPen(QColor("orange")))
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-                for i in indices:
-                    t = i / self.sample_rate
-                    x = left_padding + (t / total_time) * plot_w
-                    y_val = envelope[i]
-                    y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append((x, y))
+    def envelope_parameters(
+        self,
+    ) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
+        """Envelope parameters"""
+        attack_time = self.envelope["attack_time"] / 1000.0
+        decay_time = self.envelope["decay_time"] / 1000.0
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
 
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(*points[0])
-                    for pt in points[1:]:
-                        path.lineTo(*pt)
-                    painter.drawPath(path)
-        finally:
-            painter.end()
+        attack_samples = max(int(attack_time * self.sample_rate), 1)
+        decay_samples = max(int(decay_time * self.sample_rate), 1)
+
+        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
+        decay = np.linspace(peak_level, initial_level, decay_samples, endpoint=False)
+        envelope = np.concatenate([attack, decay])
+        total_samples = len(envelope)
+        total_time = 10  # seconds
+        return envelope, total_samples, total_time

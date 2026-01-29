@@ -2,103 +2,96 @@
 Digital Tone Modify Section
 """
 
-from typing import Callable
+from typing import Dict, Union
 
-from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
-from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.editors.widget_specs import SliderSpec, ComboBoxSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
 class DigitalToneModifySection(SectionBaseWidget):
+    SLIDER_GROUPS = {
+        "interval_sens": [
+            SliderSpec(Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
+                       Digital.ModifyDisplay.Names.ATTACK_TIME_INTERVAL_SENS,
+                       vertical=True),
+            SliderSpec(Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
+                       Digital.ModifyDisplay.Names.RELEASE_TIME_INTERVAL_SENS,
+                       vertical=True),
+            SliderSpec(Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
+                       Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
+                       vertical=True),
+        ],
+    }
+    COMBO_BOX_GROUPS = {
+        "envelope_loop_mode": [
+            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_MODE,
+                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+                         Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE, ),
+        ],
+        "envelope_loop_sync_note": [
+            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
+                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+                         LFOSyncNote.get_all_display_names()),
+        ],
+    }
+    SWITCH_GROUPS = {
+        "chromatic_portamento": [
+            SwitchSpec(Digital.ModifyParam.CHROMATIC_PORTAMENTO,
+                       Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
+                       Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO),
+        ],
+    }
+
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_combo_box: Callable,
-        create_parameter_switch: Callable,
-        controls: dict,
+            self,
+            controls: dict,
     ):
         """
-        Initialize the DigitalToneModifySection
+            Initialize the DigitalToneModifySection
 
-        :param create_parameter_slider: Callable
-        :param create_parameter_combo_box: Callable
-        :param create_parameter_switch: Callable
-        :param controls: dict
-        """
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self._create_parameter_switch = create_parameter_switch
-        self.controls = controls
+            :param controls: dict
+            """
 
-        super().__init__(icon_type=IconType.ADSR, analog=False)
-        self.init_ui()
+        super().__init__(icons_row_type=IconType.ADSR, analog=False)
+        self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
-    def init_ui(self):
-        """
-        Initialize the UI for the DigitalToneModifySection
-        """
-        main_rows_vlayout = self.get_layout()
+        self._build_widgets()
+        self.setup_ui()
 
-        slider_row_layout = QHBoxLayout()
-        main_rows_vlayout.addLayout(slider_row_layout)
-        slider_row_layout.addStretch()
+    # ------------------------------------------------------------
+    # Widget construction
+    # ------------------------------------------------------------
 
-        attack_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParam.ATTACK_TIME_INTERVAL_SENS,
-            "Attack Time Interval Sens",
-            vertical=True,
+    def _build_widgets(self) -> None:
+        self.interval_sens_sliders = self._build_sliders(
+            self.SLIDER_GROUPS["interval_sens"]
         )
-        slider_row_layout.addWidget(attack_time_interval_sens)
-
-        release_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParam.RELEASE_TIME_INTERVAL_SENS,
-            "Release Time Interval Sens",
-            vertical=True,
+        self.envelope_loop_mode_combo_boxes = self._build_combo_boxes(
+            self.COMBO_BOX_GROUPS["envelope_loop_mode"]
         )
-        slider_row_layout.addWidget(release_time_interval_sens)
-
-        portamento_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-            "Portamento Time Interval Sens",
-            vertical=True,
+        self.envelope_loop_sync_note_combo_boxes = self._build_combo_boxes(
+            self.COMBO_BOX_GROUPS["envelope_loop_sync_note"]
         )
-        slider_row_layout.addWidget(portamento_time_interval_sens)
-        slider_row_layout.addStretch()
-
-        envelope_loop_mode_row = QHBoxLayout()
-        envelope_loop_mode_row.addStretch()
-        envelope_loop_mode = self._create_parameter_combo_box(
-            DigitalModifyParam.ENVELOPE_LOOP_MODE,
-            "Envelope Loop Mode",
-            ["OFF", "FREE-RUN", "TEMPO-SYNC"],
+        self.chromatic_portamento_switches = self._build_switches(
+            self.SWITCH_GROUPS["chromatic_portamento"]
         )
-        envelope_loop_mode_row.addWidget(envelope_loop_mode)
-        envelope_loop_mode_row.addStretch()
-        main_rows_vlayout.addLayout(envelope_loop_mode_row)
 
-        envelope_loop_sync_note_row = QHBoxLayout()
-        envelope_loop_sync_note_row.addStretch()
-        envelope_loop_sync_note = self._create_parameter_combo_box(
-            DigitalModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
-            "Envelope Loop Sync Note",
-            LFOSyncNote.get_all_display_names(),
-        )
-        envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
-        envelope_loop_sync_note_row.addStretch()
-        main_rows_vlayout.addLayout(envelope_loop_sync_note_row)
+    # ------------------------------------------------------------
+    # Layout
+    # ------------------------------------------------------------
 
-        chromatic_portamento_row = QHBoxLayout()
-        chromatic_portamento_row.addStretch()
+    def setup_ui(self) -> None:
+        layout = self.get_layout()
 
-        chromatic_portamento = self._create_parameter_switch(
-            DigitalModifyParam.CHROMATIC_PORTAMENTO,
-            "Chromatic Portamento",
-            ["OFF", "ON"],
-        )
-        chromatic_portamento_row.addWidget(chromatic_portamento)
-        chromatic_portamento_row.addStretch()
-        main_rows_vlayout.addLayout(chromatic_portamento_row)
-        main_rows_vlayout.addStretch()
+        self._add_centered_row(*self.interval_sens_sliders)
+        self._add_centered_row(*self.envelope_loop_mode_combo_boxes)
+        self._add_centered_row(*self.envelope_loop_sync_note_combo_boxes)
+        self._add_centered_row(*self.chromatic_portamento_switches)
+
+        layout.addStretch()

@@ -40,6 +40,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
 def generate_filter_plot(
@@ -177,7 +178,7 @@ def generate_filter_plot(
     return envelope
 
 
-class FilterPlot(QWidget):
+class FilterPlot(BasePlotWidget):
     def __init__(
         self,
         width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -193,13 +194,8 @@ class FilterPlot(QWidget):
         self.enabled = True
         self.envelope = envelope
         self.filter_mode = filter_mode  # Store filter mode
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        self.set_dimensions(width=width, height=height)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
@@ -275,178 +271,148 @@ class FilterPlot(QWidget):
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def paintEvent(self, event):
-        """Paint the plot in the style of an LCD"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for FilterPlot."""
+        _, _, total_time = self.envelope_parameters()
 
-            # === Background ===
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
+        # X-axis ticks (no labels shown in FilterPlot)
+        num_ticks = 6
+        x_tick_values = [(i / num_ticks) * total_time for i in range(num_ticks + 1)]
+        # Draw ticks without labels
+        ctx.painter.setPen(self.get_axis_pen(config))
+        for tick_value in x_tick_values:
+            x = ctx.value_to_x(tick_value, total_time)
+            if ctx.zero_y is not None:
+                ctx.painter.drawLine(x, ctx.zero_y, x, ctx.zero_y + 5)
 
-            # === Pens & Fonts ===
-            orange_pen = QPen(QColor("orange"), 2)
-            axis_pen = QPen(QColor("white"))
-            grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
-            painter.setFont(QFont("JD LCD Rounded", 10))
-            font_metrics = painter.fontMetrics()
+        # Y-axis ticks (from -0.2 to 1.0 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(-1, 6)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=45,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # === Envelope Parameters ===
-            # Generate filter frequency response based on filter mode
-            envelope = generate_filter_plot(
-                width=self.envelope["cutoff_param"],
-                slope=self.envelope["slope_param"],
-                sample_rate=self.sample_rate,
-                duration=self.envelope.get("duration", 1.0),
-                filter_mode=self.filter_mode,
-            )
-            total_samples = len(envelope)
-            total_time = total_samples / self.sample_rate
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for FilterPlot with custom Y callback."""
+        def y_callback(y_val):
+            return ctx.value_to_y(y_val, zero_at_bottom=False)
 
-            # === Plot Layout ===
-            w, h = self.width(), self.height()
-            top_pad, bottom_pad = 50, 50
-            left_pad, right_pad = 80, 50
-            plot_w = w - left_pad - right_pad
-            plot_h = h - top_pad - bottom_pad
+        self.draw_grid_ctx(
+            ctx,
+            num_vertical_lines=6,
+            num_horizontal_lines=5,
+            zero_at_bottom=False,
+            y_callback=y_callback,
+            config=config,
+        )
 
-            y_min, y_max = -0.2, 1.2
-            zero_y = top_pad + (y_max / (y_max - y_min)) * plot_h
+    def envelope_parameters(self):
+        """Generate filter frequency response based on filter mode"""
+        envelope = generate_filter_plot(
+            width=self.envelope["cutoff_param"],
+            slope=self.envelope["slope_param"],
+            sample_rate=self.sample_rate,
+            duration=self.envelope.get("duration", 1.0),
+            filter_mode=self.filter_mode,
+        )
+        total_samples = len(envelope)
+        total_time = total_samples / self.sample_rate
+        return envelope, total_samples, total_time
 
-            # === Axes ===
-            painter.setPen(axis_pen)
-            # Y-axis
-            painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
-            # X-axis
-            painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with FilterPlot-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=50,
+            left_padding=80,
+            right_padding=50,
+        )
 
-            # === X-axis Labels & Ticks ===
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_pad + i * plot_w / num_ticks
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for FilterPlot (-0.2 to 1.2)."""
+        return 1.2, -0.2
 
-            # === Y-axis Labels & Ticks ===
-            for i in range(-1, 6):
-                y_val = i * 0.2
-                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_pad - 5, y, left_pad, y)
-                label = f"{y_val:.1f}"
-                label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(
-                    left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
-                )
-            # === Title ===
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            # Update title based on filter mode
-            filter_mode_upper = self.filter_mode.upper() if self.filter_mode else "LPF"
-            if filter_mode_upper == "BYPASS":
-                title = "Filter Bypass"
-            elif filter_mode_upper == "HPF":
-                title = "HPF Cutoff"
-            elif filter_mode_upper == "BPF":
-                title = "BPF Cutoff"
+    def zero_at_bottom(self) -> bool:
+        """FilterPlot does not have zero at bottom (uses y_max/y_min scaling)."""
+        return False
+
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Frequency (Hz)"
+
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Voltage (V)"
+
+    def get_title(self) -> str:
+        """Get title based on filter mode"""
+        filter_mode_upper = self.filter_mode.upper() if self.filter_mode else "LPF"
+        if filter_mode_upper == "BYPASS":
+            return "Filter Bypass"
+        elif filter_mode_upper == "HPF":
+            return "HPF Cutoff"
+        elif filter_mode_upper == "BPF":
+            return "BPF Cutoff"
+        else:
+            return "LPF Cutoff"
+
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw FilterPlot envelope data with vertical line segments."""
+        if not self.enabled:
+            return
+
+        envelope, total_samples, total_time = self.envelope_parameters()
+        samples_per_pixel = max(1, int(total_samples / ctx.plot_w))
+
+        # --- Build fill path (upper envelope only) ---
+        curve_path = QPainterPath()
+        first_point = True
+
+        for px in range(int(ctx.plot_w)):
+            start = px * samples_per_pixel
+            end = min(start + samples_per_pixel, total_samples)
+            if start >= end:
+                continue
+
+            ymax = max(envelope[start:end])
+            x = ctx.left_pad + px
+            y = ctx.value_to_y(ymax, zero_at_bottom=False)
+
+            if first_point:
+                curve_path.moveTo(x, y)
+                first_point = False
             else:
-                title = "LPF Cutoff"
-            title_width = painter.fontMetrics().horizontalAdvance(title)
-            painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
+                curve_path.lineTo(x, y)
 
-            # === X-axis Label ===
-            painter.setPen(QPen(QColor("white")))
-            painter.setFont(QFont("JD LCD Rounded", 10))
-            x_label = "Frequency (Hz)"
-            x_label_width = font_metrics.horizontalAdvance(x_label)
-            painter.drawText(
-                left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label
-            )
+        # Draw shaded fill under the curve
+        if ctx.zero_y is not None:
+            self.draw_shaded_curve_ctx(ctx, curve_path)
 
-            # === Y-axis Label (rotated) ===
-            painter.save()
-            y_label = "Voltage (V)"
-            y_label_width = font_metrics.horizontalAdvance(y_label)
-            painter.translate(left_pad - 50, top_pad + plot_h / 2 + y_label_width / 2)
-            painter.rotate(-90)
-            painter.drawText(0, 0, y_label)
-            painter.restore()
+        # --- Draw envelope strokes on top (vertical line segments) ---
+        envelope_pen = self.get_envelope_pen(config)
+        envelope_pen.setWidth(1)
+        envelope_pen.setCapStyle(Qt.FlatCap)
+        envelope_pen.setCosmetic(True)
+        ctx.painter.setPen(envelope_pen)
 
-            # === Grid Lines ===
-            painter.setPen(grid_pen)
-            for i in range(1, 7):
-                x = left_pad + i * plot_w / 6
-                painter.drawLine(x, top_pad, x, top_pad + plot_h)
-            for i in range(1, 6):
-                y_val = i * 0.2
-                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                y_mirror = top_pad + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_pad, y, left_pad + plot_w, y)
-                # painter.drawLine(left_pad, y_mirror, left_pad + plot_w, y_mirror)
+        for px in range(int(ctx.plot_w)):
+            start = px * samples_per_pixel
+            end = min(start + samples_per_pixel, total_samples)
+            if start >= end:
+                continue
 
-            # === Envelope Plot ===
-            if self.enabled:
-                samples_per_pixel = max(1, int(total_samples / plot_w))
+            segment = envelope[start:end]
+            ymin = min(segment)
+            ymax = max(segment)
 
-                # --- Build fill path (upper envelope only) ---
-                fill_path = QPainterPath()
-                first_point = True
+            x = ctx.left_pad + px
+            y1 = ctx.value_to_y(ymax, zero_at_bottom=False)
+            y2 = ctx.value_to_y(ymin, zero_at_bottom=False)
 
-                for px in range(int(plot_w)):
-                    start = px * samples_per_pixel
-                    end = min(start + samples_per_pixel, total_samples)
-                    if start >= end:
-                        continue
-
-                    ymax = max(envelope[start:end])
-
-                    x = left_pad + px
-                    y = top_pad + ((y_max - ymax) / (y_max - y_min)) * plot_h
-
-                    if first_point:
-                        fill_path.moveTo(x, y)
-                        first_point = False
-                    else:
-                        fill_path.lineTo(x, y)
-
-                # Close path to zero line
-                fill_path.lineTo(left_pad + plot_w, zero_y)
-                fill_path.lineTo(left_pad, zero_y)
-                fill_path.closeSubpath()
-
-                # --- Fill under curve (subtle LCD style) ---
-                fill_gradient = QLinearGradient(0, top_pad, 0, top_pad + plot_h)
-                fill_gradient.setColorAt(0.0, QColor(255, 160, 40, 60))
-                fill_gradient.setColorAt(1.0, QColor(255, 160, 40, 10))
-
-                painter.fillPath(fill_path, fill_gradient)
-
-                # --- Draw envelope strokes on top ---
-                pen = QPen(QColor("orange"), 1)
-                pen.setCapStyle(Qt.FlatCap)
-                pen.setCosmetic(True)
-                painter.setPen(pen)
-
-                for px in range(int(plot_w)):
-                    start = px * samples_per_pixel
-                    end = min(start + samples_per_pixel, total_samples)
-                    if start >= end:
-                        continue
-
-                    segment = envelope[start:end]
-                    ymin = min(segment)
-                    ymax = max(segment)
-
-                    x = left_pad + px
-                    y1 = top_pad + ((y_max - ymax) / (y_max - y_min)) * plot_h
-                    y2 = top_pad + ((y_max - ymin) / (y_max - y_min)) * plot_h
-
-                    painter.drawLine(QPointF(x, y1), QPointF(x, y2))
-
-        finally:
-            painter.end()
+            ctx.painter.drawLine(QPointF(x, y1), QPointF(x, y2))

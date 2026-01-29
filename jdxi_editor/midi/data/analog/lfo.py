@@ -1,6 +1,6 @@
 """Analog LFO"""
 
-from enum import Enum
+from enum import Enum, IntEnum
 
 LFO_RANGES = {
     "shape": (0, 5),
@@ -78,3 +78,34 @@ class AnalogLFOTempoSyncNote(Enum):
     NOTE_1_16 = 17  # 1/16
     NOTE_1_24 = 18  # 1/24
     NOTE_1_32 = 19  # 1/32
+
+
+class AnalogLFOWaveShape(IntEnum):
+    """Analog LFO Waves"""
+
+    TRI = 0
+    SINE = 1
+    SAW = 2
+    SQUARE = 3
+    SAMPLE_HOLD = 4
+    RANDOM = 5
+
+    @property
+    def display_name(self) -> str:
+        names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
+        return names.get(self.value, "???")
+
+    @property
+    def midi_value(self) -> int:
+        return self.value
+
+
+class AnalogLFOWaveType:
+    """Analog LFO Waves"""
+
+    TRI: str = "TRI"
+    SINE: str = "SINE"
+    SAW: str = "SAW"
+    SQUARE: str = "SQR"
+    SAMPLE_HOLD: str = "S&H:"
+    RANDOM: str = "RND"

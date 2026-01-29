@@ -177,9 +177,7 @@ class MidiFileEditor(SynthEditor):
 
         # Drum detection button
         self.ui.detect_drums_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.DRUM, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND),
             "Detect Drums",
         )
         self.ui.detect_drums_button.setToolTip(
@@ -190,8 +188,8 @@ class MidiFileEditor(SynthEditor):
 
         # Classify other tracks button
         self.ui.classify_tracks_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC_NOTES, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.FOREGROUND
             ),
             "Classify Tracks",
         )
@@ -276,8 +274,8 @@ class MidiFileEditor(SynthEditor):
         layout = QHBoxLayout()
 
         self.ui.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load MIDI File",
         )
@@ -285,8 +283,8 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.load_button)
 
         self.ui.save_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
             ),
             "Save MIDI File",
         )
@@ -297,7 +295,7 @@ class MidiFileEditor(SynthEditor):
 
         self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
 
-        JDXi.UI.ThemeManager.apply_partial_switch(
+        JDXi.UI.Theme.apply_partial_switch(
             self.ui.midi_suppress_program_changes_checkbox
         )
         self.ui.midi_suppress_program_changes_checkbox.setChecked(
@@ -309,7 +307,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
 
         self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        JDXi.UI.ThemeManager.apply_partial_switch(
+        JDXi.UI.Theme.apply_partial_switch(
             self.ui.midi_suppress_control_changes_checkbox
         )
         self.ui.midi_suppress_control_changes_checkbox.setChecked(
@@ -562,9 +560,7 @@ class MidiFileEditor(SynthEditor):
 
         # Insert button
         self.ui.automation_insert_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.ADD, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND),
             "Insert Program Change Here",
         )
         self.ui.automation_insert_button.clicked.connect(
@@ -799,7 +795,7 @@ class MidiFileEditor(SynthEditor):
         self.ui.usb_file_select = QPushButton("No File Selected")
         self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        JDXi.UI.ThemeManager.apply_partial_switch(self.ui.usb_file_record_checkbox)
+        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_record_checkbox)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
         )
@@ -810,9 +806,7 @@ class MidiFileEditor(SynthEditor):
         self.ui.usb_file_auto_generate_checkbox = QCheckBox(
             "Generate .Wav filename based on date, time and Midi file"
         )
-        JDXi.UI.ThemeManager.apply_partial_switch(
-            self.ui.usb_file_auto_generate_checkbox
-        )
+        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
@@ -985,27 +979,21 @@ class MidiFileEditor(SynthEditor):
         layout = QHBoxLayout(group)
 
         self.ui.play_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PLAY, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
             "Play",
         )
         self.ui.play_button.clicked.connect(self.midi_playback_start)
         layout.addWidget(self.ui.play_button)
 
         self.ui.stop_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.STOP, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
             "Stop",
         )
         self.ui.stop_button.clicked.connect(self.midi_stop_playback)
         layout.addWidget(self.ui.stop_button)
 
         self.ui.pause_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.PAUSE, color=JDXi.UI.Style.FOREGROUND
-            ),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PAUSE, color=JDXi.UI.Style.FOREGROUND),
             "Pause",
         )
         self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)

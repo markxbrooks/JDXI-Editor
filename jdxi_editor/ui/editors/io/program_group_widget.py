@@ -75,18 +75,18 @@ class ProgramGroupWidget(QGroupBox):
 
         # Add icon row at the top of Programs tab (transfer items to avoid "already has a parent" errors)
         icon_row_container = QHBoxLayout()
-        icon_row = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_row, icon_row_container)
         program_vlayout.addLayout(icon_row_container)
 
         program_layout.addWidget(self.program_preset_tab_widget)
-        programs_icon = JDXi.UI.IconRegistry.get_icon(
+        programs_icon = JDXi.UI.Icon.get_icon(
             "mdi.music-box-multiple", color=JDXi.UI.Style.GREY
         )
         if programs_icon is None:
-            programs_icon = JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.MUSIC, color=JDXi.UI.Style.GREY
+            programs_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
@@ -120,8 +120,8 @@ class ProgramGroupWidget(QGroupBox):
         self._program_list_data = []
         # Load button
         self.preset.load_button = QPushButton(
-            JDXi.UI.IconRegistry.get_icon(
-                JDXi.UI.IconRegistry.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
             ),
             "Load Program",
         )

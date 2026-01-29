@@ -50,220 +50,40 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
+from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
-from picomidi.constant import Midi
-
-
-def midi_to_pitch_level(midi_value: int) -> float:
-    """Convert MIDI value (1-127, representing -63 to +63) to pitch level (-63.0 to +63.0)."""
-    return float(midi_value - 64)
-
-
-def midi_to_time_normalized(midi_value: int, max_time: float = 10.0) -> float:
-    """Convert MIDI value (0-127) to normalized time (0.0 to max_time seconds)."""
-    return (midi_value / Midi.VALUE.MAX.SEVEN_BIT) * max_time
-
-
-class DrumPitchEnvPlot(QWidget):
-    """Plot widget for drum pitch envelope visualization."""
-
-    def __init__(
-        self,
-        width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
-        height: int = JDXi.UI.Style.ADSR_PLOT_HEIGHT,
-        envelope: dict = None,
-        parent: QWidget = None,
-    ):
-        super().__init__(parent)
-        self.enabled = True
-        self.envelope = envelope or {}
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
-        self.sample_rate = 256
-        self.setMinimumHeight(150)
-
-    def setEnabled(self, enabled):
-        super().setEnabled(enabled)
-        self.enabled = enabled
-
-    def set_values(self, envelope: dict) -> None:
-        """Update envelope values and refresh plot."""
-        self.envelope.update(envelope)
-        self.update()
-
-    def paintEvent(self, event):
-        """Paint the pitch envelope plot"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
-
-            envelope_pen = QPen(QColor("orange"), 2)
-            axis_pen = QPen(QColor("white"), 1)
-            grid_pen = QPen(Qt.GlobalColor.darkGray, 1)
-            grid_pen.setStyle(Qt.PenStyle.DashLine)
-            point_pen = QPen(QColor("orange"), JDXi.UI.Dimensions.CHART.POINT_SIZE)
-            painter.setFont(QFont("JD LCD Rounded", 10))
-
-            depth = self.envelope.get("depth", 64) - 64
-            level_0 = midi_to_pitch_level(self.envelope.get("level_0", 64))
-            level_1 = midi_to_pitch_level(self.envelope.get("level_1", 64))
-            level_2 = midi_to_pitch_level(self.envelope.get("level_2", 64))
-            level_3 = midi_to_pitch_level(self.envelope.get("level_3", 64))
-            level_4 = midi_to_pitch_level(self.envelope.get("level_4", 64))
-
-            level_0 *= 1.0 + depth / 12.0
-            level_1 *= 1.0 + depth / 12.0
-            level_2 *= 1.0 + depth / 12.0
-            level_3 *= 1.0 + depth / 12.0
-            level_4 *= 1.0 + depth / 12.0
-
-            time_1 = midi_to_time_normalized(self.envelope.get("time_1", 64))
-            time_2 = midi_to_time_normalized(self.envelope.get("time_2", 64))
-            time_3 = midi_to_time_normalized(self.envelope.get("time_3", 64))
-            time_4 = midi_to_time_normalized(self.envelope.get("time_4", 64))
-
-            total_time = time_1 + time_2 + time_3 + time_4
-            if total_time == 0:
-                total_time = 10.0
-
-            sample_rate = self.sample_rate
-            t1_samples = max(int(time_1 * sample_rate), 1)
-            t2_samples = max(int(time_2 * sample_rate), 1)
-            t3_samples = max(int(time_3 * sample_rate), 1)
-            t4_samples = max(int(time_4 * sample_rate), 1)
-
-            segment_1 = np.linspace(level_0, level_1, t1_samples, endpoint=False)
-            segment_2 = np.linspace(level_1, level_2, t2_samples, endpoint=False)
-            segment_3 = np.linspace(level_2, level_3, t3_samples, endpoint=False)
-            segment_4 = np.linspace(level_3, level_4, t4_samples, endpoint=True)
-
-            envelope_curve = np.concatenate(
-                [segment_1, segment_2, segment_3, segment_4]
-            )
-            total_samples = len(envelope_curve)
-
-            w, h = self.width(), self.height()
-            top_padding, bottom_padding = 50, 80
-            left_padding, right_padding = 80, 50
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
-
-            y_max, y_min = 80.0, -80.0
-
-            painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )
-            zero_y = top_padding + ((y_max / (y_max - y_min)) * plot_h)
-            painter.drawLine(left_padding, zero_y, left_padding + plot_w, zero_y)
-
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                time_val = (i / num_ticks) * total_time
-                painter.drawText(x - 15, zero_y + 20, f"{time_val:.1f}")
-
-            for i in range(-4, 5):
-                y_val = i * 20
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding - 5, y, left_padding, y)
-                painter.drawText(left_padding - 45, y + 5, f"{y_val:+d}")
-
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 60, top_padding / 2, "Drum Pitch Envelope"
-            )
-
-            painter.setPen(QPen(QColor("white")))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
-
-            painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-            painter.rotate(-90)
-            painter.drawText(0, 0, "Pitch")
-            painter.restore()
-
-            painter.setPen(grid_pen)
-            for i in range(1, num_ticks):
-                x = left_padding + i * plot_w / num_ticks
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(-3, 4):
-                if i == 0:
-                    continue
-                y_val = i * 20
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
-
-            if self.enabled and total_samples > 0:
-                painter.setPen(envelope_pen)
-                points = []
-                num_points = min(500, total_samples)
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-                for i in indices:
-                    if i >= len(envelope_curve):
-                        continue
-                    t = i / sample_rate
-                    x = left_padding + (t / total_time) * plot_w
-                    y_val = envelope_curve[i]
-                    y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append((x, y))
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(*points[0])
-                    for pt in points[1:]:
-                        path.lineTo(*pt)
-                    painter.drawPath(path)
-
-                painter.setPen(point_pen)
-                level_points = [
-                    (0, level_0, "L0"),
-                    (time_1, level_1, "L1"),
-                    (time_1 + time_2, level_2, "L2"),
-                    (time_1 + time_2 + time_3, level_3, "L3"),
-                    (time_1 + time_2 + time_3 + time_4, level_4, "L4"),
-                ]
-                for t, level, label in level_points:
-                    x = left_padding + (t / total_time) * plot_w
-                    y = top_padding + ((y_max - level) / (y_max - y_min)) * plot_h
-                    painter.drawEllipse(int(x) - 3, int(y) - 3, 6, 6)
-                    painter.setPen(QPen(QColor("white")))
-                    painter.setFont(QFont("JD LCD Rounded", 8))
-                    painter.drawText(int(x) + 5, int(y) - 5, label)
-                    painter.setPen(point_pen)
-        except Exception as ex:
-            log.error(f"Error drawing drum pitch envelope plot: {ex}")
-        finally:
-            painter.end()
+from jdxi_editor.ui.widgets.plot.drum import DrumPitchEnvPlot
 
 
 class DrumPitchEnvSection(DrumBaseSection):
     """Drum Pitch Env Section for the JDXI Editor"""
+
+    PARAM_SPECS = [
+        # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
+        SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, "Depth", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, "V-Sens", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, "T1 V-Sens", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, "T4 V-Sens", vertical=True),
+        # Row 1: Time 1, Time 2, Time 3, Time 4
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, "Time 1", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, "Time 2", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, "Time 3", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, "Time 4", vertical=True),
+        # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
+        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, "Level 0", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, "Level 1", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, "Level 2", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, "Level 3", vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, "Level 4", vertical=True),
+    ]
 
     envelope_changed = Signal(dict)
 
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
-        create_parameter_combo_box: Callable,
-        create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
     ):
-        super().__init__()
         """
         Initialize the DrumPitchEnvSection
 
@@ -272,10 +92,8 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self.midi_helper = midi_helper
+        # Initialize envelope before super().__init__() because setup_ui() will be called
+        # during super().__init__() and it needs envelope
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -291,21 +109,29 @@ class DrumPitchEnvSection(DrumBaseSection):
             "level_3": 15,
             "level_4": -25,
         }
+
+        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
+        # are stored in the same dict
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
+        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
     def setup_ui(self) -> None:
         """setup UI"""
+        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        layout = self.get_layout()
 
         # --- Main container with controls and plot
         main_container = QWidget()
         main_layout = QHBoxLayout(main_container)
         main_layout.addStretch()
-        self.scrolled_layout.addWidget(main_container)
+        layout.addWidget(main_container)
 
         controls_group, controls_layout = create_group_and_grid_layout(
             group_name="Pitch Envelope Controls"
         )
-        JDXi.UI.ThemeManager.apply_adsr_style(controls_group)
+        JDXi.UI.Theme.apply_adsr_style(widget=controls_group, analog=self.analog)
         main_layout.addWidget(controls_group)
         self.create_sliders(controls_layout)
 
@@ -323,140 +149,105 @@ class DrumPitchEnvSection(DrumBaseSection):
         )
 
     def create_sliders(self, controls_layout: QGridLayout):
-        """Create sliders and connect them"""
+        """Create sliders and connect them - widgets are created from PARAM_SPECS"""
+        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Access them from self.controls and add to grid layout in the same order
+        
+        # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
         row = 0
-        depth_param = DrumPartialParam.PITCH_ENV_DEPTH
-        self.depth_slider = self._create_parameter_slider(
-            depth_param, "Depth", vertical=True
-        )
-        self.controls[depth_param] = self.depth_slider
-        controls_layout.addWidget(self.depth_slider, row, 0)
-        self.depth_slider.valueChanged.connect(
-            lambda v: self._update_envelope("depth", v, depth_param)
+        depth_slider = self.controls[DrumPartialParam.PITCH_ENV_DEPTH]
+        self.depth_slider = depth_slider  # Keep reference for compatibility
+        controls_layout.addWidget(depth_slider, row, 0)
+        depth_slider.valueChanged.connect(
+            lambda v: self._update_envelope("depth", v, DrumPartialParam.PITCH_ENV_DEPTH)
         )
 
-        v_sens_param = DrumPartialParam.PITCH_ENV_VELOCITY_SENS
-        self.v_sens_slider = self._create_parameter_slider(
-            v_sens_param, "V-Sens", vertical=True
-        )
-        self.controls[v_sens_param] = self.v_sens_slider
-        controls_layout.addWidget(self.v_sens_slider, row, 1)
-        self.v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("v_sens", v, v_sens_param)
+        v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_VELOCITY_SENS]
+        self.v_sens_slider = v_sens_slider
+        controls_layout.addWidget(v_sens_slider, row, 1)
+        v_sens_slider.valueChanged.connect(
+            lambda v: self._update_envelope("v_sens", v, DrumPartialParam.PITCH_ENV_VELOCITY_SENS)
         )
 
-        t1_v_sens_param = DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
-        self.t1_v_sens_slider = self._create_parameter_slider(
-            t1_v_sens_param, "T1 V-Sens", vertical=True
-        )
-        self.controls[t1_v_sens_param] = self.t1_v_sens_slider
-        controls_layout.addWidget(self.t1_v_sens_slider, row, 2)
-        self.t1_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t1_v_sens", v, t1_v_sens_param)
+        t1_v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS]
+        self.t1_v_sens_slider = t1_v_sens_slider
+        controls_layout.addWidget(t1_v_sens_slider, row, 2)
+        t1_v_sens_slider.valueChanged.connect(
+            lambda v: self._update_envelope("t1_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS)
         )
 
-        t4_v_sens_param = DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
-        self.t4_v_sens_slider = self._create_parameter_slider(
-            t4_v_sens_param, "T4 V-Sens", vertical=True
-        )
-        self.controls[t4_v_sens_param] = self.t4_v_sens_slider
-        controls_layout.addWidget(self.t4_v_sens_slider, row, 3)
-        self.t4_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t4_v_sens", v, t4_v_sens_param)
+        t4_v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS]
+        self.t4_v_sens_slider = t4_v_sens_slider
+        controls_layout.addWidget(t4_v_sens_slider, row, 3)
+        t4_v_sens_slider.valueChanged.connect(
+            lambda v: self._update_envelope("t4_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS)
         )
 
+        # Row 1: Time 1, Time 2, Time 3, Time 4
         row += 1
-        # Time controls
-        time_1_param = DrumPartialParam.PITCH_ENV_TIME_1
-        self.time_1_slider = self._create_parameter_slider(
-            time_1_param, "Time 1", vertical=True
-        )
-        self.controls[time_1_param] = self.time_1_slider
-        controls_layout.addWidget(self.time_1_slider, row, 0)
-        self.time_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_1", v, time_1_param)
+        time_1_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_1]
+        self.time_1_slider = time_1_slider
+        controls_layout.addWidget(time_1_slider, row, 0)
+        time_1_slider.valueChanged.connect(
+            lambda v: self._update_envelope("time_1", v, DrumPartialParam.PITCH_ENV_TIME_1)
         )
 
-        time_2_param = DrumPartialParam.PITCH_ENV_TIME_2
-        self.time_2_slider = self._create_parameter_slider(
-            time_2_param, "Time 2", vertical=True
-        )
-        self.controls[time_2_param] = self.time_2_slider
-        controls_layout.addWidget(self.time_2_slider, row, 1)
-        self.time_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_2", v, time_2_param)
+        time_2_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_2]
+        self.time_2_slider = time_2_slider
+        controls_layout.addWidget(time_2_slider, row, 1)
+        time_2_slider.valueChanged.connect(
+            lambda v: self._update_envelope("time_2", v, DrumPartialParam.PITCH_ENV_TIME_2)
         )
 
-        time_3_param = DrumPartialParam.PITCH_ENV_TIME_3
-        self.time_3_slider = self._create_parameter_slider(
-            time_3_param, "Time 3", vertical=True
-        )
-        self.controls[time_3_param] = self.time_3_slider
-        controls_layout.addWidget(self.time_3_slider, row, 2)
-        self.time_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_3", v, time_3_param)
+        time_3_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_3]
+        self.time_3_slider = time_3_slider
+        controls_layout.addWidget(time_3_slider, row, 2)
+        time_3_slider.valueChanged.connect(
+            lambda v: self._update_envelope("time_3", v, DrumPartialParam.PITCH_ENV_TIME_3)
         )
 
-        time_4_param = DrumPartialParam.PITCH_ENV_TIME_4
-        self.time_4_slider = self._create_parameter_slider(
-            time_4_param, "Time 4", vertical=True
-        )
-        self.controls[time_4_param] = self.time_4_slider
-        controls_layout.addWidget(self.time_4_slider, row, 3)
-        self.time_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_4", v, time_4_param)
+        time_4_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_4]
+        self.time_4_slider = time_4_slider
+        controls_layout.addWidget(time_4_slider, row, 3)
+        time_4_slider.valueChanged.connect(
+            lambda v: self._update_envelope("time_4", v, DrumPartialParam.PITCH_ENV_TIME_4)
         )
 
+        # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
         row += 1
-        # Level controls
-        level_0_param = DrumPartialParam.PITCH_ENV_LEVEL_0
-        self.level_0_slider = self._create_parameter_slider(
-            level_0_param, "Level 0", vertical=True
-        )
-        self.controls[level_0_param] = self.level_0_slider
-        controls_layout.addWidget(self.level_0_slider, row, 0)
-        self.level_0_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_0", v, level_0_param)
+        level_0_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_0]
+        self.level_0_slider = level_0_slider
+        controls_layout.addWidget(level_0_slider, row, 0)
+        level_0_slider.valueChanged.connect(
+            lambda v: self._update_envelope("level_0", v, DrumPartialParam.PITCH_ENV_LEVEL_0)
         )
 
-        level_1_param = DrumPartialParam.PITCH_ENV_LEVEL_1
-        self.level_1_slider = self._create_parameter_slider(
-            level_1_param, "Level 1", vertical=True
-        )
-        self.controls[level_1_param] = self.level_1_slider
-        controls_layout.addWidget(self.level_1_slider, row, 1)
-        self.level_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_1", v, level_1_param)
+        level_1_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_1]
+        self.level_1_slider = level_1_slider
+        controls_layout.addWidget(level_1_slider, row, 1)
+        level_1_slider.valueChanged.connect(
+            lambda v: self._update_envelope("level_1", v, DrumPartialParam.PITCH_ENV_LEVEL_1)
         )
 
-        level_2_param = DrumPartialParam.PITCH_ENV_LEVEL_2
-        self.level_2_slider = self._create_parameter_slider(
-            level_2_param, "Level 2", vertical=True
-        )
-        self.controls[level_2_param] = self.level_2_slider
-        controls_layout.addWidget(self.level_2_slider, row, 2)
-        self.level_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_2", v, level_2_param)
+        level_2_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_2]
+        self.level_2_slider = level_2_slider
+        controls_layout.addWidget(level_2_slider, row, 2)
+        level_2_slider.valueChanged.connect(
+            lambda v: self._update_envelope("level_2", v, DrumPartialParam.PITCH_ENV_LEVEL_2)
         )
 
-        level_3_param = DrumPartialParam.PITCH_ENV_LEVEL_3
-        self.level_3_slider = self._create_parameter_slider(
-            level_3_param, "Level 3", vertical=True
-        )
-        self.controls[level_3_param] = self.level_3_slider
-        controls_layout.addWidget(self.level_3_slider, row, 3)
-        self.level_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_3", v, level_3_param)
+        level_3_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_3]
+        self.level_3_slider = level_3_slider
+        controls_layout.addWidget(level_3_slider, row, 3)
+        level_3_slider.valueChanged.connect(
+            lambda v: self._update_envelope("level_3", v, DrumPartialParam.PITCH_ENV_LEVEL_3)
         )
 
-        level_4_param = DrumPartialParam.PITCH_ENV_LEVEL_4
-        self.level_4_slider = self._create_parameter_slider(
-            level_4_param, "Level 4", vertical=True
-        )
-        self.controls[level_4_param] = self.level_4_slider
-        controls_layout.addWidget(self.level_4_slider, row, 4)
-        self.level_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_4", v, level_4_param)
+        level_4_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_4]
+        self.level_4_slider = level_4_slider
+        controls_layout.addWidget(level_4_slider, row, 4)
+        level_4_slider.valueChanged.connect(
+            lambda v: self._update_envelope("level_4", v, DrumPartialParam.PITCH_ENV_LEVEL_4)
         )
 
     def _update_envelope(

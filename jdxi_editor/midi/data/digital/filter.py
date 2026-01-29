@@ -3,6 +3,30 @@
 from enum import Enum
 
 
+class DigitalFilterType:
+    """DigitalFilterType"""
+
+    BYPASS: str = "Bypass"
+    LPF: str = "LPF"
+    HPF: str = "HPF"
+    BPF: str = "BPF"
+    PKG: str = "PKG"
+    LPF2: str = "LPF2"
+    LPF3: str = "LPF3"
+    LPF4: str = "LPF4"
+
+
+class DigitalFilterModeType:
+    BYPASS: str = "bypass"
+    LPF: str = "lpf"
+    HPF: str = "hpf"
+    BPF: str = "bpf"
+    PKG: str = "lpf"  # PKG uses LPF-style plot
+    LPF2: str = "lpf"
+    LPF3: str = "lpf"
+    LPF4: str = "lpf"
+
+
 class DigitalFilterMode(Enum):
     """Filter mode types"""
 

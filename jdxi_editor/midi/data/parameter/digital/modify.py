@@ -28,6 +28,7 @@ if param:
 """
 
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -36,45 +37,74 @@ class DigitalModifyParam(AddressParameter):
     These parameters are shared across all partials.
     """
 
-    def __init__(self, address: int, min_val: int, max_val: int, tooltip: str = ""):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: int = None,
+        display_max: int = None,
+        description: str = None,
+    ):
+        """
+        Initialize the digital modify parameter with address and value range.
+        
+        Accepts 6 arguments when unpacked from ParameterSpec tuple:
+        (address, min_val, max_val, min_display, max_display, description)
+        """
         super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
-        self.tooltip = tooltip
+        # Use description as tooltip if provided
+        self.tooltip = description if description is not None else ""
+        self.display_min = display_min if display_min is not None else min_val
+        self.display_max = display_max if display_max is not None else max_val
 
-    ATTACK_TIME_INTERVAL_SENS = (
+    ATTACK_TIME_INTERVAL_SENS = ParameterSpec(
         0x01,
+        0,
+        127,
         0,
         127,
         "Shortens the FILTER and AMP Attack Time according to the spacing between note-on events.\nHigher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play rapid notes using a sound that has a slow attack\n(Attack Time).",
     )
-    RELEASE_TIME_INTERVAL_SENS = (
+    RELEASE_TIME_INTERVAL_SENS = ParameterSpec(
         0x02,
+        0,
+        127,
         0,
         127,
         "Shortens the FILTER and AMP Release Time if the interval between one note-on and the next\nnote-off is brief. Higher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play staccato notes using a sound that has a slow release",
     )
-    PORTAMENTO_TIME_INTERVAL_SENS = (
+    PORTAMENTO_TIME_INTERVAL_SENS = ParameterSpec(
         0x03,
+        0,
+        127,
         0,
         127,
         "Shortens the Portamento Time according to the spacing between note-on events. Higher values\nproduce a greater effect. With a setting of 0, there will be no effect.",
     )
-    ENVELOPE_LOOP_MODE = (
+    ENVELOPE_LOOP_MODE = ParameterSpec(
         0x04,
+        0,
+        2,
         0,
         2,
         "Use this to loop the envelope between certain regions during a note-on.\nOFF The envelope will operate normally.\nFREE-RUN When the Decay segment has ended, the envelope will return to the Attack. The Attack through\nDecay segments will repeat until note-off occurs.\nTEMPO-SYNC Specifies the loop rate as a note value (Sync Note parameter).",
     )
-    ENVELOPE_LOOP_SYNC_NOTE = (
+    ENVELOPE_LOOP_SYNC_NOTE = ParameterSpec(
         0x05,
+        0,
+        19,
         0,
         19,
         "Returns to the Attack at the specified rate. If the Attack+Decay time is shorter than the specified\nloop, the sound is maintained at the Sustain Level. If the Attack+Decay time is longer than the\nspecified loop, the sound returns to the Attack even if the Decay has not completed. This will\n\ncontinue repeating until note-off occurs.",
     )
-    CHROMATIC_PORTAMENTO = (
+    CHROMATIC_PORTAMENTO = ParameterSpec(
         0x06,
+        0,
+        1,
         0,
         1,
         "If this is turned ON, portamento will operate in semitone steps. If this is turned OFF, the pitch will\nchange smoothly from one note to the next.\n This is effective when you want to play chromatic portamento\n using a sound that has a\nslow portamento time.",

@@ -80,6 +80,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.effects.data import EffectsData
@@ -282,20 +283,18 @@ class EffectsCommonEditor(BasicEditor):
 
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
-        effect1_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.DISTORTION, color=JDXi.UI.Style.GREY
+        effect1_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.DISTORTION, color=JDXi.UI.Style.GREY
         )
         self.tabs.addTab(self._create_effect1_section(), effect1_icon, "Effect 1")
-        effect2_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.DISTORTION, color=JDXi.UI.Style.GREY
+        effect2_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.DISTORTION, color=JDXi.UI.Style.GREY
         )
         self.tabs.addTab(self._create_effect2_section(), effect2_icon, "Effect 2")
-        delay_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.DELAY, color=JDXi.UI.Style.GREY
-        )
+        delay_icon = JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DELAY, color=JDXi.UI.Style.GREY)
         self.tabs.addTab(self._create_delay_tab(), delay_icon, "Delay")
-        reverb_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.REVERB, color=JDXi.UI.Style.GREY
+        reverb_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.REVERB, color=JDXi.UI.Style.GREY
         )
         self.tabs.addTab(self._create_reverb_section(), reverb_icon, "Reverb")
 
@@ -495,7 +494,7 @@ class EffectsCommonEditor(BasicEditor):
         container = QWidget()
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
 
@@ -586,7 +585,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
@@ -655,7 +654,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
@@ -700,7 +699,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
@@ -823,6 +822,10 @@ class EffectsCommonEditor(BasicEditor):
                     param = None
                     widget = None
 
+                    # Skip metadata keys that aren't actual parameters
+                    if param_name in ["SYNTH_TONE", "TEMPORARY_AREA"]:
+                        continue
+
                     # Check all parameter types
                     for param_type in [
                         Effect1Param,
@@ -830,6 +833,7 @@ class EffectsCommonEditor(BasicEditor):
                         DelayParam,
                         ReverbParam,
                         AddressParameterEffectCommon,
+                        ProgramCommonParam,
                     ]:
                         if hasattr(param_type, "get_by_name"):
                             param = param_type.get_by_name(param_name)

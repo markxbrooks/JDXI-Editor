@@ -33,6 +33,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
 def generate_square_wave(
@@ -62,7 +63,7 @@ def generate_square_wave(
     return wave[:total_samples] * mod_depth
 
 
-class PWMPlot(QWidget):
+class PWMPlot(BasePlotWidget):
     def __init__(
         self,
         width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -76,13 +77,8 @@ class PWMPlot(QWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        self.set_dimensions(height, width)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(JDXi.UI.Style.ADSR_PLOT_HEIGHT)
@@ -148,137 +144,92 @@ class PWMPlot(QWidget):
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def paintEvent(self, event):
-        """Paint the plot in the style of an LCD"""
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for PWMPlot."""
+        # X-axis ticks are not shown in PWMPlot (omitted)
+        
+        # Y-axis ticks (from -0.2 to 1.0 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(-1, 6)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=45,
+            zero_at_bottom=False,
+            config=config,
+        )
 
-            # === Background ===
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))
-            gradient.setColorAt(0.3, QColor("#331111"))
-            gradient.setColorAt(0.5, QColor("#551100"))
-            gradient.setColorAt(0.7, QColor("#331111"))
-            gradient.setColorAt(1.0, QColor("#111111"))
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))
-            painter.drawRect(0, 0, self.width(), self.height())
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for PWMPlot with custom Y callback."""
+        def y_callback(y_val):
+            return ctx.value_to_y(y_val, zero_at_bottom=False)
 
-            # === Pens & Fonts ===
-            orange_pen = QPen(QColor("orange"), 2)
-            axis_pen = QPen(QColor("white"))
-            grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
-            painter.setFont(QFont("JD LCD Rounded", 10))
-            font_metrics = painter.fontMetrics()
+        self.draw_grid_ctx(
+            ctx,
+            num_vertical_lines=6,
+            num_horizontal_lines=5,
+            zero_at_bottom=False,
+            y_callback=y_callback,
+            config=config,
+        )
 
-            # === Envelope Parameters ===
-            # Pulse width envelope: rise and fall
-            envelope = generate_square_wave(
-                width=self.envelope["pulse_width"],
-                mod_depth=self.envelope["mod_depth"],
-                sample_rate=self.sample_rate,
-                duration=self.envelope.get("duration", 1.0),
-            )
-            total_samples = len(envelope)
-            total_time = total_samples / self.sample_rate
+    def envelope_parameters(self):
+        """Generate pulse width envelope"""
+        envelope = generate_square_wave(
+            width=self.envelope["pulse_width"],
+            mod_depth=self.envelope["mod_depth"],
+            sample_rate=self.sample_rate,
+            duration=self.envelope.get("duration", 1.0),
+        )
+        total_samples = len(envelope)
+        total_time = total_samples / self.sample_rate
+        return envelope, total_samples, total_time
 
-            # === Plot Layout ===
-            w, h = self.width(), self.height()
-            top_pad, bottom_pad = 50, 50
-            left_pad, right_pad = 80, 50
-            plot_w = w - left_pad - right_pad
-            plot_h = h - top_pad - bottom_pad
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with PWMPlot-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=50,
+            left_padding=80,
+            right_padding=50,
+        )
 
-            y_min, y_max = -0.2, 1.2
-            zero_y = top_pad + (y_max / (y_max - y_min)) * plot_h
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for PWMPlot (-0.2 to 1.2)."""
+        return 1.2, -0.2
 
-            # === Axes ===
-            painter.setPen(axis_pen)
-            # Y-axis
-            painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
-            # X-axis
-            painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
+    def zero_at_bottom(self) -> bool:
+        """PWMPlot does not have zero at bottom (uses y_max/y_min scaling)."""
+        return False
 
-            # === X-axis Labels & Ticks ===
-            num_ticks = 6
-            for i in range(num_ticks + 1):
-                x = left_pad + i * plot_w / num_ticks
-                # painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time / num_ticks):.0f}"
-                # label_width = font_metrics.horizontalAdvance(label)
-                # painter.drawText(x - label_width / 2, zero_y + 20, label)
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "Pulse Width Modulation"
 
-            # === Y-axis Labels & Ticks ===
-            for i in range(-1, 6):
-                y_val = i * 0.2
-                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_pad - 5, y, left_pad, y)
-                label = f"{y_val:.1f}"
-                label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(
-                    left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label
-                )
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
 
-            # === Title ===
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            title = "Pulse Width Modulation"
-            title_width = painter.fontMetrics().horizontalAdvance(title)
-            painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Voltage (V)"
 
-            # === X-axis Label ===
-            painter.setPen(QPen(QColor("white")))
-            painter.setFont(QFont("JD LCD Rounded", 10))
-            x_label = "Time (s)"
-            x_label_width = font_metrics.horizontalAdvance(x_label)
-            painter.drawText(
-                left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label
-            )
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw PWMPlot envelope data."""
+        if not self.enabled:
+            return
 
-            # === Y-axis Label (rotated) ===
-            painter.save()
-            y_label = "Voltage (V)"
-            y_label_width = font_metrics.horizontalAdvance(y_label)
-            painter.translate(left_pad - 50, top_pad + plot_h / 2 + y_label_width / 2)
-            painter.rotate(-90)
-            painter.drawText(0, 0, y_label)
-            painter.restore()
+        envelope, _, total_time = self.envelope_parameters()
 
-            # === Grid Lines ===
-            painter.setPen(grid_pen)
-            for i in range(1, 7):
-                x = left_pad + i * plot_w / 6
-                painter.drawLine(x, top_pad, x, top_pad + plot_h)
-            for i in range(1, 6):
-                y_val = i * 0.2
-                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                y_mirror = top_pad + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_pad, y, left_pad + plot_w, y)
-                # painter.drawLine(left_pad, y_mirror, left_pad + plot_w, y_mirror)
-
-            # === Envelope Plot ===
-            if self.enabled:
-                painter.setPen(orange_pen)
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-
-                for i in indices:
-                    if i >= len(envelope):
-                        continue
-                    t = i / self.sample_rate
-                    x = left_pad + (t / total_time) * plot_w
-                    y_val = envelope[i]
-                    y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append(QPointF(x, y))
-
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(points[0])
-                    for pt in points[1:]:
-                        path.lineTo(pt)  # For smoothing: use cubicTo
-                    painter.drawPath(path)
-
-        finally:
-            painter.end()
+        # Draw curve using new helper method
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=False,
+            config=config,
+        )

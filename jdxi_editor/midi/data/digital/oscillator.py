@@ -1,4 +1,6 @@
-"""Digital Oscillator"""
+"""
+Digital Oscillator
+"""
 
 from enum import Enum, IntEnum
 
@@ -23,7 +25,27 @@ class DigitalOscPcmWaveGain(IntEnum):
     DB_PLUS_12 = 3  # +12 dB
 
 
-class DigitalOscWave(IntEnum):
+class WaveformType:
+    """Types of Digital Oscillator Waves"""
+
+    ADSR: str = "adsr"
+    UPSAW: str = "upsaw"
+    SQUARE: str = "square"
+    PWSQU: str = "pwsqu"
+    TRIANGLE: str = "triangle"
+    SINE: str = "sine"
+    SAW: str = "saw"
+    SPSAW: str = "spsaw"
+    PCM: str = "pcm"
+    NOISE: str = "noise"
+    LPF_FILTER: str = "lpf_filter"
+    HPF_FILTER: str = "hpf_filter"
+    BYPASS_FILTER: str = "bypass_filter"
+    BPF_FILTER: str = "bpf_filter"
+    FILTER_SINE: str = "filter_sine"
+
+
+class DigitalWaveOsc(IntEnum):
     """Oscillator waveform types"""
 
     SAW = 0

@@ -27,11 +27,11 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtTest import QTest
 
 from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
-from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
+from jdxi_editor.midi.data.digital import DigitalPartial, DigitalWaveOsc
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
-from jdxi_editor.synth.type import JDXiSynth
+from jdxi_editor.core.synth.type import JDXiSynth
 
 # Create QApplication for tests if it doesn't exist
 _app = None
@@ -104,7 +104,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Verify main components exist
         self.assertIsNotNone(self.editor.base_widget)
-        self.assertIsNotNone(self.editor.partial_tab_widget)
+        self.assertIsNotNone(self.editor.tab_widget)
         self.assertIsNotNone(self.editor.partials_panel)
         self.assertIsNotNone(self.editor.instrument_preset)
         self.assertIsNotNone(self.editor.common_section)
@@ -160,8 +160,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock set_partial_state and tab widget methods
         self.editor.set_partial_state = Mock(return_value=True)
-        self.editor.partial_tab_widget.setTabEnabled = Mock()
-        self.editor.partial_tab_widget.setCurrentIndex = Mock()
+        self.editor.tab_widget.setTabEnabled = Mock()
+        self.editor.tab_widget.setCurrentIndex = Mock()
         
         # Use actual DigitalPartial enum (which has .value attribute)
         from jdxi_editor.midi.data.digital import DigitalPartial
@@ -179,8 +179,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
             True   # selected
         )
         # Tab index 1 corresponds to "Partial 1" (index 0 is "Presets")
-        self.editor.partial_tab_widget.setTabEnabled.assert_called_with(1, True)
-        self.editor.partial_tab_widget.setCurrentIndex.assert_called_with(1)
+        self.editor.tab_widget.setTabEnabled.assert_called_with(1, True)
+        self.editor.tab_widget.setCurrentIndex.assert_called_with(1)
 
     def test_initialize_partial_states(self):
         """Test initializing partial states."""
@@ -207,20 +207,20 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock waveform buttons for partial 1
         mock_buttons = {}
-        for wave in DigitalOscWave:
+        for wave in DigitalWaveOsc:
             mock_btn = Mock()
             mock_btn.setChecked = Mock()
             mock_btn.setStyleSheet = Mock()
             mock_buttons[wave] = mock_btn
         
-        self.editor.partial_editors[1].oscillator_tab.wave_buttons = mock_buttons
+        self.editor.partial_editors[1].oscillator_tab.waveform_buttons = mock_buttons
         
         # Update to PW_SQUARE waveform (value 2) - based on actual waveform_map
         self.editor._update_waveform_buttons(1, 2)
         
         # PW_SQUARE button should be checked
-        mock_buttons[DigitalOscWave.PW_SQUARE].setChecked.assert_called_with(True)
-        mock_buttons[DigitalOscWave.PW_SQUARE].setStyleSheet.assert_called()
+        mock_buttons[DigitalWaveOsc.PW_SQUARE].setChecked.assert_called_with(True)
+        mock_buttons[DigitalWaveOsc.PW_SQUARE].setStyleSheet.assert_called()
 
     def test_update_waveform_buttons_invalid_partial(self):
         """Test updating waveform buttons with invalid partial number."""
@@ -289,7 +289,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
             mock_btn.setStyleSheet = Mock()
             mock_buttons[shape] = mock_btn
         
-        self.editor.partial_editors[1].lfo_tab.lfo_shape_buttons = mock_buttons
+        self.editor.partial_editors[1].lfo_tab.wave_shape_buttons = mock_buttons
         
         # Update to SINE shape (value 1)
         self.editor._update_lfo_shape_buttons(1, 1)
@@ -309,7 +309,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
             mock_btn.setStyleSheet = Mock()
             mock_buttons[shape] = mock_btn
         
-        self.editor.partial_editors[1].mod_lfo_tab.mod_lfo_shape_buttons = mock_buttons
+        self.editor.partial_editors[1].mod_lfo_tab.wave_shape_buttons = mock_buttons
         
         # Update to SQUARE shape (value 3)
         self.editor._update_mod_lfo_shape_buttons(1, 3)
@@ -377,7 +377,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to LPF (value 1)
         self.editor._update_filter_state(1, 1)
@@ -391,7 +391,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to BYPASS (value 0)
         self.editor._update_filter_state(1, 0)
@@ -405,7 +405,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to HPF (value 2)
         self.editor._update_filter_state(1, 2)
@@ -419,7 +419,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_filter_controls_state = mock_update_method
+        self.editor.partial_editors[1].update_controls_state = mock_update_method
         
         # Update filter state to BPF (value 3)
         self.editor._update_filter_state(1, 3)
@@ -432,12 +432,12 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor.setup_ui()
         
         # Should have Presets tab + 3 Partial tabs + Common + Misc = 6 tabs
-        self.assertEqual(self.editor.partial_tab_widget.count(), 6)
+        self.assertEqual(self.editor.tab_widget.count(), 6)
         
         # Check tab names
         tab_names = [
-            self.editor.partial_tab_widget.tabText(i)
-            for i in range(self.editor.partial_tab_widget.count())
+            self.editor.tab_widget.tabText(i)
+            for i in range(self.editor.tab_widget.count())
         ]
         
         self.assertIn("Presets", tab_names)

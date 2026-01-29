@@ -43,38 +43,80 @@ Example:
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
-    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor.helper import (
     create_scrolled_area_with_layout,
     transfer_layout_items,
 )
 
 
-class DrumBaseSection(QWidget):
-    """Drum Output Section for the JDXI Editor"""
+class DrumBaseSection(ParameterSectionBase):
+    """Drum Output Section for the JDXI Editor, giving consistent UI for drum sections"""
 
-    def __init__(self):
-        super().__init__()
-        self.vlayout = None
-        self.scrolled_layout = None
+    def __init__(self, controls: dict = None, midi_helper=None, **kwargs):
+        from jdxi_editor.ui.widgets.editor import IconType
+        
+        # Initialize scrolled layout attributes
+        self.vlayout: QVBoxLayout | None = None
+        self.scrolled_layout: QVBoxLayout | None = None
+        
+        # Call super().__init__() - it will call setup_ui() which will use our overridden get_layout()
+        # Pass controls so widgets created from PARAM_SPECS are stored in the same dict
+        super().__init__(
+            controls=controls,
+            midi_helper=midi_helper,
+            icons_row_type=IconType.ADSR,
+            analog=False,
+            **kwargs
+        )
+        
+        # Set minimum width after initialization
         self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
-        self.vlayout, self.scrolled_layout = self.setup_scrolled_layout_with_icons()
-        self.vlayout.setContentsMargins(0, 0, 0, 0)
-        self.vlayout.setSpacing(0)
-        self.scrolled_layout.setContentsMargins(0, 0, 0, 0)
 
-    def setup_scrolled_layout_with_icons(self) -> tuple[QVBoxLayout, QVBoxLayout]:
-        """setup scrolled layout with icons"""
+    def get_layout(
+        self,
+        margins: tuple[int, int, int, int] = None,
+        spacing: int = None,
+    ) -> QVBoxLayout:
+        """
+        Override to return the scrolled layout instead of a regular layout.
+        This allows ParameterSectionBase.setup_ui() to work normally with the scrolled layout.
+        """
+        if self.scrolled_layout is None:
+            # Set up scrolled layout on first call
+            self.vlayout, self.scrolled_layout = self._setup_scrolled_layout_with_icons()
+            self.vlayout.setContentsMargins(0, 0, 0, 0)
+            self.vlayout.setSpacing(0)
+            self.scrolled_layout.setContentsMargins(0, 0, 0, 0)
+            
+            # Set _layout to scrolled_layout for compatibility with SectionBaseWidget code
+            self._layout = self.scrolled_layout
+            # Mark icon as added since we add it in _setup_scrolled_layout_with_icons()
+            self._icon_added = True
+        
+        return self.scrolled_layout
+
+    def _setup_ui(self):
+        """
+        Override to prevent ParameterSectionBase from creating a default tab widget.
+        Drum sections implement their own setup_ui() methods with custom tab widgets.
+        """
+        # Do nothing - child classes will implement their own setup_ui()
+        pass
+
+    def _setup_scrolled_layout_with_icons(self) -> tuple[QVBoxLayout, QVBoxLayout]:
+        """Set up scrolled layout with icons row"""
+        # Create main vertical layout for the widget
         layout = QVBoxLayout(self)
         scroll_area, scrolled_layout = create_scrolled_area_with_layout()
         layout.addWidget(scroll_area)
 
         # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)

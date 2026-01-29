@@ -30,22 +30,16 @@ Customization:
 import numpy as np
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
-    QColor,
-    QFont,
-    QLinearGradient,
     QMouseEvent,
-    QPainter,
-    QPainterPath,
-    QPaintEvent,
-    QPen,
 )
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
 
 
-class ADSRPlot(QWidget):
+class ADSRPlot(BasePlotWidget):
+
     def __init__(
         self,
         width: int = 300,
@@ -54,6 +48,7 @@ class ADSRPlot(QWidget):
         parent: QWidget = None,
     ):
         super().__init__(parent)
+
         """
         Initialize the ADSRPlot
 
@@ -66,13 +61,8 @@ class ADSRPlot(QWidget):
         # Default envelope parameters (times in ms)
         self.enabled = True
         self.envelope = envelope
-        # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(width, height)
-        self.setMaximumHeight(height)
-        self.setMaximumWidth(width)
-        # Use dark gray background
-
-        JDXi.UI.ThemeManager.apply_adsr_plot(self)
+        self.set_dimensions(height, width)
+        JDXi.UI.Theme.apply_adsr_plot(self)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -85,32 +75,6 @@ class ADSRPlot(QWidget):
             self.parent.envelope_changed.connect(self.set_values)
         if hasattr(self.parent, "pitchenvelope_changed"):
             self.parent.pitchenvelope_changed.connect(self.set_values)
-
-    def paintEvent_experimental(self, event: QPaintEvent) -> None:
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor("#ffffff"), 2)
-        painter.setPen(pen)
-
-        w = self.width()
-        h = self.height()
-
-        # Define points
-        p0 = QPointF(0, h)
-        p1 = QPointF(self.attack_x * w, 0)
-        p2 = QPointF(self.decay_x * w, (1 - self.sustain_level) * h)
-        p3 = QPointF(self.release_x * w, (1 - self.sustain_level) * h)
-        p4 = QPointF(w, h)
-
-        # Draw lines
-        painter.drawPolyline([p0, p1, p2, p3, p4])
-
-        # Draw draggable points
-        dot_pen = QPen(QColor("#ff6666"), 4)
-        painter.setPen(dot_pen)
-        painter.setBrush(QColor("#ffcccc"))
-        for pt in [p1, p2, p3]:
-            painter.drawEllipse(pt, 6, 6)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         pos = event.position()
@@ -159,150 +123,138 @@ class ADSRPlot(QWidget):
         self.envelope = envelope
         self.update()
 
-    def paintEvent(self, event: QPaintEvent) -> None:
-        """Paint the ADSR plot.
-        :param event: QPaintEvent
-        """
-        with QPainter(self) as painter:
-            # Draw background gradient
-            gradient = QLinearGradient(0, 0, self.width(), self.height())
-            gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
-            gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
-            gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
-            gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
-            gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
-            painter.setBrush(gradient)
-            painter.setPen(QPen(QColor("#000000"), 0))  # no border
-            painter.drawRect(0, 0, self.width(), self.height())
+    def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw custom tick marks for ADSR plot."""
+        _, _, total_time = self.envelope_parameters()
 
-            # Use orange for drawing
-            pen = QPen(QColor("orange"))
-            axis_pen = QPen(QColor("white"))
-            pen.setWidth(2)
-            painter.setPen(QPen(Qt.PenStyle.SolidLine))
-            painter.setPen(pen)
-            painter.setFont(QFont("JD LCD Rounded", 10))
+        # X-axis ticks (time)
+        num_ticks = 6
+        x_tick_values = [(i / num_ticks) * total_time for i in range(num_ticks + 1)]
+        x_tick_labels = [f"{t:.1f}" for t in x_tick_values]
+        self.draw_x_axis_ticks(
+            ctx,
+            tick_values=x_tick_values,
+            tick_labels=x_tick_labels,
+            tick_length=5,
+            label_offset=20,
+            position="bottom",
+            x_max=total_time,
+            config=config,
+        )
 
-            # Compute envelope segments in seconds
-            attack_time = self.envelope["attack_time"] / 1000.0
-            decay_time = self.envelope["decay_time"] / 1000.0
-            release_time = self.envelope["release_time"] / 1000.0
-            sustain_level = self.envelope["sustain_level"]
-            peak_level = max(self.envelope["peak_level"] * 2, 0)
-            log.message(f"peak_level: {peak_level}")
-            initial_level = self.envelope["initial_level"]
+        # Y-axis ticks (amplitude: 0.0 to 1.0 in 0.2 steps)
+        y_tick_values = [i * 0.2 for i in range(6)]
+        y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
+        self.draw_y_axis_ticks(
+            ctx,
+            tick_values=y_tick_values,
+            tick_labels=y_tick_labels,
+            tick_length=5,
+            label_offset=45,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            # Convert times to sample counts
-            attack_samples = int(attack_time * self.sample_rate)
-            decay_samples = int(decay_time * self.sample_rate)
-            sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
-            release_samples = int(release_time * self.sample_rate)
+    def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw grid for ADSR plot."""
+        self.draw_grid_ctx(
+            ctx,
+            num_vertical_lines=6,
+            num_horizontal_lines=5,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            # Construct the ADSR envelope as one concatenated array
-            # Normalized ADSR envelope (peak level = 1.0)
-            attack = np.linspace(
-                initial_level, peak_level, attack_samples, endpoint=False
-            )  # Attack from initial to peak level
-            decay = np.linspace(
-                peak_level, sustain_level * peak_level, decay_samples, endpoint=False
-            )  # Decay to sustain level
-            sustain = np.full(
-                sustain_samples, sustain_level * peak_level
-            )  # Sustain level scaled by peak level
-            release = np.linspace(
-                sustain_level * peak_level, 0.0, release_samples
-            )  # Release from sustain level to 0
-            envelope = np.concatenate([attack, decay, sustain, release])
+    def draw_data(self, ctx: PlotContext, config: PlotConfig) -> None:
+        """Draw ADSR envelope data."""
+        if not self.enabled:
+            return
 
-            # envelope = np.concatenate([attack, decay, sustain, release])
-            total_samples = len(envelope)
-            total_time = 5  # in seconds
+        envelope, _, total_time = self.envelope_parameters()
 
-            # Prepare points for drawing
-            w = self.width()
-            h = self.height()
-            top_padding = 50  # Custom top padding value
-            right_padding = 50  # Custom right padding value
-            bottom_padding = 80  # Bottom padding remains the same
-            left_padding = 80  # Left padding remains the same
+        # Draw shaded fill first (this also draws the curve)
+        self.draw_shaded_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
+        # Draw envelope curve on top (to ensure it's visible above the fill)
+        self.draw_curve_from_array(
+            ctx,
+            y_values=envelope,
+            x_max=total_time,
+            sample_rate=self.sample_rate,
+            max_points=500,
+            zero_at_bottom=True,
+            config=config,
+        )
 
-            # Optionally draw axis lines and labels
-            painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )  # Y-axis
-            painter.drawLine(
-                left_padding,
-                top_padding + plot_h,
-                left_padding + plot_w,
-                top_padding + plot_h,
-            )  # X-axis
-            painter.drawText(left_padding, top_padding + plot_h + 20, "0")
-            painter.drawText(left_padding + plot_w - 10, top_padding + plot_h + 20, "5")
-            for i in range(1, 5):
-                x = left_padding + i * plot_w / 5
-                painter.drawLine(x, top_padding + plot_h, x, top_padding + plot_h + 5)
-                painter.drawText(x - 10, top_padding + plot_h + 20, f"{i}")
-            for i in range(1, 5):
-                y = top_padding + i * plot_h / 5
-                painter.drawLine(left_padding, y, left_padding - 5, y)
-                painter.drawText(left_padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
-            painter.drawText(left_padding - 35, top_padding + 5, "1")
-            painter.drawText(left_padding - 35, top_padding + plot_h, "0")
+    def envelope_parameters(self):
+        """Compute envelope segments in seconds"""
+        attack_time = self.envelope["attack_time"] / 1000.0
+        decay_time = self.envelope["decay_time"] / 1000.0
+        release_time = self.envelope["release_time"] / 1000.0
+        sustain_level = self.envelope["sustain_level"]
+        peak_level = max(self.envelope["peak_level"] * 2, 0)
+        initial_level = self.envelope["initial_level"]
 
-            # Draw the envelope label at the top center of the widget
-            painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 40, top_padding / 2, "ADSR Envelope"
-            )  # half way up top padding
+        # Convert times to sample counts
+        attack_samples = int(attack_time * self.sample_rate)
+        decay_samples = int(decay_time * self.sample_rate)
+        sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
+        release_samples = int(release_time * self.sample_rate)
 
-            # Write legend label for x-axis at the bottom center of the widget
-            painter.setPen(QPen(QColor("white")))
-            painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
+        # Construct the ADSR envelope as one concatenated array
+        # Normalized ADSR envelope (peak level = 1.0)
+        attack = np.linspace(
+            initial_level, peak_level, attack_samples, endpoint=False
+        )  # Attack from initial to peak level
+        decay = np.linspace(
+            peak_level, sustain_level * peak_level, decay_samples, endpoint=False
+        )  # Decay to sustain level
+        sustain = np.full(
+            sustain_samples, sustain_level * peak_level
+        )  # Sustain level scaled by peak level
+        release = np.linspace(
+            sustain_level * peak_level, 0.0, release_samples
+        )  # Release from sustain level to 0
+        envelope = np.concatenate([attack, decay, sustain, release])
 
-            # Draw y-axis label rotated 90 degrees
-            painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
-            painter.rotate(-90)
-            painter.drawText(0, 0, "Amplitude")
-            painter.restore()
+        total_samples = len(envelope)
+        total_time = 5  # in seconds
+        return envelope, total_samples, total_time
 
-            # Draw background grid as dashed dark gray lines
-            pen = QPen(Qt.GlobalColor.darkGray, 2)
-            pen.setStyle(Qt.PenStyle.DashLine)
-            pen.setWidth(1)
-            painter.setPen(pen)
-            for i in range(1, 5):
-                x = left_padding + i * plot_w / 5
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(1, 5):
-                y = top_padding + i * plot_h / 5
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
+    def get_plot_config(self) -> PlotConfig:
+        """Get plot configuration with ADSR-specific settings."""
+        return PlotConfig(
+            top_padding=50,
+            bottom_padding=50,
+            left_padding=80,
+            right_padding=50,
+        )
 
-            if self.enabled:
-                # Draw the envelope polyline last, on top of the grid
-                # Create a list of points for the envelope polyline.
-                painter.setPen(QPen(QColor("orange")))
-                points = []
-                num_points = 500
-                indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-                for i in indices:
-                    t = i / self.sample_rate  # time in seconds
-                    x = left_padding + (t / total_time) * plot_w
-                    y = top_padding + plot_h - (envelope[i] * plot_h)
-                    points.append((x, y))
+    def get_y_range(self) -> tuple[float, float]:
+        """Get Y range for ADSR plot (0.0 to 1.0)."""
+        return 1.0, 0.0
 
-                # Draw the envelope polyline
-                if points:
-                    path = QPainterPath()
-                    path.moveTo(*points[0])
-                    for pt in points[1:]:
-                        path.lineTo(*pt)
-                    painter.drawPath(path)
+    def zero_at_bottom(self) -> bool:
+        """ADSR plot has zero at bottom."""
+        return True
+
+    def get_title(self) -> str:
+        """Get plot title."""
+        return "ADSR Envelope"
+
+    def get_x_label(self) -> str:
+        """Get X-axis label."""
+        return "Time (s)"
+
+    def get_y_label(self) -> str:
+        """Get Y-axis label."""
+        return "Amplitude"
+

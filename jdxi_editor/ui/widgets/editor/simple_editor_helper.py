@@ -111,7 +111,7 @@ class SimpleEditorHelper:
         """Setup title label and image label"""
         # Create title label
         self.title_label = DigitalTitle(self.title_text)
-        JDXi.UI.ThemeManager.apply_instrument_title_label(self.title_label)
+        JDXi.UI.Theme.apply_instrument_title_label(self.title_label)
 
         # Create image label
         self.image_label = QLabel()
@@ -121,8 +121,14 @@ class SimpleEditorHelper:
         self.editor.instrument_icon_folder = self.image_folder
         self.editor.default_image = self.default_image
 
-        # Set image_label on editor so update_instrument_image can access it
+        # Set image_label and preset_image_label on editor so update_instrument_image can access it
         self.editor.image_label = self.image_label
+        # BasicEditor expects preset_image_label; keep both in sync
+        if (
+            not hasattr(self.editor, "preset_image_label")
+            or self.editor.preset_image_label is None
+        ):
+            self.editor.preset_image_label = self.image_label
 
         # Update image (if editor has update_instrument_image method)
         if hasattr(self.editor, "update_instrument_image"):
@@ -147,7 +153,7 @@ class SimpleEditorHelper:
 
         # Create tab widget
         self.tab_widget = QTabWidget()
-        JDXi.UI.ThemeManager.apply_tabs_style(self.tab_widget)
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
         self.rows_layout.addWidget(self.tab_widget)
 
         main_row_hlayout.addStretch()

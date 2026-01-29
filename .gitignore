@@ -1,6 +1,16 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+# Linux building files
+deps/
+appimagetool
 appimagetool-extracted
+snap
+os
+sys
+argparse
+subprocess
+shutil
+jdxi_dmg
 tests/sheep.mid
 appimagetool*
 spleeter-env
@@ -123,6 +133,8 @@ ipython_config.py
 #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
 #   in version control.
 #   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
+JD-Xi-Editor.app/
+JD-Xi-Editor.pkg/
 .pdm.toml
 .pdm-python
 .pdm-build/

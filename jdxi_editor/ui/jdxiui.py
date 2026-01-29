@@ -15,11 +15,11 @@ from jdxi_editor.ui.style import (
 
 
 class JDXiUI:
-    """Composition of main JDXI UI components as a single, immutable container."""
+    """Composition of main JDXI UI components as a single container."""
 
     Style: JDXiUIStyle = JDXiUIStyle
-    ThemeManager: JDXiUIThemeManager = JDXiUIThemeManager
-    IconRegistry: JDXiUIIconRegistry = JDXiUIIconRegistry
+    Theme: JDXiUIThemeManager = JDXiUIThemeManager
+    Icon: JDXiUIIconRegistry = JDXiUIIconRegistry
     Dimensions: JDXiUIDimensions = JDXiUIDimensions
     Parameters: JDXiUIParameters = JDXiUIParameters
     Constants: JDXiUIConstants = JDXiUIConstants

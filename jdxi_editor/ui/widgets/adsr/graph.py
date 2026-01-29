@@ -2,6 +2,8 @@ from PySide6.QtCore import QPointF, Signal
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.ui.adsr.type import ADSRType
+
 
 class ADSRGraph(QWidget):
     point_moved = Signal(str, float)  # Signal(name of point, new normalized x)
@@ -74,13 +76,13 @@ class ADSRGraph(QWidget):
         """
         if self.dragging:
             pos = event.position()
-            if self.dragging == "attack":
+            if self.dragging == ADSRType.ATTACK:
                 self.attack_x = max(0.01, min(pos.x() / self.width(), 1.0))
-            elif self.dragging == "decay":
+            elif self.dragging == ADSRType.DECAY:
                 self.decay_x = max(
                     self.attack_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )
-            elif self.dragging == "release":
+            elif self.dragging == ADSRType.RELEASE:
                 self.release_x = max(
                     self.decay_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )

@@ -45,6 +45,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_icon_label_with_pixmap,
@@ -151,15 +152,13 @@ def setup_splash_screen(
         screen_geometry = screen.availableGeometry()
         screen_center = screen_geometry.center()
         splash.move(
-            int(screen_center.x() - JDXi.UI.Dimensions.SPLASH.WIDTH / 2),
-            int(screen_center.y() - JDXi.UI.Dimensions.SPLASH.HEIGHT / 2),
+            int(screen_center.x() - JDXiUIDimensions.SPLASH.WIDTH / 2),
+            int(screen_center.y() - JDXiUIDimensions.SPLASH.HEIGHT / 2),
         )
     splash.setWindowFlags(
         Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     )
-    splash.setFixedSize(
-        JDXi.UI.Dimensions.SPLASH.WIDTH, JDXi.UI.Dimensions.SPLASH.HEIGHT
-    )
+    splash.setFixedSize(JDXiUIDimensions.SPLASH.WIDTH, JDXiUIDimensions.SPLASH.HEIGHT)
 
     splash.setStyleSheet(
         """
@@ -210,8 +209,8 @@ def setup_splash_screen(
     # --- Image (right side)
     image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
     pixmap = QPixmap(image_path).scaled(
-        JDXi.UI.Dimensions.SPLASH.IMAGE_WIDTH,
-        JDXi.UI.Dimensions.SPLASH.IMAGE_HEIGHT,
+        JDXiUIDimensions.SPLASH.IMAGE_WIDTH,
+        JDXiUIDimensions.SPLASH.IMAGE_HEIGHT,
         Qt.KeepAspectRatio,
         Qt.SmoothTransformation,
     )

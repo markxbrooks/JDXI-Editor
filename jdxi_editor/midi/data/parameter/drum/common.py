@@ -14,6 +14,7 @@ Classes:
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
 
 
@@ -22,31 +23,49 @@ class DrumCommonParam(AddressParameter):
     These parameters are shared across all partials.
     """
 
-    def __init__(self, address: int, min_val: int, max_val: int, tooltip: str = ""):
-        """Initialize the drum common parameter with address and value range."""
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+        description: Optional[str] = None,
+    ):
+        """
+        Initialize the drum common parameter with address and value range.
+        
+        Accepts 6 arguments when unpacked from ParameterSpec tuple:
+        (address, min_val, max_val, min_display, max_display, description)
+        """
         super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
-        self.tooltip = tooltip
+        # Use description as tooltip if provided
+        self.tooltip = description if description is not None else ""
+        self.display_min = display_min if display_min is not None else min_val
+        self.display_max = display_max if display_max is not None else max_val
 
     # Tone name parameters (12 ASCII characters)
-    TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
-    TONE_NAME_2 = (0x01, 32, 127)  # ASCII character 2
-    TONE_NAME_3 = (0x02, 32, 127)  # ASCII character 3
-    TONE_NAME_4 = (0x03, 32, 127)  # ASCII character 4
-    TONE_NAME_5 = (0x04, 32, 127)  # ASCII character 5
-    TONE_NAME_6 = (0x05, 32, 127)  # ASCII character 6
-    TONE_NAME_7 = (0x06, 32, 127)  # ASCII character 7
-    TONE_NAME_8 = (0x07, 32, 127)  # ASCII character 8
-    TONE_NAME_9 = (0x08, 32, 127)  # ASCII character 9
-    TONE_NAME_10 = (0x09, 32, 127)  # ASCII character 10
-    TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
-    TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
+    TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
+    TONE_NAME_2 = ParameterSpec(0x01, 32, 127)  # ASCII character 2
+    TONE_NAME_3 = ParameterSpec(0x02, 32, 127)  # ASCII character 3
+    TONE_NAME_4 = ParameterSpec(0x03, 32, 127)  # ASCII character 4
+    TONE_NAME_5 = ParameterSpec(0x04, 32, 127)  # ASCII character 5
+    TONE_NAME_6 = ParameterSpec(0x05, 32, 127)  # ASCII character 6
+    TONE_NAME_7 = ParameterSpec(0x06, 32, 127)  # ASCII character 7
+    TONE_NAME_8 = ParameterSpec(0x07, 32, 127)  # ASCII character 8
+    TONE_NAME_9 = ParameterSpec(0x08, 32, 127)  # ASCII character 9
+    TONE_NAME_10 = ParameterSpec(0x09, 32, 127)  # ASCII character 10
+    TONE_NAME_11 = ParameterSpec(0x0A, 32, 127)  # ASCII character 11
+    TONE_NAME_12 = ParameterSpec(0x0B, 32, 127)  # ASCII character 12
 
     # Tone level
-    KIT_LEVEL = (
+    KIT_LEVEL = ParameterSpec(
         0x0C,
+        0,
+        127,
         0,
         127,
         "Sets the volume of the drum kit.\nMEMO\nThe volume of each partial in the drum kit is specified by the TVA Level parameter (p. 24).\nThe volume of each waveform within a partial is set by the Wave Level parameter (p. 21).",

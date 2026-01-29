@@ -74,7 +74,7 @@ class ControlChangeSlider(Slider):
         if value == 0:
             self.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
         else:
-            JDXi.UI.ThemeManager.apply_adsr_style(self, analog=False)
+            JDXi.UI.Theme.apply_adsr_style(self, analog=False)
 
     def on_valueChanged(self, value: int):
         """

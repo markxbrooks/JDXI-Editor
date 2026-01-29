@@ -10,8 +10,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 
 

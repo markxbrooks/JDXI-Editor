@@ -75,7 +75,7 @@ from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
-from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
+from jdxi_editor.ui.editors.drum.partial.panel import DrumPartialPanel
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
@@ -160,8 +160,8 @@ class DrumCommonEditor(SynthEditor):
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
 
-        drum_kit_presets_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTES, color=JDXi.UI.Style.GREY
+        drum_kit_presets_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
             instrument_widget, drum_kit_presets_icon, "Drum Kit Presets"
@@ -177,7 +177,7 @@ class DrumCommonEditor(SynthEditor):
         container_layout.addWidget(self.partial_tab_widget)
 
         # Add the base widget as the second tab (it contains the scroll area)
-        drum_kit_parts_icon = JDXi.UI.IconRegistry.get_icon(
+        drum_kit_parts_icon = JDXi.UI.Icon.get_icon(
             "mdi.puzzle", color=JDXi.UI.Style.GREY
         )
         self.presets_parts_tab_widget.addTab(
@@ -195,21 +195,17 @@ class DrumCommonEditor(SynthEditor):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        common_icon = JDXi.UI.IconRegistry.get_icon(
-            "mdi.cog-outline", color=JDXi.UI.Style.GREY
-        )
+        common_icon = JDXi.UI.Icon.get_icon("mdi.cog-outline", color=JDXi.UI.Style.GREY)
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         # Create and add the mixer tab
         from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
 
         mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
-        mixer_icon = JDXi.UI.IconRegistry.get_icon(
-            "ei.adjust-alt", color=JDXi.UI.Style.GREY
-        )
+        mixer_icon = JDXi.UI.Icon.get_icon("ei.adjust-alt", color=JDXi.UI.Style.GREY)
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
-            mixer_icon = JDXi.UI.IconRegistry.get_icon(
+            mixer_icon = JDXi.UI.Icon.get_icon(
                 "ph.sliders-bold", color=JDXi.UI.Style.GREY
             )
         self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")
@@ -282,7 +278,7 @@ class DrumCommonEditor(SynthEditor):
                     f"Loading {partial_name} ({count} of {total})"
                 )
 
-            editor = DrumPartialEditor(
+            editor = DrumPartialPanel(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
                 partial_name=partial_name,
@@ -317,7 +313,7 @@ class DrumCommonEditor(SynthEditor):
         except IndexError:
             log.message(f"Invalid partial index: {index}")
 
-    def _update_partial_controls(
+    def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """

@@ -128,7 +128,7 @@ class ThemeManager(QObject):
     @staticmethod
     def apply_midi_monitor(widget: QWidget) -> None:
         """Apply MIDI message monitor style"""
-        ThemeManager.apply_style(widget, JDXiUIStyle.MIDI_MESSAGE_MONITOR)
+        ThemeManager.apply_style(widget, JDXiUIStyle.WINDOW_MIDI_MESSAGE_MONITOR)
 
     @staticmethod
     def apply_status_indicator_active(widget: QWidget, analog: bool = False) -> None:

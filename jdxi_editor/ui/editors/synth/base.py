@@ -22,16 +22,19 @@ import threading
 from typing import Dict, Optional
 
 import mido
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QTabWidget, QWidget
 
 from decologr import Decologr as log
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.control_change.base import ControlChange
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -44,15 +47,18 @@ class SynthBase(QWidget):
     """base class for all synth editors"""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None
+        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None, address: Optional[RolandSysExAddress] = None
     ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
 
         :param midi_helper: Optional[MidiIOHelper] instance for MIDI communication
         :param parent: QWidget Parent widget for this editor
+        :param address: Optional[RolandSysExAddress] Address for MIDI communication (can be set later)
         """
         super().__init__(parent)
+        self.midi_channel: int | None = None  # Default to Digital
+        self.tab_widget: QTabWidget | None = None
         self.preset_type = None
         self.parent = parent
         # --- Store all Tone/Preset names for access by Digital Displays
@@ -64,10 +70,11 @@ class SynthBase(QWidget):
         }
         self.partial_editors = {}
         self.sysex_data = None
-        self.address = None
+        self.address: Optional[RolandSysExAddress] = address
         self.partial_number = None
         self.bipolar_parameters = []
         self.controls: Dict[AddressParameter, QWidget] = {}
+        self.analog: bool = False
         self._midi_helper = midi_helper
         self.midi_requests = []
         self.sysex_composer = JDXiSysExComposer()
@@ -171,6 +178,18 @@ class SynthBase(QWidget):
                 return ProgramCommonAddress()
 
         return None
+
+    def send_control_change(self, control_change: ControlChange, value: int):
+        """Send MIDI CC message"""
+        if self.midi_helper:
+            control_change_number = (
+                control_change.value
+                if isinstance(control_change, ControlChange)
+                else control_change
+            )
+            self.midi_helper.send_control_change(
+                control_change_number, value, self.midi_channel
+            )
 
     def send_raw_message(self, message: bytes) -> bool:
         """
@@ -400,6 +419,52 @@ class SynthBase(QWidget):
             log.error(f"Failed to get controls: {ex}")
             return {}
 
+    def _add_tab(
+        self,
+        *,
+        key: TabDefinitionMixin,
+        widget: QWidget,
+    ) -> None:
+        # Handle both regular icons and generated waveform icons
+        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        
+        # Check if icon is a WaveformType value (string that matches WaveformType attributes)
+        waveform_type_values = {
+            WaveformType.ADSR,
+            WaveformType.UPSAW,
+            WaveformType.SQUARE,
+            WaveformType.PWSQU,
+            WaveformType.TRIANGLE,
+            WaveformType.SINE,
+            WaveformType.SAW,
+            WaveformType.SPSAW,
+            WaveformType.PCM,
+            WaveformType.NOISE,
+            WaveformType.LPF_FILTER,
+            WaveformType.HPF_FILTER,
+            WaveformType.BYPASS_FILTER,
+            WaveformType.BPF_FILTER,
+            WaveformType.FILTER_SINE,
+        }
+        
+        # Handle icon - could be a string (qtawesome icon name) or WaveformType value
+        if isinstance(key.icon, str) and key.icon in waveform_type_values:
+            # Use generated icon for waveform types
+            icon = JDXi.UI.Icon.get_generated_icon(key.icon)
+        elif isinstance(key.icon, str) and key.icon.startswith("mdi."):
+            # Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        else:
+            # Use regular icon from registry
+            icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
+        
+        self.tab_widget.addTab(
+            widget,
+            icon,
+            key.label,
+        )
+        setattr(self, key.attr_name, widget)
+
     def _on_parameter_changed(
         self,
         param: AddressParameter,
@@ -587,7 +652,7 @@ class SynthBase(QWidget):
         partial_number: Optional[int] = 0,
     ):
         """Initialize synth-specific data."""
-        from jdxi_editor.synth.factory import create_synth_data
+        from jdxi_editor.core.synth.factory import create_synth_data
 
         self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
         # Dynamically assign attributes
@@ -693,7 +758,19 @@ class SynthBase(QWidget):
         """
         if not value:
             return
-        slider = self.partial_editors[partial_no].controls.get(param)
+
+        # Check if partial editor has lfo_depth_controls property (Digital synths have it, drums don't)
+        partial_editor = self.partial_editors[partial_no]
+        if not hasattr(partial_editor, "lfo_depth_controls"):
+            # For editors without lfo_depth_controls (like drums), try to get from controls directly
+            slider = (
+                partial_editor.controls.get(param)
+                if hasattr(partial_editor, "controls")
+                else None
+            )
+        else:
+            slider = partial_editor.lfo_depth_controls.get(param)
+
         if not slider:
             failures.append(param.name)
             return

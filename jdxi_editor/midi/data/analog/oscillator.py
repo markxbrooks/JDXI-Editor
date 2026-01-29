@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class AnalogOscWave(Enum):
+class AnalogWaveOsc(Enum):
     """Analog oscillator waveform types"""
 
     SAW = 0

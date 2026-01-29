@@ -36,7 +36,7 @@ JDXiPresetData(name='011: LFO Pad 1', presets=['001: JP8 Strings1', '002: Soft P
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.synth.type import JDXiSynth
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 
 

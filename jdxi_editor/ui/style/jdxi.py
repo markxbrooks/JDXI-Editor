@@ -111,6 +111,8 @@ class JDXiUIStyle:
     ICON_PIXMAP_SIZE = 30  # in px
     TRACK_ICON_PIXMAP_SIZE = 50  # in px
     BUTTON_PADDING = 1
+    BUTTON_WAVEFORM_RADIUS = 8
+    BUTTON_WAVEFORM_BORDER_WIDTH = 2
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF4400"  # Brighter red for hover
     ACCENT_ANALOG = "#00A0E9"
@@ -136,6 +138,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_RADIUS = 15
     BUTTON_RECT_RADIUS = 6
     BUTTON_BORDER_WIDTH = 4
+    BUTTON_BORDER_WIDTH_WAVEFORM = 2
     HANDLE_SIZE = "6px"
     GROOVE_WIDTH = "2px"
     ICON_SIZE = 20
@@ -148,17 +151,15 @@ class JDXiUIStyle:
 
     # Fonts
     if platform.system() == "Windows":
-        FONT_FAMILY = "Orbitron"
         FONT_SIZE = "10px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     elif platform.system() == "Darwin":
-        FONT_FAMILY = "Orbitron"  # "Myriad Pro"
         FONT_SIZE = "11px"
         FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
-        FONT_FAMILY = "Orbitron"
-
+        FONT_SIZE = "11px"
         FONT_SIZE_SPLASH_SCREEN = "36px"
+    FONT_FAMILY = "Segoe UI"
     FONT_FAMILY_MONOSPACE = "Consolas"
     FONT_SIZE_MAIN_TABS = "14px"
     FONT_WEIGHT_BOLD = "bold"
@@ -185,7 +186,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
-        radius=BUTTON_ROUND_RADIUS,
+        border_radius=BUTTON_ROUND_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -193,7 +194,7 @@ class JDXiUIStyle:
     BUTTON_ROUND_SMALL = generate_button_style(
         bg=BORDER,
         border="black",
-        radius=10,
+        border_radius=10,
         text_color="#AAAAAA",
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -210,7 +211,7 @@ class JDXiUIStyle:
     BUTTON_RECT_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
-        radius=BUTTON_RECT_RADIUS,
+        border_radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
@@ -228,7 +229,7 @@ class JDXiUIStyle:
     BUTTON_ANALOG_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_ANALOG,
-        radius=BUTTON_RECT_RADIUS,
+        border_radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
@@ -236,12 +237,12 @@ class JDXiUIStyle:
     BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
-        radius=12,  # More circular
-        text_color=GREY,
-        hover="#444444",
+        border_radius=BUTTON_WAVEFORM_RADIUS,  # More circular
+        text_color=WHITE,
+        hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=2,  # Thinner border for waveform buttons
+        button_border_width=BUTTON_BORDER_WIDTH_WAVEFORM,  # Thinner border for waveform buttons
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
@@ -249,13 +250,13 @@ class JDXiUIStyle:
 
     BUTTON_WAVEFORM_ANALOG = generate_button_style(
         bg=BUTTON_BACKGROUND,
-        border=BACKGROUND_PRESSED,
-        radius=3,
-        text_color=GREY,
-        hover="#444444",
-        border_pressed=ACCENT_ANALOG,
+        border=ACCENT_ANALOG,
+        border_radius=BUTTON_WAVEFORM_RADIUS,
+        text_color=WHITE,
+        hover=ACCENT_ANALOG_HOVER,
+        border_pressed=ACCENT_ANALOG_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=BUTTON_BORDER_WIDTH,
+        button_border_width=BUTTON_BORDER_WIDTH_WAVEFORM,
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
@@ -491,7 +492,7 @@ class JDXiUIStyle:
             }
         """
 
-    MIDI_MESSAGE_MONITOR = f"""
+    WINDOW_MIDI_MESSAGE_MONITOR = f"""
             QTextEdit {{
                 font-family: 'Consolas', 'Courier New', monospace;
                 background-color: #1E1E1E;
@@ -1402,10 +1403,11 @@ class JDXiUIStyle:
                 );
             }}
             """
+
     INSTRUMENT_SUBTITLE_LABEL = f"""
             font-family: "{FONT_FAMILY_MONOSPACE}";
             color: #FFBB33;
-            font-size: 12px;
+            font-size: 24px;
             font-weight: bold;
             """
 
@@ -1594,7 +1596,7 @@ class JDXiUIStyle:
         }}
     """
 
-    DEBUGGER = f"""
+    WINDOW_DEBUGGER = f"""
             QMainWindow {{
                 background-color: #2E2E2E;
             }}

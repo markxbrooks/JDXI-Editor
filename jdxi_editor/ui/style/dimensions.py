@@ -33,6 +33,7 @@ class Margins:
 
 
 class Dimensions:
+    """Dimensions"""
     X: int = 0
     Y: int = 0
     WIDTH: int = 0
@@ -43,6 +44,11 @@ class Dimensions:
 
     MIN_WIDTH: Optional[int] = None
     MIN_HEIGHT: Optional[int] = None
+
+    INIT_WIDTH: Optional[int] = None
+    INIT_HEIGHT: Optional[int] = None
+
+    MARGINS: tuple = (5, 5, 5, 5)
 
     @classmethod
     def right(cls) -> int:
@@ -95,6 +101,10 @@ class DigitalEditorDimensions(Dimensions):
 
     SPACING = 5
     MARGINS = Margins(5, 15, 5, 5)
+    MIN_WIDTH: Optional[int] = 850
+    MIN_HEIGHT: Optional[int] = 300
+    INIT_WIDTH: Optional[int] = 1030
+    INIT_HEIGHT: Optional[int] = 600
 
 
 class BasicEditorDimensions(Dimensions):
@@ -113,6 +123,7 @@ class DrumEditorDimensions(Dimensions):
     PARTIAL_TAB_MIN_WIDTH = (
         400  # Minimum width for drum partial tabs to match WMT width
     )
+    MIN_HEIGHT: Optional[int] = 300
 
 
 class WaveformIconDimensions(Dimensions):
@@ -120,6 +131,13 @@ class WaveformIconDimensions(Dimensions):
 
     WIDTH = 60
     HEIGHT = 30
+
+
+class LfoIconDimensions(Dimensions):
+    """Lfo Icon Dimensions"""
+
+    WIDTH = 20
+    HEIGHT = 20
 
 
 class SplashScreenDimensions(Dimensions):
@@ -169,6 +187,7 @@ class AnalogEditorDimensions(EditorDimensions):
     MIN_HEIGHT = 330
     WIDTH = 950
     HEIGHT = 600
+    MARGINS = (1, 1, 1, 1)
 
 
 class LEDDisplayDimensions(Dimensions):
@@ -288,6 +307,12 @@ class EffectsButtonDimensions(Dimensions):
     HEIGHT = 120
 
 
+class RoundButtonDimensions(Dimensions):
+    """Button Dimensions"""
+    WIDTH = 30
+    HEIGHT = 30
+
+
 class ToneButtonDimensions(Dimensions):
     """Tone button dimensions"""
 
@@ -324,6 +349,7 @@ class JDXiUIDimensions(Dimensions):
     ICON: IconDimensions = IconDimensions
     COMBO: ComboBoxDimensions = ComboBoxDimensions
     WAVEFORM_ICON: WaveformIconDimensions = WaveformIconDimensions
+    LFOIcon: LfoIconDimensions = LfoIconDimensions
 
     # --- Splash screen
     SPLASH: SplashScreenDimensions = SplashScreenDimensions
@@ -340,6 +366,7 @@ class JDXiUIDimensions(Dimensions):
 
     # --- Widgets
     PWM_WIDGET: PWMWidgetDimensions = PWMWidgetDimensions
+    BUTTON_ROUND: RoundButtonDimensions = RoundButtonDimensions
     CHART: ChartMetrics = ChartMetrics
     LED: LEDDisplayDimensions = LEDDisplayDimensions
     DIGITAL_TITLE: DigitalTitleDimensions = DigitalTitleDimensions

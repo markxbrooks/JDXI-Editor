@@ -58,14 +58,17 @@ class DrumCommonSection(SectionBaseWidget):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.controls = controls
-        self.address = address
+        self.controls = controls or {}
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
-        self.address.lmb = AddressOffsetProgramLMB.COMMON
 
-        super().__init__(icon_type=IconType.GENERIC, analog=False)
+        super().__init__(icons_row_type=IconType.GENERIC, analog=False)
+        # Set address after super().__init__() to avoid it being overwritten
+        self.address = address
+        if self.address:
+            self.address.lmb = AddressOffsetProgramLMB.COMMON
+        
         self.setup_ui()
 
     def setup_ui(self):
@@ -85,7 +88,7 @@ class DrumCommonSection(SectionBaseWidget):
 
         # Transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_generic_musical_icon_row()
+        icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)
@@ -95,7 +98,8 @@ class DrumCommonSection(SectionBaseWidget):
         common_layout = QFormLayout()
 
         # Kit Level control
-        self.address.lmb = AddressOffsetProgramLMB.COMMON
+        if self.address:
+            self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
             DrumCommonParam.KIT_LEVEL, DrumDisplayName.KIT_LEVEL
         )

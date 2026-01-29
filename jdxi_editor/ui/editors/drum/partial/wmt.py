@@ -46,10 +46,13 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -62,27 +65,21 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 
 
-class DrumWMTSection(QWidget):
+class DrumWMTSection(ParameterSectionBase):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        create_parameter_switch,
-        midi_helper,
-        address=None,
-        on_parameter_changed=None,
+            self,
+            controls: dict,
+            midi_helper: MidiIOHelper,
+            address: RolandSysExAddress = None,
+            on_parameter_changed: Callable = None,
     ):
         super().__init__()
         """
         Initialize the DrumWMTSection
 
         :param controls: dict
-        :param create_parameter_combo_box: Callable
-        :param create_parameter_slider: Callable
-        :param create_parameter_switch: Callable
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
         :param on_parameter_changed: Callable to handle parameter changes
@@ -91,13 +88,13 @@ class DrumWMTSection(QWidget):
         self.r_wave_combos = {}
         self.wmt_tab_widget = None
         self.controls = controls
-        self._create_parameter_slider = create_parameter_slider
-        self._create_parameter_combo_box = create_parameter_combo_box
-        self._create_parameter_switch = create_parameter_switch
         self.midi_helper = midi_helper
         self.address = address
         self._on_parameter_changed = on_parameter_changed
         self.setup_ui()
+
+    def _setup_ui(self):
+        pass
 
     def setup_ui(self):
         """setup UI"""
@@ -118,7 +115,7 @@ class DrumWMTSection(QWidget):
 
         # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.IconRegistry.create_adsr_icons_row()
+        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
 
         transfer_layout_items(icon_hlayout, icon_row_container)
         scrolled_layout.addLayout(icon_row_container)
@@ -135,7 +132,7 @@ class DrumWMTSection(QWidget):
         wmt_velocity_control_combo = self._create_parameter_switch(
             DrumPartialParam.WMT_VELOCITY_CONTROL,
             DrumDisplayName.WMT_VELOCITY_CONTROL,
-            values=DrumDisplayOptions.WMT_VELOCITY_CONTROL,
+            DrumDisplayOptions.WMT_VELOCITY_CONTROL,
         )
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
@@ -182,30 +179,30 @@ class DrumWMTSection(QWidget):
         self.wmt_controls_tab_widget = QTabWidget()
         main_row_hlayout.addWidget(self.wmt_controls_tab_widget)
 
-        controls_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.TUNE, color=JDXi.UI.Style.GREY
+        controls_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.TUNE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
-        waves_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.WAVEFORM, color=JDXi.UI.Style.GREY
+        waves_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"
         )
-        fxm_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.EQUALIZER, color=JDXi.UI.Style.GREY
+        fxm_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.EQUALIZER, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(self._create_fxm_group(p), fxm_icon, "FXM")
-        tuning_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.MUSIC_NOTE, color=JDXi.UI.Style.GREY
+        tuning_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUSIC_NOTE, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_tuning_group(p), tuning_icon, "Tuning"
         )
-        pan_icon = JDXi.UI.IconRegistry.get_icon(
-            JDXi.UI.IconRegistry.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
+        pan_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.PAN_HORIZONTAL, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wmt_pan_group(p), pan_icon, "Pan"
@@ -393,7 +390,7 @@ class DrumWMTSection(QWidget):
             self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"),
             self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="FXM")
+        group, _ = create_group_with_form_layout(widgets, label="FXM")
         return group
 
     def _create_wmt_pan_group(self, p: Callable[[Any], Any]):
@@ -413,7 +410,7 @@ class DrumWMTSection(QWidget):
                 [0, 1, 2],
             ),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="Pan")
+        group, _ = create_group_with_form_layout(widgets, label="Pan")
         return group
 
     def _create_adsr_widget(self, p: Callable[[Any], Any]) -> WMTEnvelopeWidget:
@@ -437,7 +434,7 @@ class DrumWMTSection(QWidget):
             self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"),
             self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"),
         ]
-        group, _ = create_group_with_form_layout(widgets, group_name="Tuning")
+        group, _ = create_group_with_form_layout(widgets, label="Tuning")
         return group
 
     def _on_wave_parameter_changed(self, param: DrumPartialParam, value: int) -> None:

@@ -40,13 +40,13 @@ from PySide6.QtWidgets import (
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.core.synth.factory import create_synth_data
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
-from jdxi_editor.synth.factory import create_synth_data
-from jdxi_editor.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
@@ -234,7 +234,7 @@ class JDXiWindow(QMainWindow):
         file_menu.addSeparator()
 
         load_program_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.FOLDER_OPENED),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED),
             "Load Program...",
             self,
         )
@@ -243,7 +243,7 @@ class JDXiWindow(QMainWindow):
 
         load_preset_action = QAction("Load Preset...", self)
         load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
-        file_menu.addAction(load_preset_action)
+        # file_menu.addAction(load_preset_action)
 
         load_action = QAction("Load Patch...", self)
         load_action.triggered.connect(self._patch_load)
@@ -379,7 +379,7 @@ class JDXiWindow(QMainWindow):
         self.help_menu.addAction(about_help_action)
 
         preferences_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.SETTINGS),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS),
             "Preferences",
             self,
         )
@@ -388,7 +388,7 @@ class JDXiWindow(QMainWindow):
         self.help_menu.addAction(preferences_action)
 
         documentation_action = QAction(
-            JDXi.UI.IconRegistry.get_icon(JDXi.UI.IconRegistry.HELP_RHOMBUS),
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS),
             "Documentation",
             self,
         )
@@ -400,13 +400,13 @@ class JDXiWindow(QMainWindow):
         # --- Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)
         main_editor_action.triggered.connect(self._show_main_editor)
-        self.help_menu.addAction(main_editor_action)
+        # self.help_menu.addAction(main_editor_action)
 
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
 
-        JDXi.UI.ThemeManager.apply_transparent(status_bar)
+        JDXi.UI.Theme.apply_transparent(status_bar)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())
