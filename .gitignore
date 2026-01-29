@@ -14,7 +14,7 @@ jdxi_dmg
 tests/sheep.mid
 appimagetool*
 picomidi/
-
+decologr/
 spleeter-env
 *.py[cod]
 *$py.class
