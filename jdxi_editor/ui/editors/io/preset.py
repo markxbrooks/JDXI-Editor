@@ -349,17 +349,28 @@ class PresetEditor(BasicEditor):
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+            self.instrument_icon_folder = "digital_synths"
+            self.instrument_default_image = "jdxi_vector.png"
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
+            self.instrument_icon_folder = "digital_synths"
+            self.instrument_default_image = "jdxi_vector.png"
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
+            self.instrument_icon_folder = "drum_kits"
+            self.instrument_default_image = "drums.png"
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
+            self.instrument_icon_folder = "analog_synths"
+            self.instrument_default_image = "analog.png"
         self._populate_presets()
         self.update_category_combo_box_categories()
+        # Update image when preset type changes
+        if hasattr(self, "update_instrument_image"):
+            self.update_instrument_image()
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
@@ -418,6 +429,20 @@ class PresetEditor(BasicEditor):
             pc - 1,  # Convert 1-based PC to 0-based
         )
         self.data_request()
+        
+        # Update the instrument image based on the selected preset
+        self.update_instrument_image()
+    
+    def _get_selected_instrument_text(self) -> str:
+        """
+        Override to use preset_combo_box instead of instrument_selection_combo.
+        
+        :return: str The selected preset text from preset_combo_box
+        """
+        if hasattr(self, "preset_combo_box") and self.preset_combo_box:
+            return self.preset_combo_box.currentText()
+        log.error("Preset combo box is missing or malformed.")
+        return ""
 
     def _populate_presets(self, search_text: str = ""):
         """
