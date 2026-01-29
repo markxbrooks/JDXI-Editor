@@ -41,13 +41,86 @@ os.system(inno_cmd)
 
 """
 
-import os
+import os, sys
 import subprocess
 import shutil
 from pathlib import Path
 from decologr import Decologr as log, setup_logging
 
-from jdxi_editor.project import __version__, __package_name__
+# from jdxi_editor.project import __version__, __package_name__
+
+# Import project metadata
+# Navigate up from building/apple/ to project root
+SCRIPT_DIR = Path(__file__).parent.absolute()
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+try:
+    from jdxi_editor.project import (
+        __version__,
+        __package_name__,
+        __program__,
+        __author__,
+    )
+except ImportError:
+    # Fallback if running from different location
+    sys.path.insert(0, str(SCRIPT_DIR.parent.parent))
+    from jdxi_editor.project import (
+        __version__,
+        __package_name__,
+        __program__,
+        __author__,
+    )
+
+# Build configuration
+APP_NAME = "JD-Xi Editor.exe"
+APP_DISPLAY_NAME = __program__
+VERSION = __version__
+PKG_IDENTIFIER = "com.jdxi.editor"
+INSTALL_LOCATION = "/Applications"
+
+# Directories
+BUILD_DIR = PROJECT_ROOT / "build" / "macos"
+DIST_DIR = PROJECT_ROOT / "dist"
+VENV_PATH = PROJECT_ROOT / "venv"
+PYTHON_PATH = VENV_PATH / "bin" / "python"
+
+
+def clean_build_dirs():
+    """Remove previous build artifacts."""
+    print("\n🧹 Cleaning previous builds...")
+
+    dirs_to_clean = [
+        BUILD_DIR,
+        PROJECT_ROOT / "build",
+        PROJECT_ROOT / "dist",
+    ]
+
+    files_to_clean = [
+        # PROJECT_ROOT / f"JD-Xi_Editor_{VERSION}_MacOS_Universal.pkg",
+        # PROJECT_ROOT / f"JD-Xi_Editor_{VERSION}_MacOS_Universal.dmg",
+    ]
+
+    for path in dirs_to_clean:
+        if path.exists():
+            print(f"  Removing: {path}")
+            shutil.rmtree(path)
+
+    for path in files_to_clean:
+        if path.exists():
+            print(f"  Removing: {path}")
+            path.unlink()
+
+    # Also clean py2app artifacts
+    py2app_build = PROJECT_ROOT / "build"
+    py2app_dist = PROJECT_ROOT / "dist" / APP_NAME
+    if py2app_build.exists():
+        for item in py2app_build.iterdir():
+            if item.is_dir() and item.name != "macos":
+                print(f"  Removing: {item}")
+                shutil.rmtree(item)
+
+    print("  ✓ Clean complete")
 
 
 def remove_build_dirs():
@@ -60,9 +133,10 @@ def remove_build_dirs():
 
 def build_with_pyinstaller():
     """build with pyinstaller"""
-    entry_point = Path(__package_name__) / "main.py"
+    entry_point = Path(PROJECT_ROOT) / "jdxi_editor" / "main.py"
     entry_point = entry_point.resolve()
-    icon_file = Path("resources") / "jdxi_icon.ico"
+    os.chdir(PROJECT_ROOT)
+    icon_file = Path(PROJECT_ROOT) / "resources" / "jdxi_icon.ico"
     icon_file = icon_file.resolve()
     try:
         cmd = [
@@ -125,7 +199,7 @@ if __name__ == "__main__":
     log.message(f"{__package_name__} version {__version__} build system\n")
     setup_logging(project_name=__package_name__+ " builder")
     try:
-        remove_build_dirs()
+        clean_build_dirs()
         build_with_pyinstaller()
         copy_internal_dirs()
         run_inno_setup()
