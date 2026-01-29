@@ -28,8 +28,14 @@ import tempfile
 from pathlib import Path
 from distutils.dir_util import copy_tree
 
+# Directories - determine project root (this script is in building/linux/)
+SCRIPT_DIR = Path(__file__).parent.absolute()
+PROJECT_ROOT = SCRIPT_DIR.parent.parent  # Go up two levels to project root
+BUILD_DIR = PROJECT_ROOT / "build" / "linux"
+DIST_DIR = PROJECT_ROOT / "dist" / "linux"
+
 # Import project metadata
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(PROJECT_ROOT))
 from jdxi_editor.project import __version__, __package_name__, __program__, __author__
 
 # Build configuration
@@ -41,11 +47,6 @@ MAINTAINER = "Mark Brooks <mark.x.brooks@gmail.com>"
 HOMEPAGE = "https://github.com/markxbrooks/JDXI-Editor"
 LICENSE = "MIT"
 CATEGORIES = "AudioVideo;Audio;Midi;Music;"
-
-# Directories
-PROJECT_ROOT = Path(__file__).parent.absolute()
-BUILD_DIR = PROJECT_ROOT / "build" / "linux"
-DIST_DIR = PROJECT_ROOT / "dist" / "linux"
 
 
 def run_command(cmd, cwd=None, check=True):
@@ -147,6 +148,11 @@ def build_with_pyinstaller():
         "--hidden-import=matplotlib",
         "--hidden-import=pubsub",
         "--hidden-import=pubsub.core",
+        # Decologr logging library
+        "--hidden-import=decologr",
+        "--collect-all=decologr",
+        "--hidden-import=picomidi",
+        "--collect-all=decologr",
         # Collect other packages
         "--collect-submodules=jdxi_editor",
         "--collect-data=jdxi_editor",

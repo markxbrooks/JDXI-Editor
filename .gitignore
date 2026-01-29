@@ -13,6 +13,8 @@ shutil
 jdxi_dmg
 tests/sheep.mid
 appimagetool*
+picomidi/
+
 spleeter-env
 *.py[cod]
 *$py.class
