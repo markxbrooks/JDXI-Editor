@@ -100,7 +100,7 @@ class AnalogAmpSection(SectionBaseWidget):
         # --- ADSR Tab
         self._add_tab(key=Analog.Amp.Tab.ADSR, widget=self.adsr_group)
 
-        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
 
         # --- Add tab widget to main layout
         self.layout.addWidget(self.tab_widget)
