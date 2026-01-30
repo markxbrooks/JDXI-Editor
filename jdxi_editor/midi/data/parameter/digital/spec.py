@@ -13,6 +13,7 @@ from jdxi_editor.midi.data.digital.filter import (
 )
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.parameter.base.spec import MidiSynthSpec, DisplaySpec, WaveSpec, FilterSpec, AmpSpec
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam, DigitalModifyParam, DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
@@ -161,14 +162,13 @@ class DigitalGroupBox(GroupBoxDefinitionMixin, Enum):
         self.label = label
 
 
-class DigitalAmp:
+class DigitalAmp(AmpSpec):
     """Digital Amp"""
-
     ADSR: ADSRType = ADSRType
     Tab: DigitalAmpTab = DigitalAmpTab
 
 
-class DigitalFilter:
+class DigitalFilter(FilterSpec):
     """Digital Filter"""
 
     Mode: DigitalFilterMode = DigitalFilterMode
@@ -178,9 +178,8 @@ class DigitalFilter:
     Tab: DigitalFilterTab = DigitalFilterTab
 
 
-class DigitalWave:
+class DigitalWave(WaveSpec):
     """Digital Wave"""
-
     LFO: DigitalLFOShape = DigitalLFOShape
     Osc: DigitalWaveOsc = DigitalWaveOsc
     SubOsc = None  # No sub-oscillator for the digital synth
@@ -189,21 +188,21 @@ class DigitalWave:
     OscillatorTab: DigitalOscillatorTab = DigitalOscillatorTab  # Alias for clarity
 
 
-class DigitalToneModifyDisplay:
+class DigitalToneModifyDisplay(DisplaySpec):
     """Digital Tone Modify Display names and options"""
     Names: DigitalModifyNames = DigitalModifyNames
     Options: DigitalModifyOptions = DigitalModifyOptions
 
 
-class DigitalDisplay:
-    """Analog Display class"""
+class DigitalDisplay(DisplaySpec):
+    """Digital Display class"""
 
     Name: DigitalDisplayName = DigitalDisplayName
     Options: DigitalDisplayOptions = DigitalDisplayOptions
     Values: DigitalDisplayValues = DigitalDisplayValues
 
 
-class JDXiMidiDigital:
+class JDXiMidiDigital(MidiSynthSpec):
     """Digital Spec Class"""
 
     Param: DigitalPartialParam = DigitalPartialParam

@@ -14,6 +14,7 @@ from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
+from jdxi_editor.midi.data.parameter.base.spec import MidiSynthSpec, DisplaySpec, WaveSpec, FilterSpec, AmpSpec
 from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin, GroupBoxDefinitionMixin
 from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
@@ -72,14 +73,14 @@ class AnalogOscillatorTab(TabDefinitionMixin, Enum):
         self.icon = icon
 
 
-class AnalogAmp:
+class AnalogAmp(AmpSpec):
     """Analog Amp"""
 
     ADSR: ADSRType = ADSRType
     Tab: AnalogAmpTab = AnalogAmpTab
 
 
-class AnalogFilter:
+class AnalogFilter(FilterSpec):
     """Analog Filter"""
 
     # Mode: AnalogFilterMode = AnalogFilterMode
@@ -104,7 +105,7 @@ class AnalogGroupBox(GroupBoxDefinitionMixin, Enum):
         self.label = label
 
 
-class AnalogWave:
+class AnalogWave(WaveSpec):
     """Analog Wave"""
 
     LFO: AnalogLFOWaveShape = AnalogLFOWaveShape
@@ -114,7 +115,7 @@ class AnalogWave:
     Tab: AnalogOscillatorTab = AnalogOscillatorTab
 
 
-class AnalogDisplay:
+class AnalogDisplay(DisplaySpec):
     """Analog Display class"""
 
     Name: AnalogDisplayName = AnalogDisplayName
@@ -122,7 +123,7 @@ class AnalogDisplay:
     Options: AnalogDisplayOptions = AnalogDisplayOptions
 
 
-class JDXiMidiAnalog:
+class JDXiMidiAnalog(MidiSynthSpec):
     """Analog Class"""
 
     Param: AnalogParam = AnalogParam

@@ -1,0 +1,74 @@
+from typing import Optional
+
+from PySide6.QtWidgets import QWidget, QTabWidget
+
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+
+
+class BaseAmpSection(SectionBaseWidget):
+    """Base Amp Section"""
+
+    def __init__(
+        self,
+        # controls: dict,
+        analog: bool = False,
+        parent: Optional[QWidget] = None,
+    ):
+        # Get midi_helper from parent if available
+        self.synth_spec = None
+        midi_helper = None
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
+
+        # Dynamic widgets storage
+        self.amp_sliders = {}
+        self.tab_widget = None
+        self.layout = None
+
+        super().__init__(icons_row_type=IconType.ADSR, analog=analog, midi_helper=midi_helper)
+
+    # ------------------------------------------------------------------
+    # Build Widgets
+    # ------------------------------------------------------------------
+    def build_widgets(self):
+        """Build all amp widgets"""
+        self.tab_widget = QTabWidget()
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
+        self._create_sliders()
+        self._create_adsr_group()
+
+    def _create_sliders(self):
+        """Create sliders for Level, KeyFollow, and Velocity Sensitivity"""
+        for entry in self.PARAM_SPECS:
+            slider = self._create_parameter_slider(
+                entry.param, entry.label, vertical=entry.vertical
+            )
+            self.amp_sliders[entry.param] = slider
+            self.controls[entry.param] = slider
+
+    # ------------------------------------------------------------------
+    # Setup UI
+    # ------------------------------------------------------------------
+    def setup_ui(self):
+        """Setup the UI for the analog amp section"""
+        self.layout = self.create_layout()
+
+        # --- Level Controls Tab
+        self.controls_layout = create_layout_with_widgets(
+            list(self.amp_sliders.values())
+        )
+        self.level_controls_widget = QWidget()
+        self.level_controls_widget.setLayout(self.controls_layout)
+
+        self._add_tab(key=self.synth_spec.Amp.Tab.CONTROLS, widget=self.level_controls_widget)
+
+        # --- ADSR Tab
+        self._add_tab(key=self.synth_spec.Amp.Tab.ADSR, widget=self.adsr_group)
+
+        # --- Add tab widget to main layout
+        self.layout.addWidget(self.tab_widget)
+        self.layout.addStretch()

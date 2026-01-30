@@ -17,7 +17,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_layout_with_widgets,
 )
-from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
+from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin, JDXiMidiDigital
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -59,9 +59,10 @@ class ParameterSectionBase(SectionBaseWidget):
         self.adsr_widget = None
         self.control_widgets = []
         self.button_widgets = {}
+        self.synth_spec = JDXiMidiDigital
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
-        # Set controls after super().__init__() to avoid it being overwritten
+        # --- Set controls after super().__init__() to avoid it being overwritten
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self.build_widgets()
@@ -85,7 +86,7 @@ class ParameterSectionBase(SectionBaseWidget):
             log.message(f"📋 PARAM_SPECS count: {len(self.PARAM_SPECS)}")
             log.message(f"📋 ADSR_SPEC: {self.ADSR_SPEC if self.ADSR_SPEC else 'None'}")
 
-            # Check if FILTER_ENV_DEPTH is in PARAM_SPECS
+            # --- Check if FILTER_ENV_DEPTH is in PARAM_SPECS
             filter_env_depth_in_specs = any(
                 (hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH")
                 or (spec.param == DigitalPartialParam.FILTER_ENV_DEPTH)
@@ -177,7 +178,7 @@ class ParameterSectionBase(SectionBaseWidget):
         # Handle both string keys and ADSRType enum keys
         from jdxi_editor.ui.adsr.type import ADSRType
 
-        attack_key = ADSRStage.ATTACK  #if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
+        attack_key = ADSRStage.ATTACK  # if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
         decay_key = ADSRStage.DECAY # if "decay" in self.ADSR_SPEC else ADSRType.DECAY
         sustain_key = ADSRStage.SUSTAIN # if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
         release_key = ADSRStage.RELEASE # "release" in self.ADSR_SPEC else ADSRType.RELEASE
