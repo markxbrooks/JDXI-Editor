@@ -40,6 +40,49 @@ class BaseAmpSection(SectionBaseWidget):
         self.layout = None
 
         super().__init__(icons_row_type=IconType.ADSR, analog=analog, midi_helper=midi_helper)
+        
+        # ------------------------------------------------------------------
+        #Build Widgets
+        # ------------------------------------------------------------------
+        def build_widgets(self):
+            """Build all amp widgets"""
+            self.tab_widget = QTabWidget()
+            self._create_sliders()
+            self._create_adsr_group()
+            
+        def _create_sliders(self):
+            """Create sliders for Level, KeyFollow, and Velocity Sensitivity"""
+            for entry in self.PARAM_SPECS:
+                slider = self._create_parameter_slider(
+                    entry.param, entry.label, vertical=entry.vertical
+                )
+                self.amp_sliders[entry.param] = slider
+                self.controls[entry.param] = slider
+                
+        # ------------------------------------------------------------------
+        # Setup UI
+        # ------------------------------------------------------------------
+        def setup_ui(self):
+            """Setup the UI for the analog amp section"""
+            self.layout = self.create_layout()
+    
+            # --- Level Controls Tab
+            controls_layout = create_layout_with_widgets(
+                list(self.amp_sliders.values())
+            )
+            level_controls_widget = QWidget()
+            level_controls_widget.setLayout(controls_layout)
+    
+            self._add_tab(key=Analog.Amp.Tab.CONTROLS, widget=level_controls_widget)
+    
+            # --- ADSR Tab
+            self._add_tab(key=Analog.Amp.Tab.ADSR, widget=self.adsr_group)
+    
+            JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
+    
+            # --- Add tab widget to main layout
+            self.layout.addWidget(self.tab_widget)
+            self.layout.addStretch()
  
 
 class AnalogAmpSection(BaseAmpSection):
