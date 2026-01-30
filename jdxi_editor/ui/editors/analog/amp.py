@@ -21,8 +21,28 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
+class BaseAmpSection(SectionBaseWidget):
+    """Base Amp Section"""
 
-class AnalogAmpSection(SectionBaseWidget):
+    def __init__(
+        self,
+        controls: dict,
+        parent: Optional[QWidget] = None,
+    ):
+        # Get midi_helper from parent if available
+        midi_helper = None
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
+
+        # Dynamic widgets storage
+        self.amp_sliders = {}
+        self.tab_widget = None
+        self.layout = None
+
+        super().__init__(icons_row_type=IconType.ADSR, analog=analog, midi_helper=midi_helper)
+ 
+
+class AnalogAmpSection(BaseAmpSection):
     """Amp section of the JD-Xi editor"""
 
     PARAM_SPECS = [
@@ -45,17 +65,13 @@ class AnalogAmpSection(SectionBaseWidget):
         controls: dict,
         parent: Optional[QWidget] = None,
     ):
-        # Get midi_helper from parent if available
-        midi_helper = None
-        if parent and hasattr(parent, 'midi_helper'):
-            midi_helper = parent.midi_helper
 
         # Dynamic widgets storage
         self.amp_sliders = {}
         self.tab_widget = None
         self.layout = None
 
-        super().__init__(icons_row_type=IconType.ADSR, analog=True, midi_helper=midi_helper)
+        super().__init__(analog=True, midi_helper=midi_helper, parent=parent)
         # Set attributes after super().__init__() to avoid them being overwritten
         self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         self.address = address
