@@ -119,7 +119,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             btn = create_button_with_icon(
                 icon_name=mod_lfo_shape.display_name,
                 icon=icon,
-                button_dimensions=JDXi.UI.Dimensions.WAVEFORM_ICON,
+                button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
                 icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
             )
             btn.clicked.connect(

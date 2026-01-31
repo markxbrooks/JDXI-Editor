@@ -45,9 +45,9 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.widgets.spec import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from jdxi_editor.ui.widgets.plot.drum import DrumPitchEnvPlot
+from jdxi_editor.ui.widgets.spec import SliderSpec
 
 
 class DrumPitchEnvSection(DrumBaseSection):

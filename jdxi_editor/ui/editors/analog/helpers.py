@@ -24,8 +24,8 @@ def generate_analog_wave_button(
     icon_base64 = generate_waveform_icon(icon_name, JDXi.UI.Style.WHITE, 0.7)
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setFixedSize(
-        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+        JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+        JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
     )
     return btn
 

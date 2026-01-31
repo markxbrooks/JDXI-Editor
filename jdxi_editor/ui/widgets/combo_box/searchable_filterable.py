@@ -176,8 +176,8 @@ class SearchableFilterableComboBox(QWidget):
 
         # --- Main combo box
         self.combo_box = QComboBox()
-        self.combo_box.setMaximumWidth(JDXi.UI.Dimensions.COMBO.WIDTH)
-        self.combo_box.setMaximumHeight(JDXi.UI.Dimensions.COMBO.HEIGHT)
+        self.combo_box.setMaximumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
+        self.combo_box.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
         self.combo_box.currentIndexChanged.connect(self._on_combo_index_changed)
         layout.addWidget(self.combo_box)
 

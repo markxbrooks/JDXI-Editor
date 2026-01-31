@@ -1,6 +1,7 @@
 """
 Helpers to create HBox and VBoxes
 """
+from typing import Any
 
 import qtawesome as qta
 from PySide6.QtCore import QSize, Qt
@@ -34,8 +35,8 @@ def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     btn.setFixedSize(
-        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+        JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+        JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
     )
     return btn
 
@@ -220,7 +221,7 @@ def create_icons_layout() -> QHBoxLayout:
         "mdi.waveform",
     ]:
         icon_pixmap = qta.icon(icon, color=JDXi.UI.Style.GREY).pixmap(
-            JDXi.UI.Dimensions.ICON.WIDTH, JDXi.UI.Dimensions.ICON.HEIGHT
+            JDXi.UI.Dimensions.Icon.WIDTH, JDXi.UI.Dimensions.Icon.HEIGHT
         )
         icon_label = create_icon_label_with_pixmap(icon_pixmap)
         icons_hlayout.addWidget(icon_label)
@@ -421,3 +422,21 @@ def create_group_with_widgets(label: str, widgets: list, vertical: bool = False)
     group, _ = create_group_with_layout(label=label,
                                         child_layout=layout)
     return group
+
+
+def set_button_style_and_dimensions(btn: QPushButton, dimensions: Dimensions):
+    """set a button styling and dimensions"""
+    btn.setIconSize(QSize(dimensions.Icon.WIDTH, dimensions.Icon.HEIGHT))
+    JDXi.UI.Theme.apply_button_rect_analog(btn)
+    btn.setFixedSize(dimensions.WIDTH,
+                     dimensions.HEIGHT,
+                     )
+
+
+def create_icon_from_name(icon_name: str) -> Any:
+    icon = qta.icon(
+        icon_name,
+        color=JDXi.UI.Style.WHITE,
+        icon_size=JDXi.UI.Dimensions.Icon.SCALE_SMALL,
+    )
+    return icon

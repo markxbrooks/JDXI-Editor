@@ -16,8 +16,8 @@ from typing import Optional
 
 
 class ControlMetrics:
-    MIN_WIDTH = 20
-    MIN_HEIGHT = 14
+    MIN_WIDTH: int = 20
+    MIN_HEIGHT: int = 14
 
 
 @dataclass(frozen=True)
@@ -62,44 +62,50 @@ class Dimensions:
 class DigitalDimensions(Dimensions):
     """Digital Dimensions"""
 
-    SPACING = 5
-    MARGIN = 5
-    MIN_CONTROL_WIDTH = 20
-    MIN_CONTROL_HEIGHT = 14
+    SPACING: int = 5
+    MARGIN: int = 5
+    MIN_CONTROL_WIDTH: int = 20
+    MIN_CONTROL_HEIGHT: int = 14
     MIN_WIDTH = 850
-    MIN_HEIGHT = 300
-    WIDTH = 1030
+    MIN_HEIGHT: int = 300
+    WIDTH: int = 1030
     HEIGHT = 600
 
 
 class AnalogDimensions(Dimensions):
     """Analog Editor Dimensions"""
 
-    SPACING = 4
-    MARGIN = 5
-    MIN_CONTROL_WIDTH = 20
-    MIN_CONTROL_HEIGHT = 14
+    SPACING: int = 4
+    MARGIN: int = 5
+    MIN_CONTROL_WIDTH: int = 20
+    MIN_CONTROL_HEIGHT: int = 14
 
 
 class ComboBoxDimensions(Dimensions):
     """Combo Box Dimensions"""
 
-    WIDTH = 325
-    HEIGHT = 25
+    WIDTH: int = 325
+    HEIGHT: int = 25
 
 
 class IconDimensions(Dimensions):
     """Icon Dimensions"""
 
-    SIZE_SMALL = 0.7
-    WIDTH = 30
-    HEIGHT = 30
+    SCALE_SMALL: float = 0.7
+    WIDTH: int = 30
+    HEIGHT: int = 30
+
+
+class SmallIconDimensions(Dimensions):
+    """Dimensions of an Icon"""
+    WIDTH: int = 20
+    HEIGHT: int = 20
 
 
 class DigitalEditorDimensions(Dimensions):
     """Digital Filter Dimensions"""
 
-    SPACING = 5
+    SPACING: int = 5
     MARGINS = Margins(5, 15, 5, 5)
     MIN_WIDTH: Optional[int] = 850
     MIN_HEIGHT: Optional[int] = 300
@@ -110,16 +116,16 @@ class DigitalEditorDimensions(Dimensions):
 class BasicEditorDimensions(Dimensions):
     """Basic Editor Dimensions"""
 
-    IMAGE_HEIGHT = 150
-    WIDTH = 550
-    HEIGHT = 550
+    IMAGE_HEIGHT: int = 150
+    WIDTH: int = 550
+    HEIGHT: int = 550
 
 
 class DrumEditorDimensions(Dimensions):
     """Drum Editor Dimensions"""
 
-    WIDTH = 1100
-    HEIGHT = 800
+    WIDTH: int = 1100
+    HEIGHT: int = 800
     PARTIAL_TAB_MIN_WIDTH = (
         400  # Minimum width for drum partial tabs to match WMT width
     )
@@ -128,73 +134,73 @@ class DrumEditorDimensions(Dimensions):
 
 class WaveformIconDimensions(Dimensions):
     """Waveform Icon Dimensions"""
-
-    WIDTH = 60
-    HEIGHT = 30
+    Icon: SmallIconDimensions = SmallIconDimensions # Need lots of waveform icons
+    WIDTH: int = 80
+    HEIGHT: int = 30
 
 
 class LfoIconDimensions(Dimensions):
     """Lfo Icon Dimensions"""
 
-    WIDTH = 20
-    HEIGHT = 20
+    WIDTH: int = 20
+    HEIGHT: int = 20
 
 
 class SplashScreenDimensions(Dimensions):
     """Splash screen dimensions"""
 
-    HEIGHT = 540
-    WIDTH = 850
-    IMAGE_WIDTH = 360
-    IMAGE_HEIGHT = 220
+    HEIGHT: int = 540
+    WIDTH: int = 850
+    IMAGE_WIDTH: int = 360
+    IMAGE_HEIGHT: int = 220
 
 
 class ChartMetrics:
     """Chart Metrics"""
 
-    POINT_SIZE = 2
+    POINT_SIZE: int = 2
 
 
 class InstrumentDimensions(Dimensions):
     """Instrument Dimensions"""
 
-    MARGIN = 15
-    HEIGHT = 400
-    WIDTH = 1000
+    MARGIN: int = 15
+    HEIGHT: int = 400
+    WIDTH: int = 1000
 
 
 class EditorDimensions(Dimensions):
     """EditorDimensions"""
 
-    MINIMUM_HEIGHT = 250
+    MINIMUM_HEIGHT: int = 250
 
 
 class ArpDimensions(Dimensions):
     """ArpDimensions"""
 
-    MARGIN = 5
-    SPACING = 20
-    X = 120
-    Y = 125
-    WIDTH = 120
-    HEIGHT = 100
+    MARGIN: int = 5
+    SPACING: int = 20
+    X: int = 120
+    Y: int = 125
+    WIDTH: int = 120
+    HEIGHT: int = 100
 
 
 class AnalogEditorDimensions(EditorDimensions):
     """Analog Editor Dimensions"""
 
-    MIN_WIDTH = 330
-    MIN_HEIGHT = 330
-    WIDTH = 950
-    HEIGHT = 600
+    MIN_WIDTH: int = 330
+    MIN_HEIGHT: int = 330
+    WIDTH: int = 950
+    HEIGHT: int = 600
     MARGINS = (1, 1, 1, 1)
 
 
 class LEDDisplayDimensions(Dimensions):
     """LED display area (enlarged for 2 rows)"""
 
-    WIDTH = 210
-    HEIGHT = 70
+    WIDTH: int = 210
+    HEIGHT: int = 70
     X = InstrumentDimensions.MARGIN + 20
     Y = InstrumentDimensions.MARGIN + 35
 
@@ -204,17 +210,17 @@ class DigitalTitleDimensions(Dimensions):
     Digital Title Dimensions
     LED title area (enlarged for 2 rows)"""
 
-    WIDTH = 330
-    HEIGHT = 70
+    WIDTH: int = 330
+    HEIGHT: int = 70
 
 
 class PWMWidgetDimensions(Dimensions):
     """PWM Widget Dimensions"""
 
-    X = 100
-    Y = 100
-    WIDTH = 300
-    HEIGHT = 500
+    X: int = 100
+    Y: int = 100
+    WIDTH: int = 300
+    HEIGHT: int = 500
 
 
 class TitleDimensions(Dimensions):
@@ -222,15 +228,15 @@ class TitleDimensions(Dimensions):
 
     X = InstrumentDimensions.MARGIN + 20
     Y = InstrumentDimensions.MARGIN
-    WIDTH = 200
-    HEIGHT = 50
+    WIDTH: int = 200
+    HEIGHT: int = 50
 
 
 class KeyboardDimensions(Dimensions):
     """Keyboard Dimensions"""
 
     # Keyboard
-    HEIGHT = 127
+    HEIGHT: int = 127
     WIDTH = 800
 
 
@@ -238,8 +244,8 @@ class SequencerGridDimensions(Dimensions):
     """Sequencer Grid Dimensions"""
 
     # --- Sequencer grid
-    WIDTH = 300
-    HEIGHT = 30
+    WIDTH: int = 300
+    HEIGHT: int = 30
 
 
 class SequencerContainerDimensions(Dimensions):
@@ -247,8 +253,8 @@ class SequencerContainerDimensions(Dimensions):
 
     X = InstrumentDimensions.MARGIN + 520
     Y = InstrumentDimensions.MARGIN + 155
-    WIDTH = 500
-    HEIGHT = 80
+    WIDTH: int = 500
+    HEIGHT: int = 80
 
 
 class SequencerDimensions(Dimensions):
@@ -256,9 +262,9 @@ class SequencerDimensions(Dimensions):
 
     # --- Sequencer steps
 
-    STEPS = 16
-    STEP_SIZE = 18
-    SQUARE_SIZE = 25
+    STEPS: int = 16
+    STEP_SIZE: int = 18
+    SQUARE_SIZE: int = 25
     # Sequencer above keyboard
     Y_WINDOWS = (
         InstrumentDimensions.HEIGHT - KeyboardDimensions.HEIGHT + 20
@@ -266,7 +272,7 @@ class SequencerDimensions(Dimensions):
     Y_NON_WINDOWS = (
         InstrumentDimensions.HEIGHT - KeyboardDimensions.HEIGHT + 20
     )  # Keep same distance above keyboard
-    WIDTH = 440  # # Use roughly half keyboard width
+    WIDTH: int = 440  # # Use roughly half keyboard width
     X = InstrumentDimensions.WIDTH - InstrumentDimensions.MARGIN - WIDTH
     GRID: SequencerGridDimensions = SequencerGridDimensions
     # --- Sequencer container
@@ -276,16 +282,16 @@ class SequencerDimensions(Dimensions):
 class SliderContainerDimensions(Dimensions):
     """Slider Container Dimensions"""
 
-    WIDTH = 360
-    HEIGHT = 120 + 20  # Height = SliderDimensions Height
+    WIDTH: int = 360
+    HEIGHT: int = 120 + 20  # Height = SliderDimensions Height
 
 
 class SliderDimensions(Dimensions):
     """Slider Dimensions"""
 
-    X = 515
-    Y = InstrumentDimensions.MARGIN
-    HEIGHT = 120
+    X: int = 515
+    Y: int = InstrumentDimensions.MARGIN
+    HEIGHT: int = 120
     CONTAINER: SliderContainerDimensions = SliderContainerDimensions
 
 
@@ -294,8 +300,8 @@ class PartsDimensions(Dimensions):
 
     X = LEDDisplayDimensions.right() + 10
     Y = InstrumentDimensions.MARGIN
-    WIDTH = 180
-    HEIGHT = 220
+    WIDTH: int = 180
+    HEIGHT: int = 220
 
 
 class EffectsButtonDimensions(Dimensions):
@@ -304,30 +310,30 @@ class EffectsButtonDimensions(Dimensions):
     X = 910
     Y = InstrumentDimensions.MARGIN
     WIDTH = 80
-    HEIGHT = 120
+    HEIGHT: int = 120
 
 
 class RoundButtonDimensions(Dimensions):
     """Button Dimensions"""
-    WIDTH = 30
-    HEIGHT = 30
+    WIDTH: int = 30
+    HEIGHT: int = 30
 
 
 class ToneButtonDimensions(Dimensions):
     """Tone button dimensions"""
 
-    X = 385
+    X: int = 385
     Y = InstrumentDimensions.MARGIN + 75
-    WIDTH = 150
+    WIDTH: int = 150
     HEIGHT = 80
 
 
 class ProgramButtonDimensions(Dimensions):
     """Program buttons"""
 
-    X = 385
+    X: int = 385
     Y = InstrumentDimensions.MARGIN + 15
-    WIDTH = 150
+    WIDTH: int = 150
     HEIGHT = 80
 
 
@@ -335,9 +341,9 @@ class OctaveButtonDimensions(Dimensions):
     """Octave Button Dimensions"""
 
     X = InstrumentDimensions.MARGIN + 10
-    Y = 125
-    WIDTH = 120
-    HEIGHT = 100
+    Y: int = 125
+    WIDTH: int = 120
+    HEIGHT: int = 100
 
 
 class JDXiUIDimensions(Dimensions):
@@ -346,9 +352,9 @@ class JDXiUIDimensions(Dimensions):
     """
 
     # --- Icons
-    ICON: IconDimensions = IconDimensions
-    COMBO: ComboBoxDimensions = ComboBoxDimensions
-    WAVEFORM_ICON: WaveformIconDimensions = WaveformIconDimensions
+    Icon: IconDimensions = IconDimensions
+    Combo: ComboBoxDimensions = ComboBoxDimensions
+    WaveformIcon: WaveformIconDimensions = WaveformIconDimensions
     LFOIcon: LfoIconDimensions = LfoIconDimensions
 
     # --- Splash screen

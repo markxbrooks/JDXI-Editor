@@ -54,7 +54,6 @@ from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXiUIStyle
@@ -62,6 +61,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.plot.drum import DrumTVFEnvPlot
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 
 
 class DrumTVFSection(DrumBaseSection):

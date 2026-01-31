@@ -16,7 +16,6 @@ from jdxi_editor.ui.editors.analog.helpers import (
     generate_analog_wave_button,
     generate_analog_waveform_icon_name,
 )
-from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_widgets,
@@ -26,6 +25,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 class AnalogOscillatorSection(SectionBaseWidget):

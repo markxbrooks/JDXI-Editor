@@ -51,7 +51,6 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -62,6 +61,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 class SectionBaseWidget(SynthBase):
@@ -496,8 +496,8 @@ class SectionBaseWidget(SynthBase):
                     )
 
             btn.setFixedSize(
-                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+                JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+                JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
             )
 
             btn.clicked.connect(lambda _, b=spec.param: self._on_button_selected(b))

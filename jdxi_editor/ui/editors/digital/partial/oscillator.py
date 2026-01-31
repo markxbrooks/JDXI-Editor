@@ -19,7 +19,6 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
-from jdxi_editor.ui.widgets.spec import SliderSpec
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
@@ -30,6 +29,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
+from jdxi_editor.ui.widgets.spec import SliderSpec
 
 
 class DigitalOscillatorSection(BaseOscillatorSection):
@@ -335,8 +335,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 btn.setIconSize(QSize(20, 20))
 
             btn.setFixedSize(
-                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+                JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+                JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
             )
             btn.clicked.connect(lambda _, w=wave: self._on_button_selected(w))
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
