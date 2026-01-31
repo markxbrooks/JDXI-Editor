@@ -11,6 +11,14 @@ from jdxi_editor.midi.map.drum_tone import JDXiMapDrumTone
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 
 
+class TemporaryArea:
+    TEMPORARY_PROGRAM = "TEMPORARY_PROGRAM"
+    ANALOG_SYNTH = "ANALOG_SYNTH"
+    DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"
+    DIGITAL_SYNTH_2 = "DIGITAL_SYNTH_2"
+    DRUM_KIT = "DRUM_KIT"
+    
+
 def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
