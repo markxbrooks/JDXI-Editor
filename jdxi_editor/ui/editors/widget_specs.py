@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, Optional
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 @dataclass
