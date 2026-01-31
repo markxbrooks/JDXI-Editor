@@ -295,25 +295,20 @@ class AnalogSynthEditor(SynthEditor):
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
 
     def update_filter_controls_state(self, mode: int):
-        """Update filter controls enabled state based on mode (0=BYPASS, 1=LPF)."""
-        enabled = mode != 0  # --- Enable if not BYPASS
-        for param in [
-            Analog.Param.FILTER_CUTOFF,
-            Analog.Param.FILTER_RESONANCE,
-            Analog.Param.FILTER_CUTOFF_KEYFOLLOW,
-            Analog.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-            Analog.Param.FILTER_ENV_DEPTH,
-        ]:
-            if param in self.controls:
-                self.controls[param].setEnabled(enabled)
-        # --- Enable/disable filter section groups (covers widgets not in self.controls)
+        """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
+        log.message(
+            f"[Analog Editor] update_filter_controls_state: mode={mode} "
+            f"has filter_section={hasattr(self, 'filter_section')} "
+            f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
+        )
         if hasattr(self, "filter_section") and self.filter_section is not None:
-            if hasattr(self.filter_section, "filter_controls_group"):
-                self.filter_section.controls_group.setEnabled(enabled)
-            self.filter_section.adsr_widget.setEnabled(enabled)
+            self.filter_section.update_controls_state(mode)
+        else:
+            log.warning("[Analog Editor] update_filter_controls_state: no filter_section, skipping")
 
     def _on_filter_mode_changed(self, mode: int):
-        """Handle filter mode changes"""
+        """Handle filter mode changes (callback from filter section when mode button clicked)."""
+        log.message(f"[Analog Editor] _on_filter_mode_changed: mode={mode}")
         self.update_filter_controls_state(mode)
 
     def update_filter_state(self, value: int):
@@ -648,8 +643,15 @@ class AnalogSynthEditor(SynthEditor):
                     else:
                         failures.append(param_name)
                 elif param == Analog.Param.FILTER_MODE_SWITCH:
-                    self._update_filter_mode_buttons(param_value)
-                    self.update_filter_controls_state(bool(param_value))
+                    mode_int = (
+                        int(param_value)
+                        if isinstance(param_value, (int, float))
+                        else getattr(param_value, "value", 0)
+                    )
+                    if not isinstance(mode_int, int):
+                        mode_int = 0
+                    self._update_filter_mode_buttons(mode_int)
+                    self.update_filter_controls_state(mode_int)
                 elif param in [
                     Analog.Param.AMP_ENV_ATTACK_TIME,
                     Analog.Param.AMP_ENV_DECAY_TIME,

@@ -2,6 +2,8 @@
 
 from enum import Enum, IntEnum
 
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+
 ANALOG_FILTER_GROUP = 0x01  # Filter parameters
 
 
@@ -12,6 +14,13 @@ class FilterType(IntEnum):
     HPF = 1  # High Pass Filter
     BPF = 2  # Band Pass Filter
     PKG = 3  # Peaking Filter
+
+
+class AnalogFilterTypeString:
+    """AnalogFilterTypeString"""
+
+    BYPASS: str = "Bypass"
+    LPF: str = "LPF"
 
 
 class AnalogFilterType(Enum):
@@ -26,3 +35,8 @@ class AnalogFilterType(Enum):
             self.BYPASS: "No Filter",
             self.LPF: "Low Pass filter: high frequencies filtered out"
         }.get(self, "Filter Type")
+
+
+class AnalogFilterMidiType:
+    """Analog filter types"""
+    BYPASS = AnalogParam.FILTER_MODE_SWITCH

@@ -43,6 +43,7 @@ class FilterWidget(EnvelopeWidgetBase):
         create_parameter_slider: Callable = None,
         create_parameter_switch: Callable = None,
         parent: Optional[QWidget] = None,
+        analog: bool = False
     ):
         super().__init__(
             envelope_keys=["cutoff_param", "slope_param"],
@@ -51,8 +52,9 @@ class FilterWidget(EnvelopeWidgetBase):
             midi_helper=midi_helper,
             address=address,
             controls=controls,
-            parent=parent,
+            parent=parent
         )
+        self.analog = analog
         self.plot: FilterPlot | None = None
         self.parent = parent
         self.setWindowTitle("Filter Widget")
@@ -116,6 +118,8 @@ class FilterWidget(EnvelopeWidgetBase):
             self._control_widgets.append(self.slope_param_control)
             self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
             self.slope_param_control.setValue(self.envelope["slope_param"])
+            JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
+            JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """

@@ -9,6 +9,14 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 
 @dataclass
+class FilterWidgetSpec:
+    """Filter Widget Spec"""
+    cutoff_param: AddressParameter = None
+    name: Optional[str] = None
+    slope_param: Optional[AddressParameter] = None # Analog doesn't have a slope parameter
+
+
+@dataclass
 class FilterSpec:
     """Class representing the specification for a filter mode."""
     name: str  # Filter mode name (e.g., "Low Pass", "High Pass", etc.)

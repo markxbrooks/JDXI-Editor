@@ -205,6 +205,9 @@ class JDXiUIStyle:
     BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
+    BUTTON_RECT_ANALOG = generate_button_style(
+        BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    )
     BUTTON_RECT_SELECTED = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
@@ -217,7 +220,7 @@ class JDXiUIStyle:
         border_pressed=ACCENT_PRESSED,
     )
 
-    # Analog Button Styles
+    # Analog Button Styles (analog=True for blue :hover/:checked gradients)
     BUTTON_RECT_ANALOG = generate_button_style(
         BACKGROUND,
         ACCENT_ANALOG,
@@ -225,6 +228,7 @@ class JDXiUIStyle:
         FOREGROUND,
         ACCENT_ANALOG_HOVER,
         ACCENT_PRESSED,
+        analog=True,
     )
     BUTTON_ANALOG_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
@@ -233,6 +237,7 @@ class JDXiUIStyle:
         text_color=FOREGROUND,
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
+        analog=True,
     )
     BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
@@ -260,6 +265,7 @@ class JDXiUIStyle:
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
+        analog=True,
     )
 
     CREDITS_LABEL_STYLE = f"""

@@ -119,6 +119,7 @@ def generate_button_style(
     font_family: str = FONT_FAMILY,
     font_size: str = "12px",
     button_padding: int = 4,
+    analog: bool = False
 ) -> str:
     """
     Generate address button style dynamically.
@@ -134,7 +135,11 @@ def generate_button_style(
     :param border_radius: int The radius of the button
     :param text_color: str The text color
     :param hover: str The hover color
+    :param analog: bool Whether is analog colored (blue gradients for hover/checked instead of red)
     """
+    # Red-tinted gradients for digital; blue-tinted for analog
+    hover_stop = "#000066" if analog else "#660000"
+    checked_stop = "#000033" if analog else "#330000"
     return f"""
             QPushButton {{
                 font-family: {FONT_FAMILY};
@@ -149,14 +154,14 @@ def generate_button_style(
             QPushButton:hover {{
                 background-color: {hover};
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                stop:0 #660000, stop:1 {hover});
+                stop:0 {hover_stop}, stop:1 {hover});
                 border: {button_border_width}px solid {hover};
             }}
             QPushButton:border_pressed, QPushButton:checked {{
                 background-color: {background_pressed};
                 border: {button_border_width}px solid {border_pressed};
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                stop:0 #330000, stop:1 {background_pressed});
+                stop:0 {checked_stop}, stop:1 {background_pressed});
             }}
         """
 

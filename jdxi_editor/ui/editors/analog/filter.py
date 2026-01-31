@@ -17,7 +17,7 @@ from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter import BaseFilterSection
-from jdxi_editor.ui.widgets.spec import FilterSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import FilterSpec, SliderSpec, FilterWidgetSpec
 
 
 class AnalogFilterSection(BaseFilterSection):
@@ -54,7 +54,40 @@ class AnalogFilterSection(BaseFilterSection):
     ),
     }
 
+    # --- Filter mode buttons
+    BUTTON_SPECS = [
+        SliderSpec(
+            Analog.Filter.Mode.BYPASS,
+            Analog.Filter.FilterTypeString.BYPASS,
+            icon_name=JDXi.UI.Icon.Wave.BYPASS_FILTER,
+        ),
+        SliderSpec(
+            Analog.Filter.Mode.LPF,
+            Analog.Filter.FilterTypeString.LPF,
+            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+        ),
+    ]
+
+    FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Analog.Param.FILTER_CUTOFF)
+
     SYNTH_SPEC = Analog
+
+    # Same mechanism as Digital: used by update_controls_state() in base
+    FILTER_MODE_ENABLED_MAP = {
+        0: Analog.Filter.FilterType.BYPASS,
+        1: Analog.Filter.FilterType.LPF,
+    }
+    FILTER_MODE_MIDI_MAP = {
+        Analog.Filter.Mode.BYPASS: Analog.Filter.ModeType.BYPASS,
+        Analog.Filter.Mode.LPF: Analog.Filter.ModeType.LPF,
+    }
+    FILTER_PARAMS_LIST = [
+        Analog.Param.FILTER_CUTOFF,
+        Analog.Param.FILTER_RESONANCE,
+        Analog.Param.FILTER_CUTOFF_KEYFOLLOW,
+        Analog.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+        Analog.Param.FILTER_ENV_DEPTH,
+    ]
 
     def __init__(
         self,

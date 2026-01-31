@@ -5,7 +5,7 @@ Analog Spec File
 from enum import Enum
 from typing import Any
 
-from jdxi_editor.midi.data.analog.filter import AnalogFilterType
+from jdxi_editor.midi.data.analog.filter import AnalogFilterType, AnalogFilterTypeString, AnalogFilterMidiType
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOWaveShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogWaveOsc
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
@@ -69,6 +69,22 @@ class AnalogAmpTab(TabDefinitionMixin, Enum):
         self.icon = icon
 
 
+class AnalogFilterMode(Enum):
+    """Filter mode types"""
+
+    BYPASS = 0x00
+    LPF = 0x01  # Low-pass filter
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for filter mode"""
+        names = {
+            0: "BYPASS",
+            1: "LPF",
+        }
+        return names.get(self.value, "???")
+
+
 class AnalogOscillatorTab(TabDefinitionMixin, Enum):
     """Definition of Analog Oscillator Section Tabs"""
 
@@ -89,12 +105,19 @@ class AnalogAmp(AmpSpec):
     Tab: AnalogAmpTab = AnalogAmpTab
 
 
+class AnalogFilterModeType:
+    """String constants for analog filter plot / display (same pattern as DigitalFilterModeType)."""
+    BYPASS: str = "bypass"
+    LPF: str = "lpf"
+
+
 class AnalogFilter(FilterSpec):
     """Analog Filter"""
 
-    # Mode: AnalogFilterMode = AnalogFilterMode
-    # ModeType: DigitalFilterModeType = DigitalFilterModeType
     FilterType: AnalogFilterType = AnalogFilterType
+    FilterTypeString: AnalogFilterTypeString = AnalogFilterTypeString
+    Mode: AnalogFilterMode = AnalogFilterMode  # Alias so base can use SYNTH_SPEC.Filter.Mode
+    ModeType: AnalogFilterModeType = AnalogFilterModeType
     ADSR: ADSRType = ADSRType
     Tab: AnalogFilterTab = AnalogFilterTab
 

@@ -35,6 +35,9 @@ Usage Example:
 
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
+from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -249,7 +252,7 @@ class SectionBaseWidget(SynthBase):
         for spec in self.PARAM_SPECS:
             param_name = getattr(spec.param, "name", str(spec.param))
             is_filter_env_depth = (
-                hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH"
+                                          hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH"
             ) or (spec.param == DigitalPartialParam.FILTER_ENV_DEPTH)
 
             if is_filter_env_depth and is_filter_section:
@@ -424,17 +427,14 @@ class SectionBaseWidget(SynthBase):
             # --- Create button
             btn = QPushButton(button_label)
             btn.setCheckable(True)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-
+            if not self.analog:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            else:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             # --- Create icon if icon_name is provided
             if icon_name_str:
                 icon = None
                 try:
-                    # Try to get the WaveformIconType value (it's a class with string constants)
-                    from jdxi_editor.midi.data.digital.oscillator import (
-                        WaveformType,
-                    )
-
                     # Check if icon_name_str matches a WaveformIconType attribute
                     icon_type_value = getattr(WaveformType, icon_name_str, None)
                     if icon_type_value is not None:
@@ -676,12 +676,16 @@ class SectionBaseWidget(SynthBase):
 
     def _on_button_selected(self, button_param):
         """Handle button selection & enabling dependent widgets"""
+        if button_param is None:
+            return
         for btn in self.button_widgets.values():
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        selected_btn = self.button_widgets[button_param]
+        selected_btn = self.button_widgets.get(button_param)
+        if selected_btn is None:
+            return
         selected_btn.setChecked(True)
-        selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        # selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE_ANALOG)
         self._update_button_enabled_states(button_param)
         if self.send_midi_parameter:
             # Map filter mode enums to their corresponding parameter
@@ -689,11 +693,17 @@ class SectionBaseWidget(SynthBase):
                 # Filter mode buttons map to FILTER_MODE_SWITCH parameter
                 actual_param = DigitalPartialParam.FILTER_MODE_SWITCH
                 param_value = button_param.value
+            elif isinstance(button_param, AnalogFilterMode):
+                # Filter mode buttons map to FILTER_MODE_SWITCH parameter
+                actual_param = AnalogParam.FILTER_MODE_SWITCH
+                param_value = button_param.value
             else:
                 # For other button types (like waveform), use the param directly
                 actual_param = button_param
                 param_value = getattr(button_param, "value", button_param)
 
+            if actual_param is None:
+                return
             # Ensure we have a valid AddressParameter before sending
             if not isinstance(actual_param, AddressParameter):
                 from decologr import Decologr as log

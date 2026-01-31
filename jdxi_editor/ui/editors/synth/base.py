@@ -362,6 +362,12 @@ class SynthBase(QWidget):
         try:
             # --- Ensure value is an integer (handle enums, strings, floats)
             def safe_int(val):
+                # --- Reject parameter specs / tuples (e.g. param passed as value by mistake)
+                if isinstance(val, (tuple, list)):
+                    log.error(
+                        f"Cannot convert value (parameter spec?) to int for parameter {param.name}"
+                    )
+                    return 0
                 # --- Check for enums FIRST (IntEnum inherits from int, so isinstance check must come after)
                 if hasattr(val, "value") and not isinstance(
                     val, type
@@ -382,6 +388,8 @@ class SynthBase(QWidget):
                         return 0
                 if isinstance(val, int):
                     return val
+                if val is None:
+                    return 0
                 try:
                     return int(float(val))  # --- Handle floats and strings
                 except (ValueError, TypeError):
