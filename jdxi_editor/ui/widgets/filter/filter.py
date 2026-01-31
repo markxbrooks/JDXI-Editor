@@ -157,6 +157,8 @@ class FilterWidget(EnvelopeWidgetBase):
     def update_envelope_from_slider(self, slider: QSlider) -> None:
         """Update envelope with value from a single slider"""
         for param, ctrl in self.controls.items():
+            if not hasattr(param, "get_envelope_param_type"):
+                continue
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "cutoff_param":
@@ -171,6 +173,8 @@ class FilterWidget(EnvelopeWidgetBase):
         """Update envelope values from slider controls"""
         try:
             for param, ctrl in self.controls.items():
+                if not hasattr(param, "get_envelope_param_type"):
+                    continue
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "slope_param":
@@ -190,6 +194,8 @@ class FilterWidget(EnvelopeWidgetBase):
         """Update slider controls from envelope values."""
         try:
             for param, ctrl in self.controls.items():
+                if not hasattr(param, "get_envelope_param_type"):
+                    continue
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "slope_param":
                     ctrl.setValue(int(self.envelope["slope_param"]))

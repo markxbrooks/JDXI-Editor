@@ -48,6 +48,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param icons_row_type: Type of icon
         :param analog: bool
         """
+        self.wave_layout_widgets: list = []
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
         self.rate_layout_widgets: list | None = None
@@ -235,3 +236,59 @@ class BaseOscillatorSection(SectionBaseWidget):
             self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
         else:
             self.depths_layout_widgets = []
+
+    def _on_button_selected(self, button_param):
+        """Override to handle waveform button selection with correct MIDI parameter"""
+        # --- Reset all buttons
+        for btn in self.button_widgets.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+        # Set selected button
+        selected_btn = self.button_widgets[button_param]
+        selected_btn.setChecked(True)
+        selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+
+        # Update enabled states
+        self._update_button_enabled_states(button_param)
+
+        # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
+        if self.send_midi_parameter:
+            self.send_midi_parameter(self.SYNTH_SPEC.Param.OSC_WAVE, button_param.value)
+
+    def _update_button_enabled_states(self, button_param):
+        """Override to enable/disable widgets based on selected waveform.
+
+        This is called after all widgets are created (in setup_ui), so widgets
+        should exist. We still check for None as a safety measure.
+        """
+        # --- Disable all first
+        for attrs in self.BUTTON_ENABLE_RULES.values():
+            for attr in attrs:
+                widget = getattr(self, attr, None)
+                if widget is not None:
+                    widget.setEnabled(False)
+        # --- Enable per selected button
+        for attr in self.BUTTON_ENABLE_RULES.get(button_param, []):
+            widget = getattr(self, attr, None)
+            if widget is not None:
+                widget.setEnabled(True)
+
+    def _create_button_row_layout(self):
+        """Override to create waveform button row layout"""
+
+        # --- Create wave variation combo box
+        self.wave_variation = self._create_parameter_combo_box(
+            self.SYNTH_SPEC.Param.OSC_WAVE_VARIATION,
+            self.SYNTH_SPEC.Display.Name.OSC_WAVE_VARIATION,
+            options=self.SYNTH_SPEC.Display.Options.OSC_WAVE_VARIATION,
+            values=[0, 1, 2],  # A, B, C
+        )
+        self.controls[self.SYNTH_SPEC.Param.OSC_WAVE_VARIATION] = self.wave_variation
+
+        button_row = QHBoxLayout()
+        button_row.addStretch()
+        button_row.addLayout(create_layout_with_widgets(self.wave_layout_widgets))
+        button_row.addWidget(self.wave_variation)  # Add wave variation switch
+        button_row.addStretch()
+        return button_row

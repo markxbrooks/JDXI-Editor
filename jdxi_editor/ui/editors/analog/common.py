@@ -2,18 +2,16 @@
 Common Section
 """
 
-from typing import Dict, Union
-
-from PySide6.QtWidgets import QWidget
+from typing import Callable
 
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.common import BaseCommonSection
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
-class AnalogCommonSection(SectionBaseWidget):
+class AnalogCommonSection(BaseCommonSection):
     """Common section for analog synth parameters."""
 
     SLIDER_GROUPS = {
@@ -49,47 +47,17 @@ class AnalogCommonSection(SectionBaseWidget):
     def __init__(
             self,
             controls: dict,
+            midi_helper: MidiIOHelper = None,
+            send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogCommonSection
         :param controls: dict
         """
-
-        super().__init__(icons_row_type=IconType.GENERIC, analog=True)
-        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        super().__init__(icons_row_type=IconType.GENERIC,
+                         analog=True,
+                         midi_helper=midi_helper,
+                         send_midi_parameter=send_midi_parameter,
+                         controls=controls)
         self.build_widgets()
         self.setup_ui()
-
-    def setup_ui(self):
-        """
-        setup ui
-        """
-        layout = self.get_layout()
-
-        # --- Octave Switch row
-        octave_shift_switch_row = create_layout_with_widgets([self.octave_shift_switch])
-        layout.addLayout(octave_shift_switch_row)
-
-        # --- Legato Switch row
-        legato_row = create_layout_with_widgets([self.legato_switch])
-        layout.addLayout(legato_row)
-
-        # --- Portamento row
-        portamento_switch_row = create_layout_with_widgets([self.portamento_switch])
-        layout.addLayout(portamento_switch_row)
-
-        # --- Pitch Bend etc
-        pitch_bend_row = create_layout_with_widgets(
-            [self.pitch_bend_up, self.pitch_bend_down, self.portamento_time]
-        )
-        layout.addLayout(pitch_bend_row)
-        layout.addStretch()
-
-    def build_widgets(self):
-        """Create Sliders"""
-        #  --- Octave Switch
-        (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
-
-        (self.legato_switch, self.portamento_switch) = self._build_switches(self.SWITCH_SPECS)
-
-        (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = self._build_sliders(self.SLIDER_GROUPS["all"])

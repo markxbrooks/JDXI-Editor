@@ -59,7 +59,6 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_adsr_icon,
     create_envelope_group,
     create_layout_with_widgets,
     transfer_layout_items,
@@ -148,7 +147,7 @@ class SectionBaseWidget(SynthBase):
                 layout.addLayout(button_layout)
         self._create_tab_widget()
         layout.addWidget(self.tab_widget)
-        layout.addStretch()
+        # layout.addStretch()
 
     def get_layout(
         self,
@@ -410,7 +409,6 @@ class SectionBaseWidget(SynthBase):
     def _add_centered_row(self, *widgets: QWidget) -> None:
         """add centered row"""
         row = QHBoxLayout()
-        row.addStretch()
         for w in widgets:
             row.addWidget(w)
         row.addStretch()
@@ -614,10 +612,7 @@ class SectionBaseWidget(SynthBase):
         tab_widget = None
         if hasattr(self, 'tab_widget') and self.tab_widget is not None:
             tab_widget = self.tab_widget
-        elif hasattr(self, 'oscillator_tab_widget') and self.oscillator_tab_widget is not None:
-            tab_widget = self.oscillator_tab_widget
         else:
-            from PySide6.QtWidgets import QTabWidget
             self.tab_widget = QTabWidget()
             tab_widget = self.tab_widget
         

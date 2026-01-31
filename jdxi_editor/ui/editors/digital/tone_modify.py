@@ -2,13 +2,14 @@
 Digital Tone Modify Section
 """
 
-from typing import Dict, Union
+from typing import Dict, Union, Optional, Callable
 
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -51,6 +52,8 @@ class DigitalToneModifySection(SectionBaseWidget):
     def __init__(
             self,
             controls: dict,
+            send_midi_parameter: Optional[Callable] = None,
+            midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
             Initialize the DigitalToneModifySection
@@ -58,7 +61,10 @@ class DigitalToneModifySection(SectionBaseWidget):
             :param controls: dict
             """
 
-        super().__init__(icons_row_type=IconType.ADSR, analog=False)
+        super().__init__(icons_row_type=IconType.ADSR,
+                         analog=False,
+                         send_midi_parameter=send_midi_parameter,
+                         midi_helper=midi_helper)
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self._build_widgets()
@@ -88,10 +94,8 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def setup_ui(self) -> None:
         layout = self.get_layout()
-
         self._add_centered_row(*self.interval_sens_sliders)
         self._add_centered_row(*self.envelope_loop_mode_combo_boxes)
         self._add_centered_row(*self.envelope_loop_sync_note_combo_boxes)
         self._add_centered_row(*self.chromatic_portamento_switches)
-
         layout.addStretch()

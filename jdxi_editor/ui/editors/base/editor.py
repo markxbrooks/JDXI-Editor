@@ -1,275 +1,749 @@
 """
-Digital Partial Editor Module
+Module: analog_synth_editor
+===========================
 
-This module defines the `DigitalPartialEditor` class, a specialized editor for managing a single
-digital partial in a synthesizer. It extends the `PartialEditor` class, providing a structured UI
-to control and modify parameters related to oscillators, filters, amplifiers, and modulation sources.
+This module defines the `AnalogSynthEditor` class, which provides a PySide6-based
+user interface for editing analog synthesizer parameters in the Roland JD-Xi synthesizer.
+It extends the `SynthEditor` base class and integrates MIDI communication for real-time
+parameter adjustments and preset management.
 
-Classes:
-    - DigitalPartialEditor: A `QWidget` subclass that allows users to modify digital synthesis
-      parameters using a tabbed interface with various control sections.
-
-Features:
-    - Supports editing a single partial within a digital synth part.
-    - Provides categorized parameter sections: Oscillator, Filter, Amp, LFO, and Mod LFO.
-    - Integrates with `MIDIHelper` for real-time MIDI parameter updates.
-    - Uses icons for waveform selection, filter controls, and modulation settings.
-    - Stores UI controls for easy access and interaction.
-
-Usage:
-    ```python
-    from PySide6.QtWidgets import QApplication
-    from midi_helper import MIDIHelper
-
-    app = QApplication([])
-    midi_helper = MIDIHelper()
-    editor = DigitalPartialEditor(midi_helper=midi_helper)
-    editor.show()
-    app.exec()
-    ```
+Key Features:
+-------------
+- Provides a graphical editor for modifying analog synth parameters, including
+  oscillator, filter, amp, LFO, and envelope settings.
+- Supports MIDI communication to send and receive real-time parameter changes.
+- Allows selection of different analog synth presets from a dropdown menu.
+- Displays an instrument image that updates based on the selected preset.
+- Includes a scrollable layout for managing a variety of parameter controls.
+- Implements bipolar parameter handling for proper UI representation.
+- Supports waveform selection with custom buttons and icons.
+- Provides a "Send Read Request to Synth" button to retrieve current synth settings.
+- Enables MIDI-triggered updates via incoming program changes and parameter adjustments.
 
 Dependencies:
-    - PySide6 (for UI components)
-    - MIDIHelper (for MIDI communication)
-    - DigitalParameter, DigitalCommonParameter (for parameter management)
-    - WaveformButton (for waveform selection UI)
-    - QIcons generated from waveform base64 data
+-------------
+- PySide6 (for UI components and event handling)
+- MIDIHelper (for handling MIDI communication)
+- PresetHandler (for managing synth presets)
+- Various custom enums and helper classes (Analog.Parameter, AnalogCommonParameter, etc.)
+
+Usage:
+------
+The `AnalogSynthEditor` class can be instantiated as part of a larger PySide6 application.
+It requires a `MIDIHelper` instance for proper communication with the synthesizer.
+
+Example:
+--------
+    midi_helper = MIDIHelper()
+    preset_helper = PresetHandler()
+    editor = AnalogSynthEditor(midi_helper, preset_helper)
+    editor.show()
+
 """
 
-from decologr import Decologr as log
+import logging
+from typing import TYPE_CHECKING, Dict, Optional, Union
+
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QTabWidget,
+    QGroupBox,
+    QScrollArea,
+    QSlider,
     QVBoxLayout,
     QWidget,
 )
 
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+
+from decologr import Decologr as log
+from picomidi.utils.conversion import (
+    midi_value_to_fraction,
+    midi_value_to_ms,
+)
+
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.core.synth.type import JDXiSynth
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
-from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
-from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalTab
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
-from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
-from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
-from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
-from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
-from jdxi_editor.ui.editors.synth.partial import PartialPanel
+from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
+from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
+from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
+from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
+from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
+from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 
-class BasePartialEditor(PartialPanel):
-    """Editor for a single Digital Synth partial"""
+class BaseSynthEditor(SynthEditor):
+    """Base Synth Editor UI."""
 
-    SYNTH_MAP = {
-        1: JDXi.Synth.DIGITAL_SYNTH_1,
-        2: JDXi.Synth.DIGITAL_SYNTH_2,
-    }
+    SUB_OSC_TYPE_MAP = {}
 
-    PARTIAL_ADDRESS_MAP = {
-        1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-        2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-        3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
-    }
-
-    BIPOLAR_PARAMETERS = {
-        Digital.Param.OSC_DETUNE,
-        Digital.Param.OSC_PITCH,
-        Digital.Param.OSC_PITCH_ENV_DEPTH,
-        Digital.Param.AMP_PAN,
-    }
+    SYNTH_SPEC = Analog
 
     def __init__(
         self,
-        midi_helper: MidiIOHelper | None = None,
-        synth_number: int = 1,
-        partial_number: int = 1,
-        preset_type: JDXiSynth | None = None,
-        parent: QWidget | None = None,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional["JDXiPresetHelper"] = None,  # type: ignore[name-defined]
+        parent: Optional[QWidget] = None,
     ):
-        super().__init__(parent)
+        """
+        Initialize the AnalogSynthEditor
 
-        self.oscillator_tab = None
-        self.filter_tab = None
-        self.midi_helper = midi_helper
-        self.partial_number = partial_number
-        self.preset_type = preset_type
-        self.controls: dict[DigitalPartialParam | DigitalCommonParam, QWidget] = {}
+        :param midi_helper: MidiIOHelper
+        :param preset_helper: JDXIPresetHelper
+        :param parent: QWidget
+        """
+        super().__init__(midi_helper=midi_helper, parent=parent)
+        self.instrument_image_group: QGroupBox | None = None
+        self.scroll: QScrollArea | None = None
+        self.instrument_preset_group: QGroupBox | None = None
+        self.instrument_preset: QWidget | None = None
+        self.instrument_preset_widget: QWidget | None = None
+        self.amp_section: AnalogAmpSection | None = None
+        self.oscillator_section: AnalogOscillatorSection | None = None
+        self.filter_section: AnalogFilterSection | None = None
+        self.tab_widget = None
+        self.lfo_section = None
+        self.preset_helper = preset_helper
+        self.wave_buttons = {}
+        self.lfo_shape_buttons = {}
+        self.controls: Dict[Union[Analog.Param], QWidget] = {}
+        self.updating_from_spinbox = False
+        self.previous_json_data = None
+        self.main_window = parent
+        self.analog = True
 
-        self._resolve_synth_data(synth_number)
-        self._resolve_partial_name()
-        self._init_state()
-        self._build_ui()
+        # --- Initialize mappings as empty dicts/lists early to prevent AttributeError
+        # --- These will be populated after sections are created
+        self.adsr_mapping = {}
+        self.pitch_env_mapping = {}
+        self.pwm_mapping = {}
 
-        log.parameter("DigitalPartialEditor initialized:", self)
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            log.message("MIDI signals connected")
+        else:
+            log.message("MIDI signals not connected")
 
-    # ------------------------------------------------------------------
-    # Initialization helpers
-    # ------------------------------------------------------------------
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
 
-    def _resolve_synth_data(self, synth_number: int) -> None:
-        """resolve synth data"""
-        try:
-            synth_type = self.SYNTH_MAP[synth_number]
-        except KeyError:
-            raise ValueError(
-                f"Invalid synth_number: {synth_number}. Must be {list(self.SYNTH_MAP)}"
+    def setup_ui(self):
+        """Set up the Analog Synth Editor UI."""
+        self.set_dimensions()
+        self.set_style()
+
+        # --- Use EditorBaseWidget for consistent layout structure (harmonized with Digital)
+        self.base_widget = EditorBaseWidget(parent=self, analog=self.analog)
+        self.base_widget.setup_scrollable_content(spacing=5, margins=(5, 5, 5, 5))
+
+        # --- Add base widget to editor's layout (if editor has a layout)
+        if not hasattr(self, "main_layout") or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.base_widget)
+
+        # --- Store references for backward compatibility
+        self.scroll = self.base_widget.get_scroll_area()
+
+        # --- Set up instrument preset widget
+        self.instrument_preset = InstrumentPresetWidget(parent=self)
+        self.instrument_preset.setup_header_layout()
+        self.instrument_preset.setup()
+
+        self.instrument_preset_group = (
+            self.instrument_preset.create_instrument_preset_group()
+        )
+        self.instrument_preset.add_preset_group(self.instrument_preset_group)
+        self.instrument_preset.add_stretch()
+
+        (
+            self.instrument_image_group,
+            self.instrument_image_label,
+            self.instrument_group_layout,
+        ) = self.instrument_preset.create_instrument_image_group()
+        self.instrument_preset.add_image_group(self.instrument_image_group)
+        self.instrument_preset.add_stretch()
+        self.update_instrument_image()
+        self.build_widgets()
+
+    def set_style(self):
+        """Set style"""
+        JDXi.UI.Theme.apply_tabs_style(self, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
+        if not self.analog:
+            JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
+            JDXi.UI.Theme.apply_editor_style(self.tab_widget)
+
+    def set_dimensions(self):
+        """set dimensions"""
+        if self.analog:
+            self.setMinimumSize(
+                JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_WIDTH,
+                JDXi.UI.Dimensions.EDITOR_ANALOG.MIN_HEIGHT,
+            )
+            self.resize(
+                JDXi.UI.Dimensions.EDITOR_ANALOG.WIDTH,
+                JDXi.UI.Dimensions.EDITOR_ANALOG.HEIGHT,
+            )
+        else:
+            self.setMinimumSize(
+                JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_WIDTH,
+                JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT,
+            )
+            self.resize(
+                JDXi.UI.Dimensions.EDITOR_DIGITAL.INIT_WIDTH,
+                JDXi.UI.Dimensions.EDITOR_DIGITAL.INIT_HEIGHT,
             )
 
-        self._init_synth_data(
-            synth_type=synth_type,
-            partial_number=self.partial_number,
-        )
+    def build_widgets(self):
+        """Create widgets"""
+        self.tab_widget = self.base_widget.create_tab_widget()
+        self._configure_sliders()
 
-        log.parameter("Synth address:", self.synth_data.address)
+    def _configure_sliders(self):
+        """Configure sliders"""
+        for slider in self.controls.values():
+            if isinstance(slider, QSlider):
+                slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
+                slider.setTickInterval(10)
 
-    def _resolve_partial_name(self) -> None:
-        try:
-            self.part_name = DIGITAL_PARTIAL_NAMES[self.partial_number]
-        except IndexError:
-            log.error(f"Invalid partial_number: {self.partial_number}")
-            self.part_name = "Unknown"
-
-        log.parameter("Partial name:", self.part_name)
-
-    def _init_state(self) -> None:
-        self.updating_from_spinbox = False
-
-    # ------------------------------------------------------------------
-    # UI Construction
-    # ------------------------------------------------------------------
-
-    def _build_ui(self) -> None:
-        """build ui"""
-        main_layout = QVBoxLayout(self)
-
-        container = QWidget()
-        container_layout = QVBoxLayout(container)
-
-        self.tab_widget = QTabWidget()
-        container_layout.addWidget(self.tab_widget)
-
-        self._register_sections()
-
-        main_layout.addWidget(container)
-
-    def _register_sections(self) -> None:
-        """Register sections"""
-        self._add_tab(
-            key=Digital.Tab.OSCILLATOR,
-            widget=DigitalOscillatorSection(
-                send_midi_parameter=self.send_midi_parameter,
+    def _create_sections(self):
+        """Create the sections for the Analog Synth Editor."""
+        if self.analog:
+            self.oscillator_section = AnalogOscillatorSection(
+                waveform_selected_callback=self._on_waveform_selected,
+                wave_buttons=self.wave_buttons,
                 midi_helper=self.midi_helper,
                 controls=self.controls,
+                address=self.address,
+            )
+            self.filter_section = AnalogFilterSection(
+                controls=self.controls,
                 address=self.synth_data.address,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.FILTER,
-            widget=DigitalFilterSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
+                on_filter_mode_changed=self._on_filter_mode_changed,
+                parent=self,
+            )
+            self.amp_section = AnalogAmpSection(
                 address=self.synth_data.address,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.AMP,
-            widget=DigitalAmpSection(
+                controls=self.controls,
+                parent=self,
+            )
+            self.lfo_section = AnalogLFOSection(
+                on_lfo_shape_changed=self._on_lfo_shape_changed,
+                lfo_shape_buttons=self.lfo_shape_buttons,
+                send_midi_parameter=self.send_midi_parameter,
+                controls=self.controls,
+            )
+            self.common_section = AnalogCommonSection(
+                controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
-                address=self.synth_data.address,
-            ),
-        )
+            )
+        self.add_tabs()
 
-        self._add_tab(
-            key=Digital.Tab.LFO,
-            widget=DigitalLFOSection(
-                controls=self.controls,
-                send_midi_parameter=self.send_midi_parameter,
-            ),
-        )
+    def add_tabs(self):
+        """Add tabs to tab widget"""
+        self._add_tab(key=self.SYNTH_SPEC.Tab.PRESETS, widget=self.instrument_preset)
+        self._add_tab(key=self.SYNTH_SPEC.Tab.OSCILLATOR, widget=self.oscillator_section)
+        self._add_tab(key=self.SYNTH_SPEC.Tab.FILTER, widget=self.filter_section)
+        self._add_tab(key=self.SYNTH_SPEC.Tab.AMP, widget=self.amp_section)
+        self._add_tab(key=self.SYNTH_SPEC.Tab.LFO, widget=self.lfo_section)
+        self._add_tab(key=self.SYNTH_SPEC.Tab.COMMON, widget=self.common_section)
 
-        self._add_tab(
-            key=Digital.Tab.MODLFO,
-            widget=DigitalModLFOSection(
-                on_parameter_changed=self._on_parameter_changed,
-                controls=self.controls,
-                send_midi_parameter=self.send_midi_parameter,
-            ),
-        )
-
-    @property
-    def lfo_depth_controls(self) -> dict:
-        """
-        Get a dictionary of LFO depth controls filtered from the main controls dictionary.
-        This provides compatibility with the base class's _update_partial_lfo_depth method.
-
-        :return: dict mapping LFO depth parameters to their control widgets
-        """
-        lfo_depth_params = {
-            Digital.Param.LFO_PITCH_DEPTH,
-            Digital.Param.LFO_FILTER_DEPTH,
-            Digital.Param.LFO_AMP_DEPTH,
-            Digital.Param.LFO_PAN_DEPTH,
-            Digital.Param.MOD_LFO_PITCH_DEPTH,
-            Digital.Param.MOD_LFO_FILTER_DEPTH,
-            Digital.Param.MOD_LFO_AMP_DEPTH,
-        }
-        return {
-            param: self.controls[param]
-            for param in lfo_depth_params
-            if param in self.controls
+    def _init_parameter_mappings(self):
+        """Initialize MIDI parameter mappings."""
+        self.cc_parameters = {
+            "Cutoff": self.SYNTH_SPEC.ControlChange.CUTOFF,
+            "Resonance": self.SYNTH_SPEC.ControlChange.RESONANCE,
+            "Level": self.SYNTH_SPEC.ControlChange.LEVEL,
+            "LFO Rate": self.SYNTH_SPEC.ControlChange.LFO_RATE,
         }
 
-    # ------------------------------------------------------------------
-    # Behavior
-    # ------------------------------------------------------------------
+        self.nrpn_parameters = {
+            "Envelope": self.SYNTH_SPEC.RPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
+            "LFO Shape": self.SYNTH_SPEC.RPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
+            "LFO Pitch Depth": self.SYNTH_SPEC.RPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
+            "LFO Filter Depth": self.SYNTH_SPEC.RPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
+            "LFO Amp Depth": self.SYNTH_SPEC.RPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
+            "Pulse Width": self.SYNTH_SPEC.RPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
+        }
 
-    def update_filter_controls_state(self, mode: int) -> None:
-        """update filter controls state"""
-        enabled = mode != 0  # BYPASS == 0
+        # --- Reverse lookup map
+        self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
 
-        params = (
-            Digital.Param.FILTER_CUTOFF,
-            Digital.Param.FILTER_RESONANCE,
-            Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
-            Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-            Digital.Param.FILTER_ENV_DEPTH,
-            Digital.Param.FILTER_SLOPE,
+    def update_filter_controls_state(self, mode: int):
+        """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
+        log.message(
+            f"[Analog Editor] update_filter_controls_state: mode={mode} "
+            f"has filter_section={hasattr(self, 'filter_section')} "
+            f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
         )
+        if hasattr(self, "filter_section") and self.filter_section is not None:
+            self.filter_section.update_controls_state(mode)
+        else:
+            log.warning("[Analog Editor] update_filter_controls_state: no filter_section, skipping")
 
-        for param in params:
-            widget = self.controls.get(param)
-            if widget:
-                widget.setEnabled(enabled)
+    def _on_filter_mode_changed(self, mode: int):
+        """Handle filter mode changes (callback from filter section when mode button clicked)."""
+        log.message(f"[Analog Editor] _on_filter_mode_changed: mode={mode}")
+        self.update_filter_controls_state(mode)
 
-        if self.filter_tab.adsr_widget:
-            self.filter_tab.adsr_widget.setEnabled(enabled)
+    def update_filter_state(self, value: int):
+        """
+        Update the filter state
 
-    def _on_waveform_selected(self, waveform: DigitalWaveOsc) -> None:
-        """on waveform selected"""
-        for btn in self.oscillator_tab.waveform_buttons.values():
+        :param value: int value
+        :return: None
+        """
+        self._update_filter_mode_buttons(value)
+        self.update_filter_controls_state(value)
+
+    def _update_filter_mode_buttons(self, value: int):
+        """
+        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback
+
+        :param value: int filter mode value (0 = BYPASS, 1 = LPF)
+        :return: None
+        """
+        filter_mode_map = {
+            0: Analog.Filter.FilterType.BYPASS,
+            1: Analog.Filter.FilterType.LPF,
+        }
+
+        selected_filter_mode = filter_mode_map.get(value)
+
+        if selected_filter_mode is None:
+            log.warning("Unknown filter mode value: %s", value)
+            return
+
+        # --- Reset all buttons to default style
+        for btn in self.filter_section.filter_mode_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
 
-        selected = self.oscillator_tab.waveform_buttons.get(waveform)
-        if selected:
-            selected.setChecked(True)
-            selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        # --- Apply active style to the selected filter mode button
+        selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+        else:
+            log.warning("Filter mode button not found for: %s", selected_filter_mode)
 
-        if not self.send_midi_parameter(Digital.Param.OSC_WAVE, waveform.value):
-            log.warning(f"Failed to set waveform: {waveform.name}")
+    def _on_waveform_selected(self, waveform: AnalogWaveOsc):
+        """
+        Handle waveform button selection
 
-    # ------------------------------------------------------------------
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
+        if self.midi_helper:
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address,
+                param=Analog.Param.OSC_WAVEFORM,
+                value=waveform.value,
+            )
+            self.midi_helper.send_midi_message(sysex_message)
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__} {self.preset_type} partial {self.partial_number}"
+        # --- Use oscillator_section.waveform_buttons if available, fallback to wave_buttons
+        buttons_dict = self.wave_buttons
+        if self.oscillator_section and hasattr(self.oscillator_section, 'waveform_buttons'):
+            buttons_dict = self.oscillator_section.waveform_buttons
+            # --- Also sync to editor's wave_buttons for consistency
+            self.wave_buttons.update(buttons_dict)
 
-    __repr__ = __str__
+        # --- Reset all buttons to default style
+        for btn in buttons_dict.values():
+            btn.setChecked(False)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+        # --- Apply active style to the selected waveform button
+        selected_btn = buttons_dict.get(waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+        self._update_pw_controls_state(waveform)
+
+    def get_controls_as_dict(self):
+        """
+        Get the current values of self.controls as a dictionary.
+        Override to handle waveform buttons and filter mode buttons specially.
+
+        :returns: dict A dictionary of control parameter names and their values.
+        """
+        # --- Get base controls
+        controls_data = super().get_controls_as_dict()
+
+        # --- Handle OSC_WAVEFORM specially - find which waveform button is checked
+        if Analog.Param.OSC_WAVEFORM in self.controls:
+            # --- Check which waveform button is currently checked
+            for waveform, btn in self.wave_buttons.items():
+                if btn.isChecked():
+                    controls_data[Analog.Param.OSC_WAVEFORM.name] = waveform.STATUS
+                    break
+            # --- If no button is checked, use default (SAW = 0)
+            if Analog.Param.OSC_WAVEFORM.name not in controls_data:
+                controls_data[Analog.Param.OSC_WAVEFORM.name] = (
+                    Analog.Wave.Osc.SAW.value
+                )
+
+        # --- Handle FILTER_MODE_SWITCH specially - find which filter mode button is checked
+        if hasattr(self, "filter_section") and hasattr(
+            self.filter_section, "filter_mode_buttons"
+        ):
+            # --- Check which filter mode button is currently checked
+            for filter_mode, btn in self.filter_section.filter_mode_buttons.items():
+                if btn.isChecked():
+                    controls_data[Analog.Param.FILTER_MODE_SWITCH.name] = (
+                        filter_mode.value
+                    )
+                    break
+            # --- If no button is checked, use default (BYPASS = 0)
+            if Analog.Param.FILTER_MODE_SWITCH.name not in controls_data:
+                controls_data[Analog.Param.FILTER_MODE_SWITCH.name] = (
+                    Analog.Filter.FilterType.BYPASS.value
+                )
+
+        return controls_data
+
+    def _on_lfo_shape_changed(self, value: int):
+        """
+        Handle LFO shape change
+
+        :param value: int value
+        :return: None
+        """
+        if self.midi_helper:
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address, param=Analog.Param.LFO_SHAPE, value=value
+            )
+            self.midi_helper.send_midi_message(sysex_message)
+            # --- Reset all buttons to default style ---
+            for btn in self.lfo_shape_buttons.values():
+                btn.setChecked(False)
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+            # --- Apply active style to the selected button ---
+            selected_btn = self.lfo_shape_buttons.get(value)
+            if selected_btn:
+                selected_btn.setChecked(True)
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+
+    def update_slider(
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Helper function to update sliders safely.
+
+        :param param: AddressParameterAnalog value
+        :param failures: list of failed parameters
+        :param successes: list of successful parameters
+        :param midi_value: int value
+        :return: None
+        """
+        slider = self.controls.get(param)
+        if slider:
+            slider_value = param.convert_from_midi(midi_value)
+            slider.blockSignals(True)
+            slider.setValue(slider_value)
+            slider.blockSignals(False)
+            successes.append(param.name)
+            log_slider_parameters(self.address, param, midi_value, slider_value)
+        else:
+            failures.append(param.name)
+
+    def update_adsr_widget(
+        self,
+        param: AnalogParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Helper function to update ADSR widgets.
+
+        :param param: AddressParameterAnalog value
+        :param midi_value: int value
+        :param failures: list of failed parameters
+        :param successes: list of successful parameters
+        :return: None
+        """
+        slider_value = (
+            midi_value_to_fraction(midi_value)
+            if param
+            in [
+                Analog.Param.AMP_ENV_SUSTAIN_LEVEL,
+                Analog.Param.FILTER_ENV_SUSTAIN_LEVEL,
+            ]
+            else midi_value_to_ms(midi_value)
+        )
+
+        if param in self.adsr_mapping:
+            control = self.adsr_mapping[param]
+            control.blockSignals(True)
+            control.setValue(slider_value)
+            control.blockSignals(False)
+            successes.append(param.name)
+            log_slider_parameters(self.address, param, midi_value, slider_value)
+        else:
+            failures.append(param.name)
+
+    def update_pitch_env_widget(
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Helper function to update ADSR widgets.
+
+        :param parameter: AddressParameterAnalog value
+        :param value: int value
+        :param failures: list of failed parameters
+        :param successes: list of successful parameters
+        :return: None
+        """
+        new_value = (
+            midi_value_to_fraction(value)
+            if parameter
+            in [
+                Analog.Param.OSC_PITCH_ENV_DEPTH,
+            ]
+            else midi_value_to_ms(value, 10, 1000)
+        )
+
+        if parameter in self.pitch_env_mapping:
+            control = self.pitch_env_mapping[parameter]
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
+            successes.append(parameter.name)
+        else:
+            failures.append(parameter.name)
+
+    def update_pwm_widget(
+        self,
+        parameter: AnalogParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Helper function to update PWM widgets.
+
+        :param parameter: AddressParameterAnalog value
+        :param value: int value
+        :param failures: list of failed parameters
+        :param successes: list of successful parameters
+        :return: None
+        """
+        new_value = (
+            midi_value_to_fraction(value)
+            if parameter
+            in [
+                Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+                Analog.Param.OSC_PULSE_WIDTH,
+            ]
+            else midi_value_to_ms(value, 10, 1000)
+        )
+
+        if parameter in self.pwm_mapping:
+            control = self.pwm_mapping[parameter]
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
+            successes.append(parameter.name)
+        else:
+            failures.append(parameter.name)
+
+    def _update_controls(
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
+    ) -> None:
+        """
+        Update sliders and combo boxes based on parsed SysEx data.
+
+        :param sysex_data: dict SysEx data
+        :param successes: list SysEx data
+        :param failures: list SysEx data
+        :return: None
+        """
+
+        # --- Compare with previous data and log changes
+        if self.previous_json_data:
+            log_changes(self.previous_json_data, sysex_data)
+
+        # --- Store the current data for future comparison
+        self.previous_json_data = sysex_data
+
+        for param_name, param_value in sysex_data.items():
+            param = Analog.Param.get_by_name(param_name)
+
+            if param:
+                if (
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in self.SUB_OSC_TYPE_MAP
+                ):
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(
+                        True
+                    )
+                    self.oscillator_section.sub_oscillator_type_switch.setValue(
+                        self.SUB_OSC_TYPE_MAP[param_value]
+                    )
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(
+                        False
+                    )
+                elif (
+                    param_name == "OSC_WAVEFORM"
+                    and param_value in self.osc_waveform_map
+                ):
+                    self._update_waveform_buttons(param_value)
+                elif (
+                    param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
+                ):
+                    self._update_lfo_shape_buttons(param_value)
+                elif param_name == "LFO_TEMPO_SYNC_SWITCH":
+                    control = self.controls.get(Analog.Param.LFO_TEMPO_SYNC_SWITCH)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
+                elif param_name == "LFO_TEMPO_SYNC_NOTE":
+                    control = self.controls.get(Analog.Param.LFO_TEMPO_SYNC_NOTE)
+                    if control:
+                        control.setValue(param_value)
+                        successes.append(param_name)
+                    else:
+                        failures.append(param_name)
+                elif param == Analog.Param.FILTER_MODE_SWITCH:
+                    mode_int = (
+                        int(param_value)
+                        if isinstance(param_value, (int, float))
+                        else getattr(param_value, "value", 0)
+                    )
+                    if not isinstance(mode_int, int):
+                        mode_int = 0
+                    self._update_filter_mode_buttons(mode_int)
+                    self.update_filter_controls_state(mode_int)
+                elif param in [
+                    Analog.Param.AMP_ENV_ATTACK_TIME,
+                    Analog.Param.AMP_ENV_DECAY_TIME,
+                    Analog.Param.AMP_ENV_SUSTAIN_LEVEL,
+                    Analog.Param.AMP_ENV_RELEASE_TIME,
+                    Analog.Param.FILTER_ENV_ATTACK_TIME,
+                    Analog.Param.FILTER_ENV_DECAY_TIME,
+                    Analog.Param.FILTER_ENV_SUSTAIN_LEVEL,
+                    Analog.Param.FILTER_ENV_RELEASE_TIME,
+                ]:
+                    self.update_adsr_widget(param, param_value, successes, failures)
+                elif param in self.pitch_env_mapping:
+                    self.update_pitch_env_widget(
+                        param, param_value, successes, failures
+                    )
+                elif param == Analog.Param.OSC_WAVEFORM:
+                    self._update_waveform_buttons(param_value)
+                else:
+                    self.update_slider(param, param_value, successes, failures)
+                successes.append(param_name)
+            else:
+                failures.append(param_name)
+
+    def _update_waveform_buttons(self, value: int):
+        """
+        Update the waveform buttons based on the OSC_WAVE value with visual feedback.
+
+        :param value: int value
+        :return: None
+        """
+        waveform_map = {
+            0: Analog.Wave.Osc.SAW,
+            1: Analog.Wave.Osc.TRIANGLE,
+            2: Analog.Wave.Osc.PULSE,
+        }
+
+        selected_waveform = waveform_map.get(value)
+
+        if selected_waveform is None:
+            log.message(f"Unknown waveform value: {value}", level=logging.WARNING)
+            return
+
+        log.message(f"Waveform value {value} found, selecting {selected_waveform}")
+
+        # --- Retrieve waveform buttons for the given partial
+        wave_buttons = self.wave_buttons
+
+        # --- Reset all buttons to default style
+        for btn in wave_buttons.values():
+            btn.setChecked(False)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+        # --- Apply active style to the selected waveform button
+        selected_btn = wave_buttons.get(selected_waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+
+    def _update_lfo_shape_buttons(self, value: int):
+        """
+        Update the LFO shape buttons with visual feedback.
+
+        :param value: int value
+        :return: None
+        """
+        # --- Reset all buttons to default style
+        for btn in self.lfo_shape_buttons.values():
+            btn.setChecked(False)
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+        # --- Apply active style to the selected button
+        selected_btn = self.lfo_shape_buttons.get(value)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+        else:
+            log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
+
+    def _update_pw_controls_state(self, waveform: AnalogWaveOsc):
+        """
+        Enable/disable PW controls based on waveform
+
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
+        pw_enabled = waveform == AnalogWaveOsc.PULSE
+        log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
+        # --- Access PWM controls from oscillator_section.pwm_widget.controls
+        if self.oscillator_section and self.oscillator_section.pwm_widget:
+            pwm_controls = self.oscillator_section.pwm_widget.controls
+            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
+                pwm_controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
+            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
+            
+            # --- Update the visual state (if controls are sliders)
+            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
+                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH]
+                if hasattr(control, 'setStyleSheet'):
+                    control.setStyleSheet(
+                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                    )
+            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH]
+                if hasattr(control, 'setStyleSheet'):
+                    control.setStyleSheet(
+                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                    )

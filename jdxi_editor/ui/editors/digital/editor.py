@@ -32,6 +32,7 @@ Dependencies:
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -62,17 +63,27 @@ from jdxi_editor.ui.editors.digital import (
     DigitalPartialPanel,
     DigitalToneModifySection,
 )
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 
-class DigitalSynthEditor(SynthEditor):
+class DigitalSynthEditor(BaseSynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
     preset_changed = Signal(int, str, int)
+
+    FILTER_MODE_MAP = {
+        0: Digital.Filter.Mode.BYPASS,
+        1: Digital.Filter.Mode.LPF,
+        2: Digital.Filter.Mode.HPF,
+        3: Digital.Filter.Mode.BPF,
+        4: Digital.Filter.Mode.PKG,
+        5: Digital.Filter.Mode.LPF2,
+        6: Digital.Filter.Mode.LPF3,
+        7: Digital.Filter.Mode.LPF4,
+    }
 
     def __init__(
         self,
@@ -277,6 +288,8 @@ class DigitalSynthEditor(SynthEditor):
         
         self.tone_modify_section = DigitalToneModifySection(
             controls=self.controls,
+            send_midi_parameter=self.send_midi_parameter,
+            midi_helper=midi_helper,
         )
         self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
         container_layout.addWidget(self.tab_widget)
@@ -830,18 +843,7 @@ class DigitalSynthEditor(SynthEditor):
         if partial_number is None:
             return
 
-        filter_mode_map = {
-            0: Digital.Filter.Mode.BYPASS,
-            1: Digital.Filter.Mode.LPF,
-            2: Digital.Filter.Mode.HPF,
-            3: Digital.Filter.Mode.BPF,
-            4: Digital.Filter.Mode.PKG,
-            5: Digital.Filter.Mode.LPF2,
-            6: Digital.Filter.Mode.LPF3,
-            7: Digital.Filter.Mode.LPF4,
-        }
-
-        selected_filter_mode = filter_mode_map.get(value)
+        selected_filter_mode = self.FILTER_MODE_MAP.get(value)
 
         if selected_filter_mode is None:
             log.warning("Unknown filter mode value: %s", value)

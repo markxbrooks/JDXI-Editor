@@ -1,21 +1,20 @@
 """
 Common Section
 """
-from typing import Callable, Dict, Optional, Union
 
-from PySide6.QtWidgets import QWidget
+from typing import Callable, Optional
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.common import BaseCommonSection
+from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_group_with_layout
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
-class DigitalCommonSection(SectionBaseWidget):
+class DigitalCommonSection(BaseCommonSection):
     """Digital Common Section"""
 
     SLIDER_GROUPS = {
@@ -92,16 +91,14 @@ class DigitalCommonSection(SectionBaseWidget):
         :param send_midi_parameter: Optional[Callable] Function to send MIDI parameters
         :param midi_helper: Optional[MidiIOHelper] MIDI helper instance
         """
-        super().__init__(
-            icons_row_type=IconType.GENERIC,
-            analog=False,
-            midi_helper=midi_helper,
-        )
+        super().__init__(controls=controls,
+                         icons_row_type=IconType.GENERIC,
+                         midi_helper=midi_helper,
+                         send_midi_parameter=send_midi_parameter,
+                         analog=True)
         # Set address and send_midi_parameter before building widgets
         # so they're available when widgets are created
         self.address = address
-        self.send_midi_parameter = send_midi_parameter
-        self.controls: Dict[Union[AnalogParam], QWidget] = controls or {}
         self.build_widgets()
         self.setup_ui()
 
@@ -133,12 +130,15 @@ class DigitalCommonSection(SectionBaseWidget):
             = self._build_switches(self.OTHER_SWITCHES)
 
     def setup_ui(self) -> None:
+        """setup ui"""
         layout = self.get_layout()
+        group, sub_layout = create_group_with_layout(label="Common")
+        layout.addWidget(group)
+        group.setStyleSheet(JDXiUIStyle.ADSR)
+        sub_layout.addLayout(create_layout_with_widgets([self.octave_shift_switch]))
+        sub_layout.addLayout(create_layout_with_widgets([self.mono_switch]))
 
-        layout.addLayout(create_layout_with_widgets([self.octave_shift_switch]))
-        layout.addLayout(create_layout_with_widgets([self.mono_switch]))
-
-        layout.addLayout(
+        sub_layout.addLayout(
             create_layout_with_widgets([
                 self.pitch_bend_up,
                 self.pitch_bend_down,
@@ -149,14 +149,13 @@ class DigitalCommonSection(SectionBaseWidget):
             ])
         )
 
-        layout.addLayout(create_layout_with_widgets([self.ring_switch]))
-        layout.addLayout(create_layout_with_widgets([self.unison_switch, self.unison_size]))
-        layout.addLayout(
+        sub_layout.addLayout(create_layout_with_widgets([self.ring_switch]))
+        sub_layout.addLayout(create_layout_with_widgets([self.unison_switch, self.unison_size]))
+        sub_layout.addLayout(
             create_layout_with_widgets([
                 self.portamento_switch,
                 self.portamento_mode,
                 self.legato_switch,
             ])
         )
-
-        layout.addStretch()
+        sub_layout.addStretch()

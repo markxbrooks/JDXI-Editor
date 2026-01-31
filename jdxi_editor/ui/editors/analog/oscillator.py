@@ -128,8 +128,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         self._create_tab_widget()
 
     def _create_tab_widget(self):
-        """Tab widget with tuning group and pitch widget"""
-        self.oscillator_tab_widget = QTabWidget()
+        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
+        self.tab_widget = QTabWidget()
         # --- Tuning tab (standardized name matching Digital) ---
         self.tuning_group = self._create_tuning_group()
         # --- Pitch tab (standardized name matching Digital) ---
@@ -146,9 +146,9 @@ class AnalogOscillatorSection(SectionBaseWidget):
         # --- Waveform buttons ---
         self.waveform_button_layout = self._create_wave_layout()
         layout.addLayout(self.waveform_button_layout)
-        # --- Tab widget to add pitch and PW controls to ---
-        JDXi.UI.Theme.apply_tabs_style(self.oscillator_tab_widget, analog=True)
-        layout.addWidget(self.oscillator_tab_widget)
+        # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
+        layout.addWidget(self.tab_widget)
         self._add_tab(key=Analog.Wave.Tab.PITCH, widget=self.pitch_widget)
         self._add_tab(key=Analog.Wave.Tab.TUNING, widget=self.tuning_group)
         self._add_tab(key=Analog.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
