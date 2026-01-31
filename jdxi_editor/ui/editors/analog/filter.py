@@ -122,6 +122,27 @@ class AnalogFilterSection(SectionBaseWidget):
         self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
+        """Create the filter controls row with buttons for each filter mode."""
+        self.filter_label = QLabel("Filter")
+        
+        layout = QHBoxLayout()
+        layout.addWidget(self.filter_label)
+    
+        # Create buttons dynamically based on the FilterSpec configurations
+        for filter_mode, spec in FILTER_SPECS.items():
+            button = QPushButton()
+            button.setIcon(spec.icon)
+            button.setText(spec.name)
+            button.setToolTip(spec.description)
+            button.clicked.connect(
+                lambda _, mode=filter_mode: self._on_filter_mode_changed(mode)
+            )
+            self.filter_mode_buttons[filter_mode] = button
+            layout.addWidget(button)
+    
+        return layout
+
+    def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
         # --- Add label - store as instance attribute to prevent garbage collection
         self.filter_label = QLabel("Filter")
