@@ -142,7 +142,7 @@ class AnalogFilterSection(SectionBaseWidget):
     
         return layout
         
-    def _on_filter_mode_changed(self, filter_mode: AnalogFilterType):
+    def _on_filter_mode_changed_new(self, filter_mode: AnalogFilterType):
         """Handle changes to the filter mode."""
         spec = FILTER_SPECS[filter_mode]
         print(f"Switching to {spec.name} mode.")
