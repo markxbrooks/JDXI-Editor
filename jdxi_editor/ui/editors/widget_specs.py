@@ -2,6 +2,15 @@ from dataclasses import dataclass
 from typing import Any
 
 
+@dataclass
+class FilterSpec:
+    """Class representing the specification for a filter mode."""
+    name: str  # Filter mode name (e.g., "Low Pass", "High Pass", etc.)
+    param: Optional[Analog.Param]  # Associated parameter (if applicable)
+    icon: Icon  # Icon used for the filter mode
+    description: Optional[str] = None  # Optional description or tooltip text
+    
+    
 @dataclass(frozen=True)
 class SliderSpec:
     param: Any
