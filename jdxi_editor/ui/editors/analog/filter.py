@@ -121,7 +121,7 @@ class AnalogFilterSection(SectionBaseWidget):
         # --- Filter ADSR ---
         self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
 
-    def _create_filter_controls_row(self) -> QHBoxLayout:
+    def _create_filter_controls_row_new(self) -> QHBoxLayout:
         """Create the filter controls row with buttons for each filter mode."""
         self.filter_label = QLabel("Filter")
         
@@ -141,6 +141,14 @@ class AnalogFilterSection(SectionBaseWidget):
             layout.addWidget(button)
     
         return layout
+        
+    def _on_filter_mode_changed(self, filter_mode: AnalogFilterType):
+        """Handle changes to the filter mode."""
+        spec = FILTER_SPECS[filter_mode]
+        print(f"Switching to {spec.name} mode.")
+        if spec.param:
+            # Update the corresponding parameter in the UI or MIDI message handling
+            self.midi_helper.send_param_change(spec.param)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Filter controls row with individual buttons"""
