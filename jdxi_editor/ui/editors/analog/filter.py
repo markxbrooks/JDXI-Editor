@@ -2,7 +2,7 @@
 Analog Filter Section
 """
 
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Optional, Union, Any
 
 import qtawesome as qta
 from picomidi.sysex.parameter.address import AddressParameter
@@ -22,11 +22,29 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, FilterSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, FilterSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
+
+
+def set_filter_button_style(btn: QPushButton):
+    btn.setIconSize(QSize(20, 20))
+    JDXi.UI.Theme.apply_button_rect_analog(btn)
+    btn.setFixedSize(
+        JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
+        JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
+    )
+
+
+def create_icon_from_name(icon_name: str) -> Any:
+    icon = qta.icon(
+        icon_name,
+        color=JDXi.UI.Style.WHITE,
+        icon_size=JDXi.UI.Dimensions.ICON.SIZE_SMALL,
+    )
+    return icon
 
 
 class AnalogFilterSection(SectionBaseWidget):
@@ -48,17 +66,19 @@ class AnalogFilterSection(SectionBaseWidget):
         ],
     }
     
-    FILTER_SPEC: Dict[AnalogFilterType, Dict[str, Any]] = {
-        AnalogFilterType.BYPASS: {
-            "param": None,  # No parameter adjustments for bypass
-            "icon": JDXi.UI.Icon.POWER,  # Power/off icon
-            "label": "Bypass",
-        },
-        AnalogFilterType.LPF: {
-            "param": Analog.Param.FILTER_CUTOFF_FREQUENCY,  # Key parameter for low-pass filter
-            "icon": JDXi.UI.Icon.FILTER,  # Filter icon
-            "label": "Low Pass",
-        },
+    FILTER_SPECS: Dict[AnalogFilterType, FilterSpec] = {
+        AnalogFilterType.BYPASS: FilterSpec(
+            param=None,  # No parameter adjustments for bypass
+            icon=JDXi.UI.Icon.POWER,  # Power/off icon
+            name="Bypass",
+            description=AnalogFilterType.BYPASS.tooltip
+    ),
+        AnalogFilterType.LPF: FilterSpec(
+            param=Analog.Param.FILTER_MODE_SWITCH,  # Key parameter for low-pass filter
+            icon=JDXi.UI.Icon.FILTER,  # Filter icon
+            name="Low Pass",
+            description=AnalogFilterType.LPF.tooltip
+    ),
     }
 
     def __init__(
@@ -78,7 +98,7 @@ class AnalogFilterSection(SectionBaseWidget):
         self.tab_widget: QTabWidget | None = None
         self.filter_resonance: QWidget | None = None
         self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
-        self._on_filter_mode_changed: Callable = on_filter_mode_changed
+        self._filter_mode_changed_callback: Callable = on_filter_mode_changed
 
         # Get midi_helper from parent if available
         midi_helper = None
@@ -105,7 +125,7 @@ class AnalogFilterSection(SectionBaseWidget):
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
 
         # --- Filter Selection Buttons ---
-        filter_row = self._create_filter_controls_row()
+        self.filter_row = filter_row = self._create_filter_controls_row()
         if filter_row:
             layout.addLayout(filter_row)
         layout.addWidget(self.tab_widget)
@@ -121,81 +141,28 @@ class AnalogFilterSection(SectionBaseWidget):
         # --- Filter ADSR ---
         self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
 
-    def _create_filter_controls_row_new(self) -> QHBoxLayout:
+    def _create_filter_controls_row(self) -> QHBoxLayout:
         """Create the filter controls row with buttons for each filter mode."""
         self.filter_label = QLabel("Filter")
-        
-        layout = QHBoxLayout()
-        layout.addWidget(self.filter_label)
-    
+
+        self.filter_mode_control_button_widgets: list[QWidget] = [self.filter_label]
         # Create buttons dynamically based on the FilterSpec configurations
-        for filter_mode, spec in FILTER_SPECS.items():
+        for filter_mode, spec in self.FILTER_SPECS.items():
             button = QPushButton()
-            button.setIcon(spec.icon)
+            icon = create_icon_from_name(spec.icon)
+            button.setIcon(icon)
             button.setText(spec.name)
             button.setToolTip(spec.description)
+            set_filter_button_style(button)
             button.clicked.connect(
-                lambda _, mode=filter_mode: self._on_filter_mode_changed(mode)
-            )
-            self.filter_mode_buttons[filter_mode] = button
-            layout.addWidget(button)
-    
-        return layout
-        
-    def _on_filter_mode_changed_new(self, filter_mode: AnalogFilterType):
-        """Handle changes to the filter mode."""
-        spec = FILTER_SPECS[filter_mode]
-        print(f"Switching to {spec.name} mode.")
-        if spec.param:
-            # Update the corresponding parameter in the UI or MIDI message handling
-            self.midi_helper.send_param_change(spec.param)
-
-    def _create_filter_controls_row(self) -> QHBoxLayout:
-        """Filter controls row with individual buttons"""
-        # --- Add label - store as instance attribute to prevent garbage collection
-        self.filter_label = QLabel("Filter")
-
-        # --- Create buttons for each filter mode
-        filter_modes = [
-            AnalogFilterType.BYPASS,
-            AnalogFilterType.LPF,
-        ]
-
-        # --- Map filter modes to icon names
-        filter_icon_map = {
-            AnalogFilterType.BYPASS: JDXi.UI.Icon.POWER,  # Power/off icon for bypass
-            AnalogFilterType.LPF: JDXi.UI.Icon.FILTER,  # Filter icon for LPF
-        }
-
-        self.filter_mode_control_button_widgets = [self.filter_label]
-        for filter_mode in filter_modes:
-            btn = QPushButton(filter_mode.name)
-            btn.setCheckable(True)
-            # --- Add icon
-            icon_name = filter_icon_map.get(filter_mode, JDXi.UI.Icon.FILTER)
-            icon = qta.icon(
-                icon_name,
-                color=JDXi.UI.Style.WHITE,
-                icon_size=JDXi.UI.Dimensions.ICON.SIZE_SMALL,
-            )
-            btn.setIcon(icon)
-            btn.setIconSize(QSize(20, 20))
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
-            btn.setFixedSize(
-                JDXi.UI.Dimensions.WAVEFORM_ICON.WIDTH,
-                JDXi.UI.Dimensions.WAVEFORM_ICON.HEIGHT,
-            )
-            btn.clicked.connect(
                 lambda checked, mode=filter_mode: self._on_filter_mode_selected(mode)
             )
-            self.filter_mode_buttons[filter_mode] = btn
-            self.filter_mode_control_button_widgets.append(btn)
-
-        # --- Store the layout as instance attribute to prevent garbage collection
-        self.filter_controls_row_layout = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
-        return self.filter_controls_row_layout
-
-    def _on_filter_mode_selected(self, filter_mode):
+            self.filter_mode_buttons[filter_mode] = button
+            self.filter_mode_control_button_widgets.append(button)
+        filter_row = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
+        return filter_row
+        
+    def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
         """
         Handle filter mode button clicks
 
@@ -222,9 +189,9 @@ class AnalogFilterSection(SectionBaseWidget):
             if sysex_message:
                 self.midi_helper.send_midi_message(sysex_message)
 
-        # --- Update filter controls state
-        if self._on_filter_mode_changed:
-            self._on_filter_mode_changed(filter_mode.value)
+        # --- Notify parent so it can update filter controls enabled state
+        if self._filter_mode_changed_callback:
+            self._filter_mode_changed_callback(filter_mode.value)
 
     def _create_filter_controls_group(self) -> QGroupBox:
         """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""

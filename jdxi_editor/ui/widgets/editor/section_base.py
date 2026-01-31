@@ -51,7 +51,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.editors.widget_specs import ComboBoxSpec, SliderSpec, SwitchSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -352,7 +352,6 @@ class SectionBaseWidget(SynthBase):
             log.message(f"📋 ADSR_SPEC keys: {list(self.ADSR_SPEC.keys())}")
 
         # Handle both string keys and ADSRType enum keys
-        from jdxi_editor.ui.adsr.type import ADSRType
 
         attack_key = ADSRStage.ATTACK  # if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
         decay_key = ADSRStage.DECAY # if "decay" in self.ADSR_SPEC else ADSRType.DECAY

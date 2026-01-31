@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QTabWidget, QWidget
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,

@@ -7,7 +7,7 @@ from typing import Callable, Literal
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 
 

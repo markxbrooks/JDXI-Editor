@@ -19,3 +19,10 @@ class AnalogFilterType(Enum):
 
     BYPASS = 0
     LPF = 1
+
+    @property
+    def tooltip(self) -> str:
+        return {
+            self.BYPASS: "No Filter",
+            self.LPF: "Low Pass filter: high frequencies filtered out"
+        }.get(self, "Filter Type")

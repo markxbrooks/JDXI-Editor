@@ -34,12 +34,7 @@ Example:
     editor.show()
 """
 
-from typing import Callable
-
-import numpy as np
-from decologr import Decologr as log
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
@@ -50,7 +45,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from jdxi_editor.ui.widgets.plot.drum import DrumPitchEnvPlot
 

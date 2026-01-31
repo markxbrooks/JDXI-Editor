@@ -16,7 +16,7 @@ from jdxi_editor.ui.editors.analog.helpers import (
     generate_analog_wave_button,
     generate_analog_waveform_icon_name,
 )
-from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_widgets,

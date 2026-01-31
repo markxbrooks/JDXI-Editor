@@ -40,8 +40,6 @@ Example:
     editor.show()
 """
 
-from typing import Callable
-
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
@@ -53,10 +51,9 @@ from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.editors.widget_specs import ComboBoxSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_form_layout_with_widgets,
     create_group_with_layout,
     create_layout_with_widgets,
 )

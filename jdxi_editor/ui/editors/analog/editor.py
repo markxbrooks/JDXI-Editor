@@ -293,7 +293,7 @@ class AnalogSynthEditor(SynthEditor):
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
 
     def update_filter_controls_state(self, mode: int):
-        """Update filter controls enabled state based on mode"""
+        """Update filter controls enabled state based on mode (0=BYPASS, 1=LPF)."""
         enabled = mode != 0  # --- Enable if not BYPASS
         for param in [
             Analog.Param.FILTER_CUTOFF,
@@ -304,7 +304,11 @@ class AnalogSynthEditor(SynthEditor):
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
-        self.filter_section.adsr_widget.setEnabled(enabled)
+        # --- Enable/disable filter section groups (covers widgets not in self.controls)
+        if hasattr(self, "filter_section") and self.filter_section is not None:
+            if hasattr(self.filter_section, "filter_controls_group"):
+                self.filter_section.filter_controls_group.setEnabled(enabled)
+            self.filter_section.adsr_widget.setEnabled(enabled)
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""

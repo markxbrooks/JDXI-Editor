@@ -15,7 +15,7 @@ from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
-from jdxi_editor.ui.editors.widget_specs import SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec
 
 
 class AnalogAmpSection(BaseAmpSection):
