@@ -345,6 +345,20 @@ class SynthBase(QWidget):
         if param is None:
             log.error("Cannot send MIDI parameter: parameter is None")
             return False
+        if not getattr(self, "sysex_composer", None) or not callable(
+            getattr(self.sysex_composer, "compose_message", None)
+        ):
+            log.error(
+                f"Cannot send MIDI parameter {param.name}: sysex_composer or compose_message not available"
+            )
+            return False
+        if not getattr(self, "_midi_helper", None) or not callable(
+            getattr(self._midi_helper, "send_midi_message", None)
+        ):
+            log.error(
+                f"Cannot send MIDI parameter {param.name}: midi_helper or send_midi_message not available"
+            )
+            return False
         try:
             # --- Ensure value is an integer (handle enums, strings, floats)
             def safe_int(val):
@@ -482,6 +496,8 @@ class SynthBase(QWidget):
             # --- Send MIDI message
             if not address:
                 address = self.address
+            if not callable(getattr(self, "send_midi_parameter", None)):
+                return
             if not self.send_midi_parameter(param, display_value, address):
                 log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
@@ -507,12 +523,14 @@ class SynthBase(QWidget):
         :param show_value_label: str whether to show the value label
         :return: Slider
         """
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
+        get_display_value = getattr(param, "get_display_value", None)
+        if callable(get_display_value):
+            display_min, display_max = get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-        if hasattr(param, "get_tooltip"):
-            tooltip = param.get_tooltip()
+        get_tooltip = getattr(param, "get_tooltip", None)
+        if callable(get_tooltip):
+            tooltip = get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
 

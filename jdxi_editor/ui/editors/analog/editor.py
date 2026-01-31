@@ -247,6 +247,8 @@ class AnalogSynthEditor(SynthEditor):
         self.filter_section = AnalogFilterSection(
             controls=self.controls,
             address=self.synth_data.address,
+            send_midi_parameter=self.send_midi_parameter,
+            midi_helper=self.midi_helper,
             on_filter_mode_changed=self._on_filter_mode_changed,
             parent=self,
         )

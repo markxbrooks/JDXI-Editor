@@ -41,10 +41,6 @@ class BaseOscillatorSection(SectionBaseWidget):
     ):
         """
         Initialize the BaseOscillatorSection
-
-        :param create_parameter_slider: Callable to create parameter sliders
-        :param create_parameter_switch: Callable to create parameter switches
-        :param create_parameter_combo_box: Callable to create parameter combo boxes
         :param send_midi_parameter: Callable to send MIDI parameters
         :param midi_helper: MIDI helper instance
         :param controls: Dictionary of controls

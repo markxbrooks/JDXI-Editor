@@ -40,6 +40,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
@@ -125,6 +126,12 @@ class SectionBaseWidget(SynthBase):
             if self.BUTTON_SPECS:
                 self._initialize_button_states()
 
+    def get_parent_midi_helper(self, parent: QWidget | None):
+        if parent and hasattr(parent, 'midi_helper'):
+            midi_helper = parent.midi_helper
+            return midi_helper
+        return None
+
         # -------------------------------
         # Layout & Tabs
         # -------------------------------
@@ -182,10 +189,6 @@ class SectionBaseWidget(SynthBase):
     # -------------------------------
     def build_widgets(self):
         """Build sliders, switches, combo boxes, buttons, and ADSR"""
-        from decologr import Decologr as log
-
-        from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-
         class_name = self.__class__.__name__
         is_filter_section = class_name == "DigitalFilterSection"
 
@@ -226,24 +229,6 @@ class SectionBaseWidget(SynthBase):
             )
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
-    def _create_tab_widget_old(self):
-        """Create tab widget with controls and optional ADSR"""
-        self.tab_widget = QTabWidget()
-
-        controls_widget = self._create_controls_widget()
-        self.tab_widget.addTab(
-            controls_widget,
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.TUNE, JDXi.UI.Style.GREY),
-            "Controls",
-        )
-
-        # ADSR tab
-        if self.adsr_widget:
-            adsr_group = create_envelope_group(
-                "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
-            )
-            self.tab_widget.addTab(adsr_group, create_adsr_icon(), "ADSR")
-
     def _create_controls_widget(self) -> QWidget:
         # Controls tab
         controls_widget = QWidget()
@@ -253,10 +238,6 @@ class SectionBaseWidget(SynthBase):
 
     def _create_parameter_widgets(self):
         """Create widgets from PARAM_SPECS declaratively"""
-        from decologr import Decologr as log
-
-        from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-
         class_name = self.__class__.__name__
         is_filter_section = class_name == "DigitalFilterSection"
 
@@ -341,9 +322,6 @@ class SectionBaseWidget(SynthBase):
     def _create_adsr(self):
         """Create ADSR widget from ADSR_SPEC"""
         from decologr import Decologr as log
-
-        # from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-
         class_name = self.__class__.__name__
         is_filter_section = class_name == "DigitalFilterSection"
 
@@ -558,17 +536,20 @@ class SectionBaseWidget(SynthBase):
         decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
         sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
         release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
+        peak_spec = self.ADSR_SPEC.get(ADSRStage.PEAK)
 
         attack_param = get_param(attack_spec) if attack_spec else None
         decay_param = get_param(decay_spec) if decay_spec else None
         sustain_param = get_param(sustain_spec) if sustain_spec else None
         release_param = get_param(release_spec) if release_spec else None
+        peak_param = get_param(peak_spec) if peak_spec else None
 
         amp_env_adsr_widget = ADSR(
             attack_param=attack_param,
             decay_param=decay_param,
             sustain_param=sustain_param,
             release_param=release_param,
+            peak_param=peak_param,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,

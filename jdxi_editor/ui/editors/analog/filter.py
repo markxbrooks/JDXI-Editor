@@ -4,6 +4,7 @@ Analog Filter Section
 
 from typing import Callable, Dict, Optional
 
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QWidget,
@@ -53,12 +54,16 @@ class AnalogFilterSection(BaseFilterSection):
     ),
     }
 
+    SYNTH_SPEC = Analog
+
     def __init__(
         self,
         controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
         on_filter_mode_changed: Callable = None,
         parent: Optional[QWidget] = None,
+        midi_helper: MidiIOHelper = None,
+        send_midi_parameter: Callable = None
     ):
         """
         Initialize the AnalogFilterSection
@@ -69,8 +74,11 @@ class AnalogFilterSection(BaseFilterSection):
         """
         super().__init__(controls=controls,
                          address=address,
+                         midi_helper=midi_helper,
+                         send_midi_parameter=send_midi_parameter,
                          on_filter_mode_changed=on_filter_mode_changed,
-                         parent=parent)
+                         parent=parent,
+                         analog=True)
 
         self.build_widgets()
         self.setup_ui()

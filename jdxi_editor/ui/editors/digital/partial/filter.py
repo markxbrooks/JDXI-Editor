@@ -5,22 +5,22 @@ Digital Filter Section for the JDXI Editor
 from typing import Dict
 
 from decologr import Decologr as log
-from PySide6.QtWidgets import QTabWidget, QWidget
+from PySide6.QtWidgets import QGroupBox, QTabWidget, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.digital.filter import DigitalFilterType, DigitalFilterTypeEnum
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.editors.base.filter import BaseFilterSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_envelope_group,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.spec import SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, FilterSpec
 
 
-class DigitalFilterSection(SectionBaseWidget):
+class DigitalFilterSection(BaseFilterSection):
     """Digital Filter Section for JD-Xi Digital Partial"""
 
     # --- Filter sliders
@@ -123,6 +123,59 @@ class DigitalFilterSection(SectionBaseWidget):
         ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
     }
 
+    FILTER_SPECS: Dict[DigitalFilterType, FilterSpec] = {
+        DigitalFilterType.BYPASS: FilterSpec(
+            param=None,
+            icon=JDXi.UI.Icon.POWER,
+            name=DigitalFilterTypeEnum.BYPASS.name,
+            description=DigitalFilterTypeEnum.BYPASS.tooltip,
+        ),
+        DigitalFilterType.LPF: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.LPF.name,
+            description=DigitalFilterTypeEnum.LPF.tooltip,
+        ),
+        DigitalFilterType.HPF: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.HPF.name,
+            description=DigitalFilterTypeEnum.HPF.tooltip,
+        ),
+        DigitalFilterType.BPF: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.BPF.name,
+            description=DigitalFilterTypeEnum.BPF.tooltip,
+        ),
+        DigitalFilterType.PKG: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.PKG.name,
+            description=DigitalFilterTypeEnum.PKG.tooltip,
+        ),
+        DigitalFilterType.LPF2: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.LPF2.name,
+            description=DigitalFilterTypeEnum.LPF2.tooltip,
+        ),
+        DigitalFilterType.LPF3: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.LPF3.name,
+            description=DigitalFilterTypeEnum.LPF3.tooltip,
+        ),
+        DigitalFilterType.LPF4: FilterSpec(
+            param=Digital.Param.FILTER_MODE_SWITCH,
+            icon=JDXi.UI.Icon.FILTER,
+            name=DigitalFilterTypeEnum.LPF4.name,
+            description=DigitalFilterTypeEnum.LPF4.tooltip,
+        ),
+    }
+
+    SYNTH_SPEC = Digital
+
     # --- Log ADSR_SPEC at class definition time
     if _log_param_specs:
         peak_spec = ADSR_SPEC.get(ADSRStage.PEAK)
@@ -163,30 +216,42 @@ class DigitalFilterSection(SectionBaseWidget):
                 self.filter_widget.slope_param_control
             )
 
-        # --- Call parent to create other widgets from PARAM_SPECS
+        # --- Create parameter widgets (resonance, keyfollow, etc.) then run base build_widgets.
+        # BaseFilterSection.build_widgets() calls _create_controls_group(); we override it so it
+        # does not create AnalogFilterWidget (which would overwrite self.filter_widget).
+        self._create_controls_widget()
         super().build_widgets()
 
+    def _create_controls_group(self) -> QGroupBox:
+        """Digital filter: do not create AnalogFilterWidget; populate control_widgets and filter-mode buttons for the tab."""
+        self._create_parameter_widgets()
+        if self.BUTTON_SPECS:
+            self._create_waveform_buttons()
+        return QGroupBox("Controls")
+
     def _create_tab_widget(self):
-        """Override to add FilterWidget to Controls tab"""
+        """Override to add FilterWidget to Controls tab. Idempotent: skip if already built (called from both build_widgets and _setup_ui)."""
+        if self.tab_widget is not None and self.tab_widget.count() > 0:
+            return
         self.tab_widget = QTabWidget()
+        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_widget)
 
-        from jdxi_editor.midi.data.parameter.digital.spec import DigitalFilterTab
+        # --- ADSR tab (adsr_group set by _create_adsr_group() in build_widgets)
+        if getattr(self, "adsr_group", None):
+            self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
 
+    def _create_controls_widget(self):
         # --- Controls tab - include FilterWidget first, then other controls
-        controls_widget = QWidget()
+        self.controls_widget = QWidget()
         # --- FilterWidget includes cutoff and slope with plot
         #     Other controls from PARAM_SPECS (resonance, keyfollow, velocity, depth)
         all_control_widgets = [self.filter_widget] + self.control_widgets
-        controls_layout = create_layout_with_widgets(all_control_widgets)
-        controls_widget.setLayout(controls_layout)
-        self._add_tab(key=DigitalFilterTab.CONTROLS, widget=controls_widget)
+        self.controls_layout = create_layout_with_widgets(all_control_widgets)
+        self.controls_widget.setLayout(self.controls_layout)
 
-        # --- ADSR tab
-        if self.adsr_widget:
-            adsr_group = create_envelope_group(
-                name="Envelope", adsr_widget=self.adsr_widget, analog=self.analog
-            )
-            self._add_tab(key=DigitalFilterTab.ADSR, widget=adsr_group)
+    def _create_adsr_group(self):
+        """Create ADSR group (base creates adsr_widget and adsr_group)."""
+        super()._create_adsr_group()
 
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable plot and ADSR"""

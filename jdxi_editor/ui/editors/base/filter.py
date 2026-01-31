@@ -4,6 +4,8 @@ Analog Filter Section
 
 from typing import Callable, Dict, Optional, Union
 
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -19,7 +21,6 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -35,12 +36,18 @@ class BaseFilterSection(SectionBaseWidget):
 
     FILTER_SPECS: dict = {}
 
+    SYNTH_SPEC = JDXiMidiDigital
+
     def __init__(
-        self,
-        controls: dict[AddressParameter, QWidget],
-        address: RolandSysExAddress,
-        on_filter_mode_changed: Callable = None,
-        parent: Optional[QWidget] = None,
+            self,
+            controls: dict[AddressParameter, QWidget],
+            address: RolandSysExAddress,
+            on_filter_mode_changed: Callable = None,
+            parent: Optional[QWidget] = None,
+            icons_row_type: str = None,
+            send_midi_parameter: Callable = None,
+            midi_helper: MidiIOHelper = None,
+            analog: bool = False
     ):
         """
         Initialize the AnalogFilterSection
@@ -53,13 +60,14 @@ class BaseFilterSection(SectionBaseWidget):
         self.filter_resonance: QWidget | None = None
         self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
         self._filter_mode_changed_callback: Callable = on_filter_mode_changed
+        self.send_midi_parameter: Callable | None = send_midi_parameter
 
-        # Get midi_helper from parent if available
-        midi_helper = None
-        if parent and hasattr(parent, 'midi_helper'):
-            midi_helper = parent.midi_helper
-        
-        super().__init__(icons_row_type=IconType.ADSR, analog=True, midi_helper=midi_helper)
+        super().__init__(send_midi_parameter=send_midi_parameter,
+                         midi_helper=midi_helper,
+                         controls=controls,
+                         address=address,
+                         icons_row_type=icons_row_type,
+                         analog=analog)
         # Set attributes after super().__init__() to avoid them being overwritten
         self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         self.address = address
@@ -88,9 +96,9 @@ class BaseFilterSection(SectionBaseWidget):
         """create tab widget"""
         self.tab_widget = QTabWidget()
         # --- Filter Controls ---
-        self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.controls_group)
+        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group)
         # --- Filter ADSR ---
-        self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
+        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Create the filter controls row with buttons for each filter mode."""
@@ -112,7 +120,7 @@ class BaseFilterSection(SectionBaseWidget):
             self.filter_mode_control_button_widgets.append(button)
         filter_row = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
         return filter_row
-        
+
     def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
         """
         Handle filter mode button clicks
