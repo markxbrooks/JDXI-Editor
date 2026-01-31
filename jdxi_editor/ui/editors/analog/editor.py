@@ -307,7 +307,7 @@ class AnalogSynthEditor(SynthEditor):
         # --- Enable/disable filter section groups (covers widgets not in self.controls)
         if hasattr(self, "filter_section") and self.filter_section is not None:
             if hasattr(self.filter_section, "filter_controls_group"):
-                self.filter_section.filter_controls_group.setEnabled(enabled)
+                self.filter_section.controls_group.setEnabled(enabled)
             self.filter_section.adsr_widget.setEnabled(enabled)
 
     def _on_filter_mode_changed(self, mode: int):

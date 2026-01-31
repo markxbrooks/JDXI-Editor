@@ -66,7 +66,7 @@ class BaseFilterSection(SectionBaseWidget):
 
     def build_widgets(self):
         """build widgets"""
-        self.filter_controls_group = self._create_filter_controls_group()
+        self.controls_group = self._create_controls_group()
         self._create_adsr_group()
         self._create_tab_widget()
 
@@ -88,7 +88,7 @@ class BaseFilterSection(SectionBaseWidget):
         """create tab widget"""
         self.tab_widget = QTabWidget()
         # --- Filter Controls ---
-        self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.filter_controls_group)
+        self._add_tab(key=Analog.Filter.Tab.CONTROLS, widget=self.controls_group)
         # --- Filter ADSR ---
         self._add_tab(key=Analog.Filter.Tab.ADSR, widget=self.adsr_group)
 
@@ -144,7 +144,7 @@ class BaseFilterSection(SectionBaseWidget):
         if self._filter_mode_changed_callback:
             self._filter_mode_changed_callback(filter_mode.value)
 
-    def _create_filter_controls_group(self) -> QGroupBox:
+    def _create_controls_group(self) -> QGroupBox:
         """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
         self.filter_widget = AnalogFilterWidget(
             cutoff_param=Analog.Param.FILTER_CUTOFF,
