@@ -47,6 +47,19 @@ class AnalogFilterSection(SectionBaseWidget):
             SliderSpec(AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True),
         ],
     }
+    
+    FILTER_SPEC: Dict[AnalogFilterType, Dict[str, Any]] = {
+        AnalogFilterType.BYPASS: {
+            "param": None,  # No parameter adjustments for bypass
+            "icon": JDXi.UI.Icon.POWER,  # Power/off icon
+            "label": "Bypass",
+        },
+        AnalogFilterType.LPF: {
+            "param": Analog.Param.FILTER_CUTOFF_FREQUENCY,  # Key parameter for low-pass filter
+            "icon": JDXi.UI.Icon.FILTER,  # Filter icon
+            "label": "Low Pass",
+        },
+    }
 
     def __init__(
         self,
