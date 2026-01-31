@@ -35,9 +35,10 @@ from __future__ import annotations
 from enum import IntEnum, unique
 from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
 
+from picomidi.core.bitmask import BitMask
+
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
-from picomidi.core.bitmask import BitMask
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22

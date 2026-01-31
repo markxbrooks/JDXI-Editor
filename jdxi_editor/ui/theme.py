@@ -7,10 +7,10 @@ and ensuring consistent styling across the application.
 
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.ui.style import JDXiUIStyle
 
 # Optional imports for theme detection

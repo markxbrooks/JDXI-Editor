@@ -13,7 +13,9 @@ from typing import Optional
 
 import mido
 import pyaudio
+from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -29,7 +31,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -63,7 +64,6 @@ from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
-from picomidi.constant import Midi
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level

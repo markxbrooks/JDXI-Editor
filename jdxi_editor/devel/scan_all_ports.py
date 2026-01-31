@@ -7,10 +7,12 @@ is actually sending messages.
 """
 
 import sys
-import time
-import rtmidi
-from typing import List, Optional
 import threading
+import time
+from typing import List, Optional
+
+import rtmidi
+
 
 class AllPortScanner:
     def __init__(self):

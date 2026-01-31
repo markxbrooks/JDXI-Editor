@@ -11,13 +11,14 @@ Or provide multiple hex strings as separate arguments.
 import json
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 # Add the project root to the path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from decologr import Decologr as log
+
+from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 
 
 def hex_string_to_bytes(hex_string: str) -> bytes:

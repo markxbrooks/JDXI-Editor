@@ -2,25 +2,25 @@
 Digital Filter Section for the JDXI Editor
 """
 
-from PySide6.QtWidgets import QTabWidget, QWidget
-
-from decologr import Decologr as log
-from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from typing import Dict
 
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
+from decologr import Decologr as log
+from PySide6.QtWidgets import QTabWidget, QWidget
+
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_layout_with_widgets,
 )
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 
 
-class DigitalFilterSection(ParameterSectionBase):
+class DigitalFilterSection(SectionBaseWidget):
     """Digital Filter Section for JD-Xi Digital Partial"""
 
     # --- Filter sliders
@@ -171,7 +171,7 @@ class DigitalFilterSection(ParameterSectionBase):
         self.tab_widget = QTabWidget()
 
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalFilterTab
-        
+
         # --- Controls tab - include FilterWidget first, then other controls
         controls_widget = QWidget()
         # --- FilterWidget includes cutoff and slope with plot

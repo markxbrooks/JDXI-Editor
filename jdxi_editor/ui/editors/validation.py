@@ -20,10 +20,11 @@ Usage:
 """
 
 from typing import Dict, List, Optional, Set, Type
+
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 
 
 def validate_adsr_spec(
@@ -235,7 +236,7 @@ if __name__ == "__main__":
     """Run validation when executed directly."""
     import sys
     from pathlib import Path
-    
+
     # Add project root to path if running directly
     project_root = Path(__file__).parent.parent.parent.parent
     if str(project_root) not in sys.path:

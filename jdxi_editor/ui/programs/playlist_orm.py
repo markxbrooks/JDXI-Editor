@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.db.schema.playlists import PlayList, PlaylistItem
 from jdxi_editor.core.db.session import DatabaseSession
 

@@ -11,6 +11,7 @@ Classes:
 
 from typing import Callable, Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -23,7 +24,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 

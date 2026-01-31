@@ -4,14 +4,15 @@ Amp section of the JD-Xi editor
 This section contains the controls for the amp section of the JD-Xi editor.
 """
 
-from typing import Optional, Dict, Union
+from typing import Dict, Optional, Union
 
 from PySide6.QtWidgets import (
     QWidget,
 )
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog, JDXiMidiAnalog
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
@@ -34,6 +35,8 @@ class AnalogAmpSection(BaseAmpSection):
         ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Analog.Param.AMP_ENV_RELEASE_TIME),
     }
 
+    SYNTH_SPEC = JDXiMidiAnalog
+
     def __init__(
         self,
         address,
@@ -50,6 +53,5 @@ class AnalogAmpSection(BaseAmpSection):
         # --- Set attributes after super().__init__() to avoid them being overwritten
         self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         self.address: RolandSysExAddress = address
-        self.synth_spec = JDXiMidiAnalog
         self.build_widgets()
         self.setup_ui()

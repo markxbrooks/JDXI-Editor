@@ -4,6 +4,7 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -11,19 +12,18 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
     create_layout_with_widgets,
 )
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class BaseOscillatorSection(ParameterSectionBase):
+class BaseOscillatorSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
     
     controls_tab_label: str = "Controls"

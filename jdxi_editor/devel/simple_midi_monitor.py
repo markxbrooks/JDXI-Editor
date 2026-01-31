@@ -7,7 +7,9 @@ This uses a very simple approach to catch MIDI messages.
 
 import sys
 import time
+
 import rtmidi
+
 
 def simple_callback(message, data):
     """Very simple callback"""

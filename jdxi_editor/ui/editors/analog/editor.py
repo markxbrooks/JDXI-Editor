@@ -63,6 +63,11 @@ if TYPE_CHECKING:
     from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 from decologr import Decologr as log
+from picomidi.utils.conversion import (
+    midi_value_to_fraction,
+    midi_value_to_ms,
+)
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -75,10 +80,6 @@ from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from picomidi.utils.conversion import (
-    midi_value_to_fraction,
-    midi_value_to_ms,
-)
 
 
 class AnalogSynthEditor(SynthEditor):

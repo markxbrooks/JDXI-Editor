@@ -42,6 +42,8 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 import re
 from typing import Optional, Protocol, Tuple, TypeVar
 
+from decologr import Decologr as log
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -55,14 +57,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
-from picomidi.sysex.parameter.address import AddressParameter
 
 T = TypeVar("T", bound="EnumWithAddress")
 

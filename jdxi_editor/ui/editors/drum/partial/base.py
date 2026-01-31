@@ -46,19 +46,19 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.editor.helper import (
     create_scrolled_area_with_layout,
     transfer_layout_items,
 )
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DrumBaseSection(ParameterSectionBase):
+class DrumBaseSection(SectionBaseWidget):
     """Drum Output Section for the JDXI Editor, giving consistent UI for drum sections"""
 
     def __init__(self, controls: dict = None, midi_helper=None, **kwargs):
         from jdxi_editor.ui.widgets.editor import IconType
-        
+
         # Initialize scrolled layout attributes
         self.vlayout: QVBoxLayout | None = None
         self.scrolled_layout: QVBoxLayout | None = None

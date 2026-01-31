@@ -7,10 +7,10 @@ all 36 drum partial levels.
 
 from typing import Dict, Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,

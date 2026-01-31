@@ -1,6 +1,7 @@
+import time
+
 import mido
 import rtmidi
-import time
 
 print("rtmidi:", rtmidi)
 print("rtmidi type:", type(rtmidi))

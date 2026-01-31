@@ -9,6 +9,7 @@ to filter and select them easily.
 #                 selected_text.split(":")[0].strip()
 """
 
+from decologr import Decologr as log
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -19,7 +20,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 

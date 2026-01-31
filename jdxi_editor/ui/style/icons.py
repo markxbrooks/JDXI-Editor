@@ -6,10 +6,10 @@ Provides centralized icon definitions and retrieval with fallback support.
 from typing import Literal
 
 import qtawesome as qta
+from decologr import Decologr as log
 from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
-from decologr import Decologr as log
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon

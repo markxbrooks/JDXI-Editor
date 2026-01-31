@@ -90,10 +90,11 @@ Param 3	00 19	(possibly unused or Level)
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
-from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
+
+from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 
 
 class Effect1Param(AddressParameter):

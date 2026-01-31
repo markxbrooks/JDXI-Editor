@@ -3,19 +3,19 @@ AMP section for the digital partial editor.
 """
 from typing import Dict
 
-from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.editors.base.amp import BaseAmpSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_envelope_group,
     create_layout_with_widgets,
 )
 
 
-class DigitalAmpSection(ParameterSectionBase):
+class DigitalAmpSection(BaseAmpSection):
     """Digital Amp Section for JD-Xi Editor"""
 
     PARAM_SPECS = [
@@ -45,6 +45,15 @@ class DigitalAmpSection(ParameterSectionBase):
 
     BUTTON_SPECS = []  # Digital Amp does not have waveform buttons
 
+    SYNTH_SPEC = JDXiMidiDigital
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def build_widgets(self):
+        """Override to use SectionBaseWidget flow so _create_parameter_widgets runs (creates pan_slider)."""
+        super(BaseAmpSection, self).build_widgets()
+
     def _create_parameter_widgets(self):
         """Override to handle Pan slider separately (horizontal)"""
         # --- Create all widgets except Pan
@@ -70,14 +79,10 @@ class DigitalAmpSection(ParameterSectionBase):
             vertical=False,  # Horizontal slider
         )
         self.controls[Digital.Param.AMP_PAN] = self.pan_slider
-        # --- Don't add to control_widgets - it will be added separately in _create_tab_widget
+        # --- Don't add to control_widgets - it will be added separately in _create_controls_widget
 
-    def _create_tab_widget(self):
+    def _create_controls_widget(self) -> QWidget:
         """Override to add Pan slider in its own horizontal layout"""
-
-        self.tab_widget = QTabWidget()
-
-        # --- Controls tab
         controls_widget = QWidget()
         controls_layout = QVBoxLayout()
 
@@ -89,14 +94,5 @@ class DigitalAmpSection(ParameterSectionBase):
         pan_layout = create_layout_with_widgets([self.pan_slider])
         controls_layout.addLayout(pan_layout)
 
-        from jdxi_editor.midi.data.parameter.digital.spec import DigitalAmpTab
-        
         controls_widget.setLayout(controls_layout)
-        self._add_tab(key=DigitalAmpTab.CONTROLS, widget=controls_widget)
-
-        # --- ADSR tab if any
-        if self.adsr_widget:
-            adsr_group = create_envelope_group(
-                "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
-            )
-            self._add_tab(key=DigitalAmpTab.ADSR, widget=adsr_group)
+        return controls_widget

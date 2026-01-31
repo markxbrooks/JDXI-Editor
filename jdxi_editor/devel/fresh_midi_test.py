@@ -8,7 +8,9 @@ to avoid callback conflicts.
 
 import sys
 import time
+
 import rtmidi
+
 
 def fresh_midi_callback(message, data):
     """Fresh callback function"""

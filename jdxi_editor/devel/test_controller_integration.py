@@ -8,6 +8,7 @@ It uses the same MIDI handling code as the main application.
 
 import sys
 import time
+
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication
 
@@ -16,9 +17,10 @@ sys.path.insert(0, '/Users/brooks/projects/JDXI-Editor')
 
 # Import compatibility module first
 import rtmidi_compat
+from decologr import setup_logging
 
 from jdxi_editor.midi.io.input_handler import MidiInHandler
-from decologr import setup_logging
+
 
 class ControllerTestApp:
     def __init__(self):

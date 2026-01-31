@@ -16,6 +16,8 @@ ReverbMessage
 
 from dataclasses import dataclass
 
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
+
 from jdxi_editor.midi.data import AddressParameterEffect
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -24,7 +26,6 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
-from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass

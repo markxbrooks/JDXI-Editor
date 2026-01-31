@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from decologr import Decologr as log
+
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.project import __package_name__
 

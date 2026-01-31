@@ -38,6 +38,7 @@ Dependencies:
 
 from typing import Dict, Optional
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
@@ -64,7 +65,6 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ArpeggioEditor(BasicEditor):

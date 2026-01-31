@@ -32,11 +32,10 @@ Dependencies:
 
 import platform
 
+from decologr import Decologr as log
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
-
-from decologr import Decologr as log
 
 
 class DigitalDisplayBase(QWidget):

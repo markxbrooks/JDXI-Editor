@@ -99,6 +99,9 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
 """
 
+from picomidi.core.parameter.factory import AddressFactory
+from picomidi.core.parameter.kind import ByteGroupKind
+
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetDrumKitLMB,
     AddressOffsetProgramLMB,
@@ -126,8 +129,6 @@ from jdxi_editor.midi.data.parameter.offset.table import (
 from jdxi_editor.midi.data.parameter.offset.table import (
     parameter_offset_table,
 )
-from picomidi.core.parameter.factory import AddressFactory
-from picomidi.core.parameter.kind import ByteGroupKind
 
 parameter_address_map = {}
 parameter_offset_map = {}

@@ -31,6 +31,9 @@ Dependencies:
 
 from typing import Dict, Optional, Union
 
+from decologr import Decologr as log
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -41,7 +44,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
@@ -65,8 +67,6 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 
 
 class DigitalSynthEditor(SynthEditor):

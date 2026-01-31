@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from decologr import Decologr as log
+
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.programs.playlist_orm import PlaylistORM
 

@@ -25,6 +25,7 @@ from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
+    create_group_from_definition,
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
@@ -235,16 +236,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.tab_widget = QTabWidget()
 
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
-        
+
         # Controls tab
         controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.control_widgets)
         controls_widget.setLayout(controls_layout)
         self._add_tab(key=DigitalOscillatorTab.CONTROLS, widget=controls_widget)
 
-        from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-        from jdxi_editor.ui.widgets.editor.helper import create_group_from_definition
-        
         # Pulse Width tab
         if hasattr(self, "pwm_widget") and self.pwm_widget:
             pw_layout = QVBoxLayout()

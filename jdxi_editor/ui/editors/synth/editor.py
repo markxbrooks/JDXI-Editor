@@ -24,19 +24,20 @@ import json
 import os
 import re
 from dataclasses import dataclass
-from typing import Optional, Iterable
+from typing import Iterable, Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB, RolandSysExAddress,
+    AddressOffsetTemporaryToneUMB,
+    RolandSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -770,6 +771,7 @@ class SynthEditor(SynthBase):
             text_lower = descriptor.raw_text.lower()
             # Look for drum model numbers in the text
             import re
+
             # First, try to match "cr-78" pattern (special case for CR-78)
             if "cr-78" in text_lower or "cr78" in text_lower:
                 name = "cr-78"

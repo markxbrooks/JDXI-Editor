@@ -6,6 +6,7 @@ Sets settings for various biotoolkit features
 
 import logging
 
+from decologr import Decologr as log
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtWidgets import (
@@ -18,7 +19,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.project import (
     __organization_name__,

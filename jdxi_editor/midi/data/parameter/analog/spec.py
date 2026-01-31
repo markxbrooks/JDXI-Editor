@@ -7,15 +7,24 @@ from typing import Any
 
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOWaveShape
-from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc, AnalogSubOscType
+from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogWaveOsc
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
-from jdxi_editor.midi.data.parameter.base.spec import MidiSynthSpec, DisplaySpec, WaveSpec, FilterSpec, AmpSpec
-from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin, GroupBoxDefinitionMixin
+from jdxi_editor.midi.data.parameter.base.spec import (
+    AmpSpec,
+    DisplaySpec,
+    FilterSpec,
+    MidiSynthSpec,
+    WaveSpec,
+)
+from jdxi_editor.midi.data.parameter.digital.spec import (
+    GroupBoxDefinitionMixin,
+    TabDefinitionMixin,
+)
 from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
 

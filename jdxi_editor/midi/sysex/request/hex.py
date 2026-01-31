@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from picomidi.sysex.conversion import bytes_to_hex
+
+from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 
 
 class JDXISysExHex:

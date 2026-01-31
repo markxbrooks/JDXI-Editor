@@ -1,5 +1,6 @@
 import mido
 import rtmidi
+
 print("rtmidi:", rtmidi)
 print("rtmidi type:", type(rtmidi))
 print("rtmidi file:", getattr(rtmidi, "__file__", "NO __file__ ATTR"))

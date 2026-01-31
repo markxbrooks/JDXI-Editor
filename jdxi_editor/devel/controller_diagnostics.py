@@ -6,12 +6,14 @@ This script provides comprehensive diagnostics for your SINCO VMX8 controller
 to help identify why MIDI messages aren't being received.
 """
 
+import os
+import subprocess
 import sys
 import time
-import rtmidi
-import subprocess
-import os
 from typing import List, Optional
+
+import rtmidi
+
 
 class ControllerDiagnostics:
     def __init__(self):

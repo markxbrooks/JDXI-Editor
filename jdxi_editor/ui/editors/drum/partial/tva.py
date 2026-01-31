@@ -35,6 +35,7 @@ Example:
 from typing import Callable
 
 import numpy as np
+from decologr import Decologr as log
 from PySide6.QtCore import Signal
 from PySide6.QtGui import (
     QColor,
@@ -50,7 +51,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
@@ -58,11 +58,11 @@ from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.editors.widget_specs import ComboBoxSpec, SliderSpec
-from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_widgets,
 )
+from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot
 
 
 class DrumTVASection(DrumBaseSection):

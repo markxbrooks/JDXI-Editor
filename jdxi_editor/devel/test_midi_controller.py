@@ -12,8 +12,10 @@ It will:
 
 import sys
 import time
-import rtmidi
 from typing import List, Optional
+
+import rtmidi
+
 
 def list_midi_ports():
     """List all available MIDI input and output ports"""

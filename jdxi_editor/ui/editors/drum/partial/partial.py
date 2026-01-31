@@ -50,8 +50,10 @@ from jdxi_editor.ui.editors.widget_specs import ComboBoxSpec, SliderSpec
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
-    create_group_with_layout, create_group_with_widgets, create_layout_with_widgets,
+    create_group_with_layout,
+    create_group_with_widgets,
     create_group_with_widgets_in_hlayout,
+    create_layout_with_widgets,
 )
 
 

@@ -42,8 +42,9 @@ Usage example:
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.parameter.spec import ParameterSpec
 from picomidi.sysex.parameter.address import AddressParameter
+
+from jdxi_editor.midi.parameter.spec import ParameterSpec
 
 
 class VocalFXParam(AddressParameter):

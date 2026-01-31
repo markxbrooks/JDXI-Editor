@@ -41,11 +41,12 @@ import threading
 from typing import Optional, Union
 
 import qtawesome as qta
+from decologr import Decologr as log
+from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -105,7 +106,6 @@ from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
-from picomidi.constant import Midi
 
 
 class JDXiInstrument(JDXiWindow):

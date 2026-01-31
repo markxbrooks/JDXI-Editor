@@ -23,6 +23,7 @@ import os
 import re
 from typing import Union
 
+from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
@@ -38,7 +39,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth

@@ -29,6 +29,7 @@ Usage Example:
 This module requires PySide6 and proper integration with the JD-Xi Manager's signal handling for note events.
 """
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
@@ -39,7 +40,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.piano.keyboard import (
     DRUM_LABELS,

@@ -14,17 +14,19 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import List, Dict, Any
-from PySide6.QtCore import QCoreApplication, QTimer, QObject, Signal
+from typing import Any, Dict, List
+
+from PySide6.QtCore import QCoreApplication, QObject, QTimer, Signal
 
 # Add the project root to the path
 sys.path.insert(0, str(Path(__file__).parent))
+
+from decologr import Decologr as log
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
-from decologr import Decologr as log
 
 
 class SysExCollector(QObject):

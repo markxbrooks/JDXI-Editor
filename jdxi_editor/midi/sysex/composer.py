@@ -5,6 +5,10 @@ JDXiSysExComposer
 from typing import Optional
 
 from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
+
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     RolandSysExAddress,
@@ -22,9 +26,6 @@ from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
     validate_raw_sysex_message,
 )
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 def apply_lmb_offset(
@@ -71,11 +72,15 @@ class JDXiSysExComposer:
             adjusted_address = apply_lmb_offset(adjusted_address, param)
 
             # Convert value to MIDI encoding if supported
-            midi_value = (
-                param.convert_to_midi(value)
-                if hasattr(param, "convert_to_midi")
-                else param.validate_value(value)
-            )
+            # Only call if the attribute exists and is callable (avoid 'NoneType' is not callable)
+            convert_to_midi = getattr(param, "convert_to_midi", None)
+            validate_value = getattr(param, "validate_value", None)
+            if callable(convert_to_midi):
+                midi_value = convert_to_midi(value)
+            elif callable(validate_value):
+                midi_value = validate_value(value)
+            else:
+                midi_value = value
 
             # Ensure midi_value is an integer (handle enums, strings, floats)
             def safe_int(val):
@@ -104,7 +109,9 @@ class JDXiSysExComposer:
             midi_value = safe_int(midi_value)
 
             # Determine size (1 byte or 4 nibble-based)
-            size = getattr(param, "get_nibbled_size", lambda: 1)()
+            # Only call if the attribute exists and is callable (avoid 'NoneType' is not callable)
+            get_nibbled_size = getattr(param, "get_nibbled_size", None)
+            size = get_nibbled_size() if callable(get_nibbled_size) else 1
             if size == 1:
                 # Single byte value must be 0-127 (MIDI range)
                 if midi_value < 0 or midi_value > 127:

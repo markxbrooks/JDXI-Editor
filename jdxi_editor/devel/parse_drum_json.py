@@ -9,14 +9,16 @@ Example:
     python3 parse_drum_json.py tests/ceremony_from_software.msz jdxi_tone_data_19703e00.json
 """
 
+import json
 import sys
 import zipfile
-import json
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+from decologr import Decologr as log
 
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
-from decologr import Decologr as log
+
 
 # Also print directly for visibility
 def print_header(msg: str):

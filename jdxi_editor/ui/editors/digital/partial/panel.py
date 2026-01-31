@@ -36,13 +36,13 @@ Dependencies:
     - QIcons generated from waveform base64 data
 """
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
@@ -50,7 +50,6 @@ from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalTab
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection

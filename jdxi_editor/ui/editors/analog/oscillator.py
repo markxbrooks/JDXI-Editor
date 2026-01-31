@@ -4,6 +4,7 @@ Analog Oscillator Section
 
 from typing import Callable, Dict, Union
 
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -11,15 +12,20 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.helpers import generate_analog_wave_button, generate_analog_waveform_icon_name
+from jdxi_editor.ui.editors.analog.helpers import (
+    generate_analog_wave_button,
+    generate_analog_waveform_icon_name,
+)
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_widget_with_layout, \
-    create_group_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_widgets,
+    create_layout_with_widgets,
+    create_widget_with_layout,
+)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogOscillatorSection(SectionBaseWidget):

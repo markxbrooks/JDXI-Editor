@@ -23,13 +23,14 @@ Example usage:
 
 from typing import Optional, Tuple
 
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_ADDRESS_MAP,
     DRUM_GROUP_MAP,
 )
 from jdxi_editor.midi.parameter.spec import ParameterSpec
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DrumPartialParam(AddressParameter):

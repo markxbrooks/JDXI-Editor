@@ -3,6 +3,7 @@
 import logging
 
 from decologr import decorate_log_message
+
 from jdxi_editor.globals import LOGGING, logger
 
 

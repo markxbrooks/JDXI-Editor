@@ -39,6 +39,7 @@ Dependencies:
 
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -51,7 +52,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info

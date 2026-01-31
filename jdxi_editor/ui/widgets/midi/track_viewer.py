@@ -6,6 +6,8 @@ from copy import deepcopy
 
 import mido
 import qtawesome as qta
+from decologr import Decologr as log
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -20,14 +22,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
 from jdxi_editor.ui.widgets.midi.utils import get_first_channel
-from picomidi.constant import Midi
 
 
 class MidiTrackViewer(QWidget):

@@ -5,12 +5,13 @@ Analog LFO Section
 from typing import Callable, Dict, Literal, Union
 
 from PySide6.QtWidgets import (
-    QPushButton, QWidget,
+    QPushButton,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.ui.editors.digital.partial.lfo.base import BaseLFOSection
+from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
 from jdxi_editor.ui.editors.widget_specs import SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.editor import IconType
 

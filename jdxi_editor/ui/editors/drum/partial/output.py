@@ -43,7 +43,8 @@ Example:
 from typing import Callable
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout,
+    QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi

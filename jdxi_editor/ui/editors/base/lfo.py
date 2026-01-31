@@ -4,6 +4,7 @@ LFO section of the digital partial editor.
 
 from typing import Callable, Protocol, runtime_checkable
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -11,10 +12,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
@@ -54,12 +54,7 @@ class BaseLFOSection(SectionBaseWidget):
         self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
-
-        super().__init__(icons_row_type=icons_row_type, analog=analog)
-        # --- Set controls after super().__init__() to avoid it being overwritten
-        if not hasattr(self, 'controls') or self.controls is None:
-            self.controls = {}
-        # --- Set up LFO shapes
+        # --- Set up LFO shapes and icon map before super().__init__() so _setup_ui() can use them
         self.wave_shapes = [
             Digital.Wave.LFO.TRIANGLE,
             Digital.Wave.LFO.SINE,
@@ -68,7 +63,6 @@ class BaseLFOSection(SectionBaseWidget):
             Digital.Wave.LFO.SAMPLE_HOLD,
             Digital.Wave.LFO.RANDOM,
         ]
-        # --- Map LFO shapes to icon names
         self.shape_icon_map = {
             Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
             Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
@@ -78,15 +72,35 @@ class BaseLFOSection(SectionBaseWidget):
             Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
 
+        super().__init__(icons_row_type=icons_row_type, analog=analog)
+        # --- Set controls after super().__init__() to avoid it being overwritten
+        if not hasattr(self, 'controls') or self.controls is None:
+            self.controls = {}
+
+    def _setup_ui(self):
+        """Assemble UI: icons row, switch row (right after icons), shape row, tab widget, stretch."""
+        layout = self.create_layout()
+        # Switch row right after the icons row
+        switch_row_layout = self._create_switch_row_layout()
+        layout.addLayout(switch_row_layout)
+        shape_row_layout = self._create_shape_row_layout()
+        layout.addLayout(shape_row_layout)
+        self._create_tab_widget()
+        layout.addWidget(self.tab_widget)
+        layout.addStretch()
+
     def setup_ui(self):
-        """Set up the UI for the LFO section."""
+        """For analog: build layout here (_setup_ui is skipped). For digital: no-op, layout built in _setup_ui()."""
+        if not self.analog:
+            return  # Digital: already built in _setup_ui()
         layout = self.get_layout()
         shape_row_layout = self._create_shape_row_layout()
         switch_row_layout = self._create_switch_row_layout()
-        tab_widget = self._create_tab_widget()
         layout.addLayout(shape_row_layout)
         layout.addLayout(switch_row_layout)
-        layout.addWidget(tab_widget)
+        # Create tab widget (Rate/Depths with sliders) — not created for analog since _setup_ui() is skipped
+        self._create_tab_widget()
+        layout.addWidget(self.tab_widget)
         layout.addStretch()
 
     def build_widgets(self):
@@ -121,7 +135,6 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
-        from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
         
         tab_widget = QTabWidget()
         self.tab_widget = tab_widget  # Set for _add_tab to use
@@ -129,16 +142,13 @@ class BaseLFOSection(SectionBaseWidget):
         rate_widget = self._create_rate_widget()
         depths_widget = self._create_depths_widget()
         
-        # Use tab definitions
-        from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
-        
-        self._add_tab(key=DigitalLFOTab.RATE, widget=rate_widget)
-        # Update label if it differs from default
+        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
+        # --- Update label if it differs from default
         if tab_widget.tabText(0) != self.rate_tab_label:
             tab_widget.setTabText(0, self.rate_tab_label)
         
-        self._add_tab(key=DigitalLFOTab.DEPTHS, widget=depths_widget)
-        # Update label if it differs from default
+        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
+        # --- Update label if it differs from default
         if tab_widget.tabText(1) != self.depths_tab_label:
             tab_widget.setTabText(1, self.depths_tab_label)
         

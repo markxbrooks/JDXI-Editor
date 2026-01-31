@@ -39,6 +39,9 @@ Dependencies:
 
 from typing import Dict, Optional
 
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -48,7 +51,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -82,8 +84,6 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ProgramEditor(BasicEditor):

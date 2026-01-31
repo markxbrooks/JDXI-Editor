@@ -45,9 +45,10 @@ import json
 from typing import Dict, List, Optional
 
 from decologr import Decologr as log
+from picomidi.constant import Midi
+
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.programs.programs import JDXiUIProgramList
-from picomidi.constant import Midi
 
 
 def get_program_index_by_id(program_id: str) -> Optional[int]:

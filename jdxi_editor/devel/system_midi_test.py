@@ -7,8 +7,9 @@ is sending messages.
 """
 
 import subprocess
-import time
 import sys
+import time
+
 
 def test_with_system_tools():
     """Test using macOS system tools"""

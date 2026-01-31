@@ -11,14 +11,14 @@ All plots display 5-level, 4-time-segment envelope curves with interactive visua
 """
 
 import numpy as np
+from decologr import Decologr as log
+from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext
-from picomidi.constant import Midi
 
 
 def midi_to_pitch_level(midi_value: int) -> float:

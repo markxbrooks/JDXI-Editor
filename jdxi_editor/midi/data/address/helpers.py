@@ -16,8 +16,9 @@ import inspect
 from enum import IntEnum
 from typing import Any, Dict, Tuple, Type, Union
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from picomidi.sysex.parameter.address import AddressParameter
+
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 
 
 def apply_address_offset(
@@ -30,7 +31,9 @@ def apply_address_offset(
     :param param: AddressParameter
     :return: RolandSysExAddress
     """
-    offset = param.get_offset()
+    # Only call get_offset if it exists and is callable (avoid 'NoneType' is not callable)
+    get_offset = getattr(param, "get_offset", None)
+    offset = get_offset() if callable(get_offset) else None
     if offset is None:
         return base_address
     final_address = base_address.add_offset(offset)

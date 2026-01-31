@@ -5,6 +5,7 @@ tone mapper functions
 from __future__ import annotations
 
 from decologr import Decologr as log
+
 from jdxi_editor.midi.map import JDXiMapSynthTone, JDXiMapTemporaryArea
 from jdxi_editor.midi.map.drum_tone import JDXiMapDrumTone
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout

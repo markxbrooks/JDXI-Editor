@@ -1,4 +1,5 @@
 from decologr import Decologr as log
+
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset

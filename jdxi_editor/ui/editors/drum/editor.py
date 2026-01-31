@@ -59,6 +59,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 from typing import Dict, Optional, Union
 
+from decologr import Decologr as log
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -67,7 +68,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum

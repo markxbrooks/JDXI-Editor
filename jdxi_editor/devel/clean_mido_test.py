@@ -7,7 +7,9 @@ This test uses Mido without any rtmidi compatibility conflicts.
 
 import sys
 import time
+
 import mido
+
 
 def test_with_mido():
     """Test SINCO VMX8 controller using Mido"""

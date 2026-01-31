@@ -7,9 +7,11 @@ This enhanced monitor includes debugging information and tries both ports.
 
 import sys
 import time
-import rtmidi
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+import rtmidi
+
 
 class DebugMIDIMonitor:
     def __init__(self):

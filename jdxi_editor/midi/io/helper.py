@@ -23,8 +23,8 @@ import logging
 import zipfile
 
 import mido
-
 from decologr import Decologr as log
+
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     RolandSysExAddress,
@@ -272,7 +272,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
                 # Final validation: if value is still > 127 and param is 1-byte, skip it
                 # This catches cases where conversion didn't work or wasn't available
-                param_size = getattr(param, "get_nibbled_size", lambda: 1)()
+                get_nibbled_size = getattr(param, "get_nibbled_size", None)
+                param_size = get_nibbled_size() if callable(get_nibbled_size) else 1
                 if param_size == 1 and value > 127:
                     log.warning(
                         f"Skipping {param_name}: final value {value} still out of range for 1-byte parameter",

@@ -20,6 +20,7 @@ import datetime
 import logging
 from typing import Any, Optional
 
+from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -41,7 +42,6 @@ from PySide6.QtWidgets import (
 )
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper

@@ -8,9 +8,11 @@ is actually sending, based on the data you provided.
 
 import sys
 import time
-import rtmidi
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+import rtmidi
+
 
 class ImprovedMIDIMonitor:
     def __init__(self):

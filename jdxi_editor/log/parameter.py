@@ -6,10 +6,11 @@ import logging
 from typing import Any
 
 from decologr import decorate_log_message
-from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING, logger
 from picomidi.utils.formatting import (
     format_message_to_hex_string as format_midi_message_to_hex_string,
 )
+
+from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING, logger
 
 
 def log_parameter(

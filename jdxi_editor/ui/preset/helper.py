@@ -31,9 +31,9 @@ preset changes and communicate them to the UI and MIDI engine.
 
 import threading
 
+from decologr import Decologr as log
 from PySide6.QtCore import QObject, Signal
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info

@@ -1,6 +1,6 @@
+import argparse
 import os
 import re
-import argparse
 
 DOCSTRING_PATTERN = re.compile(
     r'("""[ \t]*\n[^\n]*\n)([^\n]*:(param|return|raises))',

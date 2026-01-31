@@ -4,13 +4,12 @@ Slider Spinbox Widget for Roland JD-Xi
 
 from typing import Callable
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
-
 from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:

@@ -8,9 +8,10 @@ It will display incoming messages with timestamps and decode them for easy under
 
 import sys
 import time
-import rtmidi
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+import rtmidi
 
 
 class LiveMIDIMonitor:

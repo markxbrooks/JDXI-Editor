@@ -57,6 +57,9 @@ Features:
 
 from typing import Dict, Union
 
+from decologr import Decologr as log
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -65,7 +68,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -92,8 +94,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class EffectsCommonEditor(BasicEditor):

@@ -8,6 +8,7 @@ as input, and it combines the controls into a single JSON object before saving i
 import json
 
 from decologr import Decologr as log
+
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 

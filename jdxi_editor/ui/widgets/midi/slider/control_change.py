@@ -14,6 +14,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.slider import Slider
 

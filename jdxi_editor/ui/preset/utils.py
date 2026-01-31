@@ -7,6 +7,7 @@ Example:
 """
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.jdxi import JDXi
 
 

@@ -9,10 +9,10 @@ This script uses multiple heuristics to determine which track is the drum track:
 4. Lack of pitch bend/control changes
 """
 
-import sys
 import os
+import sys
 from collections import defaultdict
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 try:
     import mido

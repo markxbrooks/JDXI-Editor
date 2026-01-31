@@ -7,7 +7,9 @@ This test uses Mido for simple and reliable MIDI message handling.
 
 import sys
 import time
+
 import mido
+
 
 def test_with_mido():
     """Test SINCO VMX8 controller using Mido"""

@@ -33,7 +33,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext, PlotConfig
+from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 
 def generate_square_wave(

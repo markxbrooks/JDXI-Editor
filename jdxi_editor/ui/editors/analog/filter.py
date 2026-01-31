@@ -5,6 +5,7 @@ Analog Filter Section
 from typing import Callable, Dict, Optional, Union
 
 import qtawesome as qta
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -16,17 +17,16 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.analog.filter import AnalogFilterType
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.widget_specs import SliderSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class AnalogFilterSection(SectionBaseWidget):

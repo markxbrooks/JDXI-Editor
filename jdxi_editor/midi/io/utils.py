@@ -6,7 +6,6 @@ utility functions
 from typing import List, Optional, Union
 
 import mido
-
 from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask

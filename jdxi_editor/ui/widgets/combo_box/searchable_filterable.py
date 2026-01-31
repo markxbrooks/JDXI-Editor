@@ -19,6 +19,7 @@ Classes:
 import re
 from typing import Callable, List, Optional
 
+from decologr import Decologr as log
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import (
     QComboBox,
@@ -29,7 +30,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 
 

@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Callable, Optional
 
-from PySide6.QtWidgets import QWidget, QTabWidget
+from PySide6.QtWidgets import QTabWidget, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -17,19 +18,24 @@ class BaseAmpSection(SectionBaseWidget):
         # controls: dict,
         analog: bool = False,
         parent: Optional[QWidget] = None,
+        send_midi_parameter: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        controls: dict = None,
+        address: RolandSysExAddress = None
+
     ):
-        # Get midi_helper from parent if available
-        self.synth_spec = None
-        midi_helper = None
-        if parent and hasattr(parent, 'midi_helper'):
-            midi_helper = parent.midi_helper
 
         # Dynamic widgets storage
         self.amp_sliders = {}
         self.tab_widget = None
         self.layout = None
 
-        super().__init__(icons_row_type=IconType.ADSR, analog=analog, midi_helper=midi_helper)
+        super().__init__(icons_row_type=IconType.ADSR,
+                         analog=analog,
+                         midi_helper=midi_helper,
+                         send_midi_parameter=send_midi_parameter,
+                         controls=controls,
+                         address=address)
 
     # ------------------------------------------------------------------
     # Build Widgets
@@ -64,10 +70,10 @@ class BaseAmpSection(SectionBaseWidget):
         self.level_controls_widget = QWidget()
         self.level_controls_widget.setLayout(self.controls_layout)
 
-        self._add_tab(key=self.synth_spec.Amp.Tab.CONTROLS, widget=self.level_controls_widget)
+        self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.CONTROLS, widget=self.level_controls_widget)
 
         # --- ADSR Tab
-        self._add_tab(key=self.synth_spec.Amp.Tab.ADSR, widget=self.adsr_group)
+        self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=self.adsr_group)
 
         # --- Add tab widget to main layout
         self.layout.addWidget(self.tab_widget)

@@ -35,6 +35,7 @@ Example:
 
 from typing import Any, Callable
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -44,7 +45,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.drum.data import rm_waves
@@ -52,7 +52,6 @@ from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.param_section import ParameterSectionBase
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -62,10 +61,11 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_scrolled_area_with_layout,
     transfer_layout_items,
 )
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
 
 
-class DrumWMTSection(ParameterSectionBase):
+class DrumWMTSection(SectionBaseWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(

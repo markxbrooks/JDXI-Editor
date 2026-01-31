@@ -11,9 +11,10 @@ Classes:
 
 from typing import Dict, Optional
 
+from decologr import Decologr as log
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
@@ -25,7 +26,6 @@ from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ProgramMixerWidget(SynthBase):

@@ -5,13 +5,14 @@ Log ADSR Parameter
 import logging
 
 from decologr.logger import LEVEL_EMOJIS
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.globals import logger
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
     AddressOffsetTemporaryToneUMB,
 )
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 def log_adsr_parameter(

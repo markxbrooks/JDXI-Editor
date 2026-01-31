@@ -5,6 +5,7 @@ Synth Factory
 from typing import Union
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.synth.analog import AnalogSynthData
 from jdxi_editor.core.synth.digital import DigitalSynthData
 from jdxi_editor.core.synth.drum import DrumSynthData

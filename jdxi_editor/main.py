@@ -28,6 +28,7 @@ import pstats
 import sys
 from pathlib import Path
 
+from decologr import setup_logging
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
@@ -40,7 +41,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from decologr import setup_logging
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__

@@ -14,7 +14,7 @@ class JDXi:
     Model of the data for all UI & Midi parameters as a single tree, importable at whichever branch needed.
 
     Example:
-    >>> from jdxi_editor.midi.data.parameter.digital.synth_spec import JDXiMidiDigital as Digital
+    >>> from jdxi_editor.midi.data.parameter.digital.SYNTH_SPEC import JDXiMidiDigital as Digital
     """
 
     Synth: JDXiSynth = JDXiSynth

@@ -5,6 +5,7 @@ Dynamic Parameter Map resolver
 from typing import Dict
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB as TemporaryToneUMB,

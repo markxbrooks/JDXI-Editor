@@ -4,10 +4,10 @@ from pathlib import Path
 
 import mido
 import rtmidi
-
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 from picomidi.constant import Midi
+
+from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Constants
 default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)

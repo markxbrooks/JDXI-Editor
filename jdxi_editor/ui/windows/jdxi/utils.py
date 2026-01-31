@@ -5,9 +5,9 @@ These functions are used to display messages, handle MIDI communication
 and manage MIDI input/output ports.
 """
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import QMessageBox
 
-from decologr import Decologr as log
 from jdxi_editor.ui.style import JDXiUIStyle
 
 

@@ -9,12 +9,12 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 
+from decologr import Decologr as log
+from decologr import log_exception
 from sqlalchemy import Index, create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from decologr import Decologr as log
-from decologr import log_exception
 from jdxi_editor.core.db.base import Base
 from jdxi_editor.core.db.pragma import Pragma
 

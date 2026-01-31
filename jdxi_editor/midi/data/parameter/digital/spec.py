@@ -13,11 +13,24 @@ from jdxi_editor.midi.data.digital.filter import (
 )
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.digital.oscillator import WaveformType
-from jdxi_editor.midi.data.parameter.base.spec import MidiSynthSpec, DisplaySpec, WaveSpec, FilterSpec, AmpSpec
-from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam, DigitalModifyParam, DigitalCommonParam
+from jdxi_editor.midi.data.parameter.base.spec import (
+    AmpSpec,
+    DisplaySpec,
+    FilterSpec,
+    MidiSynthSpec,
+    WaveSpec,
+)
+from jdxi_editor.midi.data.parameter.digital import (
+    DigitalCommonParam,
+    DigitalModifyParam,
+    DigitalPartialParam,
+)
 from jdxi_editor.midi.data.parameter.digital.name import DigitalDisplayName
 from jdxi_editor.midi.data.parameter.digital.option import DigitalDisplayOptions
-from jdxi_editor.midi.data.parameter.digital.tone_modify import DigitalModifyNames, DigitalModifyOptions
+from jdxi_editor.midi.data.parameter.digital.tone_modify import (
+    DigitalModifyNames,
+    DigitalModifyOptions,
+)
 from jdxi_editor.midi.data.parameter.digital.values import DigitalDisplayValues
 from jdxi_editor.ui.adsr.type import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
