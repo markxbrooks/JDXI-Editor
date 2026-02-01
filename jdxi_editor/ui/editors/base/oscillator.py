@@ -62,6 +62,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param analog: bool
         """
 
+        self.sub_oscillator_type_switch = None
         self.tuning_sliders: list | None = None
         self.pwm_widget: QWidget | None = None
         self.wave_layout_widgets: list = []
