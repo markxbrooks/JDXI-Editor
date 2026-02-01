@@ -181,7 +181,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             switch.stateChanged.connect(self._on_partial_state_changed)
 
         # --- Use InstrumentPresetWidget for consistent layout
-        self.instrument_preset = InstrumentPresetWidget(parent=self)
+        self.instrument_preset: InstrumentPresetWidget = InstrumentPresetWidget(parent=self)
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
 
