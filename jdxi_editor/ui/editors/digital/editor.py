@@ -35,7 +35,6 @@ from decologr import Decologr as log
 from jdxi_editor.midi.sysex.partial.switch import PartialSwitchState, PartialSelectState
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
-from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
