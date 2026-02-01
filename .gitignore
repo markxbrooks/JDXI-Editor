@@ -9,6 +9,7 @@ os
 sys
 argparse
 subprocess
+pkg_build
 shutil
 jdxi_dmg
 tests/sheep.mid
