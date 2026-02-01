@@ -21,7 +21,6 @@ from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
@@ -33,8 +32,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_widget_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 
 
 class BaseOscillatorSection(SectionBaseWidget):
