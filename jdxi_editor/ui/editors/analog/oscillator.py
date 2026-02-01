@@ -5,16 +5,11 @@ Analog Oscillator Section
 from typing import Callable, Dict, Union
 
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QWidget
+from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.helpers import (
-    generate_analog_wave_button,
-    generate_analog_waveform_icon_name,
-)
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
@@ -111,17 +106,28 @@ class AnalogOscillatorSection(BaseOscillatorSection):
     def build_widgets(self):
         """build widgets"""
         self._create_waveform_buttons()
-        (self.osc_pitch_env_velocity_sensitivity_slider,) = self._build_sliders(
-            self.SLIDER_GROUPS["env"]
+        # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
+        env_sliders = self._build_sliders(self.SLIDER_GROUPS.get("env", []))
+        self.osc_pitch_env_velocity_sensitivity_slider = (
+            env_sliders[0] if len(env_sliders) == 1 else None
         )
-        # --- Only one switch, for Sub Oscillator Type
-        (self.sub_oscillator_type_switch,) = self._build_switches(self.SWITCH_SPECS)
-        # --- Tuning Group sliders
-        (
-            self.osc_pitch_coarse_slider,
-            self.osc_pitch_fine_slider,
-        ) = self._build_sliders(self.SLIDER_GROUPS["tuning"])
-        self.tuning_sliders = [self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider]
+        # --- Sub Oscillator Type switch; optional when SWITCH_SPECS is empty
+        switches = self._build_switches(self.SWITCH_SPECS)
+        self.sub_oscillator_type_switch = switches[0] if len(switches) == 1 else None
+        # --- Tuning Group sliders; optional for Digital
+        tuning_slider_list = self._build_sliders(self.SLIDER_GROUPS.get("tuning", []))
+        if len(tuning_slider_list) == 2:
+            self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider = (
+                tuning_slider_list
+            )
+            self.tuning_sliders = [
+                self.osc_pitch_coarse_slider,
+                self.osc_pitch_fine_slider,
+            ]
+        else:
+            self.osc_pitch_coarse_slider = None
+            self.osc_pitch_fine_slider = None
+            self.tuning_sliders = []
 
         # --- PWM Widget ---
         self.pwm_widget = PWMWidget(
@@ -146,37 +152,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             analog=self.analog,
         )
         # --- Create pitch_env_widgets list after pitch_env_widget is created
-        self.pitch_env_widgets = [
-            self.pitch_env_widget,
-            self.osc_pitch_env_velocity_sensitivity_slider,
-        ]
+        self.pitch_env_widgets = [self.pitch_env_widget]
+        if self.osc_pitch_env_velocity_sensitivity_slider is not None:
+            self.pitch_env_widgets.append(
+                self.osc_pitch_env_velocity_sensitivity_slider
+            )
         # --- Finally create Tab widget with all of the above widgets
         self._create_tab_widget()
-
-    def _create_tab_widget(self):
-        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
-        self.tab_widget = QTabWidget()
-        # --- Tuning tab (standardized name matching Digital) ---
-        self.tuning_group = self._create_tuning_group()
-        # --- Pitch tab (standardized name matching Digital) ---
-        self.pitch_widget = self._create_tuning_pitch_widget()
-        # --- Pulse Width tab ---
-        self.pw_group = self._create_pw_group()
-
-    def setup_ui(self) -> None:
-        """
-        Setup the UI (standardized method name matching Digital Oscillator)
-        :return: None
-        """
-        layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR_ANALOG.MARGINS)
-        # --- Waveform buttons ---
-        self.waveform_button_layout = self._create_wave_layout()
-        layout.addLayout(self.waveform_button_layout)
-        # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
-        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=True)
-        layout.addWidget(self.tab_widget)
-        self._add_tab(key=Analog.Wave.Tab.PITCH, widget=self.pitch_widget)
-        self._add_tab(key=Analog.Wave.Tab.TUNING, widget=self.tuning_group)
-        self._add_tab(key=Analog.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
-
-        layout.addStretch()

@@ -674,6 +674,7 @@ class DelayParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
 
         self.tooltip = tooltip
+        self._display_name = display_name
 
     def get_display_value(self) -> Tuple[int, int]:
         """
@@ -682,6 +683,13 @@ class DelayParam(AddressParameter):
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
 
     # Delay Parameters
     DELAY_LEVEL = ParameterSpec(
@@ -828,6 +836,7 @@ class ReverbParam(AddressParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip
+        self._display_name = display_name
 
     def get_display_value(self) -> Tuple[int, int]:
         """
@@ -836,6 +845,13 @@ class ReverbParam(AddressParameter):
         :return: Tuple[int, int] The display range
         """
         return self.display_min, self.display_max
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
 
     # Reverb Parameters
     REVERB_LEVEL = ParameterSpec(

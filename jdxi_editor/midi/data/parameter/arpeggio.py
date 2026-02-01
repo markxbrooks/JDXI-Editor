@@ -162,5 +162,12 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
     NOTE_3 = ParameterSpec(0x32, 0, 127)
     NOTE_4 = ParameterSpec(0x33, 0, 127)
 
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
+
     def get_address_for_partial(self, partial_number: int = 0):
         return ARP_GROUP, 0x00

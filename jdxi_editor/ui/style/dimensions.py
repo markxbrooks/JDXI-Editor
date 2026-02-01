@@ -177,6 +177,7 @@ class EditorDimensions(Dimensions):
 
     HEIGHT: int = 250
     MIN_HEIGHT: int = 250
+    MARGINS = (1, 1, 1, 1)
 
 
 class ArpDimensions(Dimensions):

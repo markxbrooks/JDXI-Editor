@@ -86,7 +86,9 @@ class SystemCommonParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         return {
             self.MASTER_LEVEL: "Master Level",
         }.get(self, self.name.replace("_", " ").title())
@@ -178,6 +180,7 @@ class ProgramCommonParam(AddressParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
+        self._display_name = display_name
 
     # Program name parameters (12 ASCII characters)
     TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
@@ -238,7 +241,9 @@ from the JD-Xi.)""",
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         return {
             self.AUTO_NOTE_SWITCH: "Auto Note",
         }.get(self, self.name.replace("_", " ").title())

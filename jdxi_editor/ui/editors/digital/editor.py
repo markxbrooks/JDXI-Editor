@@ -114,18 +114,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             )
         self.synth_number = synth_number
         self._init_synth_data(synth_map[synth_number])
-        self.build_widgets()
-        self.setup_ui()
-        self.update_instrument_image()
-        self._initialize_partial_states()
-        # Connect signals
-        if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.midi_control_changed.connect(self._handle_control_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
-        self.refresh_shortcut.activated.connect(self.data_request)
-        # Note: data_request() is called in showEvent() when editor is displayed
+        # Set parameter lists before connecting signals (Sysex can arrive immediately)
         self.adsr_parameters = [
             Digital.Param.AMP_ENV_ATTACK_TIME,
             Digital.Param.AMP_ENV_DECAY_TIME,
@@ -145,6 +134,18 @@ class DigitalSynthEditor(BaseSynthEditor):
             Digital.Param.OSC_PULSE_WIDTH,
             Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
         ]
+        self.build_widgets()
+        self.setup_ui()
+        self.update_instrument_image()
+        self._initialize_partial_states()
+        # Connect signals
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_control_changed.connect(self._handle_control_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+        # Note: data_request() is called in showEvent() when editor is displayed
 
         def __str__(self):
             return f"{self.__class__.__name__} {self.preset_type}"

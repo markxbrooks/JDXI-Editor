@@ -247,7 +247,9 @@ class VocalFXParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         return self.name.replace("_", " ").title()
 
     @property

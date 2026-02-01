@@ -240,7 +240,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.control_widgets)
         controls_widget.setLayout(controls_layout)
-        self._add_tab(key=DigitalOscillatorTab.CONTROLS, widget=controls_widget)
+        self._add_tab(key=DigitalOscillatorTab.TUNING, widget=controls_widget)
 
         # Pulse Width tab
         if hasattr(self, "pwm_widget") and self.pwm_widget:
@@ -267,7 +267,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 set_attr=self,
             )
             pitch_env_group.setProperty("adsr", True)
-            self._add_tab(key=DigitalOscillatorTab.PITCH_ENV, widget=pitch_env_group)
+            self._add_tab(key=DigitalOscillatorTab.PITCH, widget=pitch_env_group)
 
         # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):

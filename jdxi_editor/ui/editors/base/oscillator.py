@@ -33,6 +33,8 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_widget_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 
 
 class BaseOscillatorSection(SectionBaseWidget):
@@ -40,6 +42,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
+    SWITCH_SPECS = []
     SYNTH_SPEC = Digital
 
     def __init__(
@@ -61,6 +64,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param icons_row_type: Type of icon
         :param analog: bool
         """
+
         self.tuning_sliders: list | None = None
         self.pwm_widget: QWidget | None = None
         self.wave_layout_widgets: list = []
@@ -107,28 +111,23 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=analog,
         )
 
-    def setup_ui(self):
-        """Set up the UI for the LFO section."""
-        layout = self.get_layout()
-        shape_row_layout = self._create_shape_row_layout()
-        switch_row_layout = self._create_switch_row_layout()
-        tab_widget = self._create_tab_widget()
-        layout.addLayout(shape_row_layout)
-        layout.addLayout(switch_row_layout)
-        layout.addWidget(tab_widget)
-        layout.addStretch()
+    def setup_ui(self) -> None:
+        """
+        Setup the UI (standardized method name matching Digital Oscillator)
+        :return: None
+        """
+        layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR.MARGINS)
+        # --- Waveform buttons ---
+        self.waveform_button_layout = self._create_wave_layout()
+        layout.addLayout(self.waveform_button_layout)
+        # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
+        layout.addWidget(self.tab_widget)
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
 
-    def build_widgets(self):
-        """Build the widgets"""
-        # --- Call parent to create buttons and other widgets from specs
-        super().build_widgets()
-        # --- Then create LFO-specific widgets (only if attributes exist)
-        if hasattr(self, "RATE_FADE_SLIDERS"):
-            self._create_rate_fade_layout_widgets()
-        if hasattr(self, "DEPTH_SLIDERS"):
-            self._create_depths_layout_widgets()
-        if hasattr(self, "SWITCH_SPECS"):
-            self._create_switch_layout_widgets()
+        layout.addStretch()
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""
@@ -155,28 +154,14 @@ class BaseOscillatorSection(SectionBaseWidget):
         return shape_row_layout
 
     def _create_tab_widget(self):
-        """Create tab widget for Rate/Rate Ctrl and Depths"""
-
-        tab_widget = QTabWidget()
-        self.tab_widget = tab_widget  # --- Set for _add_tab to use
-
-        rate_widget = self._create_rate_widget()
-        depths_widget = self._create_depths_widget()
-
-        # --- Use tab definitions - BaseOscillatorSection uses LFO-style tabs
-        from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
-
-        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
-        # --- Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
-        if tab_widget.tabText(0) != self.controls_tab_label:
-            tab_widget.setTabText(0, self.controls_tab_label)
-
-        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
-        # --- Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
-        if tab_widget.tabText(1) != self.adsr_tab_label:
-            tab_widget.setTabText(1, self.adsr_tab_label)
-        JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
-        return tab_widget
+        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
+        self.tab_widget = QTabWidget()
+        # --- Tuning tab (standardized name matching Digital) ---
+        self.tuning_group = self._create_tuning_group()
+        # --- Pitch tab (standardized name matching Digital) ---
+        self.pitch_widget = self._create_tuning_pitch_widget()
+        # --- Pulse Width tab ---
+        self.pw_group = self._create_pw_group()
 
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""

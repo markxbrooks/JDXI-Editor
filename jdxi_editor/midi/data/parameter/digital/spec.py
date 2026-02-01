@@ -149,9 +149,9 @@ class DigitalAmpTab(TabDefinitionMixin, Enum):
 class DigitalOscillatorTab(TabDefinitionMixin, Enum):
     """Definition of Digital Oscillator Section Tabs"""
 
-    CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
+    TUNING = ("tuning", "Tuning", JDXiUIIconRegistry.TUNE)
     PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveformType.SQUARE)
-    PITCH_ENV = ("pitch_env", "Pitch Env", WaveformType.ADSR)
+    PITCH = ("pitch_env", "Pitch Env", WaveformType.ADSR)
     PCM = ("pcm", "PCM", WaveformType.PCM)
     ADSR = ("adsr", "ADSR", WaveformType.ADSR)
 
