@@ -273,18 +273,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         else:
             self.switch_row_widgets = []
 
-    def _create_rate_fade_layout_widgets(self):
-        if hasattr(self, "RATE_FADE_SLIDERS"):
-            self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
-        else:
-            self.rate_layout_widgets = []
-
-    def _create_depths_layout_widgets(self):
-        if hasattr(self, "DEPTH_SLIDERS"):
-            self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
-        else:
-            self.depths_layout_widgets = []
-
     def _on_button_selected(self, button_param):
         """Override to handle waveform button selection with correct MIDI parameter"""
         # --- Reset all buttons
