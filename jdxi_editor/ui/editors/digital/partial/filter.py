@@ -5,12 +5,15 @@ Digital Filter Section for the JDXI Editor
 from typing import Dict
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.digital.filter import DigitalFilterType, DigitalFilterTypeEnum
+from jdxi_editor.midi.data.digital.filter import (
+    DigitalFilterType,
+    DigitalFilterTypeEnum,
+)
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter import BaseFilterSection
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.spec import SliderSpec, FilterSpec, FilterWidgetSpec
+from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
 class DigitalFilterSection(BaseFilterSection):
@@ -19,8 +22,12 @@ class DigitalFilterSection(BaseFilterSection):
     SLIDER_GROUPS = {
         "filter": [
             SliderSpec(Digital.Param.FILTER_RESONANCE, "Resonance", vertical=True),
-            SliderSpec(Digital.Param.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True),
-            SliderSpec(Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True),
+            SliderSpec(
+                Digital.Param.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
+            ),
+            SliderSpec(
+                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True
+            ),
             SliderSpec(
                 Digital.Param.FILTER_ENV_DEPTH, Digital.Display.Name.FILTER_ENV_DEPTH
             ),
@@ -77,10 +84,16 @@ class DigitalFilterSection(BaseFilterSection):
     }
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
-        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME),
+        ADSRStage.ATTACK: ADSRSpec(
+            ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME
+        ),
         ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL),
-        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(
+            ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL
+        ),
+        ADSRStage.RELEASE: ADSRSpec(
+            ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME
+        ),
         ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
     }
 
@@ -135,8 +148,10 @@ class DigitalFilterSection(BaseFilterSection):
         ),
     }
 
-    FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Digital.Param.FILTER_CUTOFF,
-                                          slope_param=Digital.Param.FILTER_SLOPE, )
+    FILTER_WIDGET_SPEC = FilterWidgetSpec(
+        cutoff_param=Digital.Param.FILTER_CUTOFF,
+        slope_param=Digital.Param.FILTER_SLOPE,
+    )
 
     SYNTH_SPEC = Digital
 

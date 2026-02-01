@@ -18,10 +18,10 @@ from PySide6.QtWidgets import QWidget
 class PlotContext:
     """
     Context object holding plot state for drawing operations.
-    
+
     This eliminates the need to pass multiple parameters repeatedly and provides
     coordinate conversion helpers.
-    
+
     :param painter: QPainter instance for drawing
     :param left_pad: Left padding of the plot area in pixels
     :param plot_w: Width of the plot area in pixels
@@ -31,7 +31,7 @@ class PlotContext:
     :param y_min: Minimum Y value in data coordinates
     :param zero_y: Y coordinate of the zero line in pixels (optional, calculated if not provided)
     """
-    
+
     painter: QPainter
     left_pad: int
     plot_w: int
@@ -40,11 +40,11 @@ class PlotContext:
     y_max: float
     y_min: float
     zero_y: Optional[float] = None
-    
+
     def value_to_x(self, value: float, x_max: float) -> float:
         """
         Convert X data value to pixel coordinate.
-        
+
         :param value: X value in data coordinates (0 to x_max)
         :param x_max: Maximum X value in data coordinates
         :return: X coordinate in pixels
@@ -52,11 +52,11 @@ class PlotContext:
         if x_max == 0:
             return self.left_pad
         return self.left_pad + (value / x_max) * self.plot_w
-    
+
     def value_to_y(self, value: float, zero_at_bottom: bool = False) -> float:
         """
         Convert Y data value to pixel coordinate.
-        
+
         :param value: Y value in data coordinates
         :param zero_at_bottom: If True, zero is at bottom of plot (default: False, uses y_max/y_min scaling)
         :return: Y coordinate in pixels
@@ -64,19 +64,23 @@ class PlotContext:
         if zero_at_bottom:
             # For plots where 0 is at bottom and values go up (like ADSR)
             return self.top_pad + self.plot_h - (value / self.y_max) * self.plot_h
-        
+
         # For plots with positive and negative values (like pitch envelope)
         # y_max is at top, y_min is at bottom
-        return self.top_pad + ((self.y_max - value) / (self.y_max - self.y_min)) * self.plot_h
+        return (
+            self.top_pad
+            + ((self.y_max - value) / (self.y_max - self.y_min)) * self.plot_h
+        )
 
 
 @dataclass
 class PlotConfig:
     """
     Configuration for plot appearance.
-    
+
     Centralizes colors, fonts, padding, and other visual settings.
     """
+
     top_padding: int = 50
     bottom_padding: int = 80
     left_padding: int = 80
@@ -233,7 +237,7 @@ class BasePlotWidget(QWidget):
     ) -> None:
         """
         Draw a centered title at the top of the plot.
-        
+
         This method matches the style of draw_title_ctx for consistency.
         Prefer using draw_title_ctx with PlotContext for new code.
 
@@ -263,7 +267,7 @@ class BasePlotWidget(QWidget):
     ) -> None:
         """
         Draw a centered X-axis label at the bottom of the plot.
-        
+
         This method matches the style of draw_x_axis_label_ctx for consistency.
         Prefer using draw_x_axis_label_ctx with PlotContext for new code.
 
@@ -296,7 +300,7 @@ class BasePlotWidget(QWidget):
     ) -> None:
         """
         Draw a rotated Y-axis label on the left side of the plot.
-        
+
         This method matches the style of draw_y_axis_label_ctx for consistency.
         Prefer using draw_y_axis_label_ctx with PlotContext for new code.
 
@@ -550,9 +554,7 @@ class BasePlotWidget(QWidget):
         )
         return ctx
 
-    def draw_shaded_curve_ctx(
-        self, ctx: PlotContext, path: QPainterPath
-    ) -> None:
+    def draw_shaded_curve_ctx(self, ctx: PlotContext, path: QPainterPath) -> None:
         """
         Draw a shaded fill under the curve with a gradient using PlotContext.
 
@@ -560,7 +562,9 @@ class BasePlotWidget(QWidget):
         :param path: QPainterPath representing the curve (may or may not be closed)
         """
         if ctx.zero_y is None:
-            raise ValueError("PlotContext.zero_y must be set before calling draw_shaded_curve_ctx")
+            raise ValueError(
+                "PlotContext.zero_y must be set before calling draw_shaded_curve_ctx"
+            )
 
         # --- Create a copy of the path for filling
         fill_path = QPainterPath(path)
@@ -687,9 +691,7 @@ class BasePlotWidget(QWidget):
             y = ctx.value_to_y(tick_value, zero_at_bottom=zero_at_bottom)
 
             # Draw tick mark
-            ctx.painter.drawLine(
-                ctx.left_pad - tick_length, y, ctx.left_pad, y
-            )
+            ctx.painter.drawLine(ctx.left_pad - tick_length, y, ctx.left_pad, y)
 
             # Draw label
             if tick_labels and i < len(tick_labels):
@@ -702,9 +704,7 @@ class BasePlotWidget(QWidget):
                     label = f"{int(tick_value)}"
 
             label_width = ctx.painter.fontMetrics().horizontalAdvance(label)
-            ctx.painter.drawText(
-                ctx.left_pad - label_offset, y + 5, label
-            )
+            ctx.painter.drawText(ctx.left_pad - label_offset, y + 5, label)
 
     def draw_grid_ctx(
         self,
@@ -1003,7 +1003,9 @@ class BasePlotWidget(QWidget):
         :param config: Optional PlotConfig (uses get_plot_config() if not provided)
         """
         if ctx.zero_y is None:
-            raise ValueError("PlotContext.zero_y must be set before calling draw_shaded_curve_from_array")
+            raise ValueError(
+                "PlotContext.zero_y must be set before calling draw_shaded_curve_from_array"
+            )
 
         path = self.draw_curve_from_array(
             ctx, y_values, x_max, sample_rate, max_points, zero_at_bottom, config
@@ -1046,7 +1048,9 @@ class BasePlotWidget(QWidget):
         # Draw point
         size = point_size if point_size is not None else config.point_size
         ctx.painter.setPen(self.get_point_pen(config))
-        ctx.painter.drawEllipse(int(x_pixel) - size // 2, int(y_pixel) - size // 2, size, size)
+        ctx.painter.drawEllipse(
+            int(x_pixel) - size // 2, int(y_pixel) - size // 2, size, size
+        )
 
         # Draw label if provided
         if label:

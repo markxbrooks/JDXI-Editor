@@ -50,7 +50,7 @@ class SystemCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -58,7 +58,9 @@ class SystemCommonParam(AddressParameter):
         self.tooltip = tooltip if tooltip is not None else ""
         self._display_name = display_name
 
-    MASTER_TUNE = ParameterSpec(0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
+    MASTER_TUNE = ParameterSpec(
+        0x00, 24, 2024, -100, 100, "Master Tune"
+    )  # Program Level (0-127)
     MASTER_KEY_SHIFT = ParameterSpec(
         0x04,
         40,
@@ -170,7 +172,7 @@ class ProgramCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -218,9 +220,15 @@ from the JD-Xi.)""",
         0,
         2,
     )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
-    VOCAL_EFFECT_NUMBER = ParameterSpec(0x1C, 0, 20, 0, 20)  # Vocal Effect Number (0-20: 1-21)
-    VOCAL_EFFECT_PART = ParameterSpec(0x1D, 0, 1, 0, 1)  # Vocal Effect Part (0: Part 1, 1: Part 2)
-    AUTO_NOTE_SWITCH = ParameterSpec(0x1E, 0, 1, 0, 1)  # Auto Note Switch (0: OFF, 1: ON)
+    VOCAL_EFFECT_NUMBER = ParameterSpec(
+        0x1C, 0, 20, 0, 20
+    )  # Vocal Effect Number (0-20: 1-21)
+    VOCAL_EFFECT_PART = ParameterSpec(
+        0x1D, 0, 1, 0, 1
+    )  # Vocal Effect Part (0: Part 1, 1: Part 2)
+    AUTO_NOTE_SWITCH = ParameterSpec(
+        0x1E, 0, 1, 0, 1
+    )  # Auto Note Switch (0: OFF, 1: ON)
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""

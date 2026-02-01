@@ -40,8 +40,6 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.partial.switch import PartialSelectState, PartialSwitchState
-from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
@@ -68,8 +66,10 @@ from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
+from jdxi_editor.midi.sysex.partial.switch import PartialSelectState, PartialSwitchState
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget

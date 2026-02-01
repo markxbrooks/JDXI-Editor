@@ -5,7 +5,11 @@ Analog Spec File
 from enum import Enum
 from typing import Any
 
-from jdxi_editor.midi.data.analog.filter import AnalogFilterType, AnalogFilterTypeString, AnalogFilterMidiType
+from jdxi_editor.midi.data.analog.filter import (
+    AnalogFilterMidiType,
+    AnalogFilterType,
+    AnalogFilterTypeString,
+)
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOWaveShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogWaveOsc
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
@@ -107,6 +111,7 @@ class AnalogAmp(AmpSpec):
 
 class AnalogFilterModeType:
     """String constants for analog filter plot / display (same pattern as DigitalFilterModeType)."""
+
     BYPASS: str = "bypass"
     LPF: str = "lpf"
 
@@ -116,7 +121,9 @@ class AnalogFilter(FilterSpec):
 
     FilterType: AnalogFilterType = AnalogFilterType
     FilterTypeString: AnalogFilterTypeString = AnalogFilterTypeString
-    Mode: AnalogFilterMode = AnalogFilterMode  # Alias so base can use SYNTH_SPEC.Filter.Mode
+    Mode: AnalogFilterMode = (
+        AnalogFilterMode  # Alias so base can use SYNTH_SPEC.Filter.Mode
+    )
     ModeType: AnalogFilterModeType = AnalogFilterModeType
     ADSR: ADSRType = ADSRType
     Tab: AnalogFilterTab = AnalogFilterTab

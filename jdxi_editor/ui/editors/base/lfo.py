@@ -56,7 +56,7 @@ class BaseLFOSection(SectionBaseWidget):
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
         # --- Set up LFO shapes and icon map before super().__init__() so _setup_ui() can use them
         self.wave_shapes = [
-            Digital.Wave.LFO.TRIANGLE,
+            Digital.Wave.LFO.TRI,
             Digital.Wave.LFO.SINE,
             Digital.Wave.LFO.SAW,
             Digital.Wave.LFO.SQUARE,
@@ -64,7 +64,7 @@ class BaseLFOSection(SectionBaseWidget):
             Digital.Wave.LFO.RANDOM,
         ]
         self.shape_icon_map = {
-            Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
+            Digital.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
             Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
             Digital.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
             Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
@@ -74,7 +74,7 @@ class BaseLFOSection(SectionBaseWidget):
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
         # --- Set controls after super().__init__() to avoid it being overwritten
-        if not hasattr(self, 'controls') or self.controls is None:
+        if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 
     def _setup_ui(self):
@@ -135,23 +135,23 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
-        
+
         tab_widget = QTabWidget()
         self.tab_widget = tab_widget  # Set for _add_tab to use
 
         rate_widget = self._create_rate_widget()
         depths_widget = self._create_depths_widget()
-        
+
         self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
         # --- Update label if it differs from default
         if tab_widget.tabText(0) != self.rate_tab_label:
             tab_widget.setTabText(0, self.rate_tab_label)
-        
+
         self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
         # --- Update label if it differs from default
         if tab_widget.tabText(1) != self.depths_tab_label:
             tab_widget.setTabText(1, self.depths_tab_label)
-        
+
         JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
         return tab_widget
 

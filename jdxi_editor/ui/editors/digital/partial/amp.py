@@ -1,6 +1,7 @@
 """
 AMP section for the digital partial editor.
 """
+
 from typing import Dict
 
 from PySide6.QtWidgets import QVBoxLayout, QWidget
@@ -38,8 +39,12 @@ class DigitalAmpSection(BaseAmpSection):
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
         ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.AMP_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.AMP_ENV_SUSTAIN_LEVEL),
-        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.AMP_ENV_RELEASE_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(
+            ADSRStage.SUSTAIN, Digital.Param.AMP_ENV_SUSTAIN_LEVEL
+        ),
+        ADSRStage.RELEASE: ADSRSpec(
+            ADSRStage.RELEASE, Digital.Param.AMP_ENV_RELEASE_TIME
+        ),
         # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
     }
 

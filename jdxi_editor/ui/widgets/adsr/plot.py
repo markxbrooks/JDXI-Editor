@@ -257,4 +257,3 @@ class ADSRPlot(BasePlotWidget):
     def get_y_label(self) -> str:
         """Get Y-axis label."""
         return "Amplitude"
-

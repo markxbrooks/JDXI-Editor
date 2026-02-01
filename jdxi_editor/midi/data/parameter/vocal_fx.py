@@ -58,7 +58,7 @@ class VocalFXParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -66,7 +66,9 @@ class VocalFXParam(AddressParameter):
         self.tooltip = tooltip
         self._display_name = display_name
 
-    LEVEL = ParameterSpec(0x00, 0, 127, 0, 127, "Sets the level of the vocal FX.")  # Level (0-127)
+    LEVEL = ParameterSpec(
+        0x00, 0, 127, 0, 127, "Sets the level of the vocal FX."
+    )  # Level (0-127)
     PAN = ParameterSpec(
         0x01,
         -64,

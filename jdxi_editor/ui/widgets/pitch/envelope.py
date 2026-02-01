@@ -49,7 +49,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         controls: dict[AddressParameter, QWidget] = None,
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
-        analog: bool = False
+        analog: bool = False,
     ):
         super().__init__(
             envelope_keys=["attack_time", "decay_time", "peak_level"],

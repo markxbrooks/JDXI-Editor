@@ -119,7 +119,7 @@ def generate_button_style(
     font_family: str = FONT_FAMILY,
     font_size: str = "12px",
     button_padding: int = 4,
-    analog: bool = False
+    analog: bool = False,
 ) -> str:
     """
     Generate address button style dynamically.

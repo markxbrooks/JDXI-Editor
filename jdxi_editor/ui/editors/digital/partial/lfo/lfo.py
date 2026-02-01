@@ -51,9 +51,7 @@ class DigitalLFOSection(BaseLFOSection):
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(
-            Digital.Param.LFO_RATE, Digital.Display.Name.LFO_RATE
-        ),
+        SliderSpec(Digital.Param.LFO_RATE, Digital.Display.Name.LFO_RATE),
         SliderSpec(
             Digital.Param.LFO_FADE_TIME,
             Digital.Display.Name.LFO_FADE_TIME,
@@ -76,7 +74,9 @@ class DigitalLFOSection(BaseLFOSection):
         self.controls = controls
 
         super().__init__(
-            icons_row_type=icons_row_type, analog=analog, send_midi_parameter=send_midi_parameter
+            icons_row_type=icons_row_type,
+            analog=analog,
+            send_midi_parameter=send_midi_parameter,
         )
         self.send_midi_parameter = send_midi_parameter
         self.wave_shape_param: Literal[Digital.Param.LFO_SHAPE] = (

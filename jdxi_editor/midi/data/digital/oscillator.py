@@ -52,7 +52,7 @@ class DigitalWaveOsc(WaveOscBehavior, IntEnum):
     SAW = 0
     SQUARE = 1
     PW_SQUARE = 2  # Pulse Width Square
-    TRIANGLE = 3
+    TRI = 3
     SINE = 4
     NOISE = 5
     SUPER_SAW = 6

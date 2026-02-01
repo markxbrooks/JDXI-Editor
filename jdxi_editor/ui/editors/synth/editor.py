@@ -59,10 +59,11 @@ class InstrumentDescriptor:
     """
     Canonical description of a JD-Xi instrument preset.
     """
-    category: str           # "synth" | "drum"
-    family: str            # e.g. "piano", "pad", "bass"
+
+    category: str  # "synth" | "drum"
+    family: str  # e.g. "piano", "pad", "bass"
     engine: Optional[str]  # e.g. "fm", "jd"
-    raw_text: str          # original label (for logging/debug)
+    raw_text: str  # original label (for logging/debug)
 
 
 @dataclass(frozen=True)
@@ -108,103 +109,345 @@ DRUM_KIT_SPECS = [
 
 INSTRUMENT_FAMILY_SPECS = [
     # Piano/Keyboard - highest priority for keyboard category
-    InstrumentFamilySpec("piano", [
-        "piano", "e. piano", "e.p", "ep", "e.piano", "grand", 
-        "wurly", "clav", "vibraphone", "harp", "steel drum", "trem ep"
-    ]),
-    InstrumentFamilySpec("jupiter", [
-        "jp8", "jupiter", "jupiter8",
-    ]),
+    InstrumentFamilySpec(
+        "piano",
+        [
+            "piano",
+            "e. piano",
+            "e.p",
+            "ep",
+            "e.piano",
+            "grand",
+            "wurly",
+            "clav",
+            "vibraphone",
+            "harp",
+            "steel drum",
+            "trem ep",
+        ],
+    ),
+    InstrumentFamilySpec(
+        "jupiter",
+        [
+            "jp8",
+            "jupiter",
+            "jupiter8",
+        ],
+    ),
     # Pad - pad-specific terms (check before strings to prioritize pad when "pad" is in name)
-    InstrumentFamilySpec("pad", [
-        "hollow pad", "lfo pad", "sweep pad", "boreal pad", 
-        "bright pad", "soft pad", "hpf pad", "organ pad", "bell pad",
-        "vox pad", "s-saw pad", "hpf sweep", "fltsweep pd", "koff pad",
-        "trnssweeppad", "lfo carvepd", "lfo resopad", "pls pad",
-        "reso s&h pd", "sidechainpd", "pxzoon", "psychoscilo",
-        "fantasy", "dreaming", "syn sniper", "pad"  # "pad" at end as fallback
-    ]),
+    InstrumentFamilySpec(
+        "pad",
+        [
+            "hollow pad",
+            "lfo pad",
+            "sweep pad",
+            "boreal pad",
+            "bright pad",
+            "soft pad",
+            "hpf pad",
+            "organ pad",
+            "bell pad",
+            "vox pad",
+            "s-saw pad",
+            "hpf sweep",
+            "fltsweep pd",
+            "koff pad",
+            "trnssweeppad",
+            "lfo carvepd",
+            "lfo resopad",
+            "pls pad",
+            "reso s&h pd",
+            "sidechainpd",
+            "pxzoon",
+            "psychoscilo",
+            "fantasy",
+            "dreaming",
+            "syn sniper",
+            "pad",  # "pad" at end as fallback
+        ],
+    ),
     # Strings - specific string terms (after pad to avoid conflicts)
-    InstrumentFamilySpec("strings", [
-        "jp8 strings", "strings", "string", "str", "juno str", "brite str", 
-        "oct strings", "hybrid str", "analog str",
-        "d-50 pizz", "d-50 stack"
-    ]),
-    InstrumentFamilySpec("bass guitar", [
-        "bass guitar", "bassgtr", "bassgtr1", "bassgtr2", "bassgtr3", "bassgtr4", "bassgtr5",
-        "bassgtr6", "bassgtr7", "bassgtr8", "bassgtr9", "bassgtr10", "fretless bass", "picked bass", "fingerd bs",
-    ]),
+    InstrumentFamilySpec(
+        "strings",
+        [
+            "jp8 strings",
+            "strings",
+            "string",
+            "str",
+            "juno str",
+            "brite str",
+            "oct strings",
+            "hybrid str",
+            "analog str",
+            "d-50 pizz",
+            "d-50 stack",
+        ],
+    ),
+    InstrumentFamilySpec(
+        "bass guitar",
+        [
+            "bass guitar",
+            "bassgtr",
+            "bassgtr1",
+            "bassgtr2",
+            "bassgtr3",
+            "bassgtr4",
+            "bassgtr5",
+            "bassgtr6",
+            "bassgtr7",
+            "bassgtr8",
+            "bassgtr9",
+            "bassgtr10",
+            "fretless bass",
+            "picked bass",
+            "fingerd bs",
+        ],
+    ),
     # Bass
-    InstrumentFamilySpec("bass", [
-        "bass", "bs", "bass1", "bass2", "bass3", "bass4", "bass5",
-        "seq bass", "reso bass", "tb bass", "106 bass", "low bass",
-        "kick bass", "organ bass", "growl bass", "talking bs",
-        "lfo bass", "crack bass", "wobble bs", "sidechainbs",
-        "house bass", "fm bass", "ac. bass", "fingerd bs",
-        "picked bass", "fretless bs", "slap bass", "r&b bass",
-        "wide bass", "chow bass", "sqrfilterbs", "filter bass",
-        "seqfltenvbs", "dnb bass", "unisonsynbs", "modular bs",
-        "monster bs", "square bs", "5th stac bs", "sqrstacsynbs",
-        "mc-202 bs", "sh-101 bs", "mg bass", "tri bass", "bpf syn bs",
-        "sindetunebs", "resrubber bs", "resosawsynbs", "syn bass",
-        "filterenvbs", "juno sqr bs", "detune bs", "mks-50 bass",
-        "sweep bass", "4op fm bass"
-    ]),
+    InstrumentFamilySpec(
+        "bass",
+        [
+            "bass",
+            "bs",
+            "bass1",
+            "bass2",
+            "bass3",
+            "bass4",
+            "bass5",
+            "seq bass",
+            "reso bass",
+            "tb bass",
+            "106 bass",
+            "low bass",
+            "kick bass",
+            "organ bass",
+            "growl bass",
+            "talking bs",
+            "lfo bass",
+            "crack bass",
+            "wobble bs",
+            "sidechainbs",
+            "house bass",
+            "fm bass",
+            "ac. bass",
+            "fingerd bs",
+            "picked bass",
+            "fretless bs",
+            "slap bass",
+            "r&b bass",
+            "wide bass",
+            "chow bass",
+            "sqrfilterbs",
+            "filter bass",
+            "seqfltenvbs",
+            "dnb bass",
+            "unisonsynbs",
+            "modular bs",
+            "monster bs",
+            "square bs",
+            "5th stac bs",
+            "sqrstacsynbs",
+            "mc-202 bs",
+            "sh-101 bs",
+            "mg bass",
+            "tri bass",
+            "bpf syn bs",
+            "sindetunebs",
+            "resrubber bs",
+            "resosawsynbs",
+            "syn bass",
+            "filterenvbs",
+            "juno sqr bs",
+            "detune bs",
+            "mks-50 bass",
+            "sweep bass",
+            "4op fm bass",
+        ],
+    ),
     # Lead
-    InstrumentFamilySpec("lead", [
-        "lead", "ld", "ld1", "ld2", "ld3", "ld4", "tekno lead",
-        "osc-syncld", "waveshapeld", "buzz lead", "sawbuzz ld",
-        "sqr buzz ld", "dist flt tb", "dist tb sqr", "glideator",
-        "vintager", "hover lead", "saw lead", "saw+tri lead",
-        "portasaw ld", "reso saw ld", "sawtrap ld", "fat gr lead",
-        "pulstar ld", "slow lead", "anavox lead", "square ld",
-        "sqr lead", "sqr trap ld", "sine lead", "tri lead",
-        "tri stac ld", "5th sawlead", "sweet 5th", "4th syn lead",
-        "maj stack ld", "minstack ld", "chubby lead", "cuttinglead",
-        "s-sawstacld", "bend lead"
-    ]),
+    InstrumentFamilySpec(
+        "lead",
+        [
+            "lead",
+            "ld",
+            "ld1",
+            "ld2",
+            "ld3",
+            "ld4",
+            "tekno lead",
+            "osc-syncld",
+            "waveshapeld",
+            "buzz lead",
+            "sawbuzz ld",
+            "sqr buzz ld",
+            "dist flt tb",
+            "dist tb sqr",
+            "glideator",
+            "vintager",
+            "hover lead",
+            "saw lead",
+            "saw+tri lead",
+            "portasaw ld",
+            "reso saw ld",
+            "sawtrap ld",
+            "fat gr lead",
+            "pulstar ld",
+            "slow lead",
+            "anavox lead",
+            "square ld",
+            "sqr lead",
+            "sqr trap ld",
+            "sine lead",
+            "tri lead",
+            "tri stac ld",
+            "5th sawlead",
+            "sweet 5th",
+            "4th syn lead",
+            "maj stack ld",
+            "minstack ld",
+            "chubby lead",
+            "cuttinglead",
+            "s-sawstacld",
+            "bend lead",
+        ],
+    ),
     # Brass
-    InstrumentFamilySpec("brass", [
-        "brass", "brs", "analog brass", "reso brass", "soft brass",
-        "fm brass", "syn brass", "jp8 brass", "soft synbrs",
-        "epicslow brs", "juno brass", "poly brass"
-    ]),
+    InstrumentFamilySpec(
+        "brass",
+        [
+            "brass",
+            "brs",
+            "analog brass",
+            "reso brass",
+            "soft brass",
+            "fm brass",
+            "syn brass",
+            "jp8 brass",
+            "soft synbrs",
+            "epicslow brs",
+            "juno brass",
+            "poly brass",
+        ],
+    ),
     # Organ
-    InstrumentFamilySpec("organ", [
-        "organ", "org", "house org", "70's e.organ", "e.organ",
-        "organ bell", "organ bass", "organ pad"
-    ]),
+    InstrumentFamilySpec(
+        "organ",
+        [
+            "organ",
+            "org",
+            "house org",
+            "70's e.organ",
+            "e.organ",
+            "organ bell",
+            "organ bass",
+            "organ pad",
+        ],
+    ),
     # Guitar
-    InstrumentFamilySpec("guitar", [
-        "guitar", "gtr", "strat", "ac. guitar", "bright strat",
-        "funk guitar", "jazz guitar", "dist guitar", "d. mute gtr",
-        "e. sitar", "sitar drone", "sitar"
-    ]),
+    InstrumentFamilySpec(
+        "guitar",
+        [
+            "guitar",
+            "gtr",
+            "strat",
+            "ac. guitar",
+            "bright strat",
+            "funk guitar",
+            "jazz guitar",
+            "dist guitar",
+            "d. mute gtr",
+            "e. sitar",
+            "sitar drone",
+            "sitar",
+        ],
+    ),
     # FX/Other - Voc, FX, Hits, etc.
-    InstrumentFamilySpec("synth", [
-        "fx", "voc", "hit", "vox", "vp-330", "voc:", "voc:ensemble",
-        "voc:5thstack", "voc:robot", "voc:saw", "voc:sqr",
-        "voc:rise up", "voc:auto vib", "voc:pitchenv", "voc:vp-330",
-        "voc:noise", "orch hit", "philly hit", "house hit",
-        "o'skool hit", "punch hit", "tao hit", "syn vox",
-        "jd softvox", "vox pad", "vp-330 chr", "tuned winds",
-        "bend lead", "riser", "rising seq", "scream saw",
-        "noise seq", "init tone"
-    ]),
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "fx",
+            "voc",
+            "hit",
+            "vox",
+            "vp-330",
+            "voc:",
+            "voc:ensemble",
+            "voc:5thstack",
+            "voc:robot",
+            "voc:saw",
+            "voc:sqr",
+            "voc:rise up",
+            "voc:auto vib",
+            "voc:pitchenv",
+            "voc:vp-330",
+            "voc:noise",
+            "orch hit",
+            "philly hit",
+            "house hit",
+            "o'skool hit",
+            "punch hit",
+            "tao hit",
+            "syn vox",
+            "jd softvox",
+            "vox pad",
+            "vp-330 chr",
+            "tuned winds",
+            "bend lead",
+            "riser",
+            "rising seq",
+            "scream saw",
+            "noise seq",
+            "init tone",
+        ],
+    ),
     # Seq/Sequence - plucks, sequences
-    InstrumentFamilySpec("synth", [
-        "seq", "pluck", "plk", "seq saw", "seq sqr", "seq tri",
-        "sqr reso plk", "pluck synth", "paperclip", "sonar pluck",
-        "sqrtrapplk", "tb saw seq", "tb sqr seq", "juno key",
-        "analog poly", "juno octavr", "edm synth", "super saw",
-        "s-saw poly", "trance key", "s-sawstc syn", "7th stac syn"
-    ]),
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "seq",
+            "pluck",
+            "plk",
+            "seq saw",
+            "seq sqr",
+            "seq tri",
+            "sqr reso plk",
+            "pluck synth",
+            "paperclip",
+            "sonar pluck",
+            "sqrtrapplk",
+            "tb saw seq",
+            "tb sqr seq",
+            "juno key",
+            "analog poly",
+            "juno octavr",
+            "edm synth",
+            "super saw",
+            "s-saw poly",
+            "trance key",
+            "s-sawstc syn",
+            "7th stac syn",
+        ],
+    ),
     # General synth/saw
-    InstrumentFamilySpec("synth", [
-        "synth", "saw", "super saw", "s-saw", "sawstac", "sawstc",
-        "sawpoly", "saw trap", "saw buzz", "saw lead", "saw seq",
-        "sawsynbs", "sawsyn", "sawpad"
-    ]),
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "synth",
+            "saw",
+            "super saw",
+            "s-saw",
+            "sawstac",
+            "sawstc",
+            "sawpoly",
+            "saw trap",
+            "saw buzz",
+            "saw lead",
+            "saw seq",
+            "sawsynbs",
+            "sawsyn",
+            "sawpad",
+        ],
+    ),
 ]
 
 ENGINE_KEYWORDS = {
@@ -235,7 +478,13 @@ def log_changes(previous_data, current_data):
     changes = [
         change
         for change in changes
-        if change[0] not in [SysExSection.JD_XI_HEADER, SysExSection.ADDRESS, SysExSection.TEMPORARY_AREA, SysExSection.TONE_NAME]
+        if change[0]
+        not in [
+            SysExSection.JD_XI_HEADER,
+            SysExSection.ADDRESS,
+            SysExSection.TEMPORARY_AREA,
+            SysExSection.TONE_NAME,
+        ]
     ]
 
     if changes:
@@ -261,7 +510,9 @@ class SynthEditor(SynthBase):
         parent: Optional[QWidget] = None,
         address: Optional[RolandSysExAddress] = None,
     ):
-        super().__init__(midi_helper=midi_helper, parent=parent, address=address)  # Dict of JDXiSynth Types
+        super().__init__(
+            midi_helper=midi_helper, parent=parent, address=address
+        )  # Dict of JDXiSynth Types
         self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_preset_list = None
@@ -470,9 +721,7 @@ class SynthEditor(SynthBase):
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
-            self._update_controls(
-                partial_number, sysex_data, successes, failures
-            )
+            self._update_controls(partial_number, sysex_data, successes, failures)
         if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
             self._update_common_controls(
                 partial_number, sysex_data, successes, failures
@@ -486,9 +735,7 @@ class SynthEditor(SynthBase):
                 log.error(f"Unknown partial number for synth_tone: {synth_tone}")
                 return
             log.parameter("partial_number", partial_number)
-            self._update_controls(
-                partial_number, sysex_data, successes, failures
-            )
+            self._update_controls(partial_number, sysex_data, successes, failures)
 
         log.debug_info(successes, failures)
 
@@ -688,8 +935,10 @@ class SynthEditor(SynthBase):
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
-        log.debug(f"load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}")
-        
+        log.debug(
+            f"load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}"
+        )
+
         if image_path and os.path.exists(image_path):
             file_to_load = image_path
             log.debug(f"Using primary image path: {file_to_load}")
@@ -762,11 +1011,11 @@ class SynthEditor(SynthBase):
         if descriptor is None:
             self._fallback_to_default_image("Failed to parse instrument text.")
             return
-        
+
         # Extract name and type from InstrumentDescriptor
         # Use engine as name (e.g., "fm", "jd") or extract from raw_text
         name = descriptor.engine
-        
+
         # Special handling for drum kits: Extract model number (e.g., "909", "808", "707", "cr-78")
         if descriptor.category == "drum":
             text_lower = descriptor.raw_text.lower()
@@ -777,8 +1026,8 @@ class SynthEditor(SynthBase):
             if "cr-78" in text_lower or "cr78" in text_lower:
                 name = "cr-78"
             # Then try to match "tr-XXX" pattern (e.g., "tr-909", "tr-808")
-            elif re.search(r'tr-(\d{3})', text_lower):
-                tr_match = re.search(r'tr-(\d{3})', text_lower)
+            elif re.search(r"tr-(\d{3})", text_lower):
+                tr_match = re.search(r"tr-(\d{3})", text_lower)
                 name = tr_match.group(1)  # Extract the 3-digit number after "tr-"
             else:
                 # Fallback: look for known drum model numbers in the text
@@ -791,7 +1040,7 @@ class SynthEditor(SynthBase):
                 else:
                     # No model found, use engine name
                     name = descriptor.engine
-        
+
         # Special handling: Check for specific engine names in raw_text that might not be detected
         # This ensures "JP8" matches "jp8.png" even if engine is "jupiter"
         text_lower = descriptor.raw_text.lower()
@@ -808,14 +1057,14 @@ class SynthEditor(SynthBase):
             "mks": ["mks", "mks-50"],
             "mc": ["mc", "mc-202", "202"],
         }
-        
+
         # Check if any engine name pattern matches in the text (only for non-drum)
         if descriptor.category != "drum":
             for engine_name, patterns in engine_name_patterns.items():
                 if any(pattern in text_lower for pattern in patterns):
                     name = engine_name
                     break
-        
+
         if not name:
             # Extract first word after number and dash as fallback name
             words = descriptor.raw_text.split()
@@ -823,10 +1072,10 @@ class SynthEditor(SynthBase):
                 if i > 0 and word != "-" and not word.isdigit():
                     name = word.lower().replace("&", "_").split("_")[0]
                     break
-        
+
         # Use family as type (e.g., "piano", "pad", "bass")
         type_ = descriptor.family
-        
+
         if name and type_:
             image_loaded = self._try_load_specific_or_generic_image(name, type_)
         else:
@@ -923,26 +1172,32 @@ class SynthEditor(SynthBase):
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
             if not self.instrument_icon_folder:
-                log.error(f"Instrument icon folder not set. Cannot load image for {name}/{type_}")
+                log.error(
+                    f"Instrument icon folder not set. Cannot load image for {name}/{type_}"
+                )
                 return False
-            
+
             # Build list of paths to try (in order of preference)
             paths_to_try = []
-            
+
             # Special case: For piano family, prioritize piano.png over engine-specific images
             # This ensures "JD Piano 1" matches piano.png instead of jd.png
             if type_ == "piano":
                 # 1. Try piano.png first (family image)
                 paths_to_try.append(
                     resource_path(
-                        os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                        os.path.join(
+                            "resources", self.instrument_icon_folder, f"{type_}.png"
+                        )
                     )
                 )
                 # 2. Then try specific name image as fallback (e.g., "jd.png")
                 if name:
                     paths_to_try.append(
                         resource_path(
-                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{name}.png"
+                            )
                         )
                     )
             # Special case: For guitar family, prioritize strat.png over other images
@@ -951,20 +1206,26 @@ class SynthEditor(SynthBase):
                 # 1. Try strat.png first
                 paths_to_try.append(
                     resource_path(
-                        os.path.join("resources", self.instrument_icon_folder, "strat.png")
+                        os.path.join(
+                            "resources", self.instrument_icon_folder, "strat.png"
+                        )
                     )
                 )
                 # 2. Then try specific name image as fallback
                 if name:
                     paths_to_try.append(
                         resource_path(
-                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{name}.png"
+                            )
                         )
                     )
                 # 3. Finally try generic guitar.png as fallback
                 paths_to_try.append(
                     resource_path(
-                        os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                        os.path.join(
+                            "resources", self.instrument_icon_folder, f"{type_}.png"
+                        )
                     )
                 )
             # Special case: For FM engine synths, prioritize fm.png over family images
@@ -980,7 +1241,9 @@ class SynthEditor(SynthBase):
                 if type_:
                     paths_to_try.append(
                         resource_path(
-                            os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{type_}.png"
+                            )
                         )
                     )
             else:
@@ -989,29 +1252,34 @@ class SynthEditor(SynthBase):
                 if name:
                     paths_to_try.append(
                         resource_path(
-                            os.path.join("resources", self.instrument_icon_folder, f"{name}.png")
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{name}.png"
+                            )
                         )
                     )
-                
+
                 # 2. Try generic type image (e.g., "pad.png" if type_ is "pad")
                 if type_:
                     paths_to_try.append(
                         resource_path(
-                            os.path.join("resources", self.instrument_icon_folder, f"{type_}.png")
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{type_}.png"
+                            )
                         )
                     )
-            
+
             log.debug(f"Trying to load images (in order): {paths_to_try}")
             log.debug(f"Instrument icon folder: {self.instrument_icon_folder}")
-            
+
             # Try primary path first, then secondary, etc.
             primary_path = paths_to_try[0] if paths_to_try else None
             secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
-            
+
             return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:
             log.error(f"Error loading specific/generic images: {ex}")
             import traceback
+
             log.error(traceback.format_exc())
             return False
 

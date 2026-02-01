@@ -1,6 +1,7 @@
 """
 Helpers to create HBox and VBoxes
 """
+
 from typing import Any
 
 import qtawesome as qta
@@ -59,14 +60,14 @@ def create_group(title: str, layout_or_widget) -> QGroupBox:
 
 
 def create_group_from_definition(
-        key: "GroupBoxDefinitionMixin",
-        layout_or_widget,
-        set_attr: object = None,
-        attr_name: str = None,
+    key: "GroupBoxDefinitionMixin",
+    layout_or_widget,
+    set_attr: object = None,
+    attr_name: str = None,
 ) -> QGroupBox:
     """
     Create a QGroupBox using GroupBoxDefinitionMixin pattern.
-    
+
     :param key: GroupBoxDefinitionMixin enum value (e.g., Digital.GroupBox.PULSE_WIDTH)
     :param layout_or_widget: Layout, widget, or list of widgets to add to the group
     :param set_attr: Optional object to set attribute on (e.g., self)
@@ -89,10 +90,10 @@ def create_icon_from_qta(icon_name: str) -> QIcon:
 
 
 def create_button_with_icon(
-        icon_name: str,
-        icon: QIcon,
-        button_dimensions: Dimensions,
-        icon_dimensions: Dimensions,
+    icon_name: str,
+    icon: QIcon,
+    button_dimensions: Dimensions,
+    icon_dimensions: Dimensions,
 ):
     """create button with icon"""
     btn = QPushButton(icon_name)
@@ -118,10 +119,10 @@ def create_widget_with_layout(inner_layout: QHBoxLayout) -> QWidget:
 
 
 def create_layout_with_widgets(
-        widgets: list,
-        vertical: bool = False,
-        top_stretch: bool = True,
-        bottom_stretch: bool = True,
+    widgets: list,
+    vertical: bool = False,
+    top_stretch: bool = True,
+    bottom_stretch: bool = True,
 ) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
@@ -151,7 +152,7 @@ def create_left_aligned_row(widget_list: list) -> QHBoxLayout:
 
 
 def create_layout_with_inner_layouts(
-        inner_layouts: list, vertical: bool = True
+    inner_layouts: list, vertical: bool = True
 ) -> QVBoxLayout:
     """create layout with a list of inner layouts"""
     layout = create_layout(vertical=vertical)
@@ -168,10 +169,10 @@ def create_layout(vertical: bool = True) -> QVBoxLayout | QHBoxLayout:
 
 
 def create_group_with_layout(
-        label: str = None,
-        child_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
-        vertical: bool = True,
-        style_sheet: str = None,
+    label: str = None,
+    child_layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
+    vertical: bool = True,
+    style_sheet: str = None,
 ) -> tuple[QGroupBox, QHBoxLayout | QVBoxLayout]:
     """create Group and a layout"""
     group = QGroupBox(label) if label is not None else QGroupBox()
@@ -184,9 +185,9 @@ def create_group_with_layout(
 
 
 def create_layout_with_inner_layout_and_widgets(
-        inner_layout: QHBoxLayout | QVBoxLayout | None = None,
-        widgets: list = None,
-        vertical: bool = True,
+    inner_layout: QHBoxLayout | QVBoxLayout | None = None,
+    widgets: list = None,
+    vertical: bool = True,
 ) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
     if inner_layout is None:
@@ -255,7 +256,7 @@ def create_centered_adsr_icon_layout() -> QHBoxLayout:
 
 
 def create_group_adsr_with_hlayout(
-        name: str, hlayout: QHBoxLayout, analog: bool = False
+    name: str, hlayout: QHBoxLayout, analog: bool = False
 ) -> QGroupBox:
     """create ADSR Group with an hlayout (harmonized for Digital and Analog)"""
     group = QGroupBox(name)
@@ -265,10 +266,10 @@ def create_group_adsr_with_hlayout(
 
 
 def create_envelope_group(
-        name: str = "Envelope",
-        icon_layout: QHBoxLayout = None,
-        adsr_widget: QWidget = None,
-        analog: bool = False,
+    name: str = "Envelope",
+    icon_layout: QHBoxLayout = None,
+    adsr_widget: QWidget = None,
+    analog: bool = False,
 ) -> QGroupBox:
     """
     Create a standardized envelope group with icon and ADSR widget.
@@ -305,7 +306,9 @@ def create_envelope_group(
 def create_button_with_tooltip(tooltip: str) -> QPushButton:
     """create button with tooltip"""
     button = QPushButton()
-    button.setFixedSize(JDXi.UI.Dimensions.BUTTON_ROUND.WIDTH, JDXi.UI.Dimensions.BUTTON_ROUND.HEIGHT)
+    button.setFixedSize(
+        JDXi.UI.Dimensions.BUTTON_ROUND.WIDTH, JDXi.UI.Dimensions.BUTTON_ROUND.HEIGHT
+    )
     button.setCheckable(True)
     button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
     button.setToolTip(tooltip)
@@ -344,7 +347,7 @@ def create_group_and_grid_layout(group_name: str) -> tuple[QGroupBox, QGridLayou
 
 
 def create_group_with_form_layout(
-        widgets: list, label: str = None
+    widgets: list, label: str = None
 ) -> tuple[QGroupBox, QFormLayout]:
     """
     Create a group box with form layout and add widgets in one call.
@@ -377,7 +380,9 @@ def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
     return container, container_layout
 
 
-def transfer_layout_items(source_layout: QLayout, target_layout: QHBoxLayout | QVBoxLayout) -> None:
+def transfer_layout_items(
+    source_layout: QLayout, target_layout: QHBoxLayout | QVBoxLayout
+) -> None:
     """
     Transfer all items from a source layout to a target layout.
 
@@ -397,9 +402,9 @@ def transfer_layout_items(source_layout: QLayout, target_layout: QHBoxLayout | Q
             target_layout.addLayout(item.layout())
 
 
-def create_group_with_widgets_in_hlayout(label: str,
-                                         widgets: list,
-                                         vertical: bool = False) -> QGroupBox:
+def create_group_with_widgets_in_hlayout(
+    label: str, widgets: list, vertical: bool = False
+) -> QGroupBox:
     """create group with widgets"""
     hlayout = QHBoxLayout()
     hlayout.addStretch()  # center the widgets
@@ -407,16 +412,16 @@ def create_group_with_widgets_in_hlayout(label: str,
     hlayout.addLayout(child_layout)
     hlayout.addStretch()  # center the widgets
     # hlayout = create_layout_with_inner_layouts(inner_layouts=[child_layout], vertical=False)
-    group, _ = create_group_with_layout(label=label,
-                                        child_layout=hlayout)
+    group, _ = create_group_with_layout(label=label, child_layout=hlayout)
     return group
 
 
-def create_group_with_widgets(label: str, widgets: list, vertical: bool = False) -> QGroupBox:
+def create_group_with_widgets(
+    label: str, widgets: list, vertical: bool = False
+) -> QGroupBox:
     """create group with widgets"""
     layout = create_layout_with_widgets(widgets=widgets, vertical=vertical)
-    group, _ = create_group_with_layout(label=label,
-                                        child_layout=layout)
+    group, _ = create_group_with_layout(label=label, child_layout=layout)
     return group
 
 
@@ -424,9 +429,10 @@ def set_button_style_and_dimensions(btn: QPushButton, dimensions: Dimensions):
     """set a button styling and dimensions"""
     btn.setIconSize(QSize(dimensions.Icon.WIDTH, dimensions.Icon.HEIGHT))
     JDXi.UI.Theme.apply_button_rect_analog(btn)
-    btn.setFixedSize(dimensions.WIDTH,
-                     dimensions.HEIGHT,
-                     )
+    btn.setFixedSize(
+        dimensions.WIDTH,
+        dimensions.HEIGHT,
+    )
 
 
 def create_icon_from_name(icon_name: str) -> Any:

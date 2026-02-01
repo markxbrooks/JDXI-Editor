@@ -6,7 +6,7 @@ from enum import IntEnum
 class DigitalLFOShape(IntEnum):
     """LFO waveform shapes"""
 
-    TRIANGLE = 0
+    TRI = 0
     SINE = 1
     SAW = 2
     SQUARE = 3

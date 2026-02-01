@@ -36,6 +36,7 @@ Usage Example:
 
 This class helps structure and manage parameter mappings for JD-Xi SysEx processing.
 """
+
 from typing import Optional, Tuple
 
 from picomidi.sysex.parameter.address import AddressParameter
@@ -228,7 +229,9 @@ class AnalogParam(AddressParameter):
         1,
         "Specifies whether to use the analog LPF or not use it (BYPASS).",
     )  # BYPASS, LPF
-    FILTER_CUTOFF = ParameterSpec(0x21, 0, 127, 0, 127, "Specifies the cutoff frequency")  # 0-127
+    FILTER_CUTOFF = ParameterSpec(
+        0x21, 0, 127, 0, 127, "Specifies the cutoff frequency"
+    )  # 0-127
     FILTER_CUTOFF_KEYFOLLOW = ParameterSpec(
         0x22,
         54,

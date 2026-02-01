@@ -58,7 +58,6 @@ Features:
 from typing import Dict, Union
 
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
@@ -86,6 +85,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -824,7 +824,10 @@ class EffectsCommonEditor(BasicEditor):
                     widget = None
 
                     # Skip metadata keys that aren't actual parameters
-                    if param_name in [SysExSection.SYNTH_TONE, SysExSection.TEMPORARY_AREA]:
+                    if param_name in [
+                        SysExSection.SYNTH_TONE,
+                        SysExSection.TEMPORARY_AREA,
+                    ]:
                         continue
 
                     # Check all parameter types

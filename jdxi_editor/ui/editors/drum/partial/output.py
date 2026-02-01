@@ -98,7 +98,7 @@ class DrumOutputSection(DrumBaseSection):
         """setup UI"""
         # Widgets are created automatically from PARAM_SPECS in build_widgets()
         # Access them from self.controls or self.control_widgets
-        
+
         # Get widgets in the order they appear in PARAM_SPECS
         widgets = [
             self.controls[DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL],
@@ -106,7 +106,10 @@ class DrumOutputSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL],
         ]
         row_layout = QVBoxLayout()
-        output_layout = create_layout_with_widgets(widgets=[self.controls[DrumPartialParam.PARTIAL_OUTPUT_ASSIGN]], vertical=False)
+        output_layout = create_layout_with_widgets(
+            widgets=[self.controls[DrumPartialParam.PARTIAL_OUTPUT_ASSIGN]],
+            vertical=False,
+        )
         slider_layout = create_layout_with_widgets(widgets=widgets)
         row_layout.addLayout(output_layout)
         row_layout.addLayout(slider_layout)
@@ -117,11 +120,11 @@ class DrumOutputSection(DrumBaseSection):
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
         main_row_hlayout = create_layout_with_widgets([group], vertical=True)
-        
+
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
         layout.addLayout(main_row_hlayout)
-        
+
         # Add stretch to vlayout if it exists
-        if hasattr(self, 'vlayout') and self.vlayout:
+        if hasattr(self, "vlayout") and self.vlayout:
             self.vlayout.addStretch()

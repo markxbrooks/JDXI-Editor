@@ -51,9 +51,7 @@ class AnalogLFOSection(BaseLFOSection):
         ),
     ]
     RATE_FADE_SLIDERS = [
-        SliderSpec(
-            Analog.Param.LFO_RATE, Analog.Display.Name.LFO_RATE
-        ),
+        SliderSpec(Analog.Param.LFO_RATE, Analog.Display.Name.LFO_RATE),
         SliderSpec(
             Analog.Param.LFO_FADE_TIME,
             Analog.Display.Name.LFO_FADE_TIME,

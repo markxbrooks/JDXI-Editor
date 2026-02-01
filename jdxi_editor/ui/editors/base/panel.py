@@ -264,7 +264,7 @@ class BasePartialPanel(PartialPanel):
             selected.setChecked(True)
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
-        if not self.send_midi_parameter(Digital.Param.OSC_WAVE, waveform.value):
+        if not self.send_midi_parameter(Digital.Param.OSC_WAVEFORM, waveform.value):
             log.warning(f"Failed to set waveform: {waveform.name}")
 
     # ------------------------------------------------------------------

@@ -300,6 +300,7 @@ class FilterPlot(BasePlotWidget):
 
     def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
         """Draw grid for FilterPlot with custom Y callback."""
+
         def y_callback(y_val):
             return ctx.value_to_y(y_val, zero_at_bottom=False)
 

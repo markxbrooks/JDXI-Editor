@@ -26,13 +26,20 @@ class AnalogAmpSection(BaseAmpSection):
         SliderSpec(
             Analog.Param.AMP_LEVEL_KEYFOLLOW, Analog.Display.Name.AMP_LEVEL_KEYFOLLOW
         ),
-        SliderSpec(Analog.Param.AMP_LEVEL_VELOCITY_SENSITIVITY, Analog.Display.Name.AMP_LEVEL_VELOCITY_SENSITIVITY),
+        SliderSpec(
+            Analog.Param.AMP_LEVEL_VELOCITY_SENSITIVITY,
+            Analog.Display.Name.AMP_LEVEL_VELOCITY_SENSITIVITY,
+        ),
     ]
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME),
         ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.AMP_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Analog.Param.AMP_ENV_SUSTAIN_LEVEL),
-        ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Analog.Param.AMP_ENV_RELEASE_TIME),
+        ADSRStage.SUSTAIN: ADSRSpec(
+            ADSRStage.SUSTAIN, Analog.Param.AMP_ENV_SUSTAIN_LEVEL
+        ),
+        ADSRStage.RELEASE: ADSRSpec(
+            ADSRStage.RELEASE, Analog.Param.AMP_ENV_RELEASE_TIME
+        ),
     }
 
     SYNTH_SPEC = JDXiMidiAnalog

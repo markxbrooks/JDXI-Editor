@@ -334,7 +334,9 @@ class DrumPartialParam(AddressParameter):
     )  # Only one preset_type
 
     # WMT1 Wave Group ID
-    WMT1_WAVE_GROUP_ID = ParameterSpec(0x23, 0, 16384, 0, 16384, "OFF, 1 - 16384")  # OFF, 1 - 16384
+    WMT1_WAVE_GROUP_ID = ParameterSpec(
+        0x23, 0, 16384, 0, 16384, "OFF, 1 - 16384"
+    )  # OFF, 1 - 16384
 
     # WMT1 Wave Number L (Mono)
     WMT1_WAVE_NUMBER_L = ParameterSpec(
@@ -1558,9 +1560,13 @@ class DrumPartialParam(AddressParameter):
         "Sets the relative level of the drum partial. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -64 - +63
 
-    DRUM_PART = ParameterSpec(0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5")  # Hack alert @@
+    DRUM_PART = ParameterSpec(
+        0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5"
+    )  # Hack alert @@
 
-    DRUM_GROUP = ParameterSpec(0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5")  # Hack alert @@
+    DRUM_GROUP = ParameterSpec(
+        0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5"
+    )  # Hack alert @@
 
     @property
     def display_name(self) -> str:

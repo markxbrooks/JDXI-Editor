@@ -119,7 +119,7 @@ class DigitalPartialParam(AddressParameter):
         return self.display_min, self.display_max
 
     # Oscillator parameters
-    OSC_WAVE = ParameterSpec(
+    OSC_WAVEFORM = ParameterSpec(
         0x00,
         0,
         7,
@@ -142,7 +142,7 @@ class DigitalPartialParam(AddressParameter):
         -24,
         24,
         "Adjusts the pitch in semitone steps",
-        "Pitch (1/2 tones)"
+        "Pitch (1/2 tones)",
     )  # Coarse tune
     OSC_DETUNE = ParameterSpec(
         0x04,

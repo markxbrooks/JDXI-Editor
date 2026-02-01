@@ -43,7 +43,6 @@ import re
 from typing import Optional, Protocol, Tuple, TypeVar
 
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -63,6 +62,7 @@ from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 T = TypeVar("T", bound="EnumWithAddress")

@@ -21,8 +21,7 @@ class BaseAmpSection(SectionBaseWidget):
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
         controls: dict = None,
-        address: RolandSysExAddress = None
-
+        address: RolandSysExAddress = None,
     ):
 
         # Dynamic widgets storage
@@ -30,12 +29,14 @@ class BaseAmpSection(SectionBaseWidget):
         self.tab_widget = None
         self.layout = None
 
-        super().__init__(icons_row_type=IconType.ADSR,
-                         analog=analog,
-                         midi_helper=midi_helper,
-                         send_midi_parameter=send_midi_parameter,
-                         controls=controls,
-                         address=address)
+        super().__init__(
+            icons_row_type=IconType.ADSR,
+            analog=analog,
+            midi_helper=midi_helper,
+            send_midi_parameter=send_midi_parameter,
+            controls=controls,
+            address=address,
+        )
 
     # ------------------------------------------------------------------
     # Build Widgets
@@ -70,7 +71,9 @@ class BaseAmpSection(SectionBaseWidget):
         self.level_controls_widget = QWidget()
         self.level_controls_widget.setLayout(self.controls_layout)
 
-        self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.CONTROLS, widget=self.level_controls_widget)
+        self._add_tab(
+            key=self.SYNTH_SPEC.Amp.Tab.CONTROLS, widget=self.level_controls_widget
+        )
 
         # --- ADSR Tab
         self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=self.adsr_group)

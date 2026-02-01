@@ -4,7 +4,7 @@ Script to parse SysEx hex strings from JD-Xi and save as JSON.
 
 Usage:
     python3 parse_sysex_hex.py <hex_string> [output_file]
-    
+
 Or provide multiple hex strings as separate arguments.
 """
 
@@ -12,6 +12,8 @@ import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
+
+from jdxi_editor.midi.sysex.sections import SysExSection
 
 # Add the project root to the path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -24,7 +26,7 @@ from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 def hex_string_to_bytes(hex_string: str) -> bytes:
     """
     Convert a hex string (with or without spaces) to bytes.
-    
+
     :param hex_string: str Hex string like "F0 41 10 ..." or "F04110..."
     :return: bytes
     """
@@ -36,7 +38,7 @@ def hex_string_to_bytes(hex_string: str) -> bytes:
 def parse_sysex_hex(hex_string: str) -> Dict[str, Any] | None:
     """
     Parse a SysEx hex string and return the parsed data.
-    
+
     :param hex_string: str Hex string representation of SysEx message
     :return: dict Parsed SysEx data or None if parsing fails
     """
@@ -53,7 +55,7 @@ def parse_sysex_hex(hex_string: str) -> Dict[str, Any] | None:
 def parse_multiple_sysex(hex_strings: List[str]) -> List[Dict[str, Any]]:
     """
     Parse multiple SysEx hex strings.
-    
+
     :param hex_strings: List[str] List of hex string representations
     :return: List[dict] List of parsed SysEx data
     """
@@ -67,55 +69,58 @@ def parse_multiple_sysex(hex_strings: List[str]) -> List[Dict[str, Any]]:
             log.message(f"✓ Parsed message {i} - ADDRESS: {address}")
         else:
             log.warning(f"✗ Failed to parse message {i}")
-    
+
     return parsed_results
 
 
 def main():
     """Main function."""
     if len(sys.argv) < 2:
-        print("Usage: python3 parse_sysex_hex.py <hex_string1> [hex_string2] ... [output_file]")
+        print(
+            "Usage: python3 parse_sysex_hex.py <hex_string1> [hex_string2] ... [output_file]"
+        )
         print("\nExample:")
-        print('  python3 parse_sysex_hex.py "F0 41 10 00 00 00 0E 12 18 00 00 00 ... F7"')
+        print(
+            '  python3 parse_sysex_hex.py "F0 41 10 00 00 00 0E 12 18 00 00 00 ... F7"'
+        )
         sys.exit(1)
-    
+
     # Check if last argument is an output file (ends with .json)
     args = sys.argv[1:]
     output_file = None
-    if len(args) > 1 and args[-1].endswith('.json'):
+    if len(args) > 1 and args[-1].endswith(".json"):
         output_file = Path(args[-1])
         hex_strings = args[:-1]
     else:
         hex_strings = args
         output_file = Path.home() / "jdxi_parsed_sysex.json"
-    
+
     log.header_message(f"Parsing {len(hex_strings)} SysEx message(s)...")
-    
+
     # Parse all hex strings
     parsed_results = parse_multiple_sysex(hex_strings)
-    
+
     if not parsed_results:
         log.error("No SysEx messages were successfully parsed.")
         return 1
-    
+
     # Prepare output data
-    output_data = {
-        "total_messages": len(parsed_results),
-        "messages": parsed_results
-    }
-    
+    output_data = {"total_messages": len(parsed_results), "messages": parsed_results}
+
     # Save to file
     try:
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
-        
-        log.header_message(f"✓ Successfully parsed {len(parsed_results)} SysEx message(s)")
+
+        log.header_message(
+            f"✓ Successfully parsed {len(parsed_results)} SysEx message(s)"
+        )
         log.message(f"Output file: {output_file}")
-        
+
         # Show summary
         addresses = [msg.get(SysExSection.ADDRESS, "unknown") for msg in parsed_results]
         log.message(f"Parsed addresses: {', '.join(set(addresses))}")
-        
+
         return 0
     except Exception as ex:
         log.error(f"Failed to save output: {ex}")
@@ -124,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -42,7 +42,6 @@ from typing import Optional, Union
 
 import qtawesome as qta
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
@@ -68,6 +67,7 @@ from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.dialogs.settings import UiPreferencesDialog

@@ -62,7 +62,7 @@ class DigitalCommonParam(AddressParameter):
     ):
         """
         Initialize the digital common parameter with address and value range.
-        
+
         Accepts 6 arguments when unpacked from ParameterSpec tuple:
         (address, min_val, max_val, min_display, max_display, description)
         """
@@ -211,7 +211,9 @@ class DigitalCommonParam(AddressParameter):
         127,
         "Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.",
     )  # Wave Shape amount
-    TONE_CATEGORY = ParameterSpec(0x36, 0, 127, "Selects the tone’s category.")  # Tone Category
+    TONE_CATEGORY = ParameterSpec(
+        0x36, 0, 127, "Selects the tone’s category."
+    )  # Tone Category
     UNISON_SIZE = ParameterSpec(
         0x3C,
         0,

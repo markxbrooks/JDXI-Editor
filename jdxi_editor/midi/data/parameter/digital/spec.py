@@ -38,11 +38,12 @@ from jdxi_editor.ui.style import JDXiUIIconRegistry
 
 class DigitalGroup:
     """Digital GroupBox Name Definitions"""
+
     ADSR: str = "Envelope"
     PWM: str = "PWM"
     TUNING: str = "Tuning"
-    
-    
+
+
 class TabKey(Protocol):
     """tab ley"""
 
@@ -116,6 +117,7 @@ class DigitalLFOTab(TabDefinitionMixin, Enum):
 
 class DigitalLFO:
     """Digital LFO"""
+
     Shape: DigitalLFOShape = DigitalLFOShape
     Tab: DigitalLFOTab = DigitalLFOTab
 
@@ -177,6 +179,7 @@ class DigitalGroupBox(GroupBoxDefinitionMixin, Enum):
 
 class DigitalAmp(AmpSpec):
     """Digital Amp"""
+
     ADSR: ADSRType = ADSRType
     Tab: DigitalAmpTab = DigitalAmpTab
 
@@ -193,6 +196,7 @@ class DigitalFilter(FilterSpec):
 
 class DigitalWave(WaveSpec):
     """Digital Wave"""
+
     LFO: DigitalLFOShape = DigitalLFOShape
     Osc: DigitalWaveOsc = DigitalWaveOsc
     SubOsc = None  # No sub-oscillator for the digital synth
@@ -203,6 +207,7 @@ class DigitalWave(WaveSpec):
 
 class DigitalToneModifyDisplay(DisplaySpec):
     """Digital Tone Modify Display names and options"""
+
     Names: DigitalModifyNames = DigitalModifyNames
     Options: DigitalModifyOptions = DigitalModifyOptions
 

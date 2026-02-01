@@ -164,7 +164,7 @@ class PartialController(QObject):
         :param value: int
         :return: None
         """
-        if param == DigitalPartialParam.OSC_WAVE:
+        if param == DigitalPartialParam.OSC_WAVEFORM:
             self._update_waveform_buttons(partial_no, value)
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
@@ -191,7 +191,7 @@ class PartialController(QObject):
                 failures.append(param_name)
                 continue
 
-            if param == DigitalPartialParam.OSC_WAVE:
+            if param == DigitalPartialParam.OSC_WAVEFORM:
                 self._update_waveform_buttons(partial_no, param_value)
             elif param == DigitalPartialParam.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)

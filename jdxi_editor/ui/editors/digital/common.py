@@ -10,7 +10,10 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.common import BaseCommonSection
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_group_with_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_with_layout,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
@@ -19,10 +22,16 @@ class DigitalCommonSection(BaseCommonSection):
 
     SLIDER_GROUPS = {
         "pitch": [
-            SliderSpec(Digital.Common.PITCH_BEND_UP, Digital.Display.Name.PITCH_BEND_UP),
-            SliderSpec(Digital.Common.PITCH_BEND_DOWN, Digital.Display.Name.PITCH_BEND_DOWN),
+            SliderSpec(
+                Digital.Common.PITCH_BEND_UP, Digital.Display.Name.PITCH_BEND_UP
+            ),
+            SliderSpec(
+                Digital.Common.PITCH_BEND_DOWN, Digital.Display.Name.PITCH_BEND_DOWN
+            ),
             SliderSpec(Digital.Common.TONE_LEVEL, Digital.Display.Name.TONE_LEVEL),
-            SliderSpec(Digital.Common.PORTAMENTO_TIME, Digital.Display.Name.PORTAMENTO_TIME),
+            SliderSpec(
+                Digital.Common.PORTAMENTO_TIME, Digital.Display.Name.PORTAMENTO_TIME
+            ),
             SliderSpec(Digital.Common.ANALOG_FEEL, Digital.Display.Name.ANALOG_FEEL),
             SliderSpec(Digital.Common.WAVE_SHAPE, Digital.Display.Name.WAVE_SHAPE),
         ]
@@ -44,15 +53,15 @@ class DigitalCommonSection(BaseCommonSection):
             Digital.Display.Name.LEGATO_SWITCH,
             Digital.Display.Options.LEGATO_SWITCH,
         ),
-        ]
+    ]
     COMBO_BOXES = [
         ComboBoxSpec(
             Digital.Common.OCTAVE_SHIFT,
             Digital.Display.Name.OCTAVE_SHIFT,
             Digital.Display.Options.OCTAVE_SHIFT,
-            [61, 62, 63, 64, 65, 66, 67]
+            [61, 62, 63, 64, 65, 66, 67],
         ),
-        ]
+    ]
     OTHER_SWITCHES = [
         SwitchSpec(
             Digital.Common.MONO_SWITCH,
@@ -77,11 +86,11 @@ class DigitalCommonSection(BaseCommonSection):
     ]
 
     def __init__(
-            self,
-            controls: dict = None,
-            address: Optional[RolandSysExAddress] = None,
-            send_midi_parameter: Optional[Callable] = None,
-            midi_helper: Optional[MidiIOHelper] = None,
+        self,
+        controls: dict = None,
+        address: Optional[RolandSysExAddress] = None,
+        send_midi_parameter: Optional[Callable] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
         Initialize the DigitalCommonSection
@@ -91,11 +100,13 @@ class DigitalCommonSection(BaseCommonSection):
         :param send_midi_parameter: Optional[Callable] Function to send MIDI parameters
         :param midi_helper: Optional[MidiIOHelper] MIDI helper instance
         """
-        super().__init__(controls=controls,
-                         icons_row_type=IconType.GENERIC,
-                         midi_helper=midi_helper,
-                         send_midi_parameter=send_midi_parameter,
-                         analog=True)
+        super().__init__(
+            controls=controls,
+            icons_row_type=IconType.GENERIC,
+            midi_helper=midi_helper,
+            send_midi_parameter=send_midi_parameter,
+            analog=True,
+        )
         # Set address and send_midi_parameter before building widgets
         # so they're available when widgets are created
         self.address = address
@@ -122,12 +133,9 @@ class DigitalCommonSection(BaseCommonSection):
 
         (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
         # --- Other switches
-        (
-         self.mono_switch,
-         self.ring_switch,
-         self.unison_switch,
-         self.unison_size)\
-            = self._build_switches(self.OTHER_SWITCHES)
+        (self.mono_switch, self.ring_switch, self.unison_switch, self.unison_size) = (
+            self._build_switches(self.OTHER_SWITCHES)
+        )
 
     def setup_ui(self) -> None:
         """setup ui"""
@@ -139,23 +147,29 @@ class DigitalCommonSection(BaseCommonSection):
         sub_layout.addLayout(create_layout_with_widgets([self.mono_switch]))
 
         sub_layout.addLayout(
-            create_layout_with_widgets([
-                self.pitch_bend_up,
-                self.pitch_bend_down,
-                self.tone_level,
-                self.portamento_time,
-                self.analog_feel,
-                self.wave_shape,
-            ])
+            create_layout_with_widgets(
+                [
+                    self.pitch_bend_up,
+                    self.pitch_bend_down,
+                    self.tone_level,
+                    self.portamento_time,
+                    self.analog_feel,
+                    self.wave_shape,
+                ]
+            )
         )
 
         sub_layout.addLayout(create_layout_with_widgets([self.ring_switch]))
-        sub_layout.addLayout(create_layout_with_widgets([self.unison_switch, self.unison_size]))
         sub_layout.addLayout(
-            create_layout_with_widgets([
-                self.portamento_switch,
-                self.portamento_mode,
-                self.legato_switch,
-            ])
+            create_layout_with_widgets([self.unison_switch, self.unison_size])
+        )
+        sub_layout.addLayout(
+            create_layout_with_widgets(
+                [
+                    self.portamento_switch,
+                    self.portamento_mode,
+                    self.legato_switch,
+                ]
+            )
         )
         sub_layout.addStretch()

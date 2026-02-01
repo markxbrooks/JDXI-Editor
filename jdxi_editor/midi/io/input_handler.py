@@ -26,7 +26,6 @@ from typing import Any, Callable, Dict, List, Optional
 
 import mido
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
@@ -40,6 +39,7 @@ from jdxi_editor.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.incoming_data import IncomingPresetData
 from jdxi_editor.ui.programs import JDXiUIProgramList
@@ -418,7 +418,11 @@ class MidiInHandler(MidiIOController):
         log.parameter(SysExSection.ADDRESS, address, silent=True)
         log.parameter(SysExSection.TEMPORARY_AREA, temporary_area, silent=True)
         log.parameter(SysExSection.TONE_NAME, tone_name, silent=True)
-        log.parameter(SysExSection.SYNTH_TONE, parsed_data.get(SysExSection.SYNTH_TONE), silent=True)
+        log.parameter(
+            SysExSection.SYNTH_TONE,
+            parsed_data.get(SysExSection.SYNTH_TONE),
+            silent=True,
+        )
 
         # Map address to synth section
         section_map = {

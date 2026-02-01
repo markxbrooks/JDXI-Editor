@@ -57,8 +57,12 @@ class DrumPitchEnvSection(DrumBaseSection):
         # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
         SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, "Depth", vertical=True),
         SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, "V-Sens", vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, "T1 V-Sens", vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, "T4 V-Sens", vertical=True),
+        SliderSpec(
+            DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, "T1 V-Sens", vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, "T4 V-Sens", vertical=True
+        ),
         # Row 1: Time 1, Time 2, Time 3, Time 4
         SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, "Time 1", vertical=True),
         SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, "Time 2", vertical=True),
@@ -147,35 +151,47 @@ class DrumPitchEnvSection(DrumBaseSection):
         """Create sliders and connect them - widgets are created from PARAM_SPECS"""
         # Widgets are created automatically from PARAM_SPECS in build_widgets()
         # Access them from self.controls and add to grid layout in the same order
-        
+
         # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
         row = 0
         depth_slider = self.controls[DrumPartialParam.PITCH_ENV_DEPTH]
         self.depth_slider = depth_slider  # Keep reference for compatibility
         controls_layout.addWidget(depth_slider, row, 0)
         depth_slider.valueChanged.connect(
-            lambda v: self._update_envelope("depth", v, DrumPartialParam.PITCH_ENV_DEPTH)
+            lambda v: self._update_envelope(
+                "depth", v, DrumPartialParam.PITCH_ENV_DEPTH
+            )
         )
 
         v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_VELOCITY_SENS]
         self.v_sens_slider = v_sens_slider
         controls_layout.addWidget(v_sens_slider, row, 1)
         v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("v_sens", v, DrumPartialParam.PITCH_ENV_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "v_sens", v, DrumPartialParam.PITCH_ENV_VELOCITY_SENS
+            )
         )
 
-        t1_v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS]
+        t1_v_sens_slider = self.controls[
+            DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
+        ]
         self.t1_v_sens_slider = t1_v_sens_slider
         controls_layout.addWidget(t1_v_sens_slider, row, 2)
         t1_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t1_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t1_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
+            )
         )
 
-        t4_v_sens_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS]
+        t4_v_sens_slider = self.controls[
+            DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
+        ]
         self.t4_v_sens_slider = t4_v_sens_slider
         controls_layout.addWidget(t4_v_sens_slider, row, 3)
         t4_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t4_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t4_v_sens", v, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
+            )
         )
 
         # Row 1: Time 1, Time 2, Time 3, Time 4
@@ -184,28 +200,36 @@ class DrumPitchEnvSection(DrumBaseSection):
         self.time_1_slider = time_1_slider
         controls_layout.addWidget(time_1_slider, row, 0)
         time_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_1", v, DrumPartialParam.PITCH_ENV_TIME_1)
+            lambda v: self._update_envelope(
+                "time_1", v, DrumPartialParam.PITCH_ENV_TIME_1
+            )
         )
 
         time_2_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_2]
         self.time_2_slider = time_2_slider
         controls_layout.addWidget(time_2_slider, row, 1)
         time_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_2", v, DrumPartialParam.PITCH_ENV_TIME_2)
+            lambda v: self._update_envelope(
+                "time_2", v, DrumPartialParam.PITCH_ENV_TIME_2
+            )
         )
 
         time_3_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_3]
         self.time_3_slider = time_3_slider
         controls_layout.addWidget(time_3_slider, row, 2)
         time_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_3", v, DrumPartialParam.PITCH_ENV_TIME_3)
+            lambda v: self._update_envelope(
+                "time_3", v, DrumPartialParam.PITCH_ENV_TIME_3
+            )
         )
 
         time_4_slider = self.controls[DrumPartialParam.PITCH_ENV_TIME_4]
         self.time_4_slider = time_4_slider
         controls_layout.addWidget(time_4_slider, row, 3)
         time_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_4", v, DrumPartialParam.PITCH_ENV_TIME_4)
+            lambda v: self._update_envelope(
+                "time_4", v, DrumPartialParam.PITCH_ENV_TIME_4
+            )
         )
 
         # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
@@ -214,35 +238,45 @@ class DrumPitchEnvSection(DrumBaseSection):
         self.level_0_slider = level_0_slider
         controls_layout.addWidget(level_0_slider, row, 0)
         level_0_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_0", v, DrumPartialParam.PITCH_ENV_LEVEL_0)
+            lambda v: self._update_envelope(
+                "level_0", v, DrumPartialParam.PITCH_ENV_LEVEL_0
+            )
         )
 
         level_1_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_1]
         self.level_1_slider = level_1_slider
         controls_layout.addWidget(level_1_slider, row, 1)
         level_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_1", v, DrumPartialParam.PITCH_ENV_LEVEL_1)
+            lambda v: self._update_envelope(
+                "level_1", v, DrumPartialParam.PITCH_ENV_LEVEL_1
+            )
         )
 
         level_2_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_2]
         self.level_2_slider = level_2_slider
         controls_layout.addWidget(level_2_slider, row, 2)
         level_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_2", v, DrumPartialParam.PITCH_ENV_LEVEL_2)
+            lambda v: self._update_envelope(
+                "level_2", v, DrumPartialParam.PITCH_ENV_LEVEL_2
+            )
         )
 
         level_3_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_3]
         self.level_3_slider = level_3_slider
         controls_layout.addWidget(level_3_slider, row, 3)
         level_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_3", v, DrumPartialParam.PITCH_ENV_LEVEL_3)
+            lambda v: self._update_envelope(
+                "level_3", v, DrumPartialParam.PITCH_ENV_LEVEL_3
+            )
         )
 
         level_4_slider = self.controls[DrumPartialParam.PITCH_ENV_LEVEL_4]
         self.level_4_slider = level_4_slider
         controls_layout.addWidget(level_4_slider, row, 4)
         level_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_4", v, DrumPartialParam.PITCH_ENV_LEVEL_4)
+            lambda v: self._update_envelope(
+                "level_4", v, DrumPartialParam.PITCH_ENV_LEVEL_4
+            )
         )
 
     def _update_envelope(

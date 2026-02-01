@@ -147,7 +147,7 @@ class PWMPlot(BasePlotWidget):
     def draw_custom_ticks(self, ctx: PlotContext, config: PlotConfig) -> None:
         """Draw custom tick marks for PWMPlot."""
         # X-axis ticks are not shown in PWMPlot (omitted)
-        
+
         # Y-axis ticks (from -0.2 to 1.0 in 0.2 steps)
         y_tick_values = [i * 0.2 for i in range(-1, 6)]
         y_tick_labels = [f"{y:.1f}" for y in y_tick_values]
@@ -163,6 +163,7 @@ class PWMPlot(BasePlotWidget):
 
     def draw_grid_hook(self, ctx: PlotContext, config: PlotConfig) -> None:
         """Draw grid for PWMPlot with custom Y callback."""
+
         def y_callback(y_val):
             return ctx.value_to_y(y_val, zero_at_bottom=False)
 

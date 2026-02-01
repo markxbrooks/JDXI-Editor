@@ -80,14 +80,28 @@ class DrumTVASection(DrumBaseSection):
             vertical=True,
         ),
         # Row 1: Time 1, Time 2, Time 3, Time 4
-        SliderSpec(DrumPartialParam.TVA_ENV_TIME_1, DrumDisplayName.TVA_TIME_1, vertical=True),
-        SliderSpec(DrumPartialParam.TVA_ENV_TIME_2, DrumDisplayName.TVA_TIME_2, vertical=True),
-        SliderSpec(DrumPartialParam.TVA_ENV_TIME_3, DrumDisplayName.TVA_TIME_3, vertical=True),
-        SliderSpec(DrumPartialParam.TVA_ENV_TIME_4, DrumDisplayName.TVA_TIME_4, vertical=True),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_TIME_1, DrumDisplayName.TVA_TIME_1, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_TIME_2, DrumDisplayName.TVA_TIME_2, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_TIME_3, DrumDisplayName.TVA_TIME_3, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_TIME_4, DrumDisplayName.TVA_TIME_4, vertical=True
+        ),
         # Row 2: Level 1, Level 2, Level 3
-        SliderSpec(DrumPartialParam.TVA_ENV_LEVEL_1, DrumDisplayName.TVA_LEVEL_1, vertical=True),
-        SliderSpec(DrumPartialParam.TVA_ENV_LEVEL_2, DrumDisplayName.TVA_LEVEL_2, vertical=True),
-        SliderSpec(DrumPartialParam.TVA_ENV_LEVEL_3, DrumDisplayName.TVA_LEVEL_3, vertical=True),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_LEVEL_1, DrumDisplayName.TVA_LEVEL_1, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_LEVEL_2, DrumDisplayName.TVA_LEVEL_2, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVA_ENV_LEVEL_3, DrumDisplayName.TVA_LEVEL_3, vertical=True
+        ),
     ]
 
     envelope_changed = Signal(dict)
@@ -97,7 +111,6 @@ class DrumTVASection(DrumBaseSection):
         controls: dict[DrumPartialParam, QWidget],
         midi_helper: MidiIOHelper,
     ):
-
         """
         Initialize the DrumTVASection
 
@@ -125,7 +138,6 @@ class DrumTVASection(DrumBaseSection):
         # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
-
     def setup_ui(self):
         """setup UI"""
 
@@ -139,7 +151,7 @@ class DrumTVASection(DrumBaseSection):
 
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
-        
+
         main_vbox_layout = create_layout_with_widgets(
             widgets=[self.tva_level_velocity_curve_spin], vertical=True
         )
@@ -161,21 +173,27 @@ class DrumTVASection(DrumBaseSection):
 
         # --- Add TVA Velocity Sensitivity controls - widgets are created from PARAM_SPECS
         row = 0
-        tva_level_velocity_sens_slider = self.controls[DrumPartialParam.TVA_LEVEL_VELOCITY_SENS]
+        tva_level_velocity_sens_slider = self.controls[
+            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS
+        ]
         envelope_slider_layout.addWidget(tva_level_velocity_sens_slider, row, 0)
 
         t1_v_sens_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS]
         self.t1_v_sens_slider = t1_v_sens_slider  # Keep reference for compatibility
         envelope_slider_layout.addWidget(t1_v_sens_slider, row, 1)
         t1_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t1_v_sens", v, DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t1_v_sens", v, DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS
+            )
         )
 
         t4_v_sens_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS]
         self.t4_v_sens_slider = t4_v_sens_slider  # Keep reference for compatibility
         envelope_slider_layout.addWidget(t4_v_sens_slider, row, 2)
         t4_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t4_v_sens", v, DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t4_v_sens", v, DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS
+            )
         )
 
         # --- TVA Time Row ---
@@ -184,28 +202,36 @@ class DrumTVASection(DrumBaseSection):
         self.time_1_slider = time_1_slider
         envelope_slider_layout.addWidget(time_1_slider, row, 0)
         time_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_1", v, DrumPartialParam.TVA_ENV_TIME_1)
+            lambda v: self._update_envelope(
+                "time_1", v, DrumPartialParam.TVA_ENV_TIME_1
+            )
         )
 
         time_2_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_2]
         self.time_2_slider = time_2_slider
         envelope_slider_layout.addWidget(time_2_slider, row, 1)
         time_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_2", v, DrumPartialParam.TVA_ENV_TIME_2)
+            lambda v: self._update_envelope(
+                "time_2", v, DrumPartialParam.TVA_ENV_TIME_2
+            )
         )
 
         time_3_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_3]
         self.time_3_slider = time_3_slider
         envelope_slider_layout.addWidget(time_3_slider, row, 2)
         time_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_3", v, DrumPartialParam.TVA_ENV_TIME_3)
+            lambda v: self._update_envelope(
+                "time_3", v, DrumPartialParam.TVA_ENV_TIME_3
+            )
         )
 
         time_4_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_4]
         self.time_4_slider = time_4_slider
         envelope_slider_layout.addWidget(time_4_slider, row, 3)
         time_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_4", v, DrumPartialParam.TVA_ENV_TIME_4)
+            lambda v: self._update_envelope(
+                "time_4", v, DrumPartialParam.TVA_ENV_TIME_4
+            )
         )
 
         # TVA ENV Level row
@@ -214,21 +240,27 @@ class DrumTVASection(DrumBaseSection):
         self.level_1_slider = level_1_slider
         envelope_slider_layout.addWidget(level_1_slider, row, 0)
         level_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_1", v, DrumPartialParam.TVA_ENV_LEVEL_1)
+            lambda v: self._update_envelope(
+                "level_1", v, DrumPartialParam.TVA_ENV_LEVEL_1
+            )
         )
 
         level_2_slider = self.controls[DrumPartialParam.TVA_ENV_LEVEL_2]
         self.level_2_slider = level_2_slider
         envelope_slider_layout.addWidget(level_2_slider, row, 1)
         level_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_2", v, DrumPartialParam.TVA_ENV_LEVEL_2)
+            lambda v: self._update_envelope(
+                "level_2", v, DrumPartialParam.TVA_ENV_LEVEL_2
+            )
         )
 
         level_3_slider = self.controls[DrumPartialParam.TVA_ENV_LEVEL_3]
         self.level_3_slider = level_3_slider
         envelope_slider_layout.addWidget(level_3_slider, row, 2)
         level_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_3", v, DrumPartialParam.TVA_ENV_LEVEL_3)
+            lambda v: self._update_envelope(
+                "level_3", v, DrumPartialParam.TVA_ENV_LEVEL_3
+            )
         )
         return tva_group
 

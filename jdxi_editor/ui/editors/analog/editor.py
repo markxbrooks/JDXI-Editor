@@ -55,6 +55,7 @@ if TYPE_CHECKING:
     from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 from decologr import Decologr as log
+
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
@@ -131,8 +132,12 @@ class AnalogSynthEditor(BaseSynthEditor):
             Analog.Param.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
         self.pwm_mapping = {
-            Analog.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[Analog.Param.OSC_PULSE_WIDTH],
-            Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH],
+            Analog.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
+                Analog.Param.OSC_PULSE_WIDTH
+            ],
+            Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[
+                Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH
+            ],
         }
         # Note: data_request() is called in showEvent() when editor is displayed
 
@@ -206,7 +211,9 @@ class AnalogSynthEditor(BaseSynthEditor):
         if hasattr(self, "filter_section") and self.filter_section is not None:
             self.filter_section.update_controls_state(mode)
         else:
-            log.warning("[Analog Editor] update_filter_controls_state: no filter_section, skipping")
+            log.warning(
+                "[Analog Editor] update_filter_controls_state: no filter_section, skipping"
+            )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""

@@ -2,7 +2,7 @@
 Digital Tone Modify Section
 """
 
-from typing import Dict, Union, Optional, Callable
+from typing import Callable, Dict, Optional, Union
 
 from PySide6.QtWidgets import QWidget
 
@@ -18,53 +18,67 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 class DigitalToneModifySection(SectionBaseWidget):
     SLIDER_GROUPS = {
         "interval_sens": [
-            SliderSpec(Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
-                       Digital.ModifyDisplay.Names.ATTACK_TIME_INTERVAL_SENS,
-                       vertical=True),
-            SliderSpec(Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
-                       Digital.ModifyDisplay.Names.RELEASE_TIME_INTERVAL_SENS,
-                       vertical=True),
-            SliderSpec(Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-                       Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
-                       vertical=True),
+            SliderSpec(
+                Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.ATTACK_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.RELEASE_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
         ],
     }
     COMBO_BOX_GROUPS = {
         "envelope_loop_mode": [
-            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_MODE,
-                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
-                         Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE, ),
+            ComboBoxSpec(
+                Digital.ModifyParam.ENVELOPE_LOOP_MODE,
+                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+                Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,
+            ),
         ],
         "envelope_loop_sync_note": [
-            ComboBoxSpec(Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
-                         Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
-                         LFOSyncNote.get_all_display_names()),
+            ComboBoxSpec(
+                Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
+                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+                LFOSyncNote.get_all_display_names(),
+            ),
         ],
     }
     SWITCH_GROUPS = {
         "chromatic_portamento": [
-            SwitchSpec(Digital.ModifyParam.CHROMATIC_PORTAMENTO,
-                       Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
-                       Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO),
+            SwitchSpec(
+                Digital.ModifyParam.CHROMATIC_PORTAMENTO,
+                Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
+                Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO,
+            ),
         ],
     }
 
     def __init__(
-            self,
-            controls: dict,
-            send_midi_parameter: Optional[Callable] = None,
-            midi_helper: Optional[MidiIOHelper] = None,
+        self,
+        controls: dict,
+        send_midi_parameter: Optional[Callable] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
-            Initialize the DigitalToneModifySection
+        Initialize the DigitalToneModifySection
 
-            :param controls: dict
-            """
+        :param controls: dict
+        """
 
-        super().__init__(icons_row_type=IconType.ADSR,
-                         analog=False,
-                         send_midi_parameter=send_midi_parameter,
-                         midi_helper=midi_helper)
+        super().__init__(
+            icons_row_type=IconType.ADSR,
+            analog=False,
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
+        )
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
         self._build_widgets()

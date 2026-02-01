@@ -32,9 +32,6 @@ Dependencies:
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
-from jdxi_editor.midi.sysex.partial.switch import PartialSwitchState, PartialSelectState
-from jdxi_editor.midi.sysex.sections import SysExSection
-from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -60,6 +57,9 @@ from jdxi_editor.midi.data.parameter.digital import (
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.sysex.partial.switch import PartialSelectState, PartialSwitchState
+from jdxi_editor.midi.sysex.sections import SysExSection
+from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 from jdxi_editor.ui.editors.digital import (
     DigitalCommonSection,
     DigitalPartialPanel,
@@ -181,7 +181,9 @@ class DigitalSynthEditor(BaseSynthEditor):
             switch.stateChanged.connect(self._on_partial_state_changed)
 
         # --- Use InstrumentPresetWidget for consistent layout
-        self.instrument_preset: InstrumentPresetWidget = InstrumentPresetWidget(parent=self)
+        self.instrument_preset: InstrumentPresetWidget = InstrumentPresetWidget(
+            parent=self
+        )
         self.instrument_preset.setup_header_layout()
         self.instrument_preset.setup()
 
@@ -279,7 +281,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                 self._add_tab(key=Digital.Tab.PARTIAL_2, widget=editor)
             elif i == 3:
                 self._add_tab(key=Digital.Tab.PARTIAL_3, widget=editor)
-        
+
         self.common_section = DigitalCommonSection(
             controls=self.controls,
             address=self.address,
@@ -287,7 +289,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             midi_helper=midi_helper,
         )
         self._add_tab(key=Digital.Tab.COMMON, widget=self.common_section)
-        
+
         self.tone_modify_section = DigitalToneModifySection(
             controls=self.controls,
             send_midi_parameter=self.send_midi_parameter,
@@ -366,7 +368,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         :param value: int
         :return: None
         """
-        if param == Digital.Param.OSC_WAVE:
+        if param == Digital.Param.OSC_WAVEFORM:
             self._update_waveform_buttons(partial_no, value)
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
@@ -401,7 +403,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                 failures.append(param_name)
                 continue
 
-            if param == Digital.Param.OSC_WAVE:
+            if param == Digital.Param.OSC_WAVEFORM:
                 self._update_waveform_buttons(partial_no, param_value)
             elif param == Digital.Param.FILTER_MODE_SWITCH:
                 self._update_filter_mode_buttons(partial_no, param_value)
@@ -791,7 +793,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             0: Digital.Wave.Osc.SAW,
             1: Digital.Wave.Osc.SQUARE,
             2: Digital.Wave.Osc.PW_SQUARE,
-            3: Digital.Wave.Osc.TRIANGLE,
+            3: Digital.Wave.Osc.TRI,
             4: Digital.Wave.Osc.SINE,
             5: Digital.Wave.Osc.NOISE,
             6: Digital.Wave.Osc.SUPER_SAW,
@@ -811,7 +813,9 @@ class DigitalSynthEditor(BaseSynthEditor):
             log.warning(f"Partial editor {partial_number} not found")
             return
 
-        wave_buttons = self.partial_editors[partial_number].oscillator_tab.waveform_buttons
+        wave_buttons = self.partial_editors[
+            partial_number
+        ].oscillator_tab.waveform_buttons
 
         # --- Reset all buttons to default style
         for btn in wave_buttons.values():
@@ -825,10 +829,10 @@ class DigitalSynthEditor(BaseSynthEditor):
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         else:
             log.warning("Waveform button not found for: %s", selected_waveform)
-        
+
         # Update enabled states of dependent widgets (e.g., SuperSaw Detune)
         oscillator_section = self.partial_editors[partial_number].oscillator_tab
-        if hasattr(oscillator_section, '_update_button_enabled_states'):
+        if hasattr(oscillator_section, "_update_button_enabled_states"):
             oscillator_section._update_button_enabled_states(selected_waveform)
 
     def _update_filter_mode_buttons(self, partial_number: int, value: int):
@@ -892,7 +896,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 
         lfo_shape_map = {
-            0: Digital.LFO.Shape.TRIANGLE,
+            0: Digital.LFO.Shape.TRI,
             1: Digital.LFO.Shape.SINE,
             2: Digital.LFO.Shape.SAW,
             3: Digital.LFO.Shape.SQUARE,
@@ -947,7 +951,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 
         mod_lfo_shape_map = {
-            0: Digital.LFO.Shape.TRIANGLE,
+            0: Digital.LFO.Shape.TRI,
             1: Digital.LFO.Shape.SINE,
             2: Digital.LFO.Shape.SAW,
             3: Digital.LFO.Shape.SQUARE,

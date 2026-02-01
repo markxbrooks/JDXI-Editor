@@ -92,21 +92,53 @@ class DrumTVFSection(DrumBaseSection):
             values=[0, 1, 2, 3, 4, 5, 6, 7],
         ),
         # Envelope Controls - Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
-        SliderSpec(DrumPartialParam.TVF_ENV_DEPTH, DrumDisplayName.TVF_DEPTH, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_VELOCITY_SENS, DrumDisplayName.TVF_V_SENS, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS, DrumDisplayName.TVF_T1_V_SENS, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS, DrumDisplayName.TVF_T4_V_SENS, vertical=True),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_DEPTH, DrumDisplayName.TVF_DEPTH, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_VELOCITY_SENS,
+            DrumDisplayName.TVF_V_SENS,
+            vertical=True,
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS,
+            DrumDisplayName.TVF_T1_V_SENS,
+            vertical=True,
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS,
+            DrumDisplayName.TVF_T4_V_SENS,
+            vertical=True,
+        ),
         # Row 1: Time 1, Time 2, Time 3, Time 4
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_1, DrumDisplayName.TVF_TIME_1, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_2, DrumDisplayName.TVF_TIME_2, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_3, DrumDisplayName.TVF_TIME_3, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_TIME_4, DrumDisplayName.TVF_TIME_4, vertical=True),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_1, DrumDisplayName.TVF_TIME_1, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_2, DrumDisplayName.TVF_TIME_2, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_3, DrumDisplayName.TVF_TIME_3, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_TIME_4, DrumDisplayName.TVF_TIME_4, vertical=True
+        ),
         # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
-        SliderSpec(DrumPartialParam.TVF_ENV_LEVEL_0, DrumDisplayName.TVF_LEVEL_0, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_LEVEL_1, DrumDisplayName.TVF_LEVEL_1, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_LEVEL_2, DrumDisplayName.TVF_LEVEL_2, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_LEVEL_3, DrumDisplayName.TVF_LEVEL_3, vertical=True),
-        SliderSpec(DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_LEVEL_0, DrumDisplayName.TVF_LEVEL_0, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_LEVEL_1, DrumDisplayName.TVF_LEVEL_1, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_LEVEL_2, DrumDisplayName.TVF_LEVEL_2, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_LEVEL_3, DrumDisplayName.TVF_LEVEL_3, vertical=True
+        ),
+        SliderSpec(
+            DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True
+        ),
     ]
 
     envelope_changed = Signal(dict)
@@ -116,7 +148,6 @@ class DrumTVFSection(DrumBaseSection):
         controls: dict[DrumPartialParam, QWidget],
         midi_helper: MidiIOHelper,
     ):
-
         """
         Initialize the DrumTVFSection
 
@@ -150,10 +181,10 @@ class DrumTVFSection(DrumBaseSection):
         """setup UI"""
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
-        
+
         # Create plot first (needed by envelope group)
         self._create_tvf_plot()
-        
+
         # --- Main container with controls and plot
         main_container = QWidget()
         main_layout = QHBoxLayout(main_container)
@@ -201,21 +232,27 @@ class DrumTVFSection(DrumBaseSection):
         self.v_sens_slider = v_sens_slider
         envelope_slider_layout.addWidget(v_sens_slider, row, 1)
         v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("v_sens", v, DrumPartialParam.TVF_ENV_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "v_sens", v, DrumPartialParam.TVF_ENV_VELOCITY_SENS
+            )
         )
 
         t1_v_sens_slider = self.controls[DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS]
         self.t1_v_sens_slider = t1_v_sens_slider
         envelope_slider_layout.addWidget(t1_v_sens_slider, row, 2)
         t1_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t1_v_sens", v, DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t1_v_sens", v, DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS
+            )
         )
 
         t4_v_sens_slider = self.controls[DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS]
         self.t4_v_sens_slider = t4_v_sens_slider
         envelope_slider_layout.addWidget(t4_v_sens_slider, row, 3)
         t4_v_sens_slider.valueChanged.connect(
-            lambda v: self._update_envelope("t4_v_sens", v, DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS)
+            lambda v: self._update_envelope(
+                "t4_v_sens", v, DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS
+            )
         )
 
         row += 1
@@ -224,28 +261,36 @@ class DrumTVFSection(DrumBaseSection):
         self.time_1_slider = time_1_slider
         envelope_slider_layout.addWidget(time_1_slider, row, 0)
         time_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_1", v, DrumPartialParam.TVF_ENV_TIME_1)
+            lambda v: self._update_envelope(
+                "time_1", v, DrumPartialParam.TVF_ENV_TIME_1
+            )
         )
 
         time_2_slider = self.controls[DrumPartialParam.TVF_ENV_TIME_2]
         self.time_2_slider = time_2_slider
         envelope_slider_layout.addWidget(time_2_slider, row, 1)
         time_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_2", v, DrumPartialParam.TVF_ENV_TIME_2)
+            lambda v: self._update_envelope(
+                "time_2", v, DrumPartialParam.TVF_ENV_TIME_2
+            )
         )
 
         time_3_slider = self.controls[DrumPartialParam.TVF_ENV_TIME_3]
         self.time_3_slider = time_3_slider
         envelope_slider_layout.addWidget(time_3_slider, row, 2)
         time_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_3", v, DrumPartialParam.TVF_ENV_TIME_3)
+            lambda v: self._update_envelope(
+                "time_3", v, DrumPartialParam.TVF_ENV_TIME_3
+            )
         )
 
         time_4_slider = self.controls[DrumPartialParam.TVF_ENV_TIME_4]
         self.time_4_slider = time_4_slider
         envelope_slider_layout.addWidget(time_4_slider, row, 3)
         time_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("time_4", v, DrumPartialParam.TVF_ENV_TIME_4)
+            lambda v: self._update_envelope(
+                "time_4", v, DrumPartialParam.TVF_ENV_TIME_4
+            )
         )
 
         row += 1
@@ -254,35 +299,45 @@ class DrumTVFSection(DrumBaseSection):
         self.level_0_slider = level_0_slider
         envelope_slider_layout.addWidget(level_0_slider, row, 0)
         level_0_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_0", v, DrumPartialParam.TVF_ENV_LEVEL_0)
+            lambda v: self._update_envelope(
+                "level_0", v, DrumPartialParam.TVF_ENV_LEVEL_0
+            )
         )
 
         level_1_slider = self.controls[DrumPartialParam.TVF_ENV_LEVEL_1]
         self.level_1_slider = level_1_slider
         envelope_slider_layout.addWidget(level_1_slider, row, 1)
         level_1_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_1", v, DrumPartialParam.TVF_ENV_LEVEL_1)
+            lambda v: self._update_envelope(
+                "level_1", v, DrumPartialParam.TVF_ENV_LEVEL_1
+            )
         )
 
         level_2_slider = self.controls[DrumPartialParam.TVF_ENV_LEVEL_2]
         self.level_2_slider = level_2_slider
         envelope_slider_layout.addWidget(level_2_slider, row, 2)
         level_2_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_2", v, DrumPartialParam.TVF_ENV_LEVEL_2)
+            lambda v: self._update_envelope(
+                "level_2", v, DrumPartialParam.TVF_ENV_LEVEL_2
+            )
         )
 
         level_3_slider = self.controls[DrumPartialParam.TVF_ENV_LEVEL_3]
         self.level_3_slider = level_3_slider
         envelope_slider_layout.addWidget(level_3_slider, row, 3)
         level_3_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_3", v, DrumPartialParam.TVF_ENV_LEVEL_3)
+            lambda v: self._update_envelope(
+                "level_3", v, DrumPartialParam.TVF_ENV_LEVEL_3
+            )
         )
 
         level_4_slider = self.controls[DrumPartialParam.TVF_ENV_LEVEL_4]
         self.level_4_slider = level_4_slider
         envelope_slider_layout.addWidget(level_4_slider, row, 4)
         level_4_slider.valueChanged.connect(
-            lambda v: self._update_envelope("level_4", v, DrumPartialParam.TVF_ENV_LEVEL_4)
+            lambda v: self._update_envelope(
+                "level_4", v, DrumPartialParam.TVF_ENV_LEVEL_4
+            )
         )
 
         #  --- Right side: Envelope plot (created in setup_ui())  ---
@@ -304,14 +359,21 @@ class DrumTVFSection(DrumBaseSection):
         tvf_filter_type_combo = self.controls[DrumPartialParam.TVF_FILTER_TYPE]
         basic_tvf_layout.addRow(tvf_filter_type_combo)
 
-        tvf_cutoff_velocity_curve_spin = self.controls[DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE]
+        tvf_cutoff_velocity_curve_spin = self.controls[
+            DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE
+        ]
         basic_tvf_layout.addRow(tvf_cutoff_velocity_curve_spin)
 
-        tvf_env_velocity_curve_type_spin = self.controls[DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE]
+        tvf_env_velocity_curve_type_spin = self.controls[
+            DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE
+        ]
         basic_tvf_layout.addRow(tvf_env_velocity_curve_type_spin)
-        tvf_cutoff_frequency_slider = self.controls[DrumPartialParam.TVF_CUTOFF_FREQUENCY]
-        tvf_cutoff_frequency_layout = create_layout_with_widgets(widgets=[tvf_cutoff_frequency_slider],
-                                                                 vertical=False)
+        tvf_cutoff_frequency_slider = self.controls[
+            DrumPartialParam.TVF_CUTOFF_FREQUENCY
+        ]
+        tvf_cutoff_frequency_layout = create_layout_with_widgets(
+            widgets=[tvf_cutoff_frequency_slider], vertical=False
+        )
         basic_tvf_layout.addRow(tvf_cutoff_frequency_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)

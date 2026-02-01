@@ -14,28 +14,36 @@ class SystemCommonParam(AddressParameter):
         display_min: int = None,
         display_max: int = None,
         description: str = None,
-        display_name: str = None
+        display_name: str = None,
     ):
         """
         Initialize the system common parameter.
-        
+
         Accepts 6 arguments when unpacked from ParameterSpec tuple:
         (address, min_val, max_val, min_display, max_display, description)
         """
         super().__init__(address, min_val, max_val)
         self._display_name = display_name
 
-    MASTER_TUNE = ParameterSpec(0x00, -100.0, 100.0)  # Master Tune (24-2024: -100.0 to +100.0 cents)
-    MASTER_KEY_SHIFT = ParameterSpec(0x04, -24, 24)  # Master Key Shift (40-88: -24 to +24 semitones)
+    MASTER_TUNE = ParameterSpec(
+        0x00, -100.0, 100.0
+    )  # Master Tune (24-2024: -100.0 to +100.0 cents)
+    MASTER_KEY_SHIFT = ParameterSpec(
+        0x04, -24, 24
+    )  # Master Key Shift (40-88: -24 to +24 semitones)
     MASTER_LEVEL = ParameterSpec(0x05, 0, 127)  # Master Level (0-127)
 
     # Reserved space (0x06-0x10)
 
-    PROGRAM_CTRL_CH = ParameterSpec(0x11, 0, 16)  # Program Control Channel (0-16: 1-16, OFF)
+    PROGRAM_CTRL_CH = ParameterSpec(
+        0x11, 0, 16
+    )  # Program Control Channel (0-16: 1-16, OFF)
 
     # Reserved space (0x12-0x28)
 
-    RX_PROGRAM_CHANGE = ParameterSpec(0x29, 0, 1)  # Receive Program Change (0: OFF, 1: ON)
+    RX_PROGRAM_CHANGE = ParameterSpec(
+        0x29, 0, 1
+    )  # Receive Program Change (0: OFF, 1: ON)
     RX_BANK_SELECT = ParameterSpec(0x2A, 0, 1)  # Receive Bank Select (0: OFF, 1: ON)
 
     @staticmethod

@@ -53,7 +53,12 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 class BasicEditor(SynthEditor):
     """Simple Editor Window with small instrument image"""
 
-    def __init__(self, midi_helper: MidiIOHelper, parent: QWidget = None, address: RolandSysExAddress = None):
+    def __init__(
+        self,
+        midi_helper: MidiIOHelper,
+        parent: QWidget = None,
+        address: RolandSysExAddress = None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent, address=address)
         self.default_image = None
         self.preset_image_label = None

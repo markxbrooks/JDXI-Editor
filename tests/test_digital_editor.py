@@ -324,7 +324,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         
         self.editor._handle_special_params(
             1,
-            DigitalPartialParam.OSC_WAVE,
+            DigitalPartialParam.OSC_WAVEFORM,
             2  # SAW waveform
         )
         

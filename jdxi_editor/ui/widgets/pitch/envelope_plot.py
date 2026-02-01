@@ -185,7 +185,7 @@ class PitchEnvPlot(BasePlotWidget):
         # Custom grid: vertical lines at tick positions, horizontal lines symmetric around zero
         num_ticks = 6
         x_ticks = [(i / num_ticks) * total_time for i in range(1, num_ticks + 1)]
-        
+
         # Horizontal grid lines: symmetric around zero (positive and negative)
         y_ticks = []
         for i in range(1, 4):

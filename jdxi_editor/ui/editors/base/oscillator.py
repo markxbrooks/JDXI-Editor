@@ -4,34 +4,40 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
+from decologr import Decologr as log
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
-
-from decologr import Decologr as log
 from PySide6.QtWidgets import (
+    QGroupBox,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QTabWidget,
-    QWidget, QPushButton,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
+from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
+from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
+    create_group_with_widgets,
     create_icon_from_qta,
     create_layout_with_widgets,
+    create_widget_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
 class BaseOscillatorSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
-    
+
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
     SYNTH_SPEC = Digital
@@ -55,6 +61,8 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param icons_row_type: Type of icon
         :param analog: bool
         """
+        self.tuning_sliders: list | None = None
+        self.pwm_widget: QWidget | None = None
         self.wave_layout_widgets: list = []
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
@@ -62,7 +70,34 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
-
+        # ---  Set up waveform shapes
+        self.analog = analog
+        self.common_wave_shapes = [
+            self.SYNTH_SPEC.Wave.Osc.SAW,
+            self.SYNTH_SPEC.Wave.Osc.TRI,
+            self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
+        ]
+        self.wave_shapes = (
+            self.common_wave_shapes
+            if self.analog
+            else self.common_wave_shapes
+            + [
+                self.SYNTH_SPEC.Wave.Osc.TRI,
+                self.SYNTH_SPEC.Wave.Osc.SINE,
+                self.SYNTH_SPEC.Wave.Osc.NOISE,
+                self.SYNTH_SPEC.Wave.Osc.SUPER_SAW,
+                self.SYNTH_SPEC.Wave.Osc,
+            ]
+        )
+        # ---  Map waveform shapes to icon names
+        self.shape_icon_map = {
+            self.SYNTH_SPEC.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
+            self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
+            self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
+            self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
+            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
+        }
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -71,34 +106,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             icons_row_type=icons_row_type,
             analog=analog,
         )
-        # ---  Set up waveform shapes
-        self.common_wave_shapes = [
-            self.SYNTH_SPEC.Wave.Osc.SAW,
-            self.SYNTH_SPEC.Wave.Osc.SQUARE,
-            self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
-        ]
-        self.additional_digital_wave_shapes = [
-            self.SYNTH_SPEC.Wave.Osc.TRIANGLE,
-            self.SYNTH_SPEC.Wave.Osc.SINE,
-            self.SYNTH_SPEC.Wave.Osc.NOISE,
-            self.SYNTH_SPEC.Wave.Osc.SUPER_SAW,
-            self.SYNTH_SPEC.Wave.Osc.PCM,
-        ]
-        self.wave_shapes = (
-            self.common_wave_shapes
-            if self.analog
-            else self.common_wave_shapes + self.additional_digital_wave_shapes
-        )
-        # ---  Map waveform shapes to icon names
-        self.shape_icon_map = {
-            self.SYNTH_SPEC.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
-            self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
-        }
-        
+
     def setup_ui(self):
         """Set up the UI for the LFO section."""
         layout = self.get_layout()
@@ -115,11 +123,11 @@ class BaseOscillatorSection(SectionBaseWidget):
         # --- Call parent to create buttons and other widgets from specs
         super().build_widgets()
         # --- Then create LFO-specific widgets (only if attributes exist)
-        if hasattr(self, 'RATE_FADE_SLIDERS'):
+        if hasattr(self, "RATE_FADE_SLIDERS"):
             self._create_rate_fade_layout_widgets()
-        if hasattr(self, 'DEPTH_SLIDERS'):
+        if hasattr(self, "DEPTH_SLIDERS"):
             self._create_depths_layout_widgets()
-        if hasattr(self, 'SWITCH_SPECS'):
+        if hasattr(self, "SWITCH_SPECS"):
             self._create_switch_layout_widgets()
 
     def _create_shape_row_layout(self):
@@ -148,21 +156,21 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_tab_widget(self):
         """Create tab widget for Rate/Rate Ctrl and Depths"""
-        
+
         tab_widget = QTabWidget()
         self.tab_widget = tab_widget  # --- Set for _add_tab to use
-        
+
         rate_widget = self._create_rate_widget()
         depths_widget = self._create_depths_widget()
-        
+
         # --- Use tab definitions - BaseOscillatorSection uses LFO-style tabs
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
-        
+
         self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
         # --- Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
         if tab_widget.tabText(0) != self.controls_tab_label:
             tab_widget.setTabText(0, self.controls_tab_label)
-        
+
         self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
         # --- Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
         if tab_widget.tabText(1) != self.adsr_tab_label:
@@ -226,12 +234,21 @@ class BaseOscillatorSection(SectionBaseWidget):
                 JDXi.UI.Dimensions.WaveformIcon.WIDTH,
                 JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
             )
-            btn.clicked.connect(lambda _, w=wave: self._on_button_selected(w))
+
+            def _on_click(_, w=wave):
+                self._on_button_selected(w)
+                # Invoke editor callback when set (e.g. Analog waveform_selected_callback)
+                if hasattr(self, "_on_waveform_selected") and callable(
+                    getattr(self, "_on_waveform_selected", None)
+                ):
+                    self._on_waveform_selected(w)
+
+            btn.clicked.connect(_on_click)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
             self.waveform_buttons[wave] = btn
             self.button_widgets[wave] = btn
-            self.controls[self.SYNTH_SPEC.Param.OSC_WAVE] = btn
+            self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = btn
             self.wave_layout_widgets.append(btn)
 
     def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
@@ -268,19 +285,19 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        if hasattr(self, 'SWITCH_SPECS'):
+        if hasattr(self, "SWITCH_SPECS"):
             self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
         else:
             self.switch_row_widgets = []
 
     def _create_rate_fade_layout_widgets(self):
-        if hasattr(self, 'RATE_FADE_SLIDERS'):
+        if hasattr(self, "RATE_FADE_SLIDERS"):
             self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
         else:
             self.rate_layout_widgets = []
 
     def _create_depths_layout_widgets(self):
-        if hasattr(self, 'DEPTH_SLIDERS'):
+        if hasattr(self, "DEPTH_SLIDERS"):
             self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)
         else:
             self.depths_layout_widgets = []
@@ -302,7 +319,9 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
         if self.send_midi_parameter:
-            self.send_midi_parameter(self.SYNTH_SPEC.Param.OSC_WAVE, button_param.value)
+            self.send_midi_parameter(
+                self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value
+            )
 
     def _update_button_enabled_states(self, button_param):
         """Override to enable/disable widgets based on selected waveform.
@@ -340,3 +359,97 @@ class BaseOscillatorSection(SectionBaseWidget):
         button_row.addWidget(self.wave_variation)  # Add wave variation switch
         button_row.addStretch()
         return button_row
+
+    def _create_tuning_pitch_widget(self) -> QWidget:
+        """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
+        pitch_layout = create_layout_with_widgets(
+            widgets=[self._create_pitch_env_group()]
+        )
+        pitch_widget = create_widget_with_layout(pitch_layout)
+        pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
+        return pitch_widget
+
+    def _create_wave_layout(self) -> QHBoxLayout:
+        """
+        Create the waveform buttons layout
+
+        :return: QHBoxLayout
+        """
+        # --- Get buttons in order for layout
+        waveform_buttons_list = list(self.waveform_buttons.values())
+        waveform_buttons_list.append(self.sub_oscillator_type_switch)
+        wave_layout = create_layout_with_widgets(waveform_buttons_list)
+        return wave_layout
+
+    def _create_tuning_group(self) -> QGroupBox:
+        """
+        Create the tuning group (standardized private method matching Digital)
+
+        :return: QGroupBox
+        """
+        tuning_group = create_group_with_widgets(
+            label="Controls", widgets=self.tuning_sliders
+        )
+        return tuning_group
+
+    def _create_pw_group(self) -> QGroupBox:
+        """
+        Create the pulse width group (standardized private method matching Digital)
+
+        :return: QGroupBox
+        """
+        pw_group = create_group_with_widgets(
+            label="Pulse Width", widgets=[self.pwm_widget]
+        )
+        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+        return pw_group
+
+    def _create_pitch_env_group(self) -> QGroupBox:
+        """
+        Create the pitch envelope group (standardized private method matching Digital)
+
+        :return: QGroupBox
+        """
+        # --- Pitch Envelope Group
+        pitch_env_group = create_group_with_widgets(
+            label="Pitch Envelope", widgets=self.pitch_env_widgets
+        )
+        return pitch_env_group
+
+    def _update_pw_controls_state(self, waveform: AnalogWaveOsc):
+        """
+        Update pulse width controls enabled state based on waveform
+
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
+        pw_enabled = waveform == self.SYNTH_SPEC.Wave.Osc.PW_SQUARE
+        self.pwm_widget.setEnabled(pw_enabled)
+
+    def _on_waveform_selected_local(self, waveform: AnalogWaveOsc | DigitalWaveOsc):
+        """
+        Handle waveform button selection locally (for section-level handling)
+        This is separate from the editor's callback to avoid conflicts.
+
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
+        if self.midi_helper:
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address,
+                param=self.SYNTH_SPEC.Param.OSC_WAVEFORM,
+                value=waveform.value,
+            )
+            self.midi_helper.send_midi_message(sysex_message)
+
+            # --- Reset all buttons to default style
+            for btn in self.waveform_buttons.values():
+                btn.setChecked(False)
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+            # --- Apply active style to the selected waveform button
+            selected_btn = self.waveform_buttons.get(waveform)
+            if selected_btn:
+                selected_btn.setChecked(True)
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            self._update_pw_controls_state(waveform)

@@ -33,10 +33,11 @@ class AnalogFilterType(Enum):
     def tooltip(self) -> str:
         return {
             self.BYPASS: "No Filter",
-            self.LPF: "Low Pass filter: high frequencies filtered out"
+            self.LPF: "Low Pass filter: high frequencies filtered out",
         }.get(self, "Filter Type")
 
 
 class AnalogFilterMidiType:
     """Analog filter types"""
+
     BYPASS = AnalogParam.FILTER_MODE_SWITCH

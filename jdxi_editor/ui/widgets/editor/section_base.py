@@ -35,18 +35,18 @@ Usage Example:
 
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
-from jdxi_editor.midi.data.digital.oscillator import WaveformType
-from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
-from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import (
     JDXiMidiDigital,
@@ -75,6 +75,7 @@ class SectionBaseWidget(SynthBase):
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
     """
+
     ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
     SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
@@ -129,7 +130,7 @@ class SectionBaseWidget(SynthBase):
                 self._initialize_button_states()
 
     def get_parent_midi_helper(self, parent: QWidget | None):
-        if parent and hasattr(parent, 'midi_helper'):
+        if parent and hasattr(parent, "midi_helper"):
             midi_helper = parent.midi_helper
             return midi_helper
         return None
@@ -251,7 +252,7 @@ class SectionBaseWidget(SynthBase):
         for spec in self.PARAM_SPECS:
             param_name = getattr(spec.param, "name", str(spec.param))
             is_filter_env_depth = (
-                                          hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH"
+                hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH"
             ) or (spec.param == DigitalPartialParam.FILTER_ENV_DEPTH)
 
             if is_filter_env_depth and is_filter_section:
@@ -324,6 +325,7 @@ class SectionBaseWidget(SynthBase):
     def _create_adsr(self):
         """Create ADSR widget from ADSR_SPEC"""
         from decologr import Decologr as log
+
         class_name = self.__class__.__name__
         is_filter_section = class_name == "DigitalFilterSection"
 
@@ -333,11 +335,17 @@ class SectionBaseWidget(SynthBase):
 
         # Handle both string keys and ADSRType enum keys
 
-        attack_key = ADSRStage.ATTACK  # if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
-        decay_key = ADSRStage.DECAY # if "decay" in self.ADSR_SPEC else ADSRType.DECAY
-        sustain_key = ADSRStage.SUSTAIN # if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
-        release_key = ADSRStage.RELEASE # "release" in self.ADSR_SPEC else ADSRType.RELEASE
-        peak_key = ADSRStage.PEAK #  if "peak" in self.ADSR_SPEC else ADSRType.PEAK
+        attack_key = (
+            ADSRStage.ATTACK
+        )  # if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
+        decay_key = ADSRStage.DECAY  # if "decay" in self.ADSR_SPEC else ADSRType.DECAY
+        sustain_key = (
+            ADSRStage.SUSTAIN
+        )  # if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
+        release_key = (
+            ADSRStage.RELEASE
+        )  # "release" in self.ADSR_SPEC else ADSRType.RELEASE
+        peak_key = ADSRStage.PEAK  #  if "peak" in self.ADSR_SPEC else ADSRType.PEAK
 
         # Extract parameters from ADSR_SPEC (handles both ADSRSpec objects and direct parameters)
         def get_param(spec_or_param):
@@ -413,7 +421,7 @@ class SectionBaseWidget(SynthBase):
             row.addWidget(w)
         row.addStretch()
         self.get_layout().addLayout(row)
-        
+
     def _create_waveform_buttons(self):
         """Create mode/waveform/shape buttons from BUTTON_SPECS"""
 
@@ -607,15 +615,15 @@ class SectionBaseWidget(SynthBase):
             WaveformType.BPF_FILTER,
             WaveformType.FILTER_SINE,
         }
-        
+
         # Find the tab widget (could be tab_widget or oscillator_tab_widget, etc.)
         tab_widget = None
-        if hasattr(self, 'tab_widget') and self.tab_widget is not None:
+        if hasattr(self, "tab_widget") and self.tab_widget is not None:
             tab_widget = self.tab_widget
         else:
             self.tab_widget = QTabWidget()
             tab_widget = self.tab_widget
-        
+
         # Handle icon - could be a string (qtawesome icon name) or WaveformType value
         if isinstance(key.icon, str) and key.icon in waveform_type_values:
             # Use generated icon for waveform types
@@ -655,7 +663,9 @@ class SectionBaseWidget(SynthBase):
 
     def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
         return [
-            self._create_parameter_combo_box(spec.param, spec.label, spec.options, spec.values)
+            self._create_parameter_combo_box(
+                spec.param, spec.label, spec.options, spec.values
+            )
             for spec in specs
         ]
 

@@ -3,6 +3,7 @@ Icon registry for JD-Xi Editor.
 
 Provides centralized icon definitions and retrieval with fallback support.
 """
+
 from typing import Literal
 
 import qtawesome as qta
@@ -120,7 +121,6 @@ class JDXiUIIconRegistry:
     PAUSE_ICON = "mdi.pause"
     SERVER_PROCESS = "msc.server-process"
     REPORT: str = "msc.report"
-
 
     @staticmethod
     def get_icon(

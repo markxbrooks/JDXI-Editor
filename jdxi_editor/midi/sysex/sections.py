@@ -5,6 +5,7 @@ Parsable sections from JDXI SysEx Messages
 
 class SysExSection:
     """Parsable Sections of JDXi SysSex"""
+
     JD_XI_HEADER = "JD_XI_HEADER"
     ADDRESS = "ADDRESS"
     TEMPORARY_AREA = "TEMPORARY_AREA"
@@ -38,7 +39,4 @@ class SysExSection:
 
     @classmethod
     def all(cls):
-        return [cls.JD_XI_HEADER,
-                cls.ADDRESS,
-                cls.TEMPORARY_AREA,
-                cls.TONE_NAME]
+        return [cls.JD_XI_HEADER, cls.ADDRESS, cls.TEMPORARY_AREA, cls.TONE_NAME]

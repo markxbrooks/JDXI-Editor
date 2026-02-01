@@ -43,7 +43,7 @@ class FilterWidget(EnvelopeWidgetBase):
         create_parameter_slider: Callable = None,
         create_parameter_switch: Callable = None,
         parent: Optional[QWidget] = None,
-        analog: bool = False
+        analog: bool = False,
     ):
         super().__init__(
             envelope_keys=["cutoff_param", "slope_param"],
@@ -52,7 +52,7 @@ class FilterWidget(EnvelopeWidgetBase):
             midi_helper=midi_helper,
             address=address,
             controls=controls,
-            parent=parent
+            parent=parent,
         )
         self.analog = analog
         self.plot: FilterPlot | None = None

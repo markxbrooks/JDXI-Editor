@@ -20,12 +20,30 @@ class ParameterSpec(tuple):
         param.min_val  # 0
         param.max_val  # 127
     """
-    def __new__(cls, address: int, min_val: int, max_val: int,
-                min_display: int = 0, max_display: int = 127,
-                description: str | None = None,
-                display_name: str | None = None):
+
+    def __new__(
+        cls,
+        address: int,
+        min_val: int,
+        max_val: int,
+        min_display: int = 0,
+        max_display: int = 127,
+        description: str | None = None,
+        display_name: str | None = None,
+    ):
         # Create tuple with all values - Enum will unpack this
-        return super().__new__(cls, (address, min_val, max_val, min_display, max_display, description, display_name))
+        return super().__new__(
+            cls,
+            (
+                address,
+                min_val,
+                max_val,
+                min_display,
+                max_display,
+                description,
+                display_name,
+            ),
+        )
 
     def __init__(self, *args):
         """

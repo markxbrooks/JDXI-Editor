@@ -4,6 +4,8 @@ Log Debug info
 
 from decologr import Decologr as log
 
+from jdxi_editor.midi.sysex.sections import SysExSection
+
 
 def log_debug_info(successes: list[str], failures: list[str]) -> None:
     """

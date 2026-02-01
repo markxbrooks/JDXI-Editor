@@ -64,7 +64,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             icon_name=Digital.Wave.WaveType.PWSQU,
         ),
         SliderSpec(
-            param=Digital.Wave.Osc.TRIANGLE,
+            param=Digital.Wave.Osc.TRI,
             label=Digital.Wave.WaveType.TRIANGLE,
             icon_name=Digital.Wave.WaveType.TRIANGLE,
         ),
@@ -160,7 +160,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # Call parent to create other widgets from PARAM_SPECS
         super().build_widgets()
-        
+
         # Store SuperSaw Detune widget as attribute for BUTTON_ENABLE_RULES
         # This allows _update_button_enabled_states to find it by name
         if Digital.Param.SUPER_SAW_DETUNE in self.controls:
@@ -258,7 +258,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # --- Pitch Envelope tab
         if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
-            pitch_env_layout = create_layout_with_widgets(widgets=[self.pitch_env_widget], vertical=False)
+            pitch_env_layout = create_layout_with_widgets(
+                widgets=[self.pitch_env_widget], vertical=False
+            )
             pitch_env_group = create_group_from_definition(
                 key=Digital.GroupBox.PITCH_ENVELOPE,
                 layout_or_widget=pitch_env_layout,
@@ -269,7 +271,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
-            pcm_layout = create_layout_with_widgets(widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True)
+            pcm_layout = create_layout_with_widgets(
+                widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True
+            )
             pcm_group = create_group_from_definition(
                 key=Digital.GroupBox.PCM_WAVE,
                 layout_or_widget=pcm_layout,
@@ -342,5 +346,5 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
             self.waveform_buttons[wave] = btn
             self.button_widgets[wave] = btn
-            self.controls[Digital.Param.OSC_WAVE] = btn
+            self.controls[Digital.Param.OSC_WAVEFORM] = btn
             self.wave_layout_widgets.append(btn)

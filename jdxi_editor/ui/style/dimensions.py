@@ -34,6 +34,7 @@ class Margins:
 
 class Dimensions:
     """Dimensions"""
+
     X: int = 0
     Y: int = 0
     WIDTH: int = 0
@@ -98,6 +99,7 @@ class IconDimensions(Dimensions):
 
 class SmallIconDimensions(Dimensions):
     """Dimensions of an Icon"""
+
     WIDTH: int = 20
     HEIGHT: int = 20
 
@@ -134,7 +136,8 @@ class DrumEditorDimensions(Dimensions):
 
 class WaveformIconDimensions(Dimensions):
     """Waveform Icon Dimensions"""
-    Icon: SmallIconDimensions = SmallIconDimensions # Need lots of waveform icons
+
+    Icon: SmallIconDimensions = SmallIconDimensions  # Need lots of waveform icons
     WIDTH: int = 80
     HEIGHT: int = 30
 
@@ -316,6 +319,7 @@ class EffectsButtonDimensions(Dimensions):
 
 class RoundButtonDimensions(Dimensions):
     """Button Dimensions"""
+
     WIDTH: int = 30
     HEIGHT: int = 30
 

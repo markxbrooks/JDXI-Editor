@@ -15,18 +15,22 @@ def test_with_system_tools():
     """Test using macOS system tools"""
     print("SINCO VMX8 Controller Test using System Tools")
     print("=" * 50)
-    
+
     # Check if we're on macOS
     if sys.platform != "darwin":
         print("❌ This test is designed for macOS")
         return False
-    
+
     print("Checking MIDI ports using system tools...")
-    
+
     # Use system_profiler to check MIDI devices
     try:
-        result = subprocess.run(["system_profiler", "SPAudioDataType"], 
-                              capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            ["system_profiler", "SPAudioDataType"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
         if result.returncode == 0:
             audio_info = result.stdout
             if "SINCO" in audio_info.upper() or "VMX8" in audio_info.upper():
@@ -37,13 +41,13 @@ def test_with_system_tools():
             print("❌ Could not check audio devices")
     except Exception as e:
         print(f"❌ Error checking audio devices: {e}")
-    
+
     # Check MIDI ports using system tools
     try:
         result = subprocess.run(["ls", "/dev/"], capture_output=True, text=True)
         if result.returncode == 0:
             devices = result.stdout
-            midi_devices = [d for d in devices.split('\n') if 'midi' in d.lower()]
+            midi_devices = [d for d in devices.split("\n") if "midi" in d.lower()]
             if midi_devices:
                 print(f"MIDI devices found: {midi_devices}")
             else:
@@ -52,7 +56,7 @@ def test_with_system_tools():
             print("❌ Could not list devices")
     except Exception as e:
         print(f"❌ Error listing devices: {e}")
-    
+
     # Try to use the built-in MIDI monitor
     print("\n=== Using Built-in MIDI Monitor ===")
     print("To test your controller manually:")
@@ -61,8 +65,9 @@ def test_with_system_tools():
     print("3. Open 'MIDI Monitor' (if available)")
     print("4. Move controls on your controller")
     print("5. Check if messages appear in MIDI Monitor")
-    
+
     return True
+
 
 def main():
     try:
@@ -77,6 +82,7 @@ def main():
     except Exception as e:
         print(f"Fatal error: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,7 @@ Spec Definitions
 
 class MidiSynthSpec:
     """Synth Spec Class"""
+
     Param = None
     Display = None
     Wave = None
@@ -18,6 +19,7 @@ class MidiSynthSpec:
 
 class DisplaySpec:
     """Display Spec class"""
+
     Name = None
     Values = None
     Options = None
@@ -25,6 +27,7 @@ class DisplaySpec:
 
 class WaveSpec:
     """Wave Spec"""
+
     LFO = None
     Osc = None
     SubOsc = None
@@ -34,6 +37,7 @@ class WaveSpec:
 
 class FilterSpec:
     """Filter Spec"""
+
     Mode = None
     ModeType = None
     FilterType = None
@@ -43,5 +47,6 @@ class FilterSpec:
 
 class AmpSpec:
     """Amp Spec"""
+
     ADSR = None
     Tab = None

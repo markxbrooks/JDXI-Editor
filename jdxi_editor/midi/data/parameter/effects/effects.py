@@ -108,7 +108,7 @@ class Effect1Param(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -174,8 +174,12 @@ class Effect1Param(AddressParameter):
         127,
         "Sets the output volume.",
     )
-    EFX1_PARAM_1_FUZZ_LEVEL = ParameterSpec(0x11, 32767, 32894, 0, 127, "Adjusts the volume.")
-    EFX1_PARAM_1_DISTORTION_LEVEL = ParameterSpec(0x11, 32768, 32895, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_1_FUZZ_LEVEL = ParameterSpec(
+        0x11, 32767, 32894, 0, 127, "Adjusts the volume."
+    )
+    EFX1_PARAM_1_DISTORTION_LEVEL = ParameterSpec(
+        0x11, 32768, 32895, 0, 127, "Adjusts the volume."
+    )
     EFX1_PARAM_1_COMPRESSOR_THRESHOLD = ParameterSpec(
         0x11,
         32768,
@@ -216,11 +220,17 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the depth of distortion",
     )
-    EFX1_PARAM_2_COMPRESSOR_RATIO = ParameterSpec(0x15, 32768, 32887, 0, 19, "Compression ratio")
+    EFX1_PARAM_2_COMPRESSOR_RATIO = ParameterSpec(
+        0x15, 32768, 32887, 0, 19, "Compression ratio"
+    )
     EFX1_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127)
     EFX1_PARAM_3_BITCRUSHER_DEPTH = ParameterSpec(0x19, 32768, 32895, 0, 127)
-    EFX1_PARAM_3_DISTORTION_TYPE = ParameterSpec(0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
-    EFX1_PARAM_3_FUZZ_TYPE = ParameterSpec(0x19, 32822, 32827, 0, 5)  # 32822 = 08 00 03 06
+    EFX1_PARAM_3_DISTORTION_TYPE = ParameterSpec(
+        0x19, 32822, 32827, 0, 5
+    )  # 32822 = 08 00 03 06
+    EFX1_PARAM_3_FUZZ_TYPE = ParameterSpec(
+        0x19, 32822, 32827, 0, 5
+    )  # 32822 = 08 00 03 06
     EFX1_PARAM_3_COMPRESSOR_ATTACK = ParameterSpec(
         0x19,
         32822,
@@ -238,9 +248,13 @@ class Effect1Param(AddressParameter):
         127,
         "Adjusts the filter depth",
     )
-    EFX1_PARAM_4_COMPRESSOR_RELEASE = ParameterSpec(0x1D, 32822, 32854, 0, 32, "Release time (ms)")
+    EFX1_PARAM_4_COMPRESSOR_RELEASE = ParameterSpec(
+        0x1D, 32822, 32854, 0, 32, "Release time (ms)"
+    )
     EFX1_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127, "")
-    EFX1_PARAM_5_COMPRESSOR_LEVEL = ParameterSpec(0x21, 32768, 32895, 0, 127, "Adjusts the volume.")
+    EFX1_PARAM_5_COMPRESSOR_LEVEL = ParameterSpec(
+        0x21, 32768, 32895, 0, 127, "Adjusts the volume."
+    )
     EFX1_PARAM_6 = ParameterSpec(0x25, 32768, 32895, 0, 127)
     EFX1_PARAM_7 = ParameterSpec(0x29, 32768, 32895, 0, 127)
     EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL = ParameterSpec(
@@ -419,7 +433,7 @@ class Effect2Param(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -458,14 +472,26 @@ class Effect2Param(AddressParameter):
         "[Rate] / [Note] Switch",
     )
     EFX2_PARAM_2 = ParameterSpec(0x15, 32768, 32895, 0, 127)
-    EFX2_PARAM_2_FLANGER_RATE = ParameterSpec(0x15, 32768, 32895, 0, 127, "Frequency of modulation")
-    EFX2_PARAM_2_PHASER_RATE = ParameterSpec(0x15, 32768, 32895, 0, 127, "Frequency of modulation")
+    EFX2_PARAM_2_FLANGER_RATE = ParameterSpec(
+        0x15, 32768, 32895, 0, 127, "Frequency of modulation"
+    )
+    EFX2_PARAM_2_PHASER_RATE = ParameterSpec(
+        0x15, 32768, 32895, 0, 127, "Frequency of modulation"
+    )
     EFX2_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127)
-    EFX2_PARAM_3_FLANGER_NOTE = ParameterSpec(0x19, 32768, 32895, 0, 127, "Note used for modulation")
-    EFX2_PARAM_3_PHASER_NOTE = ParameterSpec(0x19, 32768, 32895, 0, 127, "Note used for modulation")
+    EFX2_PARAM_3_FLANGER_NOTE = ParameterSpec(
+        0x19, 32768, 32895, 0, 127, "Note used for modulation"
+    )
+    EFX2_PARAM_3_PHASER_NOTE = ParameterSpec(
+        0x19, 32768, 32895, 0, 127, "Note used for modulation"
+    )
     EFX2_PARAM_4 = ParameterSpec(0x1D, 32768, 32895, 0, 127)
-    EFX2_PARAM_4_FLANGER_DEPTH = ParameterSpec(0x1D, 32768, 32895, 0, 127, "Depth of modulation")
-    EFX2_PARAM_4_PHASER_DEPTH = ParameterSpec(0x1D, 32768, 32895, 0, 127, "Depth of modulation")
+    EFX2_PARAM_4_FLANGER_DEPTH = ParameterSpec(
+        0x1D, 32768, 32895, 0, 127, "Depth of modulation"
+    )
+    EFX2_PARAM_4_PHASER_DEPTH = ParameterSpec(
+        0x1D, 32768, 32895, 0, 127, "Depth of modulation"
+    )
     EFX2_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127)
     EFX2_PARAM_5_FLANGER_FEEDBACK = ParameterSpec(
         0x21,
@@ -502,7 +528,9 @@ class Effect2Param(AddressParameter):
         "Volume balance between the direct sound (D) and the effect sound (W)",
     )
     EFX2_PARAM_8 = ParameterSpec(0x2D, 32768, 32895, 0, 127)
-    EFX2_PARAM_8_FLANGER_LEVEL = ParameterSpec(0x2D, 32768, 32895, 0, 127, "Output volume")
+    EFX2_PARAM_8_FLANGER_LEVEL = ParameterSpec(
+        0x2D, 32768, 32895, 0, 127, "Output volume"
+    )
     EFX2_PARAM_9 = ParameterSpec(0x31, 32768, 32895, 0, 127)
     EFX2_PARAM_10 = ParameterSpec(0x35, 32768, 32895, 0, 127)
     EFX2_PARAM_11 = ParameterSpec(0x39, 32768, 32895, 0, 127)
@@ -639,7 +667,7 @@ class DelayParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -656,7 +684,9 @@ class DelayParam(AddressParameter):
         return self.display_min, self.display_max
 
     # Delay Parameters
-    DELAY_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "Sets the level of the delay effect.")
+    DELAY_LEVEL = ParameterSpec(
+        0x01, 0, 127, 0, 127, "Sets the level of the delay effect."
+    )
     DELAY_PARAM_1 = ParameterSpec(
         0x08,
         32768,
@@ -792,7 +822,7 @@ class ReverbParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
-        display_name: Optional[str] = None
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -808,7 +838,9 @@ class ReverbParam(AddressParameter):
         return self.display_min, self.display_max
 
     # Reverb Parameters
-    REVERB_LEVEL = ParameterSpec(0x03, 0, 127, 0, 127, "Sets the level of the reverb effect.")
+    REVERB_LEVEL = ParameterSpec(
+        0x03, 0, 127, 0, 127, "Sets the level of the reverb effect."
+    )
     REVERB_PARAM_1 = ParameterSpec(
         0x07,
         32768,

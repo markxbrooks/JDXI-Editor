@@ -254,7 +254,9 @@ class BaseSynthEditor(SynthEditor):
     def add_tabs(self):
         """Add tabs to tab widget"""
         self._add_tab(key=self.SYNTH_SPEC.Tab.PRESETS, widget=self.instrument_preset)
-        self._add_tab(key=self.SYNTH_SPEC.Tab.OSCILLATOR, widget=self.oscillator_section)
+        self._add_tab(
+            key=self.SYNTH_SPEC.Tab.OSCILLATOR, widget=self.oscillator_section
+        )
         self._add_tab(key=self.SYNTH_SPEC.Tab.FILTER, widget=self.filter_section)
         self._add_tab(key=self.SYNTH_SPEC.Tab.AMP, widget=self.amp_section)
         self._add_tab(key=self.SYNTH_SPEC.Tab.LFO, widget=self.lfo_section)
@@ -291,7 +293,9 @@ class BaseSynthEditor(SynthEditor):
         if hasattr(self, "filter_section") and self.filter_section is not None:
             self.filter_section.update_controls_state(mode)
         else:
-            log.warning("[Analog Editor] update_filter_controls_state: no filter_section, skipping")
+            log.warning(
+                "[Analog Editor] update_filter_controls_state: no filter_section, skipping"
+            )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
@@ -356,7 +360,9 @@ class BaseSynthEditor(SynthEditor):
 
         # --- Use oscillator_section.waveform_buttons if available, fallback to wave_buttons
         buttons_dict = self.wave_buttons
-        if self.oscillator_section and hasattr(self.oscillator_section, 'waveform_buttons'):
+        if self.oscillator_section and hasattr(
+            self.oscillator_section, "waveform_buttons"
+        ):
             buttons_dict = self.oscillator_section.waveform_buttons
             # --- Also sync to editor's wave_buttons for consistency
             self.wave_buttons.update(buttons_dict)
@@ -732,18 +738,24 @@ class BaseSynthEditor(SynthEditor):
             if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
                 pwm_controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
             if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
-                pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
-            
+                pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
+                    pw_enabled
+                )
+
             # --- Update the visual state (if controls are sliders)
             if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
                 control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH]
-                if hasattr(control, 'setStyleSheet'):
+                if hasattr(control, "setStyleSheet"):
                     control.setStyleSheet(
-                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                        ""
+                        if pw_enabled
+                        else "QSlider::groove:vertical { background: #000000; }"
                     )
             if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
                 control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH]
-                if hasattr(control, 'setStyleSheet'):
+                if hasattr(control, "setStyleSheet"):
                     control.setStyleSheet(
-                        "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+                        ""
+                        if pw_enabled
+                        else "QSlider::groove:vertical { background: #000000; }"
                     )

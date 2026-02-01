@@ -62,7 +62,7 @@ class DrumBaseSection(SectionBaseWidget):
         # Initialize scrolled layout attributes
         self.vlayout: QVBoxLayout | None = None
         self.scrolled_layout: QVBoxLayout | None = None
-        
+
         # Call super().__init__() - it will call setup_ui() which will use our overridden get_layout()
         # Pass controls so widgets created from PARAM_SPECS are stored in the same dict
         super().__init__(
@@ -70,9 +70,9 @@ class DrumBaseSection(SectionBaseWidget):
             midi_helper=midi_helper,
             icons_row_type=IconType.ADSR,
             analog=False,
-            **kwargs
+            **kwargs,
         )
-        
+
         # Set minimum width after initialization
         self.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
 
@@ -87,16 +87,18 @@ class DrumBaseSection(SectionBaseWidget):
         """
         if self.scrolled_layout is None:
             # Set up scrolled layout on first call
-            self.vlayout, self.scrolled_layout = self._setup_scrolled_layout_with_icons()
+            self.vlayout, self.scrolled_layout = (
+                self._setup_scrolled_layout_with_icons()
+            )
             self.vlayout.setContentsMargins(0, 0, 0, 0)
             self.vlayout.setSpacing(0)
             self.scrolled_layout.setContentsMargins(0, 0, 0, 0)
-            
+
             # Set _layout to scrolled_layout for compatibility with SectionBaseWidget code
             self._layout = self.scrolled_layout
             # Mark icon as added since we add it in _setup_scrolled_layout_with_icons()
             self._icon_added = True
-        
+
         return self.scrolled_layout
 
     def _setup_ui(self):

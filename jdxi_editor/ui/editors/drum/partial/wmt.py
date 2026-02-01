@@ -69,11 +69,11 @@ class DrumWMTSection(SectionBaseWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            controls: dict,
-            midi_helper: MidiIOHelper,
-            address: RolandSysExAddress = None,
-            on_parameter_changed: Callable = None,
+        self,
+        controls: dict,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress = None,
+        on_parameter_changed: Callable = None,
     ):
         super().__init__()
         """

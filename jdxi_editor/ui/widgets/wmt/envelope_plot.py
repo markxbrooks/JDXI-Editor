@@ -110,9 +110,7 @@ class WMTEnvPlot(BasePlotWidget):
         fade_upper_period = fade_upper - range_upper
 
         fade_lower_samples = max(int(fade_lower * self.sample_rate), 1)
-        fade_lower_period_samples = max(
-            int(fade_lower_period * self.sample_rate), 1
-        )
+        fade_lower_period_samples = max(int(fade_lower_period * self.sample_rate), 1)
         fade_upper_samples = max(int(fade_upper * self.sample_rate), 1)
         initial_level = 0.0
 
@@ -200,7 +198,7 @@ class WMTEnvPlot(BasePlotWidget):
         # Custom grid: vertical lines at tick positions, horizontal lines symmetric around zero
         num_ticks = 6
         x_ticks = [(i / num_ticks) * total_time for i in range(1, num_ticks + 1)]
-        
+
         # Horizontal grid lines: symmetric around zero (positive and negative)
         y_ticks = []
         for i in range(1, 4):

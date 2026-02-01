@@ -161,10 +161,10 @@ class DrumPartialSection(DrumBaseSection):
         """setup UI - follows ParameterSectionBase pattern"""
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
-        
+
         # Create tab widget
         self.partial_controls_tab_widget = QTabWidget()
-        
+
         # Add tab widget to the scrolled layout
         layout.addWidget(self.partial_controls_tab_widget)
 
@@ -207,7 +207,9 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_PITCH_BEND_RANGE],
             self.controls[DrumPartialParam.PARTIAL_LEVEL],
         ]
-        group, layout = create_group_with_form_layout(widgets=form_widgets, label="Misc")
+        group, layout = create_group_with_form_layout(
+            widgets=form_widgets, label="Misc"
+        )
         slider_layout = create_layout_with_widgets(widgets=slider_widgets)
         layout.addRow(slider_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)
@@ -223,7 +225,9 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_RECEIVE_HOLD_1],
             self.controls[DrumPartialParam.ONE_SHOT_MODE],
         ]
-        group = create_group_with_widgets_in_hlayout(widgets=widgets, label="Modes", vertical=True)
+        group = create_group_with_widgets_in_hlayout(
+            widgets=widgets, label="Modes", vertical=True
+        )
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
@@ -237,7 +241,9 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH],
             self.controls[DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH],
         ]
-        group = create_group_with_widgets_in_hlayout(widgets=widgets, label="Pan", vertical=True)
+        group = create_group_with_widgets_in_hlayout(
+            widgets=widgets, label="Pan", vertical=True
+        )
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
@@ -251,9 +257,7 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_FINE_TUNE],
             self.controls[DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH],
         ]
-        group, inner_layout = create_group_with_layout(
-            label="Controls", vertical=False
-        )
+        group, inner_layout = create_group_with_layout(label="Controls", vertical=False)
         inner_layout.addStretch()
         for widget in widgets:
             inner_layout.addWidget(widget)

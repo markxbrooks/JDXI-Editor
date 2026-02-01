@@ -17,7 +17,7 @@ class TemporaryArea:
     DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"
     DIGITAL_SYNTH_2 = "DIGITAL_SYNTH_2"
     DRUM_KIT = "DRUM_KIT"
-    
+
 
 def get_temporary_area(data: bytes) -> str:
     """

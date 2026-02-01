@@ -4,10 +4,7 @@ Analog Filter Section
 
 from typing import Callable, Dict, Optional, Union
 
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.spec import FilterWidgetSpec
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -17,19 +14,24 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QWidget,
 )
-from decologr import Decologr as log
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
     create_layout_with_widgets,
     set_button_style_and_dimensions,
 )
+from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
+from jdxi_editor.ui.widgets.filter.filter import FilterWidget
+from jdxi_editor.ui.widgets.spec import FilterWidgetSpec
 
 
 class BaseFilterSection(SectionBaseWidget):
@@ -44,15 +46,15 @@ class BaseFilterSection(SectionBaseWidget):
     FILTER_MODE_MIDI_MAP: dict = {}
 
     def __init__(
-            self,
-            controls: dict[AddressParameter, QWidget],
-            address: RolandSysExAddress,
-            on_filter_mode_changed: Callable = None,
-            parent: Optional[QWidget] = None,
-            icons_row_type: str = None,
-            send_midi_parameter: Callable = None,
-            midi_helper: MidiIOHelper = None,
-            analog: bool = False
+        self,
+        controls: dict[AddressParameter, QWidget],
+        address: RolandSysExAddress,
+        on_filter_mode_changed: Callable = None,
+        parent: Optional[QWidget] = None,
+        icons_row_type: str = IconType.ADSR,
+        send_midi_parameter: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        analog: bool = False,
     ):
         """
         Initialize the AnalogFilterSection
@@ -67,12 +69,14 @@ class BaseFilterSection(SectionBaseWidget):
         self._filter_mode_changed_callback: Callable = on_filter_mode_changed
         self.send_midi_parameter: Callable | None = send_midi_parameter
 
-        super().__init__(send_midi_parameter=send_midi_parameter,
-                         midi_helper=midi_helper,
-                         controls=controls,
-                         address=address,
-                         icons_row_type=icons_row_type,
-                         analog=analog)
+        super().__init__(
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
+            controls=controls,
+            address=address,
+            icons_row_type=icons_row_type,
+            analog=analog,
+        )
         # Set attributes after super().__init__() to avoid them being overwritten
         self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         self.address = address
@@ -108,7 +112,9 @@ class BaseFilterSection(SectionBaseWidget):
             return
         self.tab_widget = QTabWidget()
         # --- Filter Controls ---
-        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group)
+        self._add_tab(
+            key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group
+        )
         # --- Filter ADSR ---
         self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
         JDXi.UI.Theme.apply_tabs_style(widget=self.tab_widget, analog=self.analog)
@@ -132,7 +138,9 @@ class BaseFilterSection(SectionBaseWidget):
             )
             self.filter_mode_buttons[filter_mode] = button
             self.filter_mode_control_button_widgets.append(button)
-        filter_row = create_layout_with_widgets(self.filter_mode_control_button_widgets, vertical=False)
+        filter_row = create_layout_with_widgets(
+            self.filter_mode_control_button_widgets, vertical=False
+        )
         return filter_row
 
     def _on_button_selected_old(self, button_param):
@@ -181,7 +189,9 @@ class BaseFilterSection(SectionBaseWidget):
 
         # --- Notify parent (Analog editor uses this to sync; Digital has no callback)
         if self._filter_mode_changed_callback:
-            log.message(f"[Filter] Calling _filter_mode_changed_callback with value={filter_mode.value}")
+            log.message(
+                f"[Filter] Calling _filter_mode_changed_callback with value={filter_mode.value}"
+            )
             self._filter_mode_changed_callback(filter_mode.value)
 
         # --- Update enabled state here so Digital (no callback) still works; Analog callback does it too
@@ -206,13 +216,21 @@ class BaseFilterSection(SectionBaseWidget):
                 create_parameter_switch=self._create_parameter_switch,
                 controls=self.controls,
                 address=self.address,
-                analog=self.analog
+                analog=self.analog,
             )
         if self.analog:
-            (self.filter_resonance, self.filter_cutoff_keyfollow, self.filter_env_velocity_sens) = self._build_sliders(self.SLIDER_GROUPS["filter"])
+            (
+                self.filter_resonance,
+                self.filter_cutoff_keyfollow,
+                self.filter_env_velocity_sens,
+            ) = self._build_sliders(self.SLIDER_GROUPS["filter"])
         else:  # Digital has an extra slider
-            (self.filter_resonance, self.filter_cutoff_keyfollow, self.filter_env_velocity_sens, self.filter_env_depth) = self._build_sliders(
-                self.SLIDER_GROUPS["filter"])
+            (
+                self.filter_resonance,
+                self.filter_cutoff_keyfollow,
+                self.filter_env_velocity_sens,
+                self.filter_env_depth,
+            ) = self._build_sliders(self.SLIDER_GROUPS["filter"])
         control_widgets = [
             self.filter_widget,
             self.filter_resonance,
@@ -221,9 +239,7 @@ class BaseFilterSection(SectionBaseWidget):
         ]
         if not self.analog:
             control_widgets.append(self.filter_env_depth)
-        controls_layout = create_layout_with_widgets(
-            control_widgets
-        )
+        controls_layout = create_layout_with_widgets(control_widgets)
         return create_group_adsr_with_hlayout(
             name="Controls", hlayout=controls_layout, analog=self.analog
         )
@@ -249,13 +265,19 @@ class BaseFilterSection(SectionBaseWidget):
 
         try:
             selected_filter_mode = self.FILTER_MODE_ENABLED_MAP.get(value)
-            _map_keys = list(self.FILTER_MODE_ENABLED_MAP.keys()) if self.FILTER_MODE_ENABLED_MAP else []
+            _map_keys = (
+                list(self.FILTER_MODE_ENABLED_MAP.keys())
+                if self.FILTER_MODE_ENABLED_MAP
+                else []
+            )
             log.message(
                 f"[Filter] update_controls_state: value={value} selected_filter_mode={selected_filter_mode!r} "
                 f"FILTER_MODE_ENABLED_MAP keys={_map_keys}"
             )
             if selected_filter_mode is None:
-                log.warning(f"[Filter] Unknown filter mode value: {value}, returning early")
+                log.warning(
+                    f"[Filter] Unknown filter mode value: {value}, returning early"
+                )
                 return
 
             # --- Enable/disable controls based on filter mode
@@ -287,9 +309,9 @@ class BaseFilterSection(SectionBaseWidget):
 
         # --- Update filter mode in FilterWidget plot
         if (
-                hasattr(self, "filter_widget")
-                and self.filter_widget
-                and hasattr(self.filter_widget, "plot")
+            hasattr(self, "filter_widget")
+            and self.filter_widget
+            and hasattr(self.filter_widget, "plot")
         ):
             filter_mode_str = self.FILTER_MODE_MIDI_MAP.get(
                 button_param, self.SYNTH_SPEC.Filter.ModeType.LPF

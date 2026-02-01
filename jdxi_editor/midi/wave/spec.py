@@ -3,15 +3,15 @@ Wave Osc Behaviour
 """
 
 WAVE_OSC_METADATA = {
-    "SAW":        ("SAW",   "Sawtooth"),
-    "SQUARE":     ("SQR",   "Square"),
-    "PW_SQUARE":  ("PWM",   "Pulse Width Square"),
-    "TRIANGLE":   ("TRI",   "Triangle"),
-    "TRI":        ("TRI",   "Triangle"),
-    "SINE":       ("SINE",  "Sine"),
-    "NOISE":      ("NOISE", "Noise"),
-    "SUPER_SAW":  ("S-SAW", "Super Saw"),
-    "PCM":        ("PCM",   "PCM Wave"),
+    "SAW": ("SAW", "Sawtooth"),
+    "SQUARE": ("SQR", "Square"),
+    "PW_SQUARE": ("PWM", "Pulse Width Square"),
+    "TRIANGLE": ("TRI", "Triangle"),
+    "TRI": ("TRI", "Triangle"),
+    "SINE": ("SINE", "Sine"),
+    "NOISE": ("NOISE", "Noise"),
+    "SUPER_SAW": ("S-SAW", "Super Saw"),
+    "PCM": ("PCM", "PCM Wave"),
 }
 
 

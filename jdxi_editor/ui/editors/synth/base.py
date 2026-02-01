@@ -47,7 +47,10 @@ class SynthBase(QWidget):
     """base class for all synth editors"""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, parent: QWidget = None, address: Optional[RolandSysExAddress] = None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent: QWidget = None,
+        address: Optional[RolandSysExAddress] = None,
     ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
@@ -468,7 +471,7 @@ class SynthBase(QWidget):
             WaveformType.BPF_FILTER,
             WaveformType.FILTER_SINE,
         }
-        
+
         # Handle icon - could be a string (qtawesome icon name) or WaveformType value
         if isinstance(key.icon, str) and key.icon in waveform_type_values:
             # Use generated icon for waveform types
@@ -479,7 +482,7 @@ class SynthBase(QWidget):
         else:
             # Use regular icon from registry
             icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
-        
+
         self.tab_widget.addTab(
             widget,
             icon,

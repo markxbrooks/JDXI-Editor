@@ -68,7 +68,7 @@ class DrumCommonSection(SectionBaseWidget):
         self.address = address
         if self.address:
             self.address.lmb = AddressOffsetProgramLMB.COMMON
-        
+
         self.setup_ui()
 
     def setup_ui(self):

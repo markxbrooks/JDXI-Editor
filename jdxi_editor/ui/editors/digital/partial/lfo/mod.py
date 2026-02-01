@@ -77,7 +77,9 @@ class DigitalModLFOSection(BaseLFOSection):
         self.wave_shape_buttons = {}  # Dictionary to store Mod LFO shape buttons
 
         super().__init__(
-            icons_row_type=icons_row_type, analog=analog, send_midi_parameter=send_midi_parameter
+            icons_row_type=icons_row_type,
+            analog=analog,
+            send_midi_parameter=send_midi_parameter,
         )
         self.wave_shape_param: Literal[DigitalPartialParam.MOD_LFO_SHAPE] = (
             DigitalPartialParam.MOD_LFO_SHAPE

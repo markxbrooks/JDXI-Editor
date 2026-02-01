@@ -429,14 +429,14 @@ class PresetEditor(BasicEditor):
             pc - 1,  # Convert 1-based PC to 0-based
         )
         self.data_request()
-        
+
         # Update the instrument image based on the selected preset
         self.update_instrument_image()
-    
+
     def _get_selected_instrument_text(self) -> str:
         """
         Override to use preset_combo_box instead of instrument_selection_combo.
-        
+
         :return: str The selected preset text from preset_combo_box
         """
         if hasattr(self, "preset_combo_box") and self.preset_combo_box:
