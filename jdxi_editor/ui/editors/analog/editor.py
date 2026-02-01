@@ -101,9 +101,9 @@ class AnalogSynthEditor(BaseSynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            log.message("MIDI signals connected")
+            log.message("[AnalogSynthEditor] MIDI signals connected")
         else:
-            log.message("MIDI signals not connected")
+            log.message("[AnalogSynthEditor] MIDI signals not connected")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -204,7 +204,7 @@ class AnalogSynthEditor(BaseSynthEditor):
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
-            f"[Analog Editor] update_filter_controls_state: mode={mode} "
+            f"[AnalogSynthEditor] update_filter_controls_state: mode={mode} "
             f"has filter_section={hasattr(self, 'filter_section')} "
             f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
         )
@@ -212,10 +212,10 @@ class AnalogSynthEditor(BaseSynthEditor):
             self.filter_section.update_controls_state(mode)
         else:
             log.warning(
-                "[Analog Editor] update_filter_controls_state: no filter_section, skipping"
+                "[AnalogSynthEditor] update_filter_controls_state: no filter_section, skipping"
             )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
-        log.message(f"[Analog Editor] _on_filter_mode_changed: mode={mode}")
+        log.message(f"[AnalogSynthEditor] _on_filter_mode_changed: mode={mode}")
         self.update_filter_controls_state(mode)

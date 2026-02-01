@@ -10,7 +10,9 @@ from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_group_with_layout
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
@@ -81,14 +83,17 @@ class DigitalToneModifySection(SectionBaseWidget):
         )
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
 
-        self._build_widgets()
+        self.build_widgets()
         self.setup_ui()
+
+    def _setup_ui(self):
+        pass  # override so as to not provide a Tab Widget
 
     # ------------------------------------------------------------
     # Widget construction
     # ------------------------------------------------------------
 
-    def _build_widgets(self) -> None:
+    def build_widgets(self) -> None:
         self.interval_sens_sliders = self._build_sliders(
             self.SLIDER_GROUPS["interval_sens"]
         )
@@ -107,9 +112,18 @@ class DigitalToneModifySection(SectionBaseWidget):
     # ------------------------------------------------------------
 
     def setup_ui(self) -> None:
+        """setup ui"""
         layout = self.get_layout()
-        self._add_centered_row(*self.interval_sens_sliders)
-        self._add_centered_row(*self.envelope_loop_mode_combo_boxes)
-        self._add_centered_row(*self.envelope_loop_sync_note_combo_boxes)
-        self._add_centered_row(*self.chromatic_portamento_switches)
+        group, sub_layout = create_group_with_layout(label="Tone Modify")
+        layout.addWidget(group)
+        group.setStyleSheet(JDXiUIStyle.ADSR)
+        sub_layout.addLayout(create_layout_with_widgets(self.envelope_loop_mode_combo_boxes))
+        sub_layout.addLayout(create_layout_with_widgets(self.envelope_loop_sync_note_combo_boxes))
+        sub_layout.addLayout(create_layout_with_widgets(self.chromatic_portamento_switches))
+        sub_layout.addLayout(
+            create_layout_with_widgets(
+                self.interval_sens_sliders
+            )
+        )
+        sub_layout.addStretch()
         layout.addStretch()

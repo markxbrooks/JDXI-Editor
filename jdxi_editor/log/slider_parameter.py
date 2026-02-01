@@ -58,14 +58,14 @@ def log_slider_parameters(
             part_name_lmb = "COMMON"
 
         message = (
-            f"Updating [umb {synth_umb:<3} {synth_name_umb:<20}] "
-            f"[lmb {part_lmb:<3} {part_name_lmb:<20}] "
-            f"[lsb: 0x{param.address:02X} {param.name:<35}] "
-            f"midi data: {midi_value:<4} → Slider: {slider_value:.1f}"
+            f"[log_slider_parameters] [umb] [{synth_umb:<3} {synth_name_umb:<20}] "
+            f"[lmb] [{part_lmb:<3} {part_name_lmb:<20}] "
+            f"[lsb] [0x{param.address:02X} {param.name:<35}] "
+            f"[midi data] [{midi_value:<4} → Slider: {slider_value:.1f}]"
         )
 
         decorated_message = decorate_log_message(message, level)
         if LOGGING:
             logger.log(level, decorated_message, stacklevel=2)
     except Exception as ex:
-        logger.recording_error(f"Error {ex} occurred logging parameter")
+        logger.recording_error(f"[log_slider_parameters] Error {ex} occurred logging parameter")

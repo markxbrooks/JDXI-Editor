@@ -280,7 +280,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -303,7 +303,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                         )
                     )
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}")
 
 
 if __name__ == "__main__":

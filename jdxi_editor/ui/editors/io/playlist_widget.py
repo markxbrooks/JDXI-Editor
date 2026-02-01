@@ -129,11 +129,11 @@ class PlaylistWidget(QWidget):
 
         # Populate table (with error handling)
         try:
-            log.message("🔨 Calling populate_table()...")
+            log.message("🔨[PlaylistWidget] Calling populate_table()...")
             self.populate_table()
-            log.message("✅ Playlist table populated successfully")
+            log.message("✅ [PlaylistWidget] Playlist table populated successfully")
         except Exception as e:
-            log.error(f"❌ Error populating playlist table: {e}")
+            log.error(f"❌ [PlaylistWidget] Error populating playlist table: {e}")
             import traceback
 
             log.error(traceback.format_exc())
@@ -149,7 +149,7 @@ class PlaylistWidget(QWidget):
     def populate_table(self) -> None:
         """Populate the playlist table from SQLite database."""
         if not self.playlist_table:
-            log.warning("Playlist table not initialized")
+            log.warning("[PlaylistWidget] Playlist table not initialized")
             return
 
         try:
@@ -159,7 +159,7 @@ class PlaylistWidget(QWidget):
             db = get_database()
             all_playlists = db.get_all_playlists()
         except Exception as e:
-            log.error(f"Error getting playlists from database: {e}")
+            log.error(f"[PlaylistWidget] Error getting playlists from database: {e}")
             import traceback
 
             log.error(traceback.format_exc())
@@ -214,7 +214,7 @@ class PlaylistWidget(QWidget):
             # Re-enable sorting if it was enabled before
             self.playlist_table.setSortingEnabled(was_sorting_enabled)
 
-        log.message(f"✅ Populated playlist table with {len(all_playlists)} playlists")
+        log.message(f"✅ [PlaylistWidget] Populated playlist table with {len(all_playlists)} playlists")
 
     def create_new_playlist(self) -> None:
         """Create a new playlist."""
@@ -228,11 +228,11 @@ class PlaylistWidget(QWidget):
             db = get_database()
             playlist_id = db.create_playlist(name.strip())
             if playlist_id:
-                log.message(f"✅ Created playlist: {name}")
+                log.message(f"✅ [PlaylistWidget] Created playlist: {name}")
                 self.populate_table()
                 self._notify_playlist_changed()
             else:
-                log.error(f"❌ Failed to create playlist: {name}")
+                log.error(f"❌[PlaylistWidget] Failed to create playlist: {name}")
                 QMessageBox.warning(
                     self,
                     "Error",
@@ -279,13 +279,13 @@ class PlaylistWidget(QWidget):
 
             db = get_database()
             if db.delete_playlist(playlist_id):
-                log.message(f"✅ Deleted playlist: {playlist_name}")
+                log.message(f"✅ [PlaylistWidget] Deleted playlist: {playlist_name}")
                 self.populate_table()
                 self._notify_playlist_changed(playlist_id=playlist_id)
             else:
-                log.error(f"❌ Failed to delete playlist: {playlist_name}")
+                log.error(f"❌ [PlaylistWidget] Failed to delete playlist: {playlist_name}")
                 QMessageBox.warning(
-                    self, "Error", f"Failed to delete playlist '{playlist_name}'."
+                    self, "Error", f"[PlaylistWidget] Failed to delete playlist '{playlist_name}'."
                 )
 
     def _on_playlist_item_changed(self, item: QTableWidgetItem) -> None:
@@ -320,7 +320,7 @@ class PlaylistWidget(QWidget):
             if db.update_playlist(playlist_id, name=new_value):
                 try:
                     log.message(
-                        f"✅ Updated playlist {playlist_id} name to: {new_value}"
+                        f"✅ [PlaylistWidget] Updated playlist {playlist_id} name to: {new_value}"
                     )
                     # Update stored playlist data
                     playlist["name"] = new_value
@@ -330,9 +330,9 @@ class PlaylistWidget(QWidget):
                             table_item.setData(Qt.ItemDataRole.UserRole, playlist)
                     self._notify_playlist_changed()
                 except Exception as ex:
-                    log.error(f"Error {ex} occurred updating playlist")
+                    log.error(f"[PlaylistWidget] Error {ex} occurred updating playlist")
             else:
-                log.error(f"❌ Failed to update playlist {playlist_id} name")
+                log.error(f"❌[PlaylistWidget] Failed to update playlist {playlist_id} name")
                 # Revert the change
                 self.playlist_table.blockSignals(True)
                 item.setText(playlist.get("name", ""))
@@ -340,7 +340,7 @@ class PlaylistWidget(QWidget):
         elif col == 2:  # Description column
             value = new_value or ""  # never pass None
             if db.update_playlist(playlist_id, description=value):
-                log.message(f"Updated playlist {playlist_id} description")
+                log.message(f"[PlaylistWidget] Updated playlist {playlist_id} description")
                 playlist["description"] = value
                 for c in range(4):
                     table_item = self.playlist_table.item(row, c)
@@ -348,7 +348,7 @@ class PlaylistWidget(QWidget):
                         table_item.setData(Qt.ItemDataRole.UserRole, playlist)
                 self._notify_playlist_changed()
             else:
-                log.error(f"Failed to update playlist {playlist_id} description")
+                log.error(f"[PlaylistWidget] Failed to update playlist {playlist_id} description")
                 self.playlist_table.blockSignals(True)
                 item.setText(playlist.get("description", "") or "")
                 self.playlist_table.blockSignals(False)
@@ -364,7 +364,7 @@ class PlaylistWidget(QWidget):
         playlist = item.data(Qt.ItemDataRole.UserRole)
         if playlist:
             log.message(
-                f"📋 Selected playlist: {playlist['name']} (ID: {playlist['id']})"
+                f"📋 [PlaylistWidget] Selected playlist: {playlist['name']} (ID: {playlist['id']})"
             )
 
     def _notify_playlist_changed(self, playlist_id: Optional[int] = None) -> None:

@@ -284,7 +284,7 @@ class JDXiInstrument(JDXiWindow):
             self._save_settings()
             event.accept()
         except Exception as ex:
-            log.error(f"Error during close event: {str(ex)}")
+            log.error(f"[JDXiInstrument] Error during close event: {str(ex)}")
             event.ignore()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
@@ -349,9 +349,9 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         self.editors.append(editor)
-        log.message(f"Editor {str(editor)} registered")
+        log.message(f"[JDXiInstrument] Editor {str(editor)} registered")
         for i, registered_editor in enumerate(self.editors):
-            log.message(f"Registered Editor {i} {str(registered_editor)}")
+            log.message(f"[JDXiInstrument] Registered Editor {i} {str(registered_editor)}")
 
     def set_tone_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
@@ -375,7 +375,7 @@ class JDXiInstrument(JDXiWindow):
         helper = self.preset_helpers.get(self.current_synth_type)
         if helper is None:
             log.warning(
-                f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1"
+                f"[JDXiInstrument] Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback
         return helper
@@ -414,7 +414,7 @@ class JDXiInstrument(JDXiWindow):
         :param synth_type: JDXiSynth
         :return: None
         """
-        log.parameter("Selected synth:", synth_type)
+        log.parameter("[JDXiInstrument] Selected synth:", synth_type)
         self.current_synth_type = synth_type
         self.channel = JDXiSynth.midi_channel_number(synth_type)
         self._update_synth_button_styles()
@@ -472,7 +472,7 @@ class JDXiInstrument(JDXiWindow):
         if not presets:
             show_message_box("No presets", "No presets available for this synth type.")
             return
-        log.parameter(f"Presets for current synth: {self.current_synth_type}", presets)
+        log.parameter(f"[JDXiInstrument] Presets for current synth: {self.current_synth_type}", presets)
         max_index = len(presets) - 1
         new_preset_index = self.current_preset_index + index_change
 
@@ -518,7 +518,7 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         log.message(
-            f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
+            f"[JDXiInstrument] update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
         # Convert channel integer to MidiChannel enum if needed
         if isinstance(channel, int):
@@ -526,7 +526,7 @@ class JDXiInstrument(JDXiWindow):
                 channel_enum = MidiChannel(channel)
             except (ValueError, TypeError):
                 log.warning(
-                    f"Invalid channel value: {channel}, using synth_type instead"
+                    f"[JDXiInstrument] Invalid channel value: {channel}, using synth_type instead"
                 )
                 channel_enum = None
         else:
@@ -543,14 +543,14 @@ class JDXiInstrument(JDXiWindow):
             presets = self.preset_manager.get_presets_for_synth(synth_type)
             if not isinstance(presets, list):
                 log.error(
-                    f"Both get_presets_for_channel and get_presets_for_synth returned non-list. "
-                    f"channel_enum: {channel_enum}, synth_type: {synth_type}, presets type: {type(presets)}"
+                    f"[JDXiInstrument] Both get_presets_for_channel and get_presets_for_synth returned non-list. "
+                    f"[JDXiInstrument] channel_enum: {channel_enum}, synth_type: {synth_type}, presets type: {type(presets)}"
                 )
                 return
         # Ensure preset_index is within bounds
         if preset_index < 0 or preset_index >= len(presets):
             log.error(
-                f"Preset index {preset_index} out of range for presets list (length: {len(presets)})"
+                f"[JDXiInstrument] Preset index {preset_index} out of range for presets list (length: {len(presets)})"
             )
             return
         self._update_display_preset(
@@ -653,7 +653,7 @@ class JDXiInstrument(JDXiWindow):
         try:
             os_file_open(html_file)
         except Exception as ex:
-            log.exception(f"Error {ex} occurred opening documentation")
+            log.exception(f"[JDXiInstrument] Error {ex} occurred opening documentation")
 
     def on_preferences(self):
         """
@@ -674,7 +674,7 @@ class JDXiInstrument(JDXiWindow):
         """
         instance_attr = f"{editor_class.__name__.lower()}_instance"
         existing_editor = getattr(self, instance_attr, None)
-        log.parameter("existing_editor", existing_editor)
+        log.parameter("[JDXiInstrument] existing_editor", existing_editor)
         return existing_editor
 
     def _show_editor_tab(self, title: str, editor_class, icon, **kwargs) -> None:
@@ -820,8 +820,8 @@ class JDXiInstrument(JDXiWindow):
         except Exception as ex:
             import traceback
 
-            log.error(f"Error showing {title} editor: {ex}", exception=ex)
-            log.error(f"Traceback: {traceback.format_exc()}")
+            log.error(f"[JDXiInstrument] Error showing {title} editor: {ex}", exception=ex)
+            log.error(f"[JDXiInstrument] Traceback: {traceback.format_exc()}")
 
     def _update_tab_bar_property(self, index: int) -> None:
         """
@@ -907,7 +907,7 @@ class JDXiInstrument(JDXiWindow):
                     self.register_editor(partial_item)
 
         except Exception as ex:
-            log.error(f"Error showing {title} editor", exception=ex)
+            log.error(f"[JDXiInstrument] Error showing {title} editor", exception=ex)
 
     def _show_log_viewer(self) -> None:
         """Show log viewer window"""
@@ -915,7 +915,7 @@ class JDXiInstrument(JDXiWindow):
             self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
         self.log_viewer.show()
         self.log_viewer.raise_()
-        log.message("Showing LogViewer window")
+        log.message("[JDXiInstrument] Showing LogViewer window")
 
     def _show_midi_config(self) -> None:
         """Show MIDI configuration dialog"""
@@ -924,19 +924,19 @@ class JDXiInstrument(JDXiWindow):
             dialog.exec()
 
         except Exception as ex:
-            log.error("Error showing MIDI configuration", exception=ex)
+            log.error("[JDXiInstrument] Error showing MIDI configuration", exception=ex)
             self.show_error("MIDI Configuration Error", str(ex))
 
     def _show_midi_debugger(self) -> None:
         """Open MIDI debugger window"""
         if not self.midi_helper:
-            log.message("MIDI helper not initialized")
+            log.message("[JDXiInstrument] MIDI helper not initialized")
             return
         if not self.midi_debugger:
             self.midi_debugger = MIDIDebugger(self.midi_helper)
             # Clean up reference when window is closed
             self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
-            log.message("Created new MIDI debugger window")
+            log.message("[JDXiInstrument] Created new MIDI debugger window")
         self.midi_debugger.show()
         self.midi_debugger.raise_()
 
@@ -1139,7 +1139,7 @@ class JDXiInstrument(JDXiWindow):
             )
             patch_manager.show()
         except Exception as ex:
-            log.error("Error loading patch", exception=ex)
+            log.error("[JDXiInstrument] Error loading patch", exception=ex)
 
     def _patch_save(self) -> None:
         """Show save patch dialog"""
@@ -1152,7 +1152,7 @@ class JDXiInstrument(JDXiWindow):
             )
             patch_manager.show()
         except Exception as ex:
-            log.error("Error saving patch", exception=ex)
+            log.error("[JDXiInstrument] Error saving patch", exception=ex)
 
     def _dump_settings_to_synth(self) -> None:
         """
@@ -1161,17 +1161,17 @@ class JDXiInstrument(JDXiWindow):
         """
         try:
             if not self.midi_helper:
-                log.warning("MIDI helper not initialized. Cannot dump settings.")
+                log.warning("[JDXiInstrument] MIDI helper not initialized. Cannot dump settings.")
                 return
 
             if (
                 not self.midi_helper.midi_out
                 or not self.midi_helper.midi_out.is_port_open()
             ):
-                log.warning("MIDI output port is not open. Cannot dump settings.")
+                log.warning("[JDXiInstrument] MIDI output port is not open. Cannot dump settings.")
                 return
 
-            log.message("Starting to dump all settings to synthesizer...")
+            log.message("[JDXiInstrument] Starting to dump all settings to synthesizer...")
 
             from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 
@@ -1220,20 +1220,20 @@ class JDXiInstrument(JDXiWindow):
                         )
                         total_sent += param_count
                         log.message(
-                            f"Sent {param_count} parameters from {editor.__class__.__name__}"
+                            f"[JDXiInstrument] Sent {param_count} parameters from {editor.__class__.__name__}"
                         )
                 except Exception as ex:
                     log.error(
-                        f"Error dumping settings from {editor.__class__.__name__}: {ex}"
+                        f"[JDXiInstrument] Error dumping settings from {editor.__class__.__name__}: {ex}"
                     )
                     total_skipped += 1
 
             log.message(
-                f"Settings dump complete: {total_sent} parameters sent to synthesizer"
+                f"[JDXiInstrument] Settings dump complete: {total_sent} parameters sent to synthesizer"
             )
 
         except Exception as ex:
-            log.error(f"Error dumping settings to synth: {ex}")
+            log.error(f"[JDXiInstrument] Error dumping settings to synth: {ex}")
 
     def _update_user_program_database(self) -> None:
         """
@@ -1381,14 +1381,14 @@ class JDXiInstrument(JDXiWindow):
             )
             if result is None:
                 log.error(
-                    f"Failed to calculate MIDI values for {current_bank}{self._db_update_current_program:02d}"
+                    f"[JDXiInstrument] Failed to calculate MIDI values for {current_bank}{self._db_update_current_program:02d}"
                 )
                 self._move_to_next_program()
                 return
             msb, lsb, pc = result
         except (ValueError, TypeError) as e:
             log.error(
-                f"Error calculating MIDI values for {current_bank}{self._db_update_current_program:02d}: {e}"
+                f"[JDXiInstrument] Error calculating MIDI values for {current_bank}{self._db_update_current_program:02d}: {e}"
             )
             self._move_to_next_program()
             return
@@ -1411,7 +1411,7 @@ class JDXiInstrument(JDXiWindow):
             program_num_1based = self._db_update_current_program
         self.midi_helper._incoming_preset_data.program_number = program_num_1based
         log.message(
-            f"🔍 Requesting program {current_bank}{self._db_update_current_program:02d} (PC={program_num_1based})"
+            f"🔍[JDXiInstrument] Requesting program {current_bank}{self._db_update_current_program:02d} (PC={program_num_1based})"
         )
 
         # Reset tracking flags
@@ -1420,7 +1420,7 @@ class JDXiInstrument(JDXiWindow):
 
         # Select the program on the synthesizer
         log.message(
-            f"🎹 Selecting program {current_bank}{self._db_update_current_program:02d} (MSB={msb}, LSB={lsb}, PC={pc})"
+            f"🎹[JDXiInstrument] Selecting program {current_bank}{self._db_update_current_program:02d} (MSB={msb}, LSB={lsb}, PC={pc})"
         )
         self.midi_helper.send_bank_select_and_program_change(
             MidiChannel.PROGRAM, msb, lsb, pc
@@ -1448,7 +1448,7 @@ class JDXiInstrument(JDXiWindow):
             return
 
         self._db_update_program_name_received = True
-        log.message(f"📝 Program name received: {program_name}")
+        log.message(f"📝 [JDXiInstrument] Program name received: {program_name}")
 
         # Check if we have all required data, then save
         self._check_and_save_program()
@@ -1461,7 +1461,7 @@ class JDXiInstrument(JDXiWindow):
         # Track which tone names we've received
         if area in ["digital_1", "digital_2", "analog", "drum"]:
             self._db_update_tone_names_received.add(area)
-            log.message(f"🎵 Tone name received: {area} = {tone_name}")
+            log.message(f"🎵[JDXiInstrument] Tone name received: {area} = {tone_name}")
 
         # Check if we have all required data, then save
         self._check_and_save_program()
@@ -1507,7 +1507,7 @@ class JDXiInstrument(JDXiWindow):
             # Use placeholder name if no program name received
             if not data.program_name:
                 log.warning(
-                    f"No program name received for {program_id}, using placeholder name"
+                    f"[JDXiInstrument]No program name received for {program_id}, using placeholder name"
                 )
                 data.program_name = f"User bank {current_bank} program {self._db_update_current_program:02d}"
 
@@ -1529,7 +1529,7 @@ class JDXiInstrument(JDXiWindow):
                     program_number = self._db_update_current_program
 
             log.message(
-                f"💾 Saving program {program_id}: name='{data.program_name}', PC={program_number}"
+                f"💾 [JDXiInstrument] Saving program {program_id}: name='{data.program_name}', PC={program_number}"
             )
 
             # Check if program already exists in database
@@ -1570,12 +1570,12 @@ class JDXiInstrument(JDXiWindow):
                         existing_program.genre if existing_program.genre else "Unknown"
                     )
                     log.message(
-                        f"📋 Program {program_id} data unchanged, preserving genre: '{genre}'"
+                        f"📋 [JDXiInstrument] Program {program_id} data unchanged, preserving genre: '{genre}'"
                     )
                 else:
                     # Program data has changed, use "Unknown" (user can edit genre manually)
                     log.message(
-                        f"🔄 Program {program_id} data changed, resetting genre to 'Unknown'"
+                        f"🔄 [JDXiInstrument] Program {program_id} data changed, resetting genre to 'Unknown'"
                     )
 
             # Create JDXiProgram object
@@ -1600,13 +1600,13 @@ class JDXiInstrument(JDXiWindow):
             if add_or_replace_program_and_save(program):
                 self._db_update_programs_saved += 1
                 log.message(
-                    f"✅ Saved program {program_id}: {program.name} (genre: '{genre}')"
+                    f"✅ [JDXiInstrument] Saved program {program_id}: {program.name} (genre: '{genre}')"
                 )
             else:
-                log.warning(f"⚠️ Failed to save program {program_id}")
+                log.warning(f"⚠️ [JDXiInstrument] Failed to save program {program_id}")
 
         except Exception as ex:
-            log.error(f"Error saving program: {ex}")
+            log.error(f"[JDXiInstrument] Error saving program: {ex}")
 
         # Move to next program
         self._move_to_next_program()
@@ -1615,7 +1615,7 @@ class JDXiInstrument(JDXiWindow):
         """Handle timeout when waiting for program data."""
         if self._db_update_waiting_for_data:
             log.warning(
-                f"Timeout waiting for program data: "
+                f"[JDXiInstrument] Timeout waiting for program data: "
                 f"{self._db_update_banks[self._db_update_current_bank_index]}"
                 f"{self._db_update_current_program:02d}"
             )
@@ -1688,10 +1688,10 @@ class JDXiInstrument(JDXiWindow):
                 name=self.preset_manager.current_preset_name,
                 type=self.current_synth_type,
             )
-            log.message(f"Current preset retrieved: {button_preset}")
+            log.message(f"[JDXiInstrument] Current preset retrieved: {button_preset}")
             return button_preset
         except Exception as ex:
-            log.error("Error generating button preset", ex)
+            log.error("[JDXiInstrument] Error generating button preset", ex)
             return None
 
     def _get_current_preset_name_from_settings(self) -> str:
@@ -1736,7 +1736,7 @@ class JDXiInstrument(JDXiWindow):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         log.message(
-            f"Updated octave to: {self.current_octave} (value: {hex(JDXi.Midi.SYSEX.OCTAVE.CENTER_VALUE + self.current_octave)})"
+            f"[JDXiInstrument] Updated octave to: {self.current_octave} (value: {hex(JDXi.Midi.SYSEX.OCTAVE.CENTER_VALUE + self.current_octave)})"
         )
 
     def _midi_init_ports(
@@ -1761,7 +1761,7 @@ class JDXiInstrument(JDXiWindow):
             self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
             self._save_settings()
         except Exception as ex:
-            log.error("Error setting MIDI ports", exception=ex)
+            log.error("[JDXiInstrument] Error setting MIDI ports", exception=ex)
 
     def _midi_blink_input(self, _):
         """Handle incoming MIDI messages and flash indicator"""
@@ -1787,7 +1787,7 @@ class JDXiInstrument(JDXiWindow):
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
             log.message(
-                f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
+                f"[JDXiInstrument] Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
             address = RolandSysExAddress(
                 msb=AddressStartMSB.TEMPORARY_TONE,
@@ -1847,9 +1847,9 @@ class JDXiInstrument(JDXiWindow):
                     self.midi_helper.send_control_change(
                         cc, cc_value, MidiChannel.DIGITAL_SYNTH_1
                     )
-                log.message(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
+                log.message(f"[JDXiInstrument] Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
         except Exception as ex:
-            log.error("Error sending arp key hold", exception=ex)
+            log.error("[JDXiInstrument] Error sending arp key hold", exception=ex)
 
     def _midi_send_arp_on_off(self, state: bool) -> None:
         """
@@ -1861,7 +1861,7 @@ class JDXiInstrument(JDXiWindow):
         try:
             if self.midi_helper:
                 value = Midi.VALUE.ON if state else Midi.VALUE.OFF  # 1 = ON, 0 = OFF
-                log.message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
+                log.message(f"[JDXiInstrument] Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
                     AddressOffsetProgramLMB.CONTROLLER,
@@ -1883,7 +1883,7 @@ class JDXiInstrument(JDXiWindow):
                     )
                     self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
-            log.error("Error sending arp on/off", exception=ex)
+            log.error("[JDXiInstrument] Error sending arp on/off", exception=ex)
 
     def handle_piano_note_on(self, note_num: int) -> None:
         """
@@ -1896,7 +1896,7 @@ class JDXiInstrument(JDXiWindow):
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
             msg = [Midi.NOTE.ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
-            log.message(f"Sent Note On: {note_num} on channel {self.channel + 1}")
+            log.message(f"[JDXiInstrument] Sent Note On: {note_num} on channel {self.channel + 1}")
 
     def handle_piano_note_off(self, note_num: int) -> None:
         """
@@ -1912,7 +1912,7 @@ class JDXiInstrument(JDXiWindow):
                 status = Midi.NOTE.OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
-                log.message(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
+                log.message(f"[JDXiInstrument] Sent Note Off: {note_num} on channel {self.channel + 1}")
 
     def _load_last_preset(self):
         """Load the last used preset from settings."""
@@ -1956,10 +1956,10 @@ class JDXiInstrument(JDXiWindow):
                 preset_name = presets[preset_number - 1]  # Adjust index to be 0-based
                 self._update_display_preset(preset_number, preset_name, channel)
 
-                log.message(f"Loaded last preset: {preset_name} on channel {channel}")
+                log.message(f"[JDXiInstrument] Loaded last preset: {preset_name} on channel {channel}")
 
         except Exception as ex:
-            log.error("Error loading last preset", exception=ex)
+            log.error("[JDXiInstrument] Error loading last preset", exception=ex)
 
     def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
         """Save the last used preset to settings
@@ -1974,11 +1974,11 @@ class JDXiInstrument(JDXiWindow):
             self.settings.setValue("last_preset/preset_num", preset_num)
             self.settings.setValue("last_preset/channel", channel)
             log.message(
-                f"Saved last preset: {synth_type} #{preset_num} on channel {channel}"
+                f"[JDXiInstrument] Saved last preset: {synth_type} #{preset_num} on channel {channel}"
             )
 
         except Exception as ex:
-            log.error("Error saving last preset", exception=ex)
+            log.error("[JDXiInstrument] Error saving last preset", exception=ex)
 
     def _show_favorite_context_menu(
         self, pos, button: Union[FavoriteButton, SequencerSquare]
@@ -2029,7 +2029,7 @@ class JDXiInstrument(JDXiWindow):
                 )
 
             except Exception as ex:
-                log.error("Error saving to favorite", ex)
+                log.error("[JDXiInstrument] Error saving to favorite", ex)
                 QMessageBox.warning(self, "Error", f"Error saving preset: {str(ex)}")
 
     def _clear_favorite(self, button: Union[FavoriteButton, SequencerSquare]) -> None:
@@ -2085,7 +2085,7 @@ class JDXiInstrument(JDXiWindow):
                 button.setChecked(True)  # Keep it checked
                 button.setCheckable(False)  # Prevent unchecking directly
                 self.settings.setValue(preset_name, button_preset)  # Save preset
-                log.message(f"Saved {button_preset} as {preset_name}")
+                log.message(f"[JDXiInstrument] Saved {button_preset} as {preset_name}")
         else:
             self.load_button_preset(button)  # Load stored preset if checked
 
@@ -2114,10 +2114,10 @@ class JDXiInstrument(JDXiWindow):
                 if input_port and output_port:
                     self._midi_init_ports(input_port, output_port)
 
-                log.message("JD-Xi Settings loaded successfully")
+                log.message("[JDXiInstrument] JD-Xi Settings loaded successfully")
 
         except Exception as ex:
-            log.error("Error loading settings", ex)
+            log.error("[JDXiInstrument] Error loading settings", ex)
 
     def _save_settings(self):
         """Save application settings"""
@@ -2134,7 +2134,7 @@ class JDXiInstrument(JDXiWindow):
                 self.settings.setValue("preset_number", self.current_preset_number)
                 self.settings.setValue("preset_name", self.current_preset_name)
 
-                log.message("Settings saved successfully")
+                log.message("[JDXiInstrument] Settings saved successfully")
 
         except Exception as ex:
-            log.error("Error saving settings", exception=ex)
+            log.error("[JDXiInstrument] Error saving settings", exception=ex)

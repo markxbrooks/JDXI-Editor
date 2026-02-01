@@ -125,7 +125,7 @@ class JDXiSysExParser:
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            log.info("Correct JD-Xi header found")
+            log.info("[JDXiSysExParser] Correct JD-Xi header found")
 
         # Determine if short or long message and parse accordingly
         if len(self.sysex_data) < JDXi.Midi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
@@ -383,7 +383,7 @@ class JDXiSysExParser:
                 parsed_fields[field_name] = parsed_value
             except (ValueError, IndexError) as e:
                 # Field extraction failed, skip it
-                log.debug(f"Failed to parse field {i}: {e}")
+                log.debug(f"[JDXiSysExParser] Failed to parse field {i}: {e}")
                 continue
 
         return parsed_fields
@@ -493,7 +493,7 @@ class JDXiSysExParser:
         byte_list = self._mido_message_data_to_byte_list(message)
         device_info = DeviceInfo.from_identity_reply(byte_list)
         if device_info:
-            log.message(device_info.to_string)
+            log.message(f"[JDXiSysExParser] {device_info.to_string}")
         device_id = device_info.device_id
         manufacturer_id = device_info.manufacturer
         version = message.data[
@@ -510,9 +510,9 @@ class JDXiSysExParser:
             manufacturer_name = "Roland"
         else:
             manufacturer_name = "Unknown"
-        log.message(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
-        log.message(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
-        log.message(f"🔄 Firmware Version: \t{version_str}")
+        log.message(f"🏭 [JDXiSysExParser] Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
+        log.message(f"🎹 [JDXiSysExParser] Device ID: \t\t\t{hex(device_id)} \t{device_name}")
+        log.message(f"🔄 [JDXiSysExParser] Firmware Version: \t{version_str}")
         return {
             "device_id": device_id,
             "manufacturer_id": manufacturer_id,
@@ -543,7 +543,7 @@ class JDXiSysExParser:
             ):
                 return self._parse_sysex_to_mido(message_content)
         except Exception as ex:
-            log.error(f"Error parsing SysEx message: {ex}")
+            log.error(f"[JDXiSysExParser] Error parsing SysEx message: {ex}")
 
         # Parse Program Change messages
         try:
@@ -553,7 +553,7 @@ class JDXiSysExParser:
             ):
                 return self._parse_program_change_to_mido(message_content)
         except Exception as ex:
-            log.error(f"Error parsing Program Change: {ex}")
+            log.error(f"[JDXiSysExParser] Error parsing Program Change: {ex}")
 
         # Parse Control Change messages
         try:
@@ -563,9 +563,9 @@ class JDXiSysExParser:
             ):
                 return self._parse_control_change_to_mido(message_content)
         except Exception as ex:
-            log.error(f"Error parsing Control Change: {ex}")
+            log.error(f"[JDXiSysExParser] Error parsing Control Change: {ex}")
 
-        log.message(f"Unhandled MIDI message: {message_content}")
+        log.message(f"[JDXiSysExParser] Unhandled MIDI message: {message_content}")
         return None
 
     def _parse_sysex_to_mido(

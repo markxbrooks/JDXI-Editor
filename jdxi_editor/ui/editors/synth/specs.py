@@ -1,0 +1,412 @@
+from dataclasses import dataclass
+from typing import Optional, Iterable
+
+
+@dataclass(frozen=True)
+class InstrumentDescriptor:
+    """
+    Canonical description of a JD-Xi instrument preset.
+    """
+
+    category: str  # "synth" | "drum"
+    family: str  # e.g. "piano", "pad", "bass"
+    engine: Optional[str]  # e.g. "fm", "jd"
+    raw_text: str  # original label (for logging/debug)
+
+
+@dataclass(frozen=True)
+class InstrumentFamilySpec:
+    family: str
+    keywords: Iterable[str]
+
+
+@dataclass(frozen=True)
+class DrumKitSpec:
+    engine: str
+    keywords: tuple[str, ...]
+    family: str = "kit"
+
+
+DRUM_KIT_SPECS = [
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-909", "909"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-808", "808"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-707", "707"),
+    ),
+    DrumKitSpec(
+        engine="cr",
+        keywords=("cr-78", "cr78"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-606", "606"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("tr-626", "626"),
+    ),
+]
+INSTRUMENT_FAMILY_SPECS = [
+    # Piano/Keyboard - highest priority for keyboard category
+    InstrumentFamilySpec(
+        "piano",
+        [
+            "piano",
+            "e. piano",
+            "e.p",
+            "ep",
+            "e.piano",
+            "grand",
+            "wurly",
+            "clav",
+            "vibraphone",
+            "harp",
+            "steel drum",
+            "trem ep",
+        ],
+    ),
+    InstrumentFamilySpec(
+        "jupiter",
+        [
+            "jp8",
+            "jupiter",
+            "jupiter8",
+        ],
+    ),
+    # Pad - pad-specific terms (check before strings to prioritize pad when "pad" is in name)
+    InstrumentFamilySpec(
+        "pad",
+        [
+            "hollow pad",
+            "lfo pad",
+            "sweep pad",
+            "boreal pad",
+            "bright pad",
+            "soft pad",
+            "hpf pad",
+            "organ pad",
+            "bell pad",
+            "vox pad",
+            "s-saw pad",
+            "hpf sweep",
+            "fltsweep pd",
+            "koff pad",
+            "trnssweeppad",
+            "lfo carvepd",
+            "lfo resopad",
+            "pls pad",
+            "reso s&h pd",
+            "sidechainpd",
+            "pxzoon",
+            "psychoscilo",
+            "fantasy",
+            "dreaming",
+            "syn sniper",
+            "pad",  # "pad" at end as fallback
+        ],
+    ),
+    # Strings - specific string terms (after pad to avoid conflicts)
+    InstrumentFamilySpec(
+        "strings",
+        [
+            "jp8 strings",
+            "strings",
+            "string",
+            "str",
+            "juno str",
+            "brite str",
+            "oct strings",
+            "hybrid str",
+            "analog str",
+            "d-50 pizz",
+            "d-50 stack",
+        ],
+    ),
+    InstrumentFamilySpec(
+        "bass guitar",
+        [
+            "bass guitar",
+            "bassgtr",
+            "bassgtr1",
+            "bassgtr2",
+            "bassgtr3",
+            "bassgtr4",
+            "bassgtr5",
+            "bassgtr6",
+            "bassgtr7",
+            "bassgtr8",
+            "bassgtr9",
+            "bassgtr10",
+            "fretless bass",
+            "picked bass",
+            "fingerd bs",
+        ],
+    ),
+    # Bass
+    InstrumentFamilySpec(
+        "bass",
+        [
+            "bass",
+            "bs",
+            "bass1",
+            "bass2",
+            "bass3",
+            "bass4",
+            "bass5",
+            "seq bass",
+            "reso bass",
+            "tb bass",
+            "106 bass",
+            "low bass",
+            "kick bass",
+            "organ bass",
+            "growl bass",
+            "talking bs",
+            "lfo bass",
+            "crack bass",
+            "wobble bs",
+            "sidechainbs",
+            "house bass",
+            "fm bass",
+            "ac. bass",
+            "fingerd bs",
+            "picked bass",
+            "fretless bs",
+            "slap bass",
+            "r&b bass",
+            "wide bass",
+            "chow bass",
+            "sqrfilterbs",
+            "filter bass",
+            "seqfltenvbs",
+            "dnb bass",
+            "unisonsynbs",
+            "modular bs",
+            "monster bs",
+            "square bs",
+            "5th stac bs",
+            "sqrstacsynbs",
+            "mc-202 bs",
+            "sh-101 bs",
+            "mg bass",
+            "tri bass",
+            "bpf syn bs",
+            "sindetunebs",
+            "resrubber bs",
+            "resosawsynbs",
+            "syn bass",
+            "filterenvbs",
+            "juno sqr bs",
+            "detune bs",
+            "mks-50 bass",
+            "sweep bass",
+            "4op fm bass",
+        ],
+    ),
+    # Lead
+    InstrumentFamilySpec(
+        "lead",
+        [
+            "lead",
+            "ld",
+            "ld1",
+            "ld2",
+            "ld3",
+            "ld4",
+            "tekno lead",
+            "osc-syncld",
+            "waveshapeld",
+            "buzz lead",
+            "sawbuzz ld",
+            "sqr buzz ld",
+            "dist flt tb",
+            "dist tb sqr",
+            "glideator",
+            "vintager",
+            "hover lead",
+            "saw lead",
+            "saw+tri lead",
+            "portasaw ld",
+            "reso saw ld",
+            "sawtrap ld",
+            "fat gr lead",
+            "pulstar ld",
+            "slow lead",
+            "anavox lead",
+            "square ld",
+            "sqr lead",
+            "sqr trap ld",
+            "sine lead",
+            "tri lead",
+            "tri stac ld",
+            "5th sawlead",
+            "sweet 5th",
+            "4th syn lead",
+            "maj stack ld",
+            "minstack ld",
+            "chubby lead",
+            "cuttinglead",
+            "s-sawstacld",
+            "bend lead",
+        ],
+    ),
+    # Brass
+    InstrumentFamilySpec(
+        "brass",
+        [
+            "brass",
+            "brs",
+            "analog brass",
+            "reso brass",
+            "soft brass",
+            "fm brass",
+            "syn brass",
+            "jp8 brass",
+            "soft synbrs",
+            "epicslow brs",
+            "juno brass",
+            "poly brass",
+        ],
+    ),
+    # Organ
+    InstrumentFamilySpec(
+        "organ",
+        [
+            "organ",
+            "org",
+            "house org",
+            "70's e.organ",
+            "e.organ",
+            "organ bell",
+            "organ bass",
+            "organ pad",
+        ],
+    ),
+    # Guitar
+    InstrumentFamilySpec(
+        "guitar",
+        [
+            "guitar",
+            "gtr",
+            "strat",
+            "ac. guitar",
+            "bright strat",
+            "funk guitar",
+            "jazz guitar",
+            "dist guitar",
+            "d. mute gtr",
+            "e. sitar",
+            "sitar drone",
+            "sitar",
+        ],
+    ),
+    # FX/Other - Voc, FX, Hits, etc.
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "fx",
+            "voc",
+            "hit",
+            "vox",
+            "vp-330",
+            "voc:",
+            "voc:ensemble",
+            "voc:5thstack",
+            "voc:robot",
+            "voc:saw",
+            "voc:sqr",
+            "voc:rise up",
+            "voc:auto vib",
+            "voc:pitchenv",
+            "voc:vp-330",
+            "voc:noise",
+            "orch hit",
+            "philly hit",
+            "house hit",
+            "o'skool hit",
+            "punch hit",
+            "tao hit",
+            "syn vox",
+            "jd softvox",
+            "vox pad",
+            "vp-330 chr",
+            "tuned winds",
+            "bend lead",
+            "riser",
+            "rising seq",
+            "scream saw",
+            "noise seq",
+            "init tone",
+        ],
+    ),
+    # Seq/Sequence - plucks, sequences
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "seq",
+            "pluck",
+            "plk",
+            "seq saw",
+            "seq sqr",
+            "seq tri",
+            "sqr reso plk",
+            "pluck synth",
+            "paperclip",
+            "sonar pluck",
+            "sqrtrapplk",
+            "tb saw seq",
+            "tb sqr seq",
+            "juno key",
+            "analog poly",
+            "juno octavr",
+            "edm synth",
+            "super saw",
+            "s-saw poly",
+            "trance key",
+            "s-sawstc syn",
+            "7th stac syn",
+        ],
+    ),
+    # General synth/saw
+    InstrumentFamilySpec(
+        "synth",
+        [
+            "synth",
+            "saw",
+            "super saw",
+            "s-saw",
+            "sawstac",
+            "sawstc",
+            "sawpoly",
+            "saw trap",
+            "saw buzz",
+            "saw lead",
+            "saw seq",
+            "sawsynbs",
+            "sawsyn",
+            "sawpad",
+        ],
+    ),
+]
+ENGINE_KEYWORDS = {
+    "jupiter": ["jupiter", "jp8", "jupiter8"],
+    "fm": ["fm", "4op fm"],
+    "juno": ["juno", "jn"],
+    "jd": ["jd"],
+    "tb": ["tb", "tb-303", "303"],
+    "mg": ["mg", "minimoog"],
+    "sh": ["sh", "sh-101", "101"],
+    "d-50": ["d-50", "d50"],
+    "vp-330": ["vp-330", "vp330"],
+    "mks": ["mks", "mks-50"],
+    "mc": ["mc", "mc-202", "202"],
+}
+
+

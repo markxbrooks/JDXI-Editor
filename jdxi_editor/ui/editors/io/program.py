@@ -40,6 +40,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
@@ -203,7 +204,7 @@ class ProgramEditor(BasicEditor):
 
         # Add User Programs tab to main tab widget
         try:
-            log.message("🔨 Creating User Programs tab for main window...")
+            log.message("🔨[ProgramEditor] Creating User Programs tab for main window...")
             self.user_programs_widget = UserProgramsWidget(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
@@ -217,31 +218,31 @@ class ProgramEditor(BasicEditor):
                 self.user_programs_widget, user_programs_icon, "User Programs"
             )
             log.message(
-                f"✅ Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
             # Log all tab names for debugging
             for i in range(self.main_tab_widget.count()):
-                log.message(f"  Main Tab {i}: '{self.main_tab_widget.tabText(i)}'")
+                log.message(f"[ProgramEditor] Main Tab {i}: '{self.main_tab_widget.tabText(i)}'")
         except Exception as e:
-            log.error(f"❌ Error creating User Programs tab: {e}")
+            log.error(f"❌ [ProgramEditor]  Error creating User Programs tab: {e}")
             import traceback
 
             log.error(traceback.format_exc())
             placeholder_widget, user_programs_icon = create_placeholder_icon(
                 e,
-                error_message="Error loading user programs:",
+                error_message="[ProgramEditor] Error loading user programs:",
                 icon_name="mdi.account-music",
             )
             self.main_tab_widget.addTab(
                 placeholder_widget, user_programs_icon, "User Programs"
             )
             log.message(
-                f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
 
         # --- Add Playlist tab to main tab widget
         try:
-            log.message("🔨 Creating Playlist tab for main window...")
+            log.message("🔨[ProgramEditor] Creating Playlist tab for main window...")
             self.playlist_widget = PlaylistWidget(
                 parent=self,
                 on_playlist_changed=self._on_playlist_changed,
@@ -251,10 +252,10 @@ class ProgramEditor(BasicEditor):
             )
             self.main_tab_widget.addTab(self.playlist_widget, playlist_icon, "Playlist")
             log.message(
-                f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
         except Exception as e:
-            log.error(f"❌ Error creating Playlist tab: {e}")
+            log.error(f"❌[ProgramEditor] Error creating Playlist tab: {e}")
             import traceback
 
             log.error(traceback.format_exc())
@@ -265,12 +266,12 @@ class ProgramEditor(BasicEditor):
             )
             self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
             log.message(
-                f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
 
         # Add Playlist Editor tab to main tab widget
         try:
-            log.message("🔨 Creating Playlist Editor tab for main window...")
+            log.message("🔨[ProgramEditor] Creating Playlist Editor tab for main window...")
             self.playlist_editor_widget = PlaylistEditorWidget(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
@@ -286,24 +287,24 @@ class ProgramEditor(BasicEditor):
                 self.playlist_editor_widget, playlist_editor_icon, "Playlist Editor"
             )
             log.message(
-                f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})"
             )
         except Exception as e:
-            log.error(f"❌ Error creating Playlist Editor tab: {e}")
+            log.error(f"❌ [ProgramEditor] Error creating Playlist Editor tab: {e}")
             import traceback
 
             log.error(traceback.format_exc())
             # Create a placeholder widget so the tab still appears
             placeholder_widget, playlist_editor_icon = create_placeholder_icon(
                 e,
-                error_message="Error loading playlist editor: ",
+                error_message="[ProgramEditor] Error loading playlist editor: ",
                 icon_name="mdi.playlist-edit",
             )
             self.main_tab_widget.addTab(
                 placeholder_widget, playlist_editor_icon, "Playlist Editor"
             )
             log.message(
-                f"✅ Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
+                f"✅ [ProgramEditor] Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})"
             )
 
         self.setLayout(main_vlayout)
@@ -339,7 +340,7 @@ class ProgramEditor(BasicEditor):
             self.program_group_widget.preset, presets_icon, "Presets"
         )
         log.message(
-            f"📑 Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_group_widget.program_preset_tab_widget.count()})"
+            f"📑[ProgramEditor] Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_group_widget.program_preset_tab_widget.count()})"
         )
         program_preset_hlayout.addStretch()
 
@@ -365,7 +366,7 @@ class ProgramEditor(BasicEditor):
         self.title_right_vlayout.addLayout(self.right_hlayout)
         self.title_hlayout.addStretch()
         self.title_vlayout.addStretch()
-        preset_type = "Digital Synth 1"
+        preset_type = PresetTitle.DIGITAL_SYNTH1
         self.set_channel_and_preset_lists(preset_type)
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
@@ -406,22 +407,22 @@ class ProgramEditor(BasicEditor):
         :param preset_type:
         :return: None
         """
-        if preset_type == "Digital Synth 1":
+        if preset_type == PresetTitle.DIGITAL_SYNTH1:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.program_group_widget.preset.preset_list = (
                 JDXiUIPreset.Digital.PROGRAM_CHANGE
             )
-        elif preset_type == "Digital Synth 2":
+        elif preset_type == PresetTitle.DIGITAL_SYNTH2:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.program_group_widget.preset.preset_list = (
                 JDXiUIPreset.Digital.PROGRAM_CHANGE
             )
-        elif preset_type == "Drums":
+        elif preset_type == PresetTitle.DRUMS:
             self.midi_channel = MidiChannel.DRUM_KIT
             self.program_group_widget.preset.preset_list = (
                 JDXiUIPreset.Drum.PROGRAM_CHANGE
             )
-        elif preset_type == "Analog Synth":
+        elif preset_type == PresetTitle.ANALOG_SYNTH:
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.program_group_widget.preset.preset_list = (
                 JDXiUIPreset.Analog.PROGRAM_CHANGE

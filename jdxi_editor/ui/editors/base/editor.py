@@ -55,6 +55,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 
 if TYPE_CHECKING:
@@ -75,7 +76,8 @@ from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
-from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
+from jdxi_editor.ui.editors.synth.helper import log_changes
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 
@@ -113,7 +115,7 @@ class BaseSynthEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}
-        self.controls: Dict[Union[Analog.Param], QWidget] = {}
+        self.controls: Dict[Union[AnalogParam, DigitalPartialParam], QWidget] = {}
         self.updating_from_spinbox = False
         self.previous_json_data = None
         self.main_window = parent
@@ -128,9 +130,9 @@ class BaseSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            log.message("MIDI signals connected")
+            log.message("[BaseSynthEditor] MIDI signals connected")
         else:
-            log.message("MIDI signals not connected")
+            log.message("[BaseSynthEditor] MIDI signals not connected")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -286,7 +288,7 @@ class BaseSynthEditor(SynthEditor):
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
-            f"[Analog Editor] update_filter_controls_state: mode={mode} "
+            f"[BaseSynthEditor] update_filter_controls_state: mode={mode} "
             f"has filter_section={hasattr(self, 'filter_section')} "
             f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
         )
@@ -294,12 +296,12 @@ class BaseSynthEditor(SynthEditor):
             self.filter_section.update_controls_state(mode)
         else:
             log.warning(
-                "[Analog Editor] update_filter_controls_state: no filter_section, skipping"
+                "[BaseSynthEditor] update_filter_controls_state: no filter_section, skipping"
             )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
-        log.message(f"[Analog Editor] _on_filter_mode_changed: mode={mode}")
+        log.message(f"[BaseSynthEditor] _on_filter_mode_changed: mode={mode}")
         self.update_filter_controls_state(mode)
 
     def update_filter_state(self, value: int):
@@ -320,14 +322,14 @@ class BaseSynthEditor(SynthEditor):
         :return: None
         """
         filter_mode_map = {
-            0: Analog.Filter.FilterType.BYPASS,
-            1: Analog.Filter.FilterType.LPF,
+            0: self.SYNTH_SPEC.Filter.FilterType.BYPASS,
+            1: self.SYNTH_SPEC.Filter.FilterType.LPF,
         }
 
         selected_filter_mode = filter_mode_map.get(value)
 
         if selected_filter_mode is None:
-            log.warning("Unknown filter mode value: %s", value)
+            log.warning("[BaseSynthEditor] Unknown filter mode value: %s", value)
             return
 
         # --- Reset all buttons to default style
@@ -341,7 +343,7 @@ class BaseSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
         else:
-            log.warning("Filter mode button not found for: %s", selected_filter_mode)
+            log.warning("[BaseSynthEditor] Filter mode button not found for: %s", selected_filter_mode)
 
     def _on_waveform_selected(self, waveform: AnalogWaveOsc):
         """
@@ -353,7 +355,7 @@ class BaseSynthEditor(SynthEditor):
         if self.midi_helper:
             sysex_message = self.sysex_composer.compose_message(
                 address=self.address,
-                param=Analog.Param.OSC_WAVEFORM,
+                param=self.SYNTH_SPEC.Param.OSC_WAVEFORM,
                 value=waveform.value,
             )
             self.midi_helper.send_midi_message(sysex_message)
@@ -390,16 +392,16 @@ class BaseSynthEditor(SynthEditor):
         controls_data = super().get_controls_as_dict()
 
         # --- Handle OSC_WAVEFORM specially - find which waveform button is checked
-        if Analog.Param.OSC_WAVEFORM in self.controls:
+        if self.SYNTH_SPEC.Param.OSC_WAVEFORM in self.controls:
             # --- Check which waveform button is currently checked
             for waveform, btn in self.wave_buttons.items():
                 if btn.isChecked():
-                    controls_data[Analog.Param.OSC_WAVEFORM.name] = waveform.STATUS
+                    controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = waveform.STATUS
                     break
             # --- If no button is checked, use default (SAW = 0)
-            if Analog.Param.OSC_WAVEFORM.name not in controls_data:
-                controls_data[Analog.Param.OSC_WAVEFORM.name] = (
-                    Analog.Wave.Osc.SAW.value
+            if self.SYNTH_SPEC.Param.OSC_WAVEFORM.name not in controls_data:
+                controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = (
+                    self.SYNTH_SPEC.Wave.Osc.SAW.value
                 )
 
         # --- Handle FILTER_MODE_SWITCH specially - find which filter mode button is checked
@@ -409,14 +411,14 @@ class BaseSynthEditor(SynthEditor):
             # --- Check which filter mode button is currently checked
             for filter_mode, btn in self.filter_section.filter_mode_buttons.items():
                 if btn.isChecked():
-                    controls_data[Analog.Param.FILTER_MODE_SWITCH.name] = (
+                    controls_data[self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH.name] = (
                         filter_mode.value
                     )
                     break
             # --- If no button is checked, use default (BYPASS = 0)
-            if Analog.Param.FILTER_MODE_SWITCH.name not in controls_data:
-                controls_data[Analog.Param.FILTER_MODE_SWITCH.name] = (
-                    Analog.Filter.FilterType.BYPASS.value
+            if self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH.name not in controls_data:
+                controls_data[self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH.name] = (
+                    self.SYNTH_SPEC.Filter.FilterType.BYPASS.value
                 )
 
         return controls_data
@@ -430,7 +432,7 @@ class BaseSynthEditor(SynthEditor):
         """
         if self.midi_helper:
             sysex_message = self.sysex_composer.compose_message(
-                address=self.address, param=Analog.Param.LFO_SHAPE, value=value
+                address=self.address, param=self.SYNTH_SPEC.Param.LFO_SHAPE, value=value
             )
             self.midi_helper.send_midi_message(sysex_message)
             # --- Reset all buttons to default style ---
@@ -491,8 +493,8 @@ class BaseSynthEditor(SynthEditor):
             midi_value_to_fraction(midi_value)
             if param
             in [
-                Analog.Param.AMP_ENV_SUSTAIN_LEVEL,
-                Analog.Param.FILTER_ENV_SUSTAIN_LEVEL,
+                self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL,
+                self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL,
             ]
             else midi_value_to_ms(midi_value)
         )
@@ -527,7 +529,7 @@ class BaseSynthEditor(SynthEditor):
             midi_value_to_fraction(value)
             if parameter
             in [
-                Analog.Param.OSC_PITCH_ENV_DEPTH,
+                self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH,
             ]
             else midi_value_to_ms(value, 10, 1000)
         )
@@ -561,8 +563,8 @@ class BaseSynthEditor(SynthEditor):
             midi_value_to_fraction(value)
             if parameter
             in [
-                Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-                Analog.Param.OSC_PULSE_WIDTH,
+                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH,
             ]
             else midi_value_to_ms(value, 10, 1000)
         )
@@ -596,7 +598,7 @@ class BaseSynthEditor(SynthEditor):
         self.previous_json_data = sysex_data
 
         for param_name, param_value in sysex_data.items():
-            param = Analog.Param.get_by_name(param_name)
+            param = self.SYNTH_SPEC.Param.get_by_name(param_name)
 
             if param:
                 if (
@@ -622,20 +624,20 @@ class BaseSynthEditor(SynthEditor):
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
-                    control = self.controls.get(Analog.Param.LFO_TEMPO_SYNC_SWITCH)
+                    control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH)
                     if control:
                         control.setValue(param_value)
                         successes.append(param_name)
                     else:
                         failures.append(param_name)
                 elif param_name == "LFO_TEMPO_SYNC_NOTE":
-                    control = self.controls.get(Analog.Param.LFO_TEMPO_SYNC_NOTE)
+                    control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE)
                     if control:
                         control.setValue(param_value)
                         successes.append(param_name)
                     else:
                         failures.append(param_name)
-                elif param == Analog.Param.FILTER_MODE_SWITCH:
+                elif param == self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH:
                     mode_int = (
                         int(param_value)
                         if isinstance(param_value, (int, float))
@@ -646,21 +648,21 @@ class BaseSynthEditor(SynthEditor):
                     self._update_filter_mode_buttons(mode_int)
                     self.update_filter_controls_state(mode_int)
                 elif param in [
-                    Analog.Param.AMP_ENV_ATTACK_TIME,
-                    Analog.Param.AMP_ENV_DECAY_TIME,
-                    Analog.Param.AMP_ENV_SUSTAIN_LEVEL,
-                    Analog.Param.AMP_ENV_RELEASE_TIME,
-                    Analog.Param.FILTER_ENV_ATTACK_TIME,
-                    Analog.Param.FILTER_ENV_DECAY_TIME,
-                    Analog.Param.FILTER_ENV_SUSTAIN_LEVEL,
-                    Analog.Param.FILTER_ENV_RELEASE_TIME,
+                    self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME,
+                    self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME,
+                    self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL,
+                    self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME,
                 ]:
                     self.update_adsr_widget(param, param_value, successes, failures)
                 elif param in self.pitch_env_mapping:
                     self.update_pitch_env_widget(
                         param, param_value, successes, failures
                     )
-                elif param == Analog.Param.OSC_WAVEFORM:
+                elif param == self.SYNTH_SPEC.Param.OSC_WAVEFORM:
                     self._update_waveform_buttons(param_value)
                 else:
                     self.update_slider(param, param_value, successes, failures)
@@ -676,9 +678,9 @@ class BaseSynthEditor(SynthEditor):
         :return: None
         """
         waveform_map = {
-            0: Analog.Wave.Osc.SAW,
-            1: Analog.Wave.Osc.TRI,
-            2: Analog.Wave.Osc.PW_SQUARE,
+            0: self.SYNTH_SPEC.Wave.Osc.SAW,
+            1: self.SYNTH_SPEC.Wave.Osc.TRI,
+            2: self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
         }
 
         selected_waveform = waveform_map.get(value)
@@ -735,24 +737,24 @@ class BaseSynthEditor(SynthEditor):
         # --- Access PWM controls from oscillator_section.pwm_widget.controls
         if self.oscillator_section and self.oscillator_section.pwm_widget:
             pwm_controls = self.oscillator_section.pwm_widget.controls
-            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
-                pwm_controls[Analog.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
-                pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
+            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:
+                pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
+            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
                     pw_enabled
                 )
 
             # --- Update the visual state (if controls are sliders)
-            if Analog.Param.OSC_PULSE_WIDTH in pwm_controls:
-                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH]
+            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:
+                control = pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH]
                 if hasattr(control, "setStyleSheet"):
                     control.setStyleSheet(
                         ""
                         if pw_enabled
                         else "QSlider::groove:vertical { background: #000000; }"
                     )
-            if Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
-                control = pwm_controls[Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH]
+            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                control = pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH]
                 if hasattr(control, "setStyleSheet"):
                     control.setStyleSheet(
                         ""

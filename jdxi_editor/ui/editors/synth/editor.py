@@ -19,484 +19,34 @@ Dependencies:
 - `jdxi_manager.ui.style` for applying UI styles.
 
 """
-
 import json
 import os
 import re
-from dataclasses import dataclass
-from typing import Iterable, Optional
+from typing import Optional
 
-from decologr import Decologr as log
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QShortcut, QKeySequence, QShowEvent, QPixmap
 from PySide6.QtWidgets import QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
-    RolandSysExAddress,
-)
+from jdxi_editor.midi.data.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.digital.utils import (
-    filter_sysex_keys,
-    get_area,
-    get_partial_number,
-)
+from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-
-
-@dataclass(frozen=True)
-class InstrumentDescriptor:
-    """
-    Canonical description of a JD-Xi instrument preset.
-    """
-
-    category: str  # "synth" | "drum"
-    family: str  # e.g. "piano", "pad", "bass"
-    engine: Optional[str]  # e.g. "fm", "jd"
-    raw_text: str  # original label (for logging/debug)
-
-
-@dataclass(frozen=True)
-class InstrumentFamilySpec:
-    family: str
-    keywords: Iterable[str]
-
-
-@dataclass(frozen=True)
-class DrumKitSpec:
-    engine: str
-    keywords: tuple[str, ...]
-    family: str = "kit"
-
-
-DRUM_KIT_SPECS = [
-    DrumKitSpec(
-        engine="tr",
-        keywords=("tr-909", "909"),
-    ),
-    DrumKitSpec(
-        engine="tr",
-        keywords=("tr-808", "808"),
-    ),
-    DrumKitSpec(
-        engine="tr",
-        keywords=("tr-707", "707"),
-    ),
-    DrumKitSpec(
-        engine="cr",
-        keywords=("cr-78", "cr78"),
-    ),
-    DrumKitSpec(
-        engine="tr",
-        keywords=("tr-606", "606"),
-    ),
-    DrumKitSpec(
-        engine="tr",
-        keywords=("tr-626", "626"),
-    ),
-]
-
-
-INSTRUMENT_FAMILY_SPECS = [
-    # Piano/Keyboard - highest priority for keyboard category
-    InstrumentFamilySpec(
-        "piano",
-        [
-            "piano",
-            "e. piano",
-            "e.p",
-            "ep",
-            "e.piano",
-            "grand",
-            "wurly",
-            "clav",
-            "vibraphone",
-            "harp",
-            "steel drum",
-            "trem ep",
-        ],
-    ),
-    InstrumentFamilySpec(
-        "jupiter",
-        [
-            "jp8",
-            "jupiter",
-            "jupiter8",
-        ],
-    ),
-    # Pad - pad-specific terms (check before strings to prioritize pad when "pad" is in name)
-    InstrumentFamilySpec(
-        "pad",
-        [
-            "hollow pad",
-            "lfo pad",
-            "sweep pad",
-            "boreal pad",
-            "bright pad",
-            "soft pad",
-            "hpf pad",
-            "organ pad",
-            "bell pad",
-            "vox pad",
-            "s-saw pad",
-            "hpf sweep",
-            "fltsweep pd",
-            "koff pad",
-            "trnssweeppad",
-            "lfo carvepd",
-            "lfo resopad",
-            "pls pad",
-            "reso s&h pd",
-            "sidechainpd",
-            "pxzoon",
-            "psychoscilo",
-            "fantasy",
-            "dreaming",
-            "syn sniper",
-            "pad",  # "pad" at end as fallback
-        ],
-    ),
-    # Strings - specific string terms (after pad to avoid conflicts)
-    InstrumentFamilySpec(
-        "strings",
-        [
-            "jp8 strings",
-            "strings",
-            "string",
-            "str",
-            "juno str",
-            "brite str",
-            "oct strings",
-            "hybrid str",
-            "analog str",
-            "d-50 pizz",
-            "d-50 stack",
-        ],
-    ),
-    InstrumentFamilySpec(
-        "bass guitar",
-        [
-            "bass guitar",
-            "bassgtr",
-            "bassgtr1",
-            "bassgtr2",
-            "bassgtr3",
-            "bassgtr4",
-            "bassgtr5",
-            "bassgtr6",
-            "bassgtr7",
-            "bassgtr8",
-            "bassgtr9",
-            "bassgtr10",
-            "fretless bass",
-            "picked bass",
-            "fingerd bs",
-        ],
-    ),
-    # Bass
-    InstrumentFamilySpec(
-        "bass",
-        [
-            "bass",
-            "bs",
-            "bass1",
-            "bass2",
-            "bass3",
-            "bass4",
-            "bass5",
-            "seq bass",
-            "reso bass",
-            "tb bass",
-            "106 bass",
-            "low bass",
-            "kick bass",
-            "organ bass",
-            "growl bass",
-            "talking bs",
-            "lfo bass",
-            "crack bass",
-            "wobble bs",
-            "sidechainbs",
-            "house bass",
-            "fm bass",
-            "ac. bass",
-            "fingerd bs",
-            "picked bass",
-            "fretless bs",
-            "slap bass",
-            "r&b bass",
-            "wide bass",
-            "chow bass",
-            "sqrfilterbs",
-            "filter bass",
-            "seqfltenvbs",
-            "dnb bass",
-            "unisonsynbs",
-            "modular bs",
-            "monster bs",
-            "square bs",
-            "5th stac bs",
-            "sqrstacsynbs",
-            "mc-202 bs",
-            "sh-101 bs",
-            "mg bass",
-            "tri bass",
-            "bpf syn bs",
-            "sindetunebs",
-            "resrubber bs",
-            "resosawsynbs",
-            "syn bass",
-            "filterenvbs",
-            "juno sqr bs",
-            "detune bs",
-            "mks-50 bass",
-            "sweep bass",
-            "4op fm bass",
-        ],
-    ),
-    # Lead
-    InstrumentFamilySpec(
-        "lead",
-        [
-            "lead",
-            "ld",
-            "ld1",
-            "ld2",
-            "ld3",
-            "ld4",
-            "tekno lead",
-            "osc-syncld",
-            "waveshapeld",
-            "buzz lead",
-            "sawbuzz ld",
-            "sqr buzz ld",
-            "dist flt tb",
-            "dist tb sqr",
-            "glideator",
-            "vintager",
-            "hover lead",
-            "saw lead",
-            "saw+tri lead",
-            "portasaw ld",
-            "reso saw ld",
-            "sawtrap ld",
-            "fat gr lead",
-            "pulstar ld",
-            "slow lead",
-            "anavox lead",
-            "square ld",
-            "sqr lead",
-            "sqr trap ld",
-            "sine lead",
-            "tri lead",
-            "tri stac ld",
-            "5th sawlead",
-            "sweet 5th",
-            "4th syn lead",
-            "maj stack ld",
-            "minstack ld",
-            "chubby lead",
-            "cuttinglead",
-            "s-sawstacld",
-            "bend lead",
-        ],
-    ),
-    # Brass
-    InstrumentFamilySpec(
-        "brass",
-        [
-            "brass",
-            "brs",
-            "analog brass",
-            "reso brass",
-            "soft brass",
-            "fm brass",
-            "syn brass",
-            "jp8 brass",
-            "soft synbrs",
-            "epicslow brs",
-            "juno brass",
-            "poly brass",
-        ],
-    ),
-    # Organ
-    InstrumentFamilySpec(
-        "organ",
-        [
-            "organ",
-            "org",
-            "house org",
-            "70's e.organ",
-            "e.organ",
-            "organ bell",
-            "organ bass",
-            "organ pad",
-        ],
-    ),
-    # Guitar
-    InstrumentFamilySpec(
-        "guitar",
-        [
-            "guitar",
-            "gtr",
-            "strat",
-            "ac. guitar",
-            "bright strat",
-            "funk guitar",
-            "jazz guitar",
-            "dist guitar",
-            "d. mute gtr",
-            "e. sitar",
-            "sitar drone",
-            "sitar",
-        ],
-    ),
-    # FX/Other - Voc, FX, Hits, etc.
-    InstrumentFamilySpec(
-        "synth",
-        [
-            "fx",
-            "voc",
-            "hit",
-            "vox",
-            "vp-330",
-            "voc:",
-            "voc:ensemble",
-            "voc:5thstack",
-            "voc:robot",
-            "voc:saw",
-            "voc:sqr",
-            "voc:rise up",
-            "voc:auto vib",
-            "voc:pitchenv",
-            "voc:vp-330",
-            "voc:noise",
-            "orch hit",
-            "philly hit",
-            "house hit",
-            "o'skool hit",
-            "punch hit",
-            "tao hit",
-            "syn vox",
-            "jd softvox",
-            "vox pad",
-            "vp-330 chr",
-            "tuned winds",
-            "bend lead",
-            "riser",
-            "rising seq",
-            "scream saw",
-            "noise seq",
-            "init tone",
-        ],
-    ),
-    # Seq/Sequence - plucks, sequences
-    InstrumentFamilySpec(
-        "synth",
-        [
-            "seq",
-            "pluck",
-            "plk",
-            "seq saw",
-            "seq sqr",
-            "seq tri",
-            "sqr reso plk",
-            "pluck synth",
-            "paperclip",
-            "sonar pluck",
-            "sqrtrapplk",
-            "tb saw seq",
-            "tb sqr seq",
-            "juno key",
-            "analog poly",
-            "juno octavr",
-            "edm synth",
-            "super saw",
-            "s-saw poly",
-            "trance key",
-            "s-sawstc syn",
-            "7th stac syn",
-        ],
-    ),
-    # General synth/saw
-    InstrumentFamilySpec(
-        "synth",
-        [
-            "synth",
-            "saw",
-            "super saw",
-            "s-saw",
-            "sawstac",
-            "sawstc",
-            "sawpoly",
-            "saw trap",
-            "saw buzz",
-            "saw lead",
-            "saw seq",
-            "sawsynbs",
-            "sawsyn",
-            "sawpad",
-        ],
-    ),
-]
-
-ENGINE_KEYWORDS = {
-    "jupiter": ["jupiter", "jp8", "jupiter8"],
-    "fm": ["fm", "4op fm"],
-    "juno": ["juno", "jn"],
-    "jd": ["jd"],
-    "tb": ["tb", "tb-303", "303"],
-    "mg": ["mg", "minimoog"],
-    "sh": ["sh", "sh-101", "101"],
-    "d-50": ["d-50", "d50"],
-    "vp-330": ["vp-330", "vp330"],
-    "mks": ["mks", "mks-50"],
-    "mc": ["mc", "mc-202", "202"],
-}
-
-
-def log_changes(previous_data, current_data):
-    """Log changes between previous and current JSON data."""
-    changes = []
-    if not current_data or not previous_data:
-        return
-    for key, current_value in current_data.items():
-        previous_value = previous_data.get(key)
-        if previous_value != current_value:
-            changes.append((key, previous_value, current_value))
-
-    changes = [
-        change
-        for change in changes
-        if change[0]
-        not in [
-            SysExSection.JD_XI_HEADER,
-            SysExSection.ADDRESS,
-            SysExSection.TEMPORARY_AREA,
-            SysExSection.TONE_NAME,
-        ]
-    ]
-
-    if changes:
-        # log.message("Changes detected:")
-        for key, prev, curr in changes:
-            pass
-            # log.message(
-            #     f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
-            # )
-    else:
-        pass
-        # --- log.message("No changes detected.")
+from jdxi_editor.ui.editors.synth.helper import log_changes
+from jdxi_editor.ui.editors.synth.specs import InstrumentDescriptor, DRUM_KIT_SPECS, ENGINE_KEYWORDS, \
+    INSTRUMENT_FAMILY_SPECS
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 
 class SynthEditor(SynthBase):
@@ -542,8 +92,8 @@ class SynthEditor(SynthBase):
                 )
             )
         self.midi_helper.midi_program_changed.connect(self.data_request)
-        log.parameter("Initialized:", self.__class__.__name__)
-        log.parameter("---> Using MIDI helper:", midi_helper)
+        log.parameter("[SynthEditor] Initialized:", self.__class__.__name__)
+        log.parameter("[SynthEditor] ---> Using MIDI helper:", midi_helper)
         # midi message bytes
         # To be over-ridden by subclasses
         # Set window flags for address tool window
@@ -568,7 +118,6 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
             self.preset_loader = JDXiPresetHelper(
                 self.midi_helper, JDXi.UI.Preset.Digital.ENUMERATED
@@ -602,9 +151,9 @@ class SynthEditor(SynthBase):
                 )
                 for synth_type, presets, channel in preset_configs
             }
-            log.message("MIDI helper initialized")
+            log.message("[SynthEditor] MIDI helper initialized")
         else:
-            log.message("MIDI helper not initialized")
+            log.message("[SynthEditor] MIDI helper not initialized")
         self.json_parser = JDXiJsonSysexParser()
 
     def __str__(self):
@@ -647,7 +196,7 @@ class SynthEditor(SynthBase):
         super().showEvent(event)
         if self.midi_helper:
             log.message(
-                "🎛️ Effects Editor shown - requesting current settings from instrument"
+                "🎛️ [SynthEditor] Effects Editor shown - requesting current settings from instrument"
             )
         self.data_request()
 
@@ -667,12 +216,12 @@ class SynthEditor(SynthBase):
                 else:
                     # --- Fallback for unexpected widget types
                     log.warning(
-                        f"Widget for {param.name} has no value() method: {type(widget)}"
+                        f"[SynthEditor] Widget for {param.name} has no value() method: {type(widget)}"
                     )
                     controls_data[param.name] = 0
             return controls_data
         except Exception as ex:
-            log.error(f"Failed to get controls: {ex}")
+            log.error(f"[SynthEditor] Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
@@ -680,7 +229,7 @@ class SynthEditor(SynthBase):
         handler = self.preset_helpers.get(self.preset_type)
         if handler is None:
             log.warning(
-                f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
+                f"[SynthEditor] Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXi.Synth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
@@ -702,12 +251,12 @@ class SynthEditor(SynthBase):
 
         if current_synth != temporary_area:
             log.message(
-                f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+                f"[SynthEditor] temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
 
         log.header_message(
-            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+            f"[SynthEditor] Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
 
         sysex_data = filter_sysex_keys(sysex_data)
@@ -732,9 +281,9 @@ class SynthEditor(SynthBase):
             )
         else:  # --- Drums and Digital 1 & 2 are dealt with via partials
             if partial_number is None:
-                log.error(f"Unknown partial number for synth_tone: {synth_tone}")
+                log.error(f"[SynthEditor] Unknown partial number for synth_tone: {synth_tone}")
                 return
-            log.parameter("partial_number", partial_number)
+            log.parameter("[SynthEditor] partial_number", partial_number)
             self._update_controls(partial_number, sysex_data, successes, failures)
 
         log.debug_info(successes, failures)
@@ -770,7 +319,7 @@ class SynthEditor(SynthBase):
             log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
-            log.message(f"Invalid JSON format: {ex}")
+            log.message(f"[SynthEditor] Invalid JSON format: {ex}")
             return None
 
     def set_instrument_title_label(self, name: str, synth_type: str):
@@ -796,7 +345,7 @@ class SynthEditor(SynthBase):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        log.message(f"Updating combo to preset {preset_number}")
+        log.message(f"[SynthEditor] Updating combo to preset {preset_number}")
         combo_box = self._get_instrument_selection_combo()
         if combo_box:
             combo_box.combo_box.setCurrentIndex(preset_number)
@@ -808,7 +357,7 @@ class SynthEditor(SynthBase):
         :return:
         """
         selected_synth_text = self._get_selected_instrument_text()
-        log.message(f"selected_synth_text: {selected_synth_text}")
+        log.message(f"[SynthEditor] selected_synth_text: {selected_synth_text}")
         # --- Get title label from widget or direct attribute
         title_label = None
         if hasattr(self, "instrument_preset") and self.instrument_preset:
@@ -835,7 +384,7 @@ class SynthEditor(SynthBase):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             one_based_preset_index = int(selected_synth_padded_number)
-            log.message(f"preset_index: {one_based_preset_index}")
+            log.message(f"[SynthEditor] preset_index: {one_based_preset_index}")
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def load_preset(self, preset_index):
@@ -843,13 +392,13 @@ class SynthEditor(SynthBase):
         # --- Get the combo box - it might be in instrument_preset widget or directly on self
         combo_box = self._get_instrument_selection_combo()
         if not combo_box:
-            log.error("Instrument selection combo box is not available")
+            log.error("[SynthEditor] Instrument selection combo box is not available")
             return
 
         preset_name = combo_box.combo_box.currentText()  # Get the selected preset name
-        log.message(f"combo box preset_name : {preset_name}")
+        log.message(f"[SynthEditor] combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
-        log.message(f"combo box program_number : {program_number}")
+        log.message(f"[SynthEditor] combo box program_number : {program_number}")
 
         # --- Determine preset list if not already set
         if self.preset_preset_list is None:
@@ -868,12 +417,12 @@ class SynthEditor(SynthBase):
                 # Default to digital preset list
                 self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
                 log.warning(
-                    f"Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
+                    f"[SynthEditor] Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
                 )
 
         # --- Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         if self.preset_preset_list is None:
-            log.error("preset_preset_list is still None after initialization")
+            log.error("[SynthEditor] preset_preset_list is still None after initialization")
             return
 
         msb = get_preset_parameter_value("msb", program_number, self.preset_preset_list)
@@ -882,7 +431,7 @@ class SynthEditor(SynthBase):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"Could not retrieve preset parameters for program {program_number}"
+                f"[SynthEditor] Could not retrieve preset parameters for program {program_number}"
             )
             return
 
@@ -898,16 +447,16 @@ class SynthEditor(SynthBase):
             if self.preset_type in channel_map:
                 self.midi_channel = channel_map[self.preset_type]
                 log.message(
-                    f"Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}"
+                    f"[SynthEditor] Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}"
                 )
             else:
                 log.error(
-                    f"midi_channel is None and could not determine from preset_type {self.preset_type}"
+                    f"[SynthEditor] midi_channel is None and could not determine from preset_type {self.preset_type}"
                 )
                 return
 
-        log.message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log.message(f"Using MIDI channel: {self.midi_channel}")
+        log.message(f"[SynthEditor] retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log.message(f"[SynthEditor] Using MIDI channel: {self.midi_channel}")
         log_midi_info(msb, lsb, pc)
         # -- Send bank select and program change
         self.midi_helper.send_bank_select_and_program_change(
@@ -921,30 +470,30 @@ class SynthEditor(SynthBase):
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
         log.message(
-            f"Program change {program} detected on channel {channel}, requesting data update"
+            f"[SynthEditor] Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
         log.message(
-            f"Control change {channel} {control} detected on channel {channel} with value {value}, "
-            f"requesting data update"
+            f"[SynthEditor] Control change {channel} {control} detected on channel {channel} with value {value}, "
+            f"[SynthEditor] requesting data update"
         )
         self.data_request()
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
         log.debug(
-            f"load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}"
+            f"[SynthEditor] load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}"
         )
 
         if image_path and os.path.exists(image_path):
             file_to_load = image_path
-            log.debug(f"Using primary image path: {file_to_load}")
+            log.debug(f"[SynthEditor] Using primary image path: {file_to_load}")
         elif secondary_image_path and os.path.exists(secondary_image_path):
             file_to_load = secondary_image_path
-            log.debug(f"Using secondary image path: {file_to_load}")
+            log.debug(f"[SynthEditor] Using secondary image path: {file_to_load}")
         else:
             # --- Fallback to default image using resource_path
             if hasattr(self, "instrument_icon_folder") and hasattr(
@@ -957,10 +506,10 @@ class SynthEditor(SynthBase):
                         self.instrument_default_image,
                     )
                 )
-                log.debug(f"Falling back to default image: {file_to_load}")
+                log.debug(f"[SynthEditor] Falling back to default image: {file_to_load}")
             else:
                 log.error(
-                    f"Cannot load image: missing instrument_icon_folder ({getattr(self, 'instrument_icon_folder', None)}) or instrument_default_image ({getattr(self, 'instrument_default_image', None)})"
+                    f"[SynthEditor] Cannot load image: missing instrument_icon_folder ({getattr(self, 'instrument_icon_folder', None)}) or instrument_default_image ({getattr(self, 'instrument_default_image', None)})"
                 )
                 image_label = self._get_instrument_image_label()
                 if image_label:
@@ -968,7 +517,7 @@ class SynthEditor(SynthBase):
                 return False
 
         if not os.path.exists(file_to_load):
-            log.warning(f"Image file does not exist: {file_to_load}")
+            log.warning(f"[SynthEditor] Image file does not exist: {file_to_load}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
@@ -976,7 +525,7 @@ class SynthEditor(SynthBase):
 
         pixmap = QPixmap(file_to_load)
         if pixmap.isNull():
-            log.error(f"Failed to load pixmap from: {file_to_load}")
+            log.error(f"[SynthEditor] Failed to load pixmap from: {file_to_load}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
@@ -994,9 +543,9 @@ class SynthEditor(SynthBase):
             image_label.setPixmap(scaled_pixmap)
             image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
             image_label.setStyleSheet(JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL)
-            log.debug(f"Successfully loaded image: {file_to_load}")
+            log.debug(f"[SynthEditor] Successfully loaded image: {file_to_load}")
         else:
-            log.error("Instrument image label not found - cannot set image")
+            log.error("[SynthEditor] Instrument image label not found - cannot set image")
             return False
         return True
 
@@ -1100,19 +649,19 @@ class SynthEditor(SynthBase):
         Get the instrument image label from either the widget or direct attribute.
         Returns None if not found.
         """
-        # Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
+        # --- Try to get from InstrumentPresetWidget first (for Digital/Drum editors)
         if hasattr(self, "instrument_preset") and self.instrument_preset:
             label = getattr(self.instrument_preset, "instrument_image_label", None)
             if label:
-                log.debug("Found instrument_image_label in instrument_preset widget")
+                log.debug("[SynthEditor] Found instrument_image_label.")
                 return label
         # Fallback to direct attribute (for Analog editor or legacy code)
         label = getattr(self, "instrument_image_label", None)
         if label:
-            log.debug("Found instrument_image_label as direct attribute")
+            log.debug("[SynthEditor] Found instrument_image_label as direct attribute")
         else:
             log.warning(
-                "Instrument image label not found in widget or direct attribute"
+                "[SynthEditor] Instrument image label not found in widget or direct attribute"
             )
         return label
 
@@ -1127,7 +676,7 @@ class SynthEditor(SynthBase):
             combo = getattr(combo_box, "combo_box", None)
             if combo and hasattr(combo, "currentText"):
                 return combo.currentText()
-        log.error("Instrument combo box is missing or malformed.")
+        log.error("[SynthEditor] Instrument combo box is missing or malformed.")
         return ""
 
     def _parse_instrument_text(self, text: str) -> Optional[InstrumentDescriptor]:
@@ -1166,14 +715,14 @@ class SynthEditor(SynthBase):
                     raw_text=text,
                 )
 
-        log.warning(f"Unrecognized instrument preset: {text}")
+        log.warning(f"[SynthEditor] Unrecognized instrument preset: {text}")
         return None
 
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
             if not self.instrument_icon_folder:
                 log.error(
-                    f"Instrument icon folder not set. Cannot load image for {name}/{type_}"
+                    f"[SynthEditor] Instrument icon folder not set. Cannot load image for {name}/{type_}"
                 )
                 return False
 
@@ -1268,8 +817,8 @@ class SynthEditor(SynthBase):
                         )
                     )
 
-            log.debug(f"Trying to load images (in order): {paths_to_try}")
-            log.debug(f"Instrument icon folder: {self.instrument_icon_folder}")
+            log.debug(f"[SynthEditor] Trying to load images (in order): {paths_to_try}")
+            log.debug(f"[SynthEditor] Instrument icon folder: {self.instrument_icon_folder}")
 
             # Try primary path first, then secondary, etc.
             primary_path = paths_to_try[0] if paths_to_try else None
@@ -1277,14 +826,14 @@ class SynthEditor(SynthBase):
 
             return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:
-            log.error(f"Error loading specific/generic images: {ex}")
+            log.error(f"[SynthEditor] Error loading specific/generic images: {ex}")
             import traceback
 
             log.error(traceback.format_exc())
             return False
 
     def _fallback_to_default_image(self, reason: str):
-        log.info(f"{reason} Falling back to default image.")
+        log.info(f"[SynthEditor] {reason} Falling back to default image.")
         try:
             default_path = resource_path(
                 os.path.join(
@@ -1294,12 +843,12 @@ class SynthEditor(SynthBase):
                 )
             )
             if not self.load_and_set_image(default_path):
-                log.error("Default instrument image not found. Clearing label.")
+                log.error("[SynthEditor] Default instrument image not found. Clearing label.")
                 image_label = self._get_instrument_image_label()
                 if image_label:
                     image_label.clear()
         except Exception as ex:
-            log.error(f"Error loading default image: {ex}")
+            log.error(f"[SynthEditor] Error loading default image: {ex}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()

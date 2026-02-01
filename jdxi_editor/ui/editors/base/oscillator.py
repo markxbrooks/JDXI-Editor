@@ -32,6 +32,10 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_widget_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
+from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class BaseOscillatorSection(SectionBaseWidget):
@@ -41,6 +45,8 @@ class BaseOscillatorSection(SectionBaseWidget):
     adsr_tab_label: str = "ADSR"
     SWITCH_SPECS = []
     SYNTH_SPEC = Digital
+    PWM_SPEC: PWMSpec | None = None
+    PITCH_ENV_SPEC: PitchEnvelopeSpec | None = None
 
     def __init__(
         self,
@@ -108,6 +114,20 @@ class BaseOscillatorSection(SectionBaseWidget):
             icons_row_type=icons_row_type,
             analog=analog,
         )
+
+    def build_widgets(self):
+        """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
+        self._create_waveform_buttons()
+        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
+        self._create_pitch_env_widget()
+        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
+        self._create_pwm_widget()
+        # Call parent to create other widgets from PARAM_SPECS
+        super().build_widgets()
+        if not self.analog:
+            self._build_additional_digital_widgets()
+        else:
+            self._build_additional_analog_widgets()
 
     def setup_ui(self) -> None:
         """
@@ -424,3 +444,50 @@ class BaseOscillatorSection(SectionBaseWidget):
                 selected_btn.setChecked(True)
                 JDXi.UI.Theme.apply_button_analog_active(selected_btn)
             self._update_pw_controls_state(waveform)
+
+    def _create_pwm_widget(self) -> None:
+        """Create PWM widget from PWM_SPEC or SYNTH_SPEC params."""
+        spec = getattr(self, "PWM_SPEC", None)
+        if spec is not None:
+            pulse_width_param = spec.pulse_width_param
+            mod_depth_param = spec.mod_depth_param
+        else:
+            pulse_width_param = self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH
+            mod_depth_param = self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
+        self.pwm_widget = PWMWidget(
+            pulse_width_param=pulse_width_param,
+            mod_depth_param=mod_depth_param,
+            midi_helper=self.midi_helper,
+            address=self.address,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            analog=self.analog,
+        )
+
+    def _create_pitch_env_widget(self) -> None:
+        """Create Pitch Envelope widget from PITCH_ENV_SPEC or SYNTH_SPEC params."""
+        spec = getattr(self, "PITCH_ENV_SPEC", None)
+        if spec is not None:
+            attack_param = spec.attack_param
+            decay_param = spec.decay_param
+            depth_param = spec.depth_param
+        else:
+            attack_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME
+            decay_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME
+            depth_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH
+        self.pitch_env_widget = PitchEnvelopeWidget(
+            attack_param=attack_param,
+            decay_param=decay_param,
+            depth_param=depth_param,
+            midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
+            controls=self.controls,
+            address=self.address,
+            analog=self.analog,
+        )
+
+    def _build_additional_digital_widgets(self):
+        raise NotImplementedError("Should be implemented in a Digital subclass")
+
+    def _build_additional_analog_widgets(self):
+        raise NotImplementedError("Should be implemented in an Analog subclass")

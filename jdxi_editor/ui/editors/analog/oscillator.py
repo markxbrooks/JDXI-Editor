@@ -14,7 +14,7 @@ from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
-from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
+from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec, SwitchSpec
 
 
 class AnalogOscillatorSection(BaseOscillatorSection):
@@ -69,15 +69,26 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         ),
     ]
 
+    PWM_SPEC = PWMSpec(
+        pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
+        mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+    )
+
+    PITCH_ENV_SPEC = PitchEnvelopeSpec(
+        attack_param=Analog.Param.OSC_PITCH_ENV_ATTACK_TIME,
+        decay_param=Analog.Param.OSC_PITCH_ENV_DECAY_TIME,
+        depth_param=Analog.Param.OSC_PITCH_ENV_DEPTH,
+    )
+
     SYNTH_SPEC = Analog
 
     def __init__(
-        self,
-        waveform_selected_callback: Callable,
-        wave_buttons: dict,
-        midi_helper: MidiIOHelper,
-        controls: dict[AddressParameter, QWidget],
-        address: RolandSysExAddress,
+            self,
+            waveform_selected_callback: Callable,
+            wave_buttons: dict,
+            midi_helper: MidiIOHelper,
+            controls: dict[AddressParameter, QWidget],
+            address: RolandSysExAddress,
     ):
         """
         Initialize the AnalogOscillatorSection
@@ -103,9 +114,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.build_widgets()
         self.setup_ui()
 
-    def build_widgets(self):
-        """build widgets"""
-        self._create_waveform_buttons()
+    def _build_additional_analog_widgets(self):
         # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
         env_sliders = self._build_sliders(self.SLIDER_GROUPS.get("env", []))
         self.osc_pitch_env_velocity_sensitivity_slider = (
@@ -128,29 +137,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             self.osc_pitch_coarse_slider = None
             self.osc_pitch_fine_slider = None
             self.tuning_sliders = []
-
-        # --- PWM Widget ---
-        self.pwm_widget = PWMWidget(
-            pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
-            mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-            midi_helper=self.midi_helper,
-            address=self.address,
-            create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls,
-            analog=self.analog,
-        )
-
-        # --- Pitch Env Widget ---
-        self.pitch_env_widget = PitchEnvelopeWidget(
-            attack_param=self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH,
-            midi_helper=self.midi_helper,
-            create_parameter_slider=self._create_parameter_slider,
-            controls=self.controls,
-            address=self.address,
-            analog=self.analog,
-        )
         # --- Create pitch_env_widgets list after pitch_env_widget is created
         self.pitch_env_widgets = [self.pitch_env_widget]
         if self.osc_pitch_env_velocity_sensitivity_slider is not None:

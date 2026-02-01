@@ -106,7 +106,7 @@ class AnalogFilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope = envelope
-        print(f"Envelope changed: {self.envelope}")
+        log.info(f"Envelope changed: {self.envelope}")
         self.update()  # Trigger repaint if needed
 
     def on_cutoff_param_changed(self, val: int) -> None:
@@ -164,7 +164,7 @@ class AnalogFilterWidget(EnvelopeWidgetBase):
                     self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.STATUS())
             log.message(f"{self.envelope}")
         except Exception as ex:
-            log.error(f"Error updating envelope from controls: {ex}")
+            log.error(f"[AnalogFilterWidget] Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -185,5 +185,5 @@ class AnalogFilterWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"[AnalogFilterWidget] Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

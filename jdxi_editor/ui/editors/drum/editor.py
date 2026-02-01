@@ -223,7 +223,7 @@ class DrumCommonEditor(SynthEditor):
         :param program: int
         """
         log.message(
-            f"Program change {program} detected on channel {channel}, requesting data update"
+            f"[DrumCommonEditor] Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request(channel, program)
 
@@ -309,9 +309,9 @@ class DrumCommonEditor(SynthEditor):
         try:
             partial_name = list(self.partial_editors.keys())[index]
             self.partial_number = index
-            log.message(f"Updated to partial {partial_name} (index {index})")
+            log.message(f"[DrumCommonEditor] Updated to partial {partial_name} (index {index})")
         except IndexError:
-            log.message(f"Invalid partial index: {index}")
+            log.message(f"[DrumCommonEditor] Invalid partial index: {index}")
 
     def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
@@ -351,16 +351,16 @@ class DrumCommonEditor(SynthEditor):
         :param failures: List of failed parameters
         :return: None
         """
-        log.header_message("Tone common")
+        log.header_message("[DrumCommonEditor] Tone common")
         for param_name, param_value in sysex_data.items():
             param = DrumCommonParam.get_by_name(param_name)
-            log.message(f"Tone common: param_name: {param} {param_value}")
+            log.message(f"[DrumCommonEditor] Tone common: param_name: {param} {param_value}")
             try:
                 if param:
                     self._update_slider(param, param_value)
                 else:
                     failures.append(param_name)
             except Exception as ex:
-                log.error(f"Error {ex} occurred")
+                log.error(f"[DrumCommonEditor] Error {ex} occurred")
 
         log.debug_info(successes, failures)

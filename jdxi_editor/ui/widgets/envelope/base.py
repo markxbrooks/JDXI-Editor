@@ -88,6 +88,8 @@ class EnvelopeWidgetBase(QWidget):
         """
         try:
             for param, slider in self.controls.items():
+                if not hasattr(param, "get_envelope_param_type"):
+                    continue
                 key = param.get_envelope_param_type()
                 val = slider.value()
                 if isinstance(self.envelope.get(key), float):
@@ -111,10 +113,12 @@ class EnvelopeWidgetBase(QWidget):
         """
         try:
             for param, slider in self.controls.items():
+                if not hasattr(param, "get_envelope_param_type"):
+                    continue
                 key = param.get_envelope_param_type()
                 if key is None:
                     log.info(
-                        f"parameter {param.name} is not in envelope, skipping update"
+                        f"[EnvelopeWidgetBase] parameter {param.name} is not in envelope, skipping update"
                     )
                 elif hasattr(slider, "setValue"):
                     if param.name in ["OSC_WAVE"]:
@@ -135,6 +139,6 @@ class EnvelopeWidgetBase(QWidget):
                     else:
                         pass  # Not in envelope or not a float
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"[EnvelopeWidgetBase] Error updating controls from envelope: {ex}")
         if hasattr(self, "plot") and self.plot:
             self.plot.set_values(self.envelope)

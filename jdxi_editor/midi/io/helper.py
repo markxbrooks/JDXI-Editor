@@ -106,7 +106,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             patch_data = parser.parse()
 
             if not patch_data:
-                log.error("Failed to parse JSON patch data")
+                log.error("[MidiIOHelper] Failed to parse JSON patch data")
                 return
 
             # Skip metadata fields
@@ -320,9 +320,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             )
 
         except json.JSONDecodeError as ex:
-            log.error(f"Invalid JSON in patch: {ex}")
+            log.error(f"[MidiIOHelper] Invalid JSON in patch: {ex}")
         except Exception as ex:
-            log.error(f"Error sending patch to instrument: {ex}")
+            log.error(f"[MidiIOHelper] Error sending patch to instrument: {ex}")
 
     def load_patch(self, file_path: str):
         """
@@ -342,16 +342,16 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     # Extract and load MIDI files first (if any)
                     midi_files = [f for f in zip_ref.namelist() if f.endswith(".mid")]
                     if midi_files:
-                        log.message(f"Found {len(midi_files)} MIDI file(s) in bundle")
+                        log.message(f"[MidiIOHelper] Found {len(midi_files)} MIDI file(s) in bundle")
                         # Emit signal for MIDI file loading (will be handled by PatchManager)
                         for midi_file in midi_files:
-                            log.message(f"MIDI file in bundle: {midi_file}")
+                            log.message(f"[MidiIOHelper] MIDI file in bundle: {midi_file}")
 
                     # Load JSON files and send to instrument
                     for json_file in zip_ref.namelist():
-                        log.message(f"File in zip: {json_file}")
+                        log.message(f"[MidiIOHelper] File in zip: {json_file}")
                         if json_file.endswith(".json"):
-                            log.message(f"Loading JSON file: {json_file}")
+                            log.message(f"[MidiIOHelper] Loading JSON file: {json_file}")
                             # Read the JSON file from the zip archive
                             with zip_ref.open(json_file) as json_file_handle:
                                 json_string = json_file_handle.read().decode("utf-8")
@@ -360,7 +360,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                                 # Send to instrument
                                 self.send_json_patch_to_instrument(json_string)
             except Exception as ex:
-                log.error(f"Error reading or emitting sysex JSON: {ex}")
+                log.error(f"[MidiIOHelper] Error reading or emitting sysex JSON: {ex}")
             return
         try:
             with open(file_path, "r", encoding="utf-8") as file_handle:
@@ -370,7 +370,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 # Send to instrument
                 self.send_json_patch_to_instrument(json_string)
         except Exception as ex:
-            log.error(f"Error reading or emitting sysex JSON: {ex}")
+            log.error(f"[MidiIOHelper] Error reading or emitting sysex JSON: {ex}")
 
     def __str__(self):
         """
@@ -395,18 +395,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 sysex_data = file.read()
 
             if not sysex_data.startswith(b"\xf0") or not sysex_data.endswith(b"\xf7"):
-                log.message("Invalid SysEx file format")
+                log.message("[MidiIOHelper] Invalid SysEx file format")
                 return
         except Exception as ex:
-            log.error(f"Error {ex} occurred opening file")
+            log.error(f"[MidiIOHelper] Error {ex} occurred opening file")
 
         self.midi_messages.append(sysex_data)
         try:
-            log.message(f"attempting to send message: {sysex_data}")
+            log.message(f"[MidiIOHelper] attempting to send message: {sysex_data}")
             sysex_list = list(sysex_data)
             self.send_raw_message(sysex_list)
         except Exception as ex:
-            log.error(f"Error {ex} sending sysex list")
+            log.error(f"[MidiIOHelper] Error {ex} sending sysex list")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """
@@ -424,7 +424,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return True
 
         except Exception as ex:
-            log.error(f"Error setting MIDI ports: {str(ex)}")
+            log.error(f"[MidiIOHelper] Error setting MIDI ports: {str(ex)}")
             return False
 
     def connect_port_names(self, in_port: str, out_port: str) -> bool:
@@ -438,19 +438,19 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
-                log.message("JD-Xi MIDI auto-connect failed", level=logging.WARNING)
-                log.parameter("MIDI in_port", in_port)
-                log.parameter("MIDI out_port", out_port)
+                log.message("[MidiIOHelper] JD-Xi MIDI auto-connect failed", level=logging.WARNING)
+                log.parameter("[MidiIOHelper] MIDI in_port", in_port)
+                log.parameter("[MidiIOHelper] MIDI out_port", out_port)
                 return False
             self.set_midi_ports(in_port, out_port)
             # Verify connection
-            log.parameter("Successfully connected to JD-Xi MIDI:", in_port)
-            log.parameter("Successfully connected to JD-Xi MIDI", out_port)
+            log.parameter("[MidiIOHelper] Successfully connected to JD-Xi MIDI:", in_port)
+            log.parameter("[MidiIOHelper] Successfully connected to JD-Xi MIDI", out_port)
             self.identify_device()
             return True
 
         except Exception as ex:
-            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log.error(f"[MidiIOHelper] Error auto-connecting to JD-Xi: {str(ex)}")
             return False
 
     def reconnect_port_names(self, in_port: str, out_port: str) -> None:
@@ -467,7 +467,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.open_output_port(out_port)
             self.reopen_input_port_name(in_port)
         except Exception as ex:
-            log.error(f"Error {ex} occurred reconnecting ports")
+            log.error(f"[MidiIOHelper] Error {ex} occurred reconnecting ports")
 
     def auto_connect_jdxi(self) -> bool:
         """
@@ -483,5 +483,5 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             # self.identify_device()
             return True
         except Exception as ex:
-            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log.error(f"[MidiIOHelper] Error auto-connecting to JD-Xi: {str(ex)}")
             return False

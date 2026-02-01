@@ -63,6 +63,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
 )
+from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
@@ -296,7 +297,7 @@ class PresetEditor(BasicEditor):
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
-            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
+            [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2, PresetTitle.DRUMS, PresetTitle.ANALOG_SYNTH]
         )
         self.digital_preset_type_combo.currentIndexChanged.connect(
             self.on_preset_type_changed
@@ -345,23 +346,23 @@ class PresetEditor(BasicEditor):
     ) -> None:  # pylint: disable=unused-argument
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
-        log.message(f"preset_type: {preset_type}")
-        if preset_type == "Digital Synth 1":
+        log.message(f"[PresetEditor] preset_type: {preset_type}")
+        if preset_type == PresetTitle.DIGITAL_SYNTH1:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
             self.instrument_icon_folder = "digital_synths"
             self.instrument_default_image = "jdxi_vector.png"
-        elif preset_type == "Digital Synth 2":
+        elif preset_type == PresetTitle.DIGITAL_SYNTH2:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
             self.instrument_icon_folder = "digital_synths"
             self.instrument_default_image = "jdxi_vector.png"
-        elif preset_type == "Drums":
+        elif preset_type == PresetTitle.DRUMS:
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
             self.instrument_icon_folder = "drum_kits"
             self.instrument_default_image = "drums.png"
-        elif preset_type == "Analog Synth":
+        elif preset_type == PresetTitle.ANALOG_SYNTH:
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
             self.instrument_icon_folder = "analog_synths"
@@ -398,10 +399,10 @@ class PresetEditor(BasicEditor):
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
-        log.message("=======load_preset_by_program_change=======")
-        log.parameter("combo box preset_name", preset_name)
+        log.message("[PresetEditor] =======load_preset_by_program_change=======")
+        log.parameter("[PresetEditor] combo box preset_name", preset_name)
         program_number = preset_name[:3]
-        log.parameter("combo box program_number", program_number)
+        log.parameter("[PresetEditor] combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -410,14 +411,14 @@ class PresetEditor(BasicEditor):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"Could not retrieve preset parameters for program {program_number}"
+                f"[PresetEditor] Could not retrieve preset parameters for program {program_number}"
             )
             return
 
-        log.message("retrieved msb, lsb, pc :")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
+        log.message("[PresetEditor] retrieved msb, lsb, pc :")
+        log.parameter("[PresetEditor] combo box msb", msb)
+        log.parameter("[PresetEditor] combo box lsb", lsb)
+        log.parameter("[PresetEditor] combo box pc", pc)
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -441,7 +442,7 @@ class PresetEditor(BasicEditor):
         """
         if hasattr(self, "preset_combo_box") and self.preset_combo_box:
             return self.preset_combo_box.currentText()
-        log.error("Preset combo box is missing or malformed.")
+        log.error("[PresetEditor] Preset combo box is missing or malformed.")
         return ""
 
     def _populate_presets(self, search_text: str = ""):
@@ -454,11 +455,11 @@ class PresetEditor(BasicEditor):
             return
 
         preset_type = self.digital_preset_type_combo.currentText()
-        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
+        if preset_type in [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2]:
             self.preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
-        elif preset_type == "Drums":
+        elif preset_type == PresetTitle.DRUMS:
             self.preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
-        elif preset_type == "Analog Synth":
+        elif preset_type == PresetTitle.ANALOG_SYNTH:
             self.preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
         else:
             self.preset_list = (
@@ -467,7 +468,7 @@ class PresetEditor(BasicEditor):
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()
-        log.message(f"Selected Category: {selected_category}")
+        log.message(f"[PresetEditor] Selected Category: {selected_category}")
 
         self.preset_combo_box.clear()
         self.presets.clear()
@@ -475,7 +476,7 @@ class PresetEditor(BasicEditor):
         filtered_list = [  # Filter programs based on bank and genre
             preset
             for preset in self.preset_list
-            if (selected_category in ["No Category Selected", preset["category"]])
+            if (selected_category in ["[PresetEditor] No Category Selected", preset["category"]])
         ]
         filtered_presets = []
         for preset in filtered_list:
@@ -533,17 +534,17 @@ class PresetEditor(BasicEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        log.parameter("combo box bank_letter", bank_letter)
-        log.parameter("combo box bank_number", bank_number)
+        log.parameter("[PresetEditor] combo box bank_letter", bank_letter)
+        log.parameter("[PresetEditor] combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             log.parameter("program_details", program_details)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log.message("calculated msb, lsb, pc :")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
+        log.message("[PresetEditor] calculated msb, lsb, pc :")
+        log.parameter("[PresetEditor] combo box msb", msb)
+        log.parameter("[PresetEditor] combo box lsb", lsb)
+        log.parameter("[PresetEditor] combo box pc", pc)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel, msb, lsb, pc
@@ -560,7 +561,7 @@ class PresetEditor(BasicEditor):
             self.drum_kit_current_label.setText(program_details["drum"])
             self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
-            log.message(f"Program details missing required keys: {program_details}")
+            log.message(f"[PresetEditor] Program details missing required keys: {program_details}")
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")
             self.drum_kit_current_label.setText("Unknown")

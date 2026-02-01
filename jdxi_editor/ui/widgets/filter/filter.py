@@ -208,5 +208,5 @@ class FilterWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
+            log.error(f"[FilterWidget] Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

@@ -104,7 +104,7 @@ class BasePartialPanel(PartialPanel):
         self._init_state()
         self._build_ui()
 
-        log.parameter("DigitalPartialEditor initialized:", self)
+        log.parameter("[BasePartialPanel] initialized:", self)
 
     # ------------------------------------------------------------------
     # Initialization helpers

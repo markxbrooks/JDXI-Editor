@@ -17,6 +17,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -61,7 +62,10 @@ class PresetWidget(QWidget):
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
-            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
+            [PresetTitle.DIGITAL_SYNTH1,
+             PresetTitle.DIGITAL_SYNTH2,
+             PresetTitle.DRUMS,
+             PresetTitle.ANALOG_SYNTH]
         )
         self.digital_preset_type_combo.currentIndexChanged.connect(
             self.on_preset_type_changed
@@ -113,9 +117,9 @@ class PresetWidget(QWidget):
             preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
 
         program_number = str(preset_id).zfill(3)  # Ensure 3-digit format
-        log.message("=======load_preset_by_program_change=======")
-        log.parameter("preset_id", preset_id)
-        log.parameter("program_number", program_number)
+        log.message("[PresetWidget] =======load_preset_by_program_change=======")
+        log.parameter("[PresetWidget] preset_id", preset_id)
+        log.parameter("[PresetWidget] program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         # Use _actual_preset_list (list of dicts) instead of preset_list (enum)
@@ -123,11 +127,11 @@ class PresetWidget(QWidget):
         if preset_list_to_use is None:
             # Fallback: determine preset list from preset type
             preset_type = self.digital_preset_type_combo.currentText()
-            if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
+            if preset_type in [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2]:
                 preset_list_to_use = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
-            elif preset_type == "Drums":
+            elif preset_type == PresetTitle.DRUMS:
                 preset_list_to_use = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
-            elif preset_type == "Analog Synth":
+            elif preset_type == PresetTitle.ANALOG_SYNTH:
                 preset_list_to_use = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
             else:
                 preset_list_to_use = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
@@ -138,14 +142,14 @@ class PresetWidget(QWidget):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"Could not retrieve preset parameters for program {program_number}"
+                f"[PresetWidget] Could not retrieve preset parameters for program {program_number}"
             )
             return
 
-        log.message("retrieved msb, lsb, pc :")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
+        log.message("[PresetWidget] retrieved msb, lsb, pc :")
+        log.parameter("[PresetWidget] combo box msb", msb)
+        log.parameter("[PresetWidget] combo box lsb", lsb)
+        log.parameter("[PresetWidget] combo box pc", pc)
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -197,16 +201,16 @@ class PresetWidget(QWidget):
         :param preset_type:
         :return: None
         """
-        if preset_type == "Digital Synth 1":
+        if preset_type == PresetTitle.DIGITAL_SYNTH1:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
-        elif preset_type == "Digital Synth 2":
+        elif preset_type == PresetTitle.DIGITAL_SYNTH2:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
-        elif preset_type == "Drums":
+        elif preset_type == PresetTitle.DRUMS:
             self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiUIPreset.Drum.PROGRAM_CHANGE
-        elif preset_type == "Analog Synth":
+        elif preset_type == PresetTitle.ANALOG_SYNTH:
             self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = JDXiUIPreset.Analog.PROGRAM_CHANGE
 
@@ -216,11 +220,11 @@ class PresetWidget(QWidget):
         Called when preset type changes.
         """
         preset_type = self.digital_preset_type_combo.currentText()
-        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
+        if preset_type in [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2]:
             preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
-        elif preset_type == "Drums":
+        elif preset_type == PresetTitle.DRUMS:
             preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
-        elif preset_type == "Analog Synth":
+        elif preset_type == PresetTitle.ANALOG_SYNTH:
             preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
         else:
             preset_list = (

@@ -56,3 +56,20 @@ class ComboBoxSpec:
     label: str
     options: Any = None
     values: Any = None
+
+
+@dataclass(frozen=True)
+class PWMSpec:
+    """Spec for PWM widget: pulse width and modulation depth parameters."""
+
+    pulse_width_param: AddressParameter
+    mod_depth_param: AddressParameter
+
+
+@dataclass(frozen=True)
+class PitchEnvelopeSpec:
+    """Spec for Pitch Envelope widget: attack, decay, and depth parameters."""
+
+    attack_param: AddressParameter
+    decay_param: AddressParameter
+    depth_param: AddressParameter
