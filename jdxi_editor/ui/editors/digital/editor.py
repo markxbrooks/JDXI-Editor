@@ -32,8 +32,10 @@ Dependencies:
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.partial.switch import PartialSwitchState, PartialSelectState
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
+from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -470,17 +472,17 @@ class DigitalSynthEditor(BaseSynthEditor):
             log.parameter(f"found {param_name}", param_name, silent=True)
             try:
                 if param.name in [
-                    "PARTIAL1_SWITCH",
-                    "PARTIAL2_SWITCH",
-                    "PARTIAL3_SWITCH",
+                    PartialSwitchState.PARTIAL1_SWITCH,
+                    PartialSwitchState.PARTIAL2_SWITCH,
+                    PartialSwitchState.PARTIAL3_SWITCH,
                 ]:
                     self._update_partial_selection_switch(
                         param, param_value, successes, failures
                     )
                 if param.name in [
-                    "PARTIAL1_SELECT",
-                    "PARTIAL2_SELECT",
-                    "PARTIAL3_SELECT",
+                    PartialSelectState.PARTIAL1_SELECT,
+                    PartialSelectState.PARTIAL2_SELECT,
+                    PartialSelectState.PARTIAL3_SELECT,
                 ]:
                     self._update_partial_selected_state(
                         param, param_value, successes, failures
@@ -710,9 +712,9 @@ class DigitalSynthEditor(BaseSynthEditor):
 
         param_name = param.name
         partial_switch_map = {
-            "PARTIAL1_SWITCH": 1,
-            "PARTIAL2_SWITCH": 2,
-            "PARTIAL3_SWITCH": 3,
+            PartialSwitchState.PARTIAL1_SWITCH: 1,
+            PartialSwitchState.PARTIAL2_SWITCH: 2,
+            PartialSwitchState.PARTIAL3_SWITCH: 3,
         }
         partial_number = partial_switch_map.get(param_name)
         if partial_number is None:
@@ -753,9 +755,9 @@ class DigitalSynthEditor(BaseSynthEditor):
 
         param_name = param.name
         partial_switch_map = {
-            "PARTIAL1_SELECT": 1,
-            "PARTIAL2_SELECT": 2,
-            "PARTIAL3_SELECT": 3,
+            PartialSelectState.PARTIAL1_SELECT: 1,
+            PartialSelectState.PARTIAL2_SELECT: 2,
+            PartialSelectState.PARTIAL3_SELECT: 3,
         }
         partial_number = partial_switch_map.get(param_name)
         if partial_number is None:

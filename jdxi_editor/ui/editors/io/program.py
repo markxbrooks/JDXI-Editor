@@ -40,6 +40,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.partial.switch import PartialSelectState, PartialSwitchState
 from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
@@ -1014,7 +1015,7 @@ class ProgramEditor(BasicEditor):
         log.message(f"Updating controls for partial {partial_number}")
         log.parameter("self.controls", self.controls)
         for control in self.controls:
-            log.parameter("control @@", control, silent=False)
+            log.parameter("control", control, silent=False)
         sysex_data.pop(SysExSection.SYNTH_TONE, None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
@@ -1028,18 +1029,18 @@ class ProgramEditor(BasicEditor):
             log.parameter(f"found {param_name}", param_name, silent=True)
             try:
                 if param.name in [
-                    "PARTIAL1_SWITCH",
-                    "PARTIAL2_SWITCH",
-                    "PARTIAL3_SWITCH",
+                    PartialSwitchState.PARTIAL1_SWITCH,
+                    PartialSwitchState.PARTIAL2_SWITCH,
+                    PartialSwitchState.PARTIAL3_SWITCH,
                 ]:
                     pass
                     """self._update_partial_selection_switch(
                         param, param_value, successes, failures
                     )"""
                 if param.name in [
-                    "PARTIAL1_SELECT",
-                    "PARTIAL2_SELECT",
-                    "PARTIAL3_SELECT",
+                    PartialSelectState.PARTIAL1_SELECT,
+                    PartialSelectState.PARTIAL2_SELECT,
+                    PartialSelectState.PARTIAL3_SELECT,
                 ]:
                     pass
                     """self._update_partial_selected_state(
