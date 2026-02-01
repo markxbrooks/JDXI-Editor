@@ -30,8 +30,8 @@ class TestCeremonyRoundTrip(unittest.TestCase):
         # Expected level values for Ceremony program
         # Note: Different synths use different parameter names
         self.expected_levels = {
-            "DIGITAL_SYNTH_1": {"param": "TONE_LEVEL", "value": 114},
-            "DIGITAL_SYNTH_2": {"param": "TONE_LEVEL", "value": 107},  # Added to .msz file
+            "DIGITAL_SYNTH_1": {"param": SysExSection.TONE_LEVEL, "value": 114},
+            "DIGITAL_SYNTH_2": {"param": SysExSection.TONE_LEVEL, "value": 107},  # Added to .msz file
             "DRUM_KIT": {"param": "KIT_LEVEL", "value": 127},
             "ANALOG_SYNTH": {"param": "AMP_LEVEL", "value": 92},
         }
@@ -76,7 +76,7 @@ class TestCeremonyRoundTrip(unittest.TestCase):
         }
         
         for message in data["messages"]:
-            address = message.get("ADDRESS", "")
+            address = message.get(SysExSection.ADDRESS, "")
             synth_section = self.address_map.get(address)
             
             if synth_section and synth_section in self.expected_levels:
@@ -126,7 +126,7 @@ class TestCeremonyRoundTrip(unittest.TestCase):
             data = json.load(f)
         
         # Check all level-related parameters
-        level_params = ["TONE_LEVEL", "KIT_LEVEL", "AMP_LEVEL"]
+        level_params = [SysExSection.TONE_LEVEL, "KIT_LEVEL", "AMP_LEVEL"]
         
         for message in data["messages"]:
             for param_name in level_params:
@@ -155,7 +155,7 @@ class TestCeremonyRoundTrip(unittest.TestCase):
         # Find the program common message (address 12180000)
         program_message = None
         for message in data["messages"]:
-            if message.get("ADDRESS") == "12180000":
+            if message.get(SysExSection.ADDRESS) == "12180000":
                 program_message = message
                 break
         
@@ -164,7 +164,7 @@ class TestCeremonyRoundTrip(unittest.TestCase):
             "Program common message not found"
         )
         
-        tone_name = program_message.get("TONE_NAME", "")
+        tone_name = program_message.get(SysExSection.TONE_NAME, "")
         self.assertEqual(
             tone_name,
             "CEREMONY",

@@ -43,6 +43,7 @@ import re
 from typing import Optional, Protocol, Tuple, TypeVar
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -248,8 +249,8 @@ class MIDIDebugger(QMainWindow):
             log.parameter("sysex_dict", sysex_dict)
 
             command_id, command_byte = parse_sysex_message(message, CommandID)
-            temporary_area = sysex_dict.get("TEMPORARY_AREA", "Unknown")
-            synth_tone = sysex_dict.get("SYNTH_TONE", "Unknown")
+            temporary_area = sysex_dict.get(SysExSection.TEMPORARY_AREA, "Unknown")
+            synth_tone = sysex_dict.get(SysExSection.SYNTH_TONE, "Unknown")
             param_name = sysex_dict.get("PARAM", "Unknown")
 
             address_msb = message[JDXiSysExMessageLayout.ADDRESS.MSB]

@@ -50,9 +50,9 @@ class SysExCollector(QObject):
         try:
             data = json.loads(json_string)
             self.collected_responses.append(data)
-            address = data.get("ADDRESS", "unknown")
-            temporary_area = data.get("TEMPORARY_AREA", "unknown")
-            synth_tone = data.get("SYNTH_TONE", "unknown")
+            address = data.get(SysExSection.ADDRESS, "unknown")
+            temporary_area = data.get(SysExSection.TEMPORARY_AREA, "unknown")
+            synth_tone = data.get(SysExSection.SYNTH_TONE, "unknown")
             log.message(f"✓ Collected SysEx response #{len(self.collected_responses)} - ADDRESS: {address}, AREA: {temporary_area}, TONE: {synth_tone}")
         except json.JSONDecodeError as ex:
             log.error(f"Failed to parse JSON SysEx: {ex}")
@@ -92,7 +92,7 @@ class SysExCollector(QObject):
             
             # Log summary of collected responses
             if len(self.collected_responses) > 0:
-                addresses = [r.get("ADDRESS", "unknown") for r in self.collected_responses]
+                addresses = [r.get(SysExSection.ADDRESS, "unknown") for r in self.collected_responses]
                 log.message(f"Collected addresses: {', '.join(set(addresses))}")
         except Exception as ex:
             log.error(f"Failed to save responses: {ex}")

@@ -268,7 +268,7 @@ class Logger:
         """
         for listing in [successes, failures]:
             try:
-                listing.remove("SYNTH_TONE")
+                listing.remove(SysExSection.SYNTH_TONE)
             except ValueError:
                 pass  # or handle the error
 

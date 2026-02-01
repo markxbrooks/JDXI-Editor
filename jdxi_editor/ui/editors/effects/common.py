@@ -58,6 +58,7 @@ Features:
 from typing import Dict, Union
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
@@ -788,8 +789,8 @@ class EffectsCommonEditor(BasicEditor):
                 return
 
             # Check if this is effects data (TEMPORARY_AREA should be "TEMPORARY_PROGRAM")
-            temporary_area = sysex_data.get("TEMPORARY_AREA", "")
-            synth_tone = sysex_data.get("SYNTH_TONE", "")
+            temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA, "")
+            synth_tone = sysex_data.get(SysExSection.SYNTH_TONE, "")
 
             # Log what we received for debugging
             log.message(
@@ -823,7 +824,7 @@ class EffectsCommonEditor(BasicEditor):
                     widget = None
 
                     # Skip metadata keys that aren't actual parameters
-                    if param_name in ["SYNTH_TONE", "TEMPORARY_AREA"]:
+                    if param_name in [SysExSection.SYNTH_TONE, SysExSection.TEMPORARY_AREA]:
                         continue
 
                     # Check all parameter types

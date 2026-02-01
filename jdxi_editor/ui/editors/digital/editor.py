@@ -32,6 +32,7 @@ Dependencies:
 from typing import Dict, Optional, Union
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
@@ -455,7 +456,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         """
         for control in self.controls:
             log.parameter("control", control, silent=True)
-        sysex_data.pop("SYNTH_TONE", None)
+        sysex_data.pop(SysExSection.SYNTH_TONE, None)
         sysex_data.pop("TONE_CATEGORY", None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
@@ -509,7 +510,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         """
         for control in self.controls:
             log.parameter("control", control, silent=True)
-        sysex_data.pop("SYNTH_TONE", None)
+        sysex_data.pop(SysExSection.SYNTH_TONE, None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = DigitalModifyParam.get_by_name(param_name)

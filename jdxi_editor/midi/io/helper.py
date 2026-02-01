@@ -38,6 +38,7 @@ from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 
 
@@ -110,14 +111,14 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
             # Skip metadata fields
             metadata_fields = {
-                "JD_XI_HEADER",
-                "ADDRESS",
-                "TEMPORARY_AREA",
-                "SYNTH_TONE",
+                SysExSection.JD_XI_HEADER,
+                SysExSection.ADDRESS,
+                SysExSection.TEMPORARY_AREA,
+                SysExSection.SYNTH_TONE,
             }
 
             # Parse address from hex string
-            address_hex = patch_data.get("ADDRESS", "")
+            address_hex = patch_data.get(SysExSection.ADDRESS, "")
             if not address_hex or len(address_hex) < 8:
                 log.warning(f"Invalid ADDRESS in patch data: {address_hex}")
                 return
@@ -138,8 +139,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             )
 
             # Determine parameter class based on TEMPORARY_AREA and SYNTH_TONE
-            temporary_area = patch_data.get("TEMPORARY_AREA", "")
-            synth_tone = patch_data.get("SYNTH_TONE", "")
+            temporary_area = patch_data.get(SysExSection.TEMPORARY_AREA, "")
+            synth_tone = patch_data.get(SysExSection.SYNTH_TONE, "")
 
             # Map to parameter class
             param_class = None

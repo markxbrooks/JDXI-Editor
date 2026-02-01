@@ -40,6 +40,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
@@ -901,8 +902,8 @@ class ProgramEditor(BasicEditor):
             return
 
         # current_synth = get_area([self.address.msb, self.address.umb])
-        temporary_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
+        temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
+        synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
 
         log.header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
@@ -949,13 +950,13 @@ class ProgramEditor(BasicEditor):
                 "KIT_LEVEL": (DrumCommonParam.KIT_LEVEL, drums_slider)
             },
             AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
-                "TONE_LEVEL": (
+                SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
                     digital1_slider,
                 )
             },
             AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
-                "TONE_LEVEL": (
+                SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
                     digital2_slider,
                 )
@@ -1014,7 +1015,7 @@ class ProgramEditor(BasicEditor):
         log.parameter("self.controls", self.controls)
         for control in self.controls:
             log.parameter("control @@", control, silent=False)
-        sysex_data.pop("SYNTH_TONE", None)
+        sysex_data.pop(SysExSection.SYNTH_TONE, None)
         for param_name, param_value in sysex_data.items():
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = DigitalCommonParam.get_by_name(param_name)

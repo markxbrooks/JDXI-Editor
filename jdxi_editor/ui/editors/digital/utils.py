@@ -12,6 +12,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS, SYNTH_PARTIAL_MAP
+from jdxi_editor.midi.sysex.sections import SysExSection
 
 
 def filter_sysex_keys(sysex_data: dict) -> dict:
@@ -64,7 +65,7 @@ def _is_valid_sysex_area(sysex_data: dict) -> bool:
     :param sysex_data: dict
     :return: bool
     """
-    temporary_area = sysex_data.get("TEMPORARY_AREA")
+    temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
     return temporary_area in [
         "DIGITAL_SYNTH_1",
         "DIGITAL_SYNTH_2",
@@ -104,7 +105,7 @@ def _sysex_area_matches(sysex_data: dict, area: int) -> bool:
     :param area: int
     :return: bool
     """
-    temp_area = sysex_data.get("TEMPORARY_AREA")
+    temp_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
     area_map = {
         AddressStartMSB.TEMPORARY_TONE: "DIGITAL_SYNTH_1",
     }
@@ -124,7 +125,7 @@ def _sysex_area2_matches(sysex_data: dict, area: int) -> bool:
     :param area: int
     :return: bool
     """
-    temp_area = sysex_data.get("TEMPORARY_AREA")
+    temp_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
     area_map = {
         AddressStartMSB.DIGITAL_2: "DIGITAL_SYNTH_2",
     }
@@ -146,7 +147,7 @@ def _sysex_tone_matches(sysex_data: dict, tone: int) -> bool:
     """
     log.message(f"looking for tone {tone}")
 
-    temp_part = sysex_data.get("SYNTH_TONE")
+    temp_part = sysex_data.get(SysExSection.SYNTH_TONE)
     log.message(f"found part {temp_part}")
     part_map = {
         AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1: "PARTIAL_1",

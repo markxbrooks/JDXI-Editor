@@ -42,6 +42,7 @@ from typing import Optional, Union
 
 import qtawesome as qta
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from PySide6.QtCore import QSettings, Qt, QTimer
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
@@ -1209,10 +1210,10 @@ class JDXiInstrument(JDXiWindow):
 
                         # Count parameters sent
                         metadata_fields = {
-                            "JD_XI_HEADER",
-                            "ADDRESS",
-                            "TEMPORARY_AREA",
-                            "SYNTH_TONE",
+                            SysExSection.JD_XI_HEADER,
+                            SysExSection.ADDRESS,
+                            SysExSection.TEMPORARY_AREA,
+                            SysExSection.SYNTH_TONE,
                         }
                         param_count = len(
                             [k for k in editor_json.keys() if k not in metadata_fields]

@@ -48,7 +48,7 @@ def group_messages_by_address(messages: List[Dict[str, Any]]) -> Dict[str, Dict[
     grouped: Dict[str, Dict[str, Any]] = {}
     
     for message in messages:
-        address = message.get("ADDRESS", "")
+        address = message.get(SysExSection.ADDRESS, "")
         if not address:
             continue
         
@@ -56,7 +56,7 @@ def group_messages_by_address(messages: List[Dict[str, Any]]) -> Dict[str, Dict[
         if address in grouped:
             # Merge parameters from this message into the existing one
             for key, value in message.items():
-                if key not in ["ADDRESS", "JD_XI_HEADER", "TEMPORARY_AREA", "SYNTH_TONE"]:
+                if key not in [SysExSection.ADDRESS, SysExSection.JD_XI_HEADER, SysExSection.TEMPORARY_AREA, SysExSection.SYNTH_TONE]:
                     grouped[address][key] = value
         else:
             # Create a new entry for this address
@@ -66,11 +66,11 @@ def group_messages_by_address(messages: List[Dict[str, Any]]) -> Dict[str, Dict[
     if "12192100" not in grouped:
         log.message("Digital Synth 2 Common not found in parsed JSON, adding with TONE_LEVEL=107")
         grouped["12192100"] = {
-            "JD_XI_HEADER": "f041100000000e",
-            "ADDRESS": "12192100",  # Digital Synth 2 Common (19 21 00 00)
-            "TEMPORARY_AREA": "DIGITAL_SYNTH_2",
-            "SYNTH_TONE": "COMMON",
-            "TONE_LEVEL": 107,  # From the SysEx message F0 41 10 00 00 00 0E 12 12 19 20 0C 6B 5E F7
+            SysExSection.JD_XI_HEADER: "f041100000000e",
+            SysExSection.ADDRESS: "12192100",  # Digital Synth 2 Common (19 21 00 00)
+            SysExSection.TEMPORARY_AREA: "DIGITAL_SYNTH_2",
+            SysExSection.SYNTH_TONE: "COMMON",
+            SysExSection.TONE_LEVEL: 107,  # From the SysEx message F0 41 10 00 00 00 0E 12 12 19 20 0C 6B 5E F7
             # Add minimal required parameters with default values
             "PORTAMENTO_SWITCH": 0,
             "PORTAMENTO_TIME": 0,
@@ -124,8 +124,8 @@ def save_msz_from_json(json_file_path: Path, output_msz_path: Path) -> bool:
                     json.dump(message_data, f, indent=2)
                 
                 json_files_created.append(json_filename)
-                temp_area = message_data.get("TEMPORARY_AREA", "UNKNOWN")
-                synth_tone = message_data.get("SYNTH_TONE", "UNKNOWN")
+                temp_area = message_data.get(SysExSection.TEMPORARY_AREA, "UNKNOWN")
+                synth_tone = message_data.get(SysExSection.SYNTH_TONE, "UNKNOWN")
                 log.message(f"Created JSON file: {json_filename}")
                 log.message(f"  Address: {address}, Area: {temp_area}, Tone: {synth_tone}")
             

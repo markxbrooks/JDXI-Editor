@@ -14,7 +14,7 @@ def log_debug_info(successes: list[str], failures: list[str]) -> None:
     """
     for listing in [successes, failures]:
         try:
-            listing.remove("SYNTH_TONE")
+            listing.remove(SysExSection.SYNTH_TONE)
         except ValueError:
             pass  # or handle the error
 

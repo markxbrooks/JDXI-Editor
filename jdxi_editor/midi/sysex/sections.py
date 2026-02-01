@@ -1,0 +1,44 @@
+"""
+Parsable sections from JDXI SysEx Messages
+"""
+
+
+class SysExSection:
+    """Parsable Sections of JDXi SysSex"""
+    JD_XI_HEADER = "JD_XI_HEADER"
+    ADDRESS = "ADDRESS"
+    TEMPORARY_AREA = "TEMPORARY_AREA"
+    TONE_NAME = "TONE_NAME"
+    SYNTH_TONE = "SYNTH_TONE"
+    TONE_LEVEL = "TONE_LEVEL"
+    TONE_NAME_1 = "TONE_NAME_1"
+    TONE_NAME_2 = "TONE_NAME_2"
+    TONE_NAME_3 = "TONE_NAME_3"
+    TONE_NAME_4 = "TONE_NAME_4"
+    TONE_NAME_5 = "TONE_NAME_5"
+    TONE_NAME_6 = "TONE_NAME_6"
+    TONE_NAME_7 = "TONE_NAME_7"
+    TONE_NAME_8 = "TONE_NAME_8"
+    TONE_NAME_9 = "TONE_NAME_9"
+    TONE_NAME_10 = "TONE_NAME_10"
+    TONE_NAME_11 = "TONE_NAME_11"
+    TONE_NAME_12 = "TONE_NAME_12"
+    PARTIAL_NAME_1 = "PARTIAL_NAME_1"
+    PARTIAL_NAME_2 = "PARTIAL_NAME_2"
+    PARTIAL_NAME_3 = "PARTIAL_NAME_3"
+    PARTIAL_NAME_4 = "PARTIAL_NAME_4"
+    PARTIAL_NAME_5 = "PARTIAL_NAME_5"
+    PARTIAL_NAME_6 = "PARTIAL_NAME_6"
+    PARTIAL_NAME_7 = "PARTIAL_NAME_7"
+    PARTIAL_NAME_8 = "PARTIAL_NAME_8"
+    PARTIAL_NAME_9 = "PARTIAL_NAME_9"
+    PARTIAL_NAME_10 = "PARTIAL_NAME_10"
+    PARTIAL_NAME_11 = "PARTIAL_NAME_11"
+    PARTIAL_NAME_12 = "PARTIAL_NAME_12"
+
+    @classmethod
+    def all(cls):
+        return [cls.JD_XI_HEADER,
+                cls.ADDRESS,
+                cls.TEMPORARY_AREA,
+                cls.TONE_NAME]

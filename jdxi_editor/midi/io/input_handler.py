@@ -26,6 +26,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 import mido
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
@@ -410,14 +411,14 @@ class MidiInHandler(MidiIOController):
             "12197000",  # Drums Common
         }
 
-        address = parsed_data.get("ADDRESS")
+        address = parsed_data.get(SysExSection.ADDRESS)
 
-        tone_name = parsed_data.get("TONE_NAME")
-        temporary_area = parsed_data.get("TEMPORARY_AREA")
-        log.parameter("ADDRESS", address, silent=True)
-        log.parameter("TEMPORARY_AREA", temporary_area, silent=True)
-        log.parameter("TONE_NAME", tone_name, silent=True)
-        log.parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"), silent=True)
+        tone_name = parsed_data.get(SysExSection.TONE_NAME)
+        temporary_area = parsed_data.get(SysExSection.TEMPORARY_AREA)
+        log.parameter(SysExSection.ADDRESS, address, silent=True)
+        log.parameter(SysExSection.TEMPORARY_AREA, temporary_area, silent=True)
+        log.parameter(SysExSection.TONE_NAME, tone_name, silent=True)
+        log.parameter(SysExSection.SYNTH_TONE, parsed_data.get(SysExSection.SYNTH_TONE), silent=True)
 
         # Map address to synth section
         section_map = {

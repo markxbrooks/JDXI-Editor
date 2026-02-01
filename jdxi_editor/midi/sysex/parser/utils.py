@@ -22,6 +22,7 @@ from enum import Enum
 from typing import Any, Dict, Iterable, Tuple
 
 from decologr import Decologr as log
+from jdxi_editor.midi.sysex.sections import SysExSection
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
@@ -184,11 +185,11 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     """
     if len(data) <= JDXiSysExMessageLayout.ADDRESS.LMB:
         return {
-            "JD_XI_HEADER": UNKNOWN,
-            "ADDRESS": UNKNOWN,
-            "TEMPORARY_AREA": UNKNOWN,
-            "SYNTH_TONE": UNKNOWN,
-            "TONE_NAME": UNKNOWN,
+            SysExSection.JD_XI_HEADER: UNKNOWN,
+            SysExSection.ADDRESS: UNKNOWN,
+            SysExSection.TEMPORARY_AREA: UNKNOWN,
+            SysExSection.SYNTH_TONE: UNKNOWN,
+            SysExSection.TONE_NAME: UNKNOWN,
         }
 
     temporary_area = get_temporary_area(data) or UNKNOWN
@@ -202,15 +203,15 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     )
 
     return {
-        "JD_XI_HEADER": safe_extract(
+        SysExSection.JD_XI_HEADER: safe_extract(
             data, JDXiSysExMessageLayout.START, JDXiSysExMessageLayout.COMMAND_ID
         ),
-        "ADDRESS": safe_extract(
+        SysExSection.ADDRESS: safe_extract(
             data, JDXiSysExMessageLayout.COMMAND_ID, JDXiSysExMessageLayout.ADDRESS.LSB
         ),
-        "TEMPORARY_AREA": temporary_area,
-        "SYNTH_TONE": synth_tone,
-        "TONE_NAME": (
+        SysExSection.TEMPORARY_AREA: temporary_area,
+        SysExSection.SYNTH_TONE: synth_tone,
+        SysExSection.TONE_NAME: (
             extract_tone_name(data)
             if len(data) >= JDXiSysExMessageLayout.TONE_NAME.END
             else UNKNOWN
@@ -226,14 +227,14 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     :return: Dict[str, str]
     """
     return {
-        "JD_XI_HEADER": (
+        SysExSection.JD_XI_HEADER: (
             extract_hex(
                 data, JDXiSysExMessageLayout.START, JDXiSysExMessageLayout.COMMAND_ID
             )
             if len(data) >= JDXiSysExMessageLayout.COMMAND_ID
             else UNKNOWN
         ),
-        "ADDRESS": (
+        SysExSection.ADDRESS: (
             extract_hex(
                 data,
                 JDXiSysExMessageLayout.COMMAND_ID,
@@ -242,8 +243,8 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
             if len(data) >= JDXiSysExMessageLayout.ADDRESS.LSB
             else UNKNOWN
         ),
-        "TEMPORARY_AREA": UNKNOWN,
-        "SYNTH_TONE": UNKNOWN,
+        SysExSection.TEMPORARY_AREA: UNKNOWN,
+        SysExSection.SYNTH_TONE: UNKNOWN,
     }
 
 

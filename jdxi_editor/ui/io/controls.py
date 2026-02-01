@@ -10,6 +10,7 @@ import json
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
@@ -22,7 +23,7 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     :return: None
     """
     try:
-        combined_data = {"JD_XI_HEADER": "f041100000000e"}
+        combined_data = {SysExSection.JD_XI_HEADER: "f041100000000e"}
         for editor in editors:
             log.message(f"processing editor: {editor} {editor.__class__.__name__}")
             if not hasattr(editor, "address"):
@@ -39,9 +40,9 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
             address_hex = "".join([f"{x:02x}" for x in editor.address.to_bytes()])
 
             synth_tone_byte = address_hex[4:6]
-            combined_data["ADDRESS"] = address_hex
+            combined_data[SysExSection.ADDRESS] = address_hex
 
-            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(
+            combined_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
                 editor.address.umb, AddressOffsetTemporaryToneUMB
             )
             synth_tone_map = {
@@ -49,7 +50,7 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
                 "21": "PARTIAL_2",
                 "22": "PARTIAL_3",
             }
-            combined_data["SYNTH_TONE"] = synth_tone_map.get(
+            combined_data[SysExSection.SYNTH_TONE] = synth_tone_map.get(
                 synth_tone_byte, "UNKNOWN_SYNTH_TONE"
             )
             # Get the raw control values instead of the full control data

@@ -100,9 +100,9 @@ def main():
         parsed = parse_sysex_hex(hex_str)
         if parsed:
             parsed_results.append(parsed)
-            address = parsed.get("ADDRESS", "unknown")
-            temporary_area = parsed.get("TEMPORARY_AREA", "unknown")
-            synth_tone = parsed.get("SYNTH_TONE", "unknown")
+            address = parsed.get(SysExSection.ADDRESS, "unknown")
+            temporary_area = parsed.get(SysExSection.TEMPORARY_AREA, "unknown")
+            synth_tone = parsed.get(SysExSection.SYNTH_TONE, "unknown")
             log.message(f"✓ Parsed message {i} - ADDRESS: {address}, AREA: {temporary_area}, TONE: {synth_tone}")
         else:
             log.warning(f"✗ Failed to parse message {i}")
@@ -129,7 +129,7 @@ def main():
         log.message(f"Output file: {output_file}")
         
         # Show summary
-        addresses = [msg.get("ADDRESS", "unknown") for msg in parsed_results]
+        addresses = [msg.get(SysExSection.ADDRESS, "unknown") for msg in parsed_results]
         unique_addresses = set(addresses)
         log.message(f"Parsed addresses ({len(unique_addresses)} unique): {', '.join(sorted(unique_addresses))}")
         

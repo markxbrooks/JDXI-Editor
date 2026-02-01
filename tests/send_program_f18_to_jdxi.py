@@ -52,9 +52,9 @@ def send_messages_to_jdxi(midi_helper: MidiIOHelper, messages: List[Dict[str, An
     failed_count = 0
     
     for i, message in enumerate(messages, 1):
-        address = message.get("ADDRESS", "unknown")
-        temporary_area = message.get("TEMPORARY_AREA", "unknown")
-        synth_tone = message.get("SYNTH_TONE", "unknown")
+        address = message.get(SysExSection.ADDRESS, "unknown")
+        temporary_area = message.get(SysExSection.TEMPORARY_AREA, "unknown")
+        synth_tone = message.get(SysExSection.SYNTH_TONE, "unknown")
         
         log.message(f"[{i}/{total_messages}] Sending message - ADDRESS: {address}, AREA: {temporary_area}, TONE: {synth_tone}")
         

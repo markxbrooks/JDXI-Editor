@@ -26,6 +26,7 @@ from jdxi_editor.midi.sysex.parser.utils import (
     update_data_with_parsed_parameters,
     update_short_data_with_parsed_parameters,
 )
+from jdxi_editor.midi.sysex.sections import SysExSection
 
 
 def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
@@ -61,15 +62,15 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
         )
 
         return {
-            "TEMPORARY_AREA": temporary_area,
-            "SYNTH_TONE": synth_tone,
+            SysExSection.TEMPORARY_AREA: temporary_area,
+            SysExSection.SYNTH_TONE: synth_tone,
             "PARAMETER_CLASS": parameter_cls.__name__ if parameter_cls else "Unknown",
         }
     except Exception as ex:
         log.error(f"Error resolving mappings: {ex}")
         return {
-            "TEMPORARY_AREA": "Error",
-            "SYNTH_TONE": "Error",
+            SysExSection.TEMPORARY_AREA: "Error",
+            SysExSection.SYNTH_TONE: "Error",
             "PARAMETER_CLASS": "Error",
         }
 

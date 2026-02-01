@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from jdxi_editor.midi.sysex.request.hex import JDXISysExHex
+from jdxi_editor.midi.sysex.sections import SysExSection
 
 RQ11_COMMAND_HEADER = f"{JDXISysExHex.JDXI_HEADER} {JDXISysExHex.RQ1_COMMAND_11}"
 TEMPORARY_PROGRAM_RQ11_HEADER = (
@@ -11,7 +12,7 @@ PROGRAM_COMMON_RQ11_HEADER = (
     f"{TEMPORARY_PROGRAM_RQ11_HEADER} {JDXISysExHex.PROGRAM_COMMON_AREA}"
 )
 IGNORED_KEYS = {
-    "TEMPORARY_AREA",
+    SysExSection.TEMPORARY_AREA,
     "TONE_NAME_1",
     "TONE_NAME_2",
     "TONE_NAME_3",
@@ -36,9 +37,9 @@ IGNORED_KEYS = {
     "PARTIAL_NAME_10",
     "PARTIAL_NAME_11",
     "PARTIAL_NAME_12",
-    "JD_XI_HEADER",
-    "ADDRESS",
-    "TONE_NAME",
+    SysExSection.JD_XI_HEADER,
+    SysExSection.ADDRESS,
+    SysExSection.TONE_NAME,
 }
 SYNTH_PARTIAL_MAP = {
     "COMMON": 0,

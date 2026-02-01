@@ -43,6 +43,7 @@ from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import (
     filter_sysex_keys,
@@ -234,7 +235,7 @@ def log_changes(previous_data, current_data):
     changes = [
         change
         for change in changes
-        if change[0] not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+        if change[0] not in [SysExSection.JD_XI_HEADER, SysExSection.ADDRESS, SysExSection.TEMPORARY_AREA, SysExSection.TONE_NAME]
     ]
 
     if changes:
@@ -445,8 +446,8 @@ class SynthEditor(SynthBase):
             return
 
         current_synth = get_area([self.address.msb, self.address.umb])
-        temporary_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
+        temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
+        synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
 
         if current_synth != temporary_area:
             log.message(

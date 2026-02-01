@@ -63,7 +63,7 @@ def parse_multiple_sysex(hex_strings: List[str]) -> List[Dict[str, Any]]:
         parsed = parse_sysex_hex(hex_str)
         if parsed:
             parsed_results.append(parsed)
-            address = parsed.get("ADDRESS", "unknown")
+            address = parsed.get(SysExSection.ADDRESS, "unknown")
             log.message(f"✓ Parsed message {i} - ADDRESS: {address}")
         else:
             log.warning(f"✗ Failed to parse message {i}")
@@ -113,7 +113,7 @@ def main():
         log.message(f"Output file: {output_file}")
         
         # Show summary
-        addresses = [msg.get("ADDRESS", "unknown") for msg in parsed_results]
+        addresses = [msg.get(SysExSection.ADDRESS, "unknown") for msg in parsed_results]
         log.message(f"Parsed addresses: {', '.join(set(addresses))}")
         
         return 0

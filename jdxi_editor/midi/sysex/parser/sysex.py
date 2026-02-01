@@ -81,7 +81,7 @@ class JDXiSysExParser:
         """
         Parse the SysEx message and return a dictionary of parsed data.
 
-        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ...}
+        :return: dict sysex dictionary {SysExSection.JD_XI_HEADER: "f041100000000e", SysExSection.ADDRESS: "12190150", ...}
         """
         if not self.sysex_data:
             raise ValueError("No SysEx data provided")
@@ -108,7 +108,7 @@ class JDXiSysExParser:
         Parse SysEx data from bytes.
 
         :param sysex_data: bytes
-        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ...}
+        :return: dict sysex dictionary {SysExSection.JD_XI_HEADER: "f041100000000e", SysExSection.ADDRESS: "12190150", ...}
         """
         self.sysex_data = sysex_data
         return self.parse()

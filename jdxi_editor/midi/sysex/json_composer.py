@@ -14,6 +14,7 @@ from jdxi_editor.midi.data.address.address import (
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
@@ -43,7 +44,7 @@ class JDXiJSONComposer:
             self.editor = editor
             self.address = editor.address
         try:
-            editor_data = {"JD_XI_HEADER": "f041100000000e"}
+            editor_data = {SysExSection.JD_XI_HEADER: "f041100000000e"}
             if not hasattr(editor, "address"):
                 log.warning(f"Skipping invalid editor: {editor}, has no address")
                 return None
@@ -61,9 +62,9 @@ class JDXiJSONComposer:
                 ]
             )
             synth_tone_byte = address_hex[4:6]
-            editor_data["ADDRESS"] = address_hex
+            editor_data[SysExSection.ADDRESS] = address_hex
 
-            editor_data["TEMPORARY_AREA"] = parse_sysex_byte(
+            editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
                 editor.address.umb, AddressOffsetTemporaryToneUMB
             )
             synth_tone_map = {
@@ -71,10 +72,10 @@ class JDXiJSONComposer:
                 "21": "PARTIAL_2",
                 "22": "PARTIAL_3",
             }
-            editor_data["SYNTH_TONE"] = synth_tone_map.get(
+            editor_data[SysExSection.SYNTH_TONE] = synth_tone_map.get(
                 synth_tone_byte, "UNKNOWN_SYNTH_TONE"
             )
-            # editor_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "COMMON")
+            # editor_data[SysExSection.SYNTH_TONE] = synth_tone_map.get(synth_tone_byte, "COMMON")
             # Get the raw control values instead of the full control data
             other_data = editor.get_controls_as_dict()
             for k, v in other_data.items():
@@ -412,11 +413,11 @@ class JDXiJSONComposer:
         :return: Path Path to the saved JSON file
         """
         try:
-            editor_data = {"JD_XI_HEADER": "f041100000000e"}
+            editor_data = {SysExSection.JD_XI_HEADER: "f041100000000e"}
 
             # Convert address to hex string
             address_hex = "".join([f"{x:02x}" for x in address.to_bytes()])
-            editor_data["ADDRESS"] = address_hex
+            editor_data[SysExSection.ADDRESS] = address_hex
 
             # Determine TEMPORARY_AREA and SYNTH_TONE
             from jdxi_editor.midi.data.address.address import (
@@ -424,7 +425,7 @@ class JDXiJSONComposer:
             )
             from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
-            editor_data["TEMPORARY_AREA"] = parse_sysex_byte(
+            editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
                 address.umb, AddressOffsetTemporaryToneUMB
             )
 
@@ -437,7 +438,7 @@ class JDXiJSONComposer:
                 "22": "PARTIAL_3",
                 "50": "MODIFY",
             }
-            editor_data["SYNTH_TONE"] = synth_tone_map.get(
+            editor_data[SysExSection.SYNTH_TONE] = synth_tone_map.get(
                 synth_tone_byte, "UNKNOWN_SYNTH_TONE"
             )
 
