@@ -79,11 +79,11 @@ class BaseFilterSection(SectionBaseWidget):
 
     def build_widgets(self):
         """build widgets"""
-        self.controls_group = self._create_controls_group()
         if self.BUTTON_SPECS:
             self._create_waveform_buttons()
             if self.analog:
                 self.filter_mode_buttons = self.button_widgets
+        self.controls_group = self._create_controls_group()
         self._create_adsr_group()
         self._create_tab_widget()
 
@@ -111,6 +111,8 @@ class BaseFilterSection(SectionBaseWidget):
         self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group)
         # --- Filter ADSR ---
         self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
+        JDXi.UI.Theme.apply_tabs_style(widget=self.tab_widget, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         """Create the filter controls row with buttons for each filter mode."""

@@ -172,7 +172,8 @@ class InstrumentDimensions(Dimensions):
 class EditorDimensions(Dimensions):
     """EditorDimensions"""
 
-    MINIMUM_HEIGHT: int = 250
+    HEIGHT: int = 250
+    MIN_HEIGHT: int = 250
 
 
 class ArpDimensions(Dimensions):

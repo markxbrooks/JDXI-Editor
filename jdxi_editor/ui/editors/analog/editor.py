@@ -111,8 +111,8 @@ class AnalogSynthEditor(BaseSynthEditor):
         self.filter_switch_map = {0: 0, 1: 1}
         self.osc_waveform_map = {
             0: Analog.Wave.Osc.SAW,
-            1: Analog.Wave.Osc.TRIANGLE,
-            2: Analog.Wave.Osc.PULSE,
+            1: Analog.Wave.Osc.TRI,
+            2: Analog.Wave.Osc.PW_SQUARE,
         }
         self._create_sections()
         self.adsr_mapping = {

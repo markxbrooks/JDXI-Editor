@@ -626,7 +626,7 @@ class SectionBaseWidget(SynthBase):
         else:
             # Use regular icon from registry
             icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
-        
+        widget.setMaximumHeight(JDXi.UI.Dimensions.EDITOR.HEIGHT)
         tab_widget.addTab(
             widget,
             icon,

@@ -58,6 +58,7 @@ class DigitalCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         description: Optional[str] = None,
+        display_name: Optional[str] = None,
     ):
         """
         Initialize the digital common parameter with address and value range.
@@ -73,6 +74,7 @@ class DigitalCommonParam(AddressParameter):
         self.tooltip = description if description is not None else ""
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self._display_name = display_name
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
@@ -219,7 +221,9 @@ class DigitalCommonParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         return {
             self.RING_SWITCH: "Ring Mod",
             self.UNISON_SWITCH: "Unison",

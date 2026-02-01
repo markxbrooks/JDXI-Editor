@@ -32,12 +32,13 @@ class DrumCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         description: Optional[str] = None,
+        display_name: Optional[str] = None,
     ):
         """
         Initialize the drum common parameter with address and value range.
-        
-        Accepts 6 arguments when unpacked from ParameterSpec tuple:
-        (address, min_val, max_val, min_display, max_display, description)
+
+        Accepts 7 arguments when unpacked from ParameterSpec tuple:
+        (address, min_val, max_val, min_display, max_display, description, display_name)
         """
         super().__init__(address, min_val, max_val)
         self.address = address
@@ -47,6 +48,7 @@ class DrumCommonParam(AddressParameter):
         self.tooltip = description if description is not None else ""
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self._display_name = display_name
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
@@ -74,7 +76,9 @@ class DrumCommonParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         address_to_name = {
             self.KIT_LEVEL[0]: "Kit level",
             # Add other mappings as needed

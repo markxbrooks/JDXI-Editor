@@ -51,14 +51,23 @@ class ProgramZoneParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         partial_number: Optional[int] = 0,
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.partial_number = partial_number
+        self._display_name = display_name
 
     ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1)  # Arpeggio OFF, ON
     ZONAL_OCTAVE_SHIFT = ParameterSpec(0x19, 61, 67, -3, +3)  # Octave shift
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
 
     def get_display_value(self) -> Tuple[int, int]:
         """

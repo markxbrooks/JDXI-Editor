@@ -671,8 +671,8 @@ class BaseSynthEditor(SynthEditor):
         """
         waveform_map = {
             0: Analog.Wave.Osc.SAW,
-            1: Analog.Wave.Osc.TRIANGLE,
-            2: Analog.Wave.Osc.PULSE,
+            1: Analog.Wave.Osc.TRI,
+            2: Analog.Wave.Osc.PW_SQUARE,
         }
 
         selected_waveform = waveform_map.get(value)
@@ -724,7 +724,7 @@ class BaseSynthEditor(SynthEditor):
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == AnalogWaveOsc.PULSE
+        pw_enabled = waveform == AnalogWaveOsc.PW_SQUARE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         # --- Access PWM controls from oscillator_section.pwm_widget.controls
         if self.oscillator_section and self.oscillator_section.pwm_widget:

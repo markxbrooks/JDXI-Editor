@@ -44,11 +44,13 @@ class DrumPartialParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = "",
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip else ""
+        self._display_name = display_name
         self.bipolar_parameters = [
             "PARTIAL_FINE_TUNE",
             "PITCH_ENV_DEPTH",
@@ -1559,6 +1561,13 @@ class DrumPartialParam(AddressParameter):
     DRUM_PART = ParameterSpec(0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5")  # Hack alert @@
 
     DRUM_GROUP = ParameterSpec(0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5")  # Hack alert @@
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)

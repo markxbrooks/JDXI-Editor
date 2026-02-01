@@ -14,6 +14,7 @@ class SystemCommonParam(AddressParameter):
         display_min: int = None,
         display_max: int = None,
         description: str = None,
+        display_name: str = None
     ):
         """
         Initialize the system common parameter.
@@ -22,6 +23,7 @@ class SystemCommonParam(AddressParameter):
         (address, min_val, max_val, min_display, max_display, description)
         """
         super().__init__(address, min_val, max_val)
+        self._display_name = display_name
 
     MASTER_TUNE = ParameterSpec(0x00, -100.0, 100.0)  # Master Tune (24-2024: -100.0 to +100.0 cents)
     MASTER_KEY_SHIFT = ParameterSpec(0x04, -24, 24)  # Master Key Shift (40-88: -24 to +24 semitones)

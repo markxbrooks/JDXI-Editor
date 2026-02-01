@@ -50,11 +50,13 @@ class SystemCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
+        display_name: Optional[str] = None
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
+        self._display_name = display_name
 
     MASTER_TUNE = ParameterSpec(0x00, 24, 2024, -100, 100, "Master Tune")  # Program Level (0-127)
     MASTER_KEY_SHIFT = ParameterSpec(
@@ -168,6 +170,7 @@ class ProgramCommonParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
+        display_name: Optional[str] = None
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val

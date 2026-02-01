@@ -258,10 +258,10 @@ def create_group_adsr_with_hlayout(
         name: str, hlayout: QHBoxLayout, analog: bool = False
 ) -> QGroupBox:
     """create ADSR Group with an hlayout (harmonized for Digital and Analog)"""
-    controls_group = QGroupBox(name)
-    controls_group.setLayout(hlayout)
-    JDXi.UI.Theme.apply_adsr_style(controls_group, analog=analog)
-    return controls_group
+    group = QGroupBox(name)
+    group.setLayout(hlayout)
+    JDXi.UI.Theme.apply_adsr_style(group, analog=analog)
+    return group
 
 
 def create_envelope_group(
@@ -282,8 +282,8 @@ def create_envelope_group(
     :param analog: Whether to apply analog styling
     :return: QGroupBox with envelope layout
     """
-    env_group = QGroupBox(name)
-    env_group.setProperty("adsr", True)
+    group = QGroupBox(name)
+    group.setProperty("adsr", True)
 
     if icon_layout is None:
         icon_layout = create_centered_adsr_icon_layout()
@@ -294,16 +294,12 @@ def create_envelope_group(
     if adsr_widget:
         env_layout.addWidget(adsr_widget)  # ADSR widget below icon
     env_layout.addStretch()  # --- Stretch at bottom for spacing
-
-    env_group.setLayout(env_layout)
-
+    group.setLayout(env_layout)
     if analog:
-
-        JDXi.UI.Theme.apply_adsr_style(env_group, analog=True)
+        JDXi.UI.Theme.apply_adsr_style(group, analog=True)
     else:
-        env_group.setStyleSheet(JDXi.UI.Style.ADSR)
-
-    return env_group
+        group.setStyleSheet(JDXi.UI.Style.ADSR)
+    return group
 
 
 def create_button_with_tooltip(tooltip: str) -> QPushButton:

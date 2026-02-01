@@ -4,16 +4,22 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
+
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QTabWidget,
-    QWidget,
+    QWidget, QPushButton,
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
@@ -28,6 +34,7 @@ class BaseOscillatorSection(SectionBaseWidget):
     
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
+    SYNTH_SPEC = Digital
 
     def __init__(
         self,
@@ -65,22 +72,31 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=analog,
         )
         # ---  Set up waveform shapes
-        self.wave_shapes = [
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE,
-            JDXi.Midi.Digital.Wave.LFO.SINE,
-            JDXi.Midi.Digital.Wave.LFO.SAW,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM,
+        self.common_wave_shapes = [
+            self.SYNTH_SPEC.Wave.Osc.SAW,
+            self.SYNTH_SPEC.Wave.Osc.SQUARE,
+            self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
         ]
+        self.additional_digital_wave_shapes = [
+            self.SYNTH_SPEC.Wave.Osc.TRIANGLE,
+            self.SYNTH_SPEC.Wave.Osc.SINE,
+            self.SYNTH_SPEC.Wave.Osc.NOISE,
+            self.SYNTH_SPEC.Wave.Osc.SUPER_SAW,
+            self.SYNTH_SPEC.Wave.Osc.PCM,
+        ]
+        self.wave_shapes = (
+            self.common_wave_shapes
+            if self.analog
+            else self.common_wave_shapes + self.additional_digital_wave_shapes
+        )
         # ---  Map waveform shapes to icon names
         self.shape_icon_map = {
-            JDXi.Midi.Digital.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
-            JDXi.Midi.Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            JDXi.Midi.Digital.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            JDXi.Midi.Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            JDXi.Midi.Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            JDXi.Midi.Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
+            self.SYNTH_SPEC.Wave.LFO.TRIANGLE: JDXi.UI.Icon.WAVE_TRIANGLE,
+            self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
+            self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
+            self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
+            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
         
     def setup_ui(self):
@@ -142,12 +158,12 @@ class BaseOscillatorSection(SectionBaseWidget):
         # --- Use tab definitions - BaseOscillatorSection uses LFO-style tabs
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalLFOTab
         
-        self._add_tab(key=DigitalLFOTab.RATE, widget=rate_widget)
+        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
         # --- Update label if it differs from default (BaseOscillatorSection uses "Controls" instead of "Rate")
         if tab_widget.tabText(0) != self.controls_tab_label:
             tab_widget.setTabText(0, self.controls_tab_label)
         
-        self._add_tab(key=DigitalLFOTab.DEPTHS, widget=depths_widget)
+        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
         # --- Update label if it differs from default (BaseOscillatorSection uses "ADSR" instead of "Depths")
         if tab_widget.tabText(1) != self.adsr_tab_label:
             tab_widget.setTabText(1, self.adsr_tab_label)
@@ -159,7 +175,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return rate_widget
 
     def _create_depths_widget(self):
@@ -167,7 +183,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return depths_widget
 
     def _create_rate_fade_controls(self) -> QWidget:
@@ -175,7 +191,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         rate_fade_widget = QWidget()
         rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return rate_fade_widget
 
     def _create_depths_controls(self) -> QWidget:
@@ -183,10 +199,42 @@ class BaseOscillatorSection(SectionBaseWidget):
         depths_widget = QWidget()
         depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return depths_widget
 
-    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape):
+    def _create_waveform_buttons(self):
+        """Override to create waveform buttons with custom icon generation"""
+        self.waveform_buttons = {}
+        self.wave_layout_widgets = []
+
+        for spec in self.BUTTON_SPECS:
+            wave = spec.param
+            icon_name = spec.icon_name  # This is a WaveformIconType enum
+
+            pixmap = generate_icon_from_waveform(icon_name)
+            # --- Use QPushButton directly since WaveformButton expects Waveform enum, not Digital.Wave.Osc
+
+            btn = QPushButton(spec.label)  # Use label from spec
+            btn.setCheckable(True)
+
+            # --- Set icon
+            if pixmap and not pixmap.isNull():
+                btn.setIcon(QIcon(pixmap))
+                btn.setIconSize(QSize(20, 20))
+
+            btn.setFixedSize(
+                JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+                JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
+            )
+            btn.clicked.connect(lambda _, w=wave: self._on_button_selected(w))
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+            self.waveform_buttons[wave] = btn
+            self.button_widgets[wave] = btn
+            self.controls[self.SYNTH_SPEC.Param.OSC_WAVE] = btn
+            self.wave_layout_widgets.append(btn)
+
+    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
         """
         Handle Mod LFO shape button clicks
 

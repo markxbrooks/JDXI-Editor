@@ -160,7 +160,7 @@ class BaseLFOSection(SectionBaseWidget):
         rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return rate_widget
 
     def _create_depths_widget(self):
@@ -168,7 +168,7 @@ class BaseLFOSection(SectionBaseWidget):
         depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return depths_widget
 
     def _create_rate_fade_controls(self) -> QWidget:
@@ -176,7 +176,7 @@ class BaseLFOSection(SectionBaseWidget):
         rate_fade_widget = QWidget()
         rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
         rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return rate_fade_widget
 
     def _create_depths_controls(self) -> QWidget:
@@ -184,7 +184,7 @@ class BaseLFOSection(SectionBaseWidget):
         depths_widget = QWidget()
         depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
         depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return depths_widget
 
     def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape):

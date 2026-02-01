@@ -1,23 +1,18 @@
+"""
+Analog Specs
+"""
+
 from enum import Enum
 
+from jdxi_editor.midi.wave.spec import WaveOscBehavior
 
-class AnalogWaveOsc(Enum):
+
+class AnalogWaveOsc(WaveOscBehavior, Enum):
     """Analog oscillator waveform types"""
 
     SAW = 0
-    TRIANGLE = 1
-    PULSE = 2  # Changed from SQUARE to PULSE to match JD-Xi terminology
-
-    @property
-    def display_name(self) -> str:
-        """Get display name for waveform"""
-        names = {0: "SAW", 1: "TRI", 2: "P.W"}  # Updated display name
-        return names.get(self.value, "???")
-
-    @property
-    def midi_value(self) -> int:
-        """Get MIDI value for waveform"""
-        return self.value
+    TRI = 1
+    PW_SQUARE = 2
 
 
 class AnalogSubOscType(Enum):

@@ -46,12 +46,13 @@ class DigitalModifyParam(AddressParameter):
         display_min: int = None,
         display_max: int = None,
         description: str = None,
+        display_name: str = None,
     ):
         """
         Initialize the digital modify parameter with address and value range.
-        
-        Accepts 6 arguments when unpacked from ParameterSpec tuple:
-        (address, min_val, max_val, min_display, max_display, description)
+
+        Accepts 7 arguments when unpacked from ParameterSpec tuple:
+        (address, min_val, max_val, min_display, max_display, description, display_name)
         """
         super().__init__(address, min_val, max_val)
         self.address = address
@@ -61,6 +62,7 @@ class DigitalModifyParam(AddressParameter):
         self.tooltip = description if description is not None else ""
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self._display_name = display_name
 
     ATTACK_TIME_INTERVAL_SENS = ParameterSpec(
         0x01,
@@ -110,6 +112,13 @@ class DigitalModifyParam(AddressParameter):
         1,
         "If this is turned ON, portamento will operate in semitone steps. If this is turned OFF, the pitch will\nchange smoothly from one note to the next.\n This is effective when you want to play chromatic portamento\n using a sound that has a\nslow portamento time.",
     )
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
+        return self.name.replace("_", " ").title()
 
     def get_switch_text(self, value: int) -> str:
         """Get display text for switch values"""

@@ -450,11 +450,13 @@ class AnalogParam(AddressParameter):
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
+        display_name: Optional[str] = None,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
+        self._display_name = display_name
         self.switches = [
             "FILTER_SWITCH",
             "PORTAMENTO_SWITCH",
@@ -520,7 +522,9 @@ class AnalogParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter"""
+        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        if getattr(self, "_display_name", None) is not None:
+            return self._display_name
         return self.name.replace("_", " ").title()
 
     @staticmethod

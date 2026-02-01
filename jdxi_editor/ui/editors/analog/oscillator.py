@@ -40,12 +40,32 @@ class AnalogOscillatorSection(SectionBaseWidget):
                        Analog.Display.Name.OSC_PITCH_FINE,
                        vertical=True),
         ],
+        # --- Analog has this extra parameter, so here is the slider
         "env": [
             SliderSpec(Analog.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
                        Analog.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
                        vertical=True)
         ]
     }
+    # --- Waveform buttons
+    BUTTON_SPECS = [
+        SliderSpec(
+            param=Analog.Wave.Osc.SAW,
+            label=Analog.Wave.WaveType.UPSAW,
+            icon_name=Analog.Wave.WaveType.UPSAW,
+        ),
+        SliderSpec(
+            param=Analog.Wave.Osc.TRI,
+            label=Analog.Wave.WaveType.SQUARE,
+            icon_name=Analog.Wave.WaveType.SQUARE,
+        ),
+        SliderSpec(
+            param=Analog.Wave.Osc.PW_SQUARE,
+            label=Analog.Wave.WaveType.PWSQU,
+            icon_name=Analog.Wave.WaveType.PWSQU,
+        ),
+    ]
+
     SWITCH_SPECS = [
         SwitchSpec(
             Analog.Param.SUB_OSCILLATOR_TYPE,
@@ -159,7 +179,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
         pitch_layout = create_layout_with_widgets(widgets=[self._create_pitch_env_group()])
         pitch_widget = create_widget_with_layout(pitch_layout)
-        pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MINIMUM_HEIGHT)
+        pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return pitch_widget
 
     def _create_wave_layout(self) -> QHBoxLayout:
@@ -178,8 +198,8 @@ class AnalogOscillatorSection(SectionBaseWidget):
         """Create waveform buttons and store in dict"""
         for waveform in [
             Analog.Wave.Osc.SAW,
-            Analog.Wave.Osc.TRIANGLE,
-            Analog.Wave.Osc.PULSE,
+            Analog.Wave.Osc.TRI,
+            Analog.Wave.Osc.PW_SQUARE,
         ]:
             icon_name = generate_analog_waveform_icon_name(waveform)
             btn = generate_analog_wave_button(icon_name, waveform)
@@ -193,7 +213,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        tuning_group = create_group_with_widgets(label="Tuning",
+        tuning_group = create_group_with_widgets(label="Controls",
                                                  widgets=self.tuning_sliders)
         return tuning_group
 
@@ -226,7 +246,7 @@ class AnalogOscillatorSection(SectionBaseWidget):
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == Analog.Wave.Osc.PULSE
+        pw_enabled = waveform == Analog.Wave.Osc.PW_SQUARE
         self.pwm_widget.setEnabled(pw_enabled)
 
     def _on_waveform_selected_local(self, waveform: AnalogWaveOsc):
