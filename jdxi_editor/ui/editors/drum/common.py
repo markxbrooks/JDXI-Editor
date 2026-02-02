@@ -104,7 +104,7 @@ class DrumCommonSection(SectionBaseWidget):
         if self.address:
             self.address.lmb = AddressOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
-            DrumCommonParam.KIT_LEVEL, DrumDisplayName.KIT_LEVEL
+            DrumCommonParam.KIT_LEVEL, DrumCommonParam.KIT_LEVEL.display_name
         )
         common_layout.addRow("Kit Level:", kit_level_slider)
 
