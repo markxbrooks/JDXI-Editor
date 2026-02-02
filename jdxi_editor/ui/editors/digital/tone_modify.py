@@ -80,7 +80,7 @@ class DigitalToneModifySection(SectionBaseWidget):
             midi_helper=midi_helper,
         )
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
-
+        self.widgets: dict = {}
         self.build_widgets()
         self.setup_ui()
 

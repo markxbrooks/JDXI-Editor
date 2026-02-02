@@ -8,12 +8,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.common import BaseCommonSection
-from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_group_with_layout,
-    create_layout_with_widgets,
-)
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
@@ -107,11 +102,15 @@ class DigitalCommonSection(BaseCommonSection):
             send_midi_parameter=send_midi_parameter,
             analog=True,
         )
-        self.address = address
-        self.widgets = {}
+        self.address: RolandSysExAddress = address
+        self.widgets: dict = {}
         self.build_widgets()
         self.setup_ui()
-        
+
+    # ------------------------------------------------------------
+    # Widget construction
+    # ------------------------------------------------------------
+
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
         self.widgets = {
@@ -120,6 +119,10 @@ class DigitalCommonSection(BaseCommonSection):
             "octave_shift": self._build_combo_boxes(self.COMBO_BOXES),
             "other_switches": self._build_switches(self.OTHER_SWITCHES),
         }
+
+    # ------------------------------------------------------------
+    # Layout
+    # ------------------------------------------------------------
         
     def setup_ui(self) -> None:
         """setup ui"""
