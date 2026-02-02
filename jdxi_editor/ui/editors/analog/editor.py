@@ -185,19 +185,19 @@ class AnalogSynthEditor(BaseSynthEditor):
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
         self.cc_parameters = {
-            "Cutoff": Analog.ControlChange.CUTOFF,
-            "Resonance": Analog.ControlChange.RESONANCE,
-            "Level": Analog.ControlChange.LEVEL,
-            "LFO Rate": Analog.ControlChange.LFO_RATE,
+            "Cutoff": self.SYNTH_SPEC.ControlChange.CUTOFF,
+            "Resonance": self.SYNTH_SPEC.ControlChange.RESONANCE,
+            "Level": self.SYNTH_SPEC.ControlChange.LEVEL,
+            "LFO Rate": self.SYNTH_SPEC.ControlChange.LFO_RATE,
         }
 
         self.nrpn_parameters = {
-            "Envelope": Analog.RPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
-            "LFO Shape": Analog.RPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
-            "LFO Pitch Depth": Analog.RPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
-            "LFO Filter Depth": Analog.RPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
-            "LFO Amp Depth": Analog.RPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
-            "Pulse Width": Analog.RPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
+            "Envelope": self.SYNTH_SPEC.RPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
+            "LFO Shape": self.SYNTH_SPEC.RPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
+            "LFO Pitch Depth": self.SYNTH_SPEC.RPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
+            "LFO Filter Depth": self.SYNTH_SPEC.RPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
+            "LFO Amp Depth": self.SYNTH_SPEC.RPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
+            "Pulse Width": self.SYNTH_SPEC.RPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
         }
 
         # --- Reverse lookup map
