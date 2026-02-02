@@ -131,4 +131,4 @@ class DigitalCommonSection(BaseCommonSection):
             [self.widgets["other_switches"][3]],  # Unison size
             self.widgets["portamento_switches"],
         ]
-        self._setup_group_with_widget_lists(label="Common", widget_lists=widget_rows)
+        self._setup_group_with_widget_rows(label="Common", widget_rows=widget_rows)

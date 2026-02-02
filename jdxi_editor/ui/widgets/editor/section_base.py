@@ -728,11 +728,11 @@ class SectionBaseWidget(SynthBase):
                     create_layout_with_widgets(widget_list)
                     )
                 
-    def _setup_group_with_widget_lists(self, label: str, widget_lists: list[list]):
+    def _setup_group_with_widget_rows(self, label: str, widget_rows: list[list]):
         """setup group box with a list of widgets"""
         layout = self.get_layout()
         group, group_layout = create_group_with_layout(label=label)
         layout.addWidget(group)
         group.setStyleSheet(JDXiUIStyle.ADSR)
-        self.add_widget_lists_to_layout(group_layout, widget_lists)
+        self.add_widget_lists_to_layout(group_layout, widget_rows)
         group_layout.addStretch()

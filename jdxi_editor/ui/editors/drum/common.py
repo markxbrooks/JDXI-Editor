@@ -71,6 +71,9 @@ class DrumCommonSection(SectionBaseWidget):
 
         self.setup_ui()
 
+    def _setup_ui(self):
+        pass  # To not provide a Tab Widget
+
     def setup_ui(self):
         """setup UI"""
         layout = QVBoxLayout(self)
