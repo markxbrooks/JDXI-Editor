@@ -1,4 +1,4 @@
-"""
+o"""
 Common Section
 """
 
@@ -140,13 +140,13 @@ class DigitalCommonSection(BaseCommonSection):
     def setup_ui(self) -> None:
         """setup ui"""
         layout = self.get_layout()
-        group, sub_layout = create_group_with_layout(label="Common")
+        group, group_layout = create_group_with_layout(label="Common")
         layout.addWidget(group)
         group.setStyleSheet(JDXiUIStyle.ADSR)
-        sub_layout.addLayout(create_layout_with_widgets([self.octave_shift_switch]))
-        sub_layout.addLayout(create_layout_with_widgets([self.mono_switch]))
+        group_layout.addLayout(create_layout_with_widgets([self.octave_shift_switch]))
+        group_layout.addLayout(create_layout_with_widgets([self.mono_switch]))
 
-        sub_layout.addLayout(
+        group_layout.addLayout(
             create_layout_with_widgets(
                 [
                     self.pitch_bend_up,
@@ -159,11 +159,11 @@ class DigitalCommonSection(BaseCommonSection):
             )
         )
 
-        sub_layout.addLayout(create_layout_with_widgets([self.ring_switch]))
-        sub_layout.addLayout(
+        group_layout.addLayout(create_layout_with_widgets([self.ring_switch]))
+        group_layout.addLayout(
             create_layout_with_widgets([self.unison_switch, self.unison_size])
         )
-        sub_layout.addLayout(
+        group_layout.addLayout(
             create_layout_with_widgets(
                 [
                     self.portamento_switch,
@@ -172,4 +172,4 @@ class DigitalCommonSection(BaseCommonSection):
                 ]
             )
         )
-        sub_layout.addStretch()
+        group_layout.addStretch()
