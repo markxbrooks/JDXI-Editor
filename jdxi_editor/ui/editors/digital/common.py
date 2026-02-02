@@ -114,7 +114,7 @@ class DigitalCommonSection(BaseCommonSection):
         self.build_widgets()
         self.setup_ui()
         
-    def build_widgets_new(self) -> None:
+    def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
         # Use helper methods to dynamically build widgets
         self.widgets.update({
@@ -123,17 +123,10 @@ class DigitalCommonSection(BaseCommonSection):
             "octave_shift": self._build_combo_boxes(self.COMBO_BOXES),
             "other_switches": self._build_switches(self.OTHER_SWITCHES),
         })
-
-    def setup_ui_new(self) -> None:
-        """Configure and arrange all UI elements."""
-        layout = self._create_layout_from_widgets()
-        self.setLayout(layout)
-
-    def _create_layout_from_widgets(self) -> QVBoxLayout:
-        """Dynamically create layouts for the widgets."""
-        layout = QVBoxLayout()
         
-        widget_groups = [
+    def setup_ui(self) -> None:
+        """setup ui"""
+        widget_lists =  [
             self.widgets["octave_shift"],
             self.widgets["other_switches"][:1],  # Mono switch
             self.widgets["sliders"],
@@ -141,57 +134,4 @@ class DigitalCommonSection(BaseCommonSection):
             [self.widgets["other_switches"][3]],  # Unison size
             self.widgets["portamento_switches"],
         ]
-
-        for group in widget_groups:
-            sublayout = QHBoxLayout()
-            for widget in group:
-                sublayout.addWidget(widget)
-            layout.addLayout(sublayout)
-
-        return layout
-
-    def build_widgets(self) -> None:
-        # --- Sliders
-        (
-            self.pitch_bend_up,
-            self.pitch_bend_down,
-            self.tone_level,
-            self.portamento_time,
-            self.analog_feel,
-            self.wave_shape,
-        ) = self._build_sliders(self.SLIDER_GROUPS["pitch"])
-
-        # --- Portamento switches
-        (
-            self.portamento_switch,
-            self.portamento_mode,
-            self.legato_switch,
-        ) = self._build_switches(self.PORTAMENTO_SWITCHES)
-
-        (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
-        # --- Other switches
-        (self.mono_switch, self.ring_switch, self.unison_switch, self.unison_size) = (
-            self._build_switches(self.OTHER_SWITCHES)
-        )
-        
-    def setup_ui(self) -> None:
-        """setup ui"""
-        widget_lists =  [[self.octave_shift_switch],
-                [self.mono_switch],
-                [
-                    self.pitch_bend_up,
-                    self.pitch_bend_down,
-                    self.tone_level,
-                    self.portamento_time,
-                    self.analog_feel,
-                    self.wave_shape,
-                ],
-                [self.ring_switch],
-                [self.unison_switch, self.unison_size],
-                [
-                    self.portamento_switch,
-                    self.portamento_mode,
-                    self.legato_switch,
-                ],
-                ]
         self._setup_group_with_widget_lists(label="Common", widget_lists=widget_lists)
