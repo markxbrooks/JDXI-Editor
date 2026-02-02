@@ -113,32 +113,32 @@ class AnalogSynthEditor(BaseSynthEditor):
         # --- Define mapping dictionaries
         self.filter_switch_map = {0: 0, 1: 1}
         self.osc_waveform_map = {
-            0: Analog.Wave.Osc.SAW,
-            1: Analog.Wave.Osc.TRI,
-            2: Analog.Wave.Osc.PW_SQUARE,
+            0: self.SYNTH_SPEC.Wave.Osc.SAW,
+            1: self.SYNTH_SPEC.Wave.Osc.TRI,
+            2: self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
         }
         self._create_sections()
         self.adsr_mapping = {
-            Analog.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
-            Analog.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
-            Analog.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
-            Analog.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
-            Analog.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
-            Analog.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
-            Analog.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
-            Analog.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
+            self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
+            self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
+            self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
+            self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
+            self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
+            self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
+            self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
+            self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
         }
         self.pitch_env_mapping = {
-            Analog.Param.OSC_PITCH_ENV_ATTACK_TIME: self.oscillator_section.pitch_env_widget.attack_control,
-            Analog.Param.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
-            Analog.Param.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: self.oscillator_section.pitch_env_widget.attack_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
         self.pwm_mapping = {
-            Analog.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
-                Analog.Param.OSC_PULSE_WIDTH
+            self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
+                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH
             ],
-            Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[
-                Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH
+            self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[
+                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
             ],
         }
         # Note: data_request() is called in showEvent() when editor is displayed
