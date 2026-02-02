@@ -69,6 +69,8 @@ class AnalogSynthEditor(BaseSynthEditor):
     """Analog Synth Editor UI."""
 
     SUB_OSC_TYPE_MAP = {0: 0, 1: 1, 2: 2}
+    
+    SYNTH_SPEC = Analog
 
     def __init__(
         self,
