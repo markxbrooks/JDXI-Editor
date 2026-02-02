@@ -110,6 +110,7 @@ class DigitalCommonSection(BaseCommonSection):
         # Set address and send_midi_parameter before building widgets
         # so they're available when widgets are created
         self.address = address
+        self.widgets = {}
         self.build_widgets()
         self.setup_ui()
         
