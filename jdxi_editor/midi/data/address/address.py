@@ -28,12 +28,50 @@ Example usage:
 >>> command = CommandID.DT1
 >>> print(f"Command: {command}, Value: {command.DT1}, Message Position: {command.message_position}")
 Command: 18, Value: 18, Message Position: <bound method CommandID.message_position of <enum 'CommandID'>>
+
+Future:
+from enum import unique
+
+@unique
+class JDXiSysExOffsetMSB(SysExMSB):
+    SYSTEM = 0x01
+    SETUP = 0x02
+    TEMPORARY_PROGRAM = 0x18
+    TEMPORARY_TONE = 0x19
+
+@unique
+class JDXiSysExOffsetTempToneUMB(SysExUMB):
+    COMMON = 0x00
+    DIGITAL_SYNTH_1 = 0x01
+    DIGITAL_SYNTH_2 = 0x21
+    ANALOG_SYNTH = 0x42
+    DRUM_KIT = 0x70
+
+@unique
+class JDXiSysExOffsetSystemLMB(SysExLMB):
+    COMMON = 0x00
+    CONTROLLER = 0x03
+
+@unique
+class JDXiSysExOffsetSuperNATURALLMB(SysExLMB):
+    COMMON = 0x00
+    PARTIAL_1 = 0x20
+    PARTIAL_2 = 0x21
+    PARTIAL_3 = 0x22
+    MODIFY = 0x50
+
+    @classmethod
+    def digital_partial_offset(cls, partial_number: int) -> int:
+        return DIGITAL_PARTIAL_MAP.get(partial_number, 0x00)
+
+
 """
 
 from __future__ import annotations
 
 from enum import IntEnum, unique
 from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
+from abc import ABC, abstractmethod
 
 from picomidi.core.bitmask import BitMask
 
@@ -42,6 +80,52 @@ from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
+
+
+
+class SysExOffsetByte(IntEnum, ABC):
+    """
+    Base class for Roland SysEx address offset bytes.
+
+    An offset byte:
+    - occupies a fixed position in a SysEx message
+    - contributes one byte to a 4-byte Roland address
+    - has no standalone meaning without other address bytes
+    """
+
+    @classmethod
+    @abstractmethod
+    def message_position(cls) -> int:
+        """
+        Return the fixed byte index in the SysEx message
+        where this offset appears.
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def as_int(cls, value: "SysExOffsetByte | int") -> int:
+        """Normalize enum or int to raw byte value."""
+        return int(value)
+
+
+
+class SysExMSB(SysExOffsetByte):
+    @classmethod
+    def message_position(cls) -> int:
+        return 8
+
+
+class SysExUMB(SysExOffsetByte):
+    @classmethod
+    def message_position(cls) -> int:
+        return 9
+
+
+class SysExLMB(SysExOffsetByte):
+    @classmethod
+    def message_position(cls) -> int:
+        return 10
 
 
 @unique
