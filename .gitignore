@@ -2,6 +2,8 @@
 __pycache__/
 # Linux building files
 deps/
+*.dmg
+*.pkg
 appimagetool
 appimagetool-extracted
 snap

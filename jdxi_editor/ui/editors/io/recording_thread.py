@@ -41,30 +41,30 @@ class WavRecordingThread(QThread):
                 self.recording_finished.emit(self.output_file)
             else:
                 self.recording_error.emit(
-                    f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
+                    f"[WavRecordingThread] Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
                 )
         except Exception as e:
             # Ensure exception is converted to string safely
             try:
                 error_msg = str(e) if e else "Unknown error"
             except Exception:
-                error_msg = f"Error occurred: {type(e).__name__}"
+                error_msg = f"[WavRecordingThread] Error occurred: {type(e).__name__}"
             self.recording_error.emit(error_msg)
 
     def record(self):
         """
         Records audio for the specified duration or until stopped gracefully.
         """
-        log.message("Recording...")
+        log.message("[WavRecordingThread] Recording...")
         try:
             index = self.recorder.input_device_index
             info = self.recorder.p.get_device_info_by_index(index)
             # Log device info as formatted string, not as dict
-            log.message(f"Device info: {info.get('name', 'Unknown')} (index: {index})")
-            log.message(f"Max input channels ={info['maxInputChannels']}")
+            log.message(f"[WavRecordingThread] Device info: {info.get('name', 'Unknown')} (index: {index})")
+            log.message(f"[WavRecordingThread] Max input channels ={info['maxInputChannels']}")
 
             # The rate might be supported:
-            log.message(f"Default sample rate = {info['defaultSampleRate']}")
+            log.message(f"[WavRecordingThread] Default sample rate = {info['defaultSampleRate']}")
 
             # Ideally match these:
             self.recorder.channels = min(
@@ -82,20 +82,20 @@ class WavRecordingThread(QThread):
                     frames_per_buffer=self.recorder.frames_per_buffer,
                 )
             except Exception as ex:
-                log.error(f"⚠️ Stream open failed: {ex}")
+                log.error(f"⚠️ [WavRecordingThread] Stream open failed: {ex}")
                 # Ensure exception is converted to string safely
                 try:
-                    error_msg = str(ex) if ex else "Stream open failed"
+                    error_msg = str(ex) if ex else "[WavRecordingThread] Stream open failed"
                 except Exception:
-                    error_msg = f"Stream open failed: {type(ex).__name__}"
+                    error_msg = f"[WavRecordingThread] Stream open failed: {type(ex).__name__}"
                 self.recording_error.emit(error_msg)
                 return
         except Exception as ex:
             # Ensure exception is converted to string safely
             try:
-                error_msg = str(ex) if ex else "Unknown error during recording"
+                error_msg = str(ex) if ex else "[WavRecordingThread] Unknown error during recording"
             except Exception:
-                error_msg = f"Error during recording: {type(ex).__name__}"
+                error_msg = f"[WavRecordingThread] Error during recording: {type(ex).__name__}"
             self.recording_error.emit(error_msg)
             return
 
@@ -110,22 +110,22 @@ class WavRecordingThread(QThread):
                 ),
             ):
                 if not self.running:
-                    log.message("Recording interrupted.")
+                    log.message("[WavRecordingThread] Recording interrupted.")
                     break
                 data = stream.read(self.recorder.frames_per_buffer)
                 frames.append(data)
         except Exception as ex:
             # Ensure exception is converted to string safely
             try:
-                error_msg = str(ex) if ex else "Unknown error during recording"
+                error_msg = str(ex) if ex else "[WavRecordingThread] Unknown error during recording"
             except Exception:
-                error_msg = f"Error during recording: {type(ex).__name__}"
+                error_msg = f"[WavRecordingThread] Error during recording: {type(ex).__name__}"
             self.recording_error.emit(error_msg)
         finally:
             stream.stop_stream()
             stream.close()
 
-        log.message("Recording finished")
+        log.message("[WavRecordingThread] Recording finished")
 
         if not frames:
             log.message("No audio captured.")
@@ -149,7 +149,7 @@ class WavRecordingThread(QThread):
         # Ensure output_file is a string before emitting
         if isinstance(self.output_file, str) and self.output_file:
             self.recording_finished.emit(self.output_file)
-            log.message(f"File successfully saved to {self.output_file}")
+            log.message(f"[WavRecordingThread] File successfully saved to {self.output_file}")
         else:
             error_msg = f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
             log.error(error_msg)
@@ -172,9 +172,9 @@ class WavRecordingThread(QThread):
         except Exception as ex:
             # Ensure exception is converted to string safely
             try:
-                error_msg = str(ex) if ex else "Unknown error during recording"
+                error_msg = str(ex) if ex else "[WavRecordingThread] Unknown error during recording"
             except Exception:
-                error_msg = f"Error during recording: {type(ex).__name__}"
+                error_msg = f"[WavRecordingThread] Error during recording: {type(ex).__name__}"
             self.recording_error.emit(error_msg)
             return
         self.running = True
@@ -188,7 +188,7 @@ class WavRecordingThread(QThread):
                 ),
             ):
                 if not self.running:
-                    log.message("Recording interrupted.")
+                    log.message("[WavRecordingThread] Recording interrupted.")
                     break
                 data = stream.read(self.recorder.frames_per_buffer)
                 frames.append(data)
@@ -197,16 +197,16 @@ class WavRecordingThread(QThread):
             try:
                 error_msg = str(ex) if ex else "Unknown error during recording"
             except Exception:
-                error_msg = f"Error during recording: {type(ex).__name__}"
+                error_msg = f"[WavRecordingThread] Error during recording: {type(ex).__name__}"
             self.recording_error.emit(error_msg)
         finally:
             stream.stop_stream()
             stream.close()
 
-        log.message("Recording finished")
+        log.message("[WavRecordingThread] Recording finished")
 
         if not frames:
-            log.message("No audio captured.")
+            log.message("[WavRecordingThread] No audio captured.")
             return
 
         try:
@@ -218,18 +218,18 @@ class WavRecordingThread(QThread):
         except Exception as ex:
             # Ensure exception is converted to string safely
             try:
-                error_msg = str(ex) if ex else "Unknown error during recording"
+                error_msg = str(ex) if ex else "[WavRecordingThread] Unknown error during recording"
             except Exception:
-                error_msg = f"Error during recording: {type(ex).__name__}"
+                error_msg = f"[WavRecordingThread] Error during recording: {type(ex).__name__}"
             self.recording_error.emit(error_msg)
             return
 
         # Ensure output_file is a string before emitting
         if isinstance(self.output_file, str) and self.output_file:
             self.recording_finished.emit(self.output_file)
-            log.message(f"File successfully saved to {self.output_file}")
+            log.message(f"[WavRecordingThread] File successfully saved to {self.output_file}")
         else:
-            error_msg = f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
+            error_msg = f"[WavRecordingThread] Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
             log.error(error_msg)
             self.recording_error.emit(error_msg)
 
@@ -242,4 +242,4 @@ class WavRecordingThread(QThread):
         :return: None
         """
         self.running = False
-        log.message("Stop signal received.")
+        log.message("[WavRecordingThread] Stop signal received.")

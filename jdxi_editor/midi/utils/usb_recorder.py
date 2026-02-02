@@ -75,10 +75,10 @@ class USBRecorder:
         stream.stop_stream()
         stream.close()
 
-        print("Recording finished")
+        print("[USBRecorder] Recording finished")
 
         if not frames:
-            log.warning("No audio captured.")
+            log.warning("[USBRecorder] No audio captured.")
             return
 
         with wave.open(output_file, "wb") as f:
@@ -87,7 +87,7 @@ class USBRecorder:
             f.setframerate(self.rate)
             f.writeframes(b"".join(frames))
 
-        print(f"File successfully saved to {output_file}")
+        print(f"[USBRecorder] File successfully saved to {output_file}")
 
     def close(self):
         """Closes the PyAudio instance."""
@@ -103,7 +103,7 @@ class USBRecorder:
             if hasattr(self, "usb_recording_thread"):
                 self.usb_recording_thread.stop_recording()
         except Exception as ex:
-            log.error(f"Error {ex} occurred stopping USB recording")
+            log.error(f"[USBRecorder] Error {ex} occurred stopping USB recording")
 
 
 # 🔹 Example usage 🔹

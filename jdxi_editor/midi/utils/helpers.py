@@ -14,21 +14,21 @@ def on_usb_recording_finished(output_file: str):
     :param output_file: str
     :return: None
     """
-    # Ensure output_file is a string
+    # --- Ensure output_file is a string
     if not isinstance(output_file, str):
         log.error(
-            f"Recording finished, but output_file is not a string: {type(output_file)} - {output_file}"
+            f"[on_usb_recording_finished] Recording finished, but output_file is not a string: {type(output_file)} - {output_file}"
         )
         return
 
     if not output_file:
-        log.error("Recording finished, but no output file path provided.")
+        log.error("[on_usb_recording_finished] Recording finished, but no output file path provided.")
         return
 
     if not os.path.exists(output_file):
-        log.error(f"Recording finished, but output file does not exist: {output_file}")
+        log.error(f"[on_usb_recording_finished] Recording finished, but output file does not exist: {output_file}")
         return
-    log.message(f"Recording finished. File successfully saved to {output_file}")
+    log.message(f"[on_usb_recording_finished] Recording finished. File successfully saved to {output_file}")
 
 
 def on_usb_recording_error(message: str):
@@ -41,9 +41,9 @@ def on_usb_recording_error(message: str):
     # Ensure message is a string
     if not isinstance(message, str):
         error_str = str(message) if message is not None else "Unknown error"
-        log.error(f"Error during recording: {error_str} (type: {type(message)})")
+        log.error(f"[on_usb_recording_error] Error during recording: {error_str} (type: {type(message)})")
     else:
-        log.error(f"Error during recording: {message}")
+        log.error(f"[on_usb_recording_error] Error during recording: {message}")
 
 
 def start_recording(
@@ -72,7 +72,7 @@ def start_recording(
             duration=file_duration_seconds + 10,
             output_file=usb_file_output_name,
             recording_rate=recording_rate,
-            # e.g. pyaudio.paInt16
+            # --- e.g. pyaudio.paInt16
         )
         usb_recorder.usb_recording_thread.recording_finished.connect(
             on_usb_recording_finished
@@ -82,10 +82,10 @@ def start_recording(
         )
         usb_recorder.usb_recording_thread.start()
         log.message(
-            f"Success: Recording started in background thread to {usb_file_output_name}"
+            f"[start_recording] Success: Recording started in background thread to {usb_file_output_name}"
         )
     except Exception as ex:
-        log.error(f"Error {ex} occurred starting USB recording")
+        log.error(f"[start_recording] Error {ex} occurred starting USB recording")
         show_message_box(
             "Error Starting Recording", f"Error {ex} occurred starting USB recording"
         )
