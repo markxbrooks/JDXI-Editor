@@ -136,18 +136,22 @@ class DigitalCommonSection(BaseCommonSection):
         (self.mono_switch, self.ring_switch, self.unison_switch, self.unison_size) = (
             self._build_switches(self.OTHER_SWITCHES)
         )
-
+        
+    def add_widget_lists_to_layout(self, layout, widget_lists: list[list]):
+        """add a list of rows of widgets to a layout"""
+        for widget_list in widget_lists:
+            layout.addLayout(
+                    create_layout_with_widgets(widget_list)
+                    )
+    
     def setup_ui(self) -> None:
         """setup ui"""
         layout = self.get_layout()
         group, group_layout = create_group_with_layout(label="Common")
         layout.addWidget(group)
         group.setStyleSheet(JDXiUIStyle.ADSR)
-        group_layout.addLayout(create_layout_with_widgets([self.octave_shift_switch]))
-        group_layout.addLayout(create_layout_with_widgets([self.mono_switch]))
-
-        group_layout.addLayout(
-            create_layout_with_widgets(
+        widget_lists =  [[self.octave_shift_switch],
+                [self.mono_switch],
                 [
                     self.pitch_bend_up,
                     self.pitch_bend_down,
@@ -155,21 +159,14 @@ class DigitalCommonSection(BaseCommonSection):
                     self.portamento_time,
                     self.analog_feel,
                     self.wave_shape,
-                ]
-            )
-        )
-
-        group_layout.addLayout(create_layout_with_widgets([self.ring_switch]))
-        group_layout.addLayout(
-            create_layout_with_widgets([self.unison_switch, self.unison_size])
-        )
-        group_layout.addLayout(
-            create_layout_with_widgets(
+                ],
+                [self.ring_switch],
+                [self.unison_switch, self.unison_size],
                 [
                     self.portamento_switch,
                     self.portamento_mode,
                     self.legato_switch,
+                ],
                 ]
-            )
-        )
+        self.add_widget_lists_to_layout(group_layout, widget_lists)
         group_layout.addStretch()
