@@ -146,10 +146,6 @@ class DigitalCommonSection(BaseCommonSection):
     
     def setup_ui(self) -> None:
         """setup ui"""
-        layout = self.get_layout()
-        group, group_layout = create_group_with_layout(label="Common")
-        layout.addWidget(group)
-        group.setStyleSheet(JDXiUIStyle.ADSR)
         widget_lists =  [[self.octave_shift_switch],
                 [self.mono_switch],
                 [
@@ -168,5 +164,12 @@ class DigitalCommonSection(BaseCommonSection):
                     self.legato_switch,
                 ],
                 ]
+                
+    def _setup_group_with_widget_lists(label: str, widget_lists: list[lists]):
+        """setup group box with a list of widgets"""
+        layout = self.get_layout()
+        group, group_layout = create_group_with_layout(label=label)
+        layout.addWidget(group)
+        group.setStyleSheet(JDXiUIStyle.ADSR)
         self.add_widget_lists_to_layout(group_layout, widget_lists)
         group_layout.addStretch()
