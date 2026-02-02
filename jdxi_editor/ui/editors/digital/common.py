@@ -164,8 +164,9 @@ class DigitalCommonSection(BaseCommonSection):
                     self.legato_switch,
                 ],
                 ]
+        self._setup_group_with_widget_lists(label="Common", widget_lists=widget_lists)
                 
-    def _setup_group_with_widget_lists(label: str, widget_lists: list[lists]):
+    def _setup_group_with_widget_lists(self, label: str, widget_lists: list[lists]):
         """setup group box with a list of widgets"""
         layout = self.get_layout()
         group, group_layout = create_group_with_layout(label=label)
