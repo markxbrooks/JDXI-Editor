@@ -1,4 +1,4 @@
-o"""
+"""
 Common Section
 """
 
@@ -114,16 +114,16 @@ class DigitalCommonSection(BaseCommonSection):
         
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets.update({
+        self.widgets = {
             "sliders": self._build_sliders(self.SLIDER_GROUPS["pitch"]),
             "portamento_switches": self._build_switches(self.PORTAMENTO_SWITCHES),
             "octave_shift": self._build_combo_boxes(self.COMBO_BOXES),
             "other_switches": self._build_switches(self.OTHER_SWITCHES),
-        })
+        }
         
     def setup_ui(self) -> None:
         """setup ui"""
-        widget_rows =  [
+        widget_rows = [
             self.widgets["octave_shift"],
             self.widgets["other_switches"][:1],  # Mono switch
             self.widgets["sliders"],

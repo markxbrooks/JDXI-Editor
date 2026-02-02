@@ -36,6 +36,7 @@ Usage Example:
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
 from decologr import Decologr as log
+from jdxi_editor.ui.style import JDXiUIStyle
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -61,7 +62,7 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_layout_with_widgets,
-    transfer_layout_items,
+    transfer_layout_items, create_group_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -727,7 +728,7 @@ class SectionBaseWidget(SynthBase):
                     create_layout_with_widgets(widget_list)
                     )
                 
-    def _setup_group_with_widget_lists(self, label: str, widget_lists: list[lists]):
+    def _setup_group_with_widget_lists(self, label: str, widget_lists: list[list]):
         """setup group box with a list of widgets"""
         layout = self.get_layout()
         group, group_layout = create_group_with_layout(label=label)
