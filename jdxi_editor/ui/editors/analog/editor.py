@@ -207,8 +207,8 @@ class AnalogSynthEditor(BaseSynthEditor):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
             f"[AnalogSynthEditor] update_filter_controls_state: mode={mode} "
-            f"has filter_section={hasattr(self, 'filter_section')} "
-            f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
+            f"[AnalogSynthEditor] has filter_section={hasattr(self, 'filter_section')} "
+            f"[AnalogSynthEditor] filter_section is not None={getattr(self, 'filter_section', None) is not None}"
         )
         if hasattr(self, "filter_section") and self.filter_section is not None:
             self.filter_section.update_controls_state(mode)
