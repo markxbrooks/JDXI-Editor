@@ -107,8 +107,6 @@ class DigitalCommonSection(BaseCommonSection):
             send_midi_parameter=send_midi_parameter,
             analog=True,
         )
-        # Set address and send_midi_parameter before building widgets
-        # so they're available when widgets are created
         self.address = address
         self.widgets = {}
         self.build_widgets()
@@ -116,7 +114,6 @@ class DigitalCommonSection(BaseCommonSection):
         
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        # Use helper methods to dynamically build widgets
         self.widgets.update({
             "sliders": self._build_sliders(self.SLIDER_GROUPS["pitch"]),
             "portamento_switches": self._build_switches(self.PORTAMENTO_SWITCHES),
