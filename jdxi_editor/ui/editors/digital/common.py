@@ -123,7 +123,7 @@ class DigitalCommonSection(BaseCommonSection):
         
     def setup_ui(self) -> None:
         """setup ui"""
-        widget_lists =  [
+        widget_rows =  [
             self.widgets["octave_shift"],
             self.widgets["other_switches"][:1],  # Mono switch
             self.widgets["sliders"],
@@ -131,4 +131,4 @@ class DigitalCommonSection(BaseCommonSection):
             [self.widgets["other_switches"][3]],  # Unison size
             self.widgets["portamento_switches"],
         ]
-        self._setup_group_with_widget_lists(label="Common", widget_lists=widget_lists)
+        self._setup_group_with_widget_lists(label="Common", widget_lists=widget_rows)
