@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
@@ -42,7 +41,7 @@ class AnalogAmpSection(BaseAmpSection):
         ),
     }
 
-    SYNTH_SPEC = JDXiMidiAnalog
+    SYNTH_SPEC = Analog
 
     def __init__(
         self,
