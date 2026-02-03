@@ -48,6 +48,7 @@ class BaseLFOSection(SectionBaseWidget):
         :param icons_row_type: Type of icon e.g
         :param analog: bool
         """
+        self.widgets: dict = {}
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
         self.rate_layout_widgets: list | None = None
@@ -103,11 +104,22 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
+    def setup_ui_new(self) -> None:
+        """setup ui"""
+        widget_rows = [
+            self.widgets["switch_row_widgets"],
+            self.widgets["envelope_loop_mode_combo_boxes"],
+            self.widgets["envelope_loop_sync_note_combo_boxes"],
+            self.widgets["chromatic_portamento_switches"],
+        ]
+        self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
+
     def build_widgets(self):
         """Build the widgets"""
         self._create_rate_fade_layout_widgets()
         self._create_depths_layout_widgets()
         self._create_switch_layout_widgets()
+        self.widgets["switch_row_widgets"] = self.switch_row_widgets
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""

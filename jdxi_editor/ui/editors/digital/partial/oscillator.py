@@ -7,7 +7,7 @@ from typing import Callable
 from PySide6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
-    QWidget,
+    QWidget, QHBoxLayout,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -155,7 +155,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             Digital.Param.PCM_WAVE_GAIN,
             Digital.Display.Name.PCM_WAVE_GAIN,
             options=Digital.Display.Options.PCM_WAVE_GAIN,
-            values=[0, 1, 2, 3],  # MIDI values for -6, 0, +6, +12 dB
+            values=Digital.Display.Values.PCM_WAVE_GAIN,  # MIDI values for -6, 0, +6, +12 dB
         )
         self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave_gain
         # --- Don't add to control_widgets - it will be in the PCM tab
@@ -169,12 +169,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             set(w["Category"] for w in PCM_WAVES_CATEGORIZED if w["Category"] != "None")
         )
 
-        # Category filter function
+        # --- Category filter function
         def pcm_category_filter(wave_name: str, category: str) -> bool:
             """Check if a PCM wave matches a category."""
             if not category:
                 return True
-            # Find the wave in PCM_WAVES_CATEGORIZED and check its category
+            # --- Find the wave in PCM_WAVES_CATEGORIZED and check its category
             wave_num_str = wave_name.split(":")[0].strip()
             try:
                 wave_num = int(wave_num_str)
@@ -198,13 +198,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             search_placeholder="Search PCM waves...",
             category_label="Category:",
         )
-        # Connect to MIDI parameter sending
+        # --- Connect to MIDI parameter sending
         if self.send_midi_parameter:
             self.pcm_wave_number.valueChanged.connect(
                 lambda v: self.send_midi_parameter(Digital.Param.PCM_WAVE_NUMBER, v)
             )
         self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave_number
-        # Don't add to control_widgets - it will be in the PCM tab
+        # --- Don't add to control_widgets - it will be in the PCM tab
 
     def _create_tab_widget(self):
         """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
@@ -246,12 +246,16 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # --- PCM tab
         if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
+            pcm_hlayout = QHBoxLayout()  # Hlayout to squish the slides of the widget together
+            pcm_hlayout.addStretch()
             pcm_layout = create_layout_with_widgets(
                 widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True
             )
+            pcm_hlayout.addLayout(pcm_layout)
+            pcm_hlayout.addStretch()
             pcm_group = create_group_from_definition(
                 key=Digital.GroupBox.PCM_WAVE,
-                layout_or_widget=pcm_layout,
+                layout_or_widget=pcm_hlayout,
                 set_attr=self,
             )
             self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)
