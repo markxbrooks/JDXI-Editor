@@ -35,6 +35,7 @@ from PySide6.QtCore import QPointF
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 
@@ -223,10 +224,10 @@ class PitchEnvPlot(BasePlotWidget):
         self,
     ) -> tuple[ndarray[Any, dtype[floating[Any]]], int, int]:
         """Envelope parameters"""
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
+        attack_time = self.envelope[EnvelopeParameter.ATTACK_TIME] / 1000.0
+        decay_time = self.envelope[EnvelopeParameter.DECAY_TIME] / 1000.0
+        peak_level = self.envelope[EnvelopeParameter.PEAK_LEVEL]
+        initial_level = self.envelope[EnvelopeParameter.INITIAL_LEVEL]
 
         attack_samples = max(int(attack_time * self.sample_rate), 1)
         decay_samples = max(int(decay_time * self.sample_rate), 1)
