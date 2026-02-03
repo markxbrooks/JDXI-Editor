@@ -5,6 +5,7 @@ Slider Spinbox Widget for Roland JD-Xi
 from typing import Callable
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -140,17 +141,18 @@ class AdsrSliderSpinbox(QWidget):
             return converted_value
         if param_type == "peak_level":
             return value / self.factor
-        elif param_type in ["attack_time", "decay_time", "release_time"]:
+        elif param_type in [EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.RELEASE_TIME]:
             return midi_value_to_ms(int(value))
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
 
     def convert_from_envelope(self, value: float):
+        """convert from envelope"""
         param_type = self.param.get_envelope_param_type()
-        if param_type in ["peak_level"]:
+        if param_type in [EnvelopeParameter.PEAK_LEVEL]:
             return int(value * self.factor)
-        if param_type in ["sustain_level"]:
+        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL]:
             converted_value = int(value * self.factor)
             log.message(
                 f"convert_from_envelope param type: "
@@ -158,7 +160,7 @@ class AdsrSliderSpinbox(QWidget):
                 silent=True,
             )
             return converted_value
-        elif param_type in ["attack_time", "decay_time", "release_time"]:
+        elif param_type in [EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.RELEASE_TIME]:
             return ms_to_midi_value(value)
         else:
             return 64

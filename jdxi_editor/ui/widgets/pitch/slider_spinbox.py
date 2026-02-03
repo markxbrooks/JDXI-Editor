@@ -1,6 +1,7 @@
 from typing import Callable
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -88,7 +89,7 @@ class PitchEnvSliderSpinbox(QWidget):
             initial_value=value,
         )
         param_type = param.get_envelope_param_type()
-        if param_type in ["sustain_level", "peak_level"]:
+        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL]:
             self.spinbox = create_double_spinbox(
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
@@ -118,17 +119,17 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: float
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in ["sustain_level", "peak_level", "depth"]:
+        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL, EnvelopeParameter.DEPTH]:
             converted_value = value / Midi.VALUE.MAX.SEVEN_BIT
         elif param_type in [
-            "attack_time",
-            "decay_time",
-            "release_time",
-            "fade_lower",
-            "fade_upper",
-            "range_lower",
-            "depth",
-            "range_upper",
+            EnvelopeParameter.ATTACK_TIME,
+            EnvelopeParameter.DECAY_TIME,
+            EnvelopeParameter.RELEASE_TIME,
+            EnvelopeParameter.FADE_LOWER,
+            EnvelopeParameter.FADE_UPPER,
+            EnvelopeParameter.RANGE_LOWER,
+            EnvelopeParameter.DEPTH,
+            EnvelopeParameter.RANGE_UPPER,
         ]:
             converted_value = midi_value_to_ms(int(value), min_time=10, max_time=5000)
         else:
