@@ -120,7 +120,7 @@ class SectionBaseWidget(SynthBase):
 
         self.tab_widget = None
         self.adsr_widget = None
-        self.control_widgets = []
+        self.tuning_control_widgets = []
         self.button_widgets = {}
 
         self.button_widgets: dict[Any, QPushButton] = {}
@@ -237,7 +237,7 @@ class SectionBaseWidget(SynthBase):
     def _create_controls_widget(self) -> QWidget:
         # Controls tab
         controls_widget = QWidget()
-        controls_layout = create_layout_with_widgets(self.control_widgets)
+        controls_layout = create_layout_with_widgets(self.tuning_control_widgets)
         controls_widget.setLayout(controls_layout)
         return controls_widget
 
@@ -292,10 +292,10 @@ class SectionBaseWidget(SynthBase):
                 )
                 log.message(f"📊 Controls dict now has {len(self.controls)} entries")
 
-            self.control_widgets.append(widget)
+            self.tuning_control_widgets.append(widget)
             if is_filter_env_depth and is_filter_section:
                 log.message(
-                    f"📦 Added FILTER_ENV_DEPTH to control_widgets list (total: {len(self.control_widgets)})"
+                    f"📦 Added FILTER_ENV_DEPTH to control_widgets list (total: {len(self.tuning_control_widgets)})"
                 )
 
     def _update_button_enabled_states(self, button_param):

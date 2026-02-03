@@ -75,7 +75,7 @@ class DigitalAmpSection(BaseAmpSection):
                 continue
 
             self.controls[spec.param] = widget
-            self.control_widgets.append(widget)
+            self.tuning_control_widgets.append(widget)
 
         # --- Create Pan slider separately (horizontal)
         self.pan_slider = self._create_parameter_slider(
@@ -92,7 +92,7 @@ class DigitalAmpSection(BaseAmpSection):
         controls_layout = QVBoxLayout()
 
         # --- Add regular vertical sliders
-        regular_layout = create_layout_with_widgets(self.control_widgets)
+        regular_layout = create_layout_with_widgets(self.tuning_control_widgets)
         controls_layout.addLayout(regular_layout)
 
         # --- Add Pan slider in its own horizontal layout

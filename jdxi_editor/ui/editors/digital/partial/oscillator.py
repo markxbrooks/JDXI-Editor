@@ -158,9 +158,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             values=[0, 1, 2, 3],  # MIDI values for -6, 0, +6, +12 dB
         )
         self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave_gain
-        # Don't add to control_widgets - it will be in the PCM tab
+        # --- Don't add to control_widgets - it will be in the PCM tab
 
-        # Build options, values, and categories from PCM_WAVES_CATEGORIZED
+        # --- Build options, values, and categories from PCM_WAVES_CATEGORIZED
         pcm_options = [
             f"{w['Wave Number']:03d}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
         ]
@@ -213,11 +213,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
 
-        # Controls tab
-        controls_widget = QWidget()
-        controls_layout = create_layout_with_widgets(self.control_widgets)
-        controls_widget.setLayout(controls_layout)
-        self._add_tab(key=DigitalOscillatorTab.TUNING, widget=controls_widget)
+        # Tuning tab
+        tuning_widget = self._create_row_widget(widgets=self.tuning_control_widgets)
+        self._add_tab(key=DigitalOscillatorTab.TUNING, widget=tuning_widget)
 
         # Pulse Width tab
         if hasattr(self, "pwm_widget") and self.pwm_widget:
@@ -264,6 +262,16 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
             )
             self._add_tab(key=DigitalOscillatorTab.ADSR, widget=adsr_group)
+
+    def _create_row_widget(
+            self,
+            widgets: list[QWidget],
+    ) -> QWidget:
+        """Create a QWidget containing a horizontal row of widgets."""
+        widget = QWidget()
+        layout = create_layout_with_widgets(widgets, vertical=False)
+        widget.setLayout(layout)
+        return widget
 
     def _initialize_button_states(self):
         """Override to skip initialization until after all widgets are created"""
