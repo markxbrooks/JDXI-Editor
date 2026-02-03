@@ -123,7 +123,7 @@ class PWMSliderSpinbox(QWidget):
             return 0.0
         if param_type in ["filter_cutoff", "filter_resonance"]:
             return value
-        if param_type == "mod_depth":
+        if param_type == EnvelopeParameter.MOD_DEPTH:
             return value / self.factor
         if param_type == EnvelopeParameter.PULSE_WIDTH:
             return value / self.factor
@@ -140,7 +140,7 @@ class PWMSliderSpinbox(QWidget):
             return 0.0
         if param_type in ["filter_cutoff", "filter_resonance"]:
             return value
-        if param_type in ["mod_depth"]:
+        if param_type in [EnvelopeParameter.MOD_DEPTH]:
             return int(value * self.factor)
         if param_type in [EnvelopeParameter.PULSE_WIDTH]:
             return int(value * self.factor)
