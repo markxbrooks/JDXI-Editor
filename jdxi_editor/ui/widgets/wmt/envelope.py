@@ -15,6 +15,7 @@ through an animated envelope curve.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import (
@@ -53,7 +54,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(
-            envelope_keys=["range_lower", "depth", "range_upper"],
+            envelope_keys=[EnvelopeParameter.RANGE_LOWER, EnvelopeParameter.DEPTH, EnvelopeParameter.RANGE_UPPER],
             create_parameter_slider=create_parameter_slider,
             parameters=[
                 fade_lower_param,
@@ -77,11 +78,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             self.controls = {}
         self._create_parameter_slider = create_parameter_slider
         self.envelope = {
-            "fade_lower": 300,
-            "range_lower": 500,
-            "range_upper": 500,
-            "fade_upper": 500,
-            "depth": 1.0,
+            EnvelopeParameter.FADE_LOWER: 300,
+            EnvelopeParameter.RANGE_LOWER: 500,
+            EnvelopeParameter.RANGE_UPPER: 500,
+            EnvelopeParameter.FADE_UPPER: 500,
+            EnvelopeParameter.DEPTH: 1.0,
         }
         self.fade_lower_control = PitchEnvSliderSpinbox(
             fade_lower_param,
@@ -89,7 +90,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             max_value=5000,
             units=" ms",
             label="Fade Lower",
-            value=self.envelope["fade_lower"],
+            value=self.envelope[EnvelopeParameter.FADE_LOWER],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -99,7 +100,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             max_value=5000,
             units=" ms",
             label="Range Lower",
-            value=self.envelope["range_lower"],
+            value=self.envelope[EnvelopeParameter.RANGE_LOWER],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -109,7 +110,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             max_value=5000,
             units=" ms",
             label="Depth",
-            value=self.envelope["depth"],
+            value=self.envelope[EnvelopeParameter.DEPTH],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -119,7 +120,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Range Upper",
-            value=self.envelope["range_upper"],
+            value=self.envelope[EnvelopeParameter.RANGE_UPPER],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -129,7 +130,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Fade Upper",
-            value=self.envelope["fade_upper"],
+            value=self.envelope[EnvelopeParameter.FADE_UPPER],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -155,11 +156,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.setLayout(self.layout)
         self.range_upper_control.spinbox.setEnabled(False)
         self.envelope_spinbox_map = {
-            "fade_lower": self.fade_lower_control.spinbox,
-            "range_lower": self.range_lower_control.spinbox,
-            "depth": self.depth_control.spinbox,
-            "range_upper": self.range_upper_control.spinbox,
-            "fade_upper": self.fade_upper_control.spinbox,
+            EnvelopeParameter.FADE_LOWER: self.fade_lower_control.spinbox,
+            EnvelopeParameter.RANGE_LOWER: self.range_lower_control.spinbox,
+            EnvelopeParameter.DEPTH: self.depth_control.spinbox,
+            EnvelopeParameter.RANGE_UPPER: self.range_upper_control.spinbox,
+            EnvelopeParameter.FADE_UPPER: self.fade_upper_control.spinbox,
         }
         self.plot = WMTEnvPlot(
             width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -193,11 +194,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         Update envelope values from spinboxes
         :emits: dict pitch envelope parameters
         """
-        self.envelope["fade_lower"] = self.fade_lower_control.value()
-        self.envelope["range_lower"] = self.range_lower_control.value()
-        self.envelope["depth"] = self.depth_control.value()
-        self.envelope["range_upper"] = self.range_upper_control.value()
-        self.envelope["fade_upper"] = self.fade_upper_control.value()
+        self.envelope[EnvelopeParameter.FADE_LOWER] = self.fade_lower_control.value()
+        self.envelope[EnvelopeParameter.RANGE_LOWER] = self.range_lower_control.value()
+        self.envelope[EnvelopeParameter.DEPTH] = self.depth_control.value()
+        self.envelope[EnvelopeParameter.RANGE_UPPER] = self.range_upper_control.value()
+        self.envelope[EnvelopeParameter.FADE_UPPER] = self.fade_upper_control.value()
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)
 
@@ -206,11 +207,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         Update spinboxes from envelope values
         :emits: dict pitch envelope parameters
         """
-        self.fade_lower_control.setValue(self.envelope["fade_lower"])
-        self.range_lower_control.setValue(self.envelope["range_lower"])
-        self.depth_control.setValue(self.envelope["depth"])
-        self.range_upper_control.setValue(self.envelope["range_upper"])
-        self.fade_upper_control.setValue(self.envelope["fade_upper"])
+        self.fade_lower_control.setValue(self.envelope[EnvelopeParameter.FADE_LOWER])
+        self.range_lower_control.setValue(self.envelope[EnvelopeParameter.RANGE_LOWER])
+        self.depth_control.setValue(self.envelope[EnvelopeParameter.DEPTH])
+        self.range_upper_control.setValue(self.envelope[EnvelopeParameter.RANGE_UPPER])
+        self.fade_upper_control.setValue(self.envelope[EnvelopeParameter.FADE_UPPER])
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)
 
@@ -224,13 +225,13 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         for param, ctrl in self.controls.items():
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "depth":
-                    self.envelope["depth"] = slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                if envelope_param_type == EnvelopeParameter.DEPTH:
+                    self.envelope[EnvelopeParameter.DEPTH] = slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                 elif envelope_param_type in [
-                    "range_upper",
-                    "fade_upper",
-                    "fade_lower",
-                    "range_lower",
+                    EnvelopeParameter.RANGE_UPPER,
+                    EnvelopeParameter.FADE_UPPER,
+                    EnvelopeParameter.FADE_LOWER,
+                    EnvelopeParameter.RANGE_LOWER,
                 ]:
                     self.envelope[envelope_param_type] = (
                         slider.value() / Midi.VALUE.MAX.SEVEN_BIT
@@ -247,12 +248,12 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
-                if envelope_param_type == "depth":
-                    self.envelope["depth"] = slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
-                    """elif envelope_param_type in ["range_upper",
-                                                 "fade_upper",
-                                                 "fade_lower",
-                                                 "range_lower"]:
+                if envelope_param_type == EnvelopeParameter.DEPTH:
+                    self.envelope[EnvelopeParameter.DEPTH] = slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                    """elif envelope_param_type in [EnvelopeParameter.RANGE_UPPER,
+                    EnvelopeParameter.FADE_UPPER,
+                    EnvelopeParameter.FADE_LOWER,
+                    EnvelopeParameter.RANGE_LOWER,]:
                         self.envelope["envelope_param_type"] = (slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT)"""
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
@@ -268,11 +269,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         try:
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "depth":
+                if envelope_param_type == EnvelopeParameter.DEPTH:
                     slider.setValue(
-                        int(self.envelope["depth"] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(self.envelope[EnvelopeParameter.DEPTH] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
-                elif envelope_param_type == "range_upper":
+                elif envelope_param_type == EnvelopeParameter.RANGE_UPPER:
                     pass
                     # slider.setValue(int((self.envelope["range_upper"] + 0.5) * 127))
                 else:
@@ -288,13 +289,13 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         try:
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "depth":
+                if envelope_param_type == EnvelopeParameter.DEPTH:
                     slider.setValue(
-                        int(self.envelope["depth"] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(self.envelope[EnvelopeParameter.DEPTH] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
-                elif envelope_param_type in ["range_upper", "fade_upper"]:
+                elif envelope_param_type in [EnvelopeParameter.RANGE_UPPER, EnvelopeParameter.FADE_UPPER]:
                     slider.setValue(int(self.envelope[envelope_param_type]))
-                elif envelope_param_type in ["fade_lower", "range_lower"]:
+                elif envelope_param_type in [EnvelopeParameter.FADE_LOWER, EnvelopeParameter.RANGE_LOWER]:
                     slider.setValue(
                         ms_to_midi_value(
                             self.envelope[envelope_param_type],

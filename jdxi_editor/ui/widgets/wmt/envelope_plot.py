@@ -28,6 +28,8 @@ Customization:
 """
 
 import numpy as np
+
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
@@ -97,13 +99,13 @@ class WMTEnvPlot(BasePlotWidget):
     def envelope_parameters(self):
         """Generate WMT envelope from parameters."""
         fade_lower = max(
-            self.envelope["fade_lower"] / 1000.0, 1.0
+            self.envelope[EnvelopeParameter.FADE_LOWER] / 1000.0, 1.0
         )  # Fade lower in seconds
-        range_lower = max(self.envelope["range_lower"] / 1000.0, 1.0)
+        range_lower = max(self.envelope[EnvelopeParameter.RANGE_LOWER] / 1000.0, 1.0)
         depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
 
-        range_upper = max(self.envelope["range_upper"] / 2000.0, 0.1)
-        fade_upper = max(self.envelope["fade_upper"] / 2000.0, 0.5)
+        range_upper = max(self.envelope[EnvelopeParameter.RANGE_UPPER] / 2000.0, 0.1)
+        fade_upper = max(self.envelope[EnvelopeParameter.FADE_UPPER] / 2000.0, 0.5)
         sustain = 2.0  # Sustain in seconds
 
         fade_lower_period = range_lower - fade_lower
