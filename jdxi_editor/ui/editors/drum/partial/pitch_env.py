@@ -67,8 +67,8 @@ class DrumPitchEnvSection(DrumBaseSection):
         # Row 1: Time 1, Time 2, Time 3, Time 4
         SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
         SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name,, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name,, vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
+        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
         # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
         SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
         SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
