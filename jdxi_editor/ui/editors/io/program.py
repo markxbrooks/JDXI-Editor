@@ -40,7 +40,6 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
@@ -56,9 +55,9 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -72,6 +71,7 @@ from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
+from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget
 from jdxi_editor.ui.editors.io.playlist_editor_widget import PlaylistEditorWidget

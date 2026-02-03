@@ -28,14 +28,13 @@ Customization:
 """
 
 import numpy as np
-
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 

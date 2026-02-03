@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
-from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 
 TEMPORARY_AREA_MAP = {
     (

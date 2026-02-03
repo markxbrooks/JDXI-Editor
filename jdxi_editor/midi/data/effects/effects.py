@@ -9,9 +9,9 @@ from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetProgramLMB,
-    JDXiSysExAddressStartMSB,
     CommandID,
+    JDXiSysExAddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
 

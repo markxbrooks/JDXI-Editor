@@ -5,6 +5,7 @@ LFO section of the digital partial editor.
 from typing import Callable
 
 from decologr import Decologr as log
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -35,7 +36,6 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec
-from picomidi.sysex.parameter.address import AddressParameter
 
 
 class BaseOscillatorSection(SectionBaseWidget):

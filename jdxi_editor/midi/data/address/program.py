@@ -1,6 +1,9 @@
 from picomidi.constant import Midi
 
-from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB, RolandSysExAddress
+from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
+    RolandSysExAddress,
+)
 
 
 class ProgramCommonAddress(RolandSysExAddress):

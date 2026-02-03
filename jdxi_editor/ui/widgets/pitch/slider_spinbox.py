@@ -1,12 +1,13 @@
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
+
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:

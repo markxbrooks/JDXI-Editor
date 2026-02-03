@@ -20,9 +20,9 @@ from dataclasses import dataclass
 from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetProgramLMB,
-    JDXiSysExAddressStartMSB,
     CommandID,
+    JDXiSysExAddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import JDXiSysEx

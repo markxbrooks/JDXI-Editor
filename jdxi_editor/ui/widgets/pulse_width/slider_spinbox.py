@@ -1,11 +1,12 @@
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
+
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -121,7 +122,7 @@ class PWMSliderSpinbox(QWidget):
                 f"Parameter type for {self.param.name} is None, cannot convert to envelope"
             )
             return 0.0
-        if param_type in ["filter_cutoff", "filter_resonance"]:
+        if param_type in [EnvelopeParameter.FILTER_CUTOFF, EnvelopeParameter.FILTER_RESONANCE]:
             return value
         if param_type == EnvelopeParameter.MOD_DEPTH:
             return value / self.factor
@@ -138,7 +139,7 @@ class PWMSliderSpinbox(QWidget):
                 f"Parameter type for {self.param.name} is None, cannot convert from envelope"
             )
             return 0.0
-        if param_type in ["filter_cutoff", "filter_resonance"]:
+        if param_type in [EnvelopeParameter.FILTER_CUTOFF, EnvelopeParameter.FILTER_RESONANCE]:
             return value
         if param_type in [EnvelopeParameter.MOD_DEPTH]:
             return int(value * self.factor)

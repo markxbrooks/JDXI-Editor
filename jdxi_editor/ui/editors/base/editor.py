@@ -76,8 +76,8 @@ from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
-from jdxi_editor.ui.editors.synth.helper import log_changes
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.helper import log_changes
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 

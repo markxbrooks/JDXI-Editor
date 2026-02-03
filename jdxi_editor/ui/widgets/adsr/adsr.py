@@ -14,7 +14,6 @@ through an animated envelope curve.
 
 from typing import Callable, Dict, Optional
 
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
@@ -25,6 +24,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.envelope.base import TOOLTIPS, EnvelopeWidgetBase
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
 
 

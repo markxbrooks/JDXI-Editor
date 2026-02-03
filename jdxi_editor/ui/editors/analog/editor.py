@@ -254,6 +254,7 @@ class AnalogSynthEditor(BaseSynthEditor):
 if __name__ == "__main__":
     # --- Test the AnalogSynthEditor
     from PySide6.QtWidgets import QApplication
+
     from jdxi_editor.core.jdxi import JDXi
     from jdxi_editor.ui.preset.helper import JDXiPresetHelper
     app = QApplication([])

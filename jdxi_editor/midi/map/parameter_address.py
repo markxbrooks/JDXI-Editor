@@ -4,15 +4,17 @@ JDXi Parameter Address Map
 
 from __future__ import annotations
 
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
-from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB as ProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    JDXiSysExOffsetProgramLMB as ProgramLMB,
+)
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetSuperNATURALLMB as SuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
-from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam

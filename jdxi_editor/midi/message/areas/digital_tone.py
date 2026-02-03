@@ -14,10 +14,10 @@ DigitalToneMessage(start_of_sysex=240, manufacturer_id=<RolandID.ROLAND_ID: 65>,
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
-    CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
 

@@ -37,8 +37,8 @@ from typing import List
 from picomidi.constant import Midi
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetProgramLMB,
     CommandID,
+    JDXiSysExOffsetProgramLMB,
     RolandID,
 )
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader

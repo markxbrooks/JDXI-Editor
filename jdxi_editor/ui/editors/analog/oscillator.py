@@ -4,10 +4,10 @@ Analog Oscillator Section
 
 from typing import Callable
 
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -15,7 +15,12 @@ from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
-from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec, SwitchSpec
+from jdxi_editor.ui.widgets.spec import (
+    PitchEnvelopeSpec,
+    PWMSpec,
+    SliderSpec,
+    SwitchSpec,
+)
 
 
 class AnalogOscillatorSection(BaseOscillatorSection):

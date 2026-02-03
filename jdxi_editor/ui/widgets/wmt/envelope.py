@@ -15,7 +15,6 @@ through an animated envelope curve.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import (
@@ -29,6 +28,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.wmt.envelope_plot import WMTEnvPlot
 
@@ -275,7 +275,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                     )
                 elif envelope_param_type == EnvelopeParameter.RANGE_UPPER:
                     pass
-                    # slider.setValue(int((self.envelope["range_upper"] + 0.5) * 127))
+                    # slider.setValue(int((self.envelope[EnvelopeParameter.RANGE_UPPER] + 0.5) * 127))
                 else:
                     slider.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))

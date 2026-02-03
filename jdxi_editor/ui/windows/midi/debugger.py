@@ -40,7 +40,7 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 """
 
 import re
-from typing import Optional, Protocol, Tuple, TypeVar, Type, runtime_checkable
+from typing import Optional, Protocol, Tuple, Type, TypeVar, runtime_checkable
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter

@@ -12,10 +12,10 @@ from jdxi_editor.core.synth.drum import DrumSynthData
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import (

@@ -7,8 +7,8 @@ import logging
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetTemporaryToneUMB,
     JDXiSysExAddressStartMSB,
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS, SYNTH_PARTIAL_MAP

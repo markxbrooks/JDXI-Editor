@@ -1,7 +1,7 @@
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress

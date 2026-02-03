@@ -19,7 +19,7 @@ VocalEffectMessage
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB, CommandID
+from jdxi_editor.midi.data.address.address import CommandID, JDXiSysExAddressStartMSB
 from jdxi_editor.midi.message.roland import JDXiSysEx
 
 

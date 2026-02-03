@@ -5,7 +5,6 @@ Base Envelope Widget
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -13,6 +12,7 @@ from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.slider import Slider
 
 TOOLTIPS = {

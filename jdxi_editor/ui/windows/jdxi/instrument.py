@@ -51,10 +51,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain

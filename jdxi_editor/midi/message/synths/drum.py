@@ -21,9 +21,9 @@ DrumKitMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
     CommandID,
+    JDXiSysExAddressStartMSB,
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
 

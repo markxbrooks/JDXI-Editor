@@ -103,12 +103,12 @@ from picomidi.core.parameter.factory import AddressFactory
 from picomidi.core.parameter.kind import ByteGroupKind
 
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetDrumKitLMB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExOffsetSystemLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.data.parameter.address.name import (
     ParameterAddressName as AddressName,

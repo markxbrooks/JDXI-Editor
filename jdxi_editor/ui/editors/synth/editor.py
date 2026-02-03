@@ -24,31 +24,41 @@ import os
 import re
 from typing import Optional
 
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QShortcut, QKeySequence, QShowEvent, QPixmap
+from decologr import Decologr as log
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, JDXiSysExOffsetTemporaryToneUMB, \
-    JDXiSysExAddressStartMSB
+from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddressStartMSB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    RolandSysExAddress,
+)
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
+from jdxi_editor.ui.editors.digital.utils import (
+    filter_sysex_keys,
+    get_area,
+    get_partial_number,
+)
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.editors.synth.helper import log_changes
-from jdxi_editor.ui.editors.synth.specs import InstrumentDescriptor, DRUM_KIT_SPECS, ENGINE_KEYWORDS, \
-    INSTRUMENT_FAMILY_SPECS
+from jdxi_editor.ui.editors.synth.specs import (
+    DRUM_KIT_SPECS,
+    ENGINE_KEYWORDS,
+    INSTRUMENT_FAMILY_SPECS,
+    InstrumentDescriptor,
+)
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-
 
 TONE_DISPATCH = {
     JDXiSysExOffsetSuperNATURALLMB.COMMON: "_update_common_controls",

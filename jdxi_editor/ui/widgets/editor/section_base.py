@@ -36,7 +36,6 @@ Usage Example:
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style import JDXiUIStyle
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -58,11 +57,13 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
+    create_group_with_layout,
     create_layout_with_widgets,
-    transfer_layout_items, create_group_with_layout,
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec

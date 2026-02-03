@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
-    JDXiSysExAddressStartMSB,
     CommandID,
+    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
 

@@ -15,7 +15,6 @@ through an animated envelope curve.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import (
@@ -29,6 +28,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 
@@ -204,7 +204,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                     self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = slider.STATUS() / 127
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
                     pass
-                    # self.envelope["peak_level"] = (slider.value() / 127)
+                    # self.envelope[EnvelopeParameter.PEAK_LEVEL] = (slider.value() / 127)
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.STATUS()
@@ -223,7 +223,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                     slider.setValue(int(self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] * 127))
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
                     pass
-                    # slider.setValue(int((self.envelope["peak_level"] + 0.5) * 127))
+                    # slider.setValue(int((self.envelope[EnvelopeParameter.PEAK_LEVEL] + 0.5) * 127))
                 else:
                     slider.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))

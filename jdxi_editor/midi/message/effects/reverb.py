@@ -20,10 +20,10 @@ from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data import AddressParameterEffect
 from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemLMB,
-    JDXiSysExAddressStartMSB,
-    CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
 

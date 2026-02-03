@@ -1108,6 +1108,7 @@ class DrumPartialParam(AddressParameter):
         -12,
         12,
         "Adjusts the effect of the Pitch Envelope. Higher settings will cause the pitch envelope to produce\ngreater change.\nNegative (“-”) settings invert the shape of the envelope.",
+        "Depth"
     )  # -12 - +12
 
     # Pitch Env Velocity Sens
@@ -1118,6 +1119,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Keyboard playing dynamics can be used to control the depth of the pitch envelope.\nSpecify a positive (“+”) setting if you want the pitch envelope to have a greater effect as you play\nthe key more strongly; specify a negative (“-”) setting if you want the pitch envelope to have less\neffect.",
+        "V-Sens"
     )  # -63 - +63
 
     # Pitch Env Time 1 Velocity Sens
@@ -1128,6 +1130,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Allows keyboard dynamics to affect the Time 1 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 1 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 1 to become slower.",
+        "T1 V-Sens"
     )  # -63 - +63
 
     # Pitch Env Time 4 Velocity Sens
@@ -1138,6 +1141,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Allows keyboard dynamics to affect the Time 4 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 4 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 4 to become slower.",
+        "T4 V-Sens"
     )  # -63 - +63
 
     # Pitch Env Time 1
@@ -1148,6 +1152,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        "Time 1"
     )
 
     # Pitch Env Time 2
@@ -1158,6 +1163,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        "Time 2"
     )
 
     # Pitch Env Time 3
@@ -1168,6 +1174,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        "Time 3"
     )
 
     # Pitch Env Time 4
@@ -1178,6 +1185,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        "Time 4"
     )
 
     # Pitch Env Level 0
@@ -1188,6 +1196,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        "Level 0"
     )
 
     # Pitch Env Level 1
@@ -1198,6 +1207,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        "Level 1"
     )  # -63 - +63
 
     # Pitch Env Level 2
@@ -1208,6 +1218,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        "Level 2"
     )  # -63 - +63
 
     # Pitch Env Level 3
@@ -1218,6 +1229,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        "Level 3"
     )  # -63 - +63
 
     # Pitch Env Level 4
@@ -1228,6 +1240,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        "Level 4"
     )  # -63 - +63
 
     # TVF Filter Type

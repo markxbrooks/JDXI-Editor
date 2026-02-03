@@ -5,12 +5,13 @@ Slider Spinbox Widget for Roland JD-Xi
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
+
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -92,7 +93,7 @@ class AdsrSliderSpinbox(QWidget):
             vertical=True,
         )
         param_type = param.get_envelope_param_type()
-        if param_type in ["sustain_level", "peak_level"]:
+        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL]:
             self.spinbox = create_double_spinbox(
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
@@ -133,13 +134,13 @@ class AdsrSliderSpinbox(QWidget):
                 f"Parameter type for {self.param.name} is None, cannot convert to envelope"
             )
             return 0.0
-        if param_type == "sustain_level":
+        if param_type == EnvelopeParameter.SUSTAIN_LEVEL:
             converted_value = value / self.factor
             log.message(
                 f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}"
             )
             return converted_value
-        if param_type == "peak_level":
+        if param_type == EnvelopeParameter.PEAK_LEVEL:
             return value / self.factor
         elif param_type in [EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.RELEASE_TIME]:
             return midi_value_to_ms(int(value))
