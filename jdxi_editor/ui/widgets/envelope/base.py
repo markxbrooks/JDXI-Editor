@@ -1,6 +1,11 @@
+"""
+Base Envelope Widget
+"""
+
 from typing import Callable, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -11,14 +16,14 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.slider import Slider
 
 TOOLTIPS = {
-    "attack_time": "Time taken for the pitch to reach peak after note-on.",
-    "decay_time": "Time taken for the pitch to fall from peak to sustain.",
-    "sustain_level": "Sustain level of the pitch envelope (0.0 to 1.0).",
-    "initial_level": "Initial pitch level at note-on (0.0 to 1.0).",
-    "release_time": "Time taken for the pitch to fall to zero after note-off.",
-    "peak_level": "Maximum pitch modulation depth.",
-    "pulse_width": "Width of the pulse waveform (0% = narrow, 100% = square).",
-    "mod_depth": "Modulation depth of the PWM LFO.",
+    EnvelopeParameter.ATTACK_TIME: "Time taken for the pitch to reach peak after note-on.",
+    EnvelopeParameter.DECAY_TIME: "Time taken for the pitch to fall from peak to sustain.",
+    EnvelopeParameter.SUSTAIN_LEVEL: "Sustain level of the pitch envelope (0.0 to 1.0).",
+    EnvelopeParameter.INITIAL_LEVEL: "Initial pitch level at note-on (0.0 to 1.0).",
+    EnvelopeParameter.RELEASE_TIME: "Time taken for the pitch to fall to zero after note-off.",
+    EnvelopeParameter.PEAK_LEVEL: "Maximum pitch modulation depth.",
+    EnvelopeParameter.PULSE_WIDTH: "Width of the pulse waveform (0% = narrow, 100% = square).",
+    EnvelopeParameter.MOD_DEPTH: "Modulation depth of the PWM LFO.",
 }
 
 
