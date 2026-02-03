@@ -41,6 +41,15 @@ Example:
 
 """
 
+import sys
+from pathlib import Path
+
+# Allow running this file directly from project root: python jdxi_editor/ui/editors/analog/editor.py
+if __name__ == "__main__" and __package__ is None:
+    _root = Path(__file__).resolve().parents[3]
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -149,38 +158,57 @@ class AnalogSynthEditor(BaseSynthEditor):
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
-        self.oscillator_section = AnalogOscillatorSection(
-            waveform_selected_callback=self._on_waveform_selected,
-            wave_buttons=self.wave_buttons,
-            midi_helper=self.midi_helper,
-            controls=self.controls,
-            address=self.address,
+        log.message(
+            f"[AnalogSynthEditor] [_create_sections] start [self.controls:] {self.controls}"
         )
-        self.filter_section = AnalogFilterSection(
-            controls=self.controls,
-            address=self.synth_data.address,
-            send_midi_parameter=self.send_midi_parameter,
-            midi_helper=self.midi_helper,
-            on_filter_mode_changed=self._on_filter_mode_changed,
-            parent=self,
-        )
-        self.amp_section = AnalogAmpSection(
-            address=self.synth_data.address,
-            controls=self.controls,
-            parent=self,
-        )
-        self.lfo_section = AnalogLFOSection(
-            on_lfo_shape_changed=self._on_lfo_shape_changed,
-            lfo_shape_buttons=self.lfo_shape_buttons,
-            send_midi_parameter=self.send_midi_parameter,
-            controls=self.controls,
-        )
-        self.common_section = AnalogCommonSection(
-            controls=self.controls,
-            send_midi_parameter=self.send_midi_parameter,
-            midi_helper=self.midi_helper,
-        )
+        try:
+            self.oscillator_section = AnalogOscillatorSection(
+                waveform_selected_callback=self._on_waveform_selected,
+                wave_buttons=self.wave_buttons,
+                midi_helper=self.midi_helper,
+                controls=self.controls,
+                address=self.address,
+            )
+            self.filter_section = AnalogFilterSection(
+                controls=self.controls,
+                address=self.synth_data.address,
+                send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                on_filter_mode_changed=self._on_filter_mode_changed,
+                parent=self,
+            )
+            self.amp_section = AnalogAmpSection(
+                address=self.synth_data.address,
+                controls=self.controls,
+                parent=self,
+            )
+            self.lfo_section = AnalogLFOSection(
+                on_lfo_shape_changed=self._on_lfo_shape_changed,
+                lfo_shape_buttons=self.lfo_shape_buttons,
+                send_midi_parameter=self.send_midi_parameter,
+                controls=self.controls,
+            )
+            self.common_section = AnalogCommonSection(
+                controls=self.controls,
+                send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+            )
+            # Ensure editor.controls has all section widgets (sections may use same ref or their own)
+            for section in (
+                self.oscillator_section,
+                self.filter_section,
+                self.amp_section,
+                self.lfo_section,
+                self.common_section,
+            ):
+                if hasattr(section, "controls") and section.controls:
+                    self.controls.update(section.controls)
+        except Exception as ex:
+            log.message(f"Error {ex} occurred in [AnalogSynthEditor] [_create_sections]")
         self.add_tabs()
+        log.message(
+            f"[AnalogSynthEditor] [_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}"
+        )
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
@@ -221,3 +249,16 @@ class AnalogSynthEditor(BaseSynthEditor):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
         log.message(f"[AnalogSynthEditor] _on_filter_mode_changed: mode={mode}")
         self.update_filter_controls_state(mode)
+
+
+if __name__ == "__main__":
+    # --- Test the AnalogSynthEditor
+    from PySide6.QtWidgets import QApplication
+    from jdxi_editor.core.jdxi import JDXi
+    from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+    app = QApplication([])
+    midi_helper = MidiIOHelper()
+    preset_helper = JDXiPresetHelper(midi_helper, JDXi.UI.Preset.Analog.ENUMERATED)
+    editor = AnalogSynthEditor(midi_helper, preset_helper)
+    editor.show()
+    app.exec()

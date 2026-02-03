@@ -77,7 +77,7 @@ class ADSR(EnvelopeWidgetBase):
         """
         self.address = address
         self.midi_helper = midi_helper
-        if controls:
+        if controls is not None:
             self.controls = controls
         else:
             self.controls = {}

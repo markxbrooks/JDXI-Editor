@@ -222,11 +222,13 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
 def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     Return minimal metadata for a JD-Xi SysEx message.
+    When the message has enough address bytes, TEMPORARY_AREA and SYNTH_TONE
+    are derived so the correct editor can match (e.g. Analog Synth).
 
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
-    return {
+    result = {
         SysExSection.JD_XI_HEADER: (
             extract_hex(
                 data, JDXiSysExMessageLayout.START, JDXiSysExMessageLayout.COMMAND_ID
@@ -246,6 +248,12 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
         SysExSection.TEMPORARY_AREA: UNKNOWN,
         SysExSection.SYNTH_TONE: UNKNOWN,
     }
+    if len(data) > JDXiSysExMessageLayout.ADDRESS.LMB:
+        area = get_temporary_area(data) or UNKNOWN
+        tone, _ = _get_tone_from_data(data, area)
+        result[SysExSection.TEMPORARY_AREA] = area
+        result[SysExSection.SYNTH_TONE] = tone
+    return result
 
 
 def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:

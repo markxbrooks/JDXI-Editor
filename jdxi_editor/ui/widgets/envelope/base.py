@@ -41,7 +41,7 @@ class EnvelopeWidgetBase(QWidget):
         self.plot = None
         self.address = address
         self.midi_helper = midi_helper
-        self.controls = controls if controls else {}
+        self.controls = controls
         self.envelope = {}
         self._create_parameter_slider = create_parameter_slider
         self._params = parameters

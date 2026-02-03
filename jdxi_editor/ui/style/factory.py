@@ -36,16 +36,9 @@ other interactive applications.
 
 """
 
-import platform
-
 from PySide6.QtWidgets import QPushButton
 
-if platform.system() == "Windows":
-    FONT_FAMILY = "Orbitron"
-elif platform.system() == "Darwin":
-    FONT_FAMILY = "Orbitron"
-else:
-    FONT_FAMILY = "Orbitron"
+FONT_FAMILY = "Segoe UI"
 
 
 def generate_polyend_sequencer_button_style(

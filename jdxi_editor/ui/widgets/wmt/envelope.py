@@ -71,7 +71,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.address = address
         self.midi_helper = midi_helper
         self.level_param = fade_upper_param
-        if controls:
+        if controls is not None:
             self.controls = controls
         else:
             self.controls = {}

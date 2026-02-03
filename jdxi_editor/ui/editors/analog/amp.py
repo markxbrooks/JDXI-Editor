@@ -55,9 +55,11 @@ class AnalogAmpSection(BaseAmpSection):
         self.tab_widget = None
         self.layout = None
 
-        super().__init__(analog=True, parent=parent)
-        # --- Set attributes after super().__init__() to avoid them being overwritten
-        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
-        self.address: RolandSysExAddress = address
+        super().__init__(
+            analog=True,
+            parent=parent,
+            controls=controls,
+            address=address,
+        )
         self.build_widgets()
         self.setup_ui()

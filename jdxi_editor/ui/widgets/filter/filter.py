@@ -64,7 +64,7 @@ class FilterWidget(EnvelopeWidgetBase):
             self.slope_param = slope_param
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
-        if controls:
+        if controls is not None:
             self.controls = controls
         else:
             self.controls = {}

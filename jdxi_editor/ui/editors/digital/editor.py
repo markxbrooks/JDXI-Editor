@@ -134,6 +134,8 @@ class DigitalSynthEditor(BaseSynthEditor):
             Digital.Param.OSC_PULSE_WIDTH,
             Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
         ]
+        # Param name -> widget map per partial (same pattern as adsr_map / pitch_env_map)
+        self._partial_param_control_map: Dict[int, Dict[str, QWidget]] = {}
         self.build_widgets()
         self.setup_ui()
         self.update_instrument_image()
@@ -426,7 +428,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                     partial_no, param, param_value, successes, failures
                 )
             else:
-                self._update_partial_slider(
+                self._update_partial_slider_digital(
                     partial_no, param, param_value, successes, failures
                 )
 
@@ -694,6 +696,55 @@ class DigitalSynthEditor(BaseSynthEditor):
             successes.append(param.name)
         else:
             failures.append(param.name)
+
+    def _get_partial_param_control_map(self, partial_no: int) -> Dict[str, QWidget]:
+        """
+        Build param name -> widget map for this partial (same pattern as adsr_map /
+        pitch_env_map). All section widgets are stored in the partial's controls dict.
+        """
+        if partial_no in self._partial_param_control_map:
+            return self._partial_param_control_map[partial_no]
+        pe = self.partial_editors.get(partial_no)
+        if not pe or not hasattr(pe, "controls"):
+            self._partial_param_control_map[partial_no] = {}
+            return self._partial_param_control_map[partial_no]
+        name_to_widget = {}
+        for param_key, widget in pe.controls.items():
+            name = getattr(param_key, "name", None) or str(param_key)
+            name_to_widget[name] = widget
+        self._partial_param_control_map[partial_no] = name_to_widget
+        return name_to_widget
+
+    def _update_partial_slider_digital(
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Update a partial's slider/control from SysEx using explicit param map
+        (same manner as ADSR, PWM, Pitch ENV).
+        """
+        if value is None:
+            return
+        name_to_widget = self._get_partial_param_control_map(partial_no)
+        control = name_to_widget.get(param.name) if getattr(param, "name", None) else None
+        if not control:
+            failures.append(param.name)
+            return
+        synth_data = create_synth_data(self.synth_data.preset_type, partial_no)
+        self.address.lmb = synth_data.lmb
+        control_value = param.convert_from_midi(value)
+        log_slider_parameters(self.address, param, value, control_value)
+        if hasattr(control, "blockSignals"):
+            control.blockSignals(True)
+        if hasattr(control, "setValue"):
+            control.setValue(control_value)
+        if hasattr(control, "blockSignals"):
+            control.blockSignals(False)
+        successes.append(param.name)
 
     def _update_partial_selection_switch(
         self,

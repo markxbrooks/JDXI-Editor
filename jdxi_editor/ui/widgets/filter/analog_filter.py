@@ -57,7 +57,7 @@ class AnalogFilterWidget(EnvelopeWidgetBase):
         self.midi_helper = midi_helper
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_slider = create_parameter_slider
-        if controls:
+        if controls is not None:
             self.controls = controls
         else:
             self.controls = {}

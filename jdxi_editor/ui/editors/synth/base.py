@@ -785,20 +785,27 @@ class SynthBase(QWidget):
         :param failures: list list of failed updates
         :return: None
         """
-        if not value:
+        if value is None:
             return
 
-        # Check if partial editor has lfo_depth_controls property (Digital synths have it, drums don't)
-        partial_editor = self.partial_editors[partial_no]
-        if not hasattr(partial_editor, "lfo_depth_controls"):
-            # For editors without lfo_depth_controls (like drums), try to get from controls directly
-            slider = (
-                partial_editor.controls.get(param)
-                if hasattr(partial_editor, "controls")
-                else None
-            )
-        else:
+        partial_editor = self.partial_editors.get(partial_no)
+        if not partial_editor:
+            failures.append(param.name)
+            return
+
+        # Resolve control: try lfo_depth_controls, then controls by param, then by param name
+        slider = None
+        if hasattr(partial_editor, "lfo_depth_controls"):
             slider = partial_editor.lfo_depth_controls.get(param)
+        if slider is None and hasattr(partial_editor, "controls"):
+            slider = partial_editor.controls.get(param)
+        if slider is None and hasattr(partial_editor, "controls"):
+            param_name = getattr(param, "name", None)
+            if param_name:
+                for k, w in partial_editor.controls.items():
+                    if getattr(k, "name", None) == param_name:
+                        slider = w
+                        break
 
         if not slider:
             failures.append(param.name)
@@ -807,7 +814,10 @@ class SynthBase(QWidget):
         self.address.lmb = synth_data.lmb
         slider_value = param.convert_from_midi(value)
         log_slider_parameters(self.address, param, value, slider_value)
-        slider.blockSignals(True)
-        slider.setValue(slider_value)
-        slider.blockSignals(False)
+        if hasattr(slider, "blockSignals"):
+            slider.blockSignals(True)
+        if hasattr(slider, "setValue"):
+            slider.setValue(slider_value)
+        if hasattr(slider, "blockSignals"):
+            slider.blockSignals(False)
         successes.append(param.name)

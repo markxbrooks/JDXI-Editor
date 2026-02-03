@@ -2,11 +2,12 @@
 Analog Oscillator Section
 """
 
-from typing import Callable, Dict, Union
+from typing import Callable
 
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
+from decologr import Decologr as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -104,14 +105,18 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.waveform_buttons: dict = wave_buttons or {}
         self.midi_helper = midi_helper
         self.analog: bool = True
-
+        log.info(f"[AnalogOscillatorSection] before super init controls: {controls}")
         super().__init__(
-            icons_row_type=IconType.OSCILLATOR, analog=True, midi_helper=midi_helper
+            icons_row_type=IconType.OSCILLATOR,
+            analog=True,
+            midi_helper=midi_helper,
+            controls=controls,
+            address=address,
         )
-        # --- Set attributes after super().__init__() to avoid them being overwritten
-        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
+        log.info(f"[AnalogOscillatorSection] after super init self.controls: {self.controls}")
         self.address = address
         self.build_widgets()
+        log.info(f"[AnalogOscillatorSection] after build_widgets self.controls: {self.controls}")
         self.setup_ui()
 
     def _build_additional_analog_widgets(self):

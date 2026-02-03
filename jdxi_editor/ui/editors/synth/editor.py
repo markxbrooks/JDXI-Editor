@@ -33,7 +33,8 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, JDXiSysExOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, JDXiSysExOffsetTemporaryToneUMB, \
+    JDXiSysExAddressStartMSB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
@@ -47,6 +48,34 @@ from jdxi_editor.ui.editors.synth.helper import log_changes
 from jdxi_editor.ui.editors.synth.specs import InstrumentDescriptor, DRUM_KIT_SPECS, ENGINE_KEYWORDS, \
     INSTRUMENT_FAMILY_SPECS
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+
+
+TONE_DISPATCH = {
+    JDXiSysExOffsetSuperNATURALLMB.COMMON: "_update_common_controls",
+    JDXiSysExOffsetSuperNATURALLMB.MODIFY: "_update_modify_controls",
+}
+
+
+SYNTH_CAPABILITIES = {
+    JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT: {
+        "partials": DRUM_PARTIAL_MAP,
+        "supports_common": False,
+    },
+    JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH: {
+        "partials": SYNTH_PARTIAL_MAP,
+        "supports_common": True,
+    },
+}
+
+
+def get_storage_scope(msb: int) -> str:
+    return JDXiSysExAddressStartMSB(msb).name
+
+
+def get_editor_target(msb: int, umb: int) -> str:
+    if msb == JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM:
+        return "PROGRAM"
+    return JDXiSysExOffsetTemporaryToneUMB(umb).name
 
 
 class SynthEditor(SynthBase):
@@ -244,7 +273,7 @@ class SynthEditor(SynthBase):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-
+        # log.message(f"self.address.msb, self.address.umb, {self.address.msb}, {self.address.umb}")
         current_synth = get_area([self.address.msb, self.address.umb])
         temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
         synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
@@ -254,6 +283,11 @@ class SynthEditor(SynthBase):
                 f"[SynthEditor] temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
+
+        else:
+            log.message(
+                f"[SynthEditor] !!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update"
+            )
 
         log.header_message(
             f"[SynthEditor] Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"

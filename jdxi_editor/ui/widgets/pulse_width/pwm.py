@@ -56,7 +56,7 @@ class PWMWidget(EnvelopeWidgetBase):
         self.address = address
         self.midi_helper = midi_helper
         self._create_parameter_slider = create_parameter_slider
-        if controls:
+        if controls is not None:
             self.controls = controls
         else:
             self.controls = {}

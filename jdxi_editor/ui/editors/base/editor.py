@@ -102,6 +102,7 @@ class BaseSynthEditor(SynthEditor):
         :param parent: QWidget
         """
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.osc_waveform_map = None
         self.instrument_image_group: QGroupBox | None = None
         self.scroll: QScrollArea | None = None
         self.instrument_preset_group: QGroupBox | None = None
@@ -589,7 +590,7 @@ class BaseSynthEditor(SynthEditor):
         :param failures: list SysEx data
         :return: None
         """
-
+        log.message("[BaseSynthEditor] [_update_controls]")
         # --- Compare with previous data and log changes
         if self.previous_json_data:
             log_changes(self.previous_json_data, sysex_data)
