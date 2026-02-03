@@ -30,8 +30,35 @@ class LFOBehavior(Protocol):
     def setup_ui(self) -> None: ...
 
 
+class LFOSwitchGroup:
+    """LFO Switch Group"""
+    SWITCH_ROW: str = "switch_row_widgets"
+
+
+class LFOSliderGroup:
+    """Slider Group"""
+    DEPTH: str = "depths"
+    RATE_FADE: str = "rate_fade"
+
+
+class LFOGroup:
+    """LFO Groups"""
+    label: str = "LFO"
+    slider: LFOSliderGroup = LFOSliderGroup
+    switch: LFOSwitchGroup = LFOSwitchGroup
+    combo: None
+
+
 class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
+    # New Method
+    # SLIDER_GROUPS = {}
+    SWITCH_GROUPS = {}
+
+    # Old Method
+    DEPTH_SLIDERS = None
+    SWITCH_SPECS = None
+    RATE_FADE_SLIDERS = None
 
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
@@ -78,7 +105,7 @@ class BaseLFOSection(SectionBaseWidget):
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 
-    def _setup_ui(self):
+    def _setup_ui_bypassed(self):
         """Assemble UI: icons row, switch row (right after icons), shape row, tab widget, stretch."""
         layout = self.create_layout()
         # Switch row right after the icons row
@@ -90,7 +117,7 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
-    def setup_ui(self):
+    def setup_ui_old(self):
         """For analog: build layout here (_setup_ui is skipped). For digital: no-op, layout built in _setup_ui()."""
         if not self.analog:
             return  # Digital: already built in _setup_ui()
@@ -104,22 +131,34 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
-    def setup_ui_new(self) -> None:
+    def setup_ui(self) -> None:
         """setup ui"""
         widget_rows = [
-            self.widgets["switch_row_widgets"],
-            self.widgets["envelope_loop_mode_combo_boxes"],
-            self.widgets["envelope_loop_sync_note_combo_boxes"],
-            self.widgets["chromatic_portamento_switches"],
+            self.widgets[LFOGroup.switch.SWITCH_ROW],
+            self.widgets[LFOGroup.slider.DEPTH],
+            self.widgets[LFOGroup.slider.RATE_FADE],
         ]
-        self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
+        self._add_group_with_widget_rows(label=LFOGroup.label, rows=widget_rows)
 
-    def build_widgets(self):
+    def build_widgets(self) -> None:
+        """Build all the necessary widgets for the digital common section."""
+        self.widgets = {
+            LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
+            LFOGroup.slider.RATE_FADE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FADE]),
+            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
+        }
+
+    def build_widgets_old(self):
         """Build the widgets"""
         self._create_rate_fade_layout_widgets()
         self._create_depths_layout_widgets()
         self._create_switch_layout_widgets()
-        self.widgets["switch_row_widgets"] = self.switch_row_widgets
+        self.widgets[LFOGroup.switch.SWITCH_ROW] = self.switch_row_widgets
+        """self.widgets = {
+            # LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
+            # LFOGroup.slider.RATE_FATE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FATE]),
+            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
+        }"""
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""
@@ -169,7 +208,7 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_rate_widget(self):
         """Rate and Rate Ctrl Controls Tab"""
-        rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.RATE_FADE])
         rate_widget = QWidget()
         rate_widget.setLayout(rate_layout)
         rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
@@ -177,7 +216,7 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _create_depths_widget(self):
         """Depths Tab"""
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
+        depths_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.DEPTH])
         depths_widget = QWidget()
         depths_widget.setLayout(depths_layout)
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
@@ -186,7 +225,7 @@ class BaseLFOSection(SectionBaseWidget):
     def _create_rate_fade_controls(self) -> QWidget:
         """Rate and Fade Controls Tab"""
         rate_fade_widget = QWidget()
-        rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
+        rate_fade_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.RATE_FADE])
         rate_fade_widget.setLayout(rate_fade_layout)
         rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return rate_fade_widget

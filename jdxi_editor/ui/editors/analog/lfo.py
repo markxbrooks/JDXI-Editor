@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
+from jdxi_editor.ui.editors.base.lfo import BaseLFOSection, LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
@@ -19,6 +19,53 @@ from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 class AnalogLFOSection(BaseLFOSection):
     """Analog LFO Section (responsive layout version)"""
 
+    # New method
+
+    SWITCH_GROUPS = {
+        LFOGroup.switch.SWITCH_ROW: [
+            SwitchSpec(
+                Analog.Param.LFO_TEMPO_SYNC_SWITCH,
+                Analog.Display.Name.LFO_TEMPO_SYNC_SWITCH,
+                Analog.Display.Options.LFO_TEMPO_SYNC_SWITCH,
+            ),
+            SwitchSpec(
+                Analog.Param.LFO_TEMPO_SYNC_NOTE,
+                Analog.Display.Name.LFO_TEMPO_SYNC_NOTE,
+                Analog.Display.Options.LFO_TEMPO_SYNC_NOTE,
+            ),
+            SwitchSpec(
+                Analog.Param.LFO_KEY_TRIGGER,
+                Analog.Display.Name.LFO_KEY_TRIGGER,
+                Analog.Display.Options.LFO_KEY_TRIGGER,
+            ),
+        ]
+    }
+
+    SLIDER_GROUPS = {
+        LFOGroup.slider.DEPTH: [
+            SliderSpec(
+                Analog.Param.LFO_PITCH_DEPTH,
+                Analog.Display.Name.LFO_PITCH_DEPTH,
+            ),
+            SliderSpec(
+                Analog.Param.LFO_FILTER_DEPTH,
+                Analog.Display.Name.LFO_FILTER_DEPTH,
+            ),
+            SliderSpec(
+                Analog.Param.LFO_AMP_DEPTH,
+                Analog.Display.Name.LFO_AMP_DEPTH,
+            ),
+        ],
+        LFOGroup.slider.RATE_FADE: [
+            SliderSpec(Analog.Param.LFO_RATE, Analog.Display.Name.LFO_RATE),
+            SliderSpec(
+                Analog.Param.LFO_FADE_TIME,
+                Analog.Display.Name.LFO_FADE_TIME,
+            ),
+        ],
+    }
+
+    # Old Method
     DEPTH_SLIDERS = [
         SliderSpec(
             Analog.Param.LFO_PITCH_DEPTH,
@@ -100,3 +147,20 @@ class AnalogLFOSection(BaseLFOSection):
         self.wave_shape_param = AnalogParam.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()
+
+    def setup_ui(self) -> None:
+        """setup ui"""
+        widget_rows = [
+            self.widgets[LFOGroup.switch.SWITCH_ROW],
+            self.widgets[LFOGroup.slider.DEPTH],
+            self.widgets[LFOGroup.slider.RATE_FADE],
+        ]
+        self._add_group_with_widget_rows(label=LFOGroup.label, rows=widget_rows)
+
+    def build_widgets(self) -> None:
+        """Build all the necessary widgets for the digital common section."""
+        self.widgets = {
+            LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
+            LFOGroup.slider.RATE_FADE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FADE]),
+            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
+        }
