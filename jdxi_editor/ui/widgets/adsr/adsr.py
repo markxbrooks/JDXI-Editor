@@ -14,6 +14,7 @@ through an animated envelope curve.
 
 from typing import Callable, Dict, Optional
 
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
@@ -83,12 +84,12 @@ class ADSR(EnvelopeWidgetBase):
             self.controls = {}
         self._create_parameter_slider = create_parameter_slider
         self.envelope = {
-            "attack_time": 300.0,
-            "decay_time": 800.0,
-            "release_time": 500.0,
-            "initial_level": 0.0,
-            "peak_level": 0.50,
-            "sustain_level": 0.8,
+            EnvelopeParameter.ATTACK_TIME: 300.0,
+            EnvelopeParameter.DECAY_TIME: 800.0,
+            EnvelopeParameter.RELEASE_TIME: 500.0,
+            EnvelopeParameter.INITIAL_LEVEL: 0.0,
+            EnvelopeParameter.PEAK_LEVEL: 0.50,
+            EnvelopeParameter.SUSTAIN_LEVEL: 0.8,
         }
         self.attack_control = AdsrSliderSpinbox(
             attack_param,
@@ -96,7 +97,7 @@ class ADSR(EnvelopeWidgetBase):
             max_value=1000,
             units=" ms",
             label="Attack",
-            value=self.envelope["attack_time"],
+            value=self.envelope[EnvelopeParameter.ATTACK_TIME],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -106,7 +107,7 @@ class ADSR(EnvelopeWidgetBase):
             max_value=1000,
             units=" ms",
             label="Decay",
-            value=self.envelope["decay_time"],
+            value=self.envelope[EnvelopeParameter.DECAY_TIME],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -116,7 +117,7 @@ class ADSR(EnvelopeWidgetBase):
             max_value=1.0,
             units="",
             label="Sustain",
-            value=self.envelope["sustain_level"],
+            value=self.envelope[EnvelopeParameter.SUSTAIN_LEVEL],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -126,7 +127,7 @@ class ADSR(EnvelopeWidgetBase):
             max_value=1000,
             units=" ms",
             label="Release",
-            value=self.envelope["release_time"],
+            value=self.envelope[EnvelopeParameter.RELEASE_TIME],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -150,7 +151,7 @@ class ADSR(EnvelopeWidgetBase):
                 max_value=1.0,
                 units="",
                 label="Depth",
-                value=self.envelope["peak_level"],
+                value=self.envelope[EnvelopeParameter.PEAK_LEVEL],
                 create_parameter_slider=self._create_parameter_slider,
                 parent=self,
             )
@@ -160,10 +161,10 @@ class ADSR(EnvelopeWidgetBase):
                 self.controls[peak_param] = self.peak_control
 
         for key, widget in [
-            ("attack_time", self.attack_control),
-            ("decay_time", self.decay_control),
-            ("sustain_level", self.sustain_control),
-            ("release_time", self.release_control),
+            (EnvelopeParameter.ATTACK_TIME, self.attack_control),
+            (EnvelopeParameter.DECAY_TIME, self.decay_control),
+            (EnvelopeParameter.SUSTAIN_LEVEL, self.sustain_control),
+            (EnvelopeParameter.RELEASE_TIME, self.release_control),
         ]:
             if tooltip := TOOLTIPS.get(key):
                 widget.setToolTip(tooltip)
@@ -188,10 +189,10 @@ class ADSR(EnvelopeWidgetBase):
         self.setLayout(self.layout)
 
         self.envelope_spinbox_map = {
-            "attack_time": self.attack_control.spinbox,
-            "decay_time": self.decay_control.spinbox,
-            "sustain_level": self.sustain_control.spinbox,
-            "release_time": self.release_control.spinbox,
+            EnvelopeParameter.ATTACK_TIME: self.attack_control.spinbox,
+            EnvelopeParameter.DECAY_TIME: self.decay_control.spinbox,
+            EnvelopeParameter.SUSTAIN_LEVEL: self.sustain_control.spinbox,
+            EnvelopeParameter.RELEASE_TIME: self.release_control.spinbox,
         }
         # Create layout
         self.plot = ADSRPlot(
@@ -202,7 +203,7 @@ class ADSR(EnvelopeWidgetBase):
         )
         if hasattr(self, "peak_control"):
             self.layout.addWidget(self.peak_control, 0, 5)
-            self.envelope_spinbox_map["peak_level"] = self.peak_control.spinbox
+            self.envelope_spinbox_map[EnvelopeParameter.PEAK_LEVEL] = self.peak_control.spinbox
             self.layout.addWidget(self.plot, 0, 6, 3, 1)
             self.layout.setColumnStretch(7, 1)
         else:
@@ -221,18 +222,18 @@ class ADSR(EnvelopeWidgetBase):
 
     def update_envelope_from_spinboxes(self):
         """Update envelope values from spin boxes"""
-        self.envelope["attack_time"] = self.attack_control.value()
-        self.envelope["decay_time"] = self.decay_control.value()
-        self.envelope["sustain_level"] = self.sustain_control.value()
-        self.envelope["release_time"] = self.release_control.value()
+        self.envelope[EnvelopeParameter.ATTACK_TIME] = self.attack_control.value()
+        self.envelope[EnvelopeParameter.DECAY_TIME] = self.decay_control.value()
+        self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = self.sustain_control.value()
+        self.envelope[EnvelopeParameter.RELEASE_TIME] = self.release_control.value()
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)
 
     def update_spinboxes_from_envelope(self):
         """Update spinboxes from envelope values"""
-        self.attack_control.setValue(self.envelope["attack_time"])
-        self.decay_control.setValue(self.envelope["decay_time"])
-        self.sustain_control.setValue(self.envelope["sustain_level"])
-        self.release_control.setValue(self.envelope["release_time"])
+        self.attack_control.setValue(self.envelope[EnvelopeParameter.ATTACK_TIME])
+        self.decay_control.setValue(self.envelope[EnvelopeParameter.DECAY_TIME])
+        self.sustain_control.setValue(self.envelope[EnvelopeParameter.SUSTAIN_LEVEL])
+        self.release_control.setValue(self.envelope[EnvelopeParameter.RELEASE_TIME])
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)

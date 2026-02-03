@@ -62,7 +62,7 @@ class AdsrSliderSpinbox(QWidget):
         max_value: float = 1.0,
         units: str = "",
         label: str = "",
-        value: int = None,
+        value: int | None | float = None,
         create_parameter_slider: Callable = None,
         parent: QWidget = None,
     ):

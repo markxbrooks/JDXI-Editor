@@ -28,17 +28,20 @@ Customization:
 """
 
 import numpy as np
-from PySide6.QtCore import QPointF, Qt
+from PySide6.QtCore import QPointF, Signal
 from PySide6.QtGui import (
     QMouseEvent,
 )
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 
 class ADSRPlot(BasePlotWidget):
+
+    point_moved = Signal(int, int)
 
     def __init__(
         self,
@@ -196,12 +199,12 @@ class ADSRPlot(BasePlotWidget):
 
     def envelope_parameters(self):
         """Compute envelope segments in seconds"""
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        release_time = self.envelope["release_time"] / 1000.0
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = max(self.envelope["peak_level"] * 2, 0)
-        initial_level = self.envelope["initial_level"]
+        attack_time = self.envelope[EnvelopeParameter.ATTACK_TIME] / 1000.0
+        decay_time = self.envelope[EnvelopeParameter.DECAY_TIME] / 1000.0
+        release_time = self.envelope[EnvelopeParameter.RELEASE_TIME] / 1000.0
+        sustain_level = self.envelope[EnvelopeParameter.SUSTAIN_LEVEL]
+        peak_level = max(self.envelope[EnvelopeParameter.PEAK_LEVEL] * 2, 0)
+        initial_level = self.envelope[EnvelopeParameter.INITIAL_LEVEL]
 
         # Convert times to sample counts
         attack_samples = int(attack_time * self.sample_rate)
