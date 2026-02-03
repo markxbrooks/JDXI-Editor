@@ -50,10 +50,10 @@ class ADSR(EnvelopeWidgetBase):
     ):
         super().__init__(
             envelope_keys=[
-                "attack_time",
-                "decay_time",
-                "sustain_level",
-                "release_time",
+                EnvelopeParameter.ATTACK_TIME,
+                EnvelopeParameter.DECAY_TIME,
+                EnvelopeParameter.SUSTAIN_LEVEL,
+                EnvelopeParameter.RELEASE_TIME,
             ],
             create_parameter_slider=create_parameter_slider,
             parameters=[attack_param, decay_param, sustain_param, release_param],
