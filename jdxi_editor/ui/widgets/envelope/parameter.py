@@ -23,6 +23,7 @@ class EnvelopeParameter:
     V_SENS: str = "v_sens"
     T1_V_SENS: str = "t1_v_sens"
     T4_V_SENS: str = "t4_v_sens"
+    TIME_0: str = "time_0"
     TIME_1: str = "time_1"
     TIME_2: str = "time_2"
     TIME_3: str = "time_3"

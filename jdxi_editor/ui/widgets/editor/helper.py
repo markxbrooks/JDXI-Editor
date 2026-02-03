@@ -42,9 +42,8 @@ def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton
     return btn
 
 
-def create_group(title: str, layout_or_widget) -> QGroupBox:
+def create_group(title: str, layout_or_widget: list | QWidget | None) -> QGroupBox:
     """Helper for QGroupBox creation with a layout or single widget."""
-    from PySide6.QtWidgets import QLayout
 
     group = QGroupBox(title)
     if isinstance(layout_or_widget, list):

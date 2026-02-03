@@ -505,7 +505,7 @@ class SectionBaseWidget(SynthBase):
         if self._layout is None:
             return
 
-        # Create a container layout to avoid "already has a parent" errors
+        # --- Create a container layout to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
 
         if self.icons_row_type == IconType.ADSR:
@@ -515,9 +515,9 @@ class SectionBaseWidget(SynthBase):
         elif self.icons_row_type == IconType.GENERIC:
             icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
         else:
-            return  # IconType.NONE or unknown
+            return  # --- IconType.NONE or unknown
 
-        # Transfer all items from icon_hlayout to icon_row_container
+        # --- Transfer all items from icon_hlayout to icon_row_container
 
         transfer_layout_items(icon_hlayout, icon_row_container)
 
@@ -599,7 +599,7 @@ class SectionBaseWidget(SynthBase):
         """Add a tab using TabDefinitionMixin pattern"""
         from jdxi_editor.midi.data.digital.oscillator import WaveformType
 
-        # Handle both regular icons and generated waveform icons
+        # --- Handle both regular icons and generated waveform icons
         waveform_type_values = {
             WaveformType.ADSR,
             WaveformType.UPSAW,
@@ -618,7 +618,7 @@ class SectionBaseWidget(SynthBase):
             WaveformType.FILTER_SINE,
         }
 
-        # Find the tab widget (could be tab_widget or oscillator_tab_widget, etc.)
+        # --- Find the tab widget (could be tab_widget or oscillator_tab_widget, etc.)
         tab_widget = None
         if hasattr(self, "tab_widget") and self.tab_widget is not None:
             tab_widget = self.tab_widget
@@ -626,15 +626,15 @@ class SectionBaseWidget(SynthBase):
             self.tab_widget = QTabWidget()
             tab_widget = self.tab_widget
 
-        # Handle icon - could be a string (qtawesome icon name) or WaveformType value
+        # --- Handle icon - could be a string (qtawesome icon name) or WaveformType value
         if isinstance(key.icon, str) and key.icon in waveform_type_values:
-            # Use generated icon for waveform types
+            # --- Use generated icon for waveform types
             icon = JDXi.UI.Icon.get_generated_icon(key.icon)
         elif isinstance(key.icon, str) and key.icon.startswith("mdi."):
-            # Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
+            # --- Direct qtawesome icon name (e.g., "mdi.numeric-1-circle-outline")
             icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
         else:
-            # Use regular icon from registry
+            # --- Use regular icon from registry
             icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
         widget.setMaximumHeight(JDXi.UI.Dimensions.EDITOR.HEIGHT)
         tab_widget.addTab(
@@ -692,26 +692,26 @@ class SectionBaseWidget(SynthBase):
         if selected_btn is None:
             return
         selected_btn.setChecked(True)
-        # selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE_ANALOG)
+        # --- selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE_ANALOG)
         self._update_button_enabled_states(button_param)
         if self.send_midi_parameter:
-            # Map filter mode enums to their corresponding parameter
+            # --- Map filter mode enums to their corresponding parameter
             if isinstance(button_param, DigitalFilterMode):
-                # Filter mode buttons map to FILTER_MODE_SWITCH parameter
+                # --- Filter mode buttons map to FILTER_MODE_SWITCH parameter
                 actual_param = DigitalPartialParam.FILTER_MODE_SWITCH
                 param_value = button_param.value
             elif isinstance(button_param, AnalogFilterMode):
-                # Filter mode buttons map to FILTER_MODE_SWITCH parameter
+                # --- Filter mode buttons map to FILTER_MODE_SWITCH parameter
                 actual_param = AnalogParam.FILTER_MODE_SWITCH
                 param_value = button_param.value
             else:
-                # For other button types (like waveform), use the param directly
+                # --- For other button types (like waveform), use the param directly
                 actual_param = button_param
                 param_value = getattr(button_param, "value", button_param)
 
             if actual_param is None:
                 return
-            # Ensure we have a valid AddressParameter before sending
+            # --- Ensure we have a valid AddressParameter before sending
             if not isinstance(actual_param, AddressParameter):
                 from decologr import Decologr as log
 
@@ -722,18 +722,18 @@ class SectionBaseWidget(SynthBase):
 
             self.send_midi_parameter(actual_param, param_value)
 
-    def add_widget_lists_to_layout(self, layout, widget_lists: list[list]):
+    def _add_widget_rows(self, layout: QHBoxLayout | QVBoxLayout, rows: list[list[QWidget]]):
         """add a list of rows of widgets to a layout"""
-        for widget_list in widget_lists:
+        for row in rows:
             layout.addLayout(
-                    create_layout_with_widgets(widget_list)
+                    create_layout_with_widgets(row)
                     )
-                
-    def _setup_group_with_widget_rows(self, label: str, widget_rows: list[list]):
-        """setup group box with a list of widgets"""
-        layout = self.get_layout()
+
+    def _add_group_with_widget_rows(self, label: str, rows: list[list[QWidget]]):
+        """Create a group box, populate it with rows of widgets, and add it to the parent layout."""
         group, group_layout = create_group_with_layout(label=label)
-        layout.addWidget(group)
-        group.setStyleSheet(JDXiUIStyle.ADSR)
-        self.add_widget_lists_to_layout(group_layout, widget_rows)
+        self._add_widget_rows(group_layout, rows)
         group_layout.addStretch()
+        group.setStyleSheet(JDXiUIStyle.ADSR)
+        layout = self.get_layout()
+        layout.addWidget(group)

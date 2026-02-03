@@ -1451,6 +1451,7 @@ class DrumPartialParam(AddressParameter):
         0,
         7,
         "Choose one of the following seven curves to specify how the volume of the drum partial changes\nin response to your keyboard playing dynamics.\nIf you don’t want the volume of the drum partial to change in response to your keyboard\ndynamics, choose the “FIXED” setting.",
+        "Level Velocity Curve"
     )  # FIXED, 1 - 7
 
     # TVA Level Velocity Sens
@@ -1461,6 +1462,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Set this when you want the volume of the drum partial to change depending on the force with\nwhich you press the keys.\nSpecify a positive (“+”) setting if you want the volume of the drum partial to increase as you play\nmore strongly; specify a negative (“-”) setting if you want the volume to decrease.",
+        "Level Velocity Sens"
     )
 
     # TVA Env Time 1 Velocity Sens
@@ -1471,6 +1473,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        "Env Time 1 Velocity Sens"
     )  # -63 - +63
 
     # TVA Env Time 4 Velocity Sens
@@ -1481,6 +1484,7 @@ class DrumPartialParam(AddressParameter):
         -63,
         63,
         "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        "T4 V-Sens"
     )  # -63 - +63
 
     # TVA Env Time 1
@@ -1491,6 +1495,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        "Time 1"
     )
 
     # TVA Env Time 2
@@ -1501,6 +1506,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        "Time 2"
     )
 
     # TVA Env Time 3
@@ -1511,6 +1517,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        "Time 3"
     )
 
     # TVA Env Time 4
@@ -1521,6 +1528,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        "Time 4"
     )
 
     # TVA Env Level 1
@@ -1531,6 +1539,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        "Level 1"
     )
 
     # TVA Env Level 2
@@ -1541,6 +1550,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        "Level 2"
     )
 
     # TVA Env Level 3
@@ -1551,6 +1561,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        "Level 3"
     )
 
     # One Shot Mode
@@ -1561,6 +1572,7 @@ class DrumPartialParam(AddressParameter):
         0,
         1,
         "The sound will play back until the end of the waveform (or the end of the envelope, whichever\ncomes first).\nThe result will be the same as when the envelope’s Env Mode parameter is set to “NO-SUS.”",
+        "Level 4"
     )  # OFF, ON
 
     # Relative Level

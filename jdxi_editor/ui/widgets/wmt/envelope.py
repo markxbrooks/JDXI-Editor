@@ -312,11 +312,11 @@ if __name__ == "__main__":
 
     app = QApplication([])
     test_env = {
-        "fade_lower": 200,
-        "range_lower": 300,
-        "depth": 0.7,
-        "range_upper": 400,
-        "fade_upper": 300,
+        EnvelopeParameter.FADE_LOWER: 200,
+        EnvelopeParameter.RANGE_LOWER: 300,
+        EnvelopeParameter.DEPTH: 0.7,
+        EnvelopeParameter.RANGE_UPPER: 400,
+        EnvelopeParameter.FADE_UPPER: 300,
     }
     plot = WMTEnvPlot(400, 200, test_env)
     plot.setStyleSheet("background-color: black;")
