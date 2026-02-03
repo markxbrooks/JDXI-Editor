@@ -1,6 +1,7 @@
 from typing import Callable
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
@@ -124,7 +125,7 @@ class PWMSliderSpinbox(QWidget):
             return value
         if param_type == "mod_depth":
             return value / self.factor
-        if param_type == "pulse_width":
+        if param_type == EnvelopeParameter.PULSE_WIDTH:
             return value / self.factor
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
@@ -141,7 +142,7 @@ class PWMSliderSpinbox(QWidget):
             return value
         if param_type in ["mod_depth"]:
             return int(value * self.factor)
-        if param_type in ["pulse_width"]:
+        if param_type in [EnvelopeParameter.PULSE_WIDTH]:
             return int(value * self.factor)
         else:
             return self.factor / 2  # Default case, or raise an error

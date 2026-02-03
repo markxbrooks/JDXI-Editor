@@ -33,6 +33,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 
@@ -179,8 +180,8 @@ class PWMPlot(BasePlotWidget):
     def envelope_parameters(self):
         """Generate pulse width envelope"""
         envelope = generate_square_wave(
-            width=self.envelope["pulse_width"],
-            mod_depth=self.envelope["mod_depth"],
+            width=self.envelope[EnvelopeParameter.PULSE_WIDTH],
+            mod_depth=self.envelope[EnvelopeParameter.PULSE_WIDTH],
             sample_rate=self.sample_rate,
             duration=self.envelope.get("duration", 1.0),
         )
