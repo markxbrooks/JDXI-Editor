@@ -6,6 +6,7 @@ from enum import Enum
 
 
 class ADSRParameter(Enum):
+    """ADSR Parameters"""
     ATTACK_TIME = "attack_time"
     DECAY_TIME = "decay_time"
     SUSTAIN_LEVEL = "sustain_level"
