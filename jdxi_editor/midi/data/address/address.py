@@ -29,42 +29,6 @@ Example usage:
 >>> print(f"Command: {command}, Value: {command.DT1}, Message Position: {command.message_position}")
 Command: 18, Value: 18, Message Position: <bound method CommandID.message_position of <enum 'CommandID'>>
 
-Future:
-from enum import unique
-
-@unique
-class JDXiSysExOffsetMSB(SysExMSB):
-    SYSTEM = 0x01
-    SETUP = 0x02
-    TEMPORARY_PROGRAM = 0x18
-    TEMPORARY_TONE = 0x19
-
-@unique
-class JDXiSysExOffsetTempToneUMB(SysExUMB):
-    COMMON = 0x00
-    DIGITAL_SYNTH_1 = 0x01
-    DIGITAL_SYNTH_2 = 0x21
-    ANALOG_SYNTH = 0x42
-    DRUM_KIT = 0x70
-
-@unique
-class JDXiSysExOffsetSystemLMB(SysExLMB):
-    COMMON = 0x00
-    CONTROLLER = 0x03
-
-@unique
-class JDXiSysExOffsetSuperNATURALLMB(SysExLMB):
-    COMMON = 0x00
-    PARTIAL_1 = 0x20
-    PARTIAL_2 = 0x21
-    PARTIAL_3 = 0x22
-    MODIFY = 0x50
-
-    @classmethod
-    def digital_partial_offset(cls, partial_number: int) -> int:
-        return DIGITAL_PARTIAL_MAP.get(partial_number, 0x00)
-
-
 """
 
 from __future__ import annotations
