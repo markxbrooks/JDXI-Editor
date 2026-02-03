@@ -37,7 +37,7 @@ from typing import List
 from picomidi.constant import Midi
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
+    JDXiSysExOffsetProgramLMB,
     CommandID,
     RolandID,
 )
@@ -56,7 +56,7 @@ class SysexParameter(Enum):
     DT1_COMMAND_12 = ("Data Set 1", CommandID.DT1)
     RQ1_COMMAND_11 = ("Data Request 1", CommandID.RQ1)
 
-    PROGRAM_COMMON = ("PROGRAM_COMMON", AddressOffsetProgramLMB.COMMON)
+    PROGRAM_COMMON = ("PROGRAM_COMMON", JDXiSysExOffsetProgramLMB.COMMON)
 
     def __new__(cls, *args: int | tuple[str, int]) -> "SysexParameter":
         if len(args) == 1:

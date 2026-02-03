@@ -25,9 +25,9 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
@@ -193,7 +193,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
         }
 
     temporary_area = get_temporary_area(data) or UNKNOWN
-    tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT.name: get_drum_tone}
+    tone_handlers = {JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: get_drum_tone}
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
 
     # Try extracting synth tone safely

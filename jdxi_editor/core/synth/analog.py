@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from jdxi_editor.core.synth.data import JDXISynthData
-from jdxi_editor.midi.data.address.address import Address, AddressOffsetAnalogLMB
+from jdxi_editor.midi.data.address.address import Address, JDXiSysExOffsetAnalogLMB
 
 
 @dataclass
@@ -20,4 +20,4 @@ class AnalogSynthData(JDXISynthData):
 
     @property
     def group_map(self) -> Dict[int, Address]:
-        return {0: AddressOffsetAnalogLMB.COMMON}
+        return {0: JDXiSysExOffsetAnalogLMB.COMMON}

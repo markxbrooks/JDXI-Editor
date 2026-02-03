@@ -51,10 +51,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSystemUMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSystemUMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
@@ -1790,9 +1790,9 @@ class JDXiInstrument(JDXiWindow):
                 f"[JDXiInstrument] Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
             address = RolandSysExAddress(
-                msb=AddressStartMSB.TEMPORARY_TONE,
-                umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
-                lmb=AddressOffsetProgramLMB.COMMON,
+                msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+                umb=JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+                lmb=JDXiSysExOffsetProgramLMB.COMMON,
                 lsb=DigitalCommonParam.OCTAVE_SHIFT.lsb,
             )
             sysex_message = JDXiSysEx(
@@ -1814,13 +1814,13 @@ class JDXiInstrument(JDXiWindow):
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
                 address1 = RolandSysExAddress(
-                    msb=AddressStartMSB.TEMPORARY_TONE,
-                    umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
-                    lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+                    umb=JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+                    lmb=JDXiSysExOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
                 address2 = RolandSysExAddress(
-                    msb=AddressStartMSB.TEMPORARY_TONE,
+                    msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
                     umb=0x01,
                     lmb=0x00,
                     lsb=0x14,
@@ -1864,15 +1864,15 @@ class JDXiInstrument(JDXiWindow):
                 log.message(f"[JDXiInstrument] Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
-                    AddressOffsetProgramLMB.CONTROLLER,
-                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
-                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2,
-                    AddressOffsetProgramLMB.PART_ANALOG,
-                    AddressOffsetProgramLMB.ZONE_DRUM,
+                    JDXiSysExOffsetProgramLMB.CONTROLLER,
+                    JDXiSysExOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    JDXiSysExOffsetProgramLMB.PART_DIGITAL_SYNTH_2,
+                    JDXiSysExOffsetProgramLMB.PART_ANALOG,
+                    JDXiSysExOffsetProgramLMB.ZONE_DRUM,
                 ]:
                     address = RolandSysExAddress(
-                        msb=AddressStartMSB.TEMPORARY_PROGRAM,
-                        umb=AddressOffsetSystemUMB.COMMON,
+                        msb=JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
+                        umb=JDXiSysExOffsetSystemUMB.COMMON,
                         lmb=zone,
                         lsb=Midi.VALUE.ZERO,
                     )

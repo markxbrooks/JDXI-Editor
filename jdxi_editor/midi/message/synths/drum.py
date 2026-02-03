@@ -21,8 +21,8 @@ DrumKitMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -33,8 +33,8 @@ class DrumKitMessage(JDXiSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.TEMPORARY_TONE  # Temporary area
-    umb: int = AddressOffsetTemporaryToneUMB.DRUM_KIT  # Drum Kit
+    msb: int = JDXiSysExAddressStartMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT  # Drum Kit
     lmb: int = 0x00  # Section (Common or Pad offset)
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

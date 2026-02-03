@@ -71,7 +71,6 @@ from __future__ import annotations
 
 from enum import IntEnum, unique
 from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
-from abc import ABC, abstractmethod
 
 from picomidi.core.bitmask import BitMask
 
@@ -82,32 +81,24 @@ T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
 
 
-
-
-class SysExOffsetByte(IntEnum, ABC):
+class SysExOffsetByte(IntEnum):
     """
     Base class for Roland SysEx address offset bytes.
-
-    An offset byte:
-    - occupies a fixed position in a SysEx message
-    - contributes one byte to a 4-byte Roland address
-    - has no standalone meaning without other address bytes
     """
 
     @classmethod
-    @abstractmethod
     def message_position(cls) -> int:
-        """
-        Return the fixed byte index in the SysEx message
-        where this offset appears.
-        """
-        raise NotImplementedError
+        raise NotImplementedError(
+            f"{cls.__name__} must implement message_position()"
+        )
 
     @classmethod
     def as_int(cls, value: "SysExOffsetByte | int") -> int:
-        """Normalize enum or int to raw byte value."""
         return int(value)
 
+    @classmethod
+    def from_byte(cls, value: int) -> "SysExOffsetByte | None":
+        return cls._value2member_map_.get(value)
 
 
 class SysExMSB(SysExOffsetByte):
@@ -448,7 +439,7 @@ class CommandID(SysExByte):
 
 
 @unique
-class AddressStartMSB(Address):
+class JDXiSysExAddressStartMSB(SysExMSB):
     """
     Memory and Program Areas
     """
@@ -458,45 +449,29 @@ class AddressStartMSB(Address):
     TEMPORARY_PROGRAM = 0x18
     TEMPORARY_TONE = 0x19
 
-    @classmethod
-    def message_position(cls) -> int:
-        """Return the fixed message position for command bytes."""
-        return 8
-
 
 @unique
-class AddressOffsetTemporaryToneUMB(Address):
+class JDXiSysExOffsetTemporaryToneUMB(SysExUMB):
     """
     Address Offset Temporary Tone UMB
     """
-
     DIGITAL_SYNTH_1 = 0x01  # Avoiding "Part" because of Partials
     DIGITAL_SYNTH_2 = 0x21
     ANALOG_SYNTH = 0x42
     DRUM_KIT = 0x70
     COMMON = 0x00
 
-    @classmethod
-    def message_position(cls) -> int:
-        """Return the fixed message position for command bytes."""
-        return 9
 
-
-class AddressOffsetSystemUMB(Address):
+class JDXiSysExOffsetSystemUMB(SysExUMB):
     """
     Address Offset System UMB
     """
 
     COMMON = 0x00
 
-    @classmethod
-    def message_position(cls) -> int:
-        """Return the fixed message position for command bytes."""
-        return 9
-
 
 @unique
-class AddressOffsetSystemLMB(Address):
+class JDXiSysExOffsetSystemLMB(SysExLMB):
     """
     Address Offset System LMB
     """
@@ -504,14 +479,9 @@ class AddressOffsetSystemLMB(Address):
     COMMON = 0x00
     CONTROLLER = 0x03
 
-    @classmethod
-    def message_position(cls) -> int:
-        """Return the fixed message position for command bytes."""
-        return 10
-
 
 @unique
-class AddressOffsetSuperNATURALLMB(Address):
+class JDXiSysExOffsetSuperNATURALLMB(SysExLMB):
     """
     Address Offset SuperNATURAL LMB
     """
@@ -523,26 +493,20 @@ class AddressOffsetSuperNATURALLMB(Address):
     MODIFY = 0x50
 
     @classmethod
-    def message_position(cls) -> int:
-        """Return the fixed message position for command bytes."""
-        return 10
-
-    @classmethod
     def digital_partial_offset(cls, partial_number: int) -> int:
         """Return the LMB offset for the given drum partial (0–37)."""
         base_address = DIGITAL_PARTIAL_MAP.get(partial_number, 0x00)
         return base_address
 
 
-class AddressOffsetAnalogLMB(Address):
+class JDXiSysExOffsetAnalogLMB(SysExLMB):
     """
     Analog Synth Tone
     """
-
     COMMON = 0x00
 
 
-class AddressOffsetProgramLMB(Address):
+class JDXiSysExOffsetProgramLMB(SysExLMB):
     """
     Address Offset Program LMB
     """
@@ -605,15 +569,6 @@ class AddressOffsetProgramLMB(Address):
     DRUM_KIT_PART_37 = 0x76
 
     @classmethod
-    def message_position(cls) -> int:
-        """
-        Return the fixed message position for command bytes.
-
-        :return: int The fixed message position
-        """
-        return 10
-
-    @classmethod
     def drum_partial_offset(cls, partial_number: int) -> int:
         """
         Return the LMB offset for the given drum partial (0–37).
@@ -626,7 +581,7 @@ class AddressOffsetProgramLMB(Address):
         return base_address + (step * partial_number)
 
 
-class AddressOffsetDrumKitLMB(Address):
+class JDXiSysExOffsetDrumKitLMB(SysExLMB):
     """
     Address Offset Program LMB
     """
@@ -673,15 +628,6 @@ class AddressOffsetDrumKitLMB(Address):
     DRUM_KIT_PART_35 = 0x72
     DRUM_KIT_PART_36 = 0x74
     DRUM_KIT_PART_37 = 0x76
-
-    @classmethod
-    def message_position(cls) -> int:
-        """
-        Return the fixed message position for command bytes.
-
-        :return: int The fixed message position
-        """
-        return 10
 
     @classmethod
     def drum_partial_offset(cls, partial_number: int) -> int:

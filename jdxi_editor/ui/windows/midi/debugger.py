@@ -40,7 +40,7 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 """
 
 import re
-from typing import Optional, Protocol, Tuple, TypeVar
+from typing import Optional, Protocol, Tuple, TypeVar, Type, runtime_checkable
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
@@ -58,7 +58,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import CommandID
+from jdxi_editor.midi.data.address.address import CommandID, SysExOffsetByte
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
@@ -66,6 +66,14 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 T = TypeVar("T", bound="EnumWithAddress")
+
+
+@runtime_checkable
+class SysExEnumProtocol(Protocol):
+    @classmethod
+    def message_position(cls) -> int: ...
+
+    def __call__(self, value: int): ...
 
 
 class EnumWithAddress(Protocol):
@@ -85,30 +93,43 @@ class EnumWithAddress(Protocol):
         ...
 
 
-def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
+def parse_sysex_byte(byte_value: int, enum_cls: Type[SysExEnumProtocol]) -> str:
     """
     Get the name of a SysEx byte value using a given enum class.
 
-    :param byte_value: int
-    :param enum_cls: EnumWithAddress
-    :return: name of the parameter or "Unknown" if not found
+    Supports both:
+    - address-aware enums (get_parameter_by_address)
+    - value-based enums (IntEnum / Enum)
+
+    :param byte_value: SysEx byte value
+    :param enum_cls: Enum class
+    :return: name or "COMMON (0x??)" if not found
     """
-    enum_member = enum_cls.get_parameter_by_address(byte_value)
-    name = enum_member.name if enum_member else f"COMMON ({hex(byte_value)})"
-    return name
+    enum_member = None
+
+    if hasattr(enum_cls, "get_parameter_by_address"):
+        enum_member = enum_cls.get_parameter_by_address(byte_value)
+    else:
+        try:
+            enum_member = enum_cls(byte_value)
+        except (ValueError, TypeError):
+            enum_member = None
+
+    return enum_member.name if enum_member else f"COMMON (0x{byte_value:02X})"
 
 
-def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
+def parse_sysex_message(message: bytes, enum_cls: Type[SysExEnumProtocol]) -> Tuple[str, int]:
     """
     Parse a SysEx message and return the name and byte value of the specified parameter.
 
-    :param message: str
-    :param enum_cls: EnumWithAddress
+    :param message: bytes
+    :param enum_cls: Enum class (EnumWithAddress or IntEnum with message_position)
     :return: Tuple containing the name and byte value
     """
     byte_value = int(message[enum_cls.message_position()])
-    enum_member = enum_cls.get_parameter_by_address(byte_value)
-    name = enum_member.name if enum_member else f"Unknown ({hex(byte_value)})"
+    name = parse_sysex_byte(byte_value, enum_cls)
+    if name.startswith("COMMON ("):
+        name = f"Unknown ({hex(byte_value)})"
     return name, byte_value
 
 

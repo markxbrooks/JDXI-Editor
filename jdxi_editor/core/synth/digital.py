@@ -8,8 +8,8 @@ from typing import Dict
 from jdxi_editor.core.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import (
     Address,
-    AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 
@@ -28,10 +28,10 @@ class DigitalSynthData(JDXISynthData):
 
         # Set _group_map (private)
         self._group_map = {
-            0: AddressOffsetProgramLMB.COMMON,
-            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+            0: JDXiSysExOffsetProgramLMB.COMMON,
+            1: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_1,
+            2: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_2,
+            3: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_3,
         }
 
     @property
@@ -48,4 +48,4 @@ class DigitalSynthData(JDXISynthData):
     def partial_lmb(self) -> int:
         """Partial LMB"""
         # --- Use group_map lookup
-        return self.group_map.get(self.partial_number, AddressOffsetProgramLMB.COMMON)
+        return self.group_map.get(self.partial_number, JDXiSysExOffsetProgramLMB.COMMON)

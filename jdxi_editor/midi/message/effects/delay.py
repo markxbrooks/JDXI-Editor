@@ -20,8 +20,8 @@ from dataclasses import dataclass
 from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -33,8 +33,8 @@ class DelayMessage(JDXiSysEx):
     """Program Delay parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.PROGRAM  # 0x18: Program area
-    umb: int = AddressOffsetProgramLMB.DELAY  # 0x06: Delay section
+    msb: int = JDXiSysExAddressStartMSB.PROGRAM  # 0x18: Program area
+    umb: int = JDXiSysExOffsetProgramLMB.DELAY  # 0x06: Delay section
     lmb: int = ZERO_BYTE
     lsb: int = ZERO_BYTE
     value: int = ZERO_BYTE

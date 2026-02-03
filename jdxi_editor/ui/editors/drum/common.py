@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
+    JDXiSysExOffsetProgramLMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -67,7 +67,7 @@ class DrumCommonSection(SectionBaseWidget):
         # Set address after super().__init__() to avoid it being overwritten
         self.address = address
         if self.address:
-            self.address.lmb = AddressOffsetProgramLMB.COMMON
+            self.address.lmb = JDXiSysExOffsetProgramLMB.COMMON
 
         self.setup_ui()
 
@@ -102,7 +102,7 @@ class DrumCommonSection(SectionBaseWidget):
 
         # Kit Level control
         if self.address:
-            self.address.lmb = AddressOffsetProgramLMB.COMMON
+            self.address.lmb = JDXiSysExOffsetProgramLMB.COMMON
         kit_level_slider = self._create_parameter_slider(
             DrumCommonParam.KIT_LEVEL, DrumCommonParam.KIT_LEVEL.display_name
         )

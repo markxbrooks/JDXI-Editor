@@ -10,10 +10,10 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.globals import LOGGING, logger
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetDrumKitLMB,
-    AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
+    JDXiSysExOffsetDrumKitLMB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -41,17 +41,17 @@ def log_slider_parameters(
         synth_umb = f"0x{int(address.umb):02X}"
         part_lmb = f"0x{int(address.lmb):02X}"
         synth_name_umb = parse_sysex_byte(
-            int(synth_umb, 16), AddressOffsetTemporaryToneUMB
+            int(synth_umb, 16), JDXiSysExOffsetTemporaryToneUMB
         )
-        if synth_name_umb == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
-            address_offset_cls = AddressOffsetDrumKitLMB
+        if synth_name_umb == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
+            address_offset_cls = JDXiSysExOffsetDrumKitLMB
         elif synth_name_umb in [
-            AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
-            AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,
         ]:
-            address_offset_cls = AddressOffsetSuperNATURALLMB
+            address_offset_cls = JDXiSysExOffsetSuperNATURALLMB
         else:
-            address_offset_cls = AddressOffsetProgramLMB
+            address_offset_cls = JDXiSysExOffsetProgramLMB
         if part_lmb != f"{ZERO_BYTE}":
             part_name_lmb = parse_sysex_byte(int(part_lmb, 16), address_offset_cls)
         else:
@@ -68,4 +68,6 @@ def log_slider_parameters(
         if LOGGING:
             logger.log(level, decorated_message, stacklevel=2)
     except Exception as ex:
-        logger.recording_error(f"[log_slider_parameters] Error {ex} occurred logging parameter")
+        logger.error(
+            "[log_slider_parameters] Error %s occurred logging parameter", ex
+        )

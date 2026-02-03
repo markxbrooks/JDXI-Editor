@@ -12,10 +12,10 @@ from jdxi_editor.core.synth.drum import DrumSynthData
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import (
@@ -52,8 +52,8 @@ def create_synth_data(
             instrument_default_image="drums.png",
             window_title="Drum Kit",
             display_prefix="DR",
-            msb=AddressStartMSB.TEMPORARY_TONE,
-            umb=AddressOffsetTemporaryToneUMB.DRUM_KIT,
+            msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            umb=JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             lmb=address_lmb,
             partial_number=partial_number,
             common_parameters=DrumCommonParam,
@@ -61,19 +61,19 @@ def create_synth_data(
         )
 
     if synth_type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
-        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(
+        address_lmb = JDXiSysExOffsetSuperNATURALLMB.digital_partial_offset(
             partial_number
         )
 
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             synth_number = 1
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
             midi_channel = MidiChannel.DIGITAL_SYNTH_1
             midi_requests = MidiRequests.DIGITAL1
 
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             synth_number = 2
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2
+            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2
             midi_channel = MidiChannel.DIGITAL_SYNTH_2
             midi_requests = MidiRequests.DIGITAL2
 
@@ -81,7 +81,7 @@ def create_synth_data(
             # --- Default to Synth 1
             synth_type = JDXiSynth.DIGITAL_SYNTH_1
             synth_number = 1
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
             midi_channel = MidiChannel.DIGITAL_SYNTH_1
             midi_requests = MidiRequests.DIGITAL1
 
@@ -95,7 +95,7 @@ def create_synth_data(
             instrument_default_image="jdxi_vector.png",
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
-            msb=AddressStartMSB.TEMPORARY_TONE,
+            msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             umb=digital_partial_address_umb,
             lmb=address_lmb,
             synth_number=synth_number,
@@ -115,9 +115,9 @@ def create_synth_data(
             instrument_default_image="analog.png",
             window_title="Analog Synth",
             display_prefix="AN",
-            msb=AddressStartMSB.TEMPORARY_TONE,
-            umb=AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
-            lmb=AddressOffsetProgramLMB.COMMON,
+            msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            umb=JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH,
+            lmb=JDXiSysExOffsetProgramLMB.COMMON,
             common_parameters=AnalogParam,
         )
     else:

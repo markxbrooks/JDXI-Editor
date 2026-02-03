@@ -13,9 +13,9 @@ from PySide6.QtWidgets import QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWi
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
@@ -53,9 +53,9 @@ class DrumKitMixer(QWidget):
         # Base address for drum kit common area (stored for reference, not currently used)
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
         self.base_address = RolandSysExAddress(
-            AddressStartMSB.TEMPORARY_TONE,
-            AddressOffsetTemporaryToneUMB.DRUM_KIT,
-            AddressOffsetProgramLMB.COMMON,
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB.COMMON,
             0x00,
         )
 
@@ -121,9 +121,9 @@ class DrumKitMixer(QWidget):
         # Use common address for master level
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
         address = RolandSysExAddress(
-            AddressStartMSB.TEMPORARY_TONE,
-            AddressOffsetTemporaryToneUMB.DRUM_KIT,
-            AddressOffsetProgramLMB.COMMON,
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB.COMMON,
             0x00,
         )
 
@@ -182,22 +182,22 @@ class DrumKitMixer(QWidget):
             return
 
         # Get the LMB for this partial from AddressOffsetDrumKitLMB
-        from jdxi_editor.midi.data.address.address import AddressOffsetDrumKitLMB
+        from jdxi_editor.midi.data.address.address import JDXiSysExOffsetDrumKitLMB
 
         # Map partial_index (1-36) to DRUM_KIT_PART_X
         lmb_attr = f"DRUM_KIT_PART_{partial_index}"
-        if not hasattr(AddressOffsetDrumKitLMB, lmb_attr):
+        if not hasattr(JDXiSysExOffsetDrumKitLMB, lmb_attr):
             log.warning(f"No LMB found for partial {partial_index}")
             return
 
-        lmb_value = getattr(AddressOffsetDrumKitLMB, lmb_attr)
+        lmb_value = getattr(JDXiSysExOffsetDrumKitLMB, lmb_attr)
 
         # Create address for this partial
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
         address = RolandSysExAddress(
-            AddressStartMSB.TEMPORARY_TONE,
-            AddressOffsetTemporaryToneUMB.DRUM_KIT,
-            AddressOffsetProgramLMB(lmb_value),
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB(lmb_value),
             0x00,
         )
 

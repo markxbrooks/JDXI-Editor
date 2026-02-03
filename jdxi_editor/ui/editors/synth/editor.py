@@ -32,8 +32,8 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, JDXiSysExOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
@@ -263,19 +263,19 @@ class SynthEditor(SynthBase):
 
         successes, failures = [], []
 
-        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
+        if temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
             partial_map = DRUM_PARTIAL_MAP
         else:
             partial_map = SYNTH_PARTIAL_MAP
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
-        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
+        if temporary_area == JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
             self._update_controls(partial_number, sysex_data, successes, failures)
-        if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
+        if synth_tone == JDXiSysExOffsetSuperNATURALLMB.COMMON.name:
             self._update_common_controls(
                 partial_number, sysex_data, successes, failures
             )
-        elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
+        elif synth_tone == JDXiSysExOffsetSuperNATURALLMB.MODIFY.name:
             self._update_modify_controls(
                 partial_number, sysex_data, successes, failures
             )

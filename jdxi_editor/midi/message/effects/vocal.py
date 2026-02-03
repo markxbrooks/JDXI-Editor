@@ -19,7 +19,7 @@ VocalEffectMessage
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import AddressStartMSB, CommandID
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB, CommandID
 from jdxi_editor.midi.message.roland import JDXiSysEx
 
 
@@ -28,7 +28,7 @@ class VocalEffectMessage(JDXiSysEx):
     """Program Vocal Effect parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressStartMSB.PROGRAM  # 0x18: Program area
+    area: int = JDXiSysExAddressStartMSB.PROGRAM  # 0x18: Program area
     section: int = 0x01  # 0x01: Vocal Effect section
     group: int = 0x00  # Always 0x00
     lsb: int = 0x00  # Parameter number

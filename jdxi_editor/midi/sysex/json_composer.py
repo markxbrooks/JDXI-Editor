@@ -10,7 +10,7 @@ from typing import Any, Optional, Union
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
@@ -65,7 +65,7 @@ class JDXiJSONComposer:
             editor_data[SysExSection.ADDRESS] = address_hex
 
             editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
-                editor.address.umb, AddressOffsetTemporaryToneUMB
+                editor.address.umb, JDXiSysExOffsetTemporaryToneUMB
             )
             synth_tone_map = {
                 "20": "PARTIAL_1",
@@ -135,8 +135,8 @@ class JDXiJSONComposer:
         from picomidi.constant import Midi
 
         from jdxi_editor.midi.data.address.address import (
-            AddressOffsetProgramLMB,
-            AddressOffsetSuperNATURALLMB,
+            JDXiSysExOffsetProgramLMB,
+            JDXiSysExOffsetSuperNATURALLMB,
             RolandSysExAddress,
         )
         from jdxi_editor.midi.data.parameter.digital import (
@@ -178,7 +178,7 @@ class JDXiJSONComposer:
                 common_address = RolandSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
-                    lmb=AddressOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
+                    lmb=JDXiSysExOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
                     lsb=Midi.VALUE.ZERO,  # 0x00
                 )
                 self._save_editor_section(
@@ -344,7 +344,7 @@ class JDXiJSONComposer:
                 common_address = RolandSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x70 (DRUM_KIT)
-                    lmb=AddressOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
+                    lmb=JDXiSysExOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
                     lsb=Midi.VALUE.ZERO,  # 0x00
                 )
 
@@ -421,12 +421,12 @@ class JDXiJSONComposer:
 
             # Determine TEMPORARY_AREA and SYNTH_TONE
             from jdxi_editor.midi.data.address.address import (
-                AddressOffsetTemporaryToneUMB,
+                JDXiSysExOffsetTemporaryToneUMB,
             )
             from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
             editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
-                address.umb, AddressOffsetTemporaryToneUMB
+                address.umb, JDXiSysExOffsetTemporaryToneUMB
             )
 
             # Determine SYNTH_TONE based on LMB

@@ -1,6 +1,6 @@
 from picomidi.constant import Midi
 
-from jdxi_editor.midi.data.address.address import AddressStartMSB, RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB, RolandSysExAddress
 
 
 class ProgramCommonAddress(RolandSysExAddress):
@@ -10,7 +10,7 @@ class ProgramCommonAddress(RolandSysExAddress):
 
     def __init__(
         self,
-        msb: int = AddressStartMSB.TEMPORARY_PROGRAM,
+        msb: int = JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
         umb: int = Midi.VALUE.ZERO,
         lmb: int = Midi.VALUE.ZERO,
         lsb: int = Midi.VALUE.ZERO,

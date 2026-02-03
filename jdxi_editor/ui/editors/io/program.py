@@ -56,9 +56,9 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -915,7 +915,7 @@ class ProgramEditor(BasicEditor):
 
         successes, failures = [], []
 
-        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
+        if temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
             partial_map = DRUM_PARTIAL_MAP
         else:
             partial_map = SYNTH_PARTIAL_MAP
@@ -939,25 +939,25 @@ class ProgramEditor(BasicEditor):
         )
 
         temporary_area_handlers = {
-            AddressStartMSB.TEMPORARY_PROGRAM.name: {
+            JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
                 "PROGRAM_LEVEL": (
                     ProgramCommonParam.PROGRAM_LEVEL,
                     master_slider,
                 )
             },
-            AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
+            JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
                 "AMP_LEVEL": (AnalogParam.get_by_name, analog_slider)
             },
-            AddressOffsetTemporaryToneUMB.DRUM_KIT.name: {
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
                 "KIT_LEVEL": (DrumCommonParam.KIT_LEVEL, drums_slider)
             },
-            AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
                 SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
                     digital1_slider,
                 )
             },
-            AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
                 SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
                     digital2_slider,
@@ -966,9 +966,9 @@ class ProgramEditor(BasicEditor):
         }
 
         partial_tone_names = [
-            AddressOffsetSuperNATURALLMB.PARTIAL_1.name,
-            AddressOffsetSuperNATURALLMB.PARTIAL_2.name,
-            AddressOffsetSuperNATURALLMB.PARTIAL_3.name,
+            JDXiSysExOffsetSuperNATURALLMB.PARTIAL_1.name,
+            JDXiSysExOffsetSuperNATURALLMB.PARTIAL_2.name,
+            JDXiSysExOffsetSuperNATURALLMB.PARTIAL_3.name,
         ]
 
         # Get the partial number

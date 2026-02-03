@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
-    AddressStartMSB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -13,7 +13,7 @@ class SetupMessage(JDXiSysEx):
     """Setup parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.SYSTEM  # 0x01: Setup area
+    msb: int = JDXiSysExAddressStartMSB.SYSTEM  # 0x01: Setup area
     umb: int = ZERO_BYTE  # Always 0x00
     lmb: int = ZERO_BYTE  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number

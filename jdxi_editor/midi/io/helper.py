@@ -26,7 +26,7 @@ import mido
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -153,11 +153,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                         f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}"
                     )
                     return
-            elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
+            elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
                 param_class = AnalogParam
             elif (
-                temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name
-                or temporary_area == AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name
+                    temporary_area == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name
+                    or temporary_area == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name
             ):
                 if synth_tone in [
                     "PARTIAL_1",
@@ -170,7 +170,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     param_class = DigitalPartialParam
                 else:
                     param_class = DigitalCommonParam
-            elif temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
+            elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
                 # Drum common has lmb=0x00, partials have lmb >= 0x2E
                 if address.lmb == 0x00 or synth_tone == "COMMON":
                     param_class = DrumCommonParam

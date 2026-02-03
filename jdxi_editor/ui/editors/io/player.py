@@ -35,9 +35,9 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSystemUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSystemUMB,
+    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import (
@@ -1481,9 +1481,9 @@ class MidiFileEditor(SynthEditor):
             # Create SysEx composer and address for effects
             sysex_composer = JDXiSysExComposer()
             address = RolandSysExAddress(
-                AddressStartMSB.TEMPORARY_PROGRAM,
-                AddressOffsetSystemUMB.COMMON,
-                AddressOffsetProgramLMB.COMMON,
+                JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
+                JDXiSysExOffsetSystemUMB.COMMON,
+                JDXiSysExOffsetProgramLMB.COMMON,
                 Midi.VALUE.ZERO,
             )
 

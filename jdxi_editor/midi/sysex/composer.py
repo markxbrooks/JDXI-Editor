@@ -10,7 +10,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB,
+    JDXiSysExOffsetSuperNATURALLMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
@@ -35,9 +35,9 @@ def apply_lmb_offset(
     Set the LMB (Logical Memory Block) of the address depending on the parameter type.
     """
     if isinstance(param, (DigitalCommonParam, DrumCommonParam)):
-        address.lmb = AddressOffsetSuperNATURALLMB.COMMON
+        address.lmb = JDXiSysExOffsetSuperNATURALLMB.COMMON
     elif isinstance(param, DigitalModifyParam):
-        address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
+        address.lmb = JDXiSysExOffsetSuperNATURALLMB.MODIFY
     return address
 
 

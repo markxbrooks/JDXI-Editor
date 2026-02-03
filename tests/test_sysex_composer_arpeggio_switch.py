@@ -1,7 +1,7 @@
 import unittest
 
 from picomidi.constant import Midi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, AddressStartMSB, AddressOffsetSystemUMB
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, JDXiSysExAddressStartMSB, JDXiSysExOffsetSystemUMB
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -24,8 +24,8 @@ class TestJDXiSysExComposer(unittest.TestCase):
     def test_compose_arpeggio_switch_sysex(self):
         # 1) Create the base address (before offset)
         base_address = RolandSysExAddress(
-            msb=AddressStartMSB.TEMPORARY_PROGRAM,
-            umb=AddressOffsetSystemUMB.COMMON,
+            msb=JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
+            umb=JDXiSysExOffsetSystemUMB.COMMON,
             lmb=0x00,
             lsb=Midi.VALUE.ZERO,
         )

@@ -1,1 +1,1 @@
-from .address import Address, AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB
+from .address import Address, JDXiSysExOffsetProgramLMB, JDXiSysExOffsetSuperNATURALLMB

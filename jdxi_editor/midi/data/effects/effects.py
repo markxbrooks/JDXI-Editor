@@ -9,8 +9,8 @@ from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -275,9 +275,9 @@ class Effect1Message(JDXiSysEx):
     """Program Effect 1 parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    area: int = JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
-    group: int = AddressOffsetProgramLMB.COMMON  # Always 0x00
+    group: int = JDXiSysExOffsetProgramLMB.COMMON  # Always 0x00
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
     param: int = None
@@ -346,7 +346,7 @@ class Effect2Message(JDXiSysEx):
     """Program Effect 2 parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    msb: int = JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
     umb: int = 0x04  # 0x04: Effect 2 section
     lmb: int = 0x00  # Always 0x00
     lsb: int = 0x00  # Parameter number

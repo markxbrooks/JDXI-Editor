@@ -69,7 +69,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
@@ -150,7 +150,7 @@ class DrumCommonEditor(SynthEditor):
             self.instrument_image_label,
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
-        self.address.lmb = AddressOffsetProgramLMB.COMMON
+        self.address.lmb = JDXiSysExOffsetProgramLMB.COMMON
         self.instrument_image_group.setMinimumWidth(
             JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
         )

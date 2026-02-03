@@ -1,7 +1,7 @@
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
@@ -11,9 +11,9 @@ from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 def create_vocal_fx_address():
     """Create Vocal Fx Address"""
     address = RolandSysExAddress(
-        AddressStartMSB.TEMPORARY_PROGRAM,
-        AddressOffsetTemporaryToneUMB.COMMON,
-        AddressOffsetProgramLMB.VOCAL_EFFECT,
+        JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
+        JDXiSysExOffsetTemporaryToneUMB.COMMON,
+        JDXiSysExOffsetProgramLMB.VOCAL_EFFECT,
         ZERO_BYTE,
     )
     return address

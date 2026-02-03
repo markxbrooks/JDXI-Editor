@@ -14,9 +14,9 @@ DigitalToneMessage(start_of_sysex=240, manufacturer_id=<RolandID.ROLAND_ID: 65>,
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -30,10 +30,10 @@ class DigitalToneMessage(JDXiSysEx):
     """
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.TEMPORARY_TONE
-    umb: int = AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1  # Digital Tone 1
+    msb: int = JDXiSysExAddressStartMSB.TEMPORARY_TONE
+    umb: int = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1  # Digital Tone 1
     lmb: int = (
-        AddressOffsetSuperNATURALLMB.PARTIAL_1
+        JDXiSysExOffsetSuperNATURALLMB.PARTIAL_1
     )  # Section (e.g., Common, Partial 1 etc. )
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

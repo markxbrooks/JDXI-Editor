@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSystemLMB,
-    AddressOffsetSystemUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetSystemLMB,
+    JDXiSysExOffsetSystemUMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -15,9 +15,9 @@ class ProgramCommonParameterMessage(JDXiSysEx):
     """Program Common parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.PROGRAM  # 0x18: Program area
-    umb: int = AddressOffsetSystemUMB.COMMON  # 0x00: Common section
-    lmb: int = AddressOffsetSystemLMB.COMMON  # Always 0x00
+    msb: int = JDXiSysExAddressStartMSB.PROGRAM  # 0x18: Program area
+    umb: int = JDXiSysExOffsetSystemUMB.COMMON  # 0x00: Common section
+    lmb: int = JDXiSysExOffsetSystemLMB.COMMON  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value
 

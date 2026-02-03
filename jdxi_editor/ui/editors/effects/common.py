@@ -70,9 +70,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSystemUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSystemUMB,
+    JDXiSysExAddressStartMSB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
@@ -305,9 +305,9 @@ class EffectsCommonEditor(BasicEditor):
         self.main_layout.addWidget(self.base_widget)
 
         self.address = RolandSysExAddress(
-            AddressStartMSB.TEMPORARY_PROGRAM,
-            AddressOffsetSystemUMB.COMMON,
-            AddressOffsetProgramLMB.COMMON,
+            JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
+            JDXiSysExOffsetSystemUMB.COMMON,
+            JDXiSysExOffsetProgramLMB.COMMON,
             Midi.VALUE.ZERO,
         )
         self.sysex_composer = JDXiSysExComposer()

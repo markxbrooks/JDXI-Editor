@@ -9,8 +9,8 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.globals import logger
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB,
-    AddressOffsetTemporaryToneUMB,
+    JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
@@ -31,9 +31,9 @@ def log_adsr_parameter(
     synth = f"0x{int(umb):02X}"
     part = f"0x{int(lmb):02X}"
 
-    synth_name = parse_sysex_byte(int(synth, 16), AddressOffsetTemporaryToneUMB)
+    synth_name = parse_sysex_byte(int(synth, 16), JDXiSysExOffsetTemporaryToneUMB)
     if part != "0x00":
-        part_name_lmb = parse_sysex_byte(int(part, 16), AddressOffsetSuperNATURALLMB)
+        part_name_lmb = parse_sysex_byte(int(part, 16), JDXiSysExOffsetSuperNATURALLMB)
     else:
         part_name_lmb = "COMMON"
 
@@ -59,7 +59,7 @@ def log_adsr_parameter(
     elif level == logging.WARNING:
         logger.warning(message, stacklevel=2)
     elif level == logging.ERROR:
-        logger.recording_error(message, stacklevel=2)
+        logger.error(message, stacklevel=2)
     elif level == logging.CRITICAL:
         logger.critical(message, stacklevel=2)
     else:

@@ -14,7 +14,7 @@ from jdxi_editor.core.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.core.synth.midi_config import MidiSynthConfig
 from jdxi_editor.midi.data.address.address import (
     Address,
-    AddressOffsetProgramLMB,
+    JDXiSysExOffsetProgramLMB,
     RolandSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -48,13 +48,13 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
         :return: Dict[int, AddressOffsetProgramLMB] The group map
         Default: Only common address (override in subclasses).
         """
-        return {0: AddressOffsetProgramLMB.COMMON}
+        return {0: JDXiSysExOffsetProgramLMB.COMMON}
 
-    def get_partial_lmb(self, partial_number: int) -> AddressOffsetProgramLMB:
+    def get_partial_lmb(self, partial_number: int) -> JDXiSysExOffsetProgramLMB:
         """
         Resolve the address for a given partial number.
 
         :param partial_number: int The partial number
         :return: AddressOffsetProgramLMB The address offset
         """
-        return self.group_map.get(partial_number, AddressOffsetProgramLMB.COMMON)
+        return self.group_map.get(partial_number, JDXiSysExOffsetProgramLMB.COMMON)

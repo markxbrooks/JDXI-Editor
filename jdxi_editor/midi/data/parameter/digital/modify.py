@@ -29,7 +29,7 @@ if param:
 
 from picomidi.sysex.parameter.address import AddressParameter
 
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.parameter.spec import ParameterSpec
 
 
@@ -171,4 +171,4 @@ class DigitalModifyParam(AddressParameter):
         return value
 
     def get_address_for_partial(self, partial_number: int = 0):
-        return AddressOffsetSuperNATURALLMB.MODIFY, 0x00
+        return JDXiSysExOffsetSuperNATURALLMB.MODIFY, 0x00

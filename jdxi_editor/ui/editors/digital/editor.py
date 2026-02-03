@@ -48,7 +48,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
@@ -528,7 +528,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                 self._update_switch(param, param_value, successes, failures)
             else:
                 log.parameter(f"[DigitalSynthEditor] found {param_name}", param_name, silent=True)
-                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
+                self.address.lmb = JDXiSysExOffsetSuperNATURALLMB.MODIFY
                 self._update_slider(param, param_value, successes, failures)
 
     def _update_partial_adsr_widgets(

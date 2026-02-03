@@ -30,8 +30,8 @@ from picomidi.constant import Midi
 from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -42,8 +42,8 @@ class SystemCommonMessage(JDXiSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.SYSTEM  # 0x02: System area
-    umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
+    msb: int = JDXiSysExAddressStartMSB.SYSTEM  # 0x02: System area
+    umb: int = JDXiSysExOffsetProgramLMB.COMMON  # 0x00: Common section
     lmb: int = Midi.VALUE.ZERO  # Always 0x00
     lsb: int = Midi.VALUE.ZERO  # Parameter number
     value: int = Midi.VALUE.ZERO  # Parameter value

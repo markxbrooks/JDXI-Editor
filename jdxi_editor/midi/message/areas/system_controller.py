@@ -26,9 +26,9 @@ SystemControllerMessage
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSystemLMB,
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetSystemLMB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -40,9 +40,9 @@ class SystemControllerMessage(JDXiSysEx):
     """System Controller parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.SETUP  # 0x02: Setup area
-    umb: int = AddressOffsetTemporaryToneUMB.COMMON  # 0x03: Controller section
-    lmb: int = AddressOffsetSystemLMB.CONTROLLER  # Always 0x00
+    msb: int = JDXiSysExAddressStartMSB.SETUP  # 0x02: Setup area
+    umb: int = JDXiSysExOffsetTemporaryToneUMB.COMMON  # 0x03: Controller section
+    lmb: int = JDXiSysExOffsetSystemLMB.CONTROLLER  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value
 

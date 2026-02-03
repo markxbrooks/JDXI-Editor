@@ -20,9 +20,9 @@ from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data import AddressParameterEffect
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
-    AddressOffsetSystemLMB,
-    AddressStartMSB,
+    JDXiSysExOffsetProgramLMB,
+    JDXiSysExOffsetSystemLMB,
+    JDXiSysExAddressStartMSB,
     CommandID,
 )
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -33,9 +33,9 @@ class ReverbMessage(JDXiSysEx):
     """Program Reverb parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
-    umb: int = AddressOffsetSystemLMB.COMMON  # 0x00: Common section
-    lmb: int = AddressOffsetProgramLMB.EFFECT_1  # Effect 1 = 0x02
+    msb: int = JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    umb: int = JDXiSysExOffsetSystemLMB.COMMON  # 0x00: Common section
+    lmb: int = JDXiSysExOffsetProgramLMB.EFFECT_1  # Effect 1 = 0x02
     lsb: int = AddressParameterEffect.REVERB_LEVEL  # Parameter number 0x03
     value: int = 0x00  # Parameter value
 

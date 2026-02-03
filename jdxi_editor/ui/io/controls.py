@@ -9,7 +9,7 @@ import json
 
 from decologr import Decologr as log
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetTemporaryToneUMB
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
@@ -43,7 +43,7 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
             combined_data[SysExSection.ADDRESS] = address_hex
 
             combined_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
-                editor.address.umb, AddressOffsetTemporaryToneUMB
+                editor.address.umb, JDXiSysExOffsetTemporaryToneUMB
             )
             synth_tone_map = {
                 "20": "PARTIAL_1",

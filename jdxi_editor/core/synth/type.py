@@ -13,7 +13,7 @@ Methods:
 """
 
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetTemporaryToneUMB
 
 
 class JDXiSynth:
@@ -31,12 +31,12 @@ class JDXiSynth:
     def get_area_code(synth_type: str) -> int:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
-            JDXiSynth.ANALOG_SYNTH: AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
-            JDXiSynth.DIGITAL_SYNTH_1: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
-            JDXiSynth.DIGITAL_SYNTH_2: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2,
-            JDXiSynth.DRUM_KIT: AddressOffsetTemporaryToneUMB.DRUM_KIT,
-            JDXiSynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
-            JDXiSynth.PROGRAM: AddressOffsetTemporaryToneUMB.COMMON,
+            JDXiSynth.ANALOG_SYNTH: JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH,
+            JDXiSynth.DIGITAL_SYNTH_1: JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+            JDXiSynth.DIGITAL_SYNTH_2: JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2,
+            JDXiSynth.DRUM_KIT: JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSynth.VOCAL_FX: JDXiSysExOffsetTemporaryToneUMB.COMMON,
+            JDXiSynth.PROGRAM: JDXiSysExOffsetTemporaryToneUMB.COMMON,
         }
         return area_codes.get(synth_type)
 

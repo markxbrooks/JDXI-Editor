@@ -8,7 +8,7 @@ from decologr import Decologr as log
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.map.parameter_address import (

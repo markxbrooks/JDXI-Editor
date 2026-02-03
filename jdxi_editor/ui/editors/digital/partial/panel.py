@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
@@ -69,9 +69,9 @@ class DigitalPartialPanel(PartialPanel):
     }
 
     PARTIAL_ADDRESS_MAP = {
-        1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-        2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-        3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+        1: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_1,
+        2: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_2,
+        3: JDXiSysExOffsetSuperNATURALLMB.PARTIAL_3,
     }
 
     BIPOLAR_PARAMETERS = {

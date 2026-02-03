@@ -4,15 +4,15 @@ JDXi Parameter Address Map
 
 from __future__ import annotations
 
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetSuperNATURALLMB as SuperNATURALLMB,
+    JDXiSysExOffsetSuperNATURALLMB as SuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB as TemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
-from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
@@ -76,151 +76,151 @@ PARAMETER_ADDRESS_NAME_MAP = {
     # since there are 36 partials
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_1.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_1.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_2.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_2.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_3.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_3.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_4.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_4.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_5.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_5.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_6.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_6.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_7.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_7.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_8.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_8.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_9.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_9.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_10.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_10.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_11.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_11.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_12.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_12.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_13.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_13.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_14.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_14.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_15.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_15.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_16.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_16.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_17.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_17.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_18.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_18.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_19.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_19.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_20.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_20.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_21.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_21.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_22.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_22.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_23.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_23.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_24.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_24.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_25.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_25.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_26.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_26.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_27.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_27.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_28.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_28.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_29.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_29.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_30.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_30.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_31.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_31.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_32.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_32.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_33.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_33.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_34.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_34.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_35.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_35.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_36.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_36.name,
     ): DrumPartialParam,
     (
         TemporaryToneUMB.DRUM_KIT.name,
-        AddressOffsetProgramLMB.DRUM_KIT_PART_37.name,
+        JDXiSysExOffsetProgramLMB.DRUM_KIT_PART_37.name,
     ): DrumPartialParam,
 }
 

@@ -30,7 +30,7 @@ from picomidi.constant import Midi
 from PySide6.QtCore import Signal
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
+from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.io.controller import MidiIOController
 
 # handle_identity_request moved to JDXiSysExParser.parse_identity_request

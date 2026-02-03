@@ -7,8 +7,8 @@ import logging
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
-    AddressStartMSB,
+    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExAddressStartMSB,
 )
 from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS, SYNTH_PARTIAL_MAP
@@ -33,8 +33,8 @@ def _get_synth_number(synth_tone: str) -> int:
     :return: int
     """
     synth_map = {
-        AddressStartMSB.TEMPORARY_TONE: 1,
-        AddressStartMSB.DIGITAL_2: 2,
+        JDXiSysExAddressStartMSB.TEMPORARY_TONE: 1,
+        JDXiSysExAddressStartMSB.DIGITAL_2: 2,
     }
     synth_no = synth_map.get(synth_tone)
     if synth_no is None:
@@ -94,7 +94,7 @@ def _is_digital_synth_area(area_code: int) -> bool:
     :param area_code: int
     :return: bool
     """
-    return area_code in [AddressStartMSB.TEMPORARY_TONE]
+    return area_code in [JDXiSysExAddressStartMSB.TEMPORARY_TONE]
 
 
 def _sysex_area_matches(sysex_data: dict, area: int) -> bool:
@@ -107,7 +107,7 @@ def _sysex_area_matches(sysex_data: dict, area: int) -> bool:
     """
     temp_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
     area_map = {
-        AddressStartMSB.TEMPORARY_TONE: "DIGITAL_SYNTH_1",
+        JDXiSysExAddressStartMSB.TEMPORARY_TONE: "DIGITAL_SYNTH_1",
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
@@ -127,7 +127,7 @@ def _sysex_area2_matches(sysex_data: dict, area: int) -> bool:
     """
     temp_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
     area_map = {
-        AddressStartMSB.DIGITAL_2: "DIGITAL_SYNTH_2",
+        JDXiSysExAddressStartMSB.DIGITAL_2: "DIGITAL_SYNTH_2",
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
@@ -150,8 +150,8 @@ def _sysex_tone_matches(sysex_data: dict, tone: int) -> bool:
     temp_part = sysex_data.get(SysExSection.SYNTH_TONE)
     log.message(f"found part {temp_part}")
     part_map = {
-        AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1: "PARTIAL_1",
-        AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2: "PARTIAL_2",
+        JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1: "PARTIAL_1",
+        JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2: "PARTIAL_2",
     }
     expected_part = part_map.get(tone)
     match = tone == expected_part
