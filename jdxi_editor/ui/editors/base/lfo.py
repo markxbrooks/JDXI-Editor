@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QTabWidget,
-    QWidget,
+    QWidget, QVBoxLayout,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -19,7 +19,7 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
-    create_layout_with_widgets,
+    create_layout_with_widgets, add_sublayout_to_layout, add_widgets_to_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -51,13 +51,13 @@ class LFOGroup:
 
 class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
-    SLIDER_GROUPS = None
-    SWITCH_GROUPS = None
+    SLIDER_GROUPS = {}
+    SWITCH_GROUPS = {}
 
     # Old Method (legacy; subclasses use SLIDER_GROUPS / SWITCH_GROUPS)
-    DEPTH_SLIDERS = None
-    SWITCH_SPECS = None
-    RATE_FADE_SLIDERS = None
+    DEPTH_SLIDERS = {}
+    SWITCH_SPECS = {}
+    RATE_FADE_SLIDERS = {}
 
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
@@ -106,14 +106,12 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _setup_ui(self):
         """Assemble UI: icons row, switch row (right after icons), shape row, tab widget, stretch."""
-        layout = self.create_layout()
-        # Switch row right after the icons row
         switch_row_layout = self._create_switch_row_layout()
-        layout.addLayout(switch_row_layout)
         shape_row_layout = self._create_shape_row_layout()
-        layout.addLayout(shape_row_layout)
         self._create_tab_widget()
-        layout.addWidget(self.tab_widget)
+        layout = self.create_layout()
+        add_sublayout_to_layout(layout=layout, sub_layouts=[shape_row_layout, switch_row_layout])
+        add_widgets_to_layout(layout=layout, widgets=[self.tab_widget])
         layout.addStretch()
 
     def setup_ui(self):
@@ -123,29 +121,11 @@ class BaseLFOSection(SectionBaseWidget):
         layout = self.get_layout()
         shape_row_layout = self._create_shape_row_layout()
         switch_row_layout = self._create_switch_row_layout()
-        layout.addLayout(shape_row_layout)
-        layout.addLayout(switch_row_layout)
+        add_sublayout_to_layout(layout=layout, sub_layouts=[shape_row_layout, switch_row_layout])
         # Create tab widget (Rate/Depths with sliders) — not created for analog since _setup_ui() is skipped
         self._create_tab_widget()
-        layout.addWidget(self.tab_widget)
+        add_widgets_to_layout(layout=layout, widgets=[self.tab_widget])
         layout.addStretch()
-
-    def setup_ui_new(self) -> None:
-        """setup ui"""
-        widget_rows = [
-            self.widgets[LFOGroup.switch.SWITCH_ROW],
-            self.widgets[LFOGroup.slider.DEPTH],
-            self.widgets[LFOGroup.slider.RATE_FADE],
-        ]
-        self._add_group_with_widget_rows(label=LFOGroup.label, rows=widget_rows)
-
-    def build_widgets_new(self) -> None:
-        """Build all the necessary widgets for the digital common section."""
-        self.widgets = {
-            LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
-            LFOGroup.slider.RATE_FADE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FADE]),
-            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
-        }
 
     def build_widgets(self):
         """Build from subclass SLIDER_GROUPS / SWITCH_GROUPS when present.

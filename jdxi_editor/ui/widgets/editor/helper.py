@@ -441,3 +441,13 @@ def create_icon_from_name(icon_name: str) -> Any:
         icon_size=JDXi.UI.Dimensions.Icon.SCALE_SMALL,
     )
     return icon
+
+
+def add_sublayout_to_layout(layout: QVBoxLayout | QHBoxLayout, sub_layouts: list[QHBoxLayout| QVBoxLayout]):
+    for sub_layout in sub_layouts:
+        layout.addLayout(sub_layout)
+
+
+def add_widgets_to_layout(layout: QVBoxLayout | QHBoxLayout, widgets: list[QWidget | None]):
+    for widget in widgets:
+        layout.addWidget(widget)
