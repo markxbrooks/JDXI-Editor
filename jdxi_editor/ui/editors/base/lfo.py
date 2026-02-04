@@ -37,7 +37,7 @@ class LFOSwitchGroup:
 
 class LFOSliderGroup:
     """Slider Group"""
-    DEPTH: str = "depths"
+    DEPTH: str = "depth"
     RATE_FADE: str = "rate_fade"
 
 
@@ -51,11 +51,10 @@ class LFOGroup:
 
 class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
-    # New Method
-    # SLIDER_GROUPS = {}
-    SWITCH_GROUPS = {}
+    SLIDER_GROUPS = None
+    SWITCH_GROUPS = None
 
-    # Old Method
+    # Old Method (legacy; subclasses use SLIDER_GROUPS / SWITCH_GROUPS)
     DEPTH_SLIDERS = None
     SWITCH_SPECS = None
     RATE_FADE_SLIDERS = None
@@ -105,7 +104,7 @@ class BaseLFOSection(SectionBaseWidget):
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 
-    def _setup_ui_bypassed(self):
+    def _setup_ui(self):
         """Assemble UI: icons row, switch row (right after icons), shape row, tab widget, stretch."""
         layout = self.create_layout()
         # Switch row right after the icons row
@@ -117,7 +116,7 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
-    def setup_ui_old(self):
+    def setup_ui(self):
         """For analog: build layout here (_setup_ui is skipped). For digital: no-op, layout built in _setup_ui()."""
         if not self.analog:
             return  # Digital: already built in _setup_ui()
@@ -131,7 +130,7 @@ class BaseLFOSection(SectionBaseWidget):
         layout.addWidget(self.tab_widget)
         layout.addStretch()
 
-    def setup_ui(self) -> None:
+    def setup_ui_new(self) -> None:
         """setup ui"""
         widget_rows = [
             self.widgets[LFOGroup.switch.SWITCH_ROW],
@@ -140,7 +139,7 @@ class BaseLFOSection(SectionBaseWidget):
         ]
         self._add_group_with_widget_rows(label=LFOGroup.label, rows=widget_rows)
 
-    def build_widgets(self) -> None:
+    def build_widgets_new(self) -> None:
         """Build all the necessary widgets for the digital common section."""
         self.widgets = {
             LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
@@ -148,17 +147,34 @@ class BaseLFOSection(SectionBaseWidget):
             LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
         }
 
-    def build_widgets_old(self):
-        """Build the widgets"""
-        self._create_rate_fade_layout_widgets()
-        self._create_depths_layout_widgets()
-        self._create_switch_layout_widgets()
-        self.widgets[LFOGroup.switch.SWITCH_ROW] = self.switch_row_widgets
-        """self.widgets = {
-            # LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
-            # LFOGroup.slider.RATE_FATE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FATE]),
-            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
-        }"""
+    def build_widgets(self):
+        """Build from subclass SLIDER_GROUPS / SWITCH_GROUPS when present.
+        Subclasses only need to define those class attributes; this fills
+        self.widgets and self.switch_row_widgets.
+        """
+        slider_groups = getattr(self, "SLIDER_GROUPS", None)
+        switch_groups = getattr(self, "SWITCH_GROUPS", None)
+        if (
+            slider_groups
+            and LFOGroup.slider.DEPTH in slider_groups
+            and LFOGroup.slider.RATE_FADE in slider_groups
+            and switch_groups
+            and LFOGroup.switch.SWITCH_ROW in switch_groups
+        ):
+            self.widgets = {
+                LFOGroup.slider.DEPTH: self._build_sliders(
+                    slider_groups[LFOGroup.slider.DEPTH]
+                ),
+                LFOGroup.slider.RATE_FADE: self._build_sliders(
+                    slider_groups[LFOGroup.slider.RATE_FADE]
+                ),
+                LFOGroup.switch.SWITCH_ROW: self._build_switches(
+                    switch_groups[LFOGroup.switch.SWITCH_ROW]
+                ),
+            }
+            self.switch_row_widgets = self.widgets[LFOGroup.switch.SWITCH_ROW]
+        else:
+            self.switch_row_widgets = []
 
     def _create_shape_row_layout(self):
         """Shape and sync controls"""

@@ -6,7 +6,7 @@ from typing import Callable, Literal
 
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
+from jdxi_editor.ui.editors.base.lfo import BaseLFOSection, LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
@@ -16,46 +16,51 @@ class DigitalModLFOSection(BaseLFOSection):
 
     rate_tab_label = "Rate and Rate Ctrl"
 
-    RATE_FADE_SLIDERS = [
-        SliderSpec(
-            Digital.Param.MOD_LFO_RATE,
-            Digital.Display.Name.MOD_LFO_RATE,
-        ),
-        SliderSpec(
-            Digital.Param.MOD_LFO_RATE_CTRL,
-            Digital.Display.Name.MOD_LFO_RATE_CTRL,
-        ),
-    ]
-    DEPTH_SLIDERS = [
-        SliderSpec(
-            Digital.Param.LFO_PITCH_DEPTH,
-            Digital.Display.Name.MOD_LFO_PITCH_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_FILTER_DEPTH,
-            Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_AMP_DEPTH,
-            Digital.Display.Name.MOD_LFO_AMP_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_PAN_DEPTH,
-            Digital.Display.Name.MOD_LFO_PAN,
-        ),
-    ]
-    SWITCH_SPECS = [
-        SwitchSpec(
-            Digital.Param.MOD_LFO_TEMPO_SYNC_SWITCH,
-            Digital.Display.Name.MOD_LFO_TEMPO_SYNC_SWITCH,
-            Digital.Display.Options.MOD_LFO_TEMPO_SYNC_SWITCH,
-        ),
-        SwitchSpec(
-            Digital.Param.MOD_LFO_TEMPO_SYNC_NOTE,
-            Digital.Display.Name.MOD_LFO_TEMPO_SYNC_NOTE,
-            Digital.Display.Options.MOD_LFO_TEMPO_SYNC_NOTE,
-        ),
-    ]
+    SWITCH_GROUPS = {
+        LFOGroup.switch.SWITCH_ROW: [
+            SwitchSpec(
+                Digital.Param.MOD_LFO_TEMPO_SYNC_SWITCH,
+                Digital.Display.Name.MOD_LFO_TEMPO_SYNC_SWITCH,
+                Digital.Display.Options.MOD_LFO_TEMPO_SYNC_SWITCH,
+            ),
+            SwitchSpec(
+                Digital.Param.MOD_LFO_TEMPO_SYNC_NOTE,
+                Digital.Display.Name.MOD_LFO_TEMPO_SYNC_NOTE,
+                Digital.Display.Options.MOD_LFO_TEMPO_SYNC_NOTE,
+            ),
+        ]
+    }
+
+    SLIDER_GROUPS = {
+        LFOGroup.slider.DEPTH: [
+            SliderSpec(
+                Digital.Param.LFO_PITCH_DEPTH,
+                Digital.Display.Name.MOD_LFO_PITCH_DEPTH,
+            ),
+            SliderSpec(
+                Digital.Param.LFO_FILTER_DEPTH,
+                Digital.Display.Name.MOD_LFO_FILTER_DEPTH,
+            ),
+            SliderSpec(
+                Digital.Param.LFO_AMP_DEPTH,
+                Digital.Display.Name.MOD_LFO_AMP_DEPTH,
+            ),
+            SliderSpec(
+                Digital.Param.LFO_PAN_DEPTH,
+                Digital.Display.Name.MOD_LFO_PAN,
+            ),
+        ],
+        LFOGroup.slider.RATE_FADE: [
+            SliderSpec(
+                Digital.Param.MOD_LFO_RATE,
+                Digital.Display.Name.MOD_LFO_RATE,
+            ),
+            SliderSpec(
+                Digital.Param.MOD_LFO_RATE_CTRL,
+                Digital.Display.Name.MOD_LFO_RATE_CTRL,
+            ),
+        ],
+    }
 
     def __init__(
         self,

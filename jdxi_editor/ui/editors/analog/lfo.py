@@ -13,6 +13,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection, LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
@@ -144,7 +145,7 @@ class AnalogLFOSection(BaseLFOSection):
 
         self.lfo_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         # Also set wave_shape_param for BaseLFOSection._on_wave_shape_selected
-        self.wave_shape_param = AnalogParam.LFO_SHAPE
+        self.wave_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         self.build_widgets()
         self.setup_ui()
 
@@ -157,10 +158,3 @@ class AnalogLFOSection(BaseLFOSection):
         ]
         self._add_group_with_widget_rows(label=LFOGroup.label, rows=widget_rows)
 
-    def build_widgets(self) -> None:
-        """Build all the necessary widgets for the digital common section."""
-        self.widgets = {
-            LFOGroup.slider.DEPTH: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.DEPTH]),
-            LFOGroup.slider.RATE_FADE: self._build_sliders(self.SLIDER_GROUPS[LFOGroup.slider.RATE_FADE]),
-            LFOGroup.switch.SWITCH_ROW: self._build_switches(self.SWITCH_GROUPS[LFOGroup.switch.SWITCH_ROW]),
-        }
