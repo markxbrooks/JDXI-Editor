@@ -2,7 +2,6 @@ import wave
 
 import pyaudio
 
-# import logging as log
 from decologr import Decologr as log
 
 
@@ -32,12 +31,12 @@ class USBRecorder:
 
     def list_devices(self):
         """Prints a list of available audio input devices."""
-        log.message("Available audio input devices:")
+        log.message("[USBRecorder] Available audio input devices:")
         device_list = []
         for i in range(self.p.get_device_count()):
             info = self.p.get_device_info_by_index(i)
             device_info = (
-                f"{i}: {info['name']} (input channels: {info['maxInputChannels']})"
+                f"[USBRecorder] {i}: {info['name']} (input channels: {info['maxInputChannels']})"
             )
             log.info(device_info)
             device_list.append(device_info)
@@ -49,7 +48,7 @@ class USBRecorder:
         """
         rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
         rate = rates.get(rate, pyaudio.paInt16)
-        print("Recording...")
+        log.message("[USBRecorder] Recording...")
         try:
             stream = self.p.open(
                 format=rate,
@@ -60,7 +59,7 @@ class USBRecorder:
                 frames_per_buffer=self.frames_per_buffer,
             )
         except Exception as e:
-            print(f"Unable to open stream: {e}")
+            log.error(f"[USBRecorder] Unable to open stream: {e}")
             return
 
         frames = []
@@ -70,12 +69,12 @@ class USBRecorder:
                 data = stream.read(self.frames_per_buffer)
                 frames.append(data)
         except Exception as ex:
-            print(f"Error while recording: {ex}")
+            log.error(f"[USBRecorder] Error while recording: {ex}")
 
         stream.stop_stream()
         stream.close()
 
-        print("[USBRecorder] Recording finished")
+        log.message("[USBRecorder] Recording finished")
 
         if not frames:
             log.warning("[USBRecorder] No audio captured.")

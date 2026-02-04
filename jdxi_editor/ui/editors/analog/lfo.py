@@ -9,18 +9,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection, LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 class AnalogLFOSection(BaseLFOSection):
     """Analog LFO Section (responsive layout version)"""
-
-    # New method
 
     SWITCH_GROUPS = {
         LFOGroup.switch.SWITCH_ROW: [
@@ -66,45 +62,7 @@ class AnalogLFOSection(BaseLFOSection):
         ],
     }
 
-    # Old Method
-    DEPTH_SLIDERS = [
-        SliderSpec(
-            Analog.Param.LFO_PITCH_DEPTH,
-            Analog.Display.Name.LFO_PITCH_DEPTH,
-        ),
-        SliderSpec(
-            Analog.Param.LFO_FILTER_DEPTH,
-            Analog.Display.Name.LFO_FILTER_DEPTH,
-        ),
-        SliderSpec(
-            Analog.Param.LFO_AMP_DEPTH,
-            Analog.Display.Name.LFO_AMP_DEPTH,
-        ),
-    ]
-    SWITCH_SPECS = [
-        SwitchSpec(
-            Analog.Param.LFO_TEMPO_SYNC_SWITCH,
-            Analog.Display.Name.LFO_TEMPO_SYNC_SWITCH,
-            Analog.Display.Options.LFO_TEMPO_SYNC_SWITCH,
-        ),
-        SwitchSpec(
-            Analog.Param.LFO_TEMPO_SYNC_NOTE,
-            Analog.Display.Name.LFO_TEMPO_SYNC_NOTE,
-            Analog.Display.Options.LFO_TEMPO_SYNC_NOTE,
-        ),
-        SwitchSpec(
-            Analog.Param.LFO_KEY_TRIGGER,
-            Analog.Display.Name.LFO_KEY_TRIGGER,
-            Analog.Display.Options.LFO_KEY_TRIGGER,
-        ),
-    ]
-    RATE_FADE_SLIDERS = [
-        SliderSpec(Analog.Param.LFO_RATE, Analog.Display.Name.LFO_RATE),
-        SliderSpec(
-            Analog.Param.LFO_FADE_TIME,
-            Analog.Display.Name.LFO_FADE_TIME,
-        ),
-    ]
+    SYNTH_SPEC = Analog
 
     def __init__(
         self,
@@ -115,23 +73,6 @@ class AnalogLFOSection(BaseLFOSection):
     ):
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
-
-        self.lfo_shapes = [
-            Analog.Wave.LFO.TRI,
-            Analog.Wave.LFO.SINE,
-            Analog.Wave.LFO.SAW,
-            Analog.Wave.LFO.SQUARE,
-            Analog.Wave.LFO.SAMPLE_HOLD,
-            Analog.Wave.LFO.RANDOM,
-        ]
-        self.shape_icon_map = {
-            Analog.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
-            Analog.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            Analog.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            Analog.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            Analog.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            Analog.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
-        }
         self.analog: bool = True
         super().__init__(
             icons_row_type=IconType.ADSR,

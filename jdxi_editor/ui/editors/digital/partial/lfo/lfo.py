@@ -63,51 +63,6 @@ class DigitalLFOSection(BaseLFOSection):
         ]
     }
 
-    # Old Method
-    DEPTH_SLIDERS = [
-        SliderSpec(
-            Digital.Param.LFO_PITCH_DEPTH,
-            Digital.Display.Name.LFO_PITCH_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_FILTER_DEPTH,
-            Digital.Display.Name.LFO_FILTER_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_AMP_DEPTH,
-            Digital.Display.Name.LFO_AMP_DEPTH,
-        ),
-        SliderSpec(
-            Digital.Param.LFO_PAN_DEPTH,
-            Digital.Display.Name.LFO_PAN_DEPTH,
-        ),
-    ]
-
-    SWITCH_SPECS = [
-        SwitchSpec(
-            Digital.Param.LFO_TEMPO_SYNC_SWITCH,
-            Digital.Display.Name.LFO_TEMPO_SYNC_SWITCH,
-            Digital.Display.Options.LFO_TEMPO_SYNC_SWITCH,
-        ),
-        SwitchSpec(
-            Digital.Param.LFO_TEMPO_SYNC_NOTE,
-            Digital.Display.Name.LFO_TEMPO_SYNC_NOTE,
-            Digital.Display.Options.LFO_TEMPO_SYNC_NOTE,
-        ),
-        SwitchSpec(
-            Digital.Param.LFO_KEY_TRIGGER,
-            Digital.Display.Name.LFO_KEY_TRIGGER,
-            Digital.Display.Options.LFO_KEY_TRIGGER,
-        ),
-    ]
-    RATE_FADE_SLIDERS = [
-        SliderSpec(Digital.Param.LFO_RATE, Digital.Display.Name.LFO_RATE),
-        SliderSpec(
-            Digital.Param.LFO_FADE_TIME,
-            Digital.Display.Name.LFO_FADE_TIME,
-        ),
-    ]
-
     def __init__(
         self,
         controls: dict,

@@ -1661,3 +1661,35 @@ class JDXiUIStyle:
             background: transparent;
             padding-bottom: 1px;
         """
+
+    @staticmethod
+    def generate_sequencer_button_style(
+            is_checked: bool, is_current: bool = False, is_selected_bar: bool = False
+    ) -> str:
+        """Generate button style based on state and current step"""
+        base_color = "#3498db" if is_checked else "#2c3e50"
+        border_color = "#e74c3c" if is_current else base_color
+
+        # Add extra highlight for selected bar
+        if is_selected_bar and is_checked:
+            border_color = "#f39c12"  # Orange border for selected bar
+            border_width = "3px"
+        else:
+            border_width = "2px"
+
+        style = f"""
+            QPushButton {{
+                background-color: {base_color};
+                border: {border_width} solid {border_color};
+                border-radius: 5px;
+                color: white;
+                padding: 5px;
+            }}
+            QPushButton:hover {{
+                background-color: {'#2980b9' if is_checked else '#34495e'};
+            }}
+            QPushButton:pressed {{
+                background-color: {'#2472a4' if is_checked else '#2c3e50'};
+            }}
+        """
+        return style

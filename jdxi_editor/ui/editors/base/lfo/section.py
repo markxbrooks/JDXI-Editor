@@ -2,19 +2,21 @@
 LFO section of the digital partial editor.
 """
 
-from typing import Callable, Protocol, runtime_checkable
+from typing import Callable
 
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QTabWidget,
-    QWidget, QVBoxLayout,
+    QWidget
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
@@ -22,31 +24,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets, add_sublayout_to_layout, add_widgets_to_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-
-
-@runtime_checkable
-class LFOBehavior(Protocol):
-    def build_widgets(self) -> None: ...
-    def setup_ui(self) -> None: ...
-
-
-class LFOSwitchGroup:
-    """LFO Switch Group"""
-    SWITCH_ROW: str = "switch_row_widgets"
-
-
-class LFOSliderGroup:
-    """Slider Group"""
-    DEPTH: str = "depth"
-    RATE_FADE: str = "rate_fade"
-
-
-class LFOGroup:
-    """LFO Groups"""
-    label: str = "LFO"
-    slider: LFOSliderGroup = LFOSliderGroup
-    switch: LFOSwitchGroup = LFOSwitchGroup
-    combo: None
 
 
 class BaseLFOSection(SectionBaseWidget):
@@ -61,6 +38,8 @@ class BaseLFOSection(SectionBaseWidget):
 
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
+
+    SYNTH_SPEC = Digital
 
     def __init__(
         self,
@@ -83,20 +62,20 @@ class BaseLFOSection(SectionBaseWidget):
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
         # --- Set up LFO shapes and icon map before super().__init__() so _setup_ui() can use them
         self.wave_shapes = [
-            Digital.Wave.LFO.TRI,
-            Digital.Wave.LFO.SINE,
-            Digital.Wave.LFO.SAW,
-            Digital.Wave.LFO.SQUARE,
-            Digital.Wave.LFO.SAMPLE_HOLD,
-            Digital.Wave.LFO.RANDOM,
+            self.SYNTH_SPEC.Wave.LFO.TRI,
+            self.SYNTH_SPEC.Wave.LFO.SINE,
+            self.SYNTH_SPEC.Wave.LFO.SAW,
+            self.SYNTH_SPEC.Wave.LFO.SQUARE,
+            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD,
+            self.SYNTH_SPEC.Wave.LFO.RANDOM,
         ]
         self.shape_icon_map = {
-            Digital.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
-            Digital.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            Digital.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            Digital.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            Digital.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            Digital.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
+            self.SYNTH_SPEC.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
+            self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
+            self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
+            self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
+            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
+            self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
 
         super().__init__(icons_row_type=icons_row_type, analog=analog)
@@ -234,7 +213,7 @@ class BaseLFOSection(SectionBaseWidget):
         depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return depths_widget
 
-    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape):
+    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
         """
         Handle Mod LFO shape button clicks
 
@@ -265,13 +244,3 @@ class BaseLFOSection(SectionBaseWidget):
         """Create Switch row"""
         switch_row_layout = create_layout_with_widgets(self.switch_row_widgets)
         return switch_row_layout
-
-    def _create_switch_layout_widgets(self):
-        """Create switch layout widgets"""
-        self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
-
-    def _create_rate_fade_layout_widgets(self):
-        self.rate_layout_widgets = self._build_sliders(self.RATE_FADE_SLIDERS)
-
-    def _create_depths_layout_widgets(self):
-        self.depths_layout_widgets = self._build_sliders(self.DEPTH_SLIDERS)

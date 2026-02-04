@@ -459,7 +459,7 @@ class PatternSequenceEditor(SynthEditor):
             button = QPushButton()
             button.setCheckable(True)
             button.setFixedSize(40, 40)
-            button.setStyleSheet(self.generate_sequencer_button_style(False))
+            button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
             # Store the row and column indices in the button
             button.row = row_index
             button.column = i
@@ -517,21 +517,21 @@ class PatternSequenceEditor(SynthEditor):
                     )
                     self._update_combo_boxes(mido_msg)
         except Exception as ex:
-            log.debug(f"Error updating combo boxes from outgoing message: {ex}")
+            log.debug(f"[PatternSequenceEditor] Error updating combo boxes from outgoing message: {ex}")
 
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
         if message.type == "note_on" and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
             channel = message.channel
-            log.message(f"message note: {note} channel: {channel}")
+            log.message(f"[PatternSequenceEditor] message note: {note} channel: {channel}")
 
             # Calculate combo box index (notes start at MIDI note 36 = C2)
             combo_index = note - 36
 
             # Ensure index is valid
             if combo_index < 0:
-                log.debug(f"Note {note} is below C2 (36), skipping combo box update")
+                log.debug(f"[PatternSequenceEditor] Note {note} is below C2 (36), skipping combo box update")
                 return
 
             # Update the appropriate combo box based on channel
@@ -639,7 +639,7 @@ class PatternSequenceEditor(SynthEditor):
         # Sync sequencer buttons with the new (empty) bar
         self._sync_sequencer_with_bar(self.current_bar_index)
 
-        log.message(f"Added bar {bar_number}. Total bars: {self.total_measures}")
+        log.message(f"[PatternSequenceEditor] Added bar {bar_number}. Total bars: {self.total_measures}")
 
     def _on_bar_selected(self, item: QListWidgetItem):
         """Handle bar selection from list"""
@@ -648,7 +648,7 @@ class PatternSequenceEditor(SynthEditor):
             self.current_bar_index = bar_index
             # Sync sequencer buttons with the selected bar's notes
             self._sync_sequencer_with_bar(bar_index)
-            log.message(f"Selected bar {bar_index + 1}")
+            log.message(f"[PatternSequenceEditor] Selected bar {bar_index + 1}")
 
     def _copy_section(self):
         """Copy a section of notes from the current bar"""
@@ -696,7 +696,7 @@ class PatternSequenceEditor(SynthEditor):
 
         self.paste_button.setEnabled(True)
         log.message(
-            f"Copied steps {start_step}-{end_step} from bar {self.current_bar_index + 1}"
+            f"[PatternSequenceEditor] Copied steps {start_step}-{end_step} from bar {self.current_bar_index + 1}"
         )
 
     def _paste_section(self):
@@ -738,7 +738,7 @@ class PatternSequenceEditor(SynthEditor):
         # Sync sequencer display
         self._sync_sequencer_with_bar(self.current_bar_index)
         log.message(
-            f"Pasted {num_steps} steps to bar {self.current_bar_index + 1} starting at step {start_step}"
+            f"[PatternSequenceEditor] Pasted {num_steps} steps to bar {self.current_bar_index + 1} starting at step {start_step}"
         )
 
     def _sync_sequencer_with_bar(self, bar_index: int):
@@ -789,7 +789,7 @@ class PatternSequenceEditor(SynthEditor):
                     # Update style
                     is_current = (self.current_step % self.total_steps) == step
                     sequencer_button.setStyleSheet(
-                        self.generate_sequencer_button_style(
+                        JDXi.UI.Style.generate_sequencer_button_style(
                             sequencer_button.isChecked(),
                             is_current,
                             is_selected_bar=True,  # All displayed buttons are from selected bar
@@ -809,7 +809,7 @@ class PatternSequenceEditor(SynthEditor):
                     is_checked = button.isChecked()
                     is_current = (self.current_step % self.total_steps) == step
                     button.setStyleSheet(
-                        self.generate_sequencer_button_style(
+                        JDXi.UI.Style.generate_sequencer_button_style(
                             is_checked, is_current, is_selected_bar=True
                         )
                     )
@@ -824,9 +824,9 @@ class PatternSequenceEditor(SynthEditor):
                 button.setChecked(False)
                 button.NOTE = None
                 button.NOTE_DURATION = None
-                button.setStyleSheet(self.generate_sequencer_button_style(False))
+                button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
 
-        log.message("Cleared learned pattern.")
+        log.message("[PatternSequenceEditor] Cleared learned pattern.")
 
     def _on_measure_count_changed(self, count: int):
         """Handle measure count changes"""
@@ -914,7 +914,7 @@ class PatternSequenceEditor(SynthEditor):
             len(self.measures) > 0 and (button.column // 16) == self.current_bar_index
         )
         button.setStyleSheet(
-            self.generate_sequencer_button_style(
+            JDXi.UI.Style.generate_sequencer_button_style(
                 checked, is_current, is_selected_bar=is_selected_bar and checked
             )
         )
@@ -928,7 +928,7 @@ class PatternSequenceEditor(SynthEditor):
 
         # Update button states based on beats per bar
         self._update_button_states_for_beats_per_bar()
-        log.message(f"Beats per bar changed to {self.beats_per_bar}")
+        log.message(f"[PatternSequenceEditor] Beats per bar changed to {self.beats_per_bar}")
 
     def _update_button_states_for_beats_per_bar(self):
         """Enable/disable sequencer buttons based on beats per bar setting"""
@@ -1023,9 +1023,9 @@ class PatternSequenceEditor(SynthEditor):
                 filename += ".mid"
             try:
                 self.save_pattern(filename)
-                log.message(f"Pattern saved to {filename}")
+                log.message(f"[PatternSequenceEditor] Pattern saved to {filename}")
             except Exception as ex:
-                log.error(f"Error saving pattern: {ex}")
+                log.error(f"[PatternSequenceEditor] Error saving pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not save pattern: {str(ex)}"
                 )
@@ -1040,13 +1040,13 @@ class PatternSequenceEditor(SynthEditor):
         if filename:
             try:
                 self.load_pattern(filename)
-                log.message(f"Pattern loaded from {filename}")
+                log.message(f"[PatternSequenceEditor] Pattern loaded from {filename}")
 
                 # Update tempo from loaded file (already handled in load_pattern)
                 # Tempo is set in load_pattern() method
                 pass
             except Exception as ex:
-                log.error(f"Error loading pattern: {ex}")
+                log.error(f"[PatternSequenceEditor] Error loading pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not load pattern: {str(ex)}"
                 )
@@ -1069,7 +1069,7 @@ class PatternSequenceEditor(SynthEditor):
             ms_per_step = (60000 / bpm) / 4  # ms per 16th note
             self.timer.setInterval(int(ms_per_step))
 
-        log.message(f"Tempo set to {bpm} BPM")
+        log.message(f"[PatternSequenceEditor] Tempo set to {bpm} BPM")
 
     def _init_midi_file(self):
         """Initialize a new MIDI file with 4 tracks"""
@@ -1155,22 +1155,22 @@ class PatternSequenceEditor(SynthEditor):
 
             if not editor:
                 log.debug(
-                    "MidiFileEditor not available - no reference provided and self.midi_file_editor is None"
+                    "[PatternSequenceEditor] Editor not available - no reference provided and self.midi_file_editor is None"
                 )
                 return
 
             if not hasattr(editor, "midi_state"):
-                log.debug("MidiFileEditor missing midi_state attribute")
+                log.debug("[PatternSequenceEditor] Editor missing midi_state attribute")
                 return
 
             # Store the reference if it wasn't set before
             if not self.midi_file_editor:
                 self.midi_file_editor = editor
-                log.debug("Stored MidiFileEditor reference in Pattern Sequencer")
+                log.debug("[PatternSequenceEditor] Stored MidiFileEditor reference in Pattern Sequencer")
 
             midi_file = editor.midi_state.file
             if not midi_file:
-                log.debug("No MIDI file loaded in MidiFileEditor")
+                log.debug("[PatternSequenceEditor] No MIDI file loaded in MidiFileEditor")
                 return
 
             # Try to get filename from multiple possible locations
@@ -1183,16 +1183,16 @@ class PatternSequenceEditor(SynthEditor):
                 filename = editor.midi_state.file.filename
 
             if filename:
-                log.message(f"Loading pattern from MidiFileEditor file: {filename}")
+                log.message(f"[PatternSequenceEditor] Loading pattern from MidiFileEditor file: {filename}")
                 self.load_pattern(filename)
             else:
                 # Load from the MidiFile object directly
                 log.message(
-                    "Loading pattern from MidiFileEditor's MidiFile object (no filename available)"
+                    "[PatternSequenceEditor] Loading pattern from MidiFileEditor's MidiFile object (no filename available)"
                 )
                 self._load_from_midi_file_object(midi_file)
         except Exception as ex:
-            log.error(f"Error loading from MidiFileEditor: {ex}")
+            log.error(f"[PatternSequenceEditor] Error loading from MidiFileEditor: {ex}")
             import traceback
 
             log.debug(traceback.format_exc())
@@ -1206,7 +1206,7 @@ class PatternSequenceEditor(SynthEditor):
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
-            log.message(f"Detected {num_bars} bars in MIDI file")
+            log.message(f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file")
 
             # Clear existing bars and bars list
             self.bars_list.clear()
@@ -1311,10 +1311,10 @@ class PatternSequenceEditor(SynthEditor):
                 self.bars_list.setCurrentRow(0)
                 self._sync_sequencer_with_bar(0)
                 log.message(
-                    f"Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars"
+                    f"[PatternSequenceEditor] Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars"
                 )
             else:
-                log.warning("No bars were created from MIDI file")
+                log.warning("[PatternSequenceEditor] No bars were created from MIDI file")
         except Exception as ex:
             log.error(f"Error loading from MidiFileEditor: {ex}")
             import traceback
@@ -1372,16 +1372,16 @@ class PatternSequenceEditor(SynthEditor):
 
         # Save the MIDI file
         midi_file.save(filename)
-        log.message(f"Pattern saved to {filename}")
+        log.message(f"[PatternSequenceEditor] Pattern saved to {filename}")
 
         # If MidiFileEditor is connected, update its file too
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             try:
                 # Reload the saved file into MidiFileEditor
                 self.midi_file_editor.midi_load_file_from_path(filename)
-                log.message("Updated MidiFileEditor with saved pattern")
+                log.message("[PatternSequenceEditor] Updated MidiFileEditor with saved pattern")
             except Exception as ex:
-                log.warning(f"Could not update MidiFileEditor: {ex}")
+                log.warning(f"[PatternSequenceEditor] Could not update MidiFileEditor: {ex}")
 
     def clear_pattern(self):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""
@@ -1425,7 +1425,7 @@ class PatternSequenceEditor(SynthEditor):
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
-            log.message(f"Detected {num_bars} bars in MIDI file")
+            log.message(f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file")
 
             # Clear existing bars and bars list
             self.bars_list.clear()
@@ -1569,7 +1569,7 @@ class PatternSequenceEditor(SynthEditor):
                             notes_loaded += 1
 
             log.message(
-                f"Loaded {notes_loaded} notes from MIDI file across all tracks and channels"
+                f"[PatternSequenceEditor] Loaded {notes_loaded} notes from MIDI file across all tracks and channels"
             )
 
             # Update tempo (use first tempo found)
@@ -1585,11 +1585,11 @@ class PatternSequenceEditor(SynthEditor):
                 self.bars_list.setCurrentRow(0)
                 self._sync_sequencer_with_bar(0)
                 log.message(
-                    f"Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel."
+                    f"[PatternSequenceEditor] Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel."
                 )
 
         except Exception as ex:
-            log.error(f"Error loading pattern: {ex}")
+            log.error(f"[PatternSequenceEditor] Error loading pattern: {ex}")
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
     def play_pattern(self):
@@ -1611,7 +1611,7 @@ class PatternSequenceEditor(SynthEditor):
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
 
-        log.message("Pattern playback started")
+        log.message("[PatternSequenceEditor] Pattern playback started")
 
     def stop_pattern(self):
         """Stop playing the pattern"""
@@ -1631,7 +1631,7 @@ class PatternSequenceEditor(SynthEditor):
             for channel in range(16):
                 self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
 
-        log.message("Pattern playback stopped")
+        log.message("[PatternSequenceEditor] Pattern playback stopped")
 
     def _note_name_to_midi(self, note_name: str) -> int:
         """Convert note name (e.g., 'C4') to MIDI note number"""
@@ -1718,7 +1718,7 @@ class PatternSequenceEditor(SynthEditor):
         step_in_bar = global_step % steps_per_bar
 
         log.message(
-            f"Playing step {step_in_bar} in bar {bar_index + 1} (global step {global_step}, {self.beats_per_bar} beats per bar)"
+            f"[PatternSequenceEditor] Playing step {step_in_bar} in bar {bar_index + 1} (global step {global_step}, {self.beats_per_bar} beats per bar)"
         )
 
         # Sync sequencer with the current bar being played
@@ -1753,7 +1753,7 @@ class PatternSequenceEditor(SynthEditor):
                         if self.midi_helper:
                             if channel not in self.muted_channels:
                                 log.message(
-                                    f"Row {row} active at step {step_in_bar} in bar {bar_index + 1}, sending note {measure_button.NOTE} on channel {channel}"
+                                    f"[PatternSequenceEditor] Row {row} active at step {step_in_bar} in bar {bar_index + 1}, sending note {measure_button.NOTE} on channel {channel}"
                                 )
                                 # Get velocity from button if available, otherwise use default
                                 if (
@@ -1809,40 +1809,10 @@ class PatternSequenceEditor(SynthEditor):
                         step_in_bar == col
                     )  # Current step within the displayed bar
                     button.setStyleSheet(
-                        self.generate_sequencer_button_style(
+                        JDXi.UI.Style.generate_sequencer_button_style(
                             is_checked, is_current, is_selected_bar=True
                         )
                     )
-
-    def generate_sequencer_button_style(
-        self, is_checked: bool, is_current: bool = False, is_selected_bar: bool = False
-    ) -> str:
-        """Generate button style based on state and current step"""
-        base_color = "#3498db" if is_checked else "#2c3e50"
-        border_color = "#e74c3c" if is_current else base_color
-
-        # Add extra highlight for selected bar
-        if is_selected_bar and is_checked:
-            border_color = "#f39c12"  # Orange border for selected bar
-            border_width = "3px"
-        else:
-            border_width = "2px"
-
-        return f"""
-            QPushButton {{
-                background-color: {base_color};
-                border: {border_width} solid {border_color};
-                border-radius: 5px;
-                color: white;
-                padding: 5px;
-            }}
-            QPushButton:hover {{
-                background-color: {'#2980b9' if is_checked else '#34495e'};
-            }}
-            QPushButton:pressed {{
-                background-color: {'#2472a4' if is_checked else '#2c3e50'};
-            }}
-        """
 
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
@@ -1886,7 +1856,7 @@ class PatternSequenceEditor(SynthEditor):
             note = message.note  # mido uses lowercase 'note'
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
-                log.message(f"Note off: {note} at step {self.current_step}")
+                log.message(f"[PatternSequenceEditor] Note off: {note} at step {self.current_step}")
                 del self.active_notes[note]  # Remove the note from active notes
 
                 # Add the note_off message to the MIDI track
@@ -1904,7 +1874,7 @@ class PatternSequenceEditor(SynthEditor):
                 button.setChecked(False)
                 button.NOTE = None
                 button.NOTE_DURATION = None
-                button.setStyleSheet(self.generate_sequencer_button_style(False))
+                button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
                 if row == 3:
                     drums_note_name = self._midi_to_note_name(button.NOTE, drums=True)
                     button.setToolTip(f"Note: {drums_note_name}")
@@ -1923,7 +1893,7 @@ class PatternSequenceEditor(SynthEditor):
                     button.NOTE_DURATION = self._get_duration_ms()
                     # Set default velocity for learned pattern notes
                     button.NOTE_VELOCITY = self.velocity_spinbox.value()
-                    button.setStyleSheet(self.generate_sequencer_button_style(True))
+                    button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(True))
                     if row == 3:
                         drums_note_name = self._midi_to_note_name(
                             button.NOTE, drums=True
@@ -1948,27 +1918,27 @@ class PatternSequenceEditor(SynthEditor):
 
         # Stop learning after 16 steps
         if self.current_step == 0:
-            log.message("Learning complete after 16 steps.")
+            log.message("[PatternSequenceEditor] Learning complete after 16 steps.")
             self.on_stop_learn_pattern_button_clicked()
             self.timer.stop()
             del self.timer
         else:
-            log.message(f"Moved to step {self.current_step}")
+            log.message(f"[PatternSequenceEditor] Moved to step {self.current_step}")
 
     def save_midi_file(self, filename: str):
         """Save the recorded MIDI messages to a file."""
         with open(filename, "wb") as output_file:
             self.midi_file.save(output_file)
-        log.message(f"MIDI file saved to {filename}")
+        log.message(f"[PatternSequenceEditor] MIDI file saved to {filename}")
 
     def _toggle_mute(self, row, checked):
         """Toggle mute for a specific row."""
         channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
         if checked:
-            log.message(f"Row {row} muted")
+            log.message(f"[PatternSequenceEditor] Row {row} muted")
             self.muted_channels.append(channel)
         else:
-            log.message(f"Row {row} unmuted")
+            log.message(f"[PatternSequenceEditor] Row {row} unmuted")
             self.muted_channels.remove(channel)
 
         # Update the UI or internal state to reflect the mute status
@@ -1993,3 +1963,6 @@ class PatternSequenceEditor(SynthEditor):
 
         # Ensure UI updates properly
         self.update()
+
+    def _add_measure(self):
+        pass # TODO: Add a measure

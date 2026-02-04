@@ -525,7 +525,7 @@ class JDXiWindow(QMainWindow):
         font_path = resource_path(os.path.join("resources", "fonts", font_name))
         if not os.path.exists(font_path):
             font_path = resource_path(font_name)
-        log.message(f"font_path: {font_path}")
+        log.message(f"[JDXiWindow] font_path: {font_path}")
         if os.path.exists(font_path):
             log.message("[JDXiWindow] Success: found font file, loading...")
             log.message(f"[JDXiWindow] font_name: \t{font_name}")
