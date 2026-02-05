@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
 from jdxi_editor.ui.widgets.spec import SliderSpec
@@ -48,8 +49,9 @@ class AnalogAmpSection(BaseAmpSection):
         address,
         controls: dict,
         parent: Optional[QWidget] = None,
+        send_midi_parameter=None,
+        midi_helper: MidiIOHelper = None,
     ):
-
         # --- Dynamic widgets storage
         self.amp_sliders = {}
         self.tab_widget = None
@@ -60,6 +62,8 @@ class AnalogAmpSection(BaseAmpSection):
             parent=parent,
             controls=controls,
             address=address,
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
         )
         self.build_widgets()
         self.setup_ui()

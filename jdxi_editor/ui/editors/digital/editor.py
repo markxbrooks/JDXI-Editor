@@ -94,13 +94,16 @@ class DigitalSynthEditor(BaseSynthEditor):
         synth_number: int = 1,
         parent: "JDXiInstrument" = None,
     ):
-        super().__init__(parent)
+        super().__init__(
+            midi_helper=midi_helper,
+            preset_helper=preset_helper,
+            parent=parent,
+        )
         self.main_layout = None
         self.instrument_image_group: QGroupBox | None = None
         self.instrument_title_label: QLabel | None = None
         self.partial_number = None
         self.current_data = None
-        self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.main_window = parent
         self.controls: Dict[

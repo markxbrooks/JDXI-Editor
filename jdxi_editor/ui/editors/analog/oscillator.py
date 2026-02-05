@@ -95,6 +95,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             midi_helper: MidiIOHelper,
             controls: dict[AddressParameter, QWidget],
             address: RolandSysExAddress,
+            send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogOscillatorSection
@@ -103,6 +104,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         :param wave_buttons: dict to store waveform buttons (waveform -> button mapping)
         :param midi_helper: MidiIOHelper
         :param address: RolandSysExAddress
+        :param send_midi_parameter: Callable to send MIDI parameter updates
         """
         self.pitch_env_widget: PitchEnvelopeWidget | None = None
         self.pwm_widget: PWMWidget | None = None
@@ -117,6 +119,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             midi_helper=midi_helper,
             controls=controls,
             address=address,
+            send_midi_parameter=send_midi_parameter,
         )
         log.info(f"[AnalogOscillatorSection] after super init self.controls: {self.controls}")
         self.address = address

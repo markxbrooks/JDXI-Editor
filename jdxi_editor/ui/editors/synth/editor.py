@@ -106,7 +106,9 @@ class SynthEditor(SynthBase):
         self.sysex_current_data = None
         self.preset_preset_list = None
         self.programs = None
-        self.midi_helper = MidiIOHelper()
+        # Use passed-in midi_helper so MIDI sending works (e.g. Analog editor); only create new if None
+        if midi_helper is None:
+            self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.midi_helper.midi_control_changed.connect(self._handle_control_change)
         self.cc_parameters = dict()

@@ -10,57 +10,13 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection, LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 class AnalogLFOSection(BaseLFOSection):
     """Analog LFO Section (responsive layout version)"""
-
-    SWITCH_GROUPS = {
-        LFOGroup.switch.SWITCH_ROW: [
-            SwitchSpec(
-                Analog.Param.LFO_TEMPO_SYNC_SWITCH,
-                Analog.Display.Name.LFO_TEMPO_SYNC_SWITCH,
-                Analog.Display.Options.LFO_TEMPO_SYNC_SWITCH,
-            ),
-            SwitchSpec(
-                Analog.Param.LFO_TEMPO_SYNC_NOTE,
-                Analog.Display.Name.LFO_TEMPO_SYNC_NOTE,
-                Analog.Display.Options.LFO_TEMPO_SYNC_NOTE,
-            ),
-            SwitchSpec(
-                Analog.Param.LFO_KEY_TRIGGER,
-                Analog.Display.Name.LFO_KEY_TRIGGER,
-                Analog.Display.Options.LFO_KEY_TRIGGER,
-            ),
-        ]
-    }
-
-    SLIDER_GROUPS = {
-        LFOGroup.slider.DEPTH: [
-            SliderSpec(
-                Analog.Param.LFO_PITCH_DEPTH,
-                Analog.Display.Name.LFO_PITCH_DEPTH,
-            ),
-            SliderSpec(
-                Analog.Param.LFO_FILTER_DEPTH,
-                Analog.Display.Name.LFO_FILTER_DEPTH,
-            ),
-            SliderSpec(
-                Analog.Param.LFO_AMP_DEPTH,
-                Analog.Display.Name.LFO_AMP_DEPTH,
-            ),
-        ],
-        LFOGroup.slider.RATE_FADE: [
-            SliderSpec(Analog.Param.LFO_RATE, Analog.Display.Name.LFO_RATE),
-            SliderSpec(
-                Analog.Param.LFO_FADE_TIME,
-                Analog.Display.Name.LFO_FADE_TIME,
-            ),
-        ],
-    }
 
     SYNTH_SPEC = Analog
 
@@ -69,16 +25,20 @@ class AnalogLFOSection(BaseLFOSection):
         on_lfo_shape_changed: Callable,
         lfo_shape_buttons: Dict[int, QPushButton],
         send_midi_parameter: Callable = None,
+        midi_helper: MidiIOHelper = None,
         controls: dict = None,
     ):
         self._on_lfo_shape_changed = on_lfo_shape_changed
         self.lfo_shape_buttons = lfo_shape_buttons
         self.analog: bool = True
+        self.midi_helper = midi_helper
         super().__init__(
             icons_row_type=IconType.ADSR,
             analog=self.analog,
             send_midi_parameter=send_midi_parameter,
         )
+        # --- Force analog so slider/theme styling is correct (base may default to False)
+        self.analog = True
         # --- Set controls after super().__init__() to avoid it being overwritten
         self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         # --- Set LFO shape parameter for Analog

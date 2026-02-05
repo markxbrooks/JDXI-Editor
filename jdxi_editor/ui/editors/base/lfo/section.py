@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.widgets.editor import IconType
@@ -24,12 +25,13 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets, add_sublayout_to_layout, add_widgets_to_layout,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
-    SLIDER_GROUPS = {}
-    SWITCH_GROUPS = {}
+
+    SYNTH_SPEC: Digital | Analog = None
 
     # Old Method (legacy; subclasses use SLIDER_GROUPS / SWITCH_GROUPS)
     DEPTH_SLIDERS = {}
@@ -38,8 +40,6 @@ class BaseLFOSection(SectionBaseWidget):
 
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
-
-    SYNTH_SPEC = Digital
 
     def __init__(
         self,
@@ -53,6 +53,59 @@ class BaseLFOSection(SectionBaseWidget):
         :param icons_row_type: Type of icon e.g
         :param analog: bool
         """
+        self.SWITCH_GROUPS = {
+            LFOGroup.switch.SWITCH_ROW: [
+                SwitchSpec(
+                    self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH,
+                    self.SYNTH_SPEC.Display.Name.LFO_TEMPO_SYNC_SWITCH,
+                    self.SYNTH_SPEC.Display.Options.LFO_TEMPO_SYNC_SWITCH,
+                ),
+                SwitchSpec(
+                    self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE,
+                    self.SYNTH_SPEC.Display.Name.LFO_TEMPO_SYNC_NOTE,
+                    self.SYNTH_SPEC.Display.Options.LFO_TEMPO_SYNC_NOTE,
+                ),
+                SwitchSpec(
+                    self.SYNTH_SPEC.Param.LFO_KEY_TRIGGER,
+                    self.SYNTH_SPEC.Display.Name.LFO_KEY_TRIGGER,
+                    self.SYNTH_SPEC.Display.Options.LFO_KEY_TRIGGER,
+                ),
+            ]
+        }
+
+        # Depth sliders: PITCH, FILTER, AMP are common; PAN_DEPTH exists only on Digital
+        depth_sliders = [
+            SliderSpec(
+                self.SYNTH_SPEC.Param.LFO_PITCH_DEPTH,
+                self.SYNTH_SPEC.Display.Name.LFO_PITCH_DEPTH,
+            ),
+            SliderSpec(
+                self.SYNTH_SPEC.Param.LFO_FILTER_DEPTH,
+                self.SYNTH_SPEC.Display.Name.LFO_FILTER_DEPTH,
+            ),
+            SliderSpec(
+                self.SYNTH_SPEC.Param.LFO_AMP_DEPTH,
+                self.SYNTH_SPEC.Display.Name.LFO_AMP_DEPTH,
+            ),
+        ]
+        lfo_pan_depth = getattr(self.SYNTH_SPEC.Param, "LFO_PAN_DEPTH", None)
+        if lfo_pan_depth is not None:
+            depth_sliders.append(
+                SliderSpec(
+                    lfo_pan_depth,
+                    getattr(self.SYNTH_SPEC.Display.Name, "LFO_PAN_DEPTH", "Pan"),
+                )
+            )
+        self.SLIDER_GROUPS = {
+            LFOGroup.slider.DEPTH: depth_sliders,
+            LFOGroup.slider.RATE_FADE: [
+                SliderSpec(self.SYNTH_SPEC.Param.LFO_RATE, self.SYNTH_SPEC.Display.Name.LFO_RATE),
+                SliderSpec(
+                    self.SYNTH_SPEC.Param.LFO_FADE_TIME,
+                    self.SYNTH_SPEC.Display.Name.LFO_FADE_TIME,
+                ),
+            ]
+        }
         self.widgets: dict = {}
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
@@ -78,7 +131,11 @@ class BaseLFOSection(SectionBaseWidget):
             self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
         }
 
-        super().__init__(icons_row_type=icons_row_type, analog=analog)
+        super().__init__(
+            icons_row_type=icons_row_type,
+            analog=analog,
+            send_midi_parameter=send_midi_parameter,
+        )
         # --- Set controls after super().__init__() to avoid it being overwritten
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}

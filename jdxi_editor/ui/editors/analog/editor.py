@@ -168,6 +168,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 midi_helper=self.midi_helper,
                 controls=self.controls,
                 address=self.address,
+                send_midi_parameter=self.send_midi_parameter,
             )
             self.filter_section = AnalogFilterSection(
                 controls=self.controls,
@@ -181,30 +182,35 @@ class AnalogSynthEditor(BaseSynthEditor):
                 address=self.synth_data.address,
                 controls=self.controls,
                 parent=self,
-            )
-            self.lfo_section = AnalogLFOSection(
-                on_lfo_shape_changed=self._on_lfo_shape_changed,
-                lfo_shape_buttons=self.lfo_shape_buttons,
                 send_midi_parameter=self.send_midi_parameter,
-                controls=self.controls,
+                midi_helper=self.midi_helper,
             )
             self.common_section = AnalogCommonSection(
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
             )
+            self.lfo_section = AnalogLFOSection(
+                on_lfo_shape_changed=self._on_lfo_shape_changed,
+                lfo_shape_buttons=self.lfo_shape_buttons,
+                midi_helper=self.midi_helper,
+                send_midi_parameter=self.send_midi_parameter,
+                controls=self.controls,
+            )
             # Ensure editor.controls has all section widgets (sections may use same ref or their own)
             for section in (
                 self.oscillator_section,
                 self.filter_section,
                 self.amp_section,
-                self.lfo_section,
                 self.common_section,
+                self.lfo_section,
             ):
                 if hasattr(section, "controls") and section.controls:
                     self.controls.update(section.controls)
         except Exception as ex:
             log.message(f"Error {ex} occurred in [AnalogSynthEditor] [_create_sections]")
+            import traceback
+            log.message(traceback.format_exc())
         self.add_tabs()
         log.message(
             f"[AnalogSynthEditor] [_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}"

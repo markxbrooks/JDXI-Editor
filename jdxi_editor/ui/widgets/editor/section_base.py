@@ -734,6 +734,6 @@ class SectionBaseWidget(SynthBase):
         group, group_layout = create_group_with_layout(label=label)
         self._add_widget_rows(group_layout, rows)
         group_layout.addStretch()
-        group.setStyleSheet(JDXiUIStyle.ADSR)
         layout = self.get_layout()
         layout.addWidget(group)
+        JDXi.UI.Theme.apply_adsr_style(group, analog=self.analog)

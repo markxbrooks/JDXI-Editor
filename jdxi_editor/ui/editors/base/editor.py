@@ -244,6 +244,7 @@ class BaseSynthEditor(SynthEditor):
             self.lfo_section = AnalogLFOSection(
                 on_lfo_shape_changed=self._on_lfo_shape_changed,
                 lfo_shape_buttons=self.lfo_shape_buttons,
+                midi_helper=self.midi_helper,
                 send_midi_parameter=self.send_midi_parameter,
                 controls=self.controls,
             )
@@ -255,15 +256,20 @@ class BaseSynthEditor(SynthEditor):
         self.add_tabs()
 
     def add_tabs(self):
-        """Add tabs to tab widget"""
+        """Add tabs to tab widget. Only adds a tab when the section exists."""
         self._add_tab(key=self.SYNTH_SPEC.Tab.PRESETS, widget=self.instrument_preset)
-        self._add_tab(
-            key=self.SYNTH_SPEC.Tab.OSCILLATOR, widget=self.oscillator_section
-        )
-        self._add_tab(key=self.SYNTH_SPEC.Tab.FILTER, widget=self.filter_section)
-        self._add_tab(key=self.SYNTH_SPEC.Tab.AMP, widget=self.amp_section)
-        self._add_tab(key=self.SYNTH_SPEC.Tab.LFO, widget=self.lfo_section)
-        self._add_tab(key=self.SYNTH_SPEC.Tab.COMMON, widget=self.common_section)
+        if getattr(self, "oscillator_section", None) is not None:
+            self._add_tab(
+                key=self.SYNTH_SPEC.Tab.OSCILLATOR, widget=self.oscillator_section
+            )
+        if getattr(self, "filter_section", None) is not None:
+            self._add_tab(key=self.SYNTH_SPEC.Tab.FILTER, widget=self.filter_section)
+        if getattr(self, "amp_section", None) is not None:
+            self._add_tab(key=self.SYNTH_SPEC.Tab.AMP, widget=self.amp_section)
+        if getattr(self, "lfo_section", None) is not None:
+            self._add_tab(key=self.SYNTH_SPEC.Tab.LFO, widget=self.lfo_section)
+        if getattr(self, "common_section", None) is not None:
+            self._add_tab(key=self.SYNTH_SPEC.Tab.COMMON, widget=self.common_section)
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
