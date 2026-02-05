@@ -1,12 +1,10 @@
 """
 LFO section of the digital partial editor.
 """
-
 from typing import Callable
 
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QLabel,
     QTabWidget,
     QWidget
@@ -18,11 +16,13 @@ from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
+from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
+from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
     create_icon_from_qta,
-    create_layout_with_widgets, add_sublayout_to_layout, add_widgets_to_layout,
+    create_layout_with_widgets
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
@@ -32,11 +32,6 @@ class BaseLFOSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
 
     SYNTH_SPEC: Digital | Analog = None
-
-    # Old Method (legacy; subclasses use SLIDER_GROUPS / SWITCH_GROUPS)
-    DEPTH_SLIDERS = {}
-    SWITCH_SPECS = {}
-    RATE_FADE_SLIDERS = {}
 
     rate_tab_label: str = "Rate"
     depths_tab_label: str = "Depths"
@@ -53,83 +48,13 @@ class BaseLFOSection(SectionBaseWidget):
         :param icons_row_type: Type of icon e.g
         :param analog: bool
         """
-        self.SWITCH_GROUPS = {
-            LFOGroup.switch.SWITCH_ROW: [
-                SwitchSpec(
-                    self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH,
-                    self.SYNTH_SPEC.Display.Name.LFO_TEMPO_SYNC_SWITCH,
-                    self.SYNTH_SPEC.Display.Options.LFO_TEMPO_SYNC_SWITCH,
-                ),
-                SwitchSpec(
-                    self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE,
-                    self.SYNTH_SPEC.Display.Name.LFO_TEMPO_SYNC_NOTE,
-                    self.SYNTH_SPEC.Display.Options.LFO_TEMPO_SYNC_NOTE,
-                ),
-                SwitchSpec(
-                    self.SYNTH_SPEC.Param.LFO_KEY_TRIGGER,
-                    self.SYNTH_SPEC.Display.Name.LFO_KEY_TRIGGER,
-                    self.SYNTH_SPEC.Display.Options.LFO_KEY_TRIGGER,
-                ),
-            ]
-        }
-
-        # Depth sliders: PITCH, FILTER, AMP are common; PAN_DEPTH exists only on Digital
-        depth_sliders = [
-            SliderSpec(
-                self.SYNTH_SPEC.Param.LFO_PITCH_DEPTH,
-                self.SYNTH_SPEC.Display.Name.LFO_PITCH_DEPTH,
-            ),
-            SliderSpec(
-                self.SYNTH_SPEC.Param.LFO_FILTER_DEPTH,
-                self.SYNTH_SPEC.Display.Name.LFO_FILTER_DEPTH,
-            ),
-            SliderSpec(
-                self.SYNTH_SPEC.Param.LFO_AMP_DEPTH,
-                self.SYNTH_SPEC.Display.Name.LFO_AMP_DEPTH,
-            ),
-        ]
-        lfo_pan_depth = getattr(self.SYNTH_SPEC.Param, "LFO_PAN_DEPTH", None)
-        if lfo_pan_depth is not None:
-            depth_sliders.append(
-                SliderSpec(
-                    lfo_pan_depth,
-                    getattr(self.SYNTH_SPEC.Display.Name, "LFO_PAN_DEPTH", "Pan"),
-                )
-            )
-        self.SLIDER_GROUPS = {
-            LFOGroup.slider.DEPTH: depth_sliders,
-            LFOGroup.slider.RATE_FADE: [
-                SliderSpec(self.SYNTH_SPEC.Param.LFO_RATE, self.SYNTH_SPEC.Display.Name.LFO_RATE),
-                SliderSpec(
-                    self.SYNTH_SPEC.Param.LFO_FADE_TIME,
-                    self.SYNTH_SPEC.Display.Name.LFO_FADE_TIME,
-                ),
-            ]
-        }
-        self.widgets: dict = {}
+        self.widgets: LFOWidgets | None = None
         self.wave_shape_param: list | None = None
-        self.switch_row_widgets: list | None = None
-        self.rate_layout_widgets: list | None = None
-        self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
         # --- Set up LFO shapes and icon map before super().__init__() so _setup_ui() can use them
-        self.wave_shapes = [
-            self.SYNTH_SPEC.Wave.LFO.TRI,
-            self.SYNTH_SPEC.Wave.LFO.SINE,
-            self.SYNTH_SPEC.Wave.LFO.SAW,
-            self.SYNTH_SPEC.Wave.LFO.SQUARE,
-            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD,
-            self.SYNTH_SPEC.Wave.LFO.RANDOM,
-        ]
-        self.shape_icon_map = {
-            self.SYNTH_SPEC.Wave.LFO.TRI: JDXi.UI.Icon.WAVE_TRIANGLE,
-            self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.WAVE_SINE,
-            self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.WAVE_SAW,
-            self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.WAVE_SQUARE,
-            self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.WAVEFORM,
-            self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.WAVE_RANDOM,
-        }
+        self.wave_shapes = self.generate_wave_shapes()
+        self.shape_icon_map = self.generate_wave_icon_map()
 
         super().__init__(
             icons_row_type=icons_row_type,
@@ -140,59 +65,79 @@ class BaseLFOSection(SectionBaseWidget):
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 
+    def generate_wave_icon_map(self):
+        """generate wave icon map"""
+        W = self.SYNTH_SPEC.Wave
+        I = JDXi.UI.Icon
+        shape_icon_map = {
+            W.LFO.TRI: I.WAVE_TRIANGLE,
+            W.LFO.SINE: I.WAVE_SINE,
+            W.LFO.SAW: I.WAVE_SAW,
+            W.LFO.SQUARE: I.WAVE_SQUARE,
+            W.LFO.SAMPLE_HOLD: I.WAVEFORM,
+            W.LFO.RANDOM: I.WAVE_RANDOM,
+        }
+        return shape_icon_map
+
+    def generate_wave_shapes(self) -> list:
+        """generate_wave_shapes"""
+        W = self.SYNTH_SPEC.Wave
+        wave_shapes = [
+            W.LFO.TRI,
+            W.LFO.SINE,
+            W.LFO.SAW,
+            W.LFO.SQUARE,
+            W.LFO.SAMPLE_HOLD,
+            W.LFO.RANDOM,
+        ]
+        return wave_shapes
+
     def _setup_ui(self):
-        """Assemble UI: icons row, switch row (right after icons), shape row, tab widget, stretch."""
-        switch_row_layout = self._create_switch_row_layout()
-        shape_row_layout = self._create_shape_row_layout()
-        self._create_tab_widget()
+        """Main construction pipeline"""
+
+        # 1) build widgets
+        self.lfo: LFOWidgets = self._build_widgets()
+
+        # 2) root layout
         layout = self.create_layout()
-        add_sublayout_to_layout(layout=layout, sub_layouts=[shape_row_layout, switch_row_layout])
-        add_widgets_to_layout(layout=layout, widgets=[self.tab_widget])
-        layout.addStretch()
 
-    def setup_ui(self):
-        """For analog: build layout here (_setup_ui is skipped). For digital: no-op, layout built in _setup_ui()."""
-        if not self.analog:
-            return  # Digital: already built in _setup_ui()
-        layout = self.get_layout()
-        shape_row_layout = self._create_shape_row_layout()
-        switch_row_layout = self._create_switch_row_layout()
-        add_sublayout_to_layout(layout=layout, sub_layouts=[shape_row_layout, switch_row_layout])
-        # Create tab widget (Rate/Depths with sliders) — not created for analog since _setup_ui() is skipped
-        self._create_tab_widget()
-        add_widgets_to_layout(layout=layout, widgets=[self.tab_widget])
-        layout.addStretch()
-
-    def build_widgets(self):
-        """Build from subclass SLIDER_GROUPS / SWITCH_GROUPS when present.
-        Subclasses only need to define those class attributes; this fills
-        self.widgets and self.switch_row_widgets.
-        """
-        slider_groups = getattr(self, "SLIDER_GROUPS", None)
-        switch_groups = getattr(self, "SWITCH_GROUPS", None)
-        if (
-            slider_groups
-            and LFOGroup.slider.DEPTH in slider_groups
-            and LFOGroup.slider.RATE_FADE in slider_groups
-            and switch_groups
-            and LFOGroup.switch.SWITCH_ROW in switch_groups
-        ):
-            self.widgets = {
-                LFOGroup.slider.DEPTH: self._build_sliders(
-                    slider_groups[LFOGroup.slider.DEPTH]
-                ),
-                LFOGroup.slider.RATE_FADE: self._build_sliders(
-                    slider_groups[LFOGroup.slider.RATE_FADE]
-                ),
-                LFOGroup.switch.SWITCH_ROW: self._build_switches(
-                    switch_groups[LFOGroup.switch.SWITCH_ROW]
-                ),
-            }
-            self.switch_row_widgets = self.widgets[LFOGroup.switch.SWITCH_ROW]
+        # 3) layout mode
+        if self.analog:
+            self._build_analog_layout(layout)
         else:
-            self.switch_row_widgets = []
+            self._build_digital_layout(layout)
 
-    def _create_shape_row_layout(self):
+        layout.addStretch()
+
+    def _build_widgets(self) -> LFOWidgets:
+        spec = self._build_layout_spec()
+
+        return LFOWidgets(
+            switches=self._build_switches(spec.switches),
+            depth=self._build_sliders(spec.depth_sliders),
+            rate=self._build_sliders(spec.rate_sliders),
+        )
+
+    def _build_analog_layout(self, layout):
+        rows = [self.lfo.switches, self.lfo.depth, self.lfo.rate]
+        self._add_group_with_widget_rows(LFOGroup.label, rows)
+
+    def _build_digital_layout(self, layout):
+        layout.addLayout(self._create_shape_row())
+
+        # switch row
+        layout.addWidget(self._wrap_row(self.lfo.switches))
+
+        # tabs
+        tabs = QTabWidget()
+        tabs.addTab(self._wrap_row(self.lfo.rate), self.rate_tab_label)
+        tabs.addTab(self._wrap_row(self.lfo.depth), self.depths_tab_label)
+
+        JDXi.UI.Theme.apply_tabs_style(tabs, analog=False)
+
+        layout.addWidget(tabs)
+
+    def _create_shape_row(self):
         """Shape and sync controls"""
         shape_label = QLabel("Shape")
         shape_row_layout_widgets = [shape_label]
@@ -215,60 +160,6 @@ class BaseLFOSection(SectionBaseWidget):
 
         shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
         return shape_row_layout
-
-    def _create_tab_widget(self):
-        """Create tab widget for Rate/Rate Ctrl and Depths"""
-
-        tab_widget = QTabWidget()
-        self.tab_widget = tab_widget  # Set for _add_tab to use
-
-        rate_widget = self._create_rate_widget()
-        depths_widget = self._create_depths_widget()
-
-        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.RATE, widget=rate_widget)
-        # --- Update label if it differs from default
-        if tab_widget.tabText(0) != self.rate_tab_label:
-            tab_widget.setTabText(0, self.rate_tab_label)
-
-        self._add_tab(key=self.SYNTH_SPEC.LFO.Tab.DEPTHS, widget=depths_widget)
-        # --- Update label if it differs from default
-        if tab_widget.tabText(1) != self.depths_tab_label:
-            tab_widget.setTabText(1, self.depths_tab_label)
-
-        JDXi.UI.Theme.apply_tabs_style(tab_widget, analog=self.analog)
-        return tab_widget
-
-    def _create_rate_widget(self):
-        """Rate and Rate Ctrl Controls Tab"""
-        rate_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.RATE_FADE])
-        rate_widget = QWidget()
-        rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return rate_widget
-
-    def _create_depths_widget(self):
-        """Depths Tab"""
-        depths_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.DEPTH])
-        depths_widget = QWidget()
-        depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return depths_widget
-
-    def _create_rate_fade_controls(self) -> QWidget:
-        """Rate and Fade Controls Tab"""
-        rate_fade_widget = QWidget()
-        rate_fade_layout = create_layout_with_widgets(self.widgets[LFOGroup.slider.RATE_FADE])
-        rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return rate_fade_widget
-
-    def _create_depths_controls(self) -> QWidget:
-        """Depths Tab"""
-        depths_widget = QWidget()
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
-        depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return depths_widget
 
     def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
         """
@@ -297,7 +188,40 @@ class BaseLFOSection(SectionBaseWidget):
             if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
                 log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
 
-    def _create_switch_row_layout(self) -> QHBoxLayout:
-        """Create Switch row"""
-        switch_row_layout = create_layout_with_widgets(self.switch_row_widgets)
-        return switch_row_layout
+    def _build_layout_spec(self):
+        P = self.SYNTH_SPEC.Param
+        D = self.SYNTH_SPEC.Display
+
+        switches = [
+            SwitchSpec(P.LFO_TEMPO_SYNC_SWITCH, D.Name.LFO_TEMPO_SYNC_SWITCH, D.Options.LFO_TEMPO_SYNC_SWITCH),
+            SwitchSpec(P.LFO_TEMPO_SYNC_NOTE, D.Name.LFO_TEMPO_SYNC_NOTE, D.Options.LFO_TEMPO_SYNC_NOTE),
+            SwitchSpec(P.LFO_KEY_TRIGGER, D.Name.LFO_KEY_TRIGGER, D.Options.LFO_KEY_TRIGGER),
+        ]
+
+        depths = [
+            SliderSpec(P.LFO_PITCH_DEPTH, D.Name.LFO_PITCH_DEPTH),
+            SliderSpec(P.LFO_FILTER_DEPTH, D.Name.LFO_FILTER_DEPTH),
+            SliderSpec(P.LFO_AMP_DEPTH, D.Name.LFO_AMP_DEPTH),
+        ]
+
+        if hasattr(P, "LFO_PAN_DEPTH"):
+            depths.append(SliderSpec(P.LFO_PAN_DEPTH, getattr(D.Name, "LFO_PAN_DEPTH", "Pan")))
+
+        rate = [
+            SliderSpec(P.LFO_RATE, D.Name.LFO_RATE),
+            SliderSpec(P.LFO_FADE_TIME, D.Name.LFO_FADE_TIME),
+        ]
+
+        return LFOLayoutSpec(switches, depths, rate)
+
+    def _wrap_row(self, widgets: list[QWidget]) -> QWidget:
+        """
+        Convert a list of controls into a QWidget row container.
+
+        Qt rule: layouts cannot be inserted where a QWidget is required
+        (tabs, group boxes, pages). So we wrap the layout inside a QWidget.
+        """
+        row_widget = QWidget()
+        row_layout = create_layout_with_widgets(widgets)
+        row_widget.setLayout(row_layout)
+        return row_widget
