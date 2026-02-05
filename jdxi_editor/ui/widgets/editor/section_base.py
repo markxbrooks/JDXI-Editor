@@ -39,7 +39,7 @@ from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout, QWidget, QButtonGroup, QLabel
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -57,13 +57,14 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_group_with_layout,
     create_layout_with_widgets,
     transfer_layout_items,
+    create_button_with_icon,
+    create_icon_from_qta,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -108,6 +109,10 @@ class SectionBaseWidget(SynthBase):
         :param midi_helper: Optional MIDI helper for communication
         """
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.wave_shape_param: list | None = None
+        self.wave_shape_buttons = None
+        self.wave_shapes: list | None = None
+        self.wave_shape_icon_map: dict | None = None
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
         self.analog: bool = analog
         self.icons_row_type = icons_row_type
@@ -150,7 +155,6 @@ class SectionBaseWidget(SynthBase):
                 layout.addLayout(button_layout)
         self._create_tab_widget()
         layout.addWidget(self.tab_widget)
-        # layout.addStretch()
 
     def get_layout(
         self,
@@ -737,3 +741,85 @@ class SectionBaseWidget(SynthBase):
         layout = self.get_layout()
         layout.addWidget(group)
         JDXi.UI.Theme.apply_adsr_style(group, analog=self.analog)
+
+    def _create_shape_row(self):
+        """Shape and sync controls"""
+
+        shape_label = QLabel("Shape")
+        layout_widgets = [shape_label]
+
+        self.wave_shape_group = QButtonGroup(self)
+        self.wave_shape_group.setExclusive(True)
+
+        for shape in self.wave_shapes:
+            icon_name = self.shape_icon_map.get(shape, JDXi.UI.Icon.WAVEFORM)
+            icon = create_icon_from_qta(icon_name)
+
+            btn = create_button_with_icon(
+                icon_name=shape.display_name,
+                icon=icon,
+                button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
+                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
+            )
+
+            btn.setCheckable(True)
+
+            if self.analog:
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+
+            self.wave_shape_group.addButton(btn, shape.value)
+            self.wave_shape_buttons[shape] = btn
+            layout_widgets.append(btn)
+
+        self.wave_shape_group.idToggled.connect(self._on_shape_group_changed)
+
+        return create_layout_with_widgets(layout_widgets)
+
+    def _apply_wave_shape_style(self, active_shape):
+        for shape, btn in self.wave_shape_buttons.items():
+            if shape == active_shape:
+                if self.analog:
+                    JDXi.UI.Theme.apply_button_analog_active(btn)
+                else:
+                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            else:
+                if self.analog:
+                    JDXi.UI.Theme.apply_button_rect_analog(btn)
+                else:
+                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+    def _on_shape_group_changed(self, shape_value: int, checked: bool):
+        if not checked:
+            return
+        shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
+        self.set_wave_shape(shape, send_midi=True)
+
+    def set_wave_shape(self, shape, send_midi=False):
+        """Update UI + optionally send MIDI"""
+
+        btn = self.wave_shape_buttons.get(shape)
+        if not btn:
+            return
+
+        # prevent recursive signals when updating from MIDI
+        self.wave_shape_group.blockSignals(True)
+        btn.setChecked(True)
+        self.wave_shape_group.blockSignals(False)
+
+        self._apply_wave_shape_style(shape)
+
+        if send_midi and self.send_midi_parameter:
+            if not self.send_midi_parameter(self.wave_shape_param, shape.value):
+                log.warning(f"Failed to set Mod LFO shape to {shape.name}")
+
+    def _wrap_row(self, widgets: list[QWidget]) -> QWidget:
+        """
+        Convert a list of controls into a QWidget row container.
+
+        Qt rule: layouts cannot be inserted where a QWidget is required
+        (tabs, group boxes, pages). So we wrap the layout inside a QWidget.
+        """
+        row_widget = QWidget()
+        row_layout = create_layout_with_widgets(widgets)
+        row_widget.setLayout(row_layout)
+        return row_widget

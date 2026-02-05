@@ -14,8 +14,6 @@ from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
 from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_button_with_icon,
-    create_icon_from_qta,
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -46,15 +44,18 @@ class BaseLFOSection(SectionBaseWidget):
         self.wave_shape_param: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
-        # --- Set up LFO shapes and icon map before super().__init__() so _setup_ui() can use them
-        self.wave_shapes = self.generate_wave_shapes()
-        self.shape_icon_map = self.generate_wave_icon_map()
 
         super().__init__(
             icons_row_type=icons_row_type,
             analog=analog,
             send_midi_parameter=send_midi_parameter,
         )
+        # --- Restore wave_shapes, icon map, and buttons after super().__init__() (SectionBaseWidget overwrites them)
+        # Note: _setup_ui() may have already run during super().__init__(), so we restore here and _setup_ui() also checks
+        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shape_icon_map = self.generate_wave_icon_map()
+        self.shape_icon_map = self.wave_shape_icon_map
+        self.wave_shape_buttons = {}
         # --- Set controls after super().__init__() to avoid it being overwritten
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
@@ -88,6 +89,14 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _setup_ui(self):
         """Main construction pipeline"""
+        # --- Restore wave_shapes/icon_map if SectionBaseWidget.__init__() overwrote them
+        if self.wave_shapes is None:
+            self.wave_shapes = self.generate_wave_shapes()
+        if self.wave_shape_icon_map is None or not hasattr(self, "shape_icon_map") or self.shape_icon_map is None:
+            self.wave_shape_icon_map = self.generate_wave_icon_map()
+            self.shape_icon_map = self.wave_shape_icon_map
+        if self.wave_shape_buttons is None:
+            self.wave_shape_buttons = {}
 
         # 1) build widgets
         self.lfo: LFOWidgets = self._build_widgets()
@@ -132,76 +141,6 @@ class BaseLFOSection(SectionBaseWidget):
 
         layout.addWidget(tabs)
 
-    def _on_shape_group_changed(self, shape_value: int, checked: bool):
-        if not checked:
-            return
-        shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
-        self.set_wave_shape(shape, send_midi=True)
-
-    def set_wave_shape(self, shape, send_midi=False):
-        """Update UI + optionally send MIDI"""
-
-        btn = self.wave_shape_buttons.get(shape)
-        if not btn:
-            return
-
-        # prevent recursive signals when updating from MIDI
-        self.wave_shape_group.blockSignals(True)
-        btn.setChecked(True)
-        self.wave_shape_group.blockSignals(False)
-
-        self._apply_wave_shape_style(shape)
-
-        if send_midi and self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, shape.value):
-                log.warning(f"Failed to set Mod LFO shape to {shape.name}")
-
-    def _apply_wave_shape_style(self, active_shape):
-        for shape, btn in self.wave_shape_buttons.items():
-            if shape == active_shape:
-                if self.analog:
-                    JDXi.UI.Theme.apply_button_analog_active(btn)
-                else:
-                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
-            else:
-                if self.analog:
-                    JDXi.UI.Theme.apply_button_rect_analog(btn)
-                else:
-                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-
-    def _create_shape_row(self):
-        """Shape and sync controls"""
-
-        shape_label = QLabel("Shape")
-        layout_widgets = [shape_label]
-
-        self.wave_shape_group = QButtonGroup(self)
-        self.wave_shape_group.setExclusive(True)
-
-        for shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(shape, JDXi.UI.Icon.WAVEFORM)
-            icon = create_icon_from_qta(icon_name)
-
-            btn = create_button_with_icon(
-                icon_name=shape.display_name,
-                icon=icon,
-                button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
-                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
-            )
-
-            btn.setCheckable(True)
-
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-
-            self.wave_shape_group.addButton(btn, shape.value)
-            self.wave_shape_buttons[shape] = btn
-            layout_widgets.append(btn)
-
-        self.wave_shape_group.idToggled.connect(self._on_shape_group_changed)
-
-        return create_layout_with_widgets(layout_widgets)
-
     def _build_layout_spec(self):
         P = self.SYNTH_SPEC.Param
         D = self.SYNTH_SPEC.Display
@@ -227,15 +166,3 @@ class BaseLFOSection(SectionBaseWidget):
         ]
 
         return LFOLayoutSpec(switches, depths, rate)
-
-    def _wrap_row(self, widgets: list[QWidget]) -> QWidget:
-        """
-        Convert a list of controls into a QWidget row container.
-
-        Qt rule: layouts cannot be inserted where a QWidget is required
-        (tabs, group boxes, pages). So we wrap the layout inside a QWidget.
-        """
-        row_widget = QWidget()
-        row_layout = create_layout_with_widgets(widgets)
-        row_widget.setLayout(row_layout)
-        return row_widget
