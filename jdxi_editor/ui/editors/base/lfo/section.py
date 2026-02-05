@@ -3,8 +3,7 @@ LFO section of the digital partial editor.
 """
 from typing import Callable
 
-from decologr import Decologr as log
-from PySide6.QtWidgets import QLabel, QTabWidget, QWidget, QButtonGroup
+from PySide6.QtWidgets import QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
@@ -13,9 +12,6 @@ from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
 from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_layout_with_widgets,
-)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
