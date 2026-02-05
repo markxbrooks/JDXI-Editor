@@ -115,6 +115,7 @@ class BaseLFOSection(SectionBaseWidget):
         )
 
     def _build_analog_layout(self, layout):
+        layout.addLayout(self._create_shape_row())
         rows = [self.lfo.switches, self.lfo.depth, self.lfo.rate]
         self._add_group_with_widget_rows(LFOGroup.label, rows)
 

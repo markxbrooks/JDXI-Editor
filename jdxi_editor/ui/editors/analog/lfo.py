@@ -40,5 +40,7 @@ class AnalogLFOSection(BaseLFOSection):
             analog=True,
             send_midi_parameter=send_midi_parameter,
         )
+        # Base overwrites wave_shape_param with None; restore for MIDI shape messages
+        self.wave_shape_param = AnalogParam.LFO_SHAPE
         # Base skips _setup_ui() when analog=True, so build the layout here
         self._setup_ui()
