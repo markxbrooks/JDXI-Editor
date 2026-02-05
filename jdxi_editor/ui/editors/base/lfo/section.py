@@ -47,7 +47,6 @@ class BaseLFOSection(SectionBaseWidget):
             send_midi_parameter=send_midi_parameter,
         )
         # --- Restore wave_shapes, icon map, and buttons after super().__init__() (SectionBaseWidget overwrites them)
-        # Note: _setup_ui() may have already run during super().__init__(), so we restore here and _setup_ui() also checks
         self.wave_shapes = self.generate_wave_shapes()
         self.wave_shape_icon_map = self.generate_wave_icon_map()
         self.shape_icon_map = self.wave_shape_icon_map
