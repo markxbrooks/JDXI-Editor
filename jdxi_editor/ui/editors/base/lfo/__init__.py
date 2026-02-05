@@ -1,3 +1,3 @@
-from .section import BaseLFOSection
-from .group import LFOGroup, LFOSliderGroup, LFOSwitchGroup
 from .behavior import LFOBehavior
+from .group import LFOGroup, LFOSliderGroup, LFOSwitchGroup
+from .section import BaseLFOSection

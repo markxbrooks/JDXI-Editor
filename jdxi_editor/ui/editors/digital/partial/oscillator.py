@@ -5,9 +5,10 @@ Digital Oscillator Section for the JDXI Editor
 from typing import Callable
 
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QTabWidget,
     QVBoxLayout,
-    QWidget, QHBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi

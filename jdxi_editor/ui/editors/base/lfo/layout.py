@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jdxi_editor.ui.widgets.spec import SwitchSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 @dataclass(frozen=True)

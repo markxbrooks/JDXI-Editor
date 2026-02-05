@@ -1,7 +1,6 @@
 import wave
 
 import pyaudio
-
 from decologr import Decologr as log
 
 
