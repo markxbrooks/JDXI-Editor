@@ -15,6 +15,7 @@ class MidiSynthSpec:
     GroupBox = None
     ControlChange = None
     RPN = None
+    LFO = None
 
 
 class DisplaySpec:

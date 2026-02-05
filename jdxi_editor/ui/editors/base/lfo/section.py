@@ -4,11 +4,9 @@ LFO section of the digital partial editor.
 from typing import Callable
 
 from decologr import Decologr as log
-from PySide6.QtWidgets import QLabel, QTabWidget, QWidget
+from PySide6.QtWidgets import QLabel, QTabWidget, QWidget, QButtonGroup
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
-from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
@@ -134,56 +132,75 @@ class BaseLFOSection(SectionBaseWidget):
 
         layout.addWidget(tabs)
 
+    def _on_shape_group_changed(self, shape_value: int, checked: bool):
+        if not checked:
+            return
+        shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
+        self.set_wave_shape(shape, send_midi=True)
+
+    def set_wave_shape(self, shape, send_midi=False):
+        """Update UI + optionally send MIDI"""
+
+        btn = self.wave_shape_buttons.get(shape)
+        if not btn:
+            return
+
+        # prevent recursive signals when updating from MIDI
+        self.wave_shape_group.blockSignals(True)
+        btn.setChecked(True)
+        self.wave_shape_group.blockSignals(False)
+
+        self._apply_wave_shape_style(shape)
+
+        if send_midi and self.send_midi_parameter:
+            if not self.send_midi_parameter(self.wave_shape_param, shape.value):
+                log.warning(f"Failed to set Mod LFO shape to {shape.name}")
+
+    def _apply_wave_shape_style(self, active_shape):
+        for shape, btn in self.wave_shape_buttons.items():
+            if shape == active_shape:
+                if self.analog:
+                    JDXi.UI.Theme.apply_button_analog_active(btn)
+                else:
+                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            else:
+                if self.analog:
+                    JDXi.UI.Theme.apply_button_rect_analog(btn)
+                else:
+                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
     def _create_shape_row(self):
         """Shape and sync controls"""
+
         shape_label = QLabel("Shape")
-        shape_row_layout_widgets = [shape_label]
-        for mod_lfo_shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(mod_lfo_shape, JDXi.UI.Icon.WAVEFORM)
+        layout_widgets = [shape_label]
+
+        self.wave_shape_group = QButtonGroup(self)
+        self.wave_shape_group.setExclusive(True)
+
+        for shape in self.wave_shapes:
+            icon_name = self.shape_icon_map.get(shape, JDXi.UI.Icon.WAVEFORM)
             icon = create_icon_from_qta(icon_name)
+
             btn = create_button_with_icon(
-                icon_name=mod_lfo_shape.display_name,
+                icon_name=shape.display_name,
                 icon=icon,
                 button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
                 icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
             )
-            btn.clicked.connect(
-                lambda checked, shape=mod_lfo_shape: self._on_wave_shape_selected(shape)
-            )
+
+            btn.setCheckable(True)
+
             if self.analog:
                 JDXi.UI.Theme.apply_button_rect_analog(btn)
-            self.wave_shape_buttons[mod_lfo_shape] = btn
-            shape_row_layout_widgets.append(btn)
 
-        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
-        return shape_row_layout
+            self.wave_shape_group.addButton(btn, shape.value)
+            self.wave_shape_buttons[shape] = btn
+            layout_widgets.append(btn)
 
-    def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
-        """
-        Handle Mod LFO shape button clicks
+        self.wave_shape_group.idToggled.connect(self._on_shape_group_changed)
 
-        :param lfo_shape: DigitalLFOShape enum value
-        """
-        for btn in self.wave_shape_buttons.values():
-            btn.setChecked(False)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        selected_btn = self.wave_shape_buttons.get(lfo_shape)
-        if selected_btn:
-            selected_btn.setChecked(True)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-            else:
-                selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
-        if self.analog:
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-
-        # --- Send MIDI message
-        if self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
-                log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
+        return create_layout_with_widgets(layout_widgets)
 
     def _build_layout_spec(self):
         P = self.SYNTH_SPEC.Param

@@ -162,6 +162,13 @@ class AnalogDisplay(DisplaySpec):
     Options: AnalogDisplayOptions = AnalogDisplayOptions
 
 
+class AnalogLFO:
+    """Digital LFO"""
+
+    Shape: AnalogLFOWaveShape = AnalogLFOWaveShape
+    Tab = None  # Analog LFO has no Tabs
+
+
 class JDXiMidiAnalog(MidiSynthSpec):
     """Analog Class"""
 
@@ -174,3 +181,4 @@ class JDXiMidiAnalog(MidiSynthSpec):
     GroupBox: AnalogGroupBox = AnalogGroupBox
     ControlChange: AnalogControlChange = AnalogControlChange
     RPN: AnalogRPN = AnalogRPN
+    LFO: AnalogLFO = AnalogLFO
