@@ -14,6 +14,11 @@ WaveShape = AnalogWaveOsc | DigitalLFOShape | AnalogLFOShape
 
 @dataclass
 class WaveShapeSpec:
-    """Wave Shape"""
+    """LFO wave shape spec. Exposes .param as an alias for .shape so section_base can treat it like SliderSpec (oscillator/filter)."""
     shape: Optional[WaveShape]
     icon: str
+
+    @property
+    def param(self) -> Optional[WaveShape]:
+        """Alias for shape so _initialize_button_states / _on_button_selected can use spec.param uniformly."""
+        return self.shape

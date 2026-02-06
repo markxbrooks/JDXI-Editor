@@ -126,7 +126,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         address: RolandSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
-        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -323,5 +322,5 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         # Now that all widgets are created, initialize button states
         # This will also enable/disable SuperSaw Detune based on selected waveform
-        if self.BUTTON_SPECS:
-            self._on_button_selected(self.BUTTON_SPECS[0])
+        if self.wave_shapes:
+            self._on_button_selected(self.wave_shapes[0])

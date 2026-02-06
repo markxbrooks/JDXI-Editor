@@ -62,8 +62,6 @@ class AnalogFilterSection(BaseFilterSection):
         ),
     }
 
-    # Filter mode buttons: populated from generate_wave_shapes() in __init__
-    BUTTON_SPECS = []
 
     FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Analog.Param.FILTER_CUTOFF)
 
@@ -118,7 +116,6 @@ class AnalogFilterSection(BaseFilterSection):
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.wave_shapes = self.generate_wave_shapes()
-        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(
             controls=controls,
             address=address,

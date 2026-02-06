@@ -78,25 +78,28 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.depths_layout_widgets: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
-        # ---  Set up waveform shapes
         self.analog = analog
-        self.common_wave_shapes = [
-            self.SYNTH_SPEC.Wave.Osc.SAW,
-            self.SYNTH_SPEC.Wave.Osc.TRI,
-            self.SYNTH_SPEC.Wave.Osc.SQUARE,
-        ]
-        self.wave_shapes = (
-            self.common_wave_shapes
-            if self.analog
-            else self.common_wave_shapes
-            + [
+        # Subclasses (Analog/Digital oscillator) set wave_shapes before super().__init__; do not overwrite
+        if getattr(self, "wave_shapes", None) is None:
+            self.common_wave_shapes = [
+                self.SYNTH_SPEC.Wave.Osc.SAW,
                 self.SYNTH_SPEC.Wave.Osc.TRI,
-                self.SYNTH_SPEC.Wave.Osc.SINE,
-                self.SYNTH_SPEC.Wave.Osc.NOISE,
-                self.SYNTH_SPEC.Wave.Osc.SUPER_SAW,
-                self.SYNTH_SPEC.Wave.Osc,
+                self.SYNTH_SPEC.Wave.Osc.SQUARE,
             ]
-        )
+            self.wave_shapes = (
+                self.common_wave_shapes
+                if self.analog
+                else self.common_wave_shapes
+                + [
+                    self.SYNTH_SPEC.Wave.Osc.TRI,
+                    self.SYNTH_SPEC.Wave.Osc.SINE,
+                    self.SYNTH_SPEC.Wave.Osc.NOISE,
+                    self.SYNTH_SPEC.Wave.Osc.SUPER_SAW,
+                    self.SYNTH_SPEC.Wave.Osc.PCM,
+                ]
+            )
+        else:
+            self.common_wave_shapes = getattr(self, "common_wave_shapes", [])
         # ---  Map waveform shapes to icon names
         """self.shape_icon_map = {
             self.SYNTH_SPEC.Wave.LFO.TRI: JDXi.UI.Icon.Wave.Icon.TRIANGLE,
@@ -214,11 +217,11 @@ class BaseOscillatorSection(SectionBaseWidget):
         return depths_widget
 
     def _create_waveform_buttons(self):
-        """Override to create waveform buttons with custom icon generation"""
+        """Override to create waveform buttons with custom icon generation (uses wave_shapes)."""
         self.waveform_buttons = {}
         self.wave_layout_widgets = []
 
-        for spec in self.BUTTON_SPECS:
+        for spec in self.wave_shapes:
             wave = spec.param
             icon_name = spec.icon_name  # This is a WaveformIconType enum
 

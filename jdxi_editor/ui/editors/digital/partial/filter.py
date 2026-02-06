@@ -45,8 +45,6 @@ class DigitalFilterSection(BaseFilterSection):
         ],
     }
 
-    # Filter mode buttons: populated from generate_wave_shapes() in __init__
-    BUTTON_SPECS = []
 
     BUTTON_ENABLE_RULES = {
         Digital.Filter.Mode.BYPASS: [],  # disables everything
@@ -175,5 +173,4 @@ class DigitalFilterSection(BaseFilterSection):
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
-        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(icons_row_type=icons_row_type, **kwargs)

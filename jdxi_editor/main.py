@@ -262,7 +262,7 @@ def setup_splash_screen(
 
 if __name__ == "__main__":
     try:
-        profiling = False
+        profiling = True
 
         if profiling:
             profiler = cProfile.Profile()

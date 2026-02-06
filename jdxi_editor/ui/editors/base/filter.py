@@ -83,7 +83,7 @@ class BaseFilterSection(SectionBaseWidget):
 
     def build_widgets(self):
         """build widgets"""
-        if self.BUTTON_SPECS:
+        if self._get_button_specs():
             self._create_waveform_buttons()
             if self.analog:
                 self.filter_mode_buttons = self.button_widgets
@@ -103,7 +103,7 @@ class BaseFilterSection(SectionBaseWidget):
 
         layout.addSpacing(JDXi.UI.Style.SPACING)
         layout.addStretch()
-        if self.analog and self.BUTTON_SPECS:
+        if self.analog and self._get_button_specs():
             self._initialize_button_states()
 
     def _create_tab_widget(self):

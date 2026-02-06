@@ -48,8 +48,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             )
         ],
     }
-    # Waveform buttons: populated from generate_wave_shapes() in __init__
-    BUTTON_SPECS = []
 
     SWITCH_SPECS = [
         SwitchSpec(
@@ -97,7 +95,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
-        self.BUTTON_SPECS = self.wave_shapes
         log.info(f"[AnalogOscillatorSection] before super init controls: {controls}")
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,

@@ -91,7 +91,6 @@ class SectionBaseWidget(SynthBase):
     WAVEFORM_SPECS: list[SliderSpec] = []
     SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
-    ENVELOPE_WIDGET_FACTORIES: list[Callable] = []
     PARAM_SPECS: list = []  # list of SliderSpec / SwitchSpec / ComboBoxSpec
     BUTTON_SPECS: list = []  # optional waveform/mode/shape buttons
     SYNTH_SPEC = JDXiMidiDigital
@@ -119,7 +118,9 @@ class SectionBaseWidget(SynthBase):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.wave_shape_param: list | None = None
         self.wave_shape_buttons = None
-        self.wave_shapes: list | None = None
+        # Only set default if subclass (e.g. oscillator/filter) did not set wave_shapes before super().__init__()
+        if not hasattr(self, "wave_shapes"):
+            self.wave_shapes: list | None = None
         self.wave_shape_icon_map: dict | None = None
         self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
         self.analog: bool = analog
@@ -141,7 +142,7 @@ class SectionBaseWidget(SynthBase):
         self.build_widgets()
         if not self.analog:
             self._setup_ui()
-            if self.BUTTON_SPECS:
+            if self._get_button_specs():
                 self._initialize_button_states()
 
     def get_parent_midi_helper(self, parent: QWidget | None):
@@ -207,7 +208,7 @@ class SectionBaseWidget(SynthBase):
     def build_widgets(self):
         """Build sliders, switches, combo boxes, buttons, and ADSR"""
         self._create_parameter_widgets()
-        if self.BUTTON_SPECS:
+        if self._get_button_specs():
             self._create_waveform_buttons()
         if self.ADSR_SPEC:
             self._create_adsr()
@@ -266,10 +267,12 @@ class SectionBaseWidget(SynthBase):
             getattr(self, attr, None).setEnabled(True)
 
     def _initialize_button_states(self):
-        """Set initial button state (first in BUTTON_SPECS)"""
-        if self.BUTTON_SPECS:
-            first_param = self.BUTTON_SPECS[0].param
-            self._on_button_selected(first_param)
+        """Set initial button state (first in wave_shapes / BUTTON_SPECS). Uses spec.param (SliderSpec and WaveShapeSpec both expose .param)."""
+        specs = self._get_button_specs()
+        if specs:
+            first_param = getattr(specs[0], "param", None)
+            if first_param is not None:
+                self._on_button_selected(first_param)
 
     def _create_button_row_layout(self):
         """Create layout for button row. Override in subclasses."""
@@ -328,10 +331,13 @@ class SectionBaseWidget(SynthBase):
         row.addStretch()
         self.get_layout().addLayout(row)
 
-    def _create_waveform_buttons(self):
-        """Create mode/waveform/shape buttons from BUTTON_SPECS"""
+    def _get_button_specs(self):
+        """Return list of button specs: wave_shapes when set by subclass, else BUTTON_SPECS."""
+        return getattr(self, "wave_shapes", None) or self.BUTTON_SPECS
 
-        for spec in self.BUTTON_SPECS:
+    def _create_waveform_buttons(self):
+        """Create mode/waveform/shape buttons from wave_shapes or BUTTON_SPECS."""
+        for spec in self._get_button_specs():
             # --- Handle both SliderSpec (has 'label') and other specs (may have 'name')
             button_label = getattr(spec, "label", getattr(spec, "name", "Button"))
             icon_name_str = getattr(spec, "icon_name", None)
@@ -397,12 +403,9 @@ class SectionBaseWidget(SynthBase):
                 self.controls[spec.param] = btn
 
         # For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
-        # or wave_buttons (DigitalOscillatorSection), create an alias
-        if hasattr(self, "BUTTON_SPECS") and self.BUTTON_SPECS:
-            # Check if this is a filter section by checking the first param type
-            first_param = self.BUTTON_SPECS[0].param
-            if isinstance(first_param, DigitalFilterMode):
-                self.filter_mode_buttons = self.button_widgets
+        specs = self._get_button_specs()
+        if specs and isinstance(specs[0].param, DigitalFilterMode):
+            self.filter_mode_buttons = self.button_widgets
 
     def _add_icon_row(self) -> None:
         """Add the appropriate icon row based on icon_type"""
