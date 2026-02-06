@@ -10,6 +10,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
 from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
@@ -33,7 +34,7 @@ class BaseLFOSection(SectionBaseWidget):
         analog: bool = False,
         send_midi_parameter: Callable = None,
         address: RolandSysExAddress = None,
-        midi_helper=None,
+        midi_helper: MidiIOHelper = None,
         controls: dict = None,
     ):
         """
