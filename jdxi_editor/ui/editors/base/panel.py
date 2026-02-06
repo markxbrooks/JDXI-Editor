@@ -38,8 +38,6 @@ Dependencies:
 
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
-    QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
@@ -50,14 +48,8 @@ from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalTab
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
-from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
-from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
-from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
-from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialPanel
 
 
@@ -92,6 +84,8 @@ class BasePartialPanel(PartialPanel):
     ):
         super().__init__(parent)
 
+        self.lfo_shape_buttons = {}
+        self.mod_lfo_shape_buttons = {}
         self.oscillator_tab = None
         self.filter_tab = None
         self.midi_helper = midi_helper
@@ -137,73 +131,6 @@ class BasePartialPanel(PartialPanel):
 
     def _init_state(self) -> None:
         self.updating_from_spinbox = False
-
-    # ------------------------------------------------------------------
-    # UI Construction
-    # ------------------------------------------------------------------
-
-    def _build_ui(self) -> None:
-        """build ui"""
-        main_layout = QVBoxLayout(self)
-
-        container = QWidget()
-        container_layout = QVBoxLayout(container)
-
-        self.tab_widget = QTabWidget()
-        container_layout.addWidget(self.tab_widget)
-
-        self._register_sections()
-
-        main_layout.addWidget(container)
-
-    def _register_sections(self) -> None:
-        """Register sections"""
-        self._add_tab(
-            key=Digital.Tab.OSCILLATOR,
-            widget=DigitalOscillatorSection(
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-                controls=self.controls,
-                address=self.synth_data.address,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.FILTER,
-            widget=DigitalFilterSection(
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-                controls=self.controls,
-                address=self.synth_data.address,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.AMP,
-            widget=DigitalAmpSection(
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-                controls=self.controls,
-                address=self.synth_data.address,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.LFO,
-            widget=DigitalLFOSection(
-                controls=self.controls,
-                send_midi_parameter=self.send_midi_parameter,
-            ),
-        )
-
-        self._add_tab(
-            key=Digital.Tab.MODLFO,
-            widget=DigitalModLFOSection(
-                on_parameter_changed=self._on_parameter_changed,
-                controls=self.controls,
-                send_midi_parameter=self.send_midi_parameter,
-            ),
-        )
 
     @property
     def lfo_depth_controls(self) -> dict:

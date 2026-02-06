@@ -796,16 +796,28 @@ class SectionBaseWidget(SynthBase):
                     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
     def _on_shape_group_changed(self, shape_value: int, checked: bool):
+        log.message(
+            "[LFO Shape] _on_shape_group_changed shape_value %s, checked: %s section: %s",
+            shape_value, checked, self.__class__.__name__,
+        )
         if not checked:
             return
-        shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
-        self.set_wave_shape(shape, send_midi=True)
+        try:
+            shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
+            self.set_wave_shape(shape, send_midi=True)
+        except Exception as ex:
+            log.error("[SectionBaseWidget] [_on_shape_group_changed] error %s occurred", ex)
 
     def set_wave_shape(self, shape, send_midi=False):
         """Update UI + optionally send MIDI"""
 
         btn = self.wave_shape_buttons.get(shape)
         if not btn:
+            log.warning(
+                "[LFO Shape] set_wave_shape: no button for shape %s (section=%s)",
+                shape,
+                self.__class__.__name__,
+            )
             return
 
         # prevent recursive signals when updating from MIDI
@@ -816,8 +828,22 @@ class SectionBaseWidget(SynthBase):
         self._apply_wave_shape_style(shape)
 
         if send_midi and self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, shape.value):
+            address = getattr(self, "address", None)
+            log.message(
+                "[LFO Shape] sending MIDI param: %s value %s address %s section %s",getattr(self.wave_shape_param, "name", self.wave_shape_param),
+                shape.value,
+                address,
+                self.__class__.__name__,
+            )
+            if not self.send_midi_parameter(
+                self.wave_shape_param, shape.value, address
+            ):
                 log.warning(f"Failed to set Mod LFO shape to {shape.name}")
+        elif send_midi and not self.send_midi_parameter:
+            log.warning(
+                "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
+                self.__class__.__name__,
+            )
 
     def _wrap_row(self, widgets: list[QWidget]) -> QWidget:
         """

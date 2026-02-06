@@ -91,6 +91,8 @@ class DigitalPartialPanel(PartialPanel):
     ):
         super().__init__(parent)
 
+        self.mod_lfo_shape_buttons = {}
+        self.lfo_shape_buttons = {}
         self.oscillator_tab = None
         self.filter_tab = None
         self.midi_helper = midi_helper
@@ -156,6 +158,8 @@ class DigitalPartialPanel(PartialPanel):
 
     def _register_sections(self) -> None:
         """Register sections"""
+        log.message(f"[DigitalPartialPanel] [_register_sections]")
+        # Correct one
         self._add_tab(
             key=Digital.Tab.OSCILLATOR,
             widget=DigitalOscillatorSection(
@@ -191,6 +195,8 @@ class DigitalPartialPanel(PartialPanel):
             widget=DigitalLFOSection(
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                address=self.synth_data.address,
             ),
         )
 
@@ -200,6 +206,8 @@ class DigitalPartialPanel(PartialPanel):
                 on_parameter_changed=self._on_parameter_changed,
                 controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
+                midi_helper=self.midi_helper,
+                address=self.synth_data.address,
             ),
         )
 

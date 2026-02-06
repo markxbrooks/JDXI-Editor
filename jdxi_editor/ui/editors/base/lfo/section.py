@@ -4,9 +4,10 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
-from PySide6.QtWidgets import QTabWidget
+from PySide6.QtWidgets import QTabWidget, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
@@ -31,24 +32,35 @@ class BaseLFOSection(SectionBaseWidget):
         icons_row_type: str = IconType.ADSR,
         analog: bool = False,
         send_midi_parameter: Callable = None,
+        address: RolandSysExAddress = None,
+        midi_helper=None,
+        controls: dict = None,
     ):
         """
-        Initialize the DigitalLFOSection
+        Initialize the BaseLFOSection
 
         :param icons_row_type: Type of icon e.g
         :param analog: bool
+        :param send_midi_parameter: Callable to send MIDI parameter updates
+        :param address: Optional RolandSysExAddress for partial/tone
+        :param midi_helper: Optional MidiIOHelper for MIDI communication
+        :param controls: Optional dict of parameter controls (from panel)
         """
         self.widgets: LFOWidgets | None = None
         self.wave_shape_param: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
         super().__init__(
+            send_midi_parameter=send_midi_parameter,
+            midi_helper=midi_helper,
+            controls=controls or {},
+            address=address,
             icons_row_type=icons_row_type,
             analog=analog,
-            send_midi_parameter=send_midi_parameter,
         )
         self.wave_shapes = self.generate_wave_shapes()
-        self.wave_shape_buttons = {}
-        # --- Set controls after super().__init__() to avoid it being overwritten
+        # Do not overwrite wave_shape_buttons: _setup_ui() (run during super()) already
+        # populated it in _create_shape_row(). Only ensure it exists for analog/other paths.
+        self.lfo_shape_buttons: dict[int, QPushButton] = {}
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 

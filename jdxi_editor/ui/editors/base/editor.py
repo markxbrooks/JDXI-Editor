@@ -218,43 +218,6 @@ class BaseSynthEditor(SynthEditor):
                 slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
                 slider.setTickInterval(10)
 
-    def _create_sections(self):
-        """Create the sections for the Analog Synth Editor."""
-        if self.analog:
-            self.oscillator_section = AnalogOscillatorSection(
-                waveform_selected_callback=self._on_waveform_selected,
-                wave_buttons=self.wave_buttons,
-                midi_helper=self.midi_helper,
-                controls=self.controls,
-                address=self.address,
-            )
-            self.filter_section = AnalogFilterSection(
-                controls=self.controls,
-                address=self.synth_data.address,
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-                on_filter_mode_changed=self._on_filter_mode_changed,
-                parent=self,
-            )
-            self.amp_section = AnalogAmpSection(
-                address=self.synth_data.address,
-                controls=self.controls,
-                parent=self,
-            )
-            self.lfo_section = AnalogLFOSection(
-                on_lfo_shape_changed=self._on_lfo_shape_changed,
-                lfo_shape_buttons=self.lfo_shape_buttons,
-                midi_helper=self.midi_helper,
-                send_midi_parameter=self.send_midi_parameter,
-                controls=self.controls,
-            )
-            self.common_section = AnalogCommonSection(
-                controls=self.controls,
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-            )
-        self.add_tabs()
-
     def add_tabs(self):
         """Add tabs to tab widget. Only adds a tab when the section exists."""
         self._add_tab(key=self.SYNTH_SPEC.Tab.PRESETS, widget=self.instrument_preset)

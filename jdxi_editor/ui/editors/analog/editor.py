@@ -191,8 +191,6 @@ class AnalogSynthEditor(BaseSynthEditor):
                 midi_helper=self.midi_helper,
             )
             self.lfo_section = AnalogLFOSection(
-                on_lfo_shape_changed=self._on_lfo_shape_changed,
-                lfo_shape_buttons=self.lfo_shape_buttons,
                 midi_helper=self.midi_helper,
                 send_midi_parameter=self.send_midi_parameter,
                 controls=self.controls,

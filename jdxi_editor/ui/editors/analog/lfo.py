@@ -4,9 +4,7 @@ Analog LFO Section
 
 from typing import Callable, Dict, Literal
 
-from PySide6.QtWidgets import (
-    QPushButton,
-)
+from PySide6.QtWidgets import QPushButton
 
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -20,18 +18,15 @@ class AnalogLFOSection(BaseLFOSection):
 
     def __init__(
         self,
-        on_lfo_shape_changed: Callable,
-        lfo_shape_buttons: Dict[int, QPushButton],
-        send_midi_parameter: Callable = None,
+        send_midi_parameter: Callable | None = None,
         midi_helper: MidiIOHelper = None,
         controls: dict = None,
     ):
-        self._on_lfo_shape_changed = on_lfo_shape_changed
-        self.lfo_shape_buttons = lfo_shape_buttons
         self.midi_helper = midi_helper
 
         # configure BEFORE base UI build
         from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+
         self.lfo_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         self.wave_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         self.controls = controls or {}
@@ -45,3 +40,7 @@ class AnalogLFOSection(BaseLFOSection):
         self.wave_shape_param = AnalogParam.LFO_SHAPE
         # Base skips _setup_ui() when analog=True, so build the layout here
         self._setup_ui()
+        # Share shape buttons with editor so _update_lfo_shape_buttons (preset load) works
+        self.lfo_shape_buttons.update(
+            {shape.value: btn for shape, btn in self.wave_shape_buttons.items()}
+        )

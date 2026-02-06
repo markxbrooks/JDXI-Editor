@@ -4,6 +4,7 @@ MOD LFO section of the digital partial editor.
 
 from typing import Callable, Literal
 
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
@@ -22,6 +23,8 @@ class DigitalModLFOSection(BaseLFOSection):
         on_parameter_changed: Callable,
         controls: dict,
         send_midi_parameter: Callable = None,
+        midi_helper=None,
+        address: RolandSysExAddress = None,
         icons_row_type: str = IconType.ADSR,
         analog: bool = False,
     ):
@@ -31,6 +34,8 @@ class DigitalModLFOSection(BaseLFOSection):
         :param on_parameter_changed: Callable
         :param controls: dict
         :param send_midi_parameter: Callable to send MIDI parameter updates
+        :param midi_helper: MidiIOHelper for MIDI communication
+        :param address: RolandSysExAddress for this partial (required for sending MIDI)
         """
         self._on_parameter_changed = on_parameter_changed
         self.controls = controls
@@ -40,7 +45,11 @@ class DigitalModLFOSection(BaseLFOSection):
             icons_row_type=icons_row_type,
             analog=analog,
             send_midi_parameter=send_midi_parameter,
+            address=address,
+            midi_helper=midi_helper,
+            controls=controls,
         )
+        self.midi_helper = midi_helper
         self.wave_shape_param: Literal[DigitalPartialParam.MOD_LFO_SHAPE] = (
             DigitalPartialParam.MOD_LFO_SHAPE
         )
