@@ -138,7 +138,6 @@ class DrumTVFSection(DrumBaseSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -153,7 +152,6 @@ class DrumTVFSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -345,7 +343,7 @@ class DrumTVFSection(DrumBaseSection):
         return envelope_group
 
     def _create_tvf_basic_group(self) -> QGroupBox:
-        """Basic TVF controls group - widgets from SLIDER_GROUPS['controls'] (as PARAM_SPECS) in build_widgets()."""
+        """Basic TVF controls group - widgets from SLIDER_GROUPS['controls'] in build_widgets()."""
         group = QGroupBox("Controls")
         basic_tvf_layout = QFormLayout()
         group.setLayout(basic_tvf_layout)

@@ -47,7 +47,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Sliders built from SLIDER_GROUPS in _build_additional_digital_widgets
 
     # --- Enable rules for dependent widgets
     BUTTON_ENABLE_RULES = {
@@ -135,6 +134,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             analog=analog,
         )
 
+    def _get_param_specs(self):
+        """Return [] so section_base does not build control sliders; we build them in _build_additional_digital_widgets() to avoid duplicate tuning sliders."""
+        return []
+
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
         self._create_waveform_buttons()
@@ -142,13 +145,23 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
         self._create_pwm_widget()
-        # Call parent to create other widgets from PARAM_SPECS
+        # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
         if not self.analog:
             self._build_additional_digital_widgets()
 
     def _build_additional_digital_widgets(self):
-        """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls."""
+        """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
+        Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3."""
+        for param in (
+            Digital.Param.OSC_PITCH,
+            Digital.Param.OSC_DETUNE,
+            Digital.Param.SUPER_SAW_DETUNE,
+        ):
+            if param in self.controls:
+                w = self.controls.pop(param)
+                if w in self.tuning_control_widgets:
+                    self.tuning_control_widgets.remove(w)
         control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
         if len(control_sliders) >= 3:
             self.osc_pitch_slider, self.osc_detune_slider, self.super_saw_detune = (

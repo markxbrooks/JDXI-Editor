@@ -64,7 +64,7 @@ class DrumBaseSection(SectionBaseWidget):
         self.scrolled_layout: QVBoxLayout | None = None
 
         # Call super().__init__() - it will call setup_ui() which will use our overridden get_layout()
-        # Pass controls so widgets created from PARAM_SPECS are stored in the same dict
+        # Pass controls so widgets created from SLIDER_GROUPS are stored in the same dict
         super().__init__(
             controls=controls,
             midi_helper=midi_helper,

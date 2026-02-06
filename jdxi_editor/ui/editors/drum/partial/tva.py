@@ -104,7 +104,6 @@ class DrumTVASection(DrumBaseSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -119,7 +118,6 @@ class DrumTVASection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             EnvelopeParameter.T1_V_SENS: 64,
             EnvelopeParameter.T4_V_SENS: 64,
@@ -157,7 +155,7 @@ class DrumTVASection(DrumBaseSection):
         layout.addLayout(main_vbox_layout)
 
     def _create_tva_spin(self) -> QWidget:
-        # Widget created from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
+        # Widget from SLIDER_GROUPS["controls"] in build_widgets()
         return self.controls[DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE]
 
     def _create_tva_group(self):

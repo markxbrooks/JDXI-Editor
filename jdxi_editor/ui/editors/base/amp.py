@@ -42,13 +42,15 @@ class BaseAmpSection(SectionBaseWidget):
     # Build Widgets
     # ------------------------------------------------------------------
     def build_widgets(self):
-        """Build all amp widgets"""
+        """Build all amp widgets from SLIDER_GROUPS['controls'] when present; Digital builds in _create_parameter_widgets override."""
         self.tab_widget = QTabWidget()
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
-        sliders = self._build_sliders(self.PARAM_SPECS)
-        for entry, slider in zip(self.PARAM_SPECS, sliders):
-            self.amp_sliders[entry.param] = slider
-            self.controls[entry.param] = slider
+        control_specs = self.SLIDER_GROUPS.get("controls", [])
+        if control_specs:
+            sliders = self._build_sliders(control_specs)
+            for entry, slider in zip(control_specs, sliders):
+                self.amp_sliders[entry.param] = slider
+                self.controls[entry.param] = slider
         self._create_adsr_group()
 
     # ------------------------------------------------------------------

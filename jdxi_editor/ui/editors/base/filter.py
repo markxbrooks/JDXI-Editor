@@ -84,7 +84,7 @@ class BaseFilterSection(SectionBaseWidget):
     def build_widgets(self):
         """build widgets"""
         if self._get_button_specs():
-            self._create_waveform_buttons()
+            # self._create_waveform_buttons()
             if self.analog:
                 self.filter_mode_buttons = self.button_widgets
         self.controls_group = self._create_controls_group()

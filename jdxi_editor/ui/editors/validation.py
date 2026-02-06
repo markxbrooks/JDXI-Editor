@@ -121,7 +121,7 @@ def validate_section_parameters(
     expected_prefixes: Set[str],
 ) -> List[str]:
     """
-    Validate that PARAM_SPECS use parameters with expected prefixes.
+    Validate that parameter specs (e.g. SLIDER_GROUPS['controls']) use parameters with expected prefixes.
 
     Args:
         section_name: Name of the section being validated
@@ -201,10 +201,11 @@ def validate_digital_sections() -> Dict[str, List[str]]:
         )
         amp_errors.extend(amp_adsr_errors)
 
-    if hasattr(DigitalAmpSection, "PARAM_SPECS"):
+    if hasattr(DigitalAmpSection, "SLIDER_GROUPS"):
+        amp_specs = DigitalAmpSection.SLIDER_GROUPS.get("controls", [])
         amp_param_errors = validate_section_parameters(
             "DigitalAmpSection",
-            DigitalAmpSection.PARAM_SPECS,
+            amp_specs,
             {"AMP_", "LEVEL_", "CUTOFF_"},
         )
         amp_errors.extend(amp_param_errors)
@@ -222,10 +223,11 @@ def validate_digital_sections() -> Dict[str, List[str]]:
         )
         filter_errors.extend(filter_adsr_errors)
 
-    if hasattr(DigitalFilterSection, "PARAM_SPECS"):
+    if hasattr(DigitalFilterSection, "SLIDER_GROUPS"):
+        filter_specs = DigitalFilterSection.SLIDER_GROUPS.get("filter", [])
         filter_param_errors = validate_section_parameters(
             "DigitalFilterSection",
-            DigitalFilterSection.PARAM_SPECS,
+            filter_specs,
             {"FILTER_"},
         )
         filter_errors.extend(filter_param_errors)

@@ -100,7 +100,7 @@ class DigitalCommonSection(BaseCommonSection):
             icons_row_type=IconType.GENERIC,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
-            analog=True,
+            analog=False,
         )
         self.address: RolandSysExAddress = address
         self.widgets: dict = {}

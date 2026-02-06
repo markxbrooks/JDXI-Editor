@@ -135,7 +135,6 @@ class DrumPartialSection(DrumBaseSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     def __init__(
         self,
@@ -148,7 +147,6 @@ class DrumPartialSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
         self.setup_ui()
 
@@ -192,7 +190,7 @@ class DrumPartialSection(DrumBaseSection):
 
     def _create_partial_misc_group(self) -> QGroupBox:
         """create partial misc group"""
-        # Widgets from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"] in build_widgets()
         form_widgets = [
             self.controls[DrumPartialParam.PARTIAL_ENV_MODE],
             self.controls[DrumPartialParam.ASSIGN_TYPE],

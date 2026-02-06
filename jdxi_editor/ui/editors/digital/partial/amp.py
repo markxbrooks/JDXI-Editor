@@ -56,7 +56,6 @@ class DigitalAmpSection(BaseAmpSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Sliders built from SLIDER_GROUPS in _create_parameter_widgets
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
@@ -70,19 +69,30 @@ class DigitalAmpSection(BaseAmpSection):
         # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
     }
 
-    BUTTON_SPECS = []  # Digital Amp does not have waveform buttons
-
     SYNTH_SPEC = JDXiMidiDigital
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def build_widgets(self):
-        """Override to use SectionBaseWidget flow so _create_parameter_widgets runs (creates pan_slider)."""
+        """Override to build from SLIDER_GROUPS via _create_parameter_widgets, then base tab/ADSR."""
+        self._create_parameter_widgets()
         super(BaseAmpSection, self).build_widgets()
 
     def _create_parameter_widgets(self):
-        """Override to build from SLIDER_GROUPS; Pan in its own group (horizontal)."""
+        """Override to build from SLIDER_GROUPS; Pan in its own group (horizontal).
+        Pop any existing control/pan widgets before adding to avoid duplication."""
+        # --- Pop existing control sliders so we don't duplicate
+        control_params = [s.param for s in self.SLIDER_GROUPS.get("controls", [])]
+        for param in control_params:
+            if param in self.controls:
+                w = self.controls.pop(param)
+                if w in self.tuning_control_widgets:
+                    self.tuning_control_widgets.remove(w)
+        pan_specs = self.SLIDER_GROUPS.get("pan", [])
+        if pan_specs and pan_specs[0].param in self.controls:
+            self.controls.pop(pan_specs[0].param, None)
+
         # --- Vertical control sliders
         control_sliders = self._build_sliders(
             self.SLIDER_GROUPS.get("controls", [])
@@ -94,7 +104,6 @@ class DigitalAmpSection(BaseAmpSection):
             self.tuning_control_widgets.append(widget)
 
         # --- Pan slider (horizontal)
-        pan_specs = self.SLIDER_GROUPS.get("pan", [])
         if pan_specs:
             spec = pan_specs[0]
             self.pan_slider = self._create_parameter_slider(

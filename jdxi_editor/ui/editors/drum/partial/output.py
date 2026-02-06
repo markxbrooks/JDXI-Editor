@@ -85,20 +85,18 @@ class DrumOutputSection(DrumBaseSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
         midi_helper: MidiIOHelper,
     ):
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
         self.setup_ui()
 
     def setup_ui(self) -> None:
         """setup UI"""
-        # Widgets are created from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"] in build_widgets()
         # Access them from self.controls
 
         # Get widgets in layout order (assign row, then sliders)

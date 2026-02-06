@@ -75,7 +75,6 @@ class DrumPitchEnvSection(DrumBaseSection):
             SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -92,7 +91,6 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             EnvelopeParameter.DEPTH: 64,
             EnvelopeParameter.V_SENS: 64,
@@ -143,7 +141,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         )
 
     def create_sliders(self, controls_layout: QGridLayout):
-        """Create sliders and connect them - widgets from SLIDER_GROUPS['controls'] (as PARAM_SPECS) in build_widgets()."""
+        """Create sliders and connect them - widgets from SLIDER_GROUPS['controls'] in build_widgets()."""
         # Access them from self.controls and add to grid layout in the same order
 
         # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens

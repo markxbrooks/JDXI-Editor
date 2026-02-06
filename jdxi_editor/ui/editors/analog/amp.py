@@ -41,7 +41,6 @@ class AnalogAmpSection(BaseAmpSection):
             ),
         ],
     }
-    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME),
@@ -64,12 +63,6 @@ class AnalogAmpSection(BaseAmpSection):
         send_midi_parameter=None,
         midi_helper: MidiIOHelper = None,
     ):
-        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
-        # --- Dynamic widgets storage
-        self.amp_sliders = {}
-        self.tab_widget = None
-        self.layout = None
-
         super().__init__(
             analog=True,
             parent=parent,
@@ -78,5 +71,5 @@ class AnalogAmpSection(BaseAmpSection):
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
         )
-        self.build_widgets()
+        # setup_ui not called for analog from SectionBaseWidget.__init__; build_widgets already ran in super().__init__
         self.setup_ui()

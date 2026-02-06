@@ -89,9 +89,8 @@ class SectionBaseWidget(SynthBase):
 
     ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
-    SLIDER_GROUPS: dict[str, list[SliderSpec]] = {}
+    SLIDER_GROUPS: dict[str, list] = {}  # e.g. {"controls": [SliderSpec, ...], "pan": [...]}
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
-    PARAM_SPECS: list = []  # list of SliderSpec / SwitchSpec / ComboBoxSpec
     BUTTON_SPECS: list = []  # optional waveform/mode/shape buttons
     SYNTH_SPEC = JDXiMidiDigital
 
@@ -235,9 +234,13 @@ class SectionBaseWidget(SynthBase):
         controls_widget.setLayout(controls_layout)
         return controls_widget
 
+    def _get_param_specs(self) -> list:
+        """Return the main list of specs for widget creation: SLIDER_GROUPS['controls'] when present."""
+        return self.SLIDER_GROUPS.get("controls", [])
+
     def _create_parameter_widgets(self):
-        """Create widgets from PARAM_SPECS declaratively (or from SLIDER_GROUPS when PARAM_SPECS is set from it in __init__)."""
-        for spec in self.PARAM_SPECS:
+        """Create widgets from SLIDER_GROUPS['controls'] (sliders, switches, combos)."""
+        for spec in self._get_param_specs():
             if isinstance(spec, SliderSpec):
                 widget = self._create_parameter_slider(
                     spec.param, spec.label, vertical=spec.vertical
