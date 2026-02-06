@@ -222,7 +222,7 @@ class SectionBaseWidget(SynthBase):
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
     def _create_controls_widget(self) -> QWidget:
-        # Controls tab
+        """Controls tab"""
         controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.tuning_control_widgets)
         controls_widget.setLayout(controls_layout)
@@ -255,11 +255,11 @@ class SectionBaseWidget(SynthBase):
 
     def _update_button_enabled_states(self, button_param):
         """Enable/disable controls based on BUTTON_ENABLE_RULES"""
-        # Disable all first
+        # --- Disable all first
         for attrs in self.BUTTON_ENABLE_RULES.values():
             for attr in attrs:
                 getattr(self, attr, None).setEnabled(False)
-        # Enable per selected button
+        # --- Enable per selected button
         for attr in self.BUTTON_ENABLE_RULES.get(button_param, []):
             getattr(self, attr, None).setEnabled(True)
 
@@ -363,14 +363,14 @@ class SectionBaseWidget(SynthBase):
                 except (AttributeError, KeyError, TypeError):
                     pass
 
-                # If not a waveform icon, try registry or QTA
+                # --- If not a waveform icon, try registry or QTA
                 if icon is None or icon.isNull():
                     try:
-                        # Try to get icon from registry (which also uses generate_waveform_icon)
+                        # --- Try to get icon from registry (which also uses generate_waveform_icon)
                         icon = JDXi.UI.Icon.get_generated_icon(icon_name_str)
                     except (AttributeError, KeyError):
                         try:
-                            # Try to create from QTA icon name
+                            # --- Try to create from QTA icon name
                             from jdxi_editor.ui.widgets.editor.helper import (
                                 create_icon_from_qta,
                             )
@@ -395,11 +395,11 @@ class SectionBaseWidget(SynthBase):
 
             btn.clicked.connect(lambda _, b=spec.param: self._on_button_selected(b))
             self.button_widgets[spec.param] = btn
-            # Only store in controls if it's a parameter enum, not a mode enum (like DigitalFilterMode)
+            # --- Only store in controls if it's a parameter enum, not a mode enum (like DigitalFilterMode)
             if not isinstance(spec.param, DigitalFilterMode):
                 self.controls[spec.param] = btn
 
-        # For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
+        # --- For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
         specs = self._get_button_specs()
         if specs and isinstance(specs[0].param, DigitalFilterMode):
             self.filter_mode_buttons = self.button_widgets
@@ -437,6 +437,7 @@ class SectionBaseWidget(SynthBase):
         )
 
     def build_adsr_widget(self) -> ADSR:
+        """build ADSR widget"""
         # --- Extract parameters from ADSRSpec objects
         def get_param(spec_or_param):
             """Extract parameter from ADSRSpec or return parameter directly"""
@@ -482,7 +483,7 @@ class SectionBaseWidget(SynthBase):
                 layout = self.get_layout()
                 layout.addWidget(my_widget)
         """
-        # Default implementation - subclasses should override
+        # --- Default implementation - subclasses should override
         self.get_layout()
 
     def init_ui(self) -> None:
@@ -558,6 +559,7 @@ class SectionBaseWidget(SynthBase):
         return layout
 
     def _build_sliders(self, specs: list["SliderSpec"]):
+        """build sliders"""
         return [
             self._create_parameter_slider(
                 spec.param,
@@ -568,6 +570,7 @@ class SectionBaseWidget(SynthBase):
         ]
 
     def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
+        """build combo boxes"""
         return [
             self._create_parameter_combo_box(
                 spec.param, spec.label, spec.options, spec.values

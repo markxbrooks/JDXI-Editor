@@ -47,8 +47,9 @@ from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import (
+    create_centered_layout_with_child,
     create_group_with_layout,
-    create_layout_with_widgets, create_centered_layout_with_child,
+    create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot

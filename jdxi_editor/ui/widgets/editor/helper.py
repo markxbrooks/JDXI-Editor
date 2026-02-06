@@ -364,10 +364,11 @@ def create_group_with_form_layout(
     return group, form_layout
 
 
-def create_centered_layout_with_child(form_layout: QFormLayout) -> QHBoxLayout:
+def create_centered_layout_with_child(layout: QFormLayout | QHBoxLayout | QVBoxLayout) -> QHBoxLayout:
+    """create centered layout with a child layout"""
     centered_layout = QHBoxLayout()
     centered_layout.addStretch()
-    centered_layout.addLayout(form_layout)
+    centered_layout.addLayout(layout)
     centered_layout.addStretch()
     return centered_layout
 

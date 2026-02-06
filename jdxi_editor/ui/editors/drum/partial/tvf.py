@@ -58,7 +58,8 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_layout_with_widgets, create_centered_layout_with_child,
+    create_centered_layout_with_child,
+    create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.plot.drum import DrumTVFEnvPlot
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec

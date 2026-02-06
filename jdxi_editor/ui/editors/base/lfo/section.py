@@ -4,7 +4,7 @@ LFO section of the digital partial editor.
 
 from typing import Callable
 
-from PySide6.QtWidgets import QTabWidget, QPushButton
+from PySide6.QtWidgets import QPushButton, QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
