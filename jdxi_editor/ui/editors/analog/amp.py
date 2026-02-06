@@ -21,16 +21,28 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 class AnalogAmpSection(BaseAmpSection):
     """Amp section of the JD-Xi editor"""
 
-    PARAM_SPECS = [
-        SliderSpec(Analog.Param.AMP_LEVEL, Analog.Display.Name.AMP_LEVEL),
-        SliderSpec(
-            Analog.Param.AMP_LEVEL_KEYFOLLOW, Analog.Display.Name.AMP_LEVEL_KEYFOLLOW
-        ),
-        SliderSpec(
-            Analog.Param.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            Analog.Display.Name.AMP_LEVEL_VELOCITY_SENSITIVITY,
-        ),
-    ]
+    # Slider parameter storage and generation (same pattern as Digital Amp / Analog Oscillator)
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(
+                Analog.Param.AMP_LEVEL,
+                Analog.Display.Name.AMP_LEVEL,
+                vertical=True,
+            ),
+            SliderSpec(
+                Analog.Param.AMP_LEVEL_KEYFOLLOW,
+                Analog.Display.Name.AMP_LEVEL_KEYFOLLOW,
+                vertical=True,
+            ),
+            SliderSpec(
+                Analog.Param.AMP_LEVEL_VELOCITY_SENSITIVITY,
+                Analog.Display.Name.AMP_LEVEL_VELOCITY_SENSITIVITY,
+                vertical=True,
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
+
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME),
         ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.AMP_ENV_DECAY_TIME),
@@ -52,6 +64,7 @@ class AnalogAmpSection(BaseAmpSection):
         send_midi_parameter=None,
         midi_helper: MidiIOHelper = None,
     ):
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         # --- Dynamic widgets storage
         self.amp_sliders = {}
         self.tab_widget = None

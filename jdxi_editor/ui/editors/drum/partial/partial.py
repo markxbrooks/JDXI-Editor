@@ -57,86 +57,85 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
-    PARAM_SPECS = [
-        # Pitch Controls (vertical sliders)
-        SliderSpec(
-            DrumPartialParam.PARTIAL_COARSE_TUNE,
-            DrumDisplayName.PARTIAL_COARSE_TUNE,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_FINE_TUNE,
-            DrumDisplayName.PARTIAL_FINE_TUNE,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
-            DrumDisplayName.PARTIAL_RANDOM_PITCH_DEPTH,
-            vertical=True,
-        ),
-        # Pan (horizontal sliders)
-        SliderSpec(
-            DrumPartialParam.PARTIAL_PAN,
-            DrumDisplayName.PARTIAL_PAN,
-            vertical=False,
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
-            DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
-            vertical=False,
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
-            DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
-            vertical=False,
-        ),
-        # Misc
-        ComboBoxSpec(
-            DrumPartialParam.PARTIAL_ENV_MODE,
-            DrumDisplayName.PARTIAL_ENV_MODE,
-            options=DrumDisplayOptions.PARTIAL_ENV_MODE,
-            values=[0, 1],
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_PITCH_BEND_RANGE,
-            DrumDisplayName.PARTIAL_PITCH_BEND_RANGE,
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.ASSIGN_TYPE,
-            DrumDisplayName.ASSIGN_TYPE,
-            options=DrumDisplayOptions.ASSIGN_TYPE,
-            values=[0, 1],
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.MUTE_GROUP,
-            DrumDisplayName.MUTE_GROUP,
-            options=DrumDisplayOptions.MUTE_GROUP,
-            values=list(range(0, 31)),
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_LEVEL,
-            DrumDisplayName.PARTIAL_LEVEL,
-        ),
-        # Modes
-        ComboBoxSpec(
-            DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
-            DrumDisplayName.PARTIAL_RECEIVE_EXPRESSION,
-            options=DrumDisplayOptions.PARTIAL_RECEIVE_EXPRESSION,
-            values=[0, 1],
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
-            DrumDisplayName.PARTIAL_RECEIVE_HOLD_1,
-            options=DrumDisplayOptions.PARTIAL_RECEIVE_HOLD_1,
-            values=[0, 1],
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.ONE_SHOT_MODE,
-            DrumDisplayName.ONE_SHOT_MODE,
-            options=DrumDisplayOptions.ONE_SHOT_MODE,
-            values=[0, 1],
-        ),
-    ]
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(
+                DrumPartialParam.PARTIAL_COARSE_TUNE,
+                DrumDisplayName.PARTIAL_COARSE_TUNE,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_FINE_TUNE,
+                DrumDisplayName.PARTIAL_FINE_TUNE,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
+                DrumDisplayName.PARTIAL_RANDOM_PITCH_DEPTH,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_PAN,
+                DrumDisplayName.PARTIAL_PAN,
+                vertical=False,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
+                DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
+                vertical=False,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
+                DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
+                vertical=False,
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.PARTIAL_ENV_MODE,
+                DrumDisplayName.PARTIAL_ENV_MODE,
+                options=DrumDisplayOptions.PARTIAL_ENV_MODE,
+                values=[0, 1],
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_PITCH_BEND_RANGE,
+                DrumDisplayName.PARTIAL_PITCH_BEND_RANGE,
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.ASSIGN_TYPE,
+                DrumDisplayName.ASSIGN_TYPE,
+                options=DrumDisplayOptions.ASSIGN_TYPE,
+                values=[0, 1],
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.MUTE_GROUP,
+                DrumDisplayName.MUTE_GROUP,
+                options=DrumDisplayOptions.MUTE_GROUP,
+                values=list(range(0, 31)),
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_LEVEL,
+                DrumDisplayName.PARTIAL_LEVEL,
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
+                DrumDisplayName.PARTIAL_RECEIVE_EXPRESSION,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_EXPRESSION,
+                values=[0, 1],
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
+                DrumDisplayName.PARTIAL_RECEIVE_HOLD_1,
+                options=DrumDisplayOptions.PARTIAL_RECEIVE_HOLD_1,
+                values=[0, 1],
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.ONE_SHOT_MODE,
+                DrumDisplayName.ONE_SHOT_MODE,
+                options=DrumDisplayOptions.ONE_SHOT_MODE,
+                values=[0, 1],
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     def __init__(
         self,
@@ -149,12 +148,8 @@ class DrumPartialSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
-        # are stored in the same dict. The widgets will be created by build_widgets()
-        # and stored in self.controls, then any additional controls will be merged.
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
-        # Additional controls (if any) are already merged via the controls parameter
         self.setup_ui()
 
     def setup_ui(self) -> None:
@@ -197,7 +192,7 @@ class DrumPartialSection(DrumBaseSection):
 
     def _create_partial_misc_group(self) -> QGroupBox:
         """create partial misc group"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
         form_widgets = [
             self.controls[DrumPartialParam.PARTIAL_ENV_MODE],
             self.controls[DrumPartialParam.ASSIGN_TYPE],
@@ -219,7 +214,7 @@ class DrumPartialSection(DrumBaseSection):
 
     def _create_partial_modes_group(self) -> QGroupBox:
         """create partial modes group"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"]
         widgets = [
             self.controls[DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION],
             self.controls[DrumPartialParam.PARTIAL_RECEIVE_HOLD_1],
@@ -235,7 +230,7 @@ class DrumPartialSection(DrumBaseSection):
 
     def _create_partial_pan_group(self) -> QGroupBox:
         """create partial pan group"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"]
         widgets = [
             self.controls[DrumPartialParam.PARTIAL_PAN],
             self.controls[DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH],
@@ -251,7 +246,7 @@ class DrumPartialSection(DrumBaseSection):
 
     def _create_pitch_controls_group(self) -> QGroupBox:
         """create pitch group"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        # Widgets from SLIDER_GROUPS["controls"]
         widgets = [
             self.controls[DrumPartialParam.PARTIAL_COARSE_TUNE],
             self.controls[DrumPartialParam.PARTIAL_FINE_TUNE],

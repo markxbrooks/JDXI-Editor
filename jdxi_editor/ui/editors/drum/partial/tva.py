@@ -58,54 +58,53 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumTVASection(DrumBaseSection):
     """Drum TVA Section for the JDXI Editor"""
 
-    PARAM_SPECS = [
-        # TVA Level Velocity Curve
-        ComboBoxSpec(
-            DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
-            DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE.display_name,
-            options=DrumDisplayOptions.TVA_LEVEL_VELOCITY_CURVE,
-            values=DrumDisplayValues.TVA_LEVEL_VELOCITY_CURVE,
-        ),
-        # TVA Envelope Controls - Row 0: Level Velocity Sens, T1 V-Sens, T4 V-Sens
-        SliderSpec(
-            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS,
-            DrumPartialParam.TVA_LEVEL_VELOCITY_SENS.display_name,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
-            DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS.display_name,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
-            DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS.display_name,
-            vertical=True,
-        ),
-        # Row 1: Time 1, Time 2, Time 3, Time 4
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_1, DrumPartialParam.TVA_ENV_TIME_1.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_2, DrumPartialParam.TVA_ENV_TIME_2.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_3, DrumPartialParam.TVA_ENV_TIME_3.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_TIME_4, DrumPartialParam.TVA_ENV_TIME_4.display_name, vertical=True
-        ),
-        # Row 2: Level 1, Level 2, Level 3
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_LEVEL_1, DrumPartialParam.TVA_ENV_LEVEL_1.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_LEVEL_2, DrumPartialParam.TVA_ENV_LEVEL_2.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVA_ENV_LEVEL_3, DrumPartialParam.TVA_ENV_LEVEL_3.display_name, vertical=True
-        ),
-    ]
+    SLIDER_GROUPS = {
+        "controls": [
+            ComboBoxSpec(
+                DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
+                DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE.display_name,
+                options=DrumDisplayOptions.TVA_LEVEL_VELOCITY_CURVE,
+                values=DrumDisplayValues.TVA_LEVEL_VELOCITY_CURVE,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_LEVEL_VELOCITY_SENS,
+                DrumPartialParam.TVA_LEVEL_VELOCITY_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
+                DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
+                DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_1, DrumPartialParam.TVA_ENV_TIME_1.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_2, DrumPartialParam.TVA_ENV_TIME_2.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_3, DrumPartialParam.TVA_ENV_TIME_3.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_TIME_4, DrumPartialParam.TVA_ENV_TIME_4.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_LEVEL_1, DrumPartialParam.TVA_ENV_LEVEL_1.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_LEVEL_2, DrumPartialParam.TVA_ENV_LEVEL_2.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVA_ENV_LEVEL_3, DrumPartialParam.TVA_ENV_LEVEL_3.display_name, vertical=True
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -120,7 +119,7 @@ class DrumTVASection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        # Initialize envelope before super().__init__() because setup_ui() may need it
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             EnvelopeParameter.T1_V_SENS: 64,
             EnvelopeParameter.T4_V_SENS: 64,
@@ -134,11 +133,7 @@ class DrumTVASection(DrumBaseSection):
             EnvelopeParameter.LEVEL_2: 80,
             EnvelopeParameter.LEVEL_3: 70,
         }
-        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
-        # are stored in the same dict
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
-        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
     def setup_ui(self):
@@ -162,7 +157,7 @@ class DrumTVASection(DrumBaseSection):
         layout.addLayout(main_vbox_layout)
 
     def _create_tva_spin(self) -> QWidget:
-        # Widget is created automatically from PARAM_SPECS in build_widgets()
+        # Widget created from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
         return self.controls[DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE]
 
     def _create_tva_group(self):
@@ -174,7 +169,7 @@ class DrumTVASection(DrumBaseSection):
             style_sheet=JDXi.UI.Style.ADSR,
         )
 
-        # --- Add TVA Velocity Sensitivity controls - widgets are created from PARAM_SPECS
+        # --- Add TVA Velocity Sensitivity controls - widgets from SLIDER_GROUPS["controls"]
         row = 0
         tva_level_velocity_sens_slider = self.controls[
             DrumPartialParam.TVA_LEVEL_VELOCITY_SENS

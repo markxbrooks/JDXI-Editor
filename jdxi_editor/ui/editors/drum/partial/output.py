@@ -62,44 +62,46 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
-    PARAM_SPECS = [
-        SliderSpec(
-            DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL,
-            DrumDisplayName.PARTIAL_CHORUS_SEND_LEVEL,
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
-            DrumDisplayName.PARTIAL_OUTPUT_ASSIGN,
-            options=DrumDisplayOptions.PARTIAL_OUTPUT_ASSIGN,
-            values=[0, 1, 2, 3, 4],
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
-            DrumDisplayName.PARTIAL_OUTPUT_LEVEL,
-        ),
-        SliderSpec(
-            DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
-            DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
-        ),
-    ]
+    # Slider/control parameter storage and generation (same pattern as Digital Amp)
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(
+                DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL,
+                DrumDisplayName.PARTIAL_CHORUS_SEND_LEVEL,
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.PARTIAL_OUTPUT_ASSIGN,
+                DrumDisplayName.PARTIAL_OUTPUT_ASSIGN,
+                options=DrumDisplayOptions.PARTIAL_OUTPUT_ASSIGN,
+                values=[0, 1, 2, 3, 4],
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
+                DrumDisplayName.PARTIAL_OUTPUT_LEVEL,
+            ),
+            SliderSpec(
+                DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
+                DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     def __init__(
         self,
         controls: dict[DrumPartialParam, QWidget],
         midi_helper: MidiIOHelper,
     ):
-        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
-        # are stored in the same dict
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
         self.setup_ui()
 
     def setup_ui(self) -> None:
         """setup UI"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
-        # Access them from self.controls or self.control_widgets
+        # Widgets are created from SLIDER_GROUPS["controls"] (as PARAM_SPECS) in build_widgets()
+        # Access them from self.controls
 
-        # Get widgets in the order they appear in PARAM_SPECS
+        # Get widgets in layout order (assign row, then sliders)
         widgets = [
             self.controls[DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL],
             self.controls[DrumPartialParam.PARTIAL_OUTPUT_LEVEL],

@@ -238,19 +238,22 @@ class BaseOscillatorSection(SectionBaseWidget):
                 JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
             )
 
-            def _on_click(_, w=wave):
-                self._on_button_selected(w)
+            # Use (param, label) as key so duplicate params (e.g. SQUARE and PWSQU) each have a button
+            btn_key = (spec.param, getattr(spec, "label", None))
+
+            def _on_click(_, s=spec):
+                self._on_button_selected(s)
                 # Invoke editor callback when set (e.g. Analog waveform_selected_callback)
                 if hasattr(self, "_on_waveform_selected") and callable(
                     getattr(self, "_on_waveform_selected", None)
                 ):
-                    self._on_waveform_selected(w)
+                    self._on_waveform_selected(s.param)
 
             btn.clicked.connect(_on_click)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-            self.waveform_buttons[wave] = btn
-            self.button_widgets[wave] = btn
+            self.waveform_buttons[wave] = btn  # last wins for param-only lookup
+            self.button_widgets[btn_key] = btn
             self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = btn
             self.wave_layout_widgets.append(btn)
 
@@ -293,17 +296,33 @@ class BaseOscillatorSection(SectionBaseWidget):
         else:
             self.switch_row_widgets = []
 
-    def _on_button_selected(self, button_param):
-        """Override to handle waveform button selection with correct MIDI parameter"""
-        # --- Reset all buttons
-        for btn in self.button_widgets.values():
+    def _on_button_selected(self, spec_or_param):
+        """Override to handle waveform button selection with correct MIDI parameter.
+
+        spec_or_param: SliderSpec (with .param, .label) or a single param enum for backward compat.
+        """
+        if hasattr(spec_or_param, "param") and hasattr(spec_or_param, "label"):
+            btn_key = (spec_or_param.param, getattr(spec_or_param, "label", None))
+            button_param = spec_or_param.param
+        else:
+            btn_key = spec_or_param
+            button_param = spec_or_param
+
+        # Reset all buttons (use wave_layout_widgets so every button is reset; button_widgets may have duplicate keys)
+        for btn in self.wave_layout_widgets:
             btn.setChecked(False)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-        # Set selected button
-        selected_btn = self.button_widgets[button_param]
-        selected_btn.setChecked(True)
-        selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        selected_btn = self.button_widgets.get(btn_key)
+        if selected_btn is None:
+            # Fallback when only param was passed (e.g. initial state): first button with this param
+            for (p, _), b in self.button_widgets.items():
+                if p == button_param:
+                    selected_btn = b
+                    break
+        if selected_btn is not None:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         # Update enabled states
         self._update_button_enabled_states(button_param)

@@ -45,17 +45,11 @@ class BaseAmpSection(SectionBaseWidget):
         """Build all amp widgets"""
         self.tab_widget = QTabWidget()
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
-        self._create_sliders()
-        self._create_adsr_group()
-
-    def _create_sliders(self):
-        """Create sliders for Level, KeyFollow, and Velocity Sensitivity"""
-        for entry in self.PARAM_SPECS:
-            slider = self._create_parameter_slider(
-                entry.param, entry.label, vertical=entry.vertical
-            )
+        sliders = self._build_sliders(self.PARAM_SPECS)
+        for entry, slider in zip(self.PARAM_SPECS, sliders):
             self.amp_sliders[entry.param] = slider
             self.controls[entry.param] = slider
+        self._create_adsr_group()
 
     # ------------------------------------------------------------------
     # Setup UI

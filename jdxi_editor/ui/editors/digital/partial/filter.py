@@ -19,64 +19,34 @@ from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 class DigitalFilterSection(BaseFilterSection):
     """Digital Filter Section for JD-Xi Digital Partial"""
 
+    # Slider parameter storage and generation (same pattern as Analog Oscillator)
     SLIDER_GROUPS = {
         "filter": [
-            SliderSpec(Digital.Param.FILTER_RESONANCE, "Resonance", vertical=True),
             SliderSpec(
-                Digital.Param.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True
+                Digital.Param.FILTER_RESONANCE,
+                Digital.Display.Name.FILTER_RESONANCE,
+                vertical=True,
             ),
             SliderSpec(
-                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True
+                Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
+                Digital.Display.Name.FILTER_CUTOFF_KEYFOLLOW,
+                vertical=True,
             ),
             SliderSpec(
-                Digital.Param.FILTER_ENV_DEPTH, Digital.Display.Name.FILTER_ENV_DEPTH
+                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+                Digital.Display.Name.FILTER_ENV_VELOCITY_SENSITIVITY,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.Param.FILTER_ENV_DEPTH,
+                Digital.Display.Name.FILTER_ENV_DEPTH,
+                vertical=True,
             ),
         ],
     }
 
-    # --- Filter mode buttons
-    BUTTON_SPECS = [
-        SliderSpec(
-            Digital.Filter.Mode.BYPASS,
-            Digital.Filter.FilterType.BYPASS,
-            icon_name=JDXi.UI.Icon.WaveForm.BYPASS_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.LPF,
-            Digital.Filter.FilterType.LPF,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.HPF,
-            Digital.Filter.FilterType.HPF,
-            icon_name=JDXi.UI.Icon.WaveForm.HPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.BPF,
-            Digital.Filter.FilterType.BPF,
-            icon_name=JDXi.UI.Icon.WaveForm.BPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.PKG,
-            Digital.Filter.FilterType.PKG,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.LPF2,
-            Digital.Filter.FilterType.LPF2,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.LPF3,
-            Digital.Filter.FilterType.LPF3,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-        SliderSpec(
-            Digital.Filter.Mode.LPF4,
-            Digital.Filter.FilterType.LPF4,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-    ]
+    # Filter mode buttons: populated from generate_wave_shapes() in __init__
+    BUTTON_SPECS = []
 
     BUTTON_ENABLE_RULES = {
         Digital.Filter.Mode.BYPASS: [],  # disables everything
@@ -187,6 +157,23 @@ class DigitalFilterSection(BaseFilterSection):
         Digital.Param.FILTER_ENV_DEPTH,
     ]
 
+    def generate_wave_shapes(self):
+        """Generate filter mode button specs (same pattern as Analog Filter / Digital Oscillator)."""
+        F = self.SYNTH_SPEC.Filter
+        I = JDXi.UI.Icon.WaveForm
+        return [
+            SliderSpec(F.Mode.BYPASS, F.FilterType.BYPASS, icon_name=I.BYPASS_FILTER),
+            SliderSpec(F.Mode.LPF, F.FilterType.LPF, icon_name=I.LPF_FILTER),
+            SliderSpec(F.Mode.HPF, F.FilterType.HPF, icon_name=I.HPF_FILTER),
+            SliderSpec(F.Mode.BPF, F.FilterType.BPF, icon_name=I.BPF_FILTER),
+            SliderSpec(F.Mode.PKG, F.FilterType.PKG, icon_name=I.LPF_FILTER),
+            SliderSpec(F.Mode.LPF2, F.FilterType.LPF2, icon_name=I.LPF_FILTER),
+            SliderSpec(F.Mode.LPF3, F.FilterType.LPF3, icon_name=I.LPF_FILTER),
+            SliderSpec(F.Mode.LPF4, F.FilterType.LPF4, icon_name=I.LPF_FILTER),
+        ]
+
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
+        self.wave_shapes = self.generate_wave_shapes()
+        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(icons_row_type=icons_row_type, **kwargs)

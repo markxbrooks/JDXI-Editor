@@ -67,79 +67,78 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumTVFSection(DrumBaseSection):
     """Drum TVF Section for the JDXI Editor"""
 
-    PARAM_SPECS = [
-        # Basic TVF Controls
-        ComboBoxSpec(
-            DrumPartialParam.TVF_FILTER_TYPE,
-            DrumDisplayName.TVF_FILTER_TYPE,
-            options=DrumDisplayOptions.TVF_FILTER_TYPE,
-            values=[0, 1, 2, 3, 4, 5, 6],
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_CUTOFF_FREQUENCY,
-            DrumDisplayName.TVF_CUTOFF_FREQUENCY,
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE,
-            DrumDisplayName.TVF_CUTOFF_VELOCITY_CURVE,
-            options=DrumDisplayOptions.TVF_CUTOFF_VELOCITY_CURVE,
-            values=[0, 1, 2, 3, 4, 5, 6, 7],
-        ),
-        ComboBoxSpec(
-            DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE,
-            DrumDisplayName.TVF_ENV_VELOCITY_CURVE_TYPE,
-            options=DrumDisplayOptions.TVF_ENV_VELOCITY_CURVE_TYPE,
-            values=[0, 1, 2, 3, 4, 5, 6, 7],
-        ),
-        # Envelope Controls - Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_DEPTH, DrumDisplayName.TVF_DEPTH, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_VELOCITY_SENS,
-            DrumDisplayName.TVF_V_SENS,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS,
-            DrumDisplayName.TVF_T1_V_SENS,
-            vertical=True,
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS,
-            DrumDisplayName.TVF_T4_V_SENS,
-            vertical=True,
-        ),
-        # Row 1: Time 1, Time 2, Time 3, Time 4
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_1, DrumDisplayName.TVF_TIME_1, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_2, DrumDisplayName.TVF_TIME_2, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_3, DrumDisplayName.TVF_TIME_3, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_TIME_4, DrumDisplayName.TVF_TIME_4, vertical=True
-        ),
-        # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_LEVEL_0, DrumDisplayName.TVF_LEVEL_0, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_LEVEL_1, DrumDisplayName.TVF_LEVEL_1, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_LEVEL_2, DrumDisplayName.TVF_LEVEL_2, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_LEVEL_3, DrumDisplayName.TVF_LEVEL_3, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True
-        ),
-    ]
+    SLIDER_GROUPS = {
+        "controls": [
+            ComboBoxSpec(
+                DrumPartialParam.TVF_FILTER_TYPE,
+                DrumDisplayName.TVF_FILTER_TYPE,
+                options=DrumDisplayOptions.TVF_FILTER_TYPE,
+                values=[0, 1, 2, 3, 4, 5, 6],
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_CUTOFF_FREQUENCY,
+                DrumDisplayName.TVF_CUTOFF_FREQUENCY,
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE,
+                DrumDisplayName.TVF_CUTOFF_VELOCITY_CURVE,
+                options=DrumDisplayOptions.TVF_CUTOFF_VELOCITY_CURVE,
+                values=[0, 1, 2, 3, 4, 5, 6, 7],
+            ),
+            ComboBoxSpec(
+                DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE,
+                DrumDisplayName.TVF_ENV_VELOCITY_CURVE_TYPE,
+                options=DrumDisplayOptions.TVF_ENV_VELOCITY_CURVE_TYPE,
+                values=[0, 1, 2, 3, 4, 5, 6, 7],
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_DEPTH, DrumDisplayName.TVF_DEPTH, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_VELOCITY_SENS,
+                DrumDisplayName.TVF_V_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS,
+                DrumDisplayName.TVF_T1_V_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS,
+                DrumDisplayName.TVF_T4_V_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_1, DrumDisplayName.TVF_TIME_1, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_2, DrumDisplayName.TVF_TIME_2, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_3, DrumDisplayName.TVF_TIME_3, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_TIME_4, DrumDisplayName.TVF_TIME_4, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_LEVEL_0, DrumDisplayName.TVF_LEVEL_0, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_LEVEL_1, DrumDisplayName.TVF_LEVEL_1, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_LEVEL_2, DrumDisplayName.TVF_LEVEL_2, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_LEVEL_3, DrumDisplayName.TVF_LEVEL_3, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -154,7 +153,7 @@ class DrumTVFSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        # Initialize envelope before super().__init__() because setup_ui() may need it
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             "depth": 64,
             "v_sens": 64,
@@ -170,11 +169,7 @@ class DrumTVFSection(DrumBaseSection):
             "level_3": 70,
             "level_4": 0,
         }
-        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
-        # are stored in the same dict
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
-        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
     def setup_ui(self):
@@ -219,7 +214,7 @@ class DrumTVFSection(DrumBaseSection):
 
         envelope_group.setStyleSheet(JDXi.UI.Style.ADSR)
 
-        #  --- Use widgets from PARAM_SPECS and connect them ---
+        #  --- Use widgets from SLIDER_GROUPS["controls"] and connect them ---
         row = 0
         depth_slider = self.controls[DrumPartialParam.TVF_ENV_DEPTH]
         self.depth_slider = depth_slider  # Keep reference for compatibility
@@ -350,12 +345,11 @@ class DrumTVFSection(DrumBaseSection):
         return envelope_group
 
     def _create_tvf_basic_group(self) -> QGroupBox:
-        """Basic TVF controls group - widgets are created from PARAM_SPECS"""
+        """Basic TVF controls group - widgets from SLIDER_GROUPS['controls'] (as PARAM_SPECS) in build_widgets()."""
         group = QGroupBox("Controls")
         basic_tvf_layout = QFormLayout()
         group.setLayout(basic_tvf_layout)
 
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
         tvf_filter_type_combo = self.controls[DrumPartialParam.TVF_FILTER_TYPE]
         basic_tvf_layout.addRow(tvf_filter_type_combo)
 

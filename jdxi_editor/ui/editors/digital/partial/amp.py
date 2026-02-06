@@ -19,22 +19,44 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 class DigitalAmpSection(BaseAmpSection):
     """Digital Amp Section for JD-Xi Editor"""
 
-    PARAM_SPECS = [
-        SliderSpec(Digital.Param.AMP_LEVEL, Digital.Display.Name.AMP_LEVEL),
-        SliderSpec(
-            Digital.Param.AMP_LEVEL_KEYFOLLOW, Digital.Display.Name.AMP_LEVEL_KEYFOLLOW
-        ),
-        SliderSpec(Digital.Param.AMP_VELOCITY, Digital.Display.Name.AMP_VELOCITY),
-        SliderSpec(
-            Digital.Param.LEVEL_AFTERTOUCH, Digital.Display.Name.LEVEL_AFTERTOUCH
-        ),
-        SliderSpec(
-            Digital.Param.CUTOFF_AFTERTOUCH, Digital.Display.Name.CUTOFF_AFTERTOUCH
-        ),
-        SliderSpec(
-            Digital.Param.AMP_PAN, Digital.Display.Name.AMP_PAN
-        ),  # Horizontal pan - handled separately
-    ]
+    # Slider parameter storage and generation (same pattern as Digital Oscillator / Digital Filter)
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(
+                Digital.Param.AMP_LEVEL,
+                Digital.Display.Name.AMP_LEVEL,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.Param.AMP_LEVEL_KEYFOLLOW,
+                Digital.Display.Name.AMP_LEVEL_KEYFOLLOW,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.Param.AMP_VELOCITY,
+                Digital.Display.Name.AMP_VELOCITY,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.Param.LEVEL_AFTERTOUCH,
+                Digital.Display.Name.LEVEL_AFTERTOUCH,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.Param.CUTOFF_AFTERTOUCH,
+                Digital.Display.Name.CUTOFF_AFTERTOUCH,
+                vertical=True,
+            ),
+        ],
+        "pan": [
+            SliderSpec(
+                Digital.Param.AMP_PAN,
+                Digital.Display.Name.AMP_PAN,
+                vertical=False,
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Sliders built from SLIDER_GROUPS in _create_parameter_widgets
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
@@ -60,31 +82,25 @@ class DigitalAmpSection(BaseAmpSection):
         super(BaseAmpSection, self).build_widgets()
 
     def _create_parameter_widgets(self):
-        """Override to handle Pan slider separately (horizontal)"""
-        # --- Create all widgets except Pan
-        for spec in self.PARAM_SPECS:
-            # Skip Pan - it will be created separately as horizontal
-            if spec.param == Digital.Param.AMP_PAN:
-                continue
-
-            if isinstance(spec, SliderSpec):
-                widget = self._create_parameter_slider(
-                    spec.param, spec.label, vertical=True
-                )
-            else:
-                continue
-
+        """Override to build from SLIDER_GROUPS; Pan in its own group (horizontal)."""
+        # --- Vertical control sliders
+        control_sliders = self._build_sliders(
+            self.SLIDER_GROUPS.get("controls", [])
+        )
+        for spec, widget in zip(
+            self.SLIDER_GROUPS.get("controls", []), control_sliders
+        ):
             self.controls[spec.param] = widget
             self.tuning_control_widgets.append(widget)
 
-        # --- Create Pan slider separately (horizontal)
-        self.pan_slider = self._create_parameter_slider(
-            Digital.Param.AMP_PAN,
-            Digital.Display.Name.AMP_PAN,
-            vertical=False,  # Horizontal slider
-        )
-        self.controls[Digital.Param.AMP_PAN] = self.pan_slider
-        # --- Don't add to control_widgets - it will be added separately in _create_controls_widget
+        # --- Pan slider (horizontal)
+        pan_specs = self.SLIDER_GROUPS.get("pan", [])
+        if pan_specs:
+            spec = pan_specs[0]
+            self.pan_slider = self._create_parameter_slider(
+                spec.param, spec.label, vertical=spec.vertical
+            )
+            self.controls[spec.param] = self.pan_slider
 
     def _create_controls_widget(self) -> QWidget:
         """Override to add Pan slider in its own horizontal layout"""

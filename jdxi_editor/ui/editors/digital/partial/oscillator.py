@@ -30,61 +30,24 @@ from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 class DigitalOscillatorSection(BaseOscillatorSection):
     """Digital Oscillator Section for JD-Xi Editor (spec-driven)."""
 
-    # --- Sliders
-    PARAM_SPECS = [
-        SliderSpec(param=Digital.Param.OSC_PITCH, label=Digital.Display.Name.OSC_PITCH),
-        SliderSpec(
-            param=Digital.Param.OSC_DETUNE, label=Digital.Display.Name.OSC_DETUNE
-        ),
-        SliderSpec(
-            param=Digital.Param.SUPER_SAW_DETUNE,
-            label=Digital.Display.Name.SUPER_SAW_DETUNE,
-        ),
-    ]
-
-    # --- Waveform buttons
-    BUTTON_SPECS = [
-        SliderSpec(
-            param=Digital.Wave.Osc.SAW,
-            label=Digital.Wave.WaveType.UPSAW,
-            icon_name=Digital.Wave.WaveType.UPSAW,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.SQUARE,
-            label=Digital.Wave.WaveType.SQUARE,
-            icon_name=Digital.Wave.WaveType.SQUARE,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.SQUARE,
-            label=Digital.Wave.WaveType.PWSQU,
-            icon_name=Digital.Wave.WaveType.PWSQU,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.TRI,
-            label=Digital.Wave.WaveType.TRIANGLE,
-            icon_name=Digital.Wave.WaveType.TRIANGLE,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.SINE,
-            label=Digital.Wave.WaveType.SINE,
-            icon_name=Digital.Wave.WaveType.SINE,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.NOISE,
-            label=Digital.Wave.WaveType.NOISE,
-            icon_name=Digital.Wave.WaveType.NOISE,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.SUPER_SAW,
-            label=Digital.Wave.WaveType.SPSAW,
-            icon_name=Digital.Wave.WaveType.SPSAW,
-        ),
-        SliderSpec(
-            param=Digital.Wave.Osc.PCM,
-            label=Digital.Wave.WaveType.PCM,
-            icon_name=Digital.Wave.WaveType.PCM,
-        ),
-    ]
+    # Slider parameter storage and generation (same pattern as Analog Oscillator)
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(
+                param=Digital.Param.OSC_PITCH,
+                label=Digital.Display.Name.OSC_PITCH,
+            ),
+            SliderSpec(
+                param=Digital.Param.OSC_DETUNE,
+                label=Digital.Display.Name.OSC_DETUNE,
+            ),
+            SliderSpec(
+                param=Digital.Param.SUPER_SAW_DETUNE,
+                label=Digital.Display.Name.SUPER_SAW_DETUNE,
+            ),
+        ],
+    }
+    PARAM_SPECS = []  # Sliders built from SLIDER_GROUPS in _build_additional_digital_widgets
 
     # --- Enable rules for dependent widgets
     BUTTON_ENABLE_RULES = {
@@ -107,6 +70,52 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
     )
 
+    def generate_wave_shapes(self):
+        """Generate waveform button specs (same pattern as Analog Oscillator / Analog Filter)."""
+        W = self.SYNTH_SPEC.Wave
+        return [
+            SliderSpec(
+                param=W.Osc.SAW,
+                label=W.WaveType.UPSAW,
+                icon_name=W.WaveType.UPSAW,
+            ),
+            SliderSpec(
+                param=W.Osc.SQUARE,
+                label=W.WaveType.SQUARE,
+                icon_name=W.WaveType.SQUARE,
+            ),
+            SliderSpec(
+                param=W.Osc.PW_SQUARE,
+                label=W.WaveType.PWSQU,
+                icon_name=W.WaveType.PWSQU,
+            ),
+            SliderSpec(
+                param=W.Osc.TRI,
+                label=W.WaveType.TRIANGLE,
+                icon_name=W.WaveType.TRIANGLE,
+            ),
+            SliderSpec(
+                param=W.Osc.SINE,
+                label=W.WaveType.SINE,
+                icon_name=W.WaveType.SINE,
+            ),
+            SliderSpec(
+                param=W.Osc.NOISE,
+                label=W.WaveType.NOISE,
+                icon_name=W.WaveType.NOISE,
+            ),
+            SliderSpec(
+                param=W.Osc.SUPER_SAW,
+                label=W.WaveType.SPSAW,
+                icon_name=W.WaveType.SPSAW,
+            ),
+            SliderSpec(
+                param=W.Osc.PCM,
+                label=W.WaveType.PCM,
+                icon_name=W.WaveType.PCM,
+            ),
+        ]
+
     def __init__(
         self,
         icons_row_type: str = IconType.ADSR,
@@ -116,6 +125,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         controls: dict = None,
         address: RolandSysExAddress = None,
     ):
+        self.wave_shapes = self.generate_wave_shapes()
+        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -138,13 +149,20 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             self._build_additional_digital_widgets()
 
     def _build_additional_digital_widgets(self):
-        """build additional digital controls"""
-        self._create_pcm_wave_controls()
-        # --- Store SuperSaw Detune widget as attribute for BUTTON_ENABLE_RULES
-        # --- This allows _update_button_enabled_states to find it by name
-        if self.SYNTH_SPEC.Param.SUPER_SAW_DETUNE in self.controls:
-            self.super_saw_detune = self.controls[self.SYNTH_SPEC.Param.SUPER_SAW_DETUNE]
-            # --- Initially disable it (will be enabled when SuperSaw is selected)
+        """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls."""
+        control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
+        if len(control_sliders) >= 3:
+            self.osc_pitch_slider, self.osc_detune_slider, self.super_saw_detune = (
+                control_sliders[0],
+                control_sliders[1],
+                control_sliders[2],
+            )
+            for spec, widget in zip(
+                self.SLIDER_GROUPS["controls"], control_sliders
+            ):
+                self.controls[spec.param] = widget
+                self.tuning_control_widgets.append(widget)
+            # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
             self.super_saw_detune.setEnabled(False)
         self._create_pcm_wave_controls()
 
@@ -285,24 +303,25 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pass
 
     def setup_ui(self):
-        """Override to create UI with button row layout and initialize button states"""
+        """Override to create UI with button row layout and initialize button states.
+        Skip creating tab widget / button row if already done by base _setup_ui() in __init__,
+        to avoid duplicate tuning sliders and ensure super_saw_detune enable targets the visible widget.
+        """
         layout = self.get_layout()
 
-        # Add button row layout if buttons exist
-        if self.button_widgets:
-            button_layout = self._create_button_row_layout()
-            if button_layout is not None:
-                layout.addLayout(button_layout)
-
-        # Create and add tab widget
-        self._create_tab_widget()
-        if self.tab_widget:
-            layout.addWidget(self.tab_widget)
+        # Only add button row and tab widget if not already added by SectionBaseWidget._setup_ui()
+        if self.tab_widget is None or self.tab_widget.parent() is None:
+            if self.button_widgets:
+                button_layout = self._create_button_row_layout()
+                if button_layout is not None:
+                    layout.addLayout(button_layout)
+            self._create_tab_widget()
+            if self.tab_widget:
+                layout.addWidget(self.tab_widget)
 
         layout.addStretch()
 
         # Now that all widgets are created, initialize button states
         # This will also enable/disable SuperSaw Detune based on selected waveform
         if self.BUTTON_SPECS:
-            first_param = self.BUTTON_SPECS[0].param
-            self._on_button_selected(first_param)
+            self._on_button_selected(self.BUTTON_SPECS[0])

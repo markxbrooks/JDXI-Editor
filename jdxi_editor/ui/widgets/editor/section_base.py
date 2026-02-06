@@ -206,25 +206,6 @@ class SectionBaseWidget(SynthBase):
     # -------------------------------
     def build_widgets(self):
         """Build sliders, switches, combo boxes, buttons, and ADSR"""
-        class_name = self.__class__.__name__
-        is_filter_section = class_name == "DigitalFilterSection"
-
-        if is_filter_section:
-            log.message(f"🔧 {class_name}.build_widgets() called")
-            log.message(f"📋 PARAM_SPECS count: {len(self.PARAM_SPECS)}")
-            log.message(f"📋 ADSR_SPEC: {self.ADSR_SPEC if self.ADSR_SPEC else 'None'}")
-
-            # --- Check if FILTER_ENV_DEPTH is in PARAM_SPECS
-            filter_env_depth_in_specs = any(
-                (hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH")
-                or (spec.param == DigitalPartialParam.FILTER_ENV_DEPTH)
-                for spec in self.PARAM_SPECS
-            )
-            if filter_env_depth_in_specs:
-                log.message(f"✅ FILTER_ENV_DEPTH found in PARAM_SPECS")
-            else:
-                log.warning(f"⚠️ FILTER_ENV_DEPTH NOT in PARAM_SPECS!")
-
         self._create_parameter_widgets()
         if self.BUTTON_SPECS:
             self._create_waveform_buttons()
@@ -254,34 +235,12 @@ class SectionBaseWidget(SynthBase):
         return controls_widget
 
     def _create_parameter_widgets(self):
-        """Create widgets from PARAM_SPECS declaratively"""
-        class_name = self.__class__.__name__
-        is_filter_section = class_name == "DigitalFilterSection"
-
-        if is_filter_section:
-            log.message(
-                f"🔧 Creating parameter widgets from {len(self.PARAM_SPECS)} specs"
-            )
-
+        """Create widgets from PARAM_SPECS declaratively (or from SLIDER_GROUPS when PARAM_SPECS is set from it in __init__)."""
         for spec in self.PARAM_SPECS:
-            param_name = getattr(spec.param, "name", str(spec.param))
-            is_filter_env_depth = (
-                hasattr(spec.param, "name") and spec.param.name == "FILTER_ENV_DEPTH"
-            ) or (spec.param == DigitalPartialParam.FILTER_ENV_DEPTH)
-
-            if is_filter_env_depth and is_filter_section:
-                log.message(
-                    f"🎯 Found FILTER_ENV_DEPTH in PARAM_SPECS: {spec.param}, label: {spec.label}"
-                )
-
             if isinstance(spec, SliderSpec):
                 widget = self._create_parameter_slider(
                     spec.param, spec.label, vertical=spec.vertical
                 )
-                if is_filter_env_depth and is_filter_section:
-                    log.message(
-                        f"✅ Created FILTER_ENV_DEPTH slider widget: {widget}, type: {type(widget)}"
-                    )
             elif isinstance(spec, SwitchSpec):
                 widget = self._create_parameter_switch(
                     spec.param, spec.label, spec.options
@@ -291,24 +250,10 @@ class SectionBaseWidget(SynthBase):
                     spec.param, spec.label, options=spec.options
                 )
             else:
-                if is_filter_env_depth and is_filter_section:
-                    log.warning(
-                        f"⚠️ FILTER_ENV_DEPTH spec is not SliderSpec/SwitchSpec/ComboBoxSpec: {type(spec)}"
-                    )
                 continue
 
             self.controls[spec.param] = widget
-            if is_filter_env_depth and is_filter_section:
-                log.message(
-                    f"📝 Stored FILTER_ENV_DEPTH in controls dict: {spec.param} -> {widget}"
-                )
-                log.message(f"📊 Controls dict now has {len(self.controls)} entries")
-
             self.tuning_control_widgets.append(widget)
-            if is_filter_env_depth and is_filter_section:
-                log.message(
-                    f"📦 Added FILTER_ENV_DEPTH to control_widgets list (total: {len(self.tuning_control_widgets)})"
-                )
 
     def _update_button_enabled_states(self, button_param):
         """Enable/disable controls based on BUTTON_ENABLE_RULES"""
@@ -338,30 +283,12 @@ class SectionBaseWidget(SynthBase):
 
     def _create_adsr(self):
         """Create ADSR widget from ADSR_SPEC"""
-        from decologr import Decologr as log
+        attack_key = ADSRStage.ATTACK
+        decay_key = ADSRStage.DECAY
+        sustain_key = ADSRStage.SUSTAIN
+        release_key = ADSRStage.RELEASE
+        peak_key = ADSRStage.PEAK
 
-        class_name = self.__class__.__name__
-        is_filter_section = class_name == "DigitalFilterSection"
-
-        if is_filter_section:
-            log.message(f"🔧 Creating ADSR widget from ADSR_SPEC")
-            log.message(f"📋 ADSR_SPEC keys: {list(self.ADSR_SPEC.keys())}")
-
-        # Handle both string keys and ADSRType enum keys
-
-        attack_key = (
-            ADSRStage.ATTACK
-        )  # if "attack" in self.ADSR_SPEC else ADSRType.ATTACK
-        decay_key = ADSRStage.DECAY  # if "decay" in self.ADSR_SPEC else ADSRType.DECAY
-        sustain_key = (
-            ADSRStage.SUSTAIN
-        )  # if "sustain" in self.ADSR_SPEC else ADSRType.SUSTAIN
-        release_key = (
-            ADSRStage.RELEASE
-        )  # "release" in self.ADSR_SPEC else ADSRType.RELEASE
-        peak_key = ADSRStage.PEAK  #  if "peak" in self.ADSR_SPEC else ADSRType.PEAK
-
-        # Extract parameters from ADSR_SPEC (handles both ADSRSpec objects and direct parameters)
         def get_param(spec_or_param):
             """Extract parameter from ADSRSpec or return parameter directly"""
             if isinstance(spec_or_param, ADSRSpec):
@@ -380,53 +307,18 @@ class SectionBaseWidget(SynthBase):
         release_param = get_param(release_spec) if release_spec else None
         peak_param = get_param(peak_spec) if peak_spec else None
 
-        if peak_param:
-            peak_name = getattr(peak_param, "name", str(peak_param))
-            if is_filter_section:
-                log.message(f"🎯 ADSR peak_param: {peak_param} (name: {peak_name})")
-            is_filter_env_depth = (
-                hasattr(peak_param, "name") and peak_param.name == "FILTER_ENV_DEPTH"
-            ) or (peak_param == DigitalPartialParam.FILTER_ENV_DEPTH)
-            if is_filter_env_depth and is_filter_section:
-                log.message(f"✅ Peak param is FILTER_ENV_DEPTH")
-                # Check if it exists in controls
-                if peak_param in self.controls:
-                    existing_widget = self.controls[peak_param]
-                    log.message(
-                        f"📝 FILTER_ENV_DEPTH already in controls: {existing_widget}, type: {type(existing_widget)}"
-                    )
-                else:
-                    log.warning(f"⚠️ FILTER_ENV_DEPTH NOT found in controls dict!")
-                    log.message(f"📊 Controls dict has {len(self.controls)} entries")
-                    log.message(
-                        f"📋 Controls keys: {[getattr(k, 'name', str(k)) for k in self.controls.keys()]}"
-                    )
-        else:
-            if is_filter_section:
-                log.warning(f"⚠️ No peak parameter in ADSR_SPEC")
-
         self.adsr_widget = ADSR(
             attack_param=attack_param,
             decay_param=decay_param,
             sustain_param=sustain_param,
             release_param=release_param,
-            peak_param=peak_param,  # Optional peak parameter
+            peak_param=peak_param,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
             analog=self.analog,
         )
-
-        if peak_param and is_filter_section:
-            peak_name = getattr(peak_param, "name", str(peak_param))
-            log.message(f"✅ ADSR widget created with peak_param: {peak_name}")
-            if hasattr(self.adsr_widget, "peak_control"):
-                log.message(
-                    f"✅ ADSR widget has peak_control: {self.adsr_widget.peak_control}, type: {type(self.adsr_widget.peak_control)}"
-                )
-            else:
-                log.warning(f"⚠️ ADSR widget does NOT have peak_control attribute")
 
     def _add_centered_row(self, *widgets: QWidget) -> None:
         """add centered row"""

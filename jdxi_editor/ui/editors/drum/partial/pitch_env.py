@@ -54,28 +54,28 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 class DrumPitchEnvSection(DrumBaseSection):
     """Drum Pitch Env Section for the JDXI Editor"""
 
-    PARAM_SPECS = [
-        # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
-        SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, DrumPartialParam.PITCH_ENV_DEPTH.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name, vertical=True),
-        SliderSpec(
-            DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name, vertical=True
-        ),
-        SliderSpec(
-            DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name, vertical=True
-        ),
-        # Row 1: Time 1, Time 2, Time 3, Time 4
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
-        # Row 2: Level 0, Level 1, Level 2, Level 3, Level 4
-        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, DrumPartialParam.PITCH_ENV_LEVEL_2.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, DrumPartialParam.PITCH_ENV_LEVEL_3.display_name, vertical=True),
-        SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
-    ]
+    SLIDER_GROUPS = {
+        "controls": [
+            SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, DrumPartialParam.PITCH_ENV_DEPTH.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name, vertical=True),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name, vertical=True
+            ),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, DrumPartialParam.PITCH_ENV_LEVEL_2.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, DrumPartialParam.PITCH_ENV_LEVEL_3.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
+        ],
+    }
+    PARAM_SPECS = []  # Populated from SLIDER_GROUPS in __init__ for base build_widgets
 
     envelope_changed = Signal(dict)
 
@@ -92,8 +92,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        # Initialize envelope before super().__init__() because setup_ui() will be called
-        # during super().__init__() and it needs envelope
+        self.PARAM_SPECS = self.SLIDER_GROUPS["controls"]
         self.envelope = {
             EnvelopeParameter.DEPTH: 64,
             EnvelopeParameter.V_SENS: 64,
@@ -109,12 +108,7 @@ class DrumPitchEnvSection(DrumBaseSection):
             EnvelopeParameter.LEVEL_3: 15,
             EnvelopeParameter.LEVEL_4: -25,
         }
-
-        # Pass controls to super().__init__() so widgets created from PARAM_SPECS
-        # are stored in the same dict
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        # Widgets from PARAM_SPECS are already in self.controls from build_widgets()
-        # Note: _setup_ui() is overridden in DrumBaseSection to do nothing, so we need to call setup_ui() explicitly
         self.setup_ui()
 
     def setup_ui(self) -> None:
@@ -149,8 +143,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         )
 
     def create_sliders(self, controls_layout: QGridLayout):
-        """Create sliders and connect them - widgets are created from PARAM_SPECS"""
-        # Widgets are created automatically from PARAM_SPECS in build_widgets()
+        """Create sliders and connect them - widgets from SLIDER_GROUPS['controls'] (as PARAM_SPECS) in build_widgets()."""
         # Access them from self.controls and add to grid layout in the same order
 
         # Row 0: Depth, V-Sens, T1 V-Sens, T4 V-Sens
