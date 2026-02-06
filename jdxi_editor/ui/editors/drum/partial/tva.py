@@ -48,7 +48,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
-    create_layout_with_widgets,
+    create_layout_with_widgets, create_centered_layout_with_child,
 )
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot
@@ -151,8 +151,10 @@ class DrumTVASection(DrumBaseSection):
         main_vbox_layout = create_layout_with_widgets(
             widgets=[self.tva_level_velocity_curve_spin], vertical=True
         )
+
+        centered_layout = create_centered_layout_with_child(main_vbox_layout)
         main_vbox_layout.addLayout(main_row_hlayout)
-        layout.addLayout(main_vbox_layout)
+        layout.addLayout(centered_layout)
 
     def _create_tva_spin(self) -> QWidget:
         # Widget from SLIDER_GROUPS["controls"] in build_widgets()

@@ -359,8 +359,17 @@ def create_group_with_form_layout(
     :return: Tuple of (QGroupBox, QFormLayout)
     """
     form_layout = create_form_layout_with_widgets(widgets)
-    group, _ = create_group_with_layout(label, child_layout=form_layout)
+    centered_layout = create_centered_layout_with_child(form_layout)
+    group, _ = create_group_with_layout(label, child_layout=centered_layout)
     return group, form_layout
+
+
+def create_centered_layout_with_child(form_layout: QFormLayout) -> QHBoxLayout:
+    centered_layout = QHBoxLayout()
+    centered_layout.addStretch()
+    centered_layout.addLayout(form_layout)
+    centered_layout.addStretch()
+    return centered_layout
 
 
 def create_scroll_area() -> QScrollArea:
@@ -456,15 +465,15 @@ def add_widgets_to_layout(layout: QVBoxLayout | QHBoxLayout, widgets: list[QWidg
 def create_centered_layout() -> QHBoxLayout:
     """Hlayout to squish the slides of the widget together"""
     layout = QHBoxLayout()
-    layout.addStretch()
-    layout.addStretch()
     return layout
 
 
 def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
-    centered_layout = create_centered_layout()
+    layout = QHBoxLayout()
+    layout.addStretch()
     pcm_layout = create_layout_with_widgets(
         widgets=widgets, vertical=True
     )
-    centered_layout.addLayout(pcm_layout)
-    return centered_layout
+    layout.addStretch()
+    layout.addLayout(pcm_layout)
+    return layout

@@ -58,7 +58,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_layout_with_widgets,
+    create_layout_with_widgets, create_centered_layout_with_child,
 )
 from jdxi_editor.ui.widgets.plot.drum import DrumTVFEnvPlot
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
@@ -345,8 +345,10 @@ class DrumTVFSection(DrumBaseSection):
     def _create_tvf_basic_group(self) -> QGroupBox:
         """Basic TVF controls group - widgets from SLIDER_GROUPS['controls'] in build_widgets()."""
         group = QGroupBox("Controls")
+
         basic_tvf_layout = QFormLayout()
-        group.setLayout(basic_tvf_layout)
+        centered_layout = create_centered_layout_with_child(basic_tvf_layout)
+        group.setLayout(centered_layout)
 
         tvf_filter_type_combo = self.controls[DrumPartialParam.TVF_FILTER_TYPE]
         basic_tvf_layout.addRow(tvf_filter_type_combo)
