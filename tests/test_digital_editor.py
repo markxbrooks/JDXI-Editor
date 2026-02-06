@@ -219,8 +219,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor._update_waveform_buttons(1, 2)
         
         # PW_SQUARE button should be checked
-        mock_buttons[DigitalWaveOsc.PW_SQUARE].setChecked.assert_called_with(True)
-        mock_buttons[DigitalWaveOsc.PW_SQUARE].setStyleSheet.assert_called()
+        mock_buttons[DigitalWaveOsc.SQUARE].setChecked.assert_called_with(True)
+        mock_buttons[DigitalWaveOsc.SQUARE].setStyleSheet.assert_called()
 
     def test_update_waveform_buttons_invalid_partial(self):
         """Test updating waveform buttons with invalid partial number."""

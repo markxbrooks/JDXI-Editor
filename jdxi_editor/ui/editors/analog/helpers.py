@@ -15,7 +15,7 @@ from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 def generate_analog_wave_button(
     icon_name: str,
-    waveform: Literal[AnalogWaveOsc.PW_SQUARE, AnalogWaveOsc.TRI, AnalogWaveOsc.SAW],
+    waveform: Literal[AnalogWaveOsc.SQUARE, AnalogWaveOsc.TRI, AnalogWaveOsc.SAW],
 ) -> AnalogWaveformButton:
     """generate analog wave button"""
     btn = AnalogWaveformButton(waveform)

@@ -12,7 +12,7 @@ class AnalogWaveOsc(WaveOscBehavior, Enum):
 
     SAW = 0
     TRI = 1
-    PW_SQUARE = 2
+    SQUARE = 2
 
 
 class AnalogSubOscType(Enum):

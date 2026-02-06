@@ -83,7 +83,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.common_wave_shapes = [
             self.SYNTH_SPEC.Wave.Osc.SAW,
             self.SYNTH_SPEC.Wave.Osc.TRI,
-            self.SYNTH_SPEC.Wave.Osc.PW_SQUARE,
+            self.SYNTH_SPEC.Wave.Osc.SQUARE,
         ]
         self.wave_shapes = (
             self.common_wave_shapes
@@ -414,7 +414,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param waveform: AnalogOscWave value
         :return: None
         """
-        pw_enabled = waveform == self.SYNTH_SPEC.Wave.Osc.PW_SQUARE
+        pw_enabled = waveform == self.SYNTH_SPEC.Wave.Osc.SQUARE
         self.pwm_widget.setEnabled(pw_enabled)
 
     def _on_waveform_selected_local(self, waveform: AnalogWaveOsc | DigitalWaveOsc):

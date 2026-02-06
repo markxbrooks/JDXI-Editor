@@ -847,7 +847,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         waveform_map = {
             0: Digital.Wave.Osc.SAW,
             1: Digital.Wave.Osc.SQUARE,
-            2: Digital.Wave.Osc.PW_SQUARE,
+            2: Digital.Wave.Osc.SQUARE,
             3: Digital.Wave.Osc.TRI,
             4: Digital.Wave.Osc.SINE,
             5: Digital.Wave.Osc.NOISE,

@@ -55,7 +55,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             icon_name=Digital.Wave.WaveType.SQUARE,
         ),
         SliderSpec(
-            param=Digital.Wave.Osc.PW_SQUARE,
+            param=Digital.Wave.Osc.SQUARE,
             label=Digital.Wave.WaveType.PWSQU,
             icon_name=Digital.Wave.WaveType.PWSQU,
         ),
@@ -88,7 +88,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     # --- Enable rules for dependent widgets
     BUTTON_ENABLE_RULES = {
-        Digital.Wave.Osc.PW_SQUARE: ["pwm_widget", "pw_shift_slider"],
+        Digital.Wave.Osc.SQUARE: ["pwm_widget", "pw_shift_slider"],
         Digital.Wave.Osc.PCM: ["pwm_widget", "pcm_wave_gain", "pcm_wave_number"],
         Digital.Wave.Osc.SUPER_SAW: ["super_saw_detune"],
     }
