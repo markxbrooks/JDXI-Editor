@@ -144,12 +144,6 @@ class SectionBaseWidget(SynthBase):
             if self._get_button_specs():
                 self._initialize_button_states()
 
-    def get_parent_midi_helper(self, parent: QWidget | None):
-        if parent and hasattr(parent, "midi_helper"):
-            midi_helper = parent.midi_helper
-            return midi_helper
-        return None
-
         # -------------------------------
         # Layout & Tabs
         # -------------------------------

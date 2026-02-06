@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital, DigitalOscillatorTab
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
@@ -67,6 +67,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         attack_param=Digital.Param.OSC_PITCH_ENV_ATTACK_TIME,
         decay_param=Digital.Param.OSC_PITCH_ENV_DECAY_TIME,
         depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
+    )
+
+    TAB_BUILDERS = (
+        "_add_tuning_tab",
+        ("_has_pwm", "_add_pwm_tab"),
+        ("_has_pitch_env", "_add_pitch_env_tab"),
+        ("_has_pcm", "_add_pcm_wave_gain_tab"),
+        ("_has_adsr", "_add_adsr_tab"),
     )
 
     def generate_wave_shapes(self):
@@ -237,66 +245,85 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave_number
         # --- Don't add to control_widgets - it will be in the PCM tab
 
+    def _has_pwm(self) -> bool:
+        return getattr(self, "pwm_widget", None) is not None
+
+    def _has_pitch_env(self) -> bool:
+        return getattr(self, "pitch_env_widget", None) is not None
+
+    def _has_pcm(self) -> bool:
+        return all(getattr(self, attr, None) is not None
+                   for attr in ("pcm_wave_gain", "pcm_wave_number"))
+
+    def _has_adsr(self) -> bool:
+        return getattr(self, "adsr_widget", None) is not None
+
     def _create_tab_widget(self):
         """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
 
         self.tab_widget = QTabWidget()
 
-        from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
+        for entry in self.TAB_BUILDERS:
+            if isinstance(entry, str):
+                getattr(self, entry)()
+            else:
+                predicate, builder = entry
+                if getattr(self, predicate)():
+                    getattr(self, builder)()
 
-        # Tuning tab
+    def _add_adsr_tab(self):
+        adsr_group = create_envelope_group(
+            "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
+        )
+        self._add_tab(key=DigitalOscillatorTab.ADSR, widget=adsr_group)
+
+    def _add_pcm_wave_gain_tab(self):
+        """Add PCM Wave gain tab"""
+        pcm_hlayout = QHBoxLayout()  # Hlayout to squish the slides of the widget together
+        pcm_hlayout.addStretch()
+        pcm_layout = create_layout_with_widgets(
+            widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True
+        )
+        pcm_hlayout.addLayout(pcm_layout)
+        pcm_hlayout.addStretch()
+        pcm_group = create_group_from_definition(
+            key=Digital.GroupBox.PCM_WAVE,
+            layout_or_widget=pcm_hlayout,
+            set_attr=self,
+        )
+        self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)
+
+    def _add_pitch_env_tab(self):
+        """Add pitch env tab"""
+        pitch_env_layout = create_layout_with_widgets(
+            widgets=[self.pitch_env_widget], vertical=False
+        )
+        pitch_env_group = create_group_from_definition(
+            key=Digital.GroupBox.PITCH_ENVELOPE,
+            layout_or_widget=pitch_env_layout,
+            set_attr=self,
+        )
+        pitch_env_group.setProperty("adsr", True)
+        self._add_tab(key=DigitalOscillatorTab.PITCH, widget=pitch_env_group)
+
+    def _add_pwm_tab(self):
+        """Add pitch env tab"""
+        pw_layout = QVBoxLayout()
+        pw_layout.addStretch()
+        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+        pw_layout.addWidget(self.pwm_widget)
+        pw_layout.addStretch()
+        pw_group = create_group_from_definition(
+            key=Digital.GroupBox.PULSE_WIDTH,
+            layout_or_widget=pw_layout,
+            set_attr=self,
+        )
+        self._add_tab(key=DigitalOscillatorTab.PULSE_WIDTH, widget=pw_group)
+
+    def _add_tuning_tab(self):
+        """Add Tuning tab"""
         tuning_widget = self._create_row_widget(widgets=self.tuning_control_widgets)
         self._add_tab(key=DigitalOscillatorTab.TUNING, widget=tuning_widget)
-
-        # Pulse Width tab
-        if hasattr(self, "pwm_widget") and self.pwm_widget:
-            pw_layout = QVBoxLayout()
-            pw_layout.addStretch()
-            self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
-            pw_layout.addWidget(self.pwm_widget)
-            pw_layout.addStretch()
-            pw_group = create_group_from_definition(
-                key=Digital.GroupBox.PULSE_WIDTH,
-                layout_or_widget=pw_layout,
-                set_attr=self,
-            )
-            self._add_tab(key=DigitalOscillatorTab.PULSE_WIDTH, widget=pw_group)
-
-        # --- Pitch Envelope tab
-        if hasattr(self, "pitch_env_widget") and self.pitch_env_widget:
-            pitch_env_layout = create_layout_with_widgets(
-                widgets=[self.pitch_env_widget], vertical=False
-            )
-            pitch_env_group = create_group_from_definition(
-                key=Digital.GroupBox.PITCH_ENVELOPE,
-                layout_or_widget=pitch_env_layout,
-                set_attr=self,
-            )
-            pitch_env_group.setProperty("adsr", True)
-            self._add_tab(key=DigitalOscillatorTab.PITCH, widget=pitch_env_group)
-
-        # --- PCM tab
-        if hasattr(self, "pcm_wave_gain") and hasattr(self, "pcm_wave_number"):
-            pcm_hlayout = QHBoxLayout()  # Hlayout to squish the slides of the widget together
-            pcm_hlayout.addStretch()
-            pcm_layout = create_layout_with_widgets(
-                widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True
-            )
-            pcm_hlayout.addLayout(pcm_layout)
-            pcm_hlayout.addStretch()
-            pcm_group = create_group_from_definition(
-                key=Digital.GroupBox.PCM_WAVE,
-                layout_or_widget=pcm_hlayout,
-                set_attr=self,
-            )
-            self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)
-
-        # --- ADSR tab (if any)
-        if self.adsr_widget:
-            adsr_group = create_envelope_group(
-                "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
-            )
-            self._add_tab(key=DigitalOscillatorTab.ADSR, widget=adsr_group)
 
     def _create_row_widget(
             self,
