@@ -23,6 +23,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_group_from_definition,
     create_layout_with_widgets,
+    create_centered_layout_with_widgets
 )
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
@@ -124,13 +125,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ]
 
     def __init__(
-        self,
-        icons_row_type: str = IconType.ADSR,
-        analog: bool = False,
-        send_midi_parameter: Callable = None,
-        midi_helper: MidiIOHelper = None,
-        controls: dict = None,
-        address: RolandSysExAddress = None,
+            self,
+            icons_row_type: str = IconType.ADSR,
+            analog: bool = False,
+            send_midi_parameter: Callable = None,
+            midi_helper: MidiIOHelper = None,
+            controls: dict = None,
+            address: RolandSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
         super().__init__(
@@ -162,9 +163,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
         Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3."""
         for param in (
-            Digital.Param.OSC_PITCH,
-            Digital.Param.OSC_DETUNE,
-            Digital.Param.SUPER_SAW_DETUNE,
+                Digital.Param.OSC_PITCH,
+                Digital.Param.OSC_DETUNE,
+                Digital.Param.SUPER_SAW_DETUNE,
         ):
             if param in self.controls:
                 w = self.controls.pop(param)
@@ -178,7 +179,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 control_sliders[2],
             )
             for spec, widget in zip(
-                self.SLIDER_GROUPS["controls"], control_sliders
+                    self.SLIDER_GROUPS["controls"], control_sliders
             ):
                 self.controls[spec.param] = widget
                 self.tuning_control_widgets.append(widget)
@@ -279,16 +280,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _add_pcm_wave_gain_tab(self):
         """Add PCM Wave gain tab"""
-        pcm_hlayout = QHBoxLayout()  # Hlayout to squish the slides of the widget together
-        pcm_hlayout.addStretch()
-        pcm_layout = create_layout_with_widgets(
-            widgets=[self.pcm_wave_gain, self.pcm_wave_number], vertical=True
-        )
-        pcm_hlayout.addLayout(pcm_layout)
-        pcm_hlayout.addStretch()
+        centered_layout = create_centered_layout_with_widgets(widgets=[self.pcm_wave_gain,
+                                                                       self.pcm_wave_number])
         pcm_group = create_group_from_definition(
             key=Digital.GroupBox.PCM_WAVE,
-            layout_or_widget=pcm_hlayout,
+            layout_or_widget=centered_layout,
             set_attr=self,
         )
         self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)

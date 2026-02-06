@@ -451,3 +451,20 @@ def add_sublayout_to_layout(layout: QVBoxLayout | QHBoxLayout, sub_layouts: list
 def add_widgets_to_layout(layout: QVBoxLayout | QHBoxLayout, widgets: list[QWidget | None]):
     for widget in widgets:
         layout.addWidget(widget)
+
+
+def create_centered_layout() -> QHBoxLayout:
+    """Hlayout to squish the slides of the widget together"""
+    layout = QHBoxLayout()
+    layout.addStretch()
+    layout.addStretch()
+    return layout
+
+
+def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
+    centered_layout = create_centered_layout()
+    pcm_layout = create_layout_with_widgets(
+        widgets=widgets, vertical=True
+    )
+    centered_layout.addLayout(pcm_layout)
+    return centered_layout

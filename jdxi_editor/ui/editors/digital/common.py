@@ -123,7 +123,11 @@ class DigitalCommonSection(BaseCommonSection):
     # ------------------------------------------------------------
     # Layout
     # ------------------------------------------------------------
-        
+
+    def _setup_ui(self) -> None:
+        pass  # Don't make a QTabWidget
+
+
     def setup_ui(self) -> None:
         """setup ui"""
         widget_rows = [
