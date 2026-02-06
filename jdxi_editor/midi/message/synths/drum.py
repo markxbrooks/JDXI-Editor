@@ -3,19 +3,9 @@ DrumKitMessage
 ==============
 
 # Example usage:
-# Set kit name
 >>> msg = DrumKitMessage(
->>>     section=DrumKitSection.COMMON.STATUS,
->>>     param=DrumKitCommon.NAME_1.STATUS,
->>>     value=0x41,  # 'A'
->>> )
-
-# Set pad parameter
->>> msg = DrumKitMessage(
->>>     section=DrumKitSection.get_pad_offset(36),  # Pad C1
->>>     param=DrumPadParam.WAVE_SAW.STATUS,
->>>     value=1,  # Wave number
->>> )
+...      value=0x41,  # 'A'
+... )
 """
 
 from dataclasses import dataclass

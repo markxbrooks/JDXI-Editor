@@ -15,6 +15,7 @@ from jdxi_editor.ui.widgets.editor import IconType
 
 
 class AnalogLFOSection(BaseLFOSection):
+
     SYNTH_SPEC = Analog
 
     def __init__(

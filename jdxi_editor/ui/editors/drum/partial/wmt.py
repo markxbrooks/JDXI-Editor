@@ -186,7 +186,7 @@ class DrumWMTSection(SectionBaseWidget):
             self._create_wmt_controls_group(p), controls_icon, "Controls"
         )
         waves_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
+            JDXi.UI.Icon.Wave.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         self.wmt_controls_tab_widget.addTab(
             self._create_wave_combo_group(p, wmt_index), waves_icon, "Waves"

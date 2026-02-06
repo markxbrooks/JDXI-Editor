@@ -67,12 +67,12 @@ class AnalogFilterSection(BaseFilterSection):
         SliderSpec(
             Analog.Filter.Mode.BYPASS,
             Analog.Filter.FilterTypeString.BYPASS,
-            icon_name=JDXi.UI.Icon.Wave.BYPASS_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.BYPASS_FILTER,
         ),
         SliderSpec(
             Analog.Filter.Mode.LPF,
             Analog.Filter.FilterTypeString.LPF,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
     ]
 

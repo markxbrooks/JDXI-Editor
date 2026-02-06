@@ -12,7 +12,7 @@ from jdxi_editor.midi.data.digital.filter import (
     DigitalFilterType,
 )
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.midi.data.parameter.base.spec import (
     AmpSpec,
     DisplaySpec,
@@ -91,11 +91,11 @@ class DigitalTab(TabDefinitionMixin, Enum):
     PARTIAL_3 = ("partial_3", "Partial 3", "mdi.numeric-3-circle-outline")
     COMMON = ("common", "Common", JDXiUIIconRegistry.COG_OUTLINE)
     MISC = ("misc", "Misc", JDXiUIIconRegistry.DOTS_HORIZONTAL)
-    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.WAVE_TRIANGLE)
+    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.Wave.Icon.TRIANGLE)
     FILTER = ("filter", "Filter", JDXiUIIconRegistry.FILTER)
     AMP = ("amp", "Amp", JDXiUIIconRegistry.AMPLIFIER)
-    LFO = ("lfo", "LFO", JDXiUIIconRegistry.WAVE_SINE)
-    MODLFO = ("mod_lfo", "Mod LFO", JDXiUIIconRegistry.WAVEFORM)
+    LFO = ("lfo", "LFO", JDXiUIIconRegistry.Wave.Icon.SINE)
+    MODLFO = ("mod_lfo", "Mod LFO", JDXiUIIconRegistry.Wave.Icon.WAVEFORM)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -107,7 +107,7 @@ class DigitalLFOTab(TabDefinitionMixin, Enum):
     """Definition of Digital LFO Section Tabs"""
 
     RATE = ("rate", "Rate", JDXiUIIconRegistry.CLOCK)
-    DEPTHS = ("depths", "Depths", JDXiUIIconRegistry.WAVEFORM)
+    DEPTHS = ("depths", "Depths", JDXiUIIconRegistry.Wave.Icon.WAVEFORM)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -126,7 +126,7 @@ class DigitalFilterTab(TabDefinitionMixin, Enum):
     """Definition of Digital Filter Section Tabs"""
 
     CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+    ADSR = ("adsr", "ADSR", WaveForm.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -138,7 +138,7 @@ class DigitalAmpTab(TabDefinitionMixin, Enum):
     """Definition of Digital Amp Section Tabs"""
 
     CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+    ADSR = ("adsr", "ADSR", WaveForm.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -150,10 +150,10 @@ class DigitalOscillatorTab(TabDefinitionMixin, Enum):
     """Definition of Digital Oscillator Section Tabs"""
 
     TUNING = ("tuning", "Tuning", JDXiUIIconRegistry.TUNE)
-    PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveformType.SQUARE)
-    PITCH = ("pitch_env", "Pitch Env", WaveformType.ADSR)
-    PCM = ("pcm", "PCM", WaveformType.PCM)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+    PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveForm.SQUARE)
+    PITCH = ("pitch_env", "Pitch Env", WaveForm.ADSR)
+    PCM = ("pcm", "PCM", WaveForm.PCM)
+    ADSR = ("adsr", "ADSR", WaveForm.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -200,7 +200,7 @@ class DigitalWave(WaveSpec):
     LFO: DigitalLFOShape = DigitalLFOShape
     Osc: DigitalWaveOsc = DigitalWaveOsc
     SubOsc = None  # No sub-oscillator for the digital synth
-    WaveType: WaveformType = WaveformType
+    WaveType: WaveForm = WaveForm
     Tab: DigitalOscillatorTab = DigitalOscillatorTab
     OscillatorTab: DigitalOscillatorTab = DigitalOscillatorTab  # Alias for clarity
 

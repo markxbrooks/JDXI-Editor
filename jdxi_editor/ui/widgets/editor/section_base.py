@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTabWidget, QVBoxLayout,
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
-from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
@@ -448,7 +448,7 @@ class SectionBaseWidget(SynthBase):
                 icon = None
                 try:
                     # Check if icon_name_str matches a WaveformIconType attribute
-                    icon_type_value = getattr(WaveformType, icon_name_str, None)
+                    icon_type_value = getattr(WaveForm, icon_name_str, None)
                     if icon_type_value is not None:
                         # Use generate_waveform_icon directly for waveform/filter icons
                         icon_base64 = generate_waveform_icon(
@@ -601,25 +601,25 @@ class SectionBaseWidget(SynthBase):
         widget: QWidget,
     ) -> None:
         """Add a tab using TabDefinitionMixin pattern"""
-        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        from jdxi_editor.midi.data.digital.oscillator import WaveForm
 
         # --- Handle both regular icons and generated waveform icons
         waveform_type_values = {
-            WaveformType.ADSR,
-            WaveformType.UPSAW,
-            WaveformType.SQUARE,
-            WaveformType.PWSQU,
-            WaveformType.TRIANGLE,
-            WaveformType.SINE,
-            WaveformType.SAW,
-            WaveformType.SPSAW,
-            WaveformType.PCM,
-            WaveformType.NOISE,
-            WaveformType.LPF_FILTER,
-            WaveformType.HPF_FILTER,
-            WaveformType.BYPASS_FILTER,
-            WaveformType.BPF_FILTER,
-            WaveformType.FILTER_SINE,
+            WaveForm.ADSR,
+            WaveForm.UPSAW,
+            WaveForm.SQUARE,
+            WaveForm.PWSQU,
+            WaveForm.TRIANGLE,
+            WaveForm.SINE,
+            WaveForm.SAW,
+            WaveForm.SPSAW,
+            WaveForm.PCM,
+            WaveForm.NOISE,
+            WaveForm.LPF_FILTER,
+            WaveForm.HPF_FILTER,
+            WaveForm.BYPASS_FILTER,
+            WaveForm.BPF_FILTER,
+            WaveForm.FILTER_SINE,
         }
 
         # --- Find the tab widget (could be tab_widget or oscillator_tab_widget, etc.)
@@ -751,12 +751,11 @@ class SectionBaseWidget(SynthBase):
         self.wave_shape_group = QButtonGroup(self)
         self.wave_shape_group.setExclusive(True)
 
-        for shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(shape, JDXi.UI.Icon.WAVEFORM)
-            icon = create_icon_from_qta(icon_name)
+        for wave in self.wave_shapes:
+            icon = create_icon_from_qta(wave.icon)
 
             btn = create_button_with_icon(
-                icon_name=shape.display_name,
+                icon_name=wave.shape.display_name,
                 icon=icon,
                 button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
                 icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
@@ -767,8 +766,8 @@ class SectionBaseWidget(SynthBase):
             if self.analog:
                 JDXi.UI.Theme.apply_button_rect_analog(btn)
 
-            self.wave_shape_group.addButton(btn, shape.value)
-            self.wave_shape_buttons[shape] = btn
+            self.wave_shape_group.addButton(btn, wave.shape.value)
+            self.wave_shape_buttons[wave.shape] = btn
             layout_widgets.append(btn)
 
         self.wave_shape_group.idToggled.connect(self._on_shape_group_changed)

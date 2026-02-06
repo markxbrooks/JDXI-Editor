@@ -1,6 +1,7 @@
 """
 LFO section of the digital partial editor.
 """
+
 from typing import Callable
 
 from PySide6.QtWidgets import QTabWidget
@@ -11,6 +12,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digi
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
 from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
+from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
@@ -39,46 +41,28 @@ class BaseLFOSection(SectionBaseWidget):
         self.widgets: LFOWidgets | None = None
         self.wave_shape_param: list | None = None
         self.send_midi_parameter: Callable | None = send_midi_parameter
-        self.wave_shape_buttons = {}  # Dictionary to store LFO shape buttons
-
         super().__init__(
             icons_row_type=icons_row_type,
             analog=analog,
             send_midi_parameter=send_midi_parameter,
         )
-        # --- Restore wave_shapes, icon map, and buttons after super().__init__() (SectionBaseWidget overwrites them)
         self.wave_shapes = self.generate_wave_shapes()
-        self.wave_shape_icon_map = self.generate_wave_icon_map()
-        self.shape_icon_map = self.wave_shape_icon_map
         self.wave_shape_buttons = {}
         # --- Set controls after super().__init__() to avoid it being overwritten
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
 
-    def generate_wave_icon_map(self):
-        """generate wave icon map"""
-        W = self.SYNTH_SPEC.Wave
-        I = JDXi.UI.Icon
-        shape_icon_map = {
-            W.LFO.TRI: I.WAVE_TRIANGLE,
-            W.LFO.SINE: I.WAVE_SINE,
-            W.LFO.SAW: I.WAVE_SAW,
-            W.LFO.SQUARE: I.WAVE_SQUARE,
-            W.LFO.SAMPLE_HOLD: I.WAVEFORM,
-            W.LFO.RANDOM: I.WAVE_RANDOM,
-        }
-        return shape_icon_map
-
     def generate_wave_shapes(self) -> list:
         """generate_wave_shapes"""
         W = self.SYNTH_SPEC.Wave
+        I = JDXi.UI.Icon
         wave_shapes = [
-            W.LFO.TRI,
-            W.LFO.SINE,
-            W.LFO.SAW,
-            W.LFO.SQUARE,
-            W.LFO.SAMPLE_HOLD,
-            W.LFO.RANDOM,
+            WaveShapeSpec(shape=W.LFO.TRI, icon=I.Wave.Icon.TRIANGLE),
+            WaveShapeSpec(shape=W.LFO.SINE, icon=I.Wave.Icon.SINE),
+            WaveShapeSpec(shape=W.LFO.SAW, icon=I.Wave.Icon.SAW),
+            WaveShapeSpec(shape=W.LFO.SQUARE, icon=I.Wave.Icon.SQUARE),
+            WaveShapeSpec(shape=W.LFO.SAMPLE_HOLD, icon=I.Wave.Icon.WAVEFORM),
+            WaveShapeSpec(shape=W.LFO.RANDOM, icon=I.Wave.Icon.RANDOM),
         ]
         return wave_shapes
 
@@ -87,9 +71,6 @@ class BaseLFOSection(SectionBaseWidget):
         # --- Restore wave_shapes/icon_map if SectionBaseWidget.__init__() overwrote them
         if self.wave_shapes is None:
             self.wave_shapes = self.generate_wave_shapes()
-        if self.wave_shape_icon_map is None or not hasattr(self, "shape_icon_map") or self.shape_icon_map is None:
-            self.wave_shape_icon_map = self.generate_wave_icon_map()
-            self.shape_icon_map = self.wave_shape_icon_map
         if self.wave_shape_buttons is None:
             self.wave_shape_buttons = {}
 

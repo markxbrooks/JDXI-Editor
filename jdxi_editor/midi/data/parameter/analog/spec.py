@@ -13,7 +13,7 @@ from jdxi_editor.midi.data.analog.filter import (
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOWaveShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogWaveOsc
 from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, AnalogRPN
-from jdxi_editor.midi.data.digital.oscillator import WaveformType
+from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
@@ -37,10 +37,10 @@ class AnalogTab(TabDefinitionMixin, Enum):
     """Analog tab class"""
 
     PRESETS = ("presets", "Presets", JDXiUIIconRegistry.MUSIC_NOTE_MULTIPLE)
-    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.WAVE_TRIANGLE)
+    OSCILLATOR = ("oscillator", "Oscillator", JDXiUIIconRegistry.Wave.Icon.TRIANGLE)
     FILTER = ("filter", "Filter", JDXiUIIconRegistry.FILTER)
     AMP = ("amp", "Amp", JDXiUIIconRegistry.AMPLIFIER)
-    LFO = ("lfo", "LFO", JDXiUIIconRegistry.WAVE_SINE)
+    LFO = ("lfo", "LFO", JDXiUIIconRegistry.Wave.Icon.SINE)
     COMMON = ("common", "Common", JDXiUIIconRegistry.COG_OUTLINE)
 
     def __init__(self, key: str, label: str, icon: Any):
@@ -53,7 +53,7 @@ class AnalogFilterTab(TabDefinitionMixin, Enum):
     """Definition of Analog Filter Section Tabs"""
 
     CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+    ADSR = ("adsr", "ADSR", WaveForm.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -65,7 +65,7 @@ class AnalogAmpTab(TabDefinitionMixin, Enum):
     """Definition of Analog Amp Section Tabs"""
 
     CONTROLS = ("controls", "Controls", JDXiUIIconRegistry.TUNE)
-    ADSR = ("adsr", "ADSR", WaveformType.ADSR)
+    ADSR = ("adsr", "ADSR", WaveForm.ADSR)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -94,7 +94,7 @@ class AnalogOscillatorTab(TabDefinitionMixin, Enum):
 
     PITCH = ("pitch", "Pitch", JDXiUIIconRegistry.MUSIC_NOTE)
     TUNING = ("tuning", "Tuning", JDXiUIIconRegistry.MUSIC_NOTE)
-    PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveformType.SQUARE)
+    PULSE_WIDTH = ("pulse_width", "Pulse Width", WaveForm.SQUARE)
 
     def __init__(self, key: str, label: str, icon: Any):
         self.key = key
@@ -150,7 +150,7 @@ class AnalogWave(WaveSpec):
     LFO: AnalogLFOWaveShape = AnalogLFOWaveShape
     Osc: AnalogWaveOsc = AnalogWaveOsc
     SubOsc: AnalogSubOscType = AnalogSubOscType
-    WaveType: WaveformType = WaveformType
+    WaveType: WaveForm = WaveForm
     Tab: AnalogOscillatorTab = AnalogOscillatorTab
 
 

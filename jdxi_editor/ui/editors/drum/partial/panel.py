@@ -110,7 +110,7 @@ class DrumPartialPanel(PartialPanel):
         tab_wmt_layout.setContentsMargins(0, 0, 0, 0)
         tab_wmt_layout.setSpacing(0)
         wmt_icon = JDXi.UI.Icon.get_icon(
-            JDXi.UI.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
+            JDXi.UI.Icon.Wave.Icon.WAVEFORM, color=JDXi.UI.Style.GREY
         )
         tab_widget.addTab(tab_wmt, wmt_icon, "WMT")
 

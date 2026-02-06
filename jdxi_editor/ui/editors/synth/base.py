@@ -451,25 +451,25 @@ class SynthBase(QWidget):
         widget: QWidget,
     ) -> None:
         # Handle both regular icons and generated waveform icons
-        from jdxi_editor.midi.data.digital.oscillator import WaveformType
+        from jdxi_editor.midi.data.digital.oscillator import WaveForm
 
         # Check if icon is a WaveformType value (string that matches WaveformType attributes)
         waveform_type_values = {
-            WaveformType.ADSR,
-            WaveformType.UPSAW,
-            WaveformType.SQUARE,
-            WaveformType.PWSQU,
-            WaveformType.TRIANGLE,
-            WaveformType.SINE,
-            WaveformType.SAW,
-            WaveformType.SPSAW,
-            WaveformType.PCM,
-            WaveformType.NOISE,
-            WaveformType.LPF_FILTER,
-            WaveformType.HPF_FILTER,
-            WaveformType.BYPASS_FILTER,
-            WaveformType.BPF_FILTER,
-            WaveformType.FILTER_SINE,
+            WaveForm.ADSR,
+            WaveForm.UPSAW,
+            WaveForm.SQUARE,
+            WaveForm.PWSQU,
+            WaveForm.TRIANGLE,
+            WaveForm.SINE,
+            WaveForm.SAW,
+            WaveForm.SPSAW,
+            WaveForm.PCM,
+            WaveForm.NOISE,
+            WaveForm.LPF_FILTER,
+            WaveForm.HPF_FILTER,
+            WaveForm.BYPASS_FILTER,
+            WaveForm.BPF_FILTER,
+            WaveForm.FILTER_SINE,
         }
 
         # Handle icon - could be a string (qtawesome icon name) or WaveformType value

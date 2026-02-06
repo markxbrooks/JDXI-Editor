@@ -39,42 +39,42 @@ class DigitalFilterSection(BaseFilterSection):
         SliderSpec(
             Digital.Filter.Mode.BYPASS,
             Digital.Filter.FilterType.BYPASS,
-            icon_name=JDXi.UI.Icon.Wave.BYPASS_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.BYPASS_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.LPF,
             Digital.Filter.FilterType.LPF,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.HPF,
             Digital.Filter.FilterType.HPF,
-            icon_name=JDXi.UI.Icon.Wave.HPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.HPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.BPF,
             Digital.Filter.FilterType.BPF,
-            icon_name=JDXi.UI.Icon.Wave.BPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.BPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.PKG,
             Digital.Filter.FilterType.PKG,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.LPF2,
             Digital.Filter.FilterType.LPF2,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.LPF3,
             Digital.Filter.FilterType.LPF3,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
         SliderSpec(
             Digital.Filter.Mode.LPF4,
             Digital.Filter.FilterType.LPF4,
-            icon_name=JDXi.UI.Icon.Wave.LPF_FILTER,
+            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
         ),
     ]
 
