@@ -38,9 +38,6 @@ class JDXiUIIconRegistry:
 
     WaveForm: WaveForm = WaveForm
     Wave: WaveSpec = WaveSpec
-    # Wave: WaveformType = WaveformType
-    # Waveform/Synth icons
-    WAVE_WAVEFORM: str = "mdi.waveform"
 
     FILTER = "ri.filter-3-fill"
     POWER: str = "mdi.power"
