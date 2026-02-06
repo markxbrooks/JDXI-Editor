@@ -62,19 +62,8 @@ class AnalogFilterSection(BaseFilterSection):
         ),
     }
 
-    # --- Filter mode buttons
-    BUTTON_SPECS = [
-        SliderSpec(
-            Analog.Filter.Mode.BYPASS,
-            Analog.Filter.FilterTypeString.BYPASS,
-            icon_name=JDXi.UI.Icon.WaveForm.BYPASS_FILTER,
-        ),
-        SliderSpec(
-            Analog.Filter.Mode.LPF,
-            Analog.Filter.FilterTypeString.LPF,
-            icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
-        ),
-    ]
+    # Filter mode buttons: populated from generate_wave_shapes() in __init__
+    BUTTON_SPECS = []
 
     FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Analog.Param.FILTER_CUTOFF)
 
@@ -97,6 +86,21 @@ class AnalogFilterSection(BaseFilterSection):
         Analog.Param.FILTER_ENV_DEPTH,
     ]
 
+    def generate_wave_shapes(self):
+        """Generate filter mode button specs (same pattern as Analog LFO generate_wave_shapes)."""
+        return [
+            SliderSpec(
+                Analog.Filter.Mode.BYPASS,
+                Analog.Filter.FilterTypeString.BYPASS,
+                icon_name=JDXi.UI.Icon.WaveForm.BYPASS_FILTER,
+            ),
+            SliderSpec(
+                Analog.Filter.Mode.LPF,
+                Analog.Filter.FilterTypeString.LPF,
+                icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
+            ),
+        ]
+
     def __init__(
         self,
         controls: dict[AddressParameter, QWidget],
@@ -113,6 +117,8 @@ class AnalogFilterSection(BaseFilterSection):
         :param address: RolandSysExAddress
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
+        self.wave_shapes = self.generate_wave_shapes()
+        self.BUTTON_SPECS = self.wave_shapes
         super().__init__(
             controls=controls,
             address=address,

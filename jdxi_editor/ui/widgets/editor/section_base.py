@@ -447,8 +447,8 @@ class SectionBaseWidget(SynthBase):
             # --- Create button
             btn = QPushButton(button_label)
             btn.setCheckable(True)
-            if not self.analog:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            if self.analog:
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
             else:
                 btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
             # --- Create icon if icon_name is provided
@@ -699,12 +699,18 @@ class SectionBaseWidget(SynthBase):
             return
         for btn in self.button_widgets.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            if self.analog:
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+            else:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         selected_btn = self.button_widgets.get(button_param)
         if selected_btn is None:
             return
         selected_btn.setChecked(True)
-        # --- selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE_ANALOG)
+        if self.analog:
+            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+        else:
+            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         self._update_button_enabled_states(button_param)
         if self.send_midi_parameter:
             # --- Map filter mode enums to their corresponding parameter

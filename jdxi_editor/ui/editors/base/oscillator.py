@@ -98,14 +98,14 @@ class BaseOscillatorSection(SectionBaseWidget):
             ]
         )
         # ---  Map waveform shapes to icon names
-        self.shape_icon_map = {
+        """self.shape_icon_map = {
             self.SYNTH_SPEC.Wave.LFO.TRI: JDXi.UI.Icon.Wave.Icon.TRIANGLE,
             self.SYNTH_SPEC.Wave.LFO.SINE: JDXi.UI.Icon.Wave.Icon.SINE,
             self.SYNTH_SPEC.Wave.LFO.SAW: JDXi.UI.Icon.Wave.Icon.SAW,
             self.SYNTH_SPEC.Wave.LFO.SQUARE: JDXi.UI.Icon.Wave.Icon.SQUARE,
             self.SYNTH_SPEC.Wave.LFO.SAMPLE_HOLD: JDXi.UI.Icon.Wave.Icon.WAVEFORM,
             self.SYNTH_SPEC.Wave.LFO.RANDOM: JDXi.UI.Icon.Wave.Icon.RANDOM,
-        }
+        }"""
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,

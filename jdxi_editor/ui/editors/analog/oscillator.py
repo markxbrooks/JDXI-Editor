@@ -5,8 +5,6 @@ Analog Oscillator Section
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
@@ -50,24 +48,8 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             )
         ],
     }
-    # --- Waveform buttons
-    BUTTON_SPECS = [
-        SliderSpec(
-            param=Analog.Wave.Osc.SAW,
-            label=Analog.Wave.WaveType.UPSAW,
-            icon_name=Analog.Wave.WaveType.UPSAW,
-        ),
-        SliderSpec(
-            param=Analog.Wave.Osc.TRI,
-            label=Analog.Wave.WaveType.SQUARE,
-            icon_name=Analog.Wave.WaveType.SQUARE,
-        ),
-        SliderSpec(
-            param=Analog.Wave.Osc.SQUARE,
-            label=Analog.Wave.WaveType.PWSQU,
-            icon_name=Analog.Wave.WaveType.PWSQU,
-        ),
-    ]
+    # Waveform buttons: populated from generate_wave_shapes() in __init__
+    BUTTON_SPECS = []
 
     SWITCH_SPECS = [
         SwitchSpec(
@@ -114,6 +96,8 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.waveform_buttons: dict = wave_buttons or {}
         self.midi_helper = midi_helper
         self.analog: bool = True
+        self.wave_shapes = self.generate_wave_shapes()
+        self.BUTTON_SPECS = self.wave_shapes
         log.info(f"[AnalogOscillatorSection] before super init controls: {controls}")
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
@@ -125,21 +109,30 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         log.info(f"[AnalogOscillatorSection] after super init self.controls: {self.controls}")
         self.address = address
-        self.wave_shapes = self.generate_wave_shapes()
         self.build_widgets()
         log.info(f"[AnalogOscillatorSection] after build_widgets self.controls: {self.controls}")
         self.setup_ui()
 
     def generate_wave_shapes(self) -> list:
-        """generate_wave_shapes"""
+        """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
         W = self.SYNTH_SPEC.Wave
-        I = JDXi.UI.Icon
-        wave_shapes = [
-            WaveShapeSpec(shape=W.Osc.TRI, icon=I.Wave.Icon.TRIANGLE),
-            WaveShapeSpec(shape=W.Osc.SAW, icon=I.Wave.Icon.SAW),
-            WaveShapeSpec(shape=W.Osc.SQUARE, icon=I.Wave.Icon.SQUARE),
+        return [
+            SliderSpec(
+                param=W.Osc.SAW,
+                label=W.WaveType.UPSAW,
+                icon_name=W.WaveType.UPSAW,
+            ),
+            SliderSpec(
+                param=W.Osc.TRI,
+                label=W.WaveType.SQUARE,
+                icon_name=W.WaveType.SQUARE,
+            ),
+            SliderSpec(
+                param=W.Osc.SQUARE,
+                label=W.WaveType.PWSQU,
+                icon_name=W.WaveType.PWSQU,
+            ),
         ]
-        return wave_shapes
 
     def _build_additional_analog_widgets(self):
         # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
