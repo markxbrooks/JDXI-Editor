@@ -91,7 +91,7 @@ class JDXiUIStyle:
     BUTTON_SEQUENCER_SMALL = "QPushButton:checked { background-color: #cc0000; color: white; }"
     WHITE = "#FFFFFF"
     TRACK_LABEL_WIDTH = 70
-    TRACK_BUTTON_WIDTH = 20
+    BUTTON_TRACK_WIDTH = 20
     TRACK_SPINBOX_WIDTH = 40
     PWM_WIDGET_HEIGHT = 250
     ADSR_PLOT_WIDTH = 300

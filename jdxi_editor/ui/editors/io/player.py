@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QFileDialog,
+    QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -32,7 +33,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider,
     QVBoxLayout,
-    QWidget, QButtonGroup,
+    QWidget,
+    QButtonGroup,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -239,6 +241,8 @@ class MidiFileEditor(SynthEditor):
         classification_hlayout.addWidget(classify_tracks_label_row)
         classification_hlayout.addStretch()
         title_vlayout.addLayout(classification_hlayout)
+        apply_all_label_row = self.create_apply_all_button_and_label()
+        title_vlayout.addWidget(apply_all_label_row)
 
         # Add title layout to header
         title_widget = QWidget()
@@ -250,9 +254,7 @@ class MidiFileEditor(SynthEditor):
 
         # --- Modular control sections
         # right_panel_layout.addLayout(self.init_midi_file_controls())
-        right_panel_layout.addLayout(self.init_automation_controls())
-        right_panel_layout.addLayout(self.init_usb_port_controls())
-        right_panel_layout.addLayout(self.init_usb_file_controls())
+        right_panel_layout.addLayout(self.init_automation_usb_grid())
         right_panel_layout.addLayout(self.init_mute_controls())
 
         # --- Use EditorBaseWidget for consistent scrollable layout structure
@@ -619,33 +621,27 @@ class MidiFileEditor(SynthEditor):
                 QMessageBox.Critical,
             )
 
-    def init_automation_controls(self) -> QHBoxLayout:
+    def init_automation_usb_grid(self) -> QGridLayout:
         """
-        Create simple automation controls to insert Program Changes at the current position.
+        Create a grid layout containing Automation, USB Port, and USB File controls.
         """
-        layout = QHBoxLayout()
+        grid = QGridLayout()
+        row = 0
 
-        layout.addWidget(QLabel("Automation:"))
-
-        # Channel selector (1-16)
+        # --- Row 0: Automation
+        grid.addWidget(QLabel("Automation:"), row, 0)
         self.ui.automation_channel_combo = QComboBox()
         for ch in range(1, 17):
             self.ui.automation_channel_combo.addItem(f"Ch {ch}", ch)
-        layout.addWidget(self.ui.automation_channel_combo)
-
-        # Source list selector
+        grid.addWidget(self.ui.automation_channel_combo, row, 1)
         self.ui.automation_type_combo = QComboBox()
         self.ui.automation_type_combo.addItems(["Digital", "Analog", "Drums"])
         self.ui.automation_type_combo.currentIndexChanged.connect(
             self.on_automation_type_changed
         )
-        layout.addWidget(self.ui.automation_type_combo)
-
-        # Program selector (populated based on type)
+        grid.addWidget(self.ui.automation_type_combo, row, 2)
         self.ui.automation_program_combo = QComboBox()
-        layout.addWidget(self.ui.automation_program_combo)
-
-        # Insert button
+        grid.addWidget(self.ui.automation_program_combo, row, 3)
         self.ui.automation_insert_button = QPushButton()
         self.ui.automation_insert_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
         self.ui.automation_insert_button.setFixedWidth(
@@ -657,28 +653,102 @@ class MidiFileEditor(SynthEditor):
         self.ui.automation_insert_button.clicked.connect(
             self.insert_program_change_current_position
         )
-        layout.addWidget(self.ui.automation_insert_button)
-
+        insert_cell = QWidget()
+        insert_cell_layout = QHBoxLayout(insert_cell)
+        insert_cell_layout.addStretch()
+        insert_cell_layout.setContentsMargins(0, 0, 0, 0)
+        insert_cell_layout.setSpacing(4)
+        insert_cell_layout.addWidget(self.ui.automation_insert_button)
         insert_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
             JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND, size=20
         )
-        insert_label_row = QWidget()
-        insert_label_layout = QHBoxLayout(insert_label_row)
-        insert_label_layout.setContentsMargins(0, 0, 0, 0)
-        insert_label_layout.setSpacing(4)
         if insert_icon_pixmap and not insert_icon_pixmap.isNull():
             insert_icon_label = QLabel()
             insert_icon_label.setPixmap(insert_icon_pixmap)
-            insert_label_layout.addWidget(insert_icon_label)
+            insert_cell_layout.addWidget(insert_icon_label)
         self.ui.automation_insert_label = QLabel("Insert Program Change Here")
         self.ui.automation_insert_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
-        insert_label_layout.addWidget(self.ui.automation_insert_label)
-        layout.addWidget(insert_label_row)
+        insert_cell_layout.addWidget(self.ui.automation_insert_label)
+        insert_cell_layout.addStretch()
+        grid.addWidget(insert_cell, row, 4)
+        row += 1
 
-        # Populate initial list
+        # --- Row 1: USB Port
+        grid.addWidget(QLabel("USB Port for recording"), row, 0)
+        self.ui.usb_port_select_combo = QComboBox()
+        self.usb_populate_devices()
+        grid.addWidget(self.ui.usb_port_select_combo, row, 1, 1, 2)
+        self.ui.usb_port_refresh_devices_button = QPushButton()
+        self.ui.usb_port_refresh_devices_button.setStyleSheet(
+            JDXiUIStyle.BUTTON_ROUND
+        )
+        self.ui.usb_port_refresh_devices_button.setFixedWidth(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH
+        )
+        self.ui.usb_port_refresh_devices_button.setFixedHeight(
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
+        )
+        self.ui.usb_port_refresh_devices_button.pressed.connect(
+            self.usb_populate_devices
+        )
+        refresh_usb_cell = QWidget()
+        refresh_usb_cell_layout = QHBoxLayout(refresh_usb_cell)
+        refresh_usb_cell_layout.setContentsMargins(0, 0, 0, 0)
+        refresh_usb_cell_layout.setSpacing(4)
+        refresh_usb_cell_layout.addWidget(self.ui.usb_port_refresh_devices_button)
+        refresh_usb_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.REFRESH, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if refresh_usb_icon_pixmap and not refresh_usb_icon_pixmap.isNull():
+            refresh_usb_icon_label = QLabel()
+            refresh_usb_icon_label.setPixmap(refresh_usb_icon_pixmap)
+            refresh_usb_cell_layout.addWidget(refresh_usb_icon_label)
+        self.ui.usb_port_refresh_devices_label = QLabel(
+            "Refresh USB Device List"
+        )
+        self.ui.usb_port_refresh_devices_label.setStyleSheet(
+            JDXi.UI.Style.FOREGROUND
+        )
+        refresh_usb_cell_layout.addWidget(
+            self.ui.usb_port_refresh_devices_label
+        )
+        grid.addWidget(refresh_usb_cell, row, 3)
+        row += 1
+
+        # --- Row 2: USB file to save recording
+        grid.addWidget(QLabel("USB file to save recording"), row, 0)
+        self.ui.usb_file_select = QPushButton("No File Selected")
+        self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
+        grid.addWidget(self.ui.usb_file_select, row, 1, 1, 2)  # 2 = colspan I guess
+        # row += 1
+
+        # --- Row 2 still: Save USB recording checkbox
+        self.ui.usb_file_record_checkbox = QCheckBox(
+            "Save USB recording to file"
+        )
+        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_record_checkbox)
+        self.ui.usb_file_record_checkbox.setChecked(
+            self.usb_recorder.file_save_recording
+        )
+        self.ui.usb_file_record_checkbox.stateChanged.connect(
+            self.on_usb_save_recording_toggled
+        )
+        grid.addWidget(self.ui.usb_file_record_checkbox, row, 3)
+        # row += 1
+
+        # --- Row 3: Auto-generate WAV filename checkbox
+        self.ui.usb_file_auto_generate_checkbox = QCheckBox(
+            "Generate .Wav filename based on date, time and Midi file"
+        )
+        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
+        self.ui.usb_file_auto_generate_checkbox.setChecked(False)
+        self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
+            self.on_usb_file_auto_generate_toggled
+        )
+        grid.addWidget(self.ui.usb_file_auto_generate_checkbox, row, 4)
+
         self.populate_automation_programs("Digital")
-
-        return layout
+        return grid
 
     def populate_automation_programs(self, source: str) -> None:
         """
@@ -873,95 +943,9 @@ class MidiFileEditor(SynthEditor):
         for m in rebuilt:
             track.append(m)
 
-    def init_usb_port_controls(self) -> QHBoxLayout:
-        """
-        init_usb_port_controls
-
-        :return: QHBoxLayout
-        """
-        layout = QHBoxLayout()
-        layout.addWidget(QLabel("USB Port for recording"))
-
-        self.ui.usb_port_select_combo = QComboBox()
-        self.usb_populate_devices()
-        layout.addWidget(self.ui.usb_port_select_combo)
-
-        self.ui.usb_port_refresh_devices_button = QPushButton()
-        self.ui.usb_port_refresh_devices_button.setStyleSheet(
-            JDXiUIStyle.BUTTON_ROUND
-        )
-        self.ui.usb_port_refresh_devices_button.setFixedWidth(
-            JDXiUIDimensions.BUTTON_ROUND.WIDTH
-        )
-        self.ui.usb_port_refresh_devices_button.setFixedHeight(
-            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
-        )
-        self.ui.usb_port_refresh_devices_button.pressed.connect(
-            self.usb_populate_devices
-        )
-        layout.addWidget(self.ui.usb_port_refresh_devices_button)
-
-        refresh_usb_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            JDXi.UI.Icon.REFRESH, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        refresh_usb_label_row = QWidget()
-        refresh_usb_label_layout = QHBoxLayout(refresh_usb_label_row)
-        refresh_usb_label_layout.setContentsMargins(0, 0, 0, 0)
-        refresh_usb_label_layout.setSpacing(4)
-        if refresh_usb_icon_pixmap and not refresh_usb_icon_pixmap.isNull():
-            refresh_usb_icon_label = QLabel()
-            refresh_usb_icon_label.setPixmap(refresh_usb_icon_pixmap)
-            refresh_usb_label_layout.addWidget(refresh_usb_icon_label)
-        self.ui.usb_port_refresh_devices_label = QLabel(
-            "Refresh USB Device List"
-        )
-        self.ui.usb_port_refresh_devices_label.setStyleSheet(
-            JDXi.UI.Style.FOREGROUND
-        )
-        refresh_usb_label_layout.addWidget(
-            self.ui.usb_port_refresh_devices_label
-        )
-        layout.addWidget(refresh_usb_label_row)
-        return layout
-
-    def init_usb_file_controls(self) -> QHBoxLayout:
-        """
-        init_usb_file_controls
-
-        :return: QHBoxLayout
-        """
-        self.ui.usb_file_select = QPushButton("No File Selected")
-        self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
-        self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_record_checkbox)
-        self.ui.usb_file_record_checkbox.setChecked(
-            self.usb_recorder.file_save_recording
-        )
-        self.ui.usb_file_record_checkbox.stateChanged.connect(
-            self.on_usb_save_recording_toggled
-        )
-        # --- Auto generate filename based on current date and time and Midi file
-        self.ui.usb_file_auto_generate_checkbox = QCheckBox(
-            "Generate .Wav filename based on date, time and Midi file"
-        )
-        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
-        self.ui.usb_file_auto_generate_checkbox.setChecked(False)
-        self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
-            self.on_usb_file_auto_generate_toggled
-        )
-
-        layout_widgets: list[QWidget] = [
-            QLabel("USB file to save recording"),
-            self.ui.usb_file_select,
-            self.ui.usb_file_record_checkbox,
-            self.ui.usb_file_auto_generate_checkbox,
-        ]
-        layout = create_layout_with_widgets(layout_widgets)
-        return layout
-
     def init_mute_controls(self) -> QHBoxLayout:
         """
-        init_usb_file_controls
+        init_mute_controls
 
         :return: QHBoxLayout
         """
@@ -985,7 +969,15 @@ class MidiFileEditor(SynthEditor):
             self.mute_channel_buttons[ch] = btn
             layout_widgets.append(btn)
 
-        # --- Add "Apply All Track Changes" button
+        # apply_all_label_row = self.create_apply_all_button_and_label(layout_widgets)
+        # layout_widgets.append(self.ui.apply_all_track_changes_button)
+        # layout_widgets.append(apply_all_label_row)
+
+        layout = create_layout_with_widgets(layout_widgets)
+        return layout
+
+    def create_apply_all_button_and_label(self) -> QWidget:
+        """Add "Apply All Track Changes" button"""
         self.ui.apply_all_track_changes_button = QPushButton()
         self.ui.apply_all_track_changes_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
         self.ui.apply_all_track_changes_button.setFixedWidth(
@@ -1000,15 +992,16 @@ class MidiFileEditor(SynthEditor):
         self.ui.apply_all_track_changes_button.clicked.connect(
             self._apply_all_track_changes
         )
-        layout_widgets.append(self.ui.apply_all_track_changes_button)
 
         apply_all_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
             JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND, size=20
         )
         apply_all_label_row = QWidget()
         apply_all_label_layout = QHBoxLayout(apply_all_label_row)
+        apply_all_label_layout.addStretch()
         apply_all_label_layout.setContentsMargins(0, 0, 0, 0)
         apply_all_label_layout.setSpacing(4)
+        apply_all_label_layout.addWidget(self.ui.apply_all_track_changes_button)
         if apply_all_icon_pixmap and not apply_all_icon_pixmap.isNull():
             apply_all_icon_label = QLabel()
             apply_all_icon_label.setPixmap(apply_all_icon_pixmap)
@@ -1018,10 +1011,8 @@ class MidiFileEditor(SynthEditor):
             JDXi.UI.Style.FOREGROUND
         )
         apply_all_label_layout.addWidget(self.ui.apply_all_track_changes_label)
-        layout_widgets.append(apply_all_label_row)
-
-        layout = create_layout_with_widgets(layout_widgets)
-        return layout
+        apply_all_label_layout.addStretch()
+        return apply_all_label_row
 
     def _toggle_channel_mute(self, channel: int, is_muted: bool, btn) -> None:
         """
@@ -2531,7 +2522,7 @@ class MidiFileEditor(SynthEditor):
             self.midi_state.playback_paused_time = time.time()
             self.midi_state.timer.stop()
             self.midi_state.playback_paused = True
-            self.ui.pause_button.setText("Resume")
+            self.ui.pause_label.setText("Resume")
         else:
             # Resuming playback
             if (
@@ -2544,7 +2535,7 @@ class MidiFileEditor(SynthEditor):
                 )
             self.midi_state.timer.start()
             self.midi_state.playback_paused = False
-            self.ui.pause_button.setText("Pause")
+            self.ui.pause_label.setText("Pause")
 
     def midi_playback_worker_handle_result(self, result=None):
         """

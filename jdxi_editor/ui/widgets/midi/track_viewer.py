@@ -437,7 +437,8 @@ class MidiTrackViewer(QWidget):
             )
 
             track_number_label = QLabel(f"{i + 1}")
-            track_number_label.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
+            track_number_label.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            track_number_label.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             hlayout.addWidget(track_number_label)
 
             icon_label = QLabel()
@@ -490,19 +491,14 @@ class MidiTrackViewer(QWidget):
             apply_button = QPushButton()
             apply_button.setIcon(apply_icon)
             apply_button.setToolTip("Apply changes to Track Channel")
-            apply_button.setFixedWidth(JDXi.UI.Style.TRACK_SPINBOX_WIDTH)
+            apply_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            apply_button.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
             apply_button.clicked.connect(
                 lambda _, tr=i, le=track_name_line_edit: self.change_track_name(
                     tr, le.text()
                 )
             )
-            """
-            apply_button.clicked.connect(lambda _, tr=i, le=track_name_line_edit, sp=spin: (
-            self.change_track_name(tr, le.text()),
-            self.change_channel(tr, sp.value())
-            ))
-            """
             button_hlayout.addWidget(apply_button)
 
             mute_icon = JDXi.UI.Icon.get_icon(
@@ -511,7 +507,8 @@ class MidiTrackViewer(QWidget):
             mute_button = QPushButton()
             mute_button.setIcon(mute_icon)
             mute_button.setToolTip("Mute Track")
-            mute_button.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
+            mute_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            mute_button.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             mute_button.setCheckable(True)
             mute_button.clicked.connect(
                 lambda _, tr=i: self.mute_track(tr)
@@ -527,7 +524,7 @@ class MidiTrackViewer(QWidget):
             delete_button = QPushButton()
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")
-            delete_button.setFixedWidth(JDXi.UI.Style.TRACK_BUTTON_WIDTH)
+            delete_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             delete_button.setCheckable(True)
             delete_button.clicked.connect(
                 lambda _, tr=i: self.delete_track(tr)
@@ -566,7 +563,7 @@ class MidiTrackViewer(QWidget):
         return (
             JDXi.UI.Style.ICON_PIXMAP_SIZE
             + JDXi.UI.Style.TRACK_LABEL_WIDTH
-            + (JDXi.UI.Style.TRACK_BUTTON_WIDTH * 4)
+            + (JDXi.UI.Style.BUTTON_TRACK_WIDTH * 4)
             + 10
         )  # = 2JDXi.Style.TRACK_MUTE_BUTTON_WIDTH
 
