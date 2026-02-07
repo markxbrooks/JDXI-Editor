@@ -812,7 +812,7 @@ class PlaylistEditorWidget(QWidget):
 
                         # Stop any current playback
                         if hasattr(midi_file_editor, "midi_stop_playback"):
-                            midi_file_editor.midi_stop_playback()
+                            midi_file_editor.midi_playback_stop()
                         if hasattr(midi_file_editor, "midi_playback_worker_stop"):
                             midi_file_editor.midi_playback_worker_stop()
 

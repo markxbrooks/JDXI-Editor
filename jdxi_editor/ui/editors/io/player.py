@@ -15,6 +15,10 @@ import mido
 import pyaudio
 from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
+
+from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
@@ -28,7 +32,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider,
     QVBoxLayout,
-    QWidget,
+    QWidget, QButtonGroup,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -60,7 +64,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_centered_layout
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
@@ -173,25 +177,44 @@ class MidiFileEditor(SynthEditor):
 
         # Add classification buttons in a horizontal layout
         classification_hlayout = QHBoxLayout()
+        classification_hlayout.addStretch()
         classification_hlayout.setSpacing(5)
 
         # Drum detection button
-        self.ui.detect_drums_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND),
-            "Detect Drums",
-        )
+        self.ui.detect_drums_button = QPushButton()
+        self.ui.detect_drums_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.detect_drums_button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
+        self.ui.detect_drums_button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
         self.ui.detect_drums_button.setToolTip(
             "Analyze MIDI file and assign Channel 10 to detected drum tracks"
         )
         self.ui.detect_drums_button.clicked.connect(self.detect_and_assign_drum_tracks)
         classification_hlayout.addWidget(self.ui.detect_drums_button)
 
+        detect_drums_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        detect_drums_label_row = QWidget()
+        detect_drums_label_layout = QHBoxLayout(detect_drums_label_row)
+        detect_drums_label_layout.setContentsMargins(0, 0, 0, 0)
+        detect_drums_label_layout.setSpacing(4)
+        if detect_drums_icon_pixmap and not detect_drums_icon_pixmap.isNull():
+            detect_drums_icon_label = QLabel()
+            detect_drums_icon_label.setPixmap(detect_drums_icon_pixmap)
+            detect_drums_label_layout.addWidget(detect_drums_icon_label)
+        self.ui.detect_drums_label = QLabel("Detect Drums")
+        self.ui.detect_drums_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        detect_drums_label_layout.addWidget(self.ui.detect_drums_label)
+        classification_hlayout.addWidget(detect_drums_label_row)
+
         # Classify other tracks button
-        self.ui.classify_tracks_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Classify Tracks",
+        self.ui.classify_tracks_button = QPushButton()
+        self.ui.classify_tracks_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.classify_tracks_button.setFixedWidth(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH
+        )
+        self.ui.classify_tracks_button.setFixedHeight(
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
         )
         self.ui.classify_tracks_button.setToolTip(
             "Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)"
@@ -199,6 +222,22 @@ class MidiFileEditor(SynthEditor):
         self.ui.classify_tracks_button.clicked.connect(self.classify_and_assign_tracks)
         classification_hlayout.addWidget(self.ui.classify_tracks_button)
 
+        classify_tracks_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        classify_tracks_label_row = QWidget()
+        classify_tracks_label_layout = QHBoxLayout(classify_tracks_label_row)
+        classify_tracks_label_layout.setContentsMargins(0, 0, 0, 0)
+        classify_tracks_label_layout.setSpacing(4)
+        if classify_tracks_icon_pixmap and not classify_tracks_icon_pixmap.isNull():
+            classify_tracks_icon_label = QLabel()
+            classify_tracks_icon_label.setPixmap(classify_tracks_icon_pixmap)
+            classify_tracks_label_layout.addWidget(classify_tracks_icon_label)
+        self.ui.classify_tracks_label = QLabel("Classify Tracks")
+        self.ui.classify_tracks_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        classify_tracks_label_layout.addWidget(self.ui.classify_tracks_label)
+        classification_hlayout.addWidget(classify_tracks_label_row)
+        classification_hlayout.addStretch()
         title_vlayout.addLayout(classification_hlayout)
 
         # Add title layout to header
@@ -210,7 +249,7 @@ class MidiFileEditor(SynthEditor):
         header_layout.addLayout(right_panel_layout)
 
         # --- Modular control sections
-        right_panel_layout.addLayout(self.init_midi_file_controls())
+        # right_panel_layout.addLayout(self.init_midi_file_controls())
         right_panel_layout.addLayout(self.init_automation_controls())
         right_panel_layout.addLayout(self.init_usb_port_controls())
         right_panel_layout.addLayout(self.init_usb_file_controls())
@@ -227,8 +266,13 @@ class MidiFileEditor(SynthEditor):
         main_layout.addLayout(header_layout)
         main_layout.addWidget(self.init_ruler())
         main_layout.addWidget(self.ui.midi_track_viewer)
-        main_layout.addWidget(self.init_transport_controls())
-
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch()
+        centered_layout.addWidget(self.init_transport_controls())
+        centered_layout.addWidget(self.init_midi_file_controls())
+        centered_layout.addWidget(self.init_event_suppression_controls())
+        centered_layout.addStretch()
+        main_layout.addLayout(centered_layout)
         # Add content to base widget
         container_layout.addWidget(content_widget)
 
@@ -265,31 +309,16 @@ class MidiFileEditor(SynthEditor):
 
         return ruler_container
 
-    def init_midi_file_controls(self) -> QHBoxLayout:
+    def init_event_suppression_controls(self) -> QGroupBox:
         """
         init_midi_file_controls
 
         :return: QHBoxLayout
         """
+        group = QGroupBox("MIDI Event Suppression")
         layout = QHBoxLayout()
-
-        self.ui.load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Load MIDI File",
-        )
-        self.ui.load_button.clicked.connect(self.midi_load_file)
-        layout.addWidget(self.ui.load_button)
-
-        self.ui.save_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.MIDI_PORT, color=JDXi.UI.Style.FOREGROUND
-            ),
-            "Save MIDI File",
-        )
-        self.ui.save_button.clicked.connect(self.midi_save_file)
-        layout.addWidget(self.ui.save_button)
+        group.setLayout(layout)
+        layout.addStretch()
 
         layout.addWidget(QLabel("Suppress MIDI Events:"))
 
@@ -317,8 +346,66 @@ class MidiFileEditor(SynthEditor):
             self.on_suppress_control_changes_toggled
         )
         layout.addWidget(self.ui.midi_suppress_control_changes_checkbox)
+        layout.addStretch()
+        return group
 
-        return layout
+    def init_midi_file_controls(self) -> QGroupBox:
+        """
+        init_midi_file_controls
+
+        :return: QHBoxLayout
+        """
+        group = QGroupBox("MIDI File")
+        layout = QHBoxLayout()
+        group.setLayout(layout)
+        layout.addStretch()
+        self.ui.load_button = QPushButton()
+        self.ui.load_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.load_button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
+        self.ui.load_button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
+        self.ui.load_button.clicked.connect(self.midi_load_file)
+        layout.addWidget(self.ui.load_button)
+
+        load_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.FOLDER_OPENED, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        load_label_row = QWidget()
+        load_label_layout = QHBoxLayout(load_label_row)
+        load_label_layout.setContentsMargins(0, 0, 0, 0)
+        load_label_layout.setSpacing(4)
+        if load_icon_pixmap and not load_icon_pixmap.isNull():
+            load_icon_label = QLabel()
+            load_icon_label.setPixmap(load_icon_pixmap)
+            load_label_layout.addWidget(load_icon_label)
+        self.ui.load_label = QLabel("Load MIDI File")
+        self.ui.load_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        load_label_layout.addWidget(self.ui.load_label)
+        layout.addWidget(load_label_row)
+
+        self.ui.save_button = QPushButton()
+        self.ui.save_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.save_button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
+        self.ui.save_button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
+        self.ui.save_button.clicked.connect(self.midi_save_file)
+        layout.addWidget(self.ui.save_button)
+
+        save_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.FLOPPY_DISK, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        save_label_row = QWidget()
+        save_label_layout = QHBoxLayout(save_label_row)
+        save_label_layout.setContentsMargins(0, 0, 0, 0)
+        save_label_layout.setSpacing(4)
+        if save_icon_pixmap and not save_icon_pixmap.isNull():
+            save_icon_label = QLabel()
+            save_icon_label.setPixmap(save_icon_pixmap)
+            save_label_layout.addWidget(save_icon_label)
+        self.ui.save_label = QLabel("Save MIDI File")
+        self.ui.save_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        save_label_layout.addWidget(self.ui.save_label)
+        layout.addWidget(save_label_row)
+        layout.addStretch()
+        return group
 
     def detect_and_assign_drum_tracks(self) -> None:
         """
@@ -559,14 +646,34 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.ui.automation_program_combo)
 
         # Insert button
-        self.ui.automation_insert_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND),
-            "Insert Program Change Here",
+        self.ui.automation_insert_button = QPushButton()
+        self.ui.automation_insert_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.automation_insert_button.setFixedWidth(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH
+        )
+        self.ui.automation_insert_button.setFixedHeight(
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
         )
         self.ui.automation_insert_button.clicked.connect(
             self.insert_program_change_current_position
         )
         layout.addWidget(self.ui.automation_insert_button)
+
+        insert_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        insert_label_row = QWidget()
+        insert_label_layout = QHBoxLayout(insert_label_row)
+        insert_label_layout.setContentsMargins(0, 0, 0, 0)
+        insert_label_layout.setSpacing(4)
+        if insert_icon_pixmap and not insert_icon_pixmap.isNull():
+            insert_icon_label = QLabel()
+            insert_icon_label.setPixmap(insert_icon_pixmap)
+            insert_label_layout.addWidget(insert_icon_label)
+        self.ui.automation_insert_label = QLabel("Insert Program Change Here")
+        self.ui.automation_insert_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        insert_label_layout.addWidget(self.ui.automation_insert_label)
+        layout.addWidget(insert_label_row)
 
         # Populate initial list
         self.populate_automation_programs("Digital")
@@ -779,11 +886,42 @@ class MidiFileEditor(SynthEditor):
         self.usb_populate_devices()
         layout.addWidget(self.ui.usb_port_select_combo)
 
-        self.ui.usb_port_refresh_devices_button = QPushButton("Refresh USB device list")
+        self.ui.usb_port_refresh_devices_button = QPushButton()
+        self.ui.usb_port_refresh_devices_button.setStyleSheet(
+            JDXiUIStyle.BUTTON_ROUND
+        )
+        self.ui.usb_port_refresh_devices_button.setFixedWidth(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH
+        )
+        self.ui.usb_port_refresh_devices_button.setFixedHeight(
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
+        )
         self.ui.usb_port_refresh_devices_button.pressed.connect(
             self.usb_populate_devices
         )
         layout.addWidget(self.ui.usb_port_refresh_devices_button)
+
+        refresh_usb_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.REFRESH, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        refresh_usb_label_row = QWidget()
+        refresh_usb_label_layout = QHBoxLayout(refresh_usb_label_row)
+        refresh_usb_label_layout.setContentsMargins(0, 0, 0, 0)
+        refresh_usb_label_layout.setSpacing(4)
+        if refresh_usb_icon_pixmap and not refresh_usb_icon_pixmap.isNull():
+            refresh_usb_icon_label = QLabel()
+            refresh_usb_icon_label.setPixmap(refresh_usb_icon_pixmap)
+            refresh_usb_label_layout.addWidget(refresh_usb_icon_label)
+        self.ui.usb_port_refresh_devices_label = QLabel(
+            "Refresh USB Device List"
+        )
+        self.ui.usb_port_refresh_devices_label.setStyleSheet(
+            JDXi.UI.Style.FOREGROUND
+        )
+        refresh_usb_label_layout.addWidget(
+            self.ui.usb_port_refresh_devices_label
+        )
+        layout.addWidget(refresh_usb_label_row)
         return layout
 
     def init_usb_file_controls(self) -> QHBoxLayout:
@@ -833,25 +971,59 @@ class MidiFileEditor(SynthEditor):
         for ch in range(1, 17):
             btn = QPushButton(f"{ch}")
             btn.setCheckable(True)
-            btn.setFixedWidth(30)
+            btn.setFixedWidth(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
+            btn.setFixedHeight(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
             btn.toggled.connect(
-                lambda checked, c=ch: self._toggle_channel_mute(c, checked)
+                lambda checked, c=ch: self._toggle_channel_mute(c, checked, btn)
             )
             btn.setStyleSheet(
-                "QPushButton:checked { background-color: #cc0000; color: white; }"
+                JDXiUIStyle.BUTTON_SEQUENCER_SMALL
             )
+            btn.setCheckable(True)
+            btn.setChecked(False)
+            btn.setStyleSheet(generate_sequencer_button_style(btn.isChecked()))
             self.mute_channel_buttons[ch] = btn
             layout_widgets.append(btn)
 
         # --- Add "Apply All Track Changes" button
-        apply_all_btn = QPushButton("Apply All Track Changes")
-        apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
-        apply_all_btn.clicked.connect(self._apply_all_track_changes)
-        layout_widgets.append(apply_all_btn)
+        self.ui.apply_all_track_changes_button = QPushButton()
+        self.ui.apply_all_track_changes_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        self.ui.apply_all_track_changes_button.setFixedWidth(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH
+        )
+        self.ui.apply_all_track_changes_button.setFixedHeight(
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT
+        )
+        self.ui.apply_all_track_changes_button.setToolTip(
+            "Apply all Track Name and MIDI Channel changes"
+        )
+        self.ui.apply_all_track_changes_button.clicked.connect(
+            self._apply_all_track_changes
+        )
+        layout_widgets.append(self.ui.apply_all_track_changes_button)
+
+        apply_all_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        apply_all_label_row = QWidget()
+        apply_all_label_layout = QHBoxLayout(apply_all_label_row)
+        apply_all_label_layout.setContentsMargins(0, 0, 0, 0)
+        apply_all_label_layout.setSpacing(4)
+        if apply_all_icon_pixmap and not apply_all_icon_pixmap.isNull():
+            apply_all_icon_label = QLabel()
+            apply_all_icon_label.setPixmap(apply_all_icon_pixmap)
+            apply_all_label_layout.addWidget(apply_all_icon_label)
+        self.ui.apply_all_track_changes_label = QLabel("Apply All Track Changes")
+        self.ui.apply_all_track_changes_label.setStyleSheet(
+            JDXi.UI.Style.FOREGROUND
+        )
+        apply_all_label_layout.addWidget(self.ui.apply_all_track_changes_label)
+        layout_widgets.append(apply_all_label_row)
+
         layout = create_layout_with_widgets(layout_widgets)
         return layout
 
-    def _toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
+    def _toggle_channel_mute(self, channel: int, is_muted: bool, btn) -> None:
         """
         Toggle mute state for a specific MIDI channel.
         Updates both the track viewer and the player's muted channels state.
@@ -865,6 +1037,7 @@ class MidiFileEditor(SynthEditor):
             # Sync the track viewer's mute buttons
             if channel in self.ui.midi_track_viewer.mute_buttons:
                 self.ui.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
+                self.ui.midi_track_viewer.mute_buttons[channel].setStyleSheet(generate_sequencer_button_style(is_muted))
 
         # Update player's muted channels state
         self.midi_state.muted_channels = self.get_muted_channels()
@@ -969,35 +1142,86 @@ class MidiFileEditor(SynthEditor):
             f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}"
         )
 
+    def _create_transport_control(
+            self,
+            spec: TransportSpec,
+            layout: QHBoxLayout,
+            button_group: QButtonGroup | None
+    ) -> None:
+        """Create a transport button + label row"""
+
+        # ---- Button
+        btn = QPushButton()
+        btn.setCheckable(True)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        btn.clicked.connect(spec.slot)
+
+        setattr(self.ui, f"{spec.name}_button", btn)
+
+        if spec.grouped and button_group:
+            button_group.addButton(btn)
+
+        layout.addWidget(btn)
+
+        # ---- Label row
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            spec.icon,
+            color=JDXi.UI.Style.FOREGROUND,
+            size=20,
+        )
+
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+
+        text_label = QLabel(spec.text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+
+        setattr(self.ui, f"{spec.name}_label", text_label)
+
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+
+    def transport_set_state(self, state: str):
+        self.ui.play_button.blockSignals(True)
+        self.ui.stop_button.blockSignals(True)
+
+        self.ui.play_button.setChecked(state == "play")
+        self.ui.stop_button.setChecked(state == "stop")
+
+        self.ui.play_button.blockSignals(False)
+        self.ui.stop_button.blockSignals(False)
+
     def init_transport_controls(self) -> QGroupBox:
-        """
-        init_transport_controls
-
-        :return: None
-        """
         group = QGroupBox("Transport")
-        layout = QHBoxLayout(group)
 
-        self.ui.play_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
-            "Play",
-        )
-        self.ui.play_button.clicked.connect(self.midi_playback_start)
-        layout.addWidget(self.ui.play_button)
+        centered_layout = QHBoxLayout(group)
+        transport_layout = QHBoxLayout()
+        centered_layout.addStretch()
+        centered_layout.addLayout(transport_layout)
+        centered_layout.addStretch()
 
-        self.ui.stop_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
-            "Stop",
-        )
-        self.ui.stop_button.clicked.connect(self.midi_stop_playback)
-        layout.addWidget(self.ui.stop_button)
+        transport_button_group = QButtonGroup(self)
+        transport_button_group.setExclusive(True)
 
-        self.ui.pause_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PAUSE, color=JDXi.UI.Style.FOREGROUND),
-            "Pause",
-        )
-        self.ui.pause_button.clicked.connect(self.midi_playback_pause_toggle)
-        layout.addWidget(self.ui.pause_button)
+        controls = [
+            TransportSpec("play", JDXi.UI.Icon.PLAY, "Play", self.midi_playback_start, True),
+            TransportSpec("stop", JDXi.UI.Icon.STOP, "Stop", self.midi_playback_stop, True),
+            TransportSpec("pause", JDXi.UI.Icon.PAUSE, "Pause", self.midi_playback_pause_toggle, False),
+        ]
+
+        for spec in controls:
+            self._create_transport_control(spec, transport_layout, transport_button_group)
 
         return group
 
@@ -1548,6 +1772,7 @@ class MidiFileEditor(SynthEditor):
         Start playback of the MIDI file from the beginning (or resume if paused).
         """
         # Reset position slider to beginning
+        self.transport_set_state("play")
         self.ui_position_slider_reset()
 
         # Turn off all effects when starting playback (prevents accidental distortion)
@@ -2046,10 +2271,11 @@ class MidiFileEditor(SynthEditor):
 
         self.start_playback_worker()
 
-    def midi_stop_playback(self):
+    def midi_playback_stop(self):
         """
         Stops playback and resets everything to the beginning.
         """
+        self.transport_set_state("stop")
         # Reset the worker's index before stopping (if it exists)
         if self.midi_playback_worker:
             self.midi_playback_worker.index = 0

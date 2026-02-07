@@ -77,23 +77,33 @@ def generate_polyend_sequencer_button_style(
 
 def generate_sequencer_button_style(active: bool) -> str:
     """
-    Generate button style based on active state
+    Generate button style based on active state.
+    Use both base state and QPushButton:checked so checkable buttons show red outline when checked.
 
-    :param active: bool Whether the button is active
+    :param active: bool Whether the button is active/checked
     :return: str The style sheet for the button
     """
+    border_color = "#ff6666" if active else "#666666"
+    bg_color = "#333333" if active else "black"
     return f"""
         QPushButton {{
-            border: 4px solid {'#ff6666' if active else '#666666'};
-            background-color: {'#333333' if active else 'black'};
+            border: 4px solid {border_color};
+            background-color: {bg_color};
             border-radius: 3px;
             padding: 0px;
+        }}
+        QPushButton:checked {{
+            border: 4px solid #ff6666;
+            background-color: #333333;
         }}
         QPushButton:hover {{
             background-color: #1A1A1A;
             border-color: #ff4d4d;
         }}
-        QPushButton:border_pressed {{
+        QPushButton:checked:hover {{
+            border-color: #ff6666;
+        }}
+        QPushButton:pressed {{
             background-color: #333333;
             border-color: #ff6666;
         }}

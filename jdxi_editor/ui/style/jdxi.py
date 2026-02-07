@@ -88,6 +88,7 @@ class JDXiUIStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
+    BUTTON_SEQUENCER_SMALL = "QPushButton:checked { background-color: #cc0000; color: white; }"
     WHITE = "#FFFFFF"
     TRACK_LABEL_WIDTH = 70
     TRACK_BUTTON_WIDTH = 20
