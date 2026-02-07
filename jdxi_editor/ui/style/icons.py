@@ -4,7 +4,7 @@ Icon registry for JD-Xi Editor.
 Provides centralized icon definitions and retrieval with fallback support.
 """
 
-from typing import Literal
+from typing import Literal, Any
 
 import qtawesome as qta
 from decologr import Decologr as log
@@ -210,7 +210,7 @@ class JDXiUIIconRegistry:
         """
         icon = JDXiUIIconRegistry.get_icon(icon_name, color=color, fallback=fallback)
         if icon is None:
-            # Return empty icon
+            # --- Return empty icon
             return qta.icon("")
         return icon
 
@@ -303,3 +303,18 @@ class JDXiUIIconRegistry:
         """get generated icon"""
         icon_base64 = generate_waveform_icon(name, JDXiUIStyle.WHITE, 1.0)
         return QIcon(base64_to_pixmap(icon_base64))
+
+    @staticmethod
+    def generate_waveform_icon_by_name(icon: QIcon | None, icon_name_str: Any | None) -> QIcon:
+        """generate waveform Icon by name"""
+        # --- Check if icon_name_str matches a WaveformIconType attribute
+        icon_type_value = getattr(WaveForm, icon_name_str, None)
+        if icon_type_value is not None:
+            # --- Use generate_waveform_icon directly for waveform/filter icons
+            icon_base64 = generate_waveform_icon(
+                icon_type_value, JDXiUIStyle.WHITE, 1.0
+            )
+            pixmap = base64_to_pixmap(icon_base64)
+            if pixmap and not pixmap.isNull():
+                icon = QIcon(pixmap)
+        return icon

@@ -36,6 +36,9 @@ Usage Example:
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
+from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -332,75 +335,83 @@ class SectionBaseWidget(SynthBase):
         """Return list of button specs: wave_shapes when set by subclass, else BUTTON_SPECS."""
         return getattr(self, "wave_shapes", None) or self.BUTTON_SPECS
 
+    def _resolve_icon(self, icon_name: str | None) -> QIcon | None:
+        """resolve icon"""
+        if not icon_name:
+            return None
+
+        # 1 — generated waveform icon
+        try:
+            icon = JDXi.UI.Icon.generate_waveform_icon_by_name(None, icon_name)
+            if icon and not icon.isNull():
+                return icon
+        except Exception:
+            pass
+
+        # 2 — cached/generated registry icon
+        try:
+            icon = JDXi.UI.Icon.get_generated_icon(icon_name)
+            if icon and not icon.isNull():
+                return icon
+        except Exception:
+            pass
+
+        # 3 — QTA fallback
+        try:
+            from jdxi_editor.ui.widgets.editor.helper import create_icon_from_qta
+            icon = create_icon_from_qta(icon_name)
+            if icon and not icon.isNull():
+                return icon
+        except Exception:
+            pass
+
+        return None
+
+    def _build_wave_button(self, spec) -> QPushButton:
+        """Build wave button"""
+        label = getattr(spec, "label", getattr(spec, "name", "Button"))
+
+        btn = QPushButton(label)
+        btn.setCheckable(True)
+
+        if self.analog:
+            JDXi.UI.Theme.apply_button_rect_analog(btn)
+        else:
+            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+        btn.setFixedSize(
+            JDXi.UI.Dimensions.WaveformIcon.WIDTH,
+            JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
+        )
+
+        icon = self._resolve_icon(getattr(spec, "icon_name", None))
+        if icon:
+            btn.setIcon(icon)
+            btn.setIconSize(QSize(
+                JDXi.UI.Dimensions.LFOIcon.WIDTH,
+                JDXi.UI.Dimensions.LFOIcon.HEIGHT,
+            ))
+
+        btn.clicked.connect(lambda _, p=spec.param: self._on_button_selected(p))
+        return btn
+
+    def _register_button(self, spec, btn: QPushButton):
+        """register button"""
+        self.button_widgets[spec.param] = btn
+
+        if not isinstance(spec.param, DigitalFilterMode):
+            self.controls[spec.param] = btn
+
     def _create_waveform_buttons(self):
         """Create mode/waveform/shape buttons from wave_shapes or BUTTON_SPECS."""
-        for spec in self._get_button_specs():
-            # --- Handle both SliderSpec (has 'label') and other specs (may have 'name')
-            button_label = getattr(spec, "label", getattr(spec, "name", "Button"))
-            icon_name_str = getattr(spec, "icon_name", None)
 
-            # --- Create button
-            btn = QPushButton(button_label)
-            btn.setCheckable(True)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-            # --- Create icon if icon_name is provided
-            if icon_name_str:
-                icon = None
-                try:
-                    # Check if icon_name_str matches a WaveformIconType attribute
-                    icon_type_value = getattr(WaveForm, icon_name_str, None)
-                    if icon_type_value is not None:
-                        # Use generate_waveform_icon directly for waveform/filter icons
-                        icon_base64 = generate_waveform_icon(
-                            icon_type_value, JDXi.UI.Style.WHITE, 1.0
-                        )
-                        pixmap = base64_to_pixmap(icon_base64)
-                        if pixmap and not pixmap.isNull():
-                            icon = QIcon(pixmap)
-                except (AttributeError, KeyError, TypeError):
-                    pass
-
-                # --- If not a waveform icon, try registry or QTA
-                if icon is None or icon.isNull():
-                    try:
-                        # --- Try to get icon from registry (which also uses generate_waveform_icon)
-                        icon = JDXi.UI.Icon.get_generated_icon(icon_name_str)
-                    except (AttributeError, KeyError):
-                        try:
-                            # --- Try to create from QTA icon name
-                            from jdxi_editor.ui.widgets.editor.helper import (
-                                create_icon_from_qta,
-                            )
-
-                            icon = create_icon_from_qta(icon_name_str)
-                        except:
-                            icon = None
-
-                if icon and not icon.isNull():
-                    btn.setIcon(icon)
-                    btn.setIconSize(
-                        QSize(
-                            JDXi.UI.Dimensions.LFOIcon.WIDTH,
-                            JDXi.UI.Dimensions.LFOIcon.HEIGHT,
-                        )
-                    )
-
-            btn.setFixedSize(
-                JDXi.UI.Dimensions.WaveformIcon.WIDTH,
-                JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
-            )
-
-            btn.clicked.connect(lambda _, b=spec.param: self._on_button_selected(b))
-            self.button_widgets[spec.param] = btn
-            # --- Only store in controls if it's a parameter enum, not a mode enum (like DigitalFilterMode)
-            if not isinstance(spec.param, DigitalFilterMode):
-                self.controls[spec.param] = btn
-
-        # --- For compatibility with code that expects filter_mode_buttons (DigitalFilterSection)
         specs = self._get_button_specs()
+
+        for spec in specs:
+            btn = self._build_wave_button(spec)
+            self._register_button(spec, btn)
+
+        # compatibility with DigitalFilterSection
         if specs and isinstance(specs[0].param, DigitalFilterMode):
             self.filter_mode_buttons = self.button_widgets
 
@@ -684,6 +695,7 @@ class SectionBaseWidget(SynthBase):
         return create_layout_with_widgets(layout_widgets)
 
     def _apply_wave_shape_style(self, active_shape):
+        """apply wave shape style"""
         for shape, btn in self.wave_shape_buttons.items():
             if shape == active_shape:
                 if self.analog:
@@ -696,7 +708,8 @@ class SectionBaseWidget(SynthBase):
                 else:
                     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-    def _on_shape_group_changed(self, shape_value: int, checked: bool):
+    def _on_shape_group_changed(self, shape_value: int, checked: bool) -> None:
+        """on shape group changed"""
         log.message(
             "[LFO Shape] _on_shape_group_changed shape_value %s, checked: %s section: %s",
             shape_value, checked, self.__class__.__name__,
@@ -709,42 +722,57 @@ class SectionBaseWidget(SynthBase):
         except Exception as ex:
             log.error("[SectionBaseWidget] [_on_shape_group_changed] error %s occurred", ex)
 
-    def set_wave_shape(self, shape, send_midi=False):
-        """Update UI + optionally send MIDI"""
-
+    def _get_wave_shape_button(self, shape: DigitalLFOShape | AnalogLFOShape):
+        """get wave shape button"""
         btn = self.wave_shape_buttons.get(shape)
-        if not btn:
+        if btn is None:
             log.warning(
-                "[LFO Shape] set_wave_shape: no button for shape %s (section=%s)",
+                "[LFO Shape] No button for %s (section=%s)",
                 shape,
                 self.__class__.__name__,
             )
+        return btn
+
+    def set_wave_shape(self, shape: DigitalLFOShape | AnalogLFOShape, send_midi: bool = False):
+        """Update UI + optionally send MIDI"""
+
+        btn = self._get_wave_shape_button(shape)
+        if not btn:
             return
 
-        # prevent recursive signals when updating from MIDI
-        self.wave_shape_group.blockSignals(True)
-        btn.setChecked(True)
-        self.wave_shape_group.blockSignals(False)
+        self._apply_wave_shape_ui(btn, shape)
 
-        self._apply_wave_shape_style(shape)
+        if send_midi:
+            self._send_wave_shape_midi(shape)
 
-        if send_midi and self.send_midi_parameter:
+    def _send_wave_shape_midi(self, shape: DigitalLFOShape | AnalogLFOShape):
+        """Send Wave Shape"""
+        if self.send_midi_parameter:
             address = getattr(self, "address", None)
             log.message(
-                "[LFO Shape] sending MIDI param: %s value %s address %s section %s",getattr(self.wave_shape_param, "name", self.wave_shape_param),
+                "[LFO Shape] sending MIDI param: %s value %s address %s section %s",
+                getattr(self.wave_shape_param, "name", self.wave_shape_param),
                 shape.value,
                 address,
                 self.__class__.__name__,
             )
             if not self.send_midi_parameter(
-                self.wave_shape_param, shape.value, address
+                    self.wave_shape_param, shape.value, address
             ):
                 log.warning(f"Failed to set Mod LFO shape to {shape.name}")
-        elif send_midi and not self.send_midi_parameter:
+        elif not self.send_midi_parameter:
             log.warning(
                 "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
                 self.__class__.__name__,
             )
+
+    def _apply_wave_shape_ui(self, btn: Any | None, shape: DigitalLFOShape | AnalogLFOShape):
+        """Apply wave shape UI"""
+        # --- Prevent recursive signals when updating from MIDI
+        self.wave_shape_group.blockSignals(True)
+        btn.setChecked(True)
+        self.wave_shape_group.blockSignals(False)
+        self._apply_wave_shape_style(shape)
 
     def _wrap_row(self, widgets: list[QWidget]) -> QWidget:
         """
