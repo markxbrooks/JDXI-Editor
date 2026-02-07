@@ -31,10 +31,10 @@ def find_jdxi_port(port_list: list[str]) -> str | None:
     for port in port_list:
         # Skip excluded ports (like MIDI Through which causes feedback loops)
         if is_excluded_port(port):
-            log.message(f"[find_jdxi_port] Skipping excluded port: {port}")
+            log.message(f"Skipping excluded port: {port}", scope="find_jdxi_port")
             continue
         if any(name in port.lower() for name in jdxi_names):
-            log.message(f"[find_jdxi_port] Auto-detected JD-Xi: {port}")
+            log.message(f"[find_jdxi_port] Auto-detected JD-Xi: {port}", scope="find_jdxi_port")
             return port
 
     return None

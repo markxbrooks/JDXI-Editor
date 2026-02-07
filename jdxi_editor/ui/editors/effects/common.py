@@ -95,6 +95,18 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 
+# Params that belong to Program Common / Vocal (handled by program widget or VocalFXEditor).
+# Skip them here so we don't look them up in effect param types and report as failure.
+PROGRAM_VOCAL_PARAM_NAMES = frozenset({
+    "PROGRAM_LEVEL",
+    "PROGRAM_TEMPO",
+    "VOCAL_EFFECT",
+    "VOCAL_EFFECT_NUMBER",
+    "VOCAL_EFFECT_PART",
+    "AUTO_NOTE_SWITCH",
+    "TONE_CATEGORY",
+})
+
 
 class EffectsCommonEditor(BasicEditor):
     """Effects Editor Window"""
@@ -327,10 +339,10 @@ class EffectsCommonEditor(BasicEditor):
         # Connect to MIDI helper signals to receive SysEx data
         if self.midi_helper:
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            log.message("🎛️ [EffectsCommonEditor] : Connected to midi_sysex_json signal")
+            log.message("🎛️: Connected to midi_sysex_json signal", scope=self.__class__.__name__)
         else:
             log.warning(
-                "🎛️ [EffectsCommonEditor] : midi_helper is None, cannot connect to signals"
+                "🎛️ : midi_helper is None, cannot connect to signals", scope=self.__class__.__name__
             )
 
         # Note: data_request() is called in showEvent() when editor is displayed
@@ -346,7 +358,7 @@ class EffectsCommonEditor(BasicEditor):
         super().showEvent(event)
         if self.midi_helper:
             log.message(
-                "🎛️ [EffectsCommonEditor] shown - requesting current settings from instrument"
+                "🎛️ shown - requesting current settings from instrument", scope=self.__class__.__name__
             )
         self.data_request()
 
@@ -362,7 +374,7 @@ class EffectsCommonEditor(BasicEditor):
             note_slider = self.controls.get(note_param)
 
             if not all([rate_note_switch, rate_slider, note_slider]):
-                log.warning("[EffectsCommonEditor] One or more Flanger rate/note controls are missing.")
+                log.warning("One or more Flanger rate/note controls are missing.", scope=self.__class__.__name__)
                 return
 
             rate_note_value = rate_note_switch.value()
@@ -371,9 +383,9 @@ class EffectsCommonEditor(BasicEditor):
             rate_slider.setEnabled(not is_note_mode)
             note_slider.setEnabled(is_note_mode)
 
-            log.message(f"[EffectsCommonEditor] Flanger control updated: Note mode = {is_note_mode}")
+            log.message(message=f"Flanger control updated: Note mode = {is_note_mode}", scope=self.__class__.__name__)
         except Exception as ex:
-            log.error(f"[EffectsCommonEditor] Failed to update flanger rate/note controls: {ex}")
+            log.error(message=f"Failed to update flanger rate/note controls: {ex}", scope=self.__class__.__name__)
 
     def update_phaser_rate_note_controls(self) -> None:
         """Update Flanger rate/note controls based on rate note switch."""
@@ -387,7 +399,7 @@ class EffectsCommonEditor(BasicEditor):
             note_slider = self.controls.get(note_param)
 
             if not all([rate_note_switch, rate_slider, note_slider]):
-                log.warning("[EffectsCommonEditor] One or more Phaser rate/note controls are missing.")
+                log.warning("One or more Phaser rate/note controls are missing.", scope=self.__class__.__name__)
                 return
 
             rate_note_value = rate_note_switch.value()
@@ -396,9 +408,9 @@ class EffectsCommonEditor(BasicEditor):
             rate_slider.setEnabled(not is_note_mode)
             note_slider.setEnabled(is_note_mode)
 
-            log.message(f"[EffectsCommonEditor] Flanger control updated: Note mode = {is_note_mode}")
+            log.message(scope=self.__class__.__name__, message=f"Flanger control updated: Note mode = {is_note_mode}")
         except Exception as ex:
-            log.error(f"[EffectsCommonEditor] Failed to update flanger rate/note controls: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Failed to update flanger rate/note controls: {ex}")
 
     def _update_efx1_labels(self, effect_type: int):
         """
@@ -407,7 +419,7 @@ class EffectsCommonEditor(BasicEditor):
         :param effect_type: int
         :return:
         """
-        log.message(f"[EffectsCommonEditor] Updating EFX1 labels for effect type {effect_type}")
+        log.message(scope=self.__class__.__name__, message=f"Updating EFX1 labels for effect type {effect_type}")
         try:
             label_map = self.efx1_param_labels.get(effect_type, {})
             for param, label in label_map.items():
@@ -415,9 +427,9 @@ class EffectsCommonEditor(BasicEditor):
                 if slider:
                     slider.setVisible(True)
                     slider.setLabel(label)
-                    log.message(f"[EffectsCommonEditor] Updated slider {param.name} with label '{label}'")
+                    log.message(scope=self.__class__.__name__, message=f"Updated slider {param.name} with label '{label}'")
                 else:
-                    log.warning(f"[EffectsCommonEditor] No slider found for param {param}")
+                    log.warning(scope=self.__class__.__name__, message=f"No slider found for param {param}")
 
             # Build a complete set of all known EFX1 parameters
             all_efx1_params = set()
@@ -432,7 +444,7 @@ class EffectsCommonEditor(BasicEditor):
                         slider.setVisible(False)
 
         except Exception as ex:
-            log.error(f"[EffectsCommonEditor] Error updating EFX1 labels: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Error updating EFX1 labels: {ex}")
 
     def _update_efx2_labels(self, effect_type: int):
         """
@@ -440,11 +452,11 @@ class EffectsCommonEditor(BasicEditor):
 
         :param effect_type: int
         """
-        log.message(f"[EffectsCommonEditor] Updating EFX2 labels for effect type {effect_type}")
+        log.message(scope=self.__class__.__name__, message=f"Updating EFX2 labels for effect type {effect_type}")
         label_map = self.efx2_param_labels.get(effect_type)
 
         if not label_map:
-            log.warning(f"[EffectsCommonEditor] No label mapping found for effect type {effect_type}")
+            log.warning(scope=self.__class__.__name__, message=f"No label mapping found for effect type {effect_type}")
             return
 
         for param, label in label_map.items():
@@ -471,9 +483,9 @@ class EffectsCommonEditor(BasicEditor):
 
                 control.setVisible(True)
                 control.setLabel(label)
-                log.message(f"[EffectsCommonEditor] Set label '{label}' for {param.name}")
+                log.message(scope=self.__class__.__name__, message=f"Set label '{label}' for {param.name}")
             else:
-                log.warning(f"[EffectsCommonEditor] No slider found for parameter {param}")
+                log.warning(scope=self.__class__.__name__, message=f"No slider found for parameter {param}")
 
         # Optional: hide unused sliders not in the current label set
         all_efx2_params = {
@@ -572,7 +584,7 @@ class EffectsCommonEditor(BasicEditor):
                 form_layout.addRow(control)
                 self.controls[param] = control
             else:
-                log.warning(f"[EffectsCommonEditor] Parameter {param.name} already exists in controls.")
+                log.warning(scope=self.__class__.__name__, message=f"Parameter {param.name} already exists in controls.")
 
         container_layout.addStretch()
         return container
@@ -642,7 +654,7 @@ class EffectsCommonEditor(BasicEditor):
                 layout.addRow(control)
                 self.controls[param] = control
             else:
-                log.warning(f"[EffectsCommonEditor] Parameter {param.name} already exists in controls.")
+                log.warning(scope=self.__class__.__name__, message=f"Parameter {param.name} already exists in controls.")
         container_layout.addStretch()
         return container
 
@@ -734,9 +746,9 @@ class EffectsCommonEditor(BasicEditor):
         try:
             # Send MIDI message
             if not self.send_midi_parameter(param, value):
-                log.message(f"[EffectsCommonEditor] Failed to send parameter {param.name}")
+                log.message(scope=self.__class__.__name__, message=f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log.error(f"[EffectsCommonEditor] Error handling parameter {param.name}: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Error handling parameter {param.name}: {ex}")
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
@@ -763,7 +775,7 @@ class EffectsCommonEditor(BasicEditor):
             result = self.midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            log.error(f"[EffectsCommonEditor] MIDI error setting {param.name}: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"MIDI error setting {param.name}: {ex}")
             return False
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
@@ -774,7 +786,7 @@ class EffectsCommonEditor(BasicEditor):
         :return: None
         """
         # Log that the method was called
-        log.message("🎛️ [EffectsCommonEditor]  _dispatch_sysex_to_area called")
+        log.message("🎛️ _dispatch_sysex_to_area called", scope ="EffectsCommonEditor")
 
         try:
             from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
@@ -783,7 +795,7 @@ class EffectsCommonEditor(BasicEditor):
             sysex_data = self._parse_sysex_json(json_sysex_data)
             if not sysex_data:
                 log.message(
-                    "🎛️ [EffectsCommonEditor] : sysex_data is None or empty after parsing"
+                    "🎛️ : sysex_data is None or empty after parsing", scope ="EffectsCommonEditor"
                 )
                 return
 
@@ -793,13 +805,14 @@ class EffectsCommonEditor(BasicEditor):
 
             # Log what we received for debugging
             log.message(
-                f"🎛️ [EffectsCommonEditor] Effects Editor received SysEx: TEMPORARY_AREA={temporary_area}, SYNTH_TONE={synth_tone}"
+                f"🎛️ Effects Editor received SysEx: TEMPORARY_AREA={temporary_area}, SYNTH_TONE={synth_tone}",
+                 scope = "EffectsCommonEditor"
             )
 
             if temporary_area != "TEMPORARY_PROGRAM":
                 # Not effects data, skip
                 log.message(
-                    f"🎛️ [EffectsCommonEditor] skipping: TEMPORARY_AREA={temporary_area} != TEMPORARY_PROGRAM"
+                    f"🎛️ skipping: TEMPORARY_AREA={temporary_area} != TEMPORARY_PROGRAM", scope ="EffectsCommonEditor"
                 )
                 return
 
@@ -808,7 +821,7 @@ class EffectsCommonEditor(BasicEditor):
             # We'll process all parameters regardless of SYNTH_TONE value
 
             log.header_message(
-                f"[EffectsCommonEditor] Updating Effects UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+                scope=self.__class__.__name__, message=f"Updating Effects UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
             )
 
             # Filter out metadata keys
@@ -827,6 +840,10 @@ class EffectsCommonEditor(BasicEditor):
                         SysExSection.SYNTH_TONE,
                         SysExSection.TEMPORARY_AREA,
                     ]:
+                        continue
+
+                    # Skip program/vocal params; they are updated by program widget or VocalFXEditor
+                    if param_name in PROGRAM_VOCAL_PARAM_NAMES:
                         continue
 
                     # Check parameter types this editor has controls for first
@@ -873,15 +890,15 @@ class EffectsCommonEditor(BasicEditor):
                                     self._update_efx1_labels(value)
                                     successes.append(param_name)
                                     log.message(
-                                        f"[EffectsCommonEditor] ✅ Updated EFX1_TYPE to index {index} (value {value})"
+                                        f"✅Updated EFX1_TYPE to index {index} (value {value})"
                                     )
                                 else:
                                     failures.append(
-                                        f"[EffectsCommonEditor] {param_name}: efx1_type combo box not found"
+                                        f"{param_name}: efx1_type combo box not found"
                                     )
                             except ValueError:
                                 failures.append(
-                                    f"[EffectsCommonEditor] {param_name}: value {value} not found in efx1_type_values"
+                                    f"{param_name}: value {value} not found in efx1_type_values"
                                 )
                         elif param_name == "EFX2_TYPE":
                             # Find index in efx2_type_values that matches the value
@@ -897,7 +914,7 @@ class EffectsCommonEditor(BasicEditor):
                                     self._update_efx2_labels(value)
                                     successes.append(param_name)
                                     log.message(
-                                        f"✅ [EffectsCommonEditor] Updated EFX2_TYPE to index {index} (value {value})"
+                                        f"✅ Updated EFX2_TYPE to index {index} (value {value})", scope ="EffectsCommonEditor"
                                     )
                                 else:
                                     failures.append(
@@ -905,7 +922,7 @@ class EffectsCommonEditor(BasicEditor):
                                     )
                             except ValueError:
                                 failures.append(
-                                    f"[EffectsCommonEditor] {param_name}: value {value} not found in efx2_type_values"
+                                    "[EffectsCommonEditor] {param_name}: value {value} not found in efx2_type_values"
                                 )
                         # else:
                         # Regular parameter update (sliders, etc.)
@@ -946,16 +963,16 @@ class EffectsCommonEditor(BasicEditor):
 
                 except Exception as ex:
                     failures.append(f"{param_name}: {ex}")
-                    log.warning(f"[EffectsCommonEditor] Error updating {param_name}: {ex}")
+                    log.warning(scope=self.__class__.__name__, message=f"Error updating {param_name}: {ex}")
 
             # Log summary similar to Analog Synth editor
             if successes:
                 log.message(
-                    f"[EffectsCommonEditor] ℹ️✅  Successes ({len(successes)}): {successes[:10]}{'...' if len(successes) > 10 else ''}"
+                    scope=self.__class__.__name__, message=f"ℹ️✅  Successes ({len(successes)}): {successes[:10]}{'...' if len(successes) > 10 else ''}"
                 )
             if failures:
                 log.warning(
-                    f"[EffectsCommonEditor] ℹ️❌  Failures ({len(failures)}): {failures[:10]}{'...' if len(failures) > 10 else ''}"
+                    scope=self.__class__.__name__, message=f"ℹ️❌  Failures ({len(failures)}): {failures[:10]}{'...' if len(failures) > 10 else ''}"
                 )
 
             success_rate = (
@@ -963,10 +980,10 @@ class EffectsCommonEditor(BasicEditor):
                 if (successes or failures)
                 else 0
             )
-            log.message(f"[EffectsCommonEditor] ℹ️📊  Success Rate: {success_rate:.1f}%")
+            log.message(scope=self.__class__.__name__, message=f"ℹ️📊  Success Rate: {success_rate:.1f}%")
 
         except Exception as ex:
             import traceback
 
-            log.error(f"[EffectsCommonEditor] 🎛️ Effects Editor error in _dispatch_sysex_to_area: {ex}")
-            log.error(f"[EffectsCommonEditor] 🎛️ Traceback: {traceback.format_exc()}")
+            log.error(scope=self.__class__.__name__, message=f"🎛️ Effects Editor error in _dispatch_sysex_to_area: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"🎛️ Traceback: {traceback.format_exc()}")

@@ -141,7 +141,7 @@ class ProgramDatabase:
             yield conn
         except Exception as e:
             conn.rollback()
-            log.error(f"Database error: {e}")
+            log.error(f"Database error: {e}", scope="_get_connection")
             raise
         finally:
             conn.close()
@@ -197,7 +197,7 @@ class ProgramDatabase:
                 )
                 return True
         except Exception as e:
-            log.error(f"❌ Failed to save program {program.id}: {e}")
+            log.error(f"❌ Failed to save program {program.id}: {e}", scope="add_or_replace_program")
             return False
 
     def get_program_by_id(self, program_id: str) -> Optional[JDXiProgram]:
@@ -217,7 +217,7 @@ class ProgramDatabase:
                     return self._row_to_program(row)
                 return None
         except Exception as e:
-            log.error(f"Error getting program {program_id}: {e}")
+            log.error(f"Error getting program {program_id}: {e}", scope="get_programs_by_id")
             return None
 
     def get_all_programs(self) -> List[JDXiProgram]:
@@ -231,7 +231,7 @@ class ProgramDatabase:
                 rows = conn.execute("SELECT * FROM programs ORDER BY id").fetchall()
                 return [self._row_to_program(row) for row in rows]
         except Exception as e:
-            log.error(f"Error loading all programs: {e}")
+            log.error(f"Error loading all programs: {e}", scope="get_all_programs")
             return []
 
     def get_programs_by_bank(self, bank: str) -> List[JDXiProgram]:
@@ -250,10 +250,10 @@ class ProgramDatabase:
                     (pattern,),
                 ).fetchall()
                 programs = [self._row_to_program(row) for row in rows]
-                log.info(f"📊 Bank {bank}: Found {len(programs)} programs in database")
+                log.info(f"📊 Bank {bank}: Found {len(programs)} programs in database", scope="get_programs_by_bank")
                 return programs
         except Exception as e:
-            log.error(f"Error loading programs for bank {bank}: {e}")
+            log.error(f"Error loading programs for bank {bank}: {e}", scope="get_programs_by_bank")
             import traceback
 
             log.error(traceback.format_exc())
@@ -419,7 +419,7 @@ class ProgramDatabase:
         import json
 
         if not json_file.exists():
-            log.warning(f"JSON file not found: {json_file}")
+            log.warning(f"JSON file not found: {json_file}", scope="migrate_from_json")
             return 0
 
         try:
@@ -435,12 +435,13 @@ class ProgramDatabase:
                 except Exception as e:
                     log.error(
                         f"Error migrating program {program_dict.get('id', 'unknown')}: {e}"
+                        , scope="migrate_from_json"
                     )
 
             log.message(f"✅ Migrated {migrated} programs from JSON to SQLite")
             return migrated
         except Exception as e:
-            log.error(f"Error migrating from JSON: {e}")
+            log.error(f"Error migrating from JSON: {e}", scope="migrate_from_json")
             return 0
 
 
@@ -468,10 +469,11 @@ def get_database() -> ProgramDatabase:
                 if migrated_count > 0:
                     log.message(
                         f"✅ Migrated {migrated_count} programs from JSON to database on first run"
+                        , scope="get_database"
                     )
             else:
                 # Database already has programs, skip migration to avoid overwriting
                 log.message(
-                    f"⚠️  Database already contains {len(existing_programs)} programs. Skipping JSON migration to prevent data loss."
+                    f"⚠️  Database already contains {len(existing_programs)} programs. Skipping JSON migration to prevent data loss.", scope="get_database"
                 )
     return _db_instance

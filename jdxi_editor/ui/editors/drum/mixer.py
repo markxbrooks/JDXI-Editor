@@ -178,7 +178,7 @@ class DrumKitMixer(QWidget):
         # partial_index is 1-based (1-36), but DRUM_ADDRESSES[0] is common
         # So we use DRUM_ADDRESSES[partial_index] where partial_index is 1-36
         if partial_index < 1 or partial_index > 36:
-            log.warning(f"Invalid partial index: {partial_index}")
+            log.warning(f"Invalid partial index: {partial_index}", scope=self.__class__.__name__)
             return
 
         # Get the LMB for this partial from AddressOffsetDrumKitLMB

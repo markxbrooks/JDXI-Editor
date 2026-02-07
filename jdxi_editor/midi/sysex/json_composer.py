@@ -210,21 +210,21 @@ class JDXiJSONComposer:
 
             controls_dict = editor.get_controls_as_dict()
             log.message(
-                f"DrumCommonEditor: Found {len(editor.controls)} controls in editor"
+                f"Found {len(editor.controls)} controls in editor", scope=self.__class__.__name__
             )
             log.message(
-                f"DrumCommonEditor: controls_dict has {len(controls_dict)} entries"
+                f"controls_dict has {len(controls_dict)} entries", scope=self.__class__.__name__
             )
 
             # First, check if KIT_LEVEL is in controls_dict (from get_controls_as_dict)
             if "KIT_LEVEL" in controls_dict:
                 log.message(
-                    f"DrumCommonEditor: KIT_LEVEL found in controls_dict = {controls_dict['KIT_LEVEL']}"
+                    f"KIT_LEVEL found in controls_dict = {controls_dict['KIT_LEVEL']}", scope=self.__class__.__name__
                 )
             else:
-                log.warning("DrumCommonEditor: KIT_LEVEL NOT found in controls_dict")
+                log.warning("KIT_LEVEL NOT found in controls_dict", scope=self.__class__.__name__)
                 log.message(
-                    f"DrumCommonEditor: Available keys in controls_dict: {list(controls_dict.keys())[:10]}..."
+                    f"Available keys in controls_dict: {list(controls_dict.keys())[:10]}...", scope=self.__class__.__name__
                 )
 
             for param, widget in editor.controls.items():
@@ -251,12 +251,12 @@ class JDXiJSONComposer:
                     value = int(widget_value) if widget_value is not None else 0
                 except Exception as ex:
                     log.warning(
-                        f"DrumCommonEditor: Error getting value for {param_name}: {ex}"
+                        f"Error getting value for {param_name}: {ex}", scope=self.__class__.__name__
                     )
                     value = controls_dict.get(param_name, 0)
 
                 log.message(
-                    f"DrumCommonEditor: Parameter {param_name}: widget.value()={widget_value}, controls_dict={controls_dict.get(param_name)}, final={value}"
+                    f"Parameter {param_name}: widget.value()={widget_value}, controls_dict={controls_dict.get(param_name)}, final={value}", scope=self.__class__.__name__
                 )
 
                 # Check if this is a Common parameter
@@ -265,43 +265,43 @@ class JDXiJSONComposer:
                     # Special check for KIT_LEVEL - warn if it's 0 as it might indicate the slider wasn't updated
                     if param_name == "KIT_LEVEL" and value == 0:
                         log.warning(
-                            f"DrumCommonEditor: KIT_LEVEL is 0 - this might indicate the slider wasn't updated from the synth"
+                            f"KIT_LEVEL is 0 - this might indicate the slider wasn't updated from the synth", scope=self.__class__.__name__
                         )
                         log.message(
-                            f"DrumCommonEditor: Widget value: {widget_value}, controls_dict value: {controls_dict.get(param_name)}"
+                            f"Widget value: {widget_value}, controls_dict value: {controls_dict.get(param_name)}", scope=self.__class__.__name__
                         )
                     common_controls[param_name] = value
                     log.message(
-                        f"DrumCommonEditor: Added Common parameter {param_name} = {value}"
+                        f"Added Common parameter {param_name} = {value}", scope=self.__class__.__name__
                     )
                 # Check if this is a Partial parameter
                 elif isinstance(param, DrumPartialParam):
                     partial_controls[param_name] = value
                     log.message(
-                        f"DrumCommonEditor: Added Partial parameter {param_name} = {value}"
+                        f"Added Partial parameter {param_name} = {value}", scope=self.__class__.__name__
                     )
                 else:
                     log.warning(
-                        f"DrumCommonEditor: Unknown parameter type for {param_name}: {type(param)}"
+                        f"Unknown parameter type for {param_name}: {type(param)}", scope=self.__class__.__name__
                     )
 
             log.message(
-                f"DrumCommonEditor: Separated {len(common_controls)} Common and {len(partial_controls)} Partial controls"
+                f"Separated {len(common_controls)} Common and {len(partial_controls)} Partial controls", scope=self.__class__.__name__
             )
 
             # If no common controls found, try alternative identification methods
             if not common_controls:
                 log.warning(
-                    "DrumCommonEditor: No Common controls found via isinstance check"
+                    "No Common controls found via isinstance check", scope=self.__class__.__name__
                 )
                 log.message(
-                    "DrumCommonEditor: Trying alternative method to identify Common parameters..."
+                    "Trying alternative method to identify Common parameters...", scope=self.__class__.__name__
                 )
 
                 # Get all Common parameter names from the enum
                 common_param_names = {param.name for param in DrumCommonParam}
                 log.message(
-                    f"DrumCommonEditor: Known Common parameter names: {common_param_names}"
+                    f"Known Common parameter names: {common_param_names}", scope=self.__class__.__name__
                 )
 
                 # Check each control by name
@@ -313,28 +313,28 @@ class JDXiJSONComposer:
                     if param_name in common_param_names:
                         common_controls[param_name] = value
                         log.message(
-                            f"DrumCommonEditor: Added Common parameter by name: {param_name} = {value}"
+                            f"Added Common parameter by name: {param_name} = {value}", scope=self.__class__.__name__
                         )
                     # Also check if it's a known Common parameter
                     elif param_name == "KIT_LEVEL":
                         common_controls[param_name] = value
                         log.message(
-                            f"DrumCommonEditor: Force-added KIT_LEVEL by name = {value}"
+                            f"Force-added KIT_LEVEL by name = {value}", scope=self.__class__.__name__
                         )
 
                 if common_controls:
                     log.message(
-                        f"DrumCommonEditor: Found {len(common_controls)} Common controls via name matching"
+                        f"Found {len(common_controls)} Common controls via name matching", scope=self.__class__.__name__
                     )
                 else:
                     log.error(
-                        "DrumCommonEditor: Still no Common controls found after name matching!"
+                        "Still no Common controls found after name matching!", scope=self.__class__.__name__
                     )
                     # Last resort: if KIT_LEVEL is in controls_dict, add it anyway
                     if "KIT_LEVEL" in controls_dict:
                         common_controls["KIT_LEVEL"] = controls_dict["KIT_LEVEL"]
                         log.message(
-                            f"DrumCommonEditor: Force-added KIT_LEVEL from controls_dict = {common_controls['KIT_LEVEL']}"
+                            f"Force-added KIT_LEVEL from controls_dict = {common_controls['KIT_LEVEL']}", scope=self.__class__.__name__
                         )
 
             # Save Common section with Common address (19700000)
@@ -352,7 +352,7 @@ class JDXiJSONComposer:
                 if "KIT_LEVEL" in controls_dict and "KIT_LEVEL" not in common_controls:
                     common_controls["KIT_LEVEL"] = controls_dict["KIT_LEVEL"]
                     log.message(
-                        f"DrumCommonEditor: Added KIT_LEVEL to common_controls = {common_controls['KIT_LEVEL']}"
+                        f"Added KIT_LEVEL to common_controls = {common_controls['KIT_LEVEL']}", scope=self.__class__.__name__
                     )
 
                 if common_controls:
@@ -360,11 +360,11 @@ class JDXiJSONComposer:
                         editor, common_controls, common_address, temp_folder, "COMMON"
                     )
                     log.message(
-                        f"DrumCommonEditor: Saved Common section with {len(common_controls)} parameters to address {common_address.to_bytes()}"
+                        f"Saved Common section with {len(common_controls)} parameters to address {common_address.to_bytes()}", scope=self.__class__.__name__
                     )
                 else:
                     log.warning(
-                        "DrumCommonEditor: common_controls is empty, skipping Common section save"
+                        "common_controls is empty, skipping Common section save", scope=self.__class__.__name__
                     )
 
             # Save Partial sections - each partial has its own address
@@ -459,7 +459,7 @@ class JDXiJSONComposer:
                     for i, char in enumerate(tone_name_padded, start=1):
                         ascii_value = ord(char)
                         editor_data[f"TONE_NAME_{i}"] = ascii_value
-                    log.message(f"Including tone name in JSON: '{tone_name}'")
+                    log.message(f"Including tone name in JSON: '{tone_name}'", scope=self.__class__.__name__)
 
             # Save JSON file
             json_temp_file = temp_folder / f"jdxi_tone_data_{address_hex}.json"
@@ -467,7 +467,7 @@ class JDXiJSONComposer:
                 json.dump(editor_data, file_handle, ensure_ascii=False, indent=2)
 
             log.message(
-                f"JSON saved successfully for {section_name} section: {json_temp_file}"
+                f"JSON saved successfully for {section_name} section: {json_temp_file}", scope=self.__class__.__name__
             )
             return json_temp_file
 

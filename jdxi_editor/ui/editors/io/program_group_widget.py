@@ -91,7 +91,7 @@ class ProgramGroupWidget(QGroupBox):
             )
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
-            f"📑[ProgramGroupWidget] Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})"
+            f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})", scope=self.__class__.__name__
         )
 
         # update_program_name
@@ -138,7 +138,7 @@ class ProgramGroupWidget(QGroupBox):
         program_name_dialog = PatchNameEditor(current_name=self.program_name)
         if program_name_dialog.exec():  # If the user clicks Save
             sysex_string = program_name_dialog.get_sysex_string()
-            log.message(f"[ProgramGroupWidget] SysEx string: {sysex_string}")
+            log.message(f"SysEx string: {sysex_string}", scope=self.__class__.__name__)
             self.parent.send_tone_name(ProgramCommonParam, sysex_string)
             self.parent.data_request()
 
@@ -152,17 +152,17 @@ class ProgramGroupWidget(QGroupBox):
         )
         bank_letter = program_id[0] if len(program_id) >= 1 else ""
         bank_number = int(program_id[1:3]) if len(program_id) >= 3 else 0
-        log.parameter("[ProgramGroupWidget] combo box bank_letter", bank_letter)
-        log.parameter("[ProgramGroupWidget] combo box bank_number", bank_number)
+        log.parameter("combo box bank_letter", bank_letter)
+        log.parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
             self.set_current_program_name(program_details.name)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log.message("[ProgramGroupWidget] calculated msb, lsb, pc :")
-        log.parameter("[ProgramGroupWidget] [msb]", msb)
-        log.parameter("[ProgramGroupWidget] [lsb]", lsb)
-        log.parameter("[ProgramGroupWidget] [pc]", pc)
+        log.message("Calculated msb, lsb, pc :", scope=self.__class__.__name__)
+        log.parameter("[msb]", msb, scope=self.__class__.__name__)
+        log.parameter("[lsb]", lsb, scope=self.__class__.__name__)
+        log.parameter("[pc]", pc, scope=self.__class__.__name__)
         log_midi_info(msb, lsb, pc)
         self.parent.midi_helper.send_bank_select_and_program_change(
             self.channel, msb, lsb, pc
@@ -193,6 +193,6 @@ class ProgramGroupWidget(QGroupBox):
         if self.file_label:
             self.file_label.setText(program_name)
         else:
-            log.message("[ProgramGroupWidget] File label not initialized.")
+            log.message("File label not initialized.", scope=self.__class__.__name__)
         if self.mixer_widget:
             self.mixer_widget.update_program_name(program_name)

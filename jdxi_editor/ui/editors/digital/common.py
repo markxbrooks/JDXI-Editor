@@ -119,6 +119,23 @@ class DigitalCommonSection(BaseCommonSection):
             "octave_shift": self._build_combo_boxes(self.COMBO_BOXES),
             "other_switches": self._build_switches(self.OTHER_SWITCHES),
         }
+        # Register widgets in the shared controls dict so the editor's
+        # _update_common_controls can find them when COMMON SysEx arrives.
+        if self.controls is not None:
+            for spec, w in zip(
+                self.SLIDER_GROUPS["pitch"], self.widgets["sliders"]
+            ):
+                self.controls[spec.param] = w
+            for spec, w in zip(
+                self.PORTAMENTO_SWITCHES, self.widgets["portamento_switches"]
+            ):
+                self.controls[spec.param] = w
+            for spec, w in zip(self.COMBO_BOXES, self.widgets["octave_shift"]):
+                self.controls[spec.param] = w
+            for spec, w in zip(
+                self.OTHER_SWITCHES, self.widgets["other_switches"]
+            ):
+                self.controls[spec.param] = w
 
     # ------------------------------------------------------------
     # Layout

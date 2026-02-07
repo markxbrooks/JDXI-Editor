@@ -712,7 +712,7 @@ class SectionBaseWidget(SynthBase):
         """on shape group changed"""
         log.message(
             "[LFO Shape] _on_shape_group_changed shape_value %s, checked: %s section: %s",
-            shape_value, checked, self.__class__.__name__,
+            shape_value, checked, self.__class__.__name__, scope=self.__class__.__name__
         )
         if not checked:
             return
@@ -720,7 +720,7 @@ class SectionBaseWidget(SynthBase):
             shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
             self.set_wave_shape(shape, send_midi=True)
         except Exception as ex:
-            log.error("[SectionBaseWidget] [_on_shape_group_changed] error %s occurred", ex)
+            log.error("[SectionBaseWidget] [_on_shape_group_changed] error %s occurred", ex, scope=self.__class__.__name__)
 
     def _get_wave_shape_button(self, shape: DigitalLFOShape | AnalogLFOShape):
         """get wave shape button"""
@@ -730,6 +730,7 @@ class SectionBaseWidget(SynthBase):
                 "[LFO Shape] No button for %s (section=%s)",
                 shape,
                 self.__class__.__name__,
+                scope=self.__class__.__name__
             )
         return btn
 
@@ -755,15 +756,17 @@ class SectionBaseWidget(SynthBase):
                 shape.value,
                 address,
                 self.__class__.__name__,
+                scope=self.__class__.__name__
             )
             if not self.send_midi_parameter(
                     self.wave_shape_param, shape.value, address
             ):
-                log.warning(f"Failed to set Mod LFO shape to {shape.name}")
+                log.warning(f"Failed to set Mod LFO shape to {shape.name}", scope=self.__class__.__name__)
         elif not self.send_midi_parameter:
             log.warning(
                 "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
                 self.__class__.__name__,
+                scope=self.__class__.__name__
             )
 
     def _apply_wave_shape_ui(self, btn: Any | None, shape: DigitalLFOShape | AnalogLFOShape):

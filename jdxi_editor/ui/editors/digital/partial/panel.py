@@ -104,7 +104,7 @@ class DigitalPartialPanel(PartialPanel):
         self._init_state()
         self._build_ui()
 
-        log.parameter("[DigitalPartialPanel] DigitalPartialEditor initialized:", self)
+        log.parameter("DigitalPartialEditor initialized:", self, scope=self.__class__.__name__)
 
     # ------------------------------------------------------------------
     # Initialization helpers
@@ -124,7 +124,7 @@ class DigitalPartialPanel(PartialPanel):
             partial_number=self.partial_number,
         )
 
-        log.parameter("[DigitalPartialPanel] Synth address:", self.synth_data.address)
+        log.parameter("Synth address:", self.synth_data.address, scope=self.__class__.__name__)
 
     def _resolve_partial_name(self) -> None:
         try:
@@ -133,7 +133,7 @@ class DigitalPartialPanel(PartialPanel):
             log.error(f"[[DigitalPartialPanel] Invalid partial_number: {self.partial_number}")
             self.part_name = "Unknown"
 
-        log.parameter("[DigitalPartialPanel] Partial name:", self.part_name)
+        log.parameter("Partial name:", self.part_name, scope=self.__class__.__name__)
 
     def _init_state(self) -> None:
         self.updating_from_spinbox = False
@@ -158,7 +158,7 @@ class DigitalPartialPanel(PartialPanel):
 
     def _register_sections(self) -> None:
         """Register sections"""
-        log.message(f"[DigitalPartialPanel] [_register_sections]")
+        log.message(scope=self.__class__.__name__, message=f"[_register_sections]")
         # Correct one
         self._add_tab(
             key=Digital.Tab.OSCILLATOR,
@@ -271,7 +271,7 @@ class DigitalPartialPanel(PartialPanel):
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         if not self.send_midi_parameter(Digital.Param.OSC_WAVEFORM, waveform.value):
-            log.warning(f"[DigitalPartialPanel] Failed to set waveform: {waveform.name}")
+            log.warning(scope=self.__class__.__name__, message=f"Failed to set waveform: {waveform.name}")
 
     # ------------------------------------------------------------------
 

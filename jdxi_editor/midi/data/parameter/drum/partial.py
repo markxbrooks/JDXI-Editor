@@ -1666,7 +1666,7 @@ class DrumPartialParam(AddressParameter):
             )
 
         if partial_index < 0 or partial_index >= 72:
-            raise ValueError(f"Invalid partial index: {partial_index}")
+            raise ValueError(f"[{self.__class__.__name__}] Invalid partial index: {partial_index}")
 
         address_lmb = DRUM_GROUP_MAP.get(
             partial_index + 1, 0x2E

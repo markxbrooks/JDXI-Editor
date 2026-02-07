@@ -129,9 +129,9 @@ class BaseSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            log.message("[BaseSynthEditor] MIDI signals connected")
+            log.message(scope="BaseSynthEditor", message="MIDI signals connected")
         else:
-            log.message("[BaseSynthEditor] MIDI signals not connected")
+            log.message(scope="BaseSynthEditor", message="MIDI signals not connected")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -256,7 +256,7 @@ class BaseSynthEditor(SynthEditor):
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
-            f"[BaseSynthEditor] update_filter_controls_state: mode={mode} "
+            scope="BaseSynthEditor", message=f"update_filter_controls_state: mode={mode} "
             f"has filter_section={hasattr(self, 'filter_section')} "
             f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
         )
@@ -264,12 +264,12 @@ class BaseSynthEditor(SynthEditor):
             self.filter_section.update_controls_state(mode)
         else:
             log.warning(
-                "[BaseSynthEditor] update_filter_controls_state: no filter_section, skipping"
+                scope="BaseSynthEditor", message="update_filter_controls_state: no filter_section, skipping"
             )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
-        log.message(f"[BaseSynthEditor] _on_filter_mode_changed: mode={mode}")
+        log.message(scope="BaseSynthEditor", message=f"_on_filter_mode_changed: mode={mode}")
         self.update_filter_controls_state(mode)
 
     def update_filter_state(self, value: int):
@@ -297,7 +297,7 @@ class BaseSynthEditor(SynthEditor):
         selected_filter_mode = filter_mode_map.get(value)
 
         if selected_filter_mode is None:
-            log.warning("[BaseSynthEditor] Unknown filter mode value: %s", value)
+            log.warning("Unknown filter mode value: %s", value, scope="BaseSynthEditor")
             return
 
         # --- Reset all buttons to default style
@@ -311,7 +311,7 @@ class BaseSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
         else:
-            log.warning("[BaseSynthEditor] Filter mode button not found for: %s", selected_filter_mode)
+            log.warning("Filter mode button not found for: %s", selected_filter_mode, scope=self.__class__.__name__)
 
     def _on_waveform_selected(self, waveform: AnalogWaveOsc):
         """
@@ -557,7 +557,7 @@ class BaseSynthEditor(SynthEditor):
         :param failures: list SysEx data
         :return: None
         """
-        log.message("[BaseSynthEditor] [_update_controls]")
+        log.message(scope="BaseSynthEditor", message="[_update_controls]")
         # --- Compare with previous data and log changes
         if self.previous_json_data:
             log_changes(self.previous_json_data, sysex_data)

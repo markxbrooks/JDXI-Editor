@@ -174,11 +174,11 @@ class UserProgramsWidget(QWidget):
 
         # Populate table (with error handling)
         try:
-            log.message("🔨[UserProgramsWidget] Calling populate_table()...")
+            log.message("🔨Calling populate_table()...", scope="UserProgramsWidget")
             self.populate_table()
-            log.message("✅ [UserProgramsWidget] Table populated successfully")
+            log.message("✅ Table populated successfully", scope="UserProgramsWidget")
         except Exception as e:
-            log.error(f"❌ [UserProgramsWidget] Error populating user programs table: {e}")
+            log.error(f"❌ Error populating user programs table: {e}", scope="UserProgramsWidget")
             import traceback
 
             log.error(traceback.format_exc())
@@ -199,7 +199,7 @@ class UserProgramsWidget(QWidget):
         :param search_text: Optional search text to filter programs
         """
         if not self.user_programs_table:
-            log.warning("[UserProgramsWidget] User programs table not initialized")
+            log.warning("User programs table not initialized", scope="UserProgramsWidget")
             return
 
         try:
@@ -209,7 +209,7 @@ class UserProgramsWidget(QWidget):
             db = get_database()
             all_programs = db.get_all_programs()
         except Exception as e:
-            log.error(f"[UserProgramsWidget] Error getting programs from database: {e}")
+            log.error(f"Error getting programs from database: {e}", scope="UserProgramsWidget")
             all_programs = []
 
         # Filter by search text if provided
@@ -233,7 +233,7 @@ class UserProgramsWidget(QWidget):
         try:
             self.user_programs_table.setRowCount(0)
         except Exception as e:
-            log.error(f"[UserProgramsWidget] Error clearing user programs table: {e}")
+            log.error(f"Error clearing user programs table: {e}", scope="UserProgramsWidget")
             return
 
         # Populate table
@@ -290,13 +290,13 @@ class UserProgramsWidget(QWidget):
                     item.setData(Qt.ItemDataRole.UserRole, program)
 
         log.message(
-            f"✅[UserProgramsWidget] Populated user programs table with {len(all_programs)} programs"
+            f"✅Populated user programs table with {len(all_programs)} programs", scope="UserProgramsWidget"
         )
 
     def save_changes(self) -> None:
         """Save changes made to the user programs table (e.g., genre edits) to the database."""
         if not self.user_programs_table:
-            log.warning("[UserProgramsWidget] User programs table not initialized")
+            log.warning("User programs table not initialized", scope="UserProgramsWidget")
             return
 
         from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
@@ -357,7 +357,7 @@ class UserProgramsWidget(QWidget):
                         changes.append(f"name: '{program.name}' -> '{new_name}'")
                     if genre_changed:
                         changes.append(f"genre: '{program.genre}' -> '{new_genre}'")
-                    log.message(f"✅ [UserProgramsWidget] Updated {program.id}: {', '.join(changes)}")
+                    log.message(f"✅ Updated {program.id}: {', '.join(changes)}", scope="UserProgramsWidget")
                     # Update the stored program object in item data
                     for col in range(11):
                         item = self.user_programs_table.item(row, col)
@@ -365,18 +365,18 @@ class UserProgramsWidget(QWidget):
                             item.setData(Qt.ItemDataRole.UserRole, updated_program)
                 else:
                     error_count += 1
-                    log.error(f"❌[UserProgramsWidget] Failed to save update for {program.id}")
+                    log.error(f"❌Failed to save update for {program.id}", scope="UserProgramsWidget")
 
         # Show summary message
         if saved_count > 0:
-            log.message(f"✅ [UserProgramsWidget] Saved {saved_count} program update(s)")
+            log.message(f"✅ Saved {saved_count} program update(s)", scope="UserProgramsWidget")
             if error_count > 0:
-                log.warning(f"⚠️ [UserProgramsWidget] {error_count} program(s) failed to save")
+                log.warning(f"⚠️ {error_count} program(s) failed to save", scope="UserProgramsWidget")
         else:
             if error_count > 0:
-                log.error(f"❌[UserProgramsWidget] Failed to save {error_count} program(s)")
+                log.error(f"❌Failed to save {error_count} program(s)", scope="UserProgramsWidget")
             else:
-                log.message("ℹ️[UserProgramsWidget] No changes to save")
+                log.message("ℹ️No changes to save", scope="UserProgramsWidget")
 
     def _on_user_program_selected(self, item: QTableWidgetItem) -> None:
         """
@@ -404,7 +404,7 @@ class UserProgramsWidget(QWidget):
         :param index: QModelIndex from the delegate
         """
         row = index.row()
-        log.message(f"🎹[UserProgramsWidget] Play button clicked for row {row}")
+        log.message(f"🎹 Play button clicked for row {row}", scope="UserProgramsWidget")
         self._load_program_from_table(row)
 
     def _load_program_from_table(self, row: int) -> None:
@@ -432,28 +432,28 @@ class UserProgramsWidget(QWidget):
         # Get program ID and extract bank/number
         program_id = program.id
         if not program_id or len(program_id) < 3:
-            log.warning(f"[UserProgramsWidget] Invalid program ID: {program_id}")
+            log.warning(f" Invalid program ID: {program_id}", scope="UserProgramsWidget")
             return
 
         bank_letter = program_id[0]
         try:
             bank_number = int(program_id[1:3])
         except ValueError:
-            log.warning(f"[UserProgramsWidget] Invalid program number in ID: {program_id}")
+            log.warning(f" Invalid program number in ID: {program_id}", scope="UserProgramsWidget")
             return
 
-        log.message(f"🎹[UserProgramsWidget] Loading program from table: {program_id} - {program.name}")
+        log.message(f"🎹 Loading program from table: {program_id} - {program.name}", scope="UserProgramsWidget")
 
         # Calculate MIDI values
         try:
             msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
         except (ValueError, TypeError) as e:
-            log.error(f"[UserProgramsWidget] Error calculating MIDI values for {program_id}: {e}")
+            log.error(f" Error calculating MIDI values for {program_id}: {e}", scope="UserProgramsWidget")
             return
 
         # Send MIDI Program Change
         if self.midi_helper:
-            log.message(f"[UserProgramsWidget] Sending Program Change: MSB={msb}, LSB={lsb}, PC={pc}")
+            log.message(f" Sending Program Change: MSB={msb}, LSB={lsb}, PC={pc}", scope="UserProgramsWidget")
             self.midi_helper.send_bank_select_and_program_change(
                 self.channel, msb, lsb, pc
             )

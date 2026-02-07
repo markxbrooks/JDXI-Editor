@@ -95,7 +95,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
-        log.info(f"[AnalogOscillatorSection] before super init controls: {controls}")
+        log.info(scope=self.__class__.__name__, message=f"before super init controls: {controls}")
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
             analog=True,
@@ -104,10 +104,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             address=address,
             send_midi_parameter=send_midi_parameter,
         )
-        log.info(f"[AnalogOscillatorSection] after super init self.controls: {self.controls}")
+        log.info(scope=self.__class__.__name__, message=f"after super init self.controls: {self.controls}")
         self.address = address
         self.build_widgets()
-        log.info(f"[AnalogOscillatorSection] after build_widgets self.controls: {self.controls}")
+        log.info(scope=self.__class__.__name__, message=f"after build_widgets self.controls: {self.controls}")
         self.setup_ui()
 
     def generate_wave_shapes(self) -> list:

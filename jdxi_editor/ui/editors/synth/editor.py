@@ -133,8 +133,8 @@ class SynthEditor(SynthBase):
                 )
             )
         self.midi_helper.midi_program_changed.connect(self.data_request)
-        log.parameter("[SynthEditor] Initialized:", self.__class__.__name__)
-        log.parameter("[SynthEditor] ---> Using MIDI helper:", midi_helper)
+        log.parameter(scope=self.__class__.__name__, message="Initialized:", parameter=self.__class__.__name__)
+        log.parameter(scope=self.__class__.__name__, message="---> Using MIDI helper:", parameter=midi_helper)
         # midi message bytes
         # To be over-ridden by subclasses
         # Set window flags for address tool window
@@ -192,9 +192,9 @@ class SynthEditor(SynthBase):
                 )
                 for synth_type, presets, channel in preset_configs
             }
-            log.message("[SynthEditor] MIDI helper initialized")
+            log.message(scope=self.__class__.__name__, message="MIDI helper initialized")
         else:
-            log.message("[SynthEditor] MIDI helper not initialized")
+            log.message(scope=self.__class__.__name__, message="MIDI helper not initialized")
         self.json_parser = JDXiJsonSysexParser()
 
     def __str__(self):
@@ -237,7 +237,7 @@ class SynthEditor(SynthBase):
         super().showEvent(event)
         if self.midi_helper:
             log.message(
-                "🎛️ [SynthEditor] Effects Editor shown - requesting current settings from instrument"
+                "🎛️Effects Editor shown - requesting current settings from instrument", scope="SynthEditor"
             )
         self.data_request()
 
@@ -257,12 +257,12 @@ class SynthEditor(SynthBase):
                 else:
                     # --- Fallback for unexpected widget types
                     log.warning(
-                        f"[SynthEditor] Widget for {param.name} has no value() method: {type(widget)}"
+                        scope=self.__class__.__name__, message=f"Widget for {param.name} has no value() method: {type(widget)}"
                     )
                     controls_data[param.name] = 0
             return controls_data
         except Exception as ex:
-            log.error(f"[SynthEditor] Failed to get controls: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
@@ -270,7 +270,7 @@ class SynthEditor(SynthBase):
         handler = self.preset_helpers.get(self.preset_type)
         if handler is None:
             log.warning(
-                f"[SynthEditor] Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
+                scope=self.__class__.__name__, message=f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXi.Synth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
@@ -292,17 +292,17 @@ class SynthEditor(SynthBase):
 
         if current_synth != temporary_area:
             log.message(
-                f"[SynthEditor] temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+                scope=self.__class__.__name__, message=f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
 
         else:
             log.message(
-                f"[SynthEditor] !!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update"
+                scope=self.__class__.__name__, message=f"!!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update"
             )
 
         log.header_message(
-            f"[SynthEditor] Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+            scope=self.__class__.__name__, message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}"
         )
 
         sysex_data = filter_sysex_keys(sysex_data)
@@ -327,12 +327,12 @@ class SynthEditor(SynthBase):
             )
         else:  # --- Drums and Digital 1 & 2 are dealt with via partials
             if partial_number is None:
-                log.error(f"[SynthEditor] Unknown partial number for synth_tone: {synth_tone}")
+                log.error(scope=self.__class__.__name__, message=f"Unknown partial number for synth_tone: {synth_tone}")
                 return
-            log.parameter("[SynthEditor] partial_number", partial_number)
+            log.parameter(scope=self.__class__.__name__, message="partial_number", parameter=partial_number)
             self._update_controls(partial_number, sysex_data, successes, failures)
 
-        log.debug_info(successes, failures)
+        log.debug_info(successes=successes, failures=failures, scope=self.__class__.__name__)
 
     def _update_controls(
         self, partial_no: int, sysex_data: dict, successes: list, failures: list
@@ -365,7 +365,7 @@ class SynthEditor(SynthBase):
             log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
-            log.message(f"[SynthEditor] Invalid JSON format: {ex}")
+            log.message(scope=self.__class__.__name__, message=f"Invalid JSON format: {ex}")
             return None
 
     def set_instrument_title_label(self, name: str, synth_type: str):
@@ -391,7 +391,7 @@ class SynthEditor(SynthBase):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        log.message(f"[SynthEditor] Updating combo to preset {preset_number}")
+        log.message(scope=self.__class__.__name__, message=f"Updating combo to preset {preset_number}")
         combo_box = self._get_instrument_selection_combo()
         if combo_box:
             combo_box.combo_box.setCurrentIndex(preset_number)
@@ -403,7 +403,7 @@ class SynthEditor(SynthBase):
         :return:
         """
         selected_synth_text = self._get_selected_instrument_text()
-        log.message(f"[SynthEditor] selected_synth_text: {selected_synth_text}")
+        log.message(scope=self.__class__.__name__, message=f"selected_synth_text: {selected_synth_text}")
         # --- Get title label from widget or direct attribute
         title_label = None
         if hasattr(self, "instrument_preset") and self.instrument_preset:
@@ -430,7 +430,7 @@ class SynthEditor(SynthBase):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             one_based_preset_index = int(selected_synth_padded_number)
-            log.message(f"[SynthEditor] preset_index: {one_based_preset_index}")
+            log.message(scope=self.__class__.__name__, message=f"preset_index: {one_based_preset_index}")
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def load_preset(self, preset_index):
@@ -438,13 +438,13 @@ class SynthEditor(SynthBase):
         # --- Get the combo box - it might be in instrument_preset widget or directly on self
         combo_box = self._get_instrument_selection_combo()
         if not combo_box:
-            log.error("[SynthEditor] Instrument selection combo box is not available")
+            log.error(scope=self.__class__.__name__, message="Instrument selection combo box is not available")
             return
 
         preset_name = combo_box.combo_box.currentText()  # Get the selected preset name
-        log.message(f"[SynthEditor] combo box preset_name : {preset_name}")
+        log.message(scope=self.__class__.__name__, message=f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
-        log.message(f"[SynthEditor] combo box program_number : {program_number}")
+        log.message(scope=self.__class__.__name__, message=f"combo box program_number : {program_number}")
 
         # --- Determine preset list if not already set
         if self.preset_preset_list is None:
@@ -462,13 +462,13 @@ class SynthEditor(SynthBase):
             else:
                 # Default to digital preset list
                 self.preset_preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
-                log.warning(
-                    f"[SynthEditor] Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
+                log.warning(scope=self.__class__.__name__,
+                    message=f"Unknown preset_type {self.preset_type}, defaulting to JDXi.UI.Preset.Digital.LIST"
                 )
 
         # --- Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         if self.preset_preset_list is None:
-            log.error("[SynthEditor] preset_preset_list is still None after initialization")
+            log.error(scope=self.__class__.__name__, message="preset_preset_list is still None after initialization")
             return
 
         msb = get_preset_parameter_value("msb", program_number, self.preset_preset_list)
@@ -477,7 +477,7 @@ class SynthEditor(SynthBase):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"[SynthEditor] Could not retrieve preset parameters for program {program_number}"
+                scope=self.__class__.__name__, message=f"Could not retrieve preset parameters for program {program_number}"
             )
             return
 
@@ -493,16 +493,16 @@ class SynthEditor(SynthBase):
             if self.preset_type in channel_map:
                 self.midi_channel = channel_map[self.preset_type]
                 log.message(
-                    f"[SynthEditor] Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}"
+                    scope=self.__class__.__name__, message=f"Set midi_channel to {self.midi_channel} based on preset_type {self.preset_type}"
                 )
             else:
                 log.error(
-                    f"[SynthEditor] midi_channel is None and could not determine from preset_type {self.preset_type}"
+                    scope=self.__class__.__name__, message=f"midi_channel is None and could not determine from preset_type {self.preset_type}"
                 )
                 return
 
-        log.message(f"[SynthEditor] retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log.message(f"[SynthEditor] Using MIDI channel: {self.midi_channel}")
+        log.message(scope=self.__class__.__name__, message=f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log.message(scope=self.__class__.__name__, message=f"Using MIDI channel: {self.midi_channel}")
         log_midi_info(msb, lsb, pc)
         # -- Send bank select and program change
         self.midi_helper.send_bank_select_and_program_change(
@@ -516,30 +516,31 @@ class SynthEditor(SynthBase):
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
         log.message(
-            f"[SynthEditor] Program change {program} detected on channel {channel}, requesting data update"
+            scope=self.__class__.__name__, message=f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
         log.message(
-            f"[SynthEditor] Control change {channel} {control} detected on channel {channel} with value {value}, "
-            f"[SynthEditor] requesting data update"
+            scope=self.__class__.__name__, message=f"Control change {channel} {control} detected on channel {channel} with value {value}, ")
+        log.message(
+            scope=self.__class__.__name__, message="requesting data update"
         )
         self.data_request()
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
         log.debug(
-            f"[SynthEditor] load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}"
+            scope=self.__class__.__name__, message=f"load_and_set_image called with primary: {image_path}, secondary: {secondary_image_path}"
         )
 
         if image_path and os.path.exists(image_path):
             file_to_load = image_path
-            log.debug(f"[SynthEditor] Using primary image path: {file_to_load}")
+            log.debug(scope=self.__class__.__name__, message=f"Using primary image path: {file_to_load}")
         elif secondary_image_path and os.path.exists(secondary_image_path):
             file_to_load = secondary_image_path
-            log.debug(f"[SynthEditor] Using secondary image path: {file_to_load}")
+            log.debug(scope=self.__class__.__name__, message=f"Using secondary image path: {file_to_load}")
         else:
             # --- Fallback to default image using resource_path
             if hasattr(self, "instrument_icon_folder") and hasattr(
@@ -552,10 +553,10 @@ class SynthEditor(SynthBase):
                         self.instrument_default_image,
                     )
                 )
-                log.debug(f"[SynthEditor] Falling back to default image: {file_to_load}")
+                log.debug(scope=self.__class__.__name__, message=f"Falling back to default image: {file_to_load}")
             else:
                 log.error(
-                    f"[SynthEditor] Cannot load image: missing instrument_icon_folder ({getattr(self, 'instrument_icon_folder', None)}) or instrument_default_image ({getattr(self, 'instrument_default_image', None)})"
+                    scope=self.__class__.__name__, message=f"Cannot load image: missing instrument_icon_folder ({getattr(self, 'instrument_icon_folder', None)}) or instrument_default_image ({getattr(self, 'instrument_default_image', None)})"
                 )
                 image_label = self._get_instrument_image_label()
                 if image_label:
@@ -563,7 +564,7 @@ class SynthEditor(SynthBase):
                 return False
 
         if not os.path.exists(file_to_load):
-            log.warning(f"[SynthEditor] Image file does not exist: {file_to_load}")
+            log.warning(scope=self.__class__.__name__, message=f"Image file does not exist: {file_to_load}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
@@ -571,7 +572,7 @@ class SynthEditor(SynthBase):
 
         pixmap = QPixmap(file_to_load)
         if pixmap.isNull():
-            log.error(f"[SynthEditor] Failed to load pixmap from: {file_to_load}")
+            log.error(scope=self.__class__.__name__, message=f"Failed to load pixmap from: {file_to_load}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()
@@ -589,9 +590,9 @@ class SynthEditor(SynthBase):
             image_label.setPixmap(scaled_pixmap)
             image_label.setScaledContents(False)  # Don't stretch, maintain aspect ratio
             image_label.setStyleSheet(JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL)
-            log.debug(f"[SynthEditor] Successfully loaded image: {file_to_load}")
+            log.debug(scope=self.__class__.__name__, message=f"Successfully loaded image: {file_to_load}")
         else:
-            log.error("[SynthEditor] Instrument image label not found - cannot set image")
+            log.error(scope=self.__class__.__name__, message="Instrument image label not found - cannot set image")
             return False
         return True
 
@@ -699,12 +700,12 @@ class SynthEditor(SynthBase):
         if hasattr(self, "instrument_preset") and self.instrument_preset:
             label = getattr(self.instrument_preset, "instrument_image_label", None)
             if label:
-                log.debug("[SynthEditor] Found instrument_image_label.")
+                log.debug(scope=self.__class__.__name__, message="Found instrument_image_label.")
                 return label
         # Fallback to direct attribute (for Analog editor or legacy code)
         label = getattr(self, "instrument_image_label", None)
         if label:
-            log.debug("[SynthEditor] Found instrument_image_label as direct attribute")
+            log.debug(scope=self.__class__.__name__, message="Found instrument_image_label as direct attribute")
         else:
             log.warning(
                 "[SynthEditor] Instrument image label not found in widget or direct attribute"
@@ -722,7 +723,7 @@ class SynthEditor(SynthBase):
             combo = getattr(combo_box, "combo_box", None)
             if combo and hasattr(combo, "currentText"):
                 return combo.currentText()
-        log.error("[SynthEditor] Instrument combo box is missing or malformed.")
+        log.error(scope=self.__class__.__name__, message="Instrument combo box is missing or malformed.")
         return ""
 
     def _parse_instrument_text(self, text: str) -> Optional[InstrumentDescriptor]:
@@ -761,14 +762,14 @@ class SynthEditor(SynthBase):
                     raw_text=text,
                 )
 
-        log.warning(f"[SynthEditor] Unrecognized instrument preset: {text}")
+        log.warning(scope=self.__class__.__name__, message=f"Unrecognized instrument preset: {text}")
         return None
 
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
             if not self.instrument_icon_folder:
                 log.error(
-                    f"[SynthEditor] Instrument icon folder not set. Cannot load image for {name}/{type_}"
+                    scope=self.__class__.__name__, message=f"Instrument icon folder not set. Cannot load image for {name}/{type_}"
                 )
                 return False
 
@@ -863,8 +864,8 @@ class SynthEditor(SynthBase):
                         )
                     )
 
-            log.debug(f"[SynthEditor] Trying to load images (in order): {paths_to_try}")
-            log.debug(f"[SynthEditor] Instrument icon folder: {self.instrument_icon_folder}")
+            log.debug(scope=self.__class__.__name__, message=f"Trying to load images (in order): {paths_to_try}")
+            log.debug(scope=self.__class__.__name__, message=f"Instrument icon folder: {self.instrument_icon_folder}")
 
             # Try primary path first, then secondary, etc.
             primary_path = paths_to_try[0] if paths_to_try else None
@@ -872,14 +873,14 @@ class SynthEditor(SynthBase):
 
             return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:
-            log.error(f"[SynthEditor] Error loading specific/generic images: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Error loading specific/generic images: {ex}")
             import traceback
 
             log.error(traceback.format_exc())
             return False
 
     def _fallback_to_default_image(self, reason: str):
-        log.info(f"[SynthEditor] {reason} Falling back to default image.")
+        log.info(scope=self.__class__.__name__, message=f"{reason} Falling back to default image.")
         try:
             default_path = resource_path(
                 os.path.join(
@@ -889,12 +890,12 @@ class SynthEditor(SynthBase):
                 )
             )
             if not self.load_and_set_image(default_path):
-                log.error("[SynthEditor] Default instrument image not found. Clearing label.")
+                log.error(scope=self.__class__.__name__, message="Default instrument image not found. Clearing label.")
                 image_label = self._get_instrument_image_label()
                 if image_label:
                     image_label.clear()
         except Exception as ex:
-            log.error(f"[SynthEditor] Error loading default image: {ex}")
+            log.error(scope=self.__class__.__name__, message=f"Error loading default image: {ex}")
             image_label = self._get_instrument_image_label()
             if image_label:
                 image_label.clear()

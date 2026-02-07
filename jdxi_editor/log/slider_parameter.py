@@ -6,6 +6,7 @@ import logging
 from typing import Union
 
 from decologr import decorate_log_message
+from decologr.logger import format_scope
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.globals import LOGGING, logger
@@ -26,6 +27,7 @@ def log_slider_parameters(
     midi_value: int,
     slider_value: Union[int, float],
     level: int = logging.INFO,
+    scope: str = None
 ) -> None:
     """
     Log slider parameters for debugging.
@@ -58,11 +60,15 @@ def log_slider_parameters(
             part_name_lmb = "COMMON"
 
         message = (
-            f"[log_slider_parameters] [umb] [{synth_umb:<3} {synth_name_umb:<20}] "
+            f"[umb] [{synth_umb:<3} {synth_name_umb:<20}] "
             f"[lmb] [{part_lmb:<3} {part_name_lmb:<20}] "
             f"[lsb] [0x{param.address:02X} {param.name:<35}] "
             f"[midi data] [{midi_value:<4} → Slider: {slider_value:.1f}]"
         )
+
+        if scope is not None:
+            scope_str = format_scope(scope)
+            message = f"{scope_str} {message}"
 
         decorated_message = decorate_log_message(message, level)
         if LOGGING:

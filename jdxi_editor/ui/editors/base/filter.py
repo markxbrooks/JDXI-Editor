@@ -164,7 +164,8 @@ class BaseFilterSection(SectionBaseWidget):
         :param filter_mode: Analog.Filter.FilterType enum value
         """
         log.message(
-            f"[Filter] _on_filter_mode_selected: filter_mode={filter_mode!r} value={getattr(filter_mode, 'value', None)} analog={getattr(self, 'analog', None)}"
+            scope=self.__class__.__name__,
+            message=f" _on_filter_mode_selected: filter_mode={filter_mode!r} value={getattr(filter_mode, 'value', None)} analog={getattr(self, 'analog', None)}"
         )
         # --- Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
@@ -190,7 +191,7 @@ class BaseFilterSection(SectionBaseWidget):
         # --- Notify parent (Analog editor uses this to sync; Digital has no callback)
         if self._filter_mode_changed_callback:
             log.message(
-                f"[Filter] Calling _filter_mode_changed_callback with value={filter_mode.value}"
+                scope=self.__class__.__name__, message=f"Calling _filter_mode_changed_callback with value={filter_mode.value}"
             )
             self._filter_mode_changed_callback(filter_mode.value)
 
@@ -271,12 +272,12 @@ class BaseFilterSection(SectionBaseWidget):
                 else []
             )
             log.message(
-                f"[Filter] update_controls_state: value={value} selected_filter_mode={selected_filter_mode!r} "
+                scope=self.__class__.__name__, message=f"update_controls_state: value={value} selected_filter_mode={selected_filter_mode!r} "
                 f"FILTER_MODE_ENABLED_MAP keys={_map_keys}"
             )
             if selected_filter_mode is None:
                 log.warning(
-                    f"[Filter] Unknown filter mode value: {value}, returning early"
+                    scope=self.__class__.__name__, message=f"Unknown filter mode value: {value}, returning early"
                 )
                 return
 
@@ -284,13 +285,13 @@ class BaseFilterSection(SectionBaseWidget):
             is_bypass = selected_filter_mode == self.SYNTH_SPEC.Filter.Mode.BYPASS
             enabled = not is_bypass
             self.controls_group.setEnabled(enabled)
-            log.message(f"[Filter] Set controls_group.setEnabled({enabled})")
+            log.message(scope=self.__class__.__name__, message=f"Set controls_group.setEnabled({enabled})")
             if self.adsr_widget:
                 self.adsr_widget.setEnabled(enabled)
-                log.message(f"[Filter] Set adsr_widget.setEnabled({enabled})")
+                log.message(scope=self.__class__.__name__, message=f"Set adsr_widget.setEnabled({enabled})")
             if hasattr(self, "filter_widget"):
                 self.filter_widget.setEnabled(enabled)
-                log.message(f"[Filter] Set filter_widget.setEnabled({enabled})")
+                log.message(scope=self.__class__.__name__, message=f"Set filter_widget.setEnabled({enabled})")
         except Exception as ex:
             log.error(f"Error {ex} occurred updating controls")
 

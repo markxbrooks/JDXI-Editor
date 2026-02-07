@@ -221,7 +221,7 @@ class PartialController(QObject):
                     partial_no, param, param_value, successes, failures
                 )
 
-        log.debug_info(successes, failures)
+        log.debug_info(successes, failures, scope="PartialController")
 
     def _update_waveform_buttons(self, partial_no, param_value):
         pass
