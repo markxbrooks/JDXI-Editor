@@ -22,16 +22,6 @@ from typing import Callable
 from jdxi_editor.midi.track.stats import TrackStats
 
 
-@dataclass(frozen=True)
-class ScoreRule:
-    name: str
-    weight: float
-    condition: Callable[["TrackStats"], bool]
-
-    def evaluate(self, stats: "TrackStats") -> float:
-        return self.weight if self.condition(stats) else 0.0
-
-
 def name_contains(keywords):
     def _check(s: TrackStats):
         if not s.track_name:
