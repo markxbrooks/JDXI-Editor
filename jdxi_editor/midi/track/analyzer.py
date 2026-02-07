@@ -1,5 +1,6 @@
 from mido import MidiTrack
 
+
 from jdxi_editor.midi.track.data import BASS_NOTE_MAX
 from jdxi_editor.midi.track.stats import TrackStats
 
@@ -110,10 +111,8 @@ class TrackAnalyzer:
         if s.note_count:
             s.legato_score /= s.note_count
         # To avoid circular import error
-        from jdxi_editor.midi.track.classification import _calculate_bass_score, _calculate_keys_guitars_score, _calculate_strings_score
-        _calculate_bass_score(s)
-        _calculate_keys_guitars_score(s)
-        _calculate_strings_score(s)
+        from jdxi_editor.midi.track.classification import calculate_scores
+        calculate_scores(s)
 
     def _read_track_name(self):
         """Extract track name from meta messages"""

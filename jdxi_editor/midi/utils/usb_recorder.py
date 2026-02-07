@@ -39,7 +39,7 @@ class USBRecorder:
         for i in range(self.p.get_device_count()):
             info = self.p.get_device_info_by_index(i)
             device_info = (
-                f"[USBRecorder] {i}: {info['name']} (input channels: {info['maxInputChannels']})"
+                f"{i}: {info['name']} (input channels: {info['maxInputChannels']})"
             )
             log.info(device_info)
             device_list.append(device_info)

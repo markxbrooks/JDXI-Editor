@@ -16,233 +16,158 @@ from jdxi_editor.midi.track.data import BASS_NOTE_MAX, BASS_KEYWORDS, KEYS_KEYWO
 # from jdxi_editor.midi.track.stats import TrackStats
 
 
+from dataclasses import dataclass
+from typing import Callable
+
+from jdxi_editor.midi.track.stats import TrackStats
+
+
+@dataclass(frozen=True)
+class ScoreRule:
+    name: str
+    weight: float
+    condition: Callable[["TrackStats"], bool]
+
+    def evaluate(self, stats: "TrackStats") -> float:
+        return self.weight if self.condition(stats) else 0.0
+
+
+def name_contains(keywords):
+    def _check(s: TrackStats):
+        if not s.track_name:
+            return False
+        name = s.track_name.lower()
+        return any(k in name for k in keywords)
+    return _check
+
+
+def percentage(part, whole):
+    return (part / whole * 100) if whole else 0
+
+
+def bass_percentage_gt(p):
+    return lambda s: percentage(s.bass_note_count, s.note_count) > p
+
+
+def max_polyphony_le(n):
+    return lambda s: s.max_simultaneous <= n
+
+
+def avg_duration_gt(ticks):
+    return lambda s: s.avg_note_duration > ticks
+
+
+def note_range_ge(n):
+    return lambda s: s.note_range >= n
+
+
+def has_pitch_bend(s: TrackStats):
+    return s.has_pitch_bend
+
+
+def max_polyphony_ge(n):
+    return lambda s: s.max_simultaneous >= n
+
+
+def note_count_gt(n):
+    return lambda s: s.note_count > n
+
+
+def note_count_between(lo, hi):
+    return lambda s: lo <= s.note_count <= hi
+
+
+def legato_score_gt(x):
+    return lambda s: s.legato_score > x
+
+
+def velocity_range_gt(r):
+    return lambda s: (max(s.velocities) - min(s.velocities)) > r if s.velocities else False
+
+
+def mid_percentage_between(lo, hi):
+    return lambda s: (
+        s.note_count > 0
+        and lo <= (s.mid_range_note_count / s.note_count * 100) <= hi
+    )
+
+
+def velocity_std_lt(threshold):
+    def _check(s: TrackStats):
+        if not s.velocities:
+            return False
+        return _calculate_std_dev(s.velocities) < threshold
+    return _check
+
+
 def analyze_track_for_classification(track: MidiTrack, track_index: int) -> "TrackStats":
     return TrackAnalyzer(track, track_index).run()
 
 
-def _calculate_bass_score(analysis: "TrackStats") -> None:
-    """Calculate score for Bass classification."""
-    score = 0.0
+# --- Bass: from _calculate_bass_score / _uprate_*
+BASS_RULES = [
+    ScoreRule("name", 30, name_contains(BASS_KEYWORDS)),
+    ScoreRule("mostly_low_notes", 40, bass_percentage_gt(70)),
+    ScoreRule("medium_low_notes", 25, bass_percentage_gt(50)),
+    ScoreRule("some_low_notes", 15, bass_percentage_gt(30)),
+    ScoreRule("very_low_range", 20, lambda s: s.highest_note <= BASS_NOTE_MAX),
+    ScoreRule("medium_low_range", 10, lambda s: BASS_NOTE_MAX < s.highest_note <= 72),
+    ScoreRule("low_polyphony", 15, max_polyphony_le(2)),
+    ScoreRule("medium_polyphony", 8, max_polyphony_le(4)),
+    ScoreRule("long_notes", 10, avg_duration_gt(500)),
+    ScoreRule("medium_notes", 5, lambda s: 300 < s.avg_note_duration <= 500),
+    ScoreRule("slides", 5, has_pitch_bend),
+]
 
-    score = _uprate_is_present_in_name(keywords=BASS_KEYWORDS, additional_score=30, analysis=analysis, score=score)
+# --- Keys/Guitars: from _calculate_keys_guitars_score / _uprate_*
+KEYS_RULES = [
+    ScoreRule("name", 30, name_contains(KEYS_KEYWORDS + GUITAR_KEYWORDS)),
+    ScoreRule("wide_range_2oct", 25, note_range_ge(24)),
+    ScoreRule("wide_range_1oct", 15, lambda s: 12 <= s.note_range < 24),
+    ScoreRule("high_polyphony", 20, max_polyphony_ge(5)),
+    ScoreRule("medium_polyphony", 12, lambda s: 3 <= s.max_simultaneous < 5),
+    ScoreRule("high_note_density", 15, note_count_gt(200)),
+    ScoreRule("medium_note_density", 10, lambda s: 100 < s.note_count <= 200),
+    ScoreRule("velocity_range_high", 10, velocity_range_gt(60)),
+    ScoreRule("velocity_range_medium", 5, lambda s: s.velocities and 40 < (max(s.velocities) - min(s.velocities)) <= 60),
+    ScoreRule("balanced_mid_notes", 10, mid_percentage_between(30, 70)),
+]
 
-    score = _uprate_high_percentage_bass_notes(analysis, score)
-
-    score = _uprate_low_note_range(analysis, score)
-
-    score = _uprate_low_polyphony(analysis, score)
-
-    score = _uprate_long_note_duration(analysis, score)
-
-    score = _uprate_pitch_bends(analysis, score)
-
-    analysis.scores["bass"] = score
-
-
-def _uprate_pitch_bends(analysis: "TrackStats", score: float) -> float:
-    # --- Has pitch bend (bass slides) = +5 points
-    if analysis.has_pitch_bend:
-        score += 5.0
-    return score
-
-
-def _uprate_long_note_duration(analysis: "TrackStats", score: float) -> float:
-    # --- Longer note durations (bass sustains) = +10 points
-    if analysis.avg_note_duration > 500:
-        score += 10.0
-    elif analysis.avg_note_duration > 300:
-        score += 5.0
-    return score
-
-
-def _uprate_low_polyphony(analysis: "TrackStats", score: float) -> float:
-    # --- Low polyphony (bass is often monophonic or 2-3 notes) = +15 points
-    if analysis.max_simultaneous <= 2:
-        score += 15.0
-    elif analysis.max_simultaneous <= 4:
-        score += 8.0
-    return score
-
-
-def _uprate_high_percentage_bass_notes(analysis: "TrackStats", score: float) -> float:
-    # ---  High percentage of bass notes = +40 points
-    if analysis.note_count > 0:
-        bass_percentage = (analysis.bass_note_count / analysis.note_count) * 100
-        if bass_percentage > 70:
-            score += 40.0
-        elif bass_percentage > 50:
-            score += 25.0
-        elif bass_percentage > 30:
-            score += 15.0
-    return score
+# --- Strings: from _calculate_strings_score / _uprate_*
+STRINGS_RULES = [
+    ScoreRule("name", 30, name_contains(STRINGS_KEYWORDS)),
+    ScoreRule("high_legato", 25, legato_score_gt(0.5)),
+    ScoreRule("medium_legato", 15, lambda s: 0.3 < s.legato_score <= 0.5),
+    ScoreRule("long_notes", 20, avg_duration_gt(800)),
+    ScoreRule("medium_long_notes", 12, lambda s: 500 < s.avg_note_duration <= 800),
+    ScoreRule("wide_range_2oct", 15, note_range_ge(24)),
+    ScoreRule("wide_range_1oct", 8, lambda s: 12 <= s.note_range < 24),
+    ScoreRule("high_polyphony", 15, max_polyphony_ge(4)),
+    ScoreRule("medium_polyphony", 8, lambda s: 2 <= s.max_simultaneous < 4),
+    ScoreRule("smooth_velocities", 10, velocity_std_lt(20)),
+    ScoreRule("moderate_density", 5, note_count_between(50, 500)),
+]
 
 
-def _uprate_low_note_range(analysis: "TrackStats", score: float) -> float:
-    # --- Low note range (most notes below C4) = +20 points
-    if analysis.highest_note <= BASS_NOTE_MAX:
-        score += 20.0
-    elif analysis.highest_note <= 72:  # C5
-        score += 10.0
-    return score
+def score_rules(stats: TrackStats, rules: list[ScoreRule]) -> float:
+    total = 0.0
+    for rule in rules:
+        total += rule.evaluate(stats)
+    return total
 
 
-def _calculate_keys_guitars_score(analysis: "TrackStats") -> None:
-    """Calculate score for Keys/Guitars classification."""
-    score = 0.0
-
-    score = _uprate_is_present_in_name(keywords=KEYS_KEYWORDS + GUITAR_KEYWORDS,
-                                       additional_score=30.0,
-                                       analysis=analysis,
-                                       score=score)
-
-    score = _uprate_wide_note_range(analysis, score)
-
-    score = _uprate_high_polyphony(analysis, score)
-
-    score = _uptate_medium_to_high_note_density(analysis, score)
-
-    score = _uprate_velocity_variations(analysis, score)
-
-    score = _uprate_balanced_note_distribution(analysis, score)
-
-    analysis.scores["keys_guitars"] = score
+def calculate_scores(stats: TrackStats) -> None:
+    stats.scores["bass"] = score_rules(stats, BASS_RULES)
+    stats.scores["keys_guitars"] = score_rules(stats, KEYS_RULES)
+    stats.scores["strings"] = score_rules(stats, STRINGS_RULES)
 
 
-def _uprate_balanced_note_distribution(analysis, score: float) -> float:
-    # --- Balanced note distribution (not just low or high) = +10 points
-    if analysis.note_count > 0:
-        mid_percentage = (
-                                 analysis.mid_range_note_count / analysis.note_count
-                         ) * 100
-        if 30 <= mid_percentage <= 70:
-            score += 10.0
-    return score
-
-
-def _uprate_velocity_variations(analysis, score: float) -> float:
-    # --- Velocity variations (dynamic playing) = +10 points
-    if analysis.velocities:
-        velocity_range = max(analysis.velocities) - min(analysis.velocities)
-        if velocity_range > 60:
-            score += 10.0
-        elif velocity_range > 40:
-            score += 5.0
-    return score
-
-
-def _uptate_medium_to_high_note_density(analysis, score: float) -> float:
-    # --- Medium to high note density = +15 points
-    if analysis.note_count > 200:
-        score += 15.0
-    elif analysis.note_count > 100:
-        score += 10.0
-    return score
-
-
-def _uprate_high_polyphony(analysis, score: float) -> float:
-    # --- High polyphony (chords) = +20 points
-    if analysis.max_simultaneous >= 5:
-        score += 20.0
-    elif analysis.max_simultaneous >= 3:
-        score += 12.0
-    return score
-
-
-def _uprate_wide_note_range(analysis: "TrackStats", score: float) -> float:
-    # --- Wide note range (spans multiple octaves) = +25 points
-    if analysis.note_range >= 24:  # 2 octaves
-        score += 25.0
-    elif analysis.note_range >= 12:  # 1 octave
-        score += 15.0
-    return score
-
-
-def _uprate_is_present_in_name(keywords: list,
-                               analysis: "TrackStats",
-                               score: float,
-                               additional_score: float = 30.0) -> float:
-    # --- Track name contains keys/guitar keywords = +30 points
-    if analysis.track_name:
-        name_lower = analysis.track_name.lower()
-        if any(keyword in name_lower for keyword in keywords):
-            score += additional_score
-    return score
-
-
-def _calculate_strings_score(analysis: "TrackStats") -> None:
-    """Calculate score for Strings classification."""
-    score = 0.0
-
-    score = _uprate_is_present_in_name(keywords=STRINGS_KEYWORDS,
-                                       additional_score=30.0,
-                                       analysis=analysis,
-                                       score=score)
-
-    score = _uprate_high_legato_score(analysis, score)
-
-    score = _uprate_long_notes(analysis, score)
-
-    score = _uprate_strings_wide_note_range(analysis, score)
-
-    score = _uprate_strings_high_polyphony(analysis, score)
-
-    score = _uprate_smooth_velocities(analysis, score)
-
-    score = _uprate_moderate_note_density(analysis, score)
-
-    analysis.scores["strings"] = score
-
-
-def _uprate_moderate_note_density(analysis, score: float) -> float:
-    # --- Moderate note density (not too sparse, not too dense) = +5 points
-    if 50 <= analysis.note_count <= 500:
-        score += 5.0
-    return score
-
-
-def _uprate_smooth_velocities(analysis, score: float) -> float:
-    # --- Smooth velocity (ensemble dynamics) = +10 points
-    if analysis.velocities:
-        velocity_std = _calculate_std_dev(analysis.velocities)
-        if velocity_std < 20:  # Low variation suggests ensemble
-            score += 10.0
-    return score
-
-
-def _uprate_strings_high_polyphony(analysis, score: float) -> float:
-    # --- High polyphony (ensemble playing) = +15 points
-    if analysis.max_simultaneous >= 4:
-        score += 15.0
-    elif analysis.max_simultaneous >= 2:
-        score += 8.0
-    return score
-
-
-def _uprate_strings_wide_note_range(analysis, score: float) -> float:
-    # --- Wide note range (ensemble spans wide range) = +15 points
-    if analysis.note_range >= 24:
-        score += 15.0
-    elif analysis.note_range >= 12:
-        score += 8.0
-    return score
-
-
-def _uprate_long_notes(analysis, score: float) -> float:
-    # --- Long note durations (sustained notes) = +20 points
-    if analysis.avg_note_duration > 800:
-        score += 20.0
-    elif analysis.avg_note_duration > 500:
-        score += 12.0
-    return score
-
-
-def _uprate_high_legato_score(analysis, score: float) -> float:
-    # --- High legato score (overlapping notes) = +25 points
-    if analysis.legato_score > 0.5:
-        score += 25.0
-    elif analysis.legato_score > 0.3:
-        score += 15.0
-    return score
+def explain_score(stats: TrackStats, rules: list[ScoreRule]):
+    return [
+        (rule.name, rule.weight)
+        for rule in rules
+        if rule.condition(stats)
+    ]
 
 
 def _calculate_std_dev(values: List[float]) -> float:
