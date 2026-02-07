@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -67,7 +68,7 @@ def play_buffered(
     buffered_msgs: list,
     midi_out_port: rtmidi.MidiOut,
     ticks_per_beat: int,
-    play_program_changes: bool = True,
+    suppress_program_changes: bool = True,
 ):
     """
     play_buffered
@@ -75,13 +76,13 @@ def play_buffered(
     :param buffered_msgs: list
     :param midi_out_port: rtmidi.MidiOut
     :param ticks_per_beat: int
-    :param play_program_changes: bool Whether or not to suppress Program Changes
+    :param suppress_program_changes: bool Whether or not to suppress Program Changes
     :return:
     Playback function with program change control
     """
     start_time = time.time()
 
-    for i, (abs_ticks, msg, tempo) in enumerate(buffered_msgs):
+    for _, (abs_ticks, msg, tempo) in enumerate(buffered_msgs):
         # Convert absolute tick time to seconds
         msg_time_sec = ticks_to_seconds(abs_ticks, tempo, ticks_per_beat)
         # Compute delay relative to start
@@ -93,7 +94,7 @@ def play_buffered(
         # Send message based on type and program change flag
         if not msg.is_meta:
             if msg.type == "program_change":
-                if play_program_changes:
+                if suppress_program_changes:
                     midi_out_port.send_message(msg.bytes())
                 else:
                     # Skip program change if disabled
@@ -103,9 +104,6 @@ def play_buffered(
 
 
 if __name__ == "__main__":
-
-    import mido
-    import rtmidi
 
     try:
         midi_out = rtmidi.MidiOut()
@@ -126,7 +124,7 @@ if __name__ == "__main__":
 
         if not midi_files:
             print("❌ No MIDI files found.")
-            exit(1)
+            sys.exit(1)
 
         print("Available MIDI files:")
         for idx, f in enumerate(midi_files):
@@ -141,7 +139,7 @@ if __name__ == "__main__":
             ]
         except (IndexError, ValueError):
             print("❌ Invalid input.")
-            exit(1)
+            sys.exit(1)
 
         play_pc_input = input("Play Program Changes? (y/n): ").strip().lower()
         play_program_changes = play_pc_input == "y"
@@ -154,7 +152,7 @@ if __name__ == "__main__":
             play_buffered(
                 buffered_messages,
                 midi_out,
-                play_program_changes=play_program_changes,
+                suppress_program_changes=play_program_changes,
                 ticks_per_beat=midi_playback_file.ticks_per_beat,
             )
 

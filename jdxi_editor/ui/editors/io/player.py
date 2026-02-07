@@ -444,17 +444,17 @@ class MidiFileEditor(SynthEditor):
                         ]
                         spin.setValue(channel)
                         track_name = (
-                            analysis.get("track_name") or f"Track {track_index + 1}"
+                            getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
                         )
-                        score = analysis["scores"][category]
+                        score = analysis.scores[category]
                         updated_tracks[category].append(
                             f"Track {track_index + 1} ({track_name}) - Score: {score:.1f}"
                         )
 
             # Handle unclassified tracks
             for track_index, analysis in classifications["unclassified"]:
-                track_name = analysis.get("track_name") or f"Track {track_index + 1}"
-                scores = analysis["scores"]
+                track_name = getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                scores = analysis.scores
                 max_score = max(scores.values())
                 max_category = max(scores.items(), key=lambda x: x[1])[0]
                 updated_tracks["unclassified"].append(

@@ -1,3 +1,7 @@
+"""
+USBRecorder
+"""
+
 import wave
 
 import pyaudio

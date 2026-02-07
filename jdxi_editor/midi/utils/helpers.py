@@ -1,3 +1,7 @@
+"""
+Helper functions
+"""
+
 import os.path
 
 from decologr import Decologr as log

@@ -1,6 +1,11 @@
+"""
+Documentation file path & os_file_open
+"""
+
 import os
 import platform
 import subprocess
+from pathlib import Path
 
 from decologr import Decologr as log
 
@@ -18,21 +23,24 @@ def documentation_file_path(file_name: str) -> str:
 
 
 def os_file_open(file_name: str) -> None:
-    """
-    os_file_open
+    """Open file using the OS default handler (non-blocking)."""
 
-    :param file_name:  str
-    :return: None
-    Opens a file using default program from the OS
-    """
-    if not os.path.exists(file_name):
+    path = Path(file_name)
+    if not path.exists():
+        log.warning("File does not exist: %s", file_name)
         return
+
+    system = platform.system()
+
     try:
-        if platform.system() == "Darwin":  # macOS
-            subprocess.call(["open", file_name])
-        elif platform.system() == "Windows":  # Windows
-            os.startfile(file_name)
-        else:  # linux variants
-            subprocess.call(["xdg-open", file_name])
-    except OSError as error:
-        log.error(f"Error opening file: {error}")
+        if system == "Windows":
+            os.startfile(path)  # type: ignore[attr-defined]
+
+        elif system == "Darwin":
+            subprocess.Popen(["open", str(path)])
+
+        else:  # Linux / BSD
+            subprocess.Popen(["xdg-open", str(path)])
+
+    except Exception as exc:
+        log.error("Failed to open file %s: %s", file_name, exc)
