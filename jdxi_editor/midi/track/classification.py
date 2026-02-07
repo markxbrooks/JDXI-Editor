@@ -13,7 +13,7 @@ from mido import MidiFile, MidiTrack
 
 from jdxi_editor.midi.track.analyzer import TrackAnalyzer
 from jdxi_editor.midi.track.data import BASS_NOTE_MAX, BASS_KEYWORDS, KEYS_KEYWORDS, GUITAR_KEYWORDS, STRINGS_KEYWORDS
-# from jdxi_editor.midi.track.stats import TrackStats
+from jdxi_editor.midi.track.rule import STRINGS_RULES, KEYS_RULES, BASS_RULES
 
 
 from dataclasses import dataclass
