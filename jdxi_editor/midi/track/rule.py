@@ -1,3 +1,18 @@
+from dataclasses import dataclass
+from typing import Callable
+
+from jdxi_editor.midi.track.stats import TrackStats
+
+
+@dataclass(frozen=True)
+class ScoreRule:
+    name: str
+    weight: float
+    condition: Callable[["TrackStats"], bool]
+
+    def evaluate(self, stats: "TrackStats") -> float:
+        return self.weight if self.condition(stats) else 0.0
+
 
 # --- Bass: from _calculate_bass_score / _uprate_*
 BASS_RULES = [
