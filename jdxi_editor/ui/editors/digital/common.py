@@ -102,40 +102,40 @@ class DigitalCommonSection(BaseCommonSection):
         S = self.SYNTH_SPEC
         pitch = [
             SliderSpec(
-                Digital.Common.PITCH_BEND_UP, Digital.Display.Name.PITCH_BEND_UP
+                S.Common.PITCH_BEND_UP, S.Common.PITCH_BEND_UP.display_name
             ),
             SliderSpec(
-                Digital.Common.PITCH_BEND_DOWN, Digital.Display.Name.PITCH_BEND_DOWN
+                S.Common.PITCH_BEND_DOWN, S.Common.PITCH_BEND_DOWN.display_name
             ),
-            SliderSpec(Digital.Common.TONE_LEVEL, Digital.Display.Name.TONE_LEVEL),
+            SliderSpec(S.Common.TONE_LEVEL, S.Common.TONE_LEVEL.display_name),
             SliderSpec(
-                Digital.Common.PORTAMENTO_TIME, Digital.Display.Name.PORTAMENTO_TIME
+                S.Common.PORTAMENTO_TIME, S.Common.PORTAMENTO_TIME.display_name
             ),
-            SliderSpec(Digital.Common.ANALOG_FEEL, Digital.Display.Name.ANALOG_FEEL),
-            SliderSpec(Digital.Common.WAVE_SHAPE, Digital.Display.Name.WAVE_SHAPE),
+            SliderSpec(S.Common.ANALOG_FEEL, S.Common.ANALOG_FEEL.display_name),
+            SliderSpec(S.Common.WAVE_SHAPE, S.Common.WAVE_SHAPE.display_name),
         ]
         portamento_switches = [
             SwitchSpec(
-                Digital.Common.PORTAMENTO_SWITCH,
-                Digital.Display.Name.PORTAMENTO_SWITCH,
+                S.Common.PORTAMENTO_SWITCH,
+                S.Common.PORTAMENTO_SWITCH.display_name,
                 Digital.Display.Options.PORTAMENTO_SWITCH,
             ),
             SwitchSpec(
-                Digital.Common.PORTAMENTO_MODE,
-                Digital.Display.Name.PORTAMENTO_MODE,
+                S.Common.PORTAMENTO_MODE,
+                S.Common.PORTAMENTO_MODE.display_name,
                 Digital.Display.Options.PORTAMENTO_MODE,
             ),
             SwitchSpec(
-                Digital.Common.LEGATO_SWITCH,
-                Digital.Display.Name.LEGATO_SWITCH,
+                S.Common.LEGATO_SWITCH,
+                S.Common.LEGATO_SWITCH.display_name,
                 Digital.Display.Options.LEGATO_SWITCH,
             ),
 
         ]
         combos = [
             ComboBoxSpec(
-                Digital.Common.OCTAVE_SHIFT,
-                Digital.Display.Name.OCTAVE_SHIFT,
+                S.Common.OCTAVE_SHIFT,
+                S.Common.OCTAVE_SHIFT.display_name,
                 Digital.Display.Options.OCTAVE_SHIFT,
                 [61, 62, 63, 64, 65, 66, 67],
             ),
@@ -143,23 +143,23 @@ class DigitalCommonSection(BaseCommonSection):
         ]
         other_switches = [
             SwitchSpec(
-                Digital.Common.MONO_SWITCH,
-                Digital.Display.Name.MONO_SWITCH,
+                S.Common.MONO_SWITCH,
+                S.Common.MONO_SWITCH.display_name,
                 Digital.Display.Options.MONO_SWITCH,
             ),
             SwitchSpec(
-                Digital.Common.RING_SWITCH,
-                Digital.Display.Name.RING_SWITCH,
+                S.Common.RING_SWITCH,
+                S.Common.RING_SWITCH.display_name,
                 Digital.Display.Options.RING_SWITCH,
             ),
             SwitchSpec(
-                Digital.Common.UNISON_SWITCH,
-                Digital.Display.Name.UNISON_SWITCH,
+                S.Common.UNISON_SWITCH,
+                S.Common.UNISON_SWITCH.display_name,
                 Digital.Display.Options.UNISON_SWITCH,
             ),
             SwitchSpec(
-                Digital.Common.UNISON_SIZE,
-                Digital.Display.Name.UNISON_SIZE,
+                S.Common.UNISON_SIZE,
+                S.Common.UNISON_SIZE.display_name,
                 Digital.Display.Options.UNISON_SIZE,
             ),
         ]
