@@ -11,15 +11,18 @@ Classes:
 """
 
 import os
+import random
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
+    QButtonGroup,
     QComboBox,
     QDialog,
     QDialogButtonBox,
+    QGroupBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -36,6 +39,8 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
@@ -122,34 +127,29 @@ class PlaylistEditorWidget(QWidget):
         self.playlist_select_layout.addStretch()
         layout.addLayout(self.playlist_select_layout)
 
-        # Add/Delete buttons
+        # Add/Delete buttons (round style + icon + label)
         button_layout = QHBoxLayout()
-        self.add_to_playlist_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLUS_CIRCLE),
+        self._add_round_action_button(
+            JDXi.UI.Icon.PLUS_CIRCLE,
             "Add to Playlist",
+            self.add_program_to_playlist,
+            button_layout,
+            name="add_to_playlist",
         )
-        self.add_to_playlist_button.clicked.connect(self.add_program_to_playlist)
-        self.add_to_playlist_button.setEnabled(
-            False
-        )  # Disabled until playlist is selected
-        button_layout.addWidget(self.add_to_playlist_button)
-
-        self.delete_from_playlist_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
-            ),
+        self.add_to_playlist_button.setEnabled(False)  # Disabled until playlist is selected
+        self._add_round_action_button(
+            JDXi.UI.Icon.TRASH_FILL,
             "Delete from Playlist",
+            self.delete_program_from_playlist,
+            button_layout,
+            name="delete_from_playlist",
         )
-        self.delete_from_playlist_button.clicked.connect(
-            self.delete_program_from_playlist
-        )
-        self.delete_from_playlist_button.setEnabled(
-            False
-        )  # Disabled until playlist is selected
-        button_layout.addWidget(self.delete_from_playlist_button)
-
+        self.delete_from_playlist_button.setEnabled(False)  # Disabled until playlist is selected
         button_layout.addStretch()
         layout.addLayout(button_layout)
+
+        # Transport group (Play, Stop, Pause, Shuffle Play)
+        layout.addWidget(self._init_transport_controls())
 
         # Create playlist programs table
         self.playlist_programs_table = QTableWidget()
@@ -216,6 +216,153 @@ class PlaylistEditorWidget(QWidget):
         :return: str CSS style string
         """
         return JDXi.UI.Style.DATABASE_TABLE_STYLE
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
+
+    def _create_transport_control(
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: Optional[QButtonGroup],
+    ) -> None:
+        """Create a transport button + label row (same pattern as Midi File Player)."""
+        btn = QPushButton()
+        btn.setCheckable(True)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        btn.clicked.connect(spec.slot)
+        if spec.grouped and button_group:
+            button_group.addButton(btn)
+        layout.addWidget(btn)
+
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(spec.text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+
+    def _init_transport_controls(self) -> QGroupBox:
+        """Build Transport group with Play, Stop, Pause, Shuffle Play (same style as Midi File Player)."""
+        group = QGroupBox("Transport")
+        centered_layout = QHBoxLayout(group)
+        transport_layout = QHBoxLayout()
+        centered_layout.addStretch()
+        centered_layout.addLayout(transport_layout)
+        centered_layout.addStretch()
+
+        transport_button_group = QButtonGroup(self)
+        transport_button_group.setExclusive(True)
+
+        controls = [
+            TransportSpec("play", JDXi.UI.Icon.PLAY, "Play", self._playlist_transport_play, True),
+            TransportSpec("stop", JDXi.UI.Icon.STOP, "Stop", self._playlist_transport_stop, True),
+            TransportSpec("pause", JDXi.UI.Icon.PAUSE, "Pause", self._playlist_transport_pause_toggle, False),
+            TransportSpec("shuffle", JDXi.UI.Icon.SHUFFLE, "Shuffle Play", self._playlist_shuffle_play, True),
+        ]
+        for spec in controls:
+            self._create_transport_control(spec, transport_layout, transport_button_group)
+        return group
+
+    def _playlist_transport_play(self) -> None:
+        """Play first playlist row that has a MIDI file, or selected row if one is selected."""
+        if not self.playlist_programs_table:
+            return
+        row = -1
+        selection = self.playlist_programs_table.selectionModel().selectedRows()
+        if selection:
+            row = selection[0].row()
+        if row < 0:
+            for r in range(self.playlist_programs_table.rowCount()):
+                midi_item = self.playlist_programs_table.item(r, 3)
+                if midi_item and midi_item.text().strip():
+                    row = r
+                    break
+        if row >= 0:
+            model = self.playlist_programs_table.model()
+            if model:
+                index = model.index(row, 5)
+                self._play_playlist_program(index)
+
+    def _playlist_transport_stop(self) -> None:
+        """Stop current playlist playback."""
+        if self._playlist_midi_editor and hasattr(self._playlist_midi_editor, "midi_playback_stop"):
+            self._playlist_midi_editor.midi_playback_stop()
+        self._current_playlist_row = None
+        self._playlist_midi_editor = None
+
+    def _playlist_transport_pause_toggle(self) -> None:
+        """Pause or resume current playlist playback."""
+        if self._playlist_midi_editor and hasattr(self._playlist_midi_editor, "midi_playback_pause_toggle"):
+            self._playlist_midi_editor.midi_playback_pause_toggle()
+
+    def _playlist_shuffle_play(self) -> None:
+        """Pick a random row that has a MIDI file and play it."""
+        if not self.playlist_programs_table:
+            return
+        rows_with_midi = []
+        for r in range(self.playlist_programs_table.rowCount()):
+            midi_item = self.playlist_programs_table.item(r, 3)
+            if midi_item and midi_item.text().strip():
+                rows_with_midi.append(r)
+        if not rows_with_midi:
+            log.message("No rows with MIDI file for shuffle play", scope=self.__class__.__name__)
+            return
+        row = random.choice(rows_with_midi)
+        model = self.playlist_programs_table.model()
+        if model:
+            index = model.index(row, 5)
+            self._play_playlist_program(index)
 
     def populate_playlist_combo(self) -> None:
         """Populate the playlist selection combo box."""

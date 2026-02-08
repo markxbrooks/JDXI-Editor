@@ -2,6 +2,8 @@
 preset widget
 """
 
+from typing import Any, Optional
+
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -14,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
@@ -90,18 +93,61 @@ class PresetWidget(QWidget):
         # This will be called again when preset type changes, but we need initial population
         QTimer.singleShot(0, self._update_preset_combo_box)
 
-        # Load button
-        self.load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
-            ),
+        # Load Preset (round button + icon + label, centered)
+        load_preset_row = QHBoxLayout()
+        load_preset_row.addStretch()
+        self.load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
             "Load Preset",
+            lambda: self.load_preset_by_program_change(),
+            load_preset_row,
+            name="load",
         )
-        self.load_button.clicked.connect(lambda: self.load_preset_by_program_change())
-        preset_vlayout.addWidget(self.load_button)
+        load_preset_row.addStretch()
+        preset_vlayout.addLayout(load_preset_row)
 
         # Connect combo box valueChanged to load preset directly (optional)
         # self.preset_combo_box.valueChanged.connect(self.load_preset_by_program_change)
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def load_preset_by_program_change(self, preset_id: str = None) -> None:
         """

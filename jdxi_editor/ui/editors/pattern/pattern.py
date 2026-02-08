@@ -18,12 +18,14 @@ Features:
 
 import datetime
 import logging
+import random
 from typing import Any, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
+    QButtonGroup,
     QCheckBox,
     QComboBox,
     QFileDialog,
@@ -46,8 +48,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
+from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
@@ -94,6 +98,7 @@ class PatternSequenceEditor(SynthEditor):
         self.midi_track = MidiTrack()  # Create a new track
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self.clipboard = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
+        self._pattern_paused = False
         self._setup_ui()
         self._init_midi_file()
         self._initialize_default_bar()
@@ -129,36 +134,26 @@ class PatternSequenceEditor(SynthEditor):
         # Add transport and file controls at the top
         control_panel = QHBoxLayout()
 
-        # File operations area
+        # File operations area (round buttons + icon labels, same style as Transport)
         file_group = QGroupBox("Pattern")
         file_layout = QHBoxLayout()
 
-        self.load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.FOREGROUND),
-            "Load",
+        self._add_round_action_button(
+            JDXi.UI.Icon.MUSIC, "Load", self._load_pattern_dialog, file_layout, name="load"
         )
-        self.load_button.clicked.connect(self._load_pattern_dialog)
-        self.save_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND),
-            "Save",
+        self._add_round_action_button(
+            JDXi.UI.Icon.SAVE, "Save", self._save_pattern_dialog, file_layout, name="save"
         )
-        self.save_button.clicked.connect(self._save_pattern_dialog)
-        # --- Add the Clear Learned Pattern button
-        self.clear_learn_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.CLEAR, color=JDXi.UI.Style.FOREGROUND),
-            "Clear",
+        self._add_round_action_button(
+            JDXi.UI.Icon.CLEAR, "Clear", self._clear_learned_pattern, file_layout, name="clear_learn"
         )
-        self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
 
         self.drum_selector = QComboBox()
         self.drum_selector.addItems(self.drum_options)
         self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
 
-        file_layout.addWidget(self.load_button)
-        file_layout.addWidget(self.save_button)
-        file_layout.addWidget(self.clear_learn_button)
         file_group.setLayout(file_layout)
-        control_panel.addWidget(file_group)
+        # control_panel.addWidget(file_group)
 
         # Bar management area (separate row for Add Bar button and checkbox)
         bar_group = QGroupBox("Bars")
@@ -166,33 +161,28 @@ class PatternSequenceEditor(SynthEditor):
 
         # First row: Add Bar button and Copy checkbox
         bar_controls_layout = QHBoxLayout()
-        self.add_bar_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.ADD, color=JDXi.UI.Style.FOREGROUND),
-            "Add Bar",
+        self._add_round_action_button(
+            JDXi.UI.Icon.ADD, "Add Bar", self._add_bar, bar_controls_layout, name="add_bar"
         )
-        self.add_bar_button.clicked.connect(self._add_bar)
         self.copy_previous_bar_checkbox = QCheckBox("Copy previous bar")
         self.copy_previous_bar_checkbox.setChecked(False)
 
-        bar_controls_layout.addWidget(self.add_bar_button)
         bar_controls_layout.addWidget(self.copy_previous_bar_checkbox)
         bar_controls_layout.addStretch()  # Push controls to the left
 
         bar_layout.addLayout(bar_controls_layout)
 
-        # Copy/Paste controls
+        # Copy/Paste controls (round buttons + icon labels)
         copy_paste_layout = QHBoxLayout()
-        self.copy_button = QPushButton("Copy Section")
-        self.copy_button.clicked.connect(self._copy_section)
+        self._add_round_action_button(
+            JDXi.UI.Icon.FILE_DOCUMENT, "Copy Section", self._copy_section, copy_paste_layout, name="copy"
+        )
         self.copy_button.setToolTip("Copy selected steps from current bar")
-
-        self.paste_button = QPushButton("Paste Section")
-        self.paste_button.clicked.connect(self._paste_section)
+        self._add_round_action_button(
+            JDXi.UI.Icon.ADD, "Paste Section", self._paste_section, copy_paste_layout, name="paste"
+        )
         self.paste_button.setToolTip("Paste copied steps to current bar")
         self.paste_button.setEnabled(False)  # Disabled until something is copied
-
-        copy_paste_layout.addWidget(self.copy_button)
-        copy_paste_layout.addWidget(self.paste_button)
 
         # Step range selection
         step_range_layout = QHBoxLayout()
@@ -220,21 +210,12 @@ class PatternSequenceEditor(SynthEditor):
         learn_group = QGroupBox("Learn Pattern")
         learn_layout = QHBoxLayout()
 
-        # Add the Clear Learned Pattern button
-        self.learn_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
-            "Start",
+        self._add_round_action_button(
+            JDXi.UI.Icon.PLAY, "Start", self.on_learn_pattern_button_clicked, learn_layout, name="learn"
         )
-        self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
-        self.stop_learn_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
-            "Stop",
+        self._add_round_action_button(
+            JDXi.UI.Icon.STOP, "Stop", self.on_stop_learn_pattern_button_clicked, learn_layout, name="stop_learn"
         )
-        self.stop_learn_button.clicked.connect(
-            self.on_stop_learn_pattern_button_clicked
-        )
-        learn_layout.addWidget(self.learn_button)
-        learn_layout.addWidget(self.stop_learn_button)
         learn_group.setLayout(learn_layout)
         # control_panel.addWidget(learn_group)
 
@@ -248,15 +229,11 @@ class PatternSequenceEditor(SynthEditor):
         self.tempo_spinbox.setValue(120)
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
-        self.tap_tempo_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND),
-            "Tap",
-        )
-        self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
-
         tempo_layout.addWidget(self.tempo_label)
         tempo_layout.addWidget(self.tempo_spinbox)
-        tempo_layout.addWidget(self.tap_tempo_button)
+        self._add_round_action_button(
+            JDXi.UI.Icon.DRUM, "Tap", self._on_tap_tempo, tempo_layout, name="tap_tempo"
+        )
         tempo_group.setLayout(tempo_layout)
         control_panel.addWidget(tempo_group)
 
@@ -318,29 +295,9 @@ class PatternSequenceEditor(SynthEditor):
         duration_group.setLayout(duration_layout)
         control_panel.addWidget(duration_group)
 
-        # Transport controls area
-        transport_group = QGroupBox("Transport")
-        transport_layout = QHBoxLayout()
-
-        self.start_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.PLAY, color=JDXi.UI.Style.FOREGROUND),
-            "Play",
-        )
-        self.stop_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.STOP, color=JDXi.UI.Style.FOREGROUND),
-            "Stop",
-        )
-        self.start_button.clicked.connect(self.play_pattern)
-        self.stop_button.clicked.connect(self.stop_pattern)
-
-        transport_layout.addWidget(self.start_button)
-        transport_layout.addWidget(self.stop_button)
-        transport_group.setLayout(transport_layout)
-        control_panel.addWidget(transport_group)
-
         self.layout.addLayout(control_panel)
 
-        # Create splitter for bars list and sequencer
+        # Create splitter for bars list and sequencer (play_button/stop_button set in _init_transport_controls)
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
         # Bars list widget
@@ -416,18 +373,25 @@ class PatternSequenceEditor(SynthEditor):
 
             row_layout.addLayout(header_layout)
             button_row_layout = QHBoxLayout()
-
-            # Add mute button
-            mute_button = QPushButton("Mute")
-            mute_button.setCheckable(True)
-            mute_button.setFixedSize(60, 40)
-            mute_button.toggled.connect(
+            mute_btn_layout = QHBoxLayout()
+            mute_btn_layout.addStretch()
+            # Add mute button (round style + icon + label)
+            mute_btn = self._add_round_action_button(
+                JDXi.UI.Icon.MUTE,
+                "Mute",
+                None,
+                mute_btn_layout,
+                checkable=True,
+                append_to=self.mute_buttons,
+            )
+            mute_btn.toggled.connect(
                 lambda checked, row=row_idx: self._toggle_mute(row, checked)
             )
-            self.mute_buttons.append(mute_button)
-            button_row_layout.addWidget(mute_button)
-            button_row_layout = self.ui_generate_button_row(row_idx, True)
-            self.button_layouts.append(button_row_layout)  # Store layout reference
+            button_row_layout.addLayout(mute_btn_layout)
+            mute_btn_layout.addStretch()
+            step_buttons_layout = self.ui_generate_button_row(row_idx, True)
+            button_row_layout.addLayout(step_buttons_layout)
+            self.button_layouts.append(step_buttons_layout)  # Store layout reference
             row_layout.addLayout(button_row_layout)
             sequencer_layout.addLayout(row_layout)
 
@@ -442,6 +406,14 @@ class PatternSequenceEditor(SynthEditor):
         splitter.setStretchFactor(1, 1)  # Sequencer stretches
 
         self.layout.addWidget(splitter)
+
+        # Transport at bottom, centered (stretch on both sides)
+        transport_bottom_layout = QHBoxLayout()
+        transport_bottom_layout.addStretch()
+        transport_bottom_layout.addWidget(self._init_transport_controls())
+        transport_bottom_layout.addWidget(file_group)
+        transport_bottom_layout.addStretch()
+        self.layout.addLayout(transport_bottom_layout)
 
         # Add content widget to base widget
         container_layout.addWidget(content_widget)
@@ -1592,6 +1564,140 @@ class PatternSequenceEditor(SynthEditor):
             log.error(f"[PatternSequenceEditor] Error loading pattern: {ex}")
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+        append_to: Optional[list] = None,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        if append_to is not None:
+            append_to.append(btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
+
+    def _create_transport_control(
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: Optional[QButtonGroup],
+    ) -> None:
+        """Create a transport button + label row (same pattern as Midi File Player)."""
+        btn = QPushButton()
+        btn.setCheckable(True)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        btn.clicked.connect(spec.slot)
+        setattr(self, f"{spec.name}_button", btn)
+        if spec.grouped and button_group:
+            button_group.addButton(btn)
+        layout.addWidget(btn)
+
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(spec.text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+
+    def _init_transport_controls(self) -> QGroupBox:
+        """Build Transport group with Play, Stop, Pause, Shuffle Play (same style as Midi File Player)."""
+        group = QGroupBox("Transport")
+        centered_layout = QHBoxLayout(group)
+        transport_layout = QHBoxLayout()
+        centered_layout.addStretch()
+        centered_layout.addLayout(transport_layout)
+        centered_layout.addStretch()
+
+        transport_button_group = QButtonGroup(self)
+        transport_button_group.setExclusive(True)
+
+        controls = [
+            TransportSpec("play", JDXi.UI.Icon.PLAY, "Play", self._pattern_transport_play, True),
+            TransportSpec("stop", JDXi.UI.Icon.STOP, "Stop", self._pattern_transport_stop, True),
+            TransportSpec("pause", JDXi.UI.Icon.PAUSE, "Pause", self._pattern_transport_pause_toggle, False),
+            TransportSpec("shuffle", JDXi.UI.Icon.SHUFFLE, "Shuffle Play", self._pattern_shuffle_play, True),
+        ]
+        for spec in controls:
+            self._create_transport_control(spec, transport_layout, transport_button_group)
+        return group
+
+    def _pattern_transport_play(self) -> None:
+        """Start pattern playback (delegate to play_pattern)."""
+        self.play_pattern()
+
+    def _pattern_transport_stop(self) -> None:
+        """Stop pattern playback (delegate to stop_pattern)."""
+        self.stop_pattern()
+
+    def _pattern_transport_pause_toggle(self) -> None:
+        """Pause or resume pattern playback."""
+        if self._pattern_paused:
+            if hasattr(self, "timer") and self.timer and not self.timer.isActive():
+                ms_per_step = (60000 / self.bpm) / 4
+                self.timer.start(int(ms_per_step))
+            self._pattern_paused = False
+            log.message("[PatternSequenceEditor] Pattern playback resumed")
+        else:
+            if hasattr(self, "timer") and self.timer and self.timer.isActive():
+                self.timer.stop()
+            self._pattern_paused = True
+            log.message("[PatternSequenceEditor] Pattern playback paused")
+
+    def _pattern_shuffle_play(self) -> None:
+        """Select a random bar and start playback."""
+        if not self.measures:
+            return
+        idx = random.randint(0, len(self.measures) - 1)
+        self.current_bar_index = idx
+        if self.bars_list and idx < self.bars_list.count():
+            self.bars_list.setCurrentRow(idx)
+        self._sync_sequencer_with_bar(idx)
+        self.play_pattern()
+
     def play_pattern(self):
         """Start playing the pattern"""
         if hasattr(self, "timer") and self.timer and self.timer.isActive():
@@ -1607,9 +1713,15 @@ class PatternSequenceEditor(SynthEditor):
         self.timer.timeout.connect(self._play_step)
         self.timer.start(int(ms_per_step))
 
-        # Update button states
-        self.start_button.setEnabled(False)
-        self.stop_button.setEnabled(True)
+        # Update button states (match transport group selection to playback state)
+        if hasattr(self, "play_button") and self.play_button:
+            self.play_button.blockSignals(True)
+            self.play_button.setChecked(True)
+            self.play_button.setEnabled(False)
+            self.play_button.blockSignals(False)
+        if hasattr(self, "stop_button") and self.stop_button:
+            self.stop_button.setChecked(False)
+            self.stop_button.setEnabled(True)
 
         log.message("[PatternSequenceEditor] Pattern playback started")
 
@@ -1618,13 +1730,20 @@ class PatternSequenceEditor(SynthEditor):
         if hasattr(self, "timer") and self.timer:
             self.timer.stop()
             self.timer = None
+        self._pattern_paused = False
 
         # Reset step counter
         self.current_step = 0
 
-        # Update button states
-        self.start_button.setEnabled(True)
-        self.stop_button.setEnabled(False)
+        # Update button states (match transport group selection to playback state)
+        if hasattr(self, "play_button") and self.play_button:
+            self.play_button.setEnabled(True)
+            self.play_button.blockSignals(True)
+            self.play_button.setChecked(False)
+            self.play_button.blockSignals(False)
+        if hasattr(self, "stop_button") and self.stop_button:
+            self.stop_button.setChecked(True)
+            self.stop_button.setEnabled(False)
 
         # Send all notes off
         if self.midi_helper:

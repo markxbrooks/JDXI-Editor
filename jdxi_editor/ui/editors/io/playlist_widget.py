@@ -9,13 +9,14 @@ Classes:
         A widget for displaying and managing playlists.
 """
 
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
+    QLabel,
     QMessageBox,
     QPushButton,
     QTableWidget,
@@ -25,6 +26,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
@@ -67,33 +69,29 @@ class PlaylistWidget(QWidget):
         transfer_layout_items(icon_row, icon_row_container)
         layout.addLayout(icon_row_container)
 
-        # Button layout for create/delete actions
+        # Button layout for create/delete/refresh (round style + icon + label)
         button_layout = QHBoxLayout()
-        self.create_playlist_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.PLUS_CIRCLE, color=JDXi.UI.Style.FOREGROUND
-            ),
+        self._add_round_action_button(
+            JDXi.UI.Icon.PLUS_CIRCLE,
             "New Playlist",
+            self.create_new_playlist,
+            button_layout,
+            name="create_playlist",
         )
-        self.create_playlist_button.clicked.connect(self.create_new_playlist)
-        button_layout.addWidget(self.create_playlist_button)
-
-        self.delete_playlist_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.TRASH_FILL, color=JDXi.UI.Style.FOREGROUND
-            ),
+        self._add_round_action_button(
+            JDXi.UI.Icon.TRASH_FILL,
             "Delete Playlist",
+            self.delete_selected_playlist,
+            button_layout,
+            name="delete_playlist",
         )
-        self.delete_playlist_button.clicked.connect(self.delete_selected_playlist)
-        button_layout.addWidget(self.delete_playlist_button)
-
-        self.refresh_playlist_button = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.REFRESH, color=JDXi.UI.Style.FOREGROUND),
+        self._add_round_action_button(
+            JDXi.UI.Icon.REFRESH,
             "Refresh Playlist",
+            self.refresh_playlists,
+            button_layout,
+            name="refresh_playlist",
         )
-        self.refresh_playlist_button.clicked.connect(self.refresh_playlists)
-        button_layout.addWidget(self.refresh_playlist_button)
-
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
@@ -137,6 +135,46 @@ class PlaylistWidget(QWidget):
             import traceback
 
             log.error(traceback.format_exc())
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def _get_table_style(self) -> str:
         """

@@ -1,6 +1,6 @@
 """Preset Widget to be used by All Editors"""
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
@@ -96,6 +97,63 @@ class InstrumentPresetWidget(QWidget):
             instrument_group_layout,
         )
 
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
+
+    def _add_centered_round_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        parent_layout: QVBoxLayout,
+        *,
+        name: Optional[str] = None,
+    ) -> QPushButton:
+        """Add a round button + label row centered in a QHBoxLayout (stretch on both sides)."""
+        row = QHBoxLayout()
+        row.addStretch()
+        btn = self._add_round_action_button(icon_enum, text, slot, row, name=name)
+        row.addStretch()
+        parent_layout.addLayout(row)
+        return btn
+
     def create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
         Create the instrument preset group box with tabs for normal and cheat presets (Analog only).
@@ -164,14 +222,22 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_title_label = DigitalTitle()
         layout.addWidget(self.instrument_title_label)
 
-        # --- Update_tone_name
-        self.edit_tone_name_button = QPushButton("Edit tone name")
-        self.edit_tone_name_button.clicked.connect(self.parent.edit_tone_name)
-        layout.addWidget(self.edit_tone_name_button)
-        # --- Read request button
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.parent.data_request)
-        layout.addWidget(self.read_request_button)
+        # --- Edit Tone Name (round button + label, centered)
+        self._add_centered_round_button(
+            JDXi.UI.Icon.SETTINGS,
+            "Edit Tone Name",
+            self.parent.edit_tone_name,
+            layout,
+            name="edit_tone_name",
+        )
+        # --- Send Read Request to Synth (round button + label, centered)
+        self._add_centered_round_button(
+            JDXi.UI.Icon.REFRESH,
+            "Send Read Request to Synth",
+            self.parent.data_request,
+            layout,
+            name="read_request",
+        )
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
 
@@ -262,12 +328,22 @@ class InstrumentPresetWidget(QWidget):
             self.parent.update_instrument_title
         )
 
-        # --- Create a load button (SearchableFilterableComboBox doesn't have one built-in)
-        load_button = QPushButton("Load")
-        load_button.clicked.connect(self._on_load_preset)
+        # --- Load (round button + label, centered)
+        load_row = QHBoxLayout()
+        load_row.addStretch()
+        load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+            "Load",
+            self._on_load_preset,
+            load_row,
+            name=None,
+        )
+        load_row.addStretch()
+        load_row_widget = QWidget()
+        load_row_widget.setLayout(load_row)
 
         selection_layout = create_layout_with_widgets(
-            [self.instrument_selection_combo, load_button], vertical=True
+            [self.instrument_selection_combo, load_row_widget], vertical=True
         )
 
         layout.addLayout(selection_layout)
@@ -330,15 +406,14 @@ class InstrumentPresetWidget(QWidget):
         )
         layout.addWidget(self.cheat_preset_combo_box)
 
-        # Load Button
-        self.cheat_load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
-            ),
+        # Load Preset (round button + label, centered)
+        self._add_centered_round_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
             "Load Preset",
+            self._load_cheat_preset,
+            layout,
+            name="cheat_load",
         )
-        self.cheat_load_button.clicked.connect(self._load_cheat_preset)
-        layout.addWidget(self.cheat_load_button)
 
         layout.addStretch()
 

@@ -78,6 +78,7 @@ class JDXiUIIconRegistry:
     PLAY = "ri.play-line"
     STOP = "ri.stop-line"
     PAUSE = "ri.pause-line"
+    SHUFFLE = "mdi.shuffle"
     MUTE = "msc.mute"
 
     # Instrument icons

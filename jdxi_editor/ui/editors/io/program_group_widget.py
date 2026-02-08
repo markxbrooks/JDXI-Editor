@@ -9,17 +9,19 @@ Classes:
         A widget for selecting and loading programs.
 """
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
+    QLabel,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 if TYPE_CHECKING:
@@ -94,10 +96,18 @@ class ProgramGroupWidget(QGroupBox):
             f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})", scope=self.__class__.__name__
         )
 
-        # update_program_name
-        self.edit_program_name_button = QPushButton("Edit program name")
-        self.edit_program_name_button.clicked.connect(self.edit_program_name)
-        program_vlayout.addWidget(self.edit_program_name_button)
+        # Edit Program Name (round button + icon + label, centered)
+        edit_name_row = QHBoxLayout()
+        edit_name_row.addStretch()
+        self._add_round_action_button(
+            JDXi.UI.Icon.SETTINGS,
+            "Edit Program Name",
+            self.edit_program_name,
+            edit_name_row,
+            name="edit_program_name",
+        )
+        edit_name_row.addStretch()
+        program_vlayout.addLayout(edit_name_row)
 
         # Create SearchableFilterableComboBox for program selection with bank and genre filtering
         # Initialize with empty data - will be populated by populate_programs()
@@ -119,15 +129,58 @@ class ProgramGroupWidget(QGroupBox):
 
         # Store reference to actual program list for use in filtering
         self._program_list_data = []
-        # Load button
-        self.preset.load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
-            ),
+        # Load Program (round button + icon + label, centered)
+        load_program_row = QHBoxLayout()
+        load_program_row.addStretch()
+        self.preset.load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
             "Load Program",
+            self.load_program,
+            load_program_row,
+            name=None,
         )
-        self.preset.load_button.clicked.connect(self.load_program)
-        program_vlayout.addWidget(self.preset.load_button)
+        load_program_row.addStretch()
+        program_vlayout.addLayout(load_program_row)
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def edit_program_name(self):
         """
