@@ -37,7 +37,6 @@ class BaseCommonSection(SectionBaseWidget):
             analog=analog,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
-            controls=controls,
         )
 
     def setup_ui(self):

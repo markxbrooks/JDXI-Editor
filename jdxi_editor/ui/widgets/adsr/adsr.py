@@ -237,3 +237,17 @@ class ADSR(EnvelopeWidgetBase):
         self.release_control.setValue(self.envelope[EnvelopeParameter.RELEASE_TIME])
         self.plot.set_values(self.envelope)
         self.envelope_changed.emit(self.envelope)
+
+    def refresh_plot_from_controls(self) -> None:
+        """
+        Sync envelope from current control values and redraw the plot without emitting.
+        Call this after programmatically setting control values (e.g. from incoming SysEx)
+        when blockSignals(True) was used, so the plot reflects the new values.
+        """
+        self.envelope[EnvelopeParameter.ATTACK_TIME] = self.attack_control.value()
+        self.envelope[EnvelopeParameter.DECAY_TIME] = self.decay_control.value()
+        self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = self.sustain_control.value()
+        self.envelope[EnvelopeParameter.RELEASE_TIME] = self.release_control.value()
+        if hasattr(self, "peak_control"):
+            self.envelope[EnvelopeParameter.PEAK_LEVEL] = self.peak_control.value()
+        self.plot.set_values(self.envelope)

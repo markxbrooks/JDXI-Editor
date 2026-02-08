@@ -66,7 +66,6 @@ class DrumBaseSection(SectionBaseWidget):
         # Call super().__init__() - it will call setup_ui() which will use our overridden get_layout()
         # Pass controls so widgets created from SLIDER_GROUPS are stored in the same dict
         super().__init__(
-            controls=controls,
             midi_helper=midi_helper,
             icons_row_type=IconType.ADSR,
             analog=False,

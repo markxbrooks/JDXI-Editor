@@ -93,12 +93,13 @@ class DigitalPartialPanel(PartialPanel):
 
         self.mod_lfo_shape_buttons = {}
         self.lfo_shape_buttons = {}
+
         self.oscillator_tab = None
         self.filter_tab = None
         self.midi_helper = midi_helper
         self.partial_number = partial_number
         self.preset_type = preset_type
-        self.controls: dict[DigitalPartialParam | DigitalCommonParam, QWidget] = {}
+        # Use parent's controls dict so sections and panel share one dict (do not assign new {} here)
         self._resolve_synth_data(synth_number)
         self._resolve_partial_name()
         self._init_state()
@@ -165,7 +166,6 @@ class DigitalPartialPanel(PartialPanel):
             widget=DigitalOscillatorSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
                 address=self.synth_data.address,
             ),
         )
@@ -175,7 +175,6 @@ class DigitalPartialPanel(PartialPanel):
             widget=DigitalFilterSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
                 address=self.synth_data.address,
             ),
         )
@@ -185,7 +184,6 @@ class DigitalPartialPanel(PartialPanel):
             widget=DigitalAmpSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
                 address=self.synth_data.address,
             ),
         )
@@ -193,7 +191,6 @@ class DigitalPartialPanel(PartialPanel):
         self._add_tab(
             key=Digital.Tab.LFO,
             widget=DigitalLFOSection(
-                controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 address=self.synth_data.address,
@@ -204,7 +201,6 @@ class DigitalPartialPanel(PartialPanel):
             key=Digital.Tab.MODLFO,
             widget=DigitalModLFOSection(
                 on_parameter_changed=self._on_parameter_changed,
-                controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 address=self.synth_data.address,

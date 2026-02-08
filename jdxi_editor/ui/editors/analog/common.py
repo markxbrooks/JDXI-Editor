@@ -56,7 +56,6 @@ class AnalogCommonSection(BaseCommonSection):
 
     def __init__(
         self,
-        controls: dict,
         midi_helper: MidiIOHelper = None,
         send_midi_parameter: Callable = None,
     ):
@@ -69,7 +68,6 @@ class AnalogCommonSection(BaseCommonSection):
             analog=True,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
-            controls=controls,
         )
         self.build_widgets()
         self.setup_ui()

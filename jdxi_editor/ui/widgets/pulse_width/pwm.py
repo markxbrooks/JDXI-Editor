@@ -218,3 +218,25 @@ class PWMWidget(EnvelopeWidgetBase):
         except Exception as ex:
             log.error(f"[PWMWidget] Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
+
+    def refresh_plot_from_controls(self) -> None:
+        """
+        Sync envelope from current control values and redraw the plot without emitting.
+        Call after programmatically setting control values (e.g. from incoming SysEx)
+        when blockSignals(True) was used, so the plot reflects the new values.
+        """
+        try:
+            pw_val = self.pulse_width_control.value()
+            md_val = self.mod_depth_control.value()
+            # value() may be 0-127 or 0.0-1.0 depending on widget
+            if isinstance(pw_val, (int, float)) and pw_val <= 1.0 and pw_val >= 0.0:
+                self.envelope[EnvelopeParameter.PULSE_WIDTH] = float(pw_val)
+            else:
+                self.envelope[EnvelopeParameter.PULSE_WIDTH] = pw_val / Midi.VALUE.MAX.SEVEN_BIT
+            if isinstance(md_val, (int, float)) and md_val <= 1.0 and md_val >= 0.0:
+                self.envelope[EnvelopeParameter.MOD_DEPTH] = float(md_val)
+            else:
+                self.envelope[EnvelopeParameter.MOD_DEPTH] = md_val / Midi.VALUE.MAX.SEVEN_BIT
+            self.plot.set_values(self.envelope)
+        except Exception as ex:
+            log.error(f"[PWMWidget] Error in refresh_plot_from_controls: {ex}")

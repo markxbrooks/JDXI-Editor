@@ -131,14 +131,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             analog: bool = False,
             send_midi_parameter: Callable = None,
             midi_helper: MidiIOHelper = None,
-            controls: dict = None,
             address: RolandSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
-            controls=controls,
             address=address,
             icons_row_type=icons_row_type,
             analog=analog,
@@ -186,7 +184,19 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 self.tuning_control_widgets.append(widget)
             # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
             self.super_saw_detune.setEnabled(False)
+        self._create_pulse_width_shift_slider()
         self._create_pcm_wave_controls()
+
+    def _create_pulse_width_shift_slider(self):
+        """Create OSC_PULSE_WIDTH_SHIFT slider and register in controls (PWM tab)."""
+        if not hasattr(Digital.Param, "OSC_PULSE_WIDTH_SHIFT"):
+            return
+        self.pw_shift_slider = self._create_parameter_slider(
+            Digital.Param.OSC_PULSE_WIDTH_SHIFT,
+            Digital.Display.Name.OSC_PULSE_WIDTH_SHIFT,
+        )
+        self.controls[Digital.Param.OSC_PULSE_WIDTH_SHIFT] = self.pw_shift_slider
+        self.pw_shift_slider.setEnabled(False)
 
     def _create_pcm_wave_controls(self):
         """Create PCM Wave controls (Gain and Number) after parent builds widgets
@@ -304,9 +314,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self._add_tab(key=DigitalOscillatorTab.PITCH, widget=pitch_env_group)
 
     def _add_pwm_tab(self):
-        """Add pitch env tab"""
+        """Add PWM tab with optional pulse width shift slider and PWM widget."""
         pw_layout = QVBoxLayout()
         pw_layout.addStretch()
+        if getattr(self, "pw_shift_slider", None) is not None:
+            pw_layout.addWidget(self.pw_shift_slider)
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
         pw_layout.addStretch()

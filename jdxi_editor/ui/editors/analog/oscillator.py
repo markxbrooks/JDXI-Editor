@@ -75,7 +75,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             waveform_selected_callback: Callable,
             wave_buttons: dict,
             midi_helper: MidiIOHelper,
-            controls: dict[AddressParameter, QWidget],
             address: RolandSysExAddress,
             send_midi_parameter: Callable = None,
     ):
@@ -95,12 +94,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
-        log.info(scope=self.__class__.__name__, message=f"before super init controls: {controls}")
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
             analog=True,
             midi_helper=midi_helper,
-            controls=controls,
             address=address,
             send_midi_parameter=send_midi_parameter,
         )

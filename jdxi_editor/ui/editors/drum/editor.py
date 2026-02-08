@@ -109,7 +109,7 @@ class DrumCommonEditor(SynthEditor):
         self.partial_tab_widget = QTabWidget()
         self.instrument_image_label = None
         self.instrument_title_label = None
-        self.controls: Dict[Union[DrumPartialParam, DrumCommonParam], QWidget] = {}
+        # self.controls from SynthBase (ControlRegistry) used for common; partials use get_control_registry()
         self.setup_ui()
         self.update_instrument_image()
         # Setup signal handlers

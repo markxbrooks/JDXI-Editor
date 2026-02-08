@@ -231,3 +231,17 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         except Exception as ex:
             log.error(f"[PitchEnvelopeWidget] [update_controls_from_envelope] Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
+
+    def refresh_plot_from_controls(self) -> None:
+        """
+        Sync envelope from current control values and redraw the plot without emitting.
+        Call after programmatically setting control values (e.g. from incoming SysEx)
+        when blockSignals(True) was used, so the plot reflects the new values.
+        """
+        try:
+            self.envelope[EnvelopeParameter.ATTACK_TIME] = self.attack_control.value()
+            self.envelope[EnvelopeParameter.DECAY_TIME] = self.decay_control.value()
+            self.envelope[EnvelopeParameter.PEAK_LEVEL] = self.depth_control.value()
+            self.plot.set_values(self.envelope)
+        except Exception as ex:
+            log.error(f"[PitchEnvelopeWidget] [refresh_plot_from_controls] Error: {ex}")

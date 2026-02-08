@@ -47,10 +47,8 @@ class BaseFilterSection(SectionBaseWidget):
 
     def __init__(
         self,
-        controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
         on_filter_mode_changed: Callable = None,
-        parent: Optional[QWidget] = None,
         icons_row_type: str = IconType.ADSR,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
@@ -72,13 +70,10 @@ class BaseFilterSection(SectionBaseWidget):
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
-            controls=controls,
             address=address,
             icons_row_type=icons_row_type,
             analog=analog,
         )
-        # Set attributes after super().__init__() to avoid them being overwritten
-        self.controls: Dict[Union[Analog.Param], QWidget] = controls or {}
         self.address = address
 
     def build_widgets(self):

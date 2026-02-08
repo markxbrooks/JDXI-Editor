@@ -58,15 +58,12 @@ class AnalogAmpSection(BaseAmpSection):
     def __init__(
         self,
         address,
-        controls: dict,
         parent: Optional[QWidget] = None,
         send_midi_parameter=None,
         midi_helper: MidiIOHelper = None,
     ):
         super().__init__(
             analog=True,
-            parent=parent,
-            controls=controls,
             address=address,
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,

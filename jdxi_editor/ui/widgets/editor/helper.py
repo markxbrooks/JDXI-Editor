@@ -389,6 +389,15 @@ def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
     return container, container_layout
 
 
+def create_layout_with_child(widget_layout: QHBoxLayout) -> QHBoxLayout:
+    """create layout with child layout"""
+    layout = QHBoxLayout()
+    layout.addStretch()
+    layout.addLayout(widget_layout)
+    layout.addStretch()
+    return layout
+
+
 def transfer_layout_items(
     source_layout: QLayout, target_layout: QHBoxLayout | QVBoxLayout
 ) -> None:

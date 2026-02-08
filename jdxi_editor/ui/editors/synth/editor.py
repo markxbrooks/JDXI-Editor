@@ -114,7 +114,7 @@ class SynthEditor(SynthBase):
         self.cc_parameters = dict()
         self.nrpn_parameters = dict()
         self.nrpn_map = dict()
-        self.controls = dict()
+        # self.controls from SynthBase (ControlRegistry)
         self.bipolar_parameters = list()
         # Midi request for Temporary program
         self.midi_requests = list()
@@ -298,7 +298,7 @@ class SynthEditor(SynthBase):
 
         else:
             log.message(
-                scope=self.__class__.__name__, message=f"!!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update"
+                scope=self.__class__.__name__, message=f"!!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update", silent=True
             )
 
         log.header_message(
@@ -329,7 +329,7 @@ class SynthEditor(SynthBase):
             if partial_number is None:
                 log.error(scope=self.__class__.__name__, message=f"Unknown partial number for synth_tone: {synth_tone}")
                 return
-            log.parameter(scope=self.__class__.__name__, message="partial_number", parameter=partial_number)
+            log.parameter(scope=self.__class__.__name__, message="partial_number _update_controls", parameter=partial_number)
             self._update_controls(partial_number, sysex_data, successes, failures)
 
         log.debug_info(successes=successes, failures=failures, scope=self.__class__.__name__)

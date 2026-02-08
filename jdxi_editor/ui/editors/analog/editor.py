@@ -166,34 +166,28 @@ class AnalogSynthEditor(BaseSynthEditor):
                 waveform_selected_callback=self._on_waveform_selected,
                 wave_buttons=self.wave_buttons,
                 midi_helper=self.midi_helper,
-                controls=self.controls,
                 address=self.address,
                 send_midi_parameter=self.send_midi_parameter,
             )
             self.filter_section = AnalogFilterSection(
-                controls=self.controls,
                 address=self.synth_data.address,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 on_filter_mode_changed=self._on_filter_mode_changed,
-                parent=self,
             )
             self.amp_section = AnalogAmpSection(
                 address=self.synth_data.address,
-                controls=self.controls,
                 parent=self,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
             )
             self.common_section = AnalogCommonSection(
-                controls=self.controls,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
             )
             self.lfo_section = AnalogLFOSection(
                 midi_helper=self.midi_helper,
                 send_midi_parameter=self.send_midi_parameter,
-                controls=self.controls,
             )
             # Ensure editor.controls has all section widgets (sections may use same ref or their own)
             for section in (

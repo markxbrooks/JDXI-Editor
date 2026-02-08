@@ -20,7 +20,6 @@ class DigitalLFOSection(BaseLFOSection):
 
     def __init__(
         self,
-        controls: dict,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
         address: RolandSysExAddress = None,
@@ -30,12 +29,10 @@ class DigitalLFOSection(BaseLFOSection):
         """
         Initialize the DigitalLFOSection
 
-        :param controls: dict
         :param send_midi_parameter: Callable to send MIDI parameter updates
         :param midi_helper: MidiIOHelper for MIDI communication
         :param address: RolandSysExAddress for this partial (required for sending MIDI)
         """
-        self.controls = controls
         self.wave_shape_buttons = {}
 
         super().__init__(
@@ -44,7 +41,6 @@ class DigitalLFOSection(BaseLFOSection):
             send_midi_parameter=send_midi_parameter,
             address=address,
             midi_helper=midi_helper,
-            controls=controls,
         )
         self.send_midi_parameter = send_midi_parameter
         self.midi_helper = midi_helper

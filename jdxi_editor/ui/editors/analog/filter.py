@@ -101,28 +101,23 @@ class AnalogFilterSection(BaseFilterSection):
 
     def __init__(
         self,
-        controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
         on_filter_mode_changed: Callable = None,
-        parent: Optional[QWidget] = None,
         midi_helper: MidiIOHelper = None,
         send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogFilterSection
 
-        :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.wave_shapes = self.generate_wave_shapes()
         super().__init__(
-            controls=controls,
             address=address,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
             on_filter_mode_changed=on_filter_mode_changed,
-            parent=parent,
             analog=True,
         )
 

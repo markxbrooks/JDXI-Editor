@@ -184,7 +184,7 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log.error(f"Error {ex} occurred")
+            log.error(f"Error {ex} occurred",scope=self.__class__.__name__)
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """
@@ -195,7 +195,7 @@ class MidiInHandler(MidiIOController):
         """
         try:
             if self.input_port_number is None:
-                log.warning("No MIDI input port to reopen")
+                log.warning("No MIDI input port to reopen", scope=self.__class__.__name__)
                 return False
 
             # Close current input port if it's open
@@ -208,9 +208,9 @@ class MidiInHandler(MidiIOController):
             # Reset callback
             if hasattr(self, "midi_callback"):
                 self.midi_in.set_callback(self.midi_callback)
-                log.message(f"Callback reattached to MIDI input port {in_port}")
+                log.message(f"Callback reattached to MIDI input port {in_port}", scope=self.__class__.__name__)
             else:
-                log.warning("No handle_midi_input() method found for callback.")
+                log.warning("No handle_midi_input() method found for callback.", scope=self.__class__.__name__)
             return True
 
         except Exception as ex:
@@ -325,19 +325,19 @@ class MidiInHandler(MidiIOController):
                 log.error(f"Error {ex} occurred parsing data")
                 filtered_data = {}
             log.message(
-                f"[MIDI SysEx received]: {hex_string} {filtered_data}", silent=False
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}", silent=False, scope=self.__class__.__name__
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                log.parameter("Parsed data", parsed_data, silent=True)
+                log.parameter("Parsed data", parsed_data, silent=True, scope=self.__class__.__name__)
                 self._emit_program_or_tone_name(parsed_data)
                 self.midi_sysex_json.emit(json.dumps(parsed_data))
                 log.json(parsed_data, silent=True)
             except Exception as parse_ex:
-                log.error(f"Failed to parse JD-Xi tone data: {parse_ex}")
+                log.error(f"Failed to parse JD-Xi tone data: {parse_ex}", scope=self.__class__.__name__)
 
         except Exception as ex:
-            log.error(f"Unexpected error {ex} while handling SysEx message")
+            log.error(f"Unexpected error {ex} while handling SysEx message", scope=self.__class__.__name__)
 
     def _handle_control_change(
         self, message: mido.Message, preset_data: dict
@@ -358,8 +358,8 @@ class MidiInHandler(MidiIOController):
             JDXi.Midi.CC.BANK_SELECT.LSB.BANK_E_AND_F,
             JDXi.Midi.CC.BANK_SELECT.LSB.BANK_G_AND_H,
         ]:
-            log.parameter("control", control)  # Bank Select LSB 00 or 01
-            log.parameter("value", value)  # Bank Select LSB 00 or 01
+            log.parameter("control", control, scope=self.__class__.__name__)  # Bank Select LSB 00 or 01
+            log.parameter("value", value, scope=self.__class__.__name__)  # Bank Select LSB 00 or 01
             self._incoming_preset_data.lsb = value
 
         self.midi_control_changed.emit(channel, control, value)
@@ -392,7 +392,7 @@ class MidiInHandler(MidiIOController):
         """
         channel = message.channel + 1
         program_number = message.program
-        log.message(f"Program Change - Channel: {channel}, Program: {program_number}")
+        log.message(f"Program Change - Channel: {channel}, Program: {program_number}", scope=self.__class__.__name__)
 
         # Store for later use
         self._incoming_preset_data.channel = channel
@@ -477,10 +477,10 @@ class MidiInHandler(MidiIOController):
         085 | 103 | 001 - 064 | Extra Bank Program (Z) | Z01 - Z64      Banks to 1024
         """
         data = self._incoming_preset_data
-        log.parameter("preset data", data)
+        log.parameter("preset data", data, scope=self.__class__.__name__)
 
         if data.program_number is None:
-            log.message("No program number; cannot auto-add program")
+            log.message("No program number; cannot auto-add program", scope=self.__class__.__name__)
             return
 
         try:
@@ -494,7 +494,7 @@ class MidiInHandler(MidiIOController):
 
             # Guard against None values (should not happen after defaults, but keep as safety check)
             if msb is None:
-                log.message(f"❌ Missing MSB (msb={msb}); cannot auto-add program")
+                log.message(f"❌ Missing MSB (msb={msb}); cannot auto-add program", scope=self.__class__.__name__)
                 return
 
             index_in_bank = program_number % 64
@@ -508,10 +508,10 @@ class MidiInHandler(MidiIOController):
                 elif 96 <= lsb <= 103:
                     prefix = chr(ord("S") + (lsb - 96))
                 else:
-                    log.message(f"❌ Unsupported LSB {lsb} for user/extra banks")
+                    log.message(f"❌ Unsupported LSB {lsb} for user/extra banks", scope=self.__class__.__name__)
                     return
             else:
-                log.message(f"❌ Unsupported MSB {msb} (expected 85)")
+                log.message(f"❌ Unsupported MSB {msb} (expected 85)", scope=self.__class__.__name__)
                 return
 
             program = JDXiProgram(
@@ -526,16 +526,16 @@ class MidiInHandler(MidiIOController):
                 analog=data.tone_names.get("analog"),
                 drums=data.tone_names.get("drum"),
             )
-            log.parameter("program", program)
+            log.parameter("program", program, scope=self.__class__.__name__)
 
         except Exception as ex:
-            log.message(f"Error {ex} creating JDXiProgram")
+            log.message(f"Error {ex} creating JDXiProgram", scope=self.__class__.__name__)
             return
 
         if add_or_replace_program_and_save(program):
-            log.message(f"✅ Auto-added program: {program.id}")
+            log.message(f"✅ Auto-added program: {program.id}", scope=self.__class__.__name__)
         else:
-            log.message(f"⚠️ Duplicate or failed to add: {program.id}")
+            log.message(f"⚠️ Duplicate or failed to add: {program.id}", scope=self.__class__.__name__)
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """
@@ -546,7 +546,7 @@ class MidiInHandler(MidiIOController):
         :return: None
         """
         if area == AreaMSB.TEMPORARY_PROGRAM.name:
-            log.message(f"Emitting program name: {tone_name} to {area}")
+            log.message(f"Emitting program name: {tone_name} to {area}", scope=self.__class__.__name__)
             self.update_program_name.emit(tone_name)
 
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
@@ -560,8 +560,8 @@ class MidiInHandler(MidiIOController):
         synth_type = JDXiMapSynthType.MAP.get(area)
         if synth_type:
             log.message(
-                f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})"
+                f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type}, scope=self.__class__.__name__)"
             )
             self.update_tone_name.emit(tone_name, synth_type)
         else:
-            log.warning(f"Unknown area: {area}. Cannot emit tone name.")
+            log.warning(f"Unknown area: {area}. Cannot emit tone name.", scope=self.__class__.__name__)

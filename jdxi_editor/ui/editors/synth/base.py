@@ -23,6 +23,7 @@ from typing import Dict, Optional
 
 import mido
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QTabWidget, QWidget
 
@@ -71,12 +72,13 @@ class SynthBase(QWidget):
             JDXiSynth.ANALOG_SYNTH: "",
             JDXiSynth.DRUM_KIT: "",
         }
+        self.controls = ControlRegistry()
+        self._control_registries: Dict[tuple, ControlRegistry] = {}
         self.partial_editors = {}
         self.sysex_data = None
         self.address: Optional[RolandSysExAddress] = address
         self.partial_number = None
         self.bipolar_parameters = []
-        self.controls: Dict[AddressParameter, QWidget] = {}
         self.analog: bool = False
         self._midi_helper = midi_helper
         self.midi_requests = []
@@ -95,6 +97,22 @@ class SynthBase(QWidget):
         :return: None
         """
         self._midi_helper = helper
+
+    def get_control_registry(
+        self, synth_type: str, partial_no: int = 1
+    ) -> ControlRegistry:
+        """
+        Return the ControlRegistry for a given part/partial (Analog, Digital1, Digital2, Drums).
+        One registry per (synth_type, partial_no); creates on first use.
+
+        :param synth_type: JDXiSynth.ANALOG_SYNTH, DIGITAL_SYNTH_1, DIGITAL_SYNTH_2, DRUM_KIT
+        :param partial_no: Partial number (e.g. 1, 2 for digital; 1..N for drums)
+        :return: ControlRegistry for that partial
+        """
+        key = (synth_type, partial_no)
+        if key not in self._control_registries:
+            self._control_registries[key] = ControlRegistry()
+        return self._control_registries[key]
 
     def _get_address_from_hierarchy(
         self, parameter_cls: AddressParameter = None

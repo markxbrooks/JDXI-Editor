@@ -2,9 +2,7 @@
 Analog LFO Section
 """
 
-from typing import Callable, Dict, Literal
-
-from PySide6.QtWidgets import QPushButton
+from typing import Callable, Literal
 
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -20,7 +18,6 @@ class AnalogLFOSection(BaseLFOSection):
         self,
         send_midi_parameter: Callable | None = None,
         midi_helper: MidiIOHelper = None,
-        controls: dict = None,
     ):
         self.midi_helper = midi_helper
 
@@ -29,7 +26,6 @@ class AnalogLFOSection(BaseLFOSection):
 
         self.lfo_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
         self.wave_shape_param: Literal[AnalogParam.LFO_SHAPE] = AnalogParam.LFO_SHAPE
-        self.controls = controls or {}
 
         super().__init__(
             icons_row_type=IconType.ADSR,

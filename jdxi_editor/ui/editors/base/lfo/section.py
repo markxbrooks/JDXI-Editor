@@ -35,7 +35,6 @@ class BaseLFOSection(SectionBaseWidget):
         send_midi_parameter: Callable = None,
         address: RolandSysExAddress = None,
         midi_helper: MidiIOHelper = None,
-        controls: dict = None,
     ):
         """
         Initialize the BaseLFOSection
@@ -53,7 +52,6 @@ class BaseLFOSection(SectionBaseWidget):
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
-            controls=controls or {},
             address=address,
             icons_row_type=icons_row_type,
             analog=analog,

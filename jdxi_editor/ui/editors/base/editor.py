@@ -90,16 +90,15 @@ class BaseSynthEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         preset_helper: Optional["JDXiPresetHelper"] = None,  # type: ignore[name-defined]
-        parent: Optional[QWidget] = None,
+        parent: Optional["QWidget"] = None,  # type: ignore[name-defined]
     ):
         """
         Initialize the AnalogSynthEditor
 
         :param midi_helper: MidiIOHelper
         :param preset_helper: JDXIPresetHelper
-        :param parent: QWidget
         """
-        super().__init__(midi_helper=midi_helper, parent=parent)
+        super().__init__(midi_helper=midi_helper)
         self.osc_waveform_map = None
         self.instrument_image_group: QGroupBox | None = None
         self.scroll: QScrollArea | None = None
@@ -114,7 +113,6 @@ class BaseSynthEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}
-        self.controls: Dict[Union[AnalogParam, DigitalPartialParam], QWidget] = {}
         self.updating_from_spinbox = False
         self.previous_json_data = None
         self.main_window = parent
@@ -472,6 +470,17 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(slider_value)
             control.blockSignals(False)
+            # ADSR plot is driven by envelope_changed; refresh after programmatic update
+            amp_env = (
+                self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME,
+                self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME,
+                self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL,
+                self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME,
+            )
+            if param in amp_env and hasattr(self, "amp_section") and self.amp_section and getattr(self.amp_section, "adsr_widget", None):
+                self.amp_section.adsr_widget.refresh_plot_from_controls()
+            elif param not in amp_env and hasattr(self, "filter_section") and self.filter_section and getattr(self.filter_section, "adsr_widget", None):
+                self.filter_section.adsr_widget.refresh_plot_from_controls()
             successes.append(param.name)
             log_slider_parameters(self.address, param, midi_value, slider_value)
         else:
@@ -507,6 +516,8 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
+            if hasattr(self, "oscillator_section") and self.oscillator_section and getattr(self.oscillator_section, "pitch_env_widget", None):
+                self.oscillator_section.pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -542,6 +553,8 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
+            if hasattr(self, "oscillator_section") and self.oscillator_section and getattr(self.oscillator_section, "pwm_widget", None):
+                self.oscillator_section.pwm_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -572,6 +585,8 @@ class BaseSynthEditor(SynthEditor):
                 if (
                     param_name == "SUB_OSCILLATOR_TYPE"
                     and param_value in self.SUB_OSC_TYPE_MAP
+                    and self.oscillator_section is not None
+                    and hasattr(self.oscillator_section, "sub_oscillator_type_switch")
                 ):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         True

@@ -15,12 +15,9 @@ class BaseAmpSection(SectionBaseWidget):
 
     def __init__(
         self,
-        # controls: dict,
         analog: bool = False,
-        parent: Optional[QWidget] = None,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
-        controls: dict = None,
         address: RolandSysExAddress = None,
     ):
 
@@ -34,7 +31,6 @@ class BaseAmpSection(SectionBaseWidget):
             analog=analog,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
-            controls=controls,
             address=address,
         )
 

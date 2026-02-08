@@ -76,6 +76,8 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_icon_from_qta,
     create_layout_with_widgets,
     transfer_layout_items,
+    create_layout_with_child,
+    create_widget_with_layout
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -101,7 +103,6 @@ class SectionBaseWidget(SynthBase):
         self,
         send_midi_parameter: Callable = None,
         midi_helper: Optional[MidiIOHelper] = None,
-        controls: dict = None,
         address: RolandSysExAddress = None,
         parent: Optional[QWidget] = None,
         icons_row_type: Literal[
@@ -124,7 +125,6 @@ class SectionBaseWidget(SynthBase):
         if not hasattr(self, "wave_shapes"):
             self.wave_shapes: list | None = None
         self.wave_shape_icon_map: dict | None = None
-        self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
         self.analog: bool = analog
         self.icons_row_type = icons_row_type
         self._layout: Optional[QVBoxLayout] = None
@@ -226,10 +226,8 @@ class SectionBaseWidget(SynthBase):
 
     def _create_controls_widget(self) -> QWidget:
         """Controls tab"""
-        controls_widget = QWidget()
         controls_layout = create_layout_with_widgets(self.tuning_control_widgets)
-        controls_widget.setLayout(controls_layout)
-        return controls_widget
+        return create_widget_with_layout(controls_layout)
 
     def _get_param_specs(self) -> list:
         """Return the main list of specs for widget creation: SLIDER_GROUPS['controls'] when present."""
@@ -278,10 +276,8 @@ class SectionBaseWidget(SynthBase):
         """Create layout for button row. Override in subclasses."""
         if not self.button_widgets:
             return None
-        layout = QHBoxLayout()
-        layout.addStretch()
-        layout.addLayout(create_layout_with_widgets(list(self.button_widgets.values())))
-        layout.addStretch()
+        widget_layout = create_layout_with_widgets(list(self.button_widgets.values()))
+        layout = create_layout_with_child(widget_layout)
         return layout
 
     def _create_adsr(self):
@@ -326,6 +322,7 @@ class SectionBaseWidget(SynthBase):
     def _add_centered_row(self, *widgets: QWidget) -> None:
         """add centered row"""
         row = QHBoxLayout()
+        row.addStretch()
         for w in widgets:
             row.addWidget(w)
         row.addStretch()

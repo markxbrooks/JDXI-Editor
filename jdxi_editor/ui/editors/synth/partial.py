@@ -20,18 +20,14 @@ Dependencies:
 
 """
 
-from typing import Dict
-
-from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtWidgets import (
-    QWidget,
-)
+from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.ui.editors.synth.base import SynthBase
+from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 
 
 class PartialPanel(SynthBase):
-    """Editor for address single partial"""
+    """Editor for a single partial. Uses ControlRegistry for controls (per-partial when assigned by parent)."""
 
     def __init__(
         self,
@@ -48,8 +44,8 @@ class PartialPanel(SynthBase):
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_helper = None
-        # Store parameter controls for easy access
-        self.controls: Dict[AddressParameter, QWidget] = {}
+        # Per-partial control registry; parent (e.g. DigitalSynthEditor) may replace with get_control_registry(...)
+        self.controls: ControlRegistry = ControlRegistry()
 
     def __str__(self):
         return f"{self.__class__.__name__} partial {self.partial_number}"

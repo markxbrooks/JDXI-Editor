@@ -103,7 +103,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
-            controls=controls,
             address=address,
             icons_row_type=icons_row_type,
             analog=analog,
