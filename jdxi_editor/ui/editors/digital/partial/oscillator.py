@@ -17,6 +17,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
@@ -31,24 +32,6 @@ from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
 class DigitalOscillatorSection(BaseOscillatorSection):
     """Digital Oscillator Section for JD-Xi Editor (spec-driven)."""
-
-    # Slider parameter storage and generation (same pattern as Analog Oscillator)
-    SLIDER_GROUPS = {
-        "controls": [
-            SliderSpec(
-                param=Digital.Param.OSC_PITCH,
-                label=Digital.Display.Name.OSC_PITCH,
-            ),
-            SliderSpec(
-                param=Digital.Param.OSC_DETUNE,
-                label=Digital.Display.Name.OSC_DETUNE,
-            ),
-            SliderSpec(
-                param=Digital.Param.SUPER_SAW_DETUNE,
-                label=Digital.Display.Name.SUPER_SAW_DETUNE,
-            ),
-        ],
-    }
 
     # --- Enable rules for dependent widgets (which tab/widgets to enable per waveform)
     BUTTON_ENABLE_RULES = {
@@ -134,6 +117,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             address: RolandSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -178,7 +162,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 control_sliders[2],
             )
             for spec, widget in zip(
-                    self.SLIDER_GROUPS["controls"], control_sliders
+                    self.SLIDER_GROUPS.controls, control_sliders
             ):
                 self.controls[spec.param] = widget
                 self.tuning_control_widgets.append(widget)
@@ -377,3 +361,22 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # This will also enable/disable SuperSaw Detune based on selected waveform
         if self.wave_shapes:
             self._on_button_selected(self.wave_shapes[0])
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(
+                param=S.Param.OSC_PITCH,
+                label=S.Param.OSC_PITCH.display_name,
+            ),
+            SliderSpec(
+                param=S.Param.OSC_DETUNE,
+                label=S.Param.OSC_DETUNE.display_name,
+            ),
+            SliderSpec(
+                param=S.Param.SUPER_SAW_DETUNE,
+                label=S.Param.SUPER_SAW_DETUNE.display_name,
+            ),
+        ]
+        return LayoutSpec(controls=controls)
