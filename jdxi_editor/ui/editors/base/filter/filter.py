@@ -28,7 +28,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
     set_button_style_and_dimensions,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.filter.analog_filter import AnalogFilterWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 from jdxi_editor.ui.widgets.spec import FilterWidgetSpec
 
@@ -226,20 +225,6 @@ class BaseFilterSection(SectionBaseWidget):
 
         return create_layout_with_widgets(widgets, vertical=False)
 
-    def _on_button_selected_old(self, button_param):
-        """Route Analog filter mode button clicks to _on_filter_mode_selected; Digital uses parent."""
-        if self.analog and button_param is not None:
-            # Match by key (Analog.Filter.Mode / AnalogFilterMode) or by value (0=BYPASS, 1=LPF)
-            buttons = getattr(self, "filter_mode_buttons", None)
-            if buttons and button_param in buttons:
-                self._on_filter_mode_selected(button_param)
-                return
-            if hasattr(button_param, "value") and button_param.value in (0, 1):
-                # AnalogFilterMode / filter-mode enum; handle here so we never pass it to send_midi_parameter
-                self._on_filter_mode_selected(button_param)
-                return
-        super()._on_button_selected(button_param)
-
     def _on_filter_mode_selected(self, filter_mode: AnalogFilterType):
         """
         Handle filter mode button clicks
@@ -281,59 +266,6 @@ class BaseFilterSection(SectionBaseWidget):
 
         # --- Update enabled state here so Digital (no callback) still works; Analog callback does it too
         self.update_controls_state(filter_mode.value)
-
-    def _create_controls_group_old(self) -> QGroupBox:
-        """Controls Group - standardized order: FilterWidget, Resonance, KeyFollow, Velocity (harmonized with Digital)"""
-        if self.analog:
-            self.filter_widget = AnalogFilterWidget(
-                cutoff_param=self.FILTER_WIDGET_SPEC.cutoff_param,
-                midi_helper=self.midi_helper,
-                create_parameter_slider=self._create_parameter_slider,
-                controls=self.controls,
-                address=self.address,
-            )
-        else:
-            self.filter_widget = FilterWidget(
-                cutoff_param=self.FILTER_WIDGET_SPEC.cutoff_param,
-                slope_param=self.FILTER_WIDGET_SPEC.slope_param,
-                midi_helper=self.midi_helper,
-                create_parameter_slider=self._create_parameter_slider,
-                create_parameter_switch=self._create_parameter_switch,
-                controls=self.controls,
-                address=self.address,
-                analog=self.analog,
-            )
-        # SLIDER_GROUPS may be a dict (key "filter") or a LayoutSpec (attr "filter" or "controls")
-        sg = self.SLIDER_GROUPS
-        if isinstance(sg, dict):
-            filter_specs = sg.get("", [])
-        else:
-            filter_specs = getattr(sg, "filter", None) or getattr(sg, "controls", []) or []
-        if self.analog:
-            (
-                self.filter_resonance,
-                self.filter_cutoff_keyfollow,
-                self.filter_env_velocity_sens,
-            ) = self._build_sliders(filter_specs)
-        else:  # Digital has an extra slider
-            (
-                self.filter_resonance,
-                self.filter_cutoff_keyfollow,
-                self.filter_env_velocity_sens,
-                self.filter_env_depth,
-            ) = self._build_sliders(filter_specs)
-        control_widgets = [
-            self.filter_widget,
-            self.filter_resonance,
-            self.filter_cutoff_keyfollow,
-            self.filter_env_velocity_sens,
-        ]
-        if not self.analog:
-            control_widgets.append(self.filter_env_depth)
-        controls_layout = create_layout_with_widgets(control_widgets)
-        return create_group_adsr_with_hlayout(
-            name="Controls", hlayout=controls_layout, analog=self.analog
-        )
 
     def update_controls_state(self, value: int) -> None:
         """

@@ -13,39 +13,13 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digi
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
 class DigitalFilterSection(BaseFilterSection):
     """Digital Filter Section for JD-Xi Digital Partial"""
-
-    # Slider parameter storage and generation (same pattern as Analog Oscillator)
-    SLIDER_GROUPS = {
-        "filter": [
-            SliderSpec(
-                Digital.Param.FILTER_RESONANCE,
-                Digital.Param.FILTER_RESONANCE.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
-                Digital.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.FILTER_ENV_DEPTH,
-                Digital.Param.FILTER_ENV_DEPTH.display_name,
-                vertical=True,
-            ),
-        ],
-    }
-
 
     BUTTON_ENABLE_RULES = {
         Digital.Filter.Mode.BYPASS: [],  # disables everything
@@ -174,6 +148,7 @@ class DigitalFilterSection(BaseFilterSection):
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
         self.DEFINITION = FilterDefinition(
             modes=DigitalFilterTypeEnum,
             param_mode=Digital.Param.FILTER_MODE_SWITCH,
@@ -185,3 +160,30 @@ class DigitalFilterSection(BaseFilterSection):
             adsr=self.ADSR_SPEC,
             bypass_mode=DigitalFilterTypeEnum.BYPASS)
         super().__init__(definition=self.DEFINITION, **kwargs)
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(
+                S.Param.FILTER_RESONANCE,
+                S.Param.FILTER_RESONANCE.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_CUTOFF_KEYFOLLOW,
+                S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_ENV_DEPTH,
+                S.Param.FILTER_ENV_DEPTH.display_name,
+                vertical=True,
+            ),
+        ]
+        return LayoutSpec(controls=controls)

@@ -244,6 +244,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies how you can make the filter envelope depth vary, \naccording to the strength with which you play the key",
+        "Velocity sensitivity"
     )  # Velocity sensitivity
     FILTER_RESONANCE = ParameterSpec(
         0x0F,
@@ -252,6 +253,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Emphasizes the sound in the region of the filter cutoff frequency",
+        "Resonance"
     )  # Resonance
     FILTER_ENV_ATTACK_TIME = ParameterSpec(
         0x10,
@@ -260,7 +262,8 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from the moment you press the key until\n the cutoff frequency reaches its highest (or lowest) point",
-    )  # Filter envelope attack
+        "Filter envelope attack"
+    )  #
     FILTER_ENV_DECAY_TIME = ParameterSpec(
         0x11,
         0,
@@ -268,7 +271,8 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when the cutoff frequency reaches its\n highest (or lowest) point, until it decays to the sustain level",
-    )  # Filter envelope decay
+        "Filter envelope decay"
+    )  #
     FILTER_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x12,
         0,
@@ -276,7 +280,8 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the cutoff frequency that will be maintained\n from when the decay time has elapsed until you release the key",
-    )  # Filter envelope sustain
+        "Filter envelope sustain"
+    )  #
     FILTER_ENV_RELEASE_TIME = ParameterSpec(
         0x13,
         0,
@@ -284,7 +289,8 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when you release the key until\n the cutoff frequency reaches its minimum value",
-    )  # Filter envelope release
+        "Filter envelope release"
+    )  #
     FILTER_ENV_DEPTH = ParameterSpec(
         0x14,
         1,
@@ -292,7 +298,8 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies the direction and depth to which the cutoff frequency will change",
-    )  # Filter envelope depth
+        "Filter envelope depth"
+    )
 
     # Amplitude parameters
     AMP_LEVEL = ParameterSpec(0x15, 0, 127, 0, 127, "Partial volume")  # Amplitude level
@@ -303,6 +310,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies how the volume will vary according to the strength with which you play the keyboard.",
+        "Velocity Sensitivity"
     )  # Velocity sensitivity
     AMP_ENV_ATTACK_TIME = ParameterSpec(
         0x17,
@@ -311,6 +319,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from the \nmoment you press the key until \n the maximum volume is reached.",
+        "Amp Env Attack"
     )  # Amplitude envelope attack
     AMP_ENV_DECAY_TIME = ParameterSpec(
         0x18,
@@ -319,6 +328,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when the\nmaximum volume is reached, until\nit decays to the sustain level.",
+        "Amp Env decay"
     )  # Amplitude envelope decay
     AMP_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x19,
@@ -327,6 +337,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the volume level that\nwill be maintained from when\nthe attack and decay times have\nelapsed until you release the key",
+        "Amp Env Sustain"
     )  # Amplitude envelope sustain
     AMP_ENV_RELEASE_TIME = ParameterSpec(
         0x1A,
@@ -335,6 +346,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when you\nrelease the key until the volume\nreaches its minimum value.",
+        "Amp Env Release"
     )  # Amplitude envelope release
     AMP_PAN = ParameterSpec(
         0x1B,
@@ -343,6 +355,7 @@ class DigitalPartialParam(AddressParameter):
         -64,
         63,
         "Specifies the stereo position of the partial; Left-Right",
+        "Pan"
     )  # Pan position
     AMP_LEVEL_KEYFOLLOW = ParameterSpec(
         0x1C,

@@ -10,6 +10,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
@@ -18,44 +19,6 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 
 class DigitalAmpSection(BaseAmpSection):
     """Digital Amp Section for JD-Xi Editor"""
-
-    # Slider parameter storage and generation (same pattern as Digital Oscillator / Digital Filter)
-    SLIDER_GROUPS = {
-        "controls": [
-            SliderSpec(
-                Digital.Param.AMP_LEVEL,
-                Digital.Display.Name.AMP_LEVEL,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.AMP_LEVEL_KEYFOLLOW,
-                Digital.Display.Name.AMP_LEVEL_KEYFOLLOW,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.AMP_VELOCITY,
-                Digital.Display.Name.AMP_VELOCITY,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.LEVEL_AFTERTOUCH,
-                Digital.Display.Name.LEVEL_AFTERTOUCH,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.Param.CUTOFF_AFTERTOUCH,
-                Digital.Display.Name.CUTOFF_AFTERTOUCH,
-                vertical=True,
-            ),
-        ],
-        "pan": [
-            SliderSpec(
-                Digital.Param.AMP_PAN,
-                Digital.Display.Name.AMP_PAN,
-                vertical=False,
-            ),
-        ],
-    }
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
@@ -72,6 +35,7 @@ class DigitalAmpSection(BaseAmpSection):
     SYNTH_SPEC = JDXiMidiDigital
 
     def __init__(self, **kwargs):
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
         super().__init__(**kwargs)
 
     def build_widgets(self):
@@ -89,7 +53,7 @@ class DigitalAmpSection(BaseAmpSection):
                 w = self.controls.pop(param)
                 if w in self.tuning_control_widgets:
                     self.tuning_control_widgets.remove(w)
-        pan_specs = self.SLIDER_GROUPS.get("pan", [])
+        pan_specs = self.SLIDER_GROUPS.get("sliders", [])
         if pan_specs and pan_specs[0].param in self.controls:
             self.controls.pop(pan_specs[0].param, None)
 
@@ -126,3 +90,43 @@ class DigitalAmpSection(BaseAmpSection):
 
         controls_widget.setLayout(controls_layout)
         return controls_widget
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(
+                S.Param.AMP_LEVEL,
+                S.Param.AMP_LEVEL.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.AMP_LEVEL_KEYFOLLOW,
+                S.Param.AMP_LEVEL_KEYFOLLOW.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.AMP_VELOCITY,
+                S.Param.AMP_VELOCITY.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.LEVEL_AFTERTOUCH,
+                S.Param.LEVEL_AFTERTOUCH.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.CUTOFF_AFTERTOUCH,
+                S.Param.CUTOFF_AFTERTOUCH.display_name,
+                vertical=True,
+            ),
+        ]
+        pan = [
+            SliderSpec(
+                S.Param.AMP_PAN,
+                S.Param.AMP_PAN.display_name,
+                vertical=False,
+            ),
+        ]
+        return LayoutSpec(controls=controls,
+                          sliders=pan)  # separate place to put the Pan
