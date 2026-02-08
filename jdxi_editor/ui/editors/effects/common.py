@@ -57,10 +57,6 @@ Features:
 from __future__ import annotations
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
-from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES
-from jdxi_editor.midi.data.effects.sysex.dispatcher import EffectsSysExDispatcher
-from jdxi_editor.midi.data.effects.type.handler import EffectTypeHandler
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
@@ -78,6 +74,10 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetSystemUMB,
     RolandSysExAddress,
 )
+from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
+from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES
+from jdxi_editor.midi.data.effects.sysex.dispatcher import EffectsSysExDispatcher
+from jdxi_editor.midi.data.effects.type.handler import EffectTypeHandler
 from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,
     Effect1Param,
