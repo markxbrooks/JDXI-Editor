@@ -53,6 +53,7 @@ from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -68,8 +69,41 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumTVFSection(DrumBaseSection):
     """Drum TVF Section for the JDXI Editor"""
 
-    SLIDER_GROUPS = {
-        "controls": [
+    envelope_changed = Signal(dict)
+
+    def __init__(
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+    ):
+        """
+        Initialize the DrumTVFSection
+
+        :param controls: dict
+        :param midi_helper: MidiIOHelper
+        """
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.envelope = {
+            "depth": 64,
+            "v_sens": 64,
+            "t1_v_sens": 64,
+            "t4_v_sens": 64,
+            "time_1": 21,
+            "time_2": 16,
+            "time_3": 40,
+            "time_4": 25,
+            "level_0": 0,
+            "level_1": 127,
+            "level_2": 70,
+            "level_3": 70,
+            "level_4": 0,
+        }
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """Build drum TVF layout spec (controls list for widget creation)."""
+        controls = [
             ComboBoxSpec(
                 DrumPartialParam.TVF_FILTER_TYPE,
                 DrumDisplayName.TVF_FILTER_TYPE,
@@ -137,39 +171,8 @@ class DrumTVFSection(DrumBaseSection):
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True
             ),
-        ],
-    }
-
-    envelope_changed = Signal(dict)
-
-    def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper,
-    ):
-        """
-        Initialize the DrumTVFSection
-
-        :param controls: dict
-        :param midi_helper: MidiIOHelper
-        """
-        self.envelope = {
-            "depth": 64,
-            "v_sens": 64,
-            "t1_v_sens": 64,
-            "t4_v_sens": 64,
-            "time_1": 21,
-            "time_2": 16,
-            "time_3": 40,
-            "time_4": 25,
-            "level_0": 0,
-            "level_1": 127,
-            "level_2": 70,
-            "level_3": 70,
-            "level_4": 0,
-        }
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        self.setup_ui()
+        ]
+        return LayoutSpec(controls=controls)
 
     def setup_ui(self):
         """setup UI"""

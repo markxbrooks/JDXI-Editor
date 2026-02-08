@@ -50,6 +50,7 @@ from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -62,9 +63,18 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
-    # Slider/control parameter storage and generation (same pattern as Digital Amp)
-    SLIDER_GROUPS = {
-        "controls": [
+    def __init__(
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+    ):
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """Build drum output layout spec (controls list for widget creation)."""
+        controls = [
             SliderSpec(
                 DrumPartialParam.PARTIAL_CHORUS_SEND_LEVEL,
                 DrumDisplayName.PARTIAL_CHORUS_SEND_LEVEL,
@@ -83,16 +93,8 @@ class DrumOutputSection(DrumBaseSection):
                 DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL,
                 DrumDisplayName.PARTIAL_REVERB_SEND_LEVEL,
             ),
-        ],
-    }
-
-    def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper,
-    ):
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        self.setup_ui()
+        ]
+        return LayoutSpec(controls=controls)
 
     def setup_ui(self) -> None:
         """setup UI"""

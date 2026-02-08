@@ -43,6 +43,7 @@ from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -57,8 +58,24 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
-    SLIDER_GROUPS = {
-        "controls": [
+    def __init__(
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+    ):
+        """
+        Initialize the DrumPartialSection
+
+        :param controls: dict
+        :param midi_helper: MidiIOHelper
+        """
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """Build drum partial layout spec (controls list for widget creation)."""
+        controls = [
             SliderSpec(
                 DrumPartialParam.PARTIAL_COARSE_TUNE,
                 DrumDisplayName.PARTIAL_COARSE_TUNE,
@@ -133,22 +150,8 @@ class DrumPartialSection(DrumBaseSection):
                 options=DrumDisplayOptions.ONE_SHOT_MODE,
                 values=[0, 1],
             ),
-        ],
-    }
-
-    def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper,
-    ):
-        """
-        Initialize the DrumPartialSection
-
-        :param controls: dict
-        :param midi_helper: MidiIOHelper
-        """
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        self.setup_ui()
+        ]
+        return LayoutSpec(controls=controls)
 
     def setup_ui(self) -> None:
         """setup UI - follows ParameterSectionBase pattern"""

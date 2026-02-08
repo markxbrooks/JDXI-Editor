@@ -45,6 +45,7 @@ from jdxi_editor.midi.data.parameter.drum.option import (
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
@@ -59,8 +60,39 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 class DrumTVASection(DrumBaseSection):
     """Drum TVA Section for the JDXI Editor"""
 
-    SLIDER_GROUPS = {
-        "controls": [
+    envelope_changed = Signal(dict)
+
+    def __init__(
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+    ):
+        """
+        Initialize the DrumTVASection
+
+        :param controls: dict
+        :param midi_helper: MidiIOHelper
+        """
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.envelope = {
+            EnvelopeParameter.T1_V_SENS: 64,
+            EnvelopeParameter.T4_V_SENS: 64,
+            EnvelopeParameter.TIME_0: 0,
+            EnvelopeParameter.TIME_1: 32,
+            EnvelopeParameter.TIME_2: 32,
+            EnvelopeParameter.TIME_3: 64,
+            EnvelopeParameter.TIME_4: 64,
+            EnvelopeParameter.LEVEL_0: 0,
+            EnvelopeParameter.LEVEL_1: 120,
+            EnvelopeParameter.LEVEL_2: 80,
+            EnvelopeParameter.LEVEL_3: 70,
+        }
+        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """Build drum TVA layout spec (controls list for widget creation)."""
+        controls = [
             ComboBoxSpec(
                 DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
                 DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE.display_name,
@@ -103,37 +135,8 @@ class DrumTVASection(DrumBaseSection):
             SliderSpec(
                 DrumPartialParam.TVA_ENV_LEVEL_3, DrumPartialParam.TVA_ENV_LEVEL_3.display_name, vertical=True
             ),
-        ],
-    }
-
-    envelope_changed = Signal(dict)
-
-    def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper,
-    ):
-        """
-        Initialize the DrumTVASection
-
-        :param controls: dict
-        :param midi_helper: MidiIOHelper
-        """
-        self.envelope = {
-            EnvelopeParameter.T1_V_SENS: 64,
-            EnvelopeParameter.T4_V_SENS: 64,
-            EnvelopeParameter.TIME_0: 0,
-            EnvelopeParameter.TIME_1: 32,
-            EnvelopeParameter.TIME_2: 32,
-            EnvelopeParameter.TIME_3: 64,
-            EnvelopeParameter.TIME_4: 64,
-            EnvelopeParameter.LEVEL_0: 0,
-            EnvelopeParameter.LEVEL_1: 120,
-            EnvelopeParameter.LEVEL_2: 80,
-            EnvelopeParameter.LEVEL_3: 70,
-        }
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
-        self.setup_ui()
+        ]
+        return LayoutSpec(controls=controls)
 
     def setup_ui(self):
         """setup UI"""

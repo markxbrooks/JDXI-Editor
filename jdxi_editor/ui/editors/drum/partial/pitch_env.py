@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
@@ -53,28 +54,6 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 
 class DrumPitchEnvSection(DrumBaseSection):
     """Drum Pitch Env Section for the JDXI Editor"""
-
-    SLIDER_GROUPS = {
-        "controls": [
-            SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, DrumPartialParam.PITCH_ENV_DEPTH.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name, vertical=True),
-            SliderSpec(
-                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name, vertical=True
-            ),
-            SliderSpec(
-                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name, vertical=True
-            ),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, DrumPartialParam.PITCH_ENV_LEVEL_2.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, DrumPartialParam.PITCH_ENV_LEVEL_3.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
-        ],
-    }
 
     envelope_changed = Signal(dict)
 
@@ -91,6 +70,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
         self.envelope = {
             EnvelopeParameter.DEPTH: 64,
             EnvelopeParameter.V_SENS: 64,
@@ -108,6 +88,29 @@ class DrumPitchEnvSection(DrumBaseSection):
         }
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
         self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """Build drum pitch envelope layout spec (controls list for widget creation)."""
+        controls = [
+            SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, DrumPartialParam.PITCH_ENV_DEPTH.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name, vertical=True),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name, vertical=True
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name, vertical=True
+            ),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, DrumPartialParam.PITCH_ENV_LEVEL_2.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, DrumPartialParam.PITCH_ENV_LEVEL_3.display_name, vertical=True),
+            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
+        ]
+        return LayoutSpec(controls=controls)
 
     def setup_ui(self) -> None:
         """setup UI"""
