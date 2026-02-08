@@ -25,9 +25,9 @@ from typing import Dict, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
+    QFormLayout,
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QVBoxLayout,
     QWidget,
 )
@@ -52,6 +52,9 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from jdxi_editor.ui.widgets.group import WidgetGroups
+from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 class VocalFXEditor(BasicEditor):
@@ -114,289 +117,222 @@ class VocalFXEditor(BasicEditor):
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
-    def _create_common_section(self) -> QWidget:
-        """
-        _create_common_section
+    def _build_widgets_from_spec(self, spec: WidgetLayoutSpec) -> WidgetGroups:
+        """Build WidgetGroups from a layout spec (same paradigm as Arpeggiator/Effects)."""
+        return WidgetGroups(
+            switches=self._build_switches(spec.switches),
+            sliders=self._build_sliders(spec.sliders),
+            combos=self._build_combo_boxes(spec.combos),
+        )
 
-        :return: QWidget
-        """
+    def _build_common_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Common tab."""
+        combos = [
+            ComboBoxSpec(
+                ProgramCommonParam.VOCAL_EFFECT,
+                "Vocal Effect",
+                ["OFF", "VOCODER", "AUTO - PITCH"],
+                [0, 1, 2],
+            ),
+        ]
+        sliders = [
+            SliderSpec(ProgramCommonParam.PROGRAM_TEMPO, "Tempo", vertical=False),
+            SliderSpec(
+                ProgramCommonParam.VOCAL_EFFECT_NUMBER, "Effect Number", vertical=False
+            ),
+            SliderSpec(ProgramCommonParam.PROGRAM_LEVEL, "Level", vertical=False),
+        ]
+        switches = [
+            SwitchSpec(VocalFXParam.VOCODER_SWITCH, "Effect Part:", ["OFF", "ON"]),
+            SwitchSpec(ProgramCommonParam.AUTO_NOTE_SWITCH, "Auto Note:", ["OFF", "ON"]),
+        ]
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
+
+    def _create_common_section(self) -> QWidget:
+        """Create Common tab (spec-driven)."""
+        spec = self._build_common_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
 
-        self.program_tempo = self._create_parameter_slider(
-            ProgramCommonParam.PROGRAM_TEMPO, "Tempo"
-        )
-        layout.addWidget(self.program_tempo)
-
-        vocal_effect_switch_row = QHBoxLayout()
-        self.vocal_effect_type = self._create_parameter_combo_box(
-            ProgramCommonParam.VOCAL_EFFECT,
-            "Vocal Effect",
-            ["OFF", "VOCODER", "AUTO - PITCH"],
-            [0, 1, 2],
-        )
-
-        vocal_effect_switch_row.addWidget(self.vocal_effect_type)
-        layout.addLayout(vocal_effect_switch_row)
-
-        self.vocal_effect_number = self._create_parameter_slider(
-            ProgramCommonParam.VOCAL_EFFECT_NUMBER, "Effect Number"
-        )
-        layout.addWidget(self.vocal_effect_number)
-
-        self.program_level = self._create_parameter_slider(
-            ProgramCommonParam.PROGRAM_LEVEL, "Level"
-        )
-        layout.addWidget(self.program_level)
-
-        # Add Effect Part switch
-        effect_part_switch_row = QHBoxLayout()
-        self.effect_part_switch = self._create_parameter_switch(
-            VocalFXParam.VOCODER_SWITCH, "Effect Part:", ["OFF", "ON"]
-        )
-        effect_part_switch_row.addWidget(self.effect_part_switch)
-        layout.addLayout(effect_part_switch_row)  # Add at bottom
-
-        # Add Auto Note switch
-        auto_note_switch_row = QHBoxLayout()
-        self.auto_note_switch = self._create_parameter_switch(
-            ProgramCommonParam.AUTO_NOTE_SWITCH, "Auto Note:", ["OFF", "ON"]
-        )
-        auto_note_switch_row.addWidget(self.auto_note_switch)
-        layout.addLayout(auto_note_switch_row)  # Add at bottom
-
+        form_widget = QWidget()
+        form_layout = QFormLayout()
+        form_widget.setLayout(form_layout)
+        for w in groups.combos + groups.sliders + groups.switches:
+            form_layout.addRow(w)
+        layout.addWidget(form_widget)
         layout.addStretch()
         return common_section
 
+    def _build_vocal_effect_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Vocal FX tab (Vocoder settings)."""
+        switches = [
+            SwitchSpec(VocalFXParam.VOCODER_SWITCH, "Vocoder:", ["OFF", "ON"]),
+        ]
+        combos = [
+            ComboBoxSpec(
+                VocalFXParam.VOCODER_ENVELOPE,
+                "Envelope",
+                [env.display_name for env in VocoderEnvelope],
+                [env.value for env in VocoderEnvelope],
+            ),
+            ComboBoxSpec(
+                VocalFXParam.VOCODER_MIC_HPF,
+                "HPF",
+                [freq.display_name for freq in VocoderHPF],
+                [freq.value for freq in VocoderHPF],
+            ),
+        ]
+        sliders = [
+            SliderSpec(VocalFXParam.VOCODER_LEVEL, "Level", vertical=False),
+            SliderSpec(VocalFXParam.VOCODER_MIC_SENS, "Mic Sensitivity", vertical=False),
+            SliderSpec(VocalFXParam.VOCODER_SYNTH_LEVEL, "Synth Level", vertical=False),
+            SliderSpec(VocalFXParam.VOCODER_MIC_MIX, "Mic Mix", vertical=False),
+        ]
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
+
     def _create_vocal_effect_section(self) -> QWidget:
-        """Create general vocal effect controls section"""
+        """Create Vocal FX tab (spec-driven)."""
+        spec = self._build_vocal_effect_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         vocal_effect_section = QWidget()
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
 
-        # Add vocoder switch
-        switch_row = QHBoxLayout()
-        self.vocoder_switch = self._create_parameter_switch(
-            VocalFXParam.VOCODER_SWITCH, "Vocoder:", ["OFF", "ON"]
-        )
-        switch_row.addWidget(self.vocoder_switch)
-        layout.addLayout(switch_row)  # Add at top
+        # Vocoder switch at top
+        for w in groups.switches:
+            layout.addWidget(w)
 
-        # Add Vocoder controls
         vocoder_group = QGroupBox("Vocoder Settings")
-        vocoder_layout = QVBoxLayout()
-        vocoder_group.setLayout(vocoder_layout)
-
-        # Envelope Type
-        env_row = QHBoxLayout()
-        env_row.addWidget(QLabel("Envelope"))
-        self.vocoder_env = self._create_parameter_combo_box(
-            VocalFXParam.VOCODER_ENVELOPE,
-            "Envelope",
-            [env.display_name for env in VocoderEnvelope],
-            [env.value for env in VocoderEnvelope],
-        )
-        env_row.addWidget(self.vocoder_env)
-        vocoder_layout.addLayout(env_row)
-
-        # Level controls
-        levels_row_layout = QHBoxLayout()
-        self.vocoder_level = self._create_parameter_slider(
-            VocalFXParam.VOCODER_LEVEL, "Level", 1
-        )
-
-        self.vocoder_mic_sens = self._create_parameter_slider(
-            VocalFXParam.VOCODER_MIC_SENS, "Mic Sensitivity", 1
-        )
-
-        self.vocoder_synth_level = self._create_parameter_slider(
-            VocalFXParam.VOCODER_SYNTH_LEVEL, "Synth Level", 1
-        )
-
-        self.vocoder_mic_mix = self._create_parameter_slider(
-            VocalFXParam.VOCODER_MIC_MIX, "Mic Mix", 1
-        )
-
-        self.vocoder_hpf = self._create_parameter_combo_box(
-            VocalFXParam.VOCODER_MIC_HPF,
-            "HPF",
-            [freq.display_name for freq in VocoderHPF],
-            [freq.value for freq in VocoderHPF],
-        )
-
-        # HPF Frequency
-        hpf_row = QHBoxLayout()
-        hpf_row.addWidget(self.vocoder_hpf)
-
-        # Add all controls
-        levels_row_layout.addWidget(self.vocoder_level)
-        levels_row_layout.addWidget(self.vocoder_mic_sens)
-        levels_row_layout.addWidget(self.vocoder_synth_level)
-        levels_row_layout.addWidget(self.vocoder_mic_mix)
-        vocoder_layout.addLayout(levels_row_layout)
-        vocoder_layout.addLayout(hpf_row)
-
+        vocoder_form = QFormLayout()
+        vocoder_group.setLayout(vocoder_form)
+        for w in groups.combos + groups.sliders:
+            vocoder_form.addRow(w)
         layout.addWidget(vocoder_group)
         JDXi.UI.Theme.apply_adsr_style(widget=vocoder_group)
         layout.addStretch()
         return vocal_effect_section
 
-    def _create_mixer_section(self) -> QWidget:
-        """
-        _create_mixer_section
+    def _build_mixer_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Mixer tab."""
+        combos = [
+            ComboBoxSpec(
+                VocalFXParam.OUTPUT_ASSIGN,
+                "Output",
+                [output.display_name for output in VocalOutputAssign],
+                [output.value for output in VocalOutputAssign],
+            ),
+        ]
+        sliders = [
+            SliderSpec(VocalFXParam.LEVEL, "Level", vertical=False),
+            SliderSpec(VocalFXParam.PAN, "Pan", vertical=False),
+            SliderSpec(VocalFXParam.DELAY_SEND_LEVEL, "Delay Send", vertical=False),
+            SliderSpec(VocalFXParam.REVERB_SEND_LEVEL, "Reverb Send", vertical=False),
+        ]
+        return WidgetLayoutSpec(switches=[], sliders=sliders, combos=combos)
 
-        :return: QWidget
-        """
+    def _create_mixer_section(self) -> QWidget:
+        """Create Mixer tab (spec-driven)."""
+        spec = self._build_mixer_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         mixer_section = QWidget()
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
 
-        # Level and Pan
-        self.level = self._create_parameter_slider(
-            VocalFXParam.LEVEL,
-            "Level",
-        )
-        self.pan = self._create_parameter_slider(VocalFXParam.PAN, "Pan")  # Center at 0
-
-        # Send Levels
-        self.delay_send_level_slider = self._create_parameter_slider(
-            VocalFXParam.DELAY_SEND_LEVEL, "Delay Send"
-        )
-        self.reverb_send_level_slider = self._create_parameter_slider(
-            VocalFXParam.REVERB_SEND_LEVEL, "Reverb Send"
-        )
-
-        # Output Assign
-        output_row = QHBoxLayout()
-        output_row.addWidget(QLabel("Output"))
-        self.output_assign = self._create_parameter_combo_box(
-            VocalFXParam.OUTPUT_ASSIGN,
-            "Output",
-            [output.display_name for output in VocalOutputAssign],
-            [output.value for output in VocalOutputAssign],
-        )
-        output_row.addWidget(self.output_assign)
-        layout.addLayout(output_row)
-
-        layout.addWidget(self.level)
-        layout.addWidget(self.pan)
-        layout.addWidget(self.delay_send_level_slider)
-        layout.addWidget(self.reverb_send_level_slider)
-
+        form_widget = QWidget()
+        form_layout = QFormLayout()
+        form_widget.setLayout(form_layout)
+        for w in groups.combos + groups.sliders + groups.switches:
+            form_layout.addRow(w)
+        layout.addWidget(form_widget)
         layout.addStretch()
         return mixer_section
 
-    def _create_auto_pitch_section(self):
-        """
-        _create_auto_pitch_section
+    def _build_auto_pitch_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Auto Pitch tab."""
+        switches = [
+            SwitchSpec(
+                VocalFXParam.AUTO_PITCH_SWITCH,
+                "Auto Pitch",
+                [switch.display_name for switch in VocalFxSwitch],
+            ),
+            SwitchSpec(
+                VocalFXParam.AUTO_PITCH_OCTAVE,
+                "Octave",
+                [rng.name for rng in VocalOctaveRange],
+            ),
+        ]
+        combos = [
+            ComboBoxSpec(
+                VocalFXParam.AUTO_PITCH_TYPE,
+                "Pitch Type",
+                [pitch_type.display_name for pitch_type in VocalAutoPitchType],
+                [pitch_type.value for pitch_type in VocalAutoPitchType],
+            ),
+            ComboBoxSpec(
+                VocalFXParam.AUTO_PITCH_SCALE,
+                "Scale",
+                ["CHROMATIC", "Maj(Min)"],
+                [0, 1],
+            ),
+            ComboBoxSpec(
+                VocalFXParam.AUTO_PITCH_KEY,
+                "Key",
+                [key.display_name for key in VocalAutoPitchKey],
+                [key.value for key in VocalAutoPitchKey],
+            ),
+            ComboBoxSpec(
+                VocalFXParam.AUTO_PITCH_NOTE,
+                "Note",
+                [note.display_name for note in VocalAutoPitchNote],
+                [note.value for note in VocalAutoPitchNote],
+            ),
+        ]
+        sliders = [
+            SliderSpec(VocalFXParam.AUTO_PITCH_GENDER, "Gender", vertical=False),
+            SliderSpec(VocalFXParam.AUTO_PITCH_BALANCE, "D/W Balance", vertical=False),
+        ]
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
-        :return: QWidget
-        """
+    def _create_auto_pitch_section(self) -> QWidget:
+        """Create Auto Pitch tab (spec-driven)."""
+        spec = self._build_auto_pitch_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         auto_pitch_section = QWidget()
         self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
 
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         layout.addLayout(icon_row_container)
 
-        self.pitch_switch = self._create_parameter_switch(
-            VocalFXParam.AUTO_PITCH_SWITCH,
-            "Auto Pitch",
-            [switch.display_name for switch in VocalFxSwitch],
-        )
-
-        # Type selector
-        type_row = QHBoxLayout()
-        self.auto_pitch_type = self._create_parameter_combo_box(
-            VocalFXParam.AUTO_PITCH_TYPE,
-            "Pitch Type",
-            [pitch_type.display_name for pitch_type in VocalAutoPitchType],
-            [pitch_type.value for pitch_type in VocalAutoPitchType],
-        )
-        type_row.addWidget(self.auto_pitch_type)
-
-        # Scale selector
-        scale_row = QHBoxLayout()
-        self.pitch_scale = self._create_parameter_combo_box(
-            VocalFXParam.AUTO_PITCH_SCALE,
-            "Scale",
-            ["CHROMATIC", "Maj(Min)"],
-            [0, 1],
-        )
-        scale_row.addWidget(self.pitch_scale)
-
-        # Key selector
-        key_row = QHBoxLayout()
-        self.pitch_key = self._create_parameter_combo_box(
-            VocalFXParam.AUTO_PITCH_KEY,
-            "Key",
-            [key.display_name for key in VocalAutoPitchKey],
-            [key.value for key in VocalAutoPitchKey],
-        )
-        key_row.addWidget(self.pitch_key)
-
-        # Note selector
-        note_row = QHBoxLayout()
-        self.pitch_note = self._create_parameter_combo_box(
-            VocalFXParam.AUTO_PITCH_NOTE,
-            "Note",
-            [note.display_name for note in VocalAutoPitchNote],
-            [note.value for note in VocalAutoPitchNote],
-        )
-        note_row.addWidget(self.pitch_note)
-
-        # Gender and Octave controls
-        self.gender = self._create_parameter_slider(
-            VocalFXParam.AUTO_PITCH_GENDER, "Gender"
-        )
-
-        self.octave = self._create_parameter_switch(
-            VocalFXParam.AUTO_PITCH_OCTAVE,
-            "Octave",
-            [range.name for range in VocalOctaveRange],
-        )
-
-        # Dry/Wet Balance
-        self.auto_pitch_balance = self._create_parameter_slider(
-            VocalFXParam.AUTO_PITCH_BALANCE, "D/W Balance"
-        )
-
-        # Add all controls to layout
-        layout.addWidget(self.pitch_switch)
-        layout.addLayout(type_row)
-        layout.addLayout(scale_row)
-        layout.addLayout(key_row)
-        layout.addLayout(note_row)
-        layout.addWidget(self.gender)
-        layout.addWidget(self.octave)
-        layout.addWidget(self.auto_pitch_balance)
-
+        form_widget = QWidget()
+        form_layout = QFormLayout()
+        form_widget.setLayout(form_layout)
+        for w in groups.combos + groups.sliders + groups.switches:
+            form_layout.addRow(w)
+        layout.addWidget(form_widget)
         layout.addStretch()
         return auto_pitch_section

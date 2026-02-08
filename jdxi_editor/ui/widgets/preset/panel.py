@@ -2,17 +2,22 @@
 Panel for loading/saving presets
 """
 
+from typing import Any, Optional
+
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
+    QLabel,
     QPushButton,
     QWidget,
 )
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.io.preset import PresetEditor
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 
 
 class PresetPanel(QWidget):
@@ -31,15 +36,27 @@ class PresetPanel(QWidget):
         self.preset_combo = QComboBox()
         layout.addWidget(self.preset_combo)
 
-        # Load button
-        load_btn = QPushButton("Load")
-        load_btn.clicked.connect(self._on_load)
-        layout.addWidget(load_btn)
+        # Load (round button + label)
+        load_row = QHBoxLayout()
+        self.load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+            "Load",
+            self._on_load,
+            load_row,
+            name="load",
+        )
+        layout.addLayout(load_row)
 
-        # Save button
-        save_btn = QPushButton("Save")
-        save_btn.clicked.connect(self._on_save)
-        layout.addWidget(save_btn)
+        # Save (round button + label)
+        save_row = QHBoxLayout()
+        self.save_button = self._add_round_action_button(
+            JDXi.UI.Icon.FLOPPY_DISK,
+            "Save",
+            self._on_save,
+            save_row,
+            name="save",
+        )
+        layout.addLayout(save_row)
 
         # Create preset editors for each preset_type
         self.analog_editor = PresetEditor(midi_helper, self, JDXiSynth.ANALOG_SYNTH)
@@ -50,6 +67,46 @@ class PresetPanel(QWidget):
             midi_helper, self, JDXiSynth.DIGITAL_SYNTH_2
         )
         self.drums_editor = PresetEditor(midi_helper, self, JDXiSynth.DRUM_KIT)
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(f"color: {JDXi.UI.Style.FOREGROUND};")
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def _on_load(self):
         """Handle load button click"""

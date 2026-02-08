@@ -30,7 +30,7 @@ Dependencies:
 """
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Dict, Optional, Union, Callable, Any
+from typing import Any, Callable, Dict, Optional, Union
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
@@ -39,7 +39,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
+    QHBoxLayout,
     QLabel,
+    QSizePolicy,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -69,6 +71,7 @@ from jdxi_editor.ui.editors.digital import (
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 
@@ -293,12 +296,21 @@ class DigitalSynthEditor(BaseSynthEditor):
             )
         # Get container layout for adding content
         container_layout = self.base_widget.get_container_layout()
+        # --- Icons row at top (same as Drum/Analog and preset content)
+        icon_row_container = QHBoxLayout()
+        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
+        transfer_layout_items(icon_row, icon_row_container)
+        container_layout.addLayout(icon_row_container)
         # --- Add partials panel directly to container
         container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(
             JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
         )  # Minimal spacing instead of stretch
         self.tab_widget.setStyleSheet(JDXi.UI.Style.TAB_TITLE)
+        # Ensure tab widget expands so Partial 1/2/3 and content are visible
+        self.tab_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         self._add_tab(key=Digital.Tab.PRESETS, widget=instrument_widget)
         self._setup_tabs(container_layout, self.midi_helper)
 

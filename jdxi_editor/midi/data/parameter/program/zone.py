@@ -59,7 +59,7 @@ class ProgramZoneParam(AddressParameter):
         self.partial_number = partial_number
         self._display_name = display_name
 
-    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1)  # Arpeggio OFF, ON
+    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1, "Master Arpeggiator", "Master Arpeggiator")  # Arpeggio OFF, ON
     ZONAL_OCTAVE_SHIFT = ParameterSpec(0x19, 61, 67, -3, +3)  # Octave shift
 
     @property

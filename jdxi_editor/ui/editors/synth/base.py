@@ -23,7 +23,6 @@ from typing import Dict, Optional
 
 import mido
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QTabWidget, QWidget
 
@@ -38,6 +37,7 @@ from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
+from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
@@ -273,6 +273,32 @@ class SynthBase(QWidget):
                 self.midi_requests,
             ),
         ).start()
+
+    def _build_sliders(self, specs: list["SliderSpec"]):
+        """build sliders"""
+        return [
+            self._create_parameter_slider(
+                spec.param,
+                spec.label,
+                vertical=spec.vertical,
+            )
+            for spec in specs
+        ]
+
+    def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
+        """build combo boxes"""
+        return [
+            self._create_parameter_combo_box(
+                spec.param, spec.label, spec.options, spec.values
+            )
+            for spec in specs
+        ]
+
+    def _build_switches(self, specs: list["SwitchSpec"]):
+        return [
+            self._create_parameter_switch(spec.param, spec.label, spec.options)
+            for spec in specs
+        ]
 
     def _on_midi_message_received(self, message: mido.Message) -> None:
         """

@@ -73,6 +73,7 @@ class ArpeggioParam(AddressParameter):
         0,
         8,
         "Specifies the time signature and “swing” of the arpeggio style.\nThe setting specifies the note value that one grid unit represents, and the degree of shuffle (none, light, or heavy).\n1/4: Eighth note (two grid sections = one beat)\n1/8: Eighth note (two grid sections = one beat)\n1/8L: Eighth note shuffle Light (two grid sections = one beat, with a light shuffle)\n1/8H: Eighth note shuffle Heavy (two grid sections = one beat, with a heavy shuffle)\n1/12: Eighth note triplet (three grid sections = one beat)\n1/16: Sixteenth note (four grid sections = one beat)\n1/16L: Sixteenth note shuffle Light (four grid sections = one beat, with a light shuffle)\n1/16H: Sixteenth note shuffle Heavy (four grid sections = one beat, with a heavy shuffle)\n1/24: Sixteenth note triplet (six grid sections = one beat)",
+        "Grid"
     )  # 04_, 08_, 08L, 08H, 08t, 16_, 16L, 16H, 16t
 
     ARPEGGIO_DURATION = ParameterSpec(
@@ -87,8 +88,9 @@ This determines whether the sounds are played staccato (short and clipped), or t
 duration that is 30% of the note value specified by the grid.
 Full: Even if the linked grid is not connected with a tie, the same note continues to sound until the point at which the
 next new sound is specified.""",
+        "Duration"
     )
-    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1, "Arpeggio ON/OFF")  # OFF, ON
+    ARPEGGIO_SWITCH = ParameterSpec(0x03, 0, 1, 0, 1, "Arpeggio ON/OFF", "Arpeggiator")  # OFF, ON
     ARPEGGIO_STYLE = ParameterSpec(
         0x05,
         0,
@@ -96,6 +98,7 @@ next new sound is specified.""",
         0,
         127,
         "Specifies the style of the arpeggio style.\n1 - 128",
+        "Style"
     )  # 1 - 128
 
     ARPEGGIO_MOTIF = ParameterSpec(
@@ -118,6 +121,7 @@ U/D (_) The notes play in order from the lowest of the pressed keys, and then ba
 Rand (L) Notes will be sounded randomly for the keys you press, with only the lowest key sounded each time.
 Rand (_) Only the lowest of the keys pressed is sounded each time, the notes you press will be sounded randomly.
 Phrase Pressing just one key will play a phrase based on the pitch of that key. If you press more than one key, the key you press last will be used.""",
+        "Motif"
     )
     ARPEGGIO_OCTAVE_RANGE = ParameterSpec(
         0x07,
@@ -126,6 +130,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         61,
         67,
         "Specifies the range by which the arpeggio is shifted.\nThis adds an effect that shifts arpeggios one cycle at a time in octave units (octave range).\nYou can set the shift range upwards or downwards (up to three octaves up or down).",
+        "Octave Range"
     )  # -3 - +3
     ARPEGGIO_ACCENT_RATE = ParameterSpec(
         0x09,
@@ -134,6 +139,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         0,
         100,
         "Specifies the accent strength for the arpeggio.\nWith a setting of “100,” the arpeggiated notes will have the velocities that are programmed by the arpeggio style.\nWith a setting of “0,” all arpeggiated notes will be sounded at a fixed velocity.",
+        "Accent"
     )  # 0 - 100
     ARPEGGIO_VELOCITY = ParameterSpec(
         0x0A,
@@ -142,6 +148,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         0,
         127,
         "Specifies the loudness of the notes that you play.\nREAL: If you want the velocity value of each note to depend on how strongly you play the keyboard, set this\nparameter to REAL.\n1–127: Notes sound at the velocity you specify here, regardless of how strongly you play the keys.",
+        "Velocity"
     )  # REAL, 1 - 127
 
     # Pattern parameters

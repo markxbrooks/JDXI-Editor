@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 if TYPE_CHECKING:

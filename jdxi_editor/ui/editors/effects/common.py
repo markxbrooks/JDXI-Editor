@@ -54,10 +54,13 @@ Features:
                                 AddressParameterEffect1.EFX2_PARAM_30,
                                 AddressParameterEffect1.EFX2_PARAM_31,
 """
-
-from typing import Dict, Union
+from __future__ import annotations
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
+from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES
+from jdxi_editor.midi.data.effects.sysex.dispatcher import EffectsSysExDispatcher
+from jdxi_editor.midi.data.effects.type.handler import EffectTypeHandler
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
@@ -75,7 +78,6 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetSystemUMB,
     RolandSysExAddress,
 )
-from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,
     Effect1Param,
@@ -94,34 +96,33 @@ from jdxi_editor.ui.widgets.editor.helper import (
     transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
-
-# Params that belong to Program Common / Vocal (handled by program widget or VocalFXEditor).
-# Skip them here so we don't look them up in effect param types and report as failure.
-PROGRAM_VOCAL_PARAM_NAMES = frozenset({
-    "PROGRAM_LEVEL",
-    "PROGRAM_TEMPO",
-    "VOCAL_EFFECT",
-    "VOCAL_EFFECT_NUMBER",
-    "VOCAL_EFFECT_PART",
-    "AUTO_NOTE_SWITCH",
-    "TONE_CATEGORY",
-})
+from jdxi_editor.ui.widgets.group import WidgetGroups
+from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 class EffectsCommonEditor(BasicEditor):
     """Effects Editor Window"""
 
     def __init__(
-        self,
-        midi_helper: MidiIOHelper,
-        preset_helper: JDXiPresetHelper = None,
-        parent=None,
+            self,
+            midi_helper: MidiIOHelper,
+            preset_helper: JDXiPresetHelper = None,
+            parent=None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
 
         self.tab_widget = None
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
+        self._sysex_dispatcher = EffectsSysExDispatcher(
+            controls=self.controls,
+            param_registry=EffectParamRegistry(EFFECT_PARAM_TYPES),
+            type_handler=EffectTypeHandler(
+                self._update_efx1_labels,
+                self._update_efx2_labels,
+            ),
+        )
         self.EFX1_PARAMETERS = [
             Effect1Param.EFX1_PARAM_1,
             Effect1Param.EFX1_PARAM_2,
@@ -286,13 +287,6 @@ class EffectsCommonEditor(BasicEditor):
             default_image="effects.png",
         )
 
-        self.controls: Dict[
-            Union[
-                ReverbParam, AddressParameterEffectCommon, Effect1Param, Effect2Param
-            ],
-            QWidget,
-        ] = {}
-
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
         effect1_icon = JDXi.UI.Icon.get_icon(
@@ -331,9 +325,12 @@ class EffectsCommonEditor(BasicEditor):
             slider = self.controls.get(param)
             if slider:
                 slider.setVisible(False)
-        self.efx1_type.combo_box.currentIndexChanged.connect(self._update_efx1_labels)
-        # self.efx1_type.combo_box.currentIndexChanged.connect(self.data_request)
-        self.efx2_type.combo_box.currentIndexChanged.connect(self._update_efx2_labels)
+        efx1_type_ctrl = self.controls.get(Effect1Param.EFX1_TYPE)
+        if efx1_type_ctrl and hasattr(efx1_type_ctrl, "combo_box"):
+            efx1_type_ctrl.combo_box.currentIndexChanged.connect(self._update_efx1_labels)
+        efx2_type_ctrl = self.controls.get(Effect2Param.EFX2_TYPE)
+        if efx2_type_ctrl and hasattr(efx2_type_ctrl, "combo_box"):
+            efx2_type_ctrl.combo_box.currentIndexChanged.connect(self._update_efx2_labels)
         # self.efx2_type.combo_box.currentIndexChanged.connect(self.data_request)
 
         # Connect to MIDI helper signals to receive SysEx data
@@ -427,7 +424,8 @@ class EffectsCommonEditor(BasicEditor):
                 if slider:
                     slider.setVisible(True)
                     slider.setLabel(label)
-                    log.message(scope=self.__class__.__name__, message=f"Updated slider {param.name} with label '{label}'")
+                    log.message(scope=self.__class__.__name__,
+                                message=f"Updated slider {param.name} with label '{label}'")
                 else:
                     log.warning(scope=self.__class__.__name__, message=f"No slider found for param {param}")
 
@@ -501,104 +499,144 @@ class EffectsCommonEditor(BasicEditor):
                 control.setVisible(False)
                 log.message(f"Hid unused slider for {param.name}")
 
+    def _build_effect1_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Effect 1 tab (spec-driven widgets)."""
+        combos = [
+            ComboBoxSpec(
+                Effect1Param.EFX1_TYPE,
+                Effect1Param.EFX1_TYPE.display_name,
+                EffectsData.efx1_types,
+                EffectsData.efx1_type_values,
+            ),
+        ]
+        sliders = [
+            SliderSpec(Effect1Param.EFX1_LEVEL, Effect1Param.EFX1_LEVEL.display_name, vertical=False),
+            SliderSpec(
+                Effect1Param.EFX1_DELAY_SEND_LEVEL,
+                Effect1Param.EFX1_DELAY_SEND_LEVEL.display_name,
+                vertical=False,
+            ),
+            SliderSpec(
+                Effect1Param.EFX1_REVERB_SEND_LEVEL,
+                Effect1Param.EFX1_REVERB_SEND_LEVEL.display_name,
+                vertical=False,
+            ),
+        ]
+        switches = [
+            SwitchSpec(
+                Effect1Param.EFX1_OUTPUT_ASSIGN,
+                Effect1Param.EFX1_OUTPUT_ASSIGN.display_name,
+                EffectsData.output_assignments,
+            ),
+        ]
+        for param in self.EFX1_PARAMETERS:
+            if "TYPE" in param.name:
+                switches.append(
+                    SwitchSpec(param, param.display_name, EffectsData.effects_generic_types)
+                )
+            elif "COMPRESSOR_RATIO" in param.name:
+                switches.append(
+                    SwitchSpec(param, param.display_name, EffectsData.compression_ratios)
+                )
+            elif "COMPRESSOR_ATTACK" in param.name:
+                switches.append(
+                    SwitchSpec(
+                        param, param.display_name, EffectsData.compression_attack_times
+                    )
+                )
+            elif "COMPRESSOR_RELEASE" in param.name:
+                switches.append(
+                    SwitchSpec(
+                        param, param.display_name, EffectsData.compression_release_times
+                    )
+                )
+            else:
+                sliders.append(SliderSpec(param, param.display_name, vertical=False))
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
+
+    def _build_widgets_from_spec(self, spec: WidgetLayoutSpec) -> WidgetGroups:
+        """Build WidgetGroups from a layout spec (same paradigm as Arpeggiator)."""
+        return WidgetGroups(
+            switches=self._build_switches(spec.switches),
+            sliders=self._build_sliders(spec.sliders),
+            combos=self._build_combo_boxes(spec.combos),
+        )
+
     def _create_effect1_section(self):
-        """Create Effect 1 section"""
+        """Create Effect 1 section (spec-driven)."""
+        spec = self._build_effect1_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         container = QWidget()
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
 
         widget = QWidget()
         form_layout = QFormLayout()
         widget.setLayout(form_layout)
-
         container_layout = create_layout_with_inner_layout_and_widgets(
             icon_row_container, widgets=[widget]
         )
         container.setLayout(container_layout)
 
-        # Create address combo box for EFX1 preset_type
-        self.efx1_type = self._create_parameter_combo_box(
-            Effect1Param.EFX1_TYPE,
-            "Effect 1 Type",
-            EffectsData.efx1_types,
-            EffectsData.efx1_type_values,
-        )
-        form_layout.addRow(self.efx1_type)
-
-        # Create sliders for EFX1 parameters
-        self.efx1_level = self._create_parameter_slider(
-            Effect1Param.EFX1_LEVEL, "EFX1 Level (0-127)"
-        )
-        form_layout.addRow(self.efx1_level)
-
-        self.efx1_delay_send_level = self._create_parameter_slider(
-            Effect1Param.EFX1_DELAY_SEND_LEVEL,
-            "EFX1 Delay Send Level (0-127)",
-        )
-        form_layout.addRow(self.efx1_delay_send_level)
-
-        self.efx1_reverb_send_level = self._create_parameter_slider(
-            Effect1Param.EFX1_REVERB_SEND_LEVEL,
-            "EFX1 Reverb Send Level (0-127)",
-        )
-        form_layout.addRow(self.efx1_reverb_send_level)
-
-        self.efx1_output_assign = self._create_parameter_switch(
-            Effect1Param.EFX1_OUTPUT_ASSIGN,
-            "Output Assign",
-            EffectsData.output_assignments,
-        )
-        form_layout.addRow(self.efx1_output_assign)
-
-        # Create sliders for EFX1 parameters
-        for param in self.EFX1_PARAMETERS:
-            if param not in self.controls:
-
-                if "TYPE" in param.name:
-                    control = self._create_parameter_switch(
-                        param,
-                        param.display_name,
-                        values=EffectsData.effects_generic_types,
-                    )
-                elif "COMPRESSOR_RATIO" in param.name:
-                    control = self._create_parameter_switch(
-                        param, param.display_name, values=EffectsData.compression_ratios
-                    )
-                elif "COMPRESSOR_ATTACK" in param.name:
-                    control = self._create_parameter_switch(
-                        param,
-                        param.display_name,
-                        values=EffectsData.compression_attack_times,
-                    )
-                elif "COMPRESSOR_RELEASE" in param.name:
-                    control = self._create_parameter_switch(
-                        param,
-                        param.display_name,
-                        values=EffectsData.compression_release_times,
-                    )
-                else:
-                    control = self._create_parameter_slider(param, param.display_name)
-                form_layout.addRow(control)
-                self.controls[param] = control
-            else:
-                log.warning(scope=self.__class__.__name__, message=f"Parameter {param.name} already exists in controls.")
+        for w in groups.combos + groups.sliders + groups.switches:
+            form_layout.addRow(w)
 
         container_layout.addStretch()
         return container
+
+    def _build_effect2_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Effect 2 tab (spec-driven widgets)."""
+        combos = [
+            ComboBoxSpec(
+                Effect2Param.EFX2_TYPE,
+                Effect2Param.EFX2_TYPE.display_name,
+                EffectsData.efx2_types,
+                EffectsData.efx2_type_values,
+            ),
+        ]
+        sliders = [
+            SliderSpec(Effect2Param.EFX2_LEVEL, Effect2Param.EFX2_LEVEL.display_name, vertical=False),
+            SliderSpec(
+                Effect2Param.EFX2_DELAY_SEND_LEVEL,
+                Effect2Param.EFX2_DELAY_SEND_LEVEL.display_name,
+                vertical=False,
+            ),
+            SliderSpec(
+                Effect2Param.EFX2_REVERB_SEND_LEVEL,
+                Effect2Param.EFX2_REVERB_SEND_LEVEL.display_name,
+                vertical=False,
+            ),
+        ]
+        switches = []
+        for param in self.EFX2_PARAMETERS:
+            if "ER_NOTE" in param.name:
+                switches.append(
+                    SwitchSpec(param, param.display_name, EffectsData.flanger_notes)
+                )
+            elif "RATE_NOTE" in param.name:
+                switches.append(
+                    SwitchSpec(param, param.display_name, EffectsData.rate_note_states)
+                )
+            elif "SWITCH" in param.name:
+                switches.append(
+                    SwitchSpec(param, param.display_name, EffectsData.switch_states)
+                )
+            else:
+                sliders.append(SliderSpec(param, param.display_name, vertical=False))
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
     def _create_effect2_section(self):
-        """Create Effect 2 section"""
+        """Create Effect 2 section (spec-driven)."""
+        spec = self._build_effect2_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
 
@@ -606,68 +644,38 @@ class EffectsCommonEditor(BasicEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         container_layout.addWidget(widget)
-
-        # Create address combo box for EFX2 preset_type
-        self.efx2_type = self._create_parameter_combo_box(
-            Effect2Param.EFX2_TYPE,
-            "Effect Type",
-            EffectsData.efx2_types,
-            EffectsData.efx2_type_values,
-        )
-        layout.addRow(self.efx2_type)
-
-        # Create sliders for EFX2 parameters
-        self.efx2_level = self._create_parameter_slider(
-            Effect2Param.EFX2_LEVEL, "EFX2 Level (0-127)"
-        )
-        layout.addRow(self.efx2_level)
-
-        self.efx2_delay_send_level = self._create_parameter_slider(
-            Effect2Param.EFX2_DELAY_SEND_LEVEL,
-            "EFX2 Delay Send Level (0-127)",
-        )
-        layout.addRow(self.efx2_delay_send_level)
-
-        self.efx2_reverb_send_level = self._create_parameter_slider(
-            Effect2Param.EFX2_REVERB_SEND_LEVEL,
-            "EFX2 Reverb Send Level (0-127)",
-        )
-        layout.addRow(self.efx2_reverb_send_level)
-
-        # Create sliders for EFX1 parameters
-        for param in self.EFX2_PARAMETERS:
-            if param not in self.controls:
-                if "ER_NOTE" in param.name:
-                    control = self._create_parameter_switch(
-                        param, param.display_name, values=EffectsData.flanger_notes
-                    )
-                elif "RATE_NOTE" in param.name:
-                    control = self._create_parameter_switch(
-                        param, param.display_name, values=EffectsData.rate_note_states
-                    )
-                elif "SWITCH" in param.name:
-                    control = self._create_parameter_switch(
-                        param, param.display_name, values=EffectsData.switch_states
-                    )
-                else:
-                    control = self._create_parameter_slider(param, param.display_name)
-                layout.addRow(control)
-                self.controls[param] = control
-            else:
-                log.warning(scope=self.__class__.__name__, message=f"Parameter {param.name} already exists in controls.")
+        for w in groups.combos + groups.sliders + groups.switches:
+            layout.addRow(w)
         container_layout.addStretch()
         return container
+
+    def _build_delay_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Delay tab (spec-driven widgets)."""
+        sliders = [
+            SliderSpec(DelayParam.DELAY_LEVEL, "Delay Level", vertical=False),
+            SliderSpec(
+                DelayParam.DELAY_REVERB_SEND_LEVEL,
+                "Delay to Reverb Send Level",
+                vertical=False,
+            ),
+            SliderSpec(DelayParam.DELAY_PARAM_1, "Delay Time (ms)", vertical=False),
+            SliderSpec(DelayParam.DELAY_PARAM_2, "Delay Tap Time (ms)", vertical=False),
+            SliderSpec(DelayParam.DELAY_PARAM_24, "Feedback (%)", vertical=False),
+        ]
+        return WidgetLayoutSpec(
+            switches=[], sliders=sliders, combos=[]
+        )
 
     def _create_delay_tab(self):
-        """Create Delay tab with parameters"""
+        """Create Delay tab (spec-driven)."""
+        spec = self._build_delay_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
 
@@ -675,44 +683,33 @@ class EffectsCommonEditor(BasicEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         container_layout.addWidget(widget)
-        # Create address combo box for Delay Type
-        delay_level_slider = self._create_parameter_slider(
-            DelayParam.DELAY_LEVEL, "Delay Level"
-        )
-        layout.addRow(delay_level_slider)
-
-        delay_reverb_send_level_slider = self._create_parameter_slider(
-            DelayParam.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
-        )
-        layout.addRow(delay_reverb_send_level_slider)
-
-        delay_parameter1_slider = self._create_parameter_slider(
-            DelayParam.DELAY_PARAM_1, "Delay Time (ms)"
-        )
-        layout.addRow(delay_parameter1_slider)
-
-        delay_parameter2_slider = self._create_parameter_slider(
-            DelayParam.DELAY_PARAM_2, "Delay Tap Time (ms)"
-        )
-        layout.addRow(delay_parameter2_slider)
-
-        delay_parameter24_slider = self._create_parameter_slider(
-            DelayParam.DELAY_PARAM_24, "Feedback (%)"
-        )
-        layout.addRow(delay_parameter24_slider)
+        for w in groups.combos + groups.sliders + groups.switches:
+            layout.addRow(w)
         container_layout.addStretch()
         return container
 
+    def _build_reverb_layout_spec(self) -> WidgetLayoutSpec:
+        """Build layout spec for Reverb tab (spec-driven widgets)."""
+        sliders = [
+            SliderSpec(ReverbParam.REVERB_LEVEL, "Level (0-127)", vertical=False),
+            SliderSpec(ReverbParam.REVERB_PARAM_1, "Parameter 1", vertical=False),
+            SliderSpec(ReverbParam.REVERB_PARAM_2, "Parameter 2", vertical=False),
+            SliderSpec(ReverbParam.REVERB_PARAM_24, "Parameter 24", vertical=False),
+        ]
+        return WidgetLayoutSpec(
+            switches=[], sliders=sliders, combos=[]
+        )
+
     def _create_reverb_section(self):
-        """Create Reverb section"""
+        """Create Reverb section (spec-driven)."""
+        spec = self._build_reverb_layout_spec()
+        groups = self._build_widgets_from_spec(spec)
+
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-
-        # Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
         container_layout.addLayout(icon_row_container)
 
@@ -720,27 +717,13 @@ class EffectsCommonEditor(BasicEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         container_layout.addWidget(widget)
-        reverb_level_slider = self._create_parameter_slider(
-            ReverbParam.REVERB_LEVEL, "Level (0-127)"
-        )
-        layout.addRow(reverb_level_slider)
-        reverb_parameter1_slider = self._create_parameter_slider(
-            ReverbParam.REVERB_PARAM_1, "Parameter 1"
-        )
-        layout.addRow(reverb_parameter1_slider)
-        reverb_parameter2_slider = self._create_parameter_slider(
-            ReverbParam.REVERB_PARAM_2, "Parameter 2"
-        )
-        layout.addRow(reverb_parameter2_slider)
-        reverb_parameter24_slider = self._create_parameter_slider(
-            ReverbParam.REVERB_PARAM_24, "Parameter 24"
-        )
-        layout.addRow(reverb_parameter24_slider)
+        for w in groups.combos + groups.sliders + groups.switches:
+            layout.addRow(w)
         container_layout.addStretch()
         return container
 
     def _on_parameter_changed(
-        self, param: AddressParameter, value: int, address: RolandSysExAddress = None
+            self, param: AddressParameter, value: int, address: RolandSysExAddress = None
     ):
         """Handle parameter value changes from UI controls."""
         try:
@@ -779,211 +762,53 @@ class EffectsCommonEditor(BasicEditor):
             return False
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
-        """
-        Dispatch SysEx data to update effects controls.
+        """Thin adapter: parse → validate → dispatch"""
 
-        :param json_sysex_data: str JSON string containing SysEx data
-        :return: None
-        """
-        # Log that the method was called
-        log.message("🎛️ _dispatch_sysex_to_area called", scope ="EffectsCommonEditor")
+        log.message("🎛️ _dispatch_sysex_to_area called", scope="EffectsCommonEditor")
 
         try:
             from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 
-            # Parse JSON SysEx data using the same method as SynthEditor
             sysex_data = self._parse_sysex_json(json_sysex_data)
             if not sysex_data:
-                log.message(
-                    "🎛️ : sysex_data is None or empty after parsing", scope ="EffectsCommonEditor"
-                )
+                log.message("🎛️ empty sysex_data", scope="EffectsCommonEditor")
                 return
 
-            # Check if this is effects data (TEMPORARY_AREA should be "TEMPORARY_PROGRAM")
             temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA, "")
             synth_tone = sysex_data.get(SysExSection.SYNTH_TONE, "")
 
-            # Log what we received for debugging
-            log.message(
-                f"🎛️ Effects Editor received SysEx: TEMPORARY_AREA={temporary_area}, SYNTH_TONE={synth_tone}",
-                 scope = "EffectsCommonEditor"
-            )
-
             if temporary_area != "TEMPORARY_PROGRAM":
-                # Not effects data, skip
-                log.message(
-                    f"🎛️ skipping: TEMPORARY_AREA={temporary_area} != TEMPORARY_PROGRAM", scope ="EffectsCommonEditor"
-                )
                 return
 
-            # For TEMPORARY_PROGRAM area, we accept any SYNTH_TONE (COMMON, EFFECT_1, EFFECT_2, DELAY, REVERB, etc.)
-            # The parser may return "COMMON" for effects because JDXiMapSynthTone doesn't include effects tones
-            # We'll process all parameters regardless of SYNTH_TONE value
-
             log.header_message(
-                scope=self.__class__.__name__, message=f"Updating Effects UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+                scope=self.__class__.__name__,
+                message=f"Updating Effects UI from SysEx\t{temporary_area}\t{synth_tone}"
             )
 
-            # Filter out metadata keys
-            sysex_data = filter_sysex_keys(sysex_data)
+            filtered = filter_sysex_keys(sysex_data)
 
-            # Update controls based on parameter names
-            successes, failures = [], []
-            for param_name, param_value in sysex_data.items():
-                try:
-                    # Try to find the parameter in our controls
-                    param = None
-                    widget = None
+            stats = self._sysex_dispatcher.dispatch(filtered)
 
-                    # Skip metadata keys that aren't actual parameters
-                    if param_name in [
-                        SysExSection.SYNTH_TONE,
-                        SysExSection.TEMPORARY_AREA,
-                    ]:
-                        continue
-
-                    # Skip program/vocal params; they are updated by program widget or VocalFXEditor
-                    if param_name in PROGRAM_VOCAL_PARAM_NAMES:
-                        continue
-
-                    # Check parameter types this editor has controls for first
-                    effects_param_types = [
-                        Effect1Param,
-                        Effect2Param,
-                        DelayParam,
-                        ReverbParam,
-                        AddressParameterEffectCommon,
-                    ]
-                    for param_type in effects_param_types:
-                        if hasattr(param_type, "get_by_name"):
-                            param = param_type.get_by_name(param_name)
-                            if param:
-                                widget = self.controls.get(param)
-                                if widget:
-                                    break
-
-                    # Params not in effects_param_types (e.g. PROGRAM_LEVEL, VOCAL_EFFECT, AUTO_NOTE_SWITCH)
-                    # belong to other editors; skip without counting as failure.
-                    if param is None:
-                        continue
-
-                    if param and widget:
-                        # Convert value if needed and update widget
-                        value = (
-                            int(param_value)
-                            if not isinstance(param_value, int)
-                            else param_value
-                        )
-
-                        # Special handling for Effect Type combo boxes
-                        if param_name == "EFX1_TYPE":
-                            # Find index in efx1_type_values that matches the value
-                            try:
-                                index = EffectsData.efx1_type_values.index(value)
-                                if hasattr(self, "efx1_type") and hasattr(
-                                    self.efx1_type, "combo_box"
-                                ):
-                                    self.efx1_type.combo_box.blockSignals(True)
-                                    self.efx1_type.combo_box.setCurrentIndex(index)
-                                    self.efx1_type.combo_box.blockSignals(False)
-                                    # Trigger label update to show correct parameters
-                                    self._update_efx1_labels(value)
-                                    successes.append(param_name)
-                                    log.message(
-                                        f"✅Updated EFX1_TYPE to index {index} (value {value})"
-                                    )
-                                else:
-                                    failures.append(
-                                        f"{param_name}: efx1_type combo box not found"
-                                    )
-                            except ValueError:
-                                failures.append(
-                                    f"{param_name}: value {value} not found in efx1_type_values"
-                                )
-                        elif param_name == "EFX2_TYPE":
-                            # Find index in efx2_type_values that matches the value
-                            try:
-                                index = EffectsData.efx2_type_values.index(value)
-                                if hasattr(self, "efx2_type") and hasattr(
-                                    self.efx2_type, "combo_box"
-                                ):
-                                    self.efx2_type.combo_box.blockSignals(True)
-                                    self.efx2_type.combo_box.setCurrentIndex(index)
-                                    self.efx2_type.combo_box.blockSignals(False)
-                                    # Trigger label update to show correct parameters
-                                    self._update_efx2_labels(value)
-                                    successes.append(param_name)
-                                    log.message(
-                                        f"✅ Updated EFX2_TYPE to index {index} (value {value})", scope ="EffectsCommonEditor"
-                                    )
-                                else:
-                                    failures.append(
-                                        f"{param_name}: [EffectsCommonEditor] efx2_type combo box not found"
-                                    )
-                            except ValueError:
-                                failures.append(
-                                    "[EffectsCommonEditor] {param_name}: value {value} not found in efx2_type_values"
-                                )
-                        # else:
-                        # Regular parameter update (sliders, etc.)
-                        # Convert from MIDI to display value if parameter has conversion
-                        if hasattr(param, "convert_from_midi"):
-                            display_value = param.convert_from_midi(value)
-                        else:
-                            display_value = value
-
-                        # Update widget value
-                        if hasattr(widget, "setValue"):
-                            widget.blockSignals(True)  # Prevent triggering MIDI sends
-                            widget.setValue(display_value)
-                            widget.blockSignals(False)
-                            successes.append(param_name)
-                        elif hasattr(widget, "combo_box"):
-                            # Handle combo box widgets (for switches, etc.)
-                            widget.combo_box.blockSignals(True)
-                            # Try to find the index in values
-                            if hasattr(widget, "values") and widget.values:
-                                try:
-                                    index = widget.values.index(value)
-                                    widget.combo_box.setCurrentIndex(index)
-                                except (ValueError, AttributeError):
-                                    # If value not found, try direct index
-                                    widget.combo_box.setCurrentIndex(value)
-                            else:
-                                widget.combo_box.setCurrentIndex(value)
-                                widget.combo_box.blockSignals(False)
-                                successes.append(param_name)
-                        else:
-                            failures.append(
-                                f"{param_name}: widget has no setValue or combo_box method"
-                            )
-                    else:
-                        # Param found in this editor's param types but no widget (unexpected)
-                        failures.append(f"{param_name}: parameter or widget not found")
-
-                except Exception as ex:
-                    failures.append(f"{param_name}: {ex}")
-                    log.warning(scope=self.__class__.__name__, message=f"Error updating {param_name}: {ex}")
-
-            # Log summary similar to Analog Synth editor
-            if successes:
+            # ---- summary logging (same behaviour as before) ----
+            if stats.successes:
                 log.message(
-                    scope=self.__class__.__name__, message=f"ℹ️✅  Successes ({len(successes)}): {successes[:10]}{'...' if len(successes) > 10 else ''}"
-                )
-            if failures:
-                log.warning(
-                    scope=self.__class__.__name__, message=f"ℹ️❌  Failures ({len(failures)}): {failures[:10]}{'...' if len(failures) > 10 else ''}"
+                    scope=self.__class__.__name__,
+                    message=f"ℹ️✅  Successes ({len(stats.successes)}): {stats.successes[:10]}"
                 )
 
-            success_rate = (
-                (len(successes) / (len(successes) + len(failures)) * 100)
-                if (successes or failures)
-                else 0
+            if stats.failures:
+                log.warning(
+                    scope=self.__class__.__name__,
+                    message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}"
+                )
+
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1f}%"
             )
-            log.message(scope=self.__class__.__name__, message=f"ℹ️📊  Success Rate: {success_rate:.1f}%")
 
         except Exception as ex:
             import traceback
+            log.error(scope=self.__class__.__name__, message=f"Effects dispatch error: {ex}")
+            log.error(scope=self.__class__.__name__, message=traceback.format_exc())
 
-            log.error(scope=self.__class__.__name__, message=f"🎛️ Effects Editor error in _dispatch_sysex_to_area: {ex}")
-            log.error(scope=self.__class__.__name__, message=f"🎛️ Traceback: {traceback.format_exc()}")

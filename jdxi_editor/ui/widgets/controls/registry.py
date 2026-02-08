@@ -6,9 +6,14 @@ Supports get(param) with optional name fallback so param identity matches across
 partials. Use register(param, widget) or registry[param] = widget; lookup via
 registry.get(param) or registry[param].
 """
-from typing import Any, Iterator
+from typing import Any, Iterator, Protocol, runtime_checkable
 
 from PySide6.QtWidgets import QWidget
+
+
+@runtime_checkable
+class ControlResolver(Protocol):
+    def get(self, param, default: QWidget | None = None) -> QWidget | None: ...
 
 
 class ControlRegistry:

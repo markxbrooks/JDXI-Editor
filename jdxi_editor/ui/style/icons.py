@@ -4,7 +4,7 @@ Icon registry for JD-Xi Editor.
 Provides centralized icon definitions and retrieval with fallback support.
 """
 
-from typing import Literal, Any
+from typing import Any, Literal
 
 import qtawesome as qta
 from decologr import Decologr as log

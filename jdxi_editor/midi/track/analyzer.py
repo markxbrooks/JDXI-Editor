@@ -1,6 +1,5 @@
 from mido import MidiTrack
 
-
 from jdxi_editor.midi.track.data import BASS_NOTE_MAX
 from jdxi_editor.midi.track.stats import TrackStats
 

@@ -35,11 +35,11 @@ Dependencies:
     - Slider (for smooth control over numerical parameters)
 
 """
-
 from typing import Dict, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import (
+    QFormLayout,
     QHBoxLayout,
     QVBoxLayout,
     QWidget,
@@ -65,10 +65,15 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+from jdxi_editor.ui.widgets.group import WidgetGroups
+from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 class ArpeggioEditor(BasicEditor):
     """Arpeggio Editor Window"""
+
+    EDITOR_PARAM = ArpeggioParam
 
     def __init__(
         self,
@@ -77,6 +82,7 @@ class ArpeggioEditor(BasicEditor):
         parent: Optional["JDXiInstrument"] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+
         """
         Initialize the ArpeggioEditor
 
@@ -115,95 +121,30 @@ class ArpeggioEditor(BasicEditor):
             default_image="arpeggiator2.png",
         )
 
-        # --- Get rows layout to add additional content (icon row and switches)
-        # Helper function to create left-aligned horizontal layouts
-        def create_left_aligned_row(widget_list: list) -> QHBoxLayout:
-            """Create a left-aligned horizontal layout"""
-            row = QHBoxLayout()
-            for widget in widget_list:
-                row.addWidget(widget)
-            row.addStretch()  # Only add stretch on the right
-            return row
+        self.setup_ui()
 
+    def setup_ui(self):
         # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
         icon_row_container = QHBoxLayout()
         icon_hlayout = JDXi.UI.Icon.create_generic_musical_icon_row()
-
         transfer_layout_items(icon_hlayout, icon_row_container)
-        # Add on-off switch
-        common_button = self._create_parameter_switch(
-            ProgramZoneParam.ARPEGGIO_SWITCH,
-            "Master Arpeggiator",
-            [switch_setting.display_name for switch_setting in ArpeggioSwitch],
-        )
-        program_zone_row = create_left_aligned_row([common_button])
-        # Add on-off switch
-        self.switch_button = self._create_parameter_switch(
-            ArpeggioParam.ARPEGGIO_SWITCH,
-            "Arpeggiator",
-            [switch_setting.display_name for switch_setting in ArpeggioSwitch],
-        )
-        switch_row = create_left_aligned_row([self.switch_button])
-        # --- Create address combo box for Arpeggio Style
-        self.style_combo = self._create_parameter_combo_box(
-            ArpeggioParam.ARPEGGIO_STYLE, "Style", ARPEGGIO_STYLE
-        )
-        style_row = create_left_aligned_row([self.style_combo])
-        # Create address combo box for Arpeggio Grid
-        # Add grid combo box
-        self.grid_combo = self._create_parameter_combo_box(
-            ArpeggioParam.ARPEGGIO_GRID,
-            "Grid:",
-            [grid.display_name for grid in ArpeggioGrid],
-        )
-        grid_row = create_left_aligned_row([self.grid_combo])
-        # Add grid combo box
-        # Create address combo box for Arpeggio Duration
-        self.duration_combo = self._create_parameter_combo_box(
-            ArpeggioParam.ARPEGGIO_DURATION,
-            "Duration",
-            [duration.display_name for duration in ArpeggioDuration],
-        )
-        duration_row = create_left_aligned_row([self.duration_combo])
-        # --- Add sliders
-        self.velocity_slider = self._create_parameter_slider(
-            ArpeggioParam.ARPEGGIO_VELOCITY, "Velocity", 0, 127
-        )
-        self.accent_slider = self._create_parameter_slider(
-            ArpeggioParam.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
-        )
-        # --- Add octave range combo box
-        self.octave_combo = self._create_parameter_combo_box(
-            ArpeggioParam.ARPEGGIO_OCTAVE_RANGE,
-            "Octave Range:",
-            [octave.display_name for octave in ArpeggioOctaveRange],
-            [octave.midi_value for octave in ArpeggioOctaveRange],
-        )
-        # --- Set default to 0
-        self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
-        octave_row = create_left_aligned_row([self.octave_combo])
-        # --- Add motif combo box
-        self.motif_combo = self._create_parameter_combo_box(
-            ArpeggioParam.ARPEGGIO_MOTIF,
-            "Motif:",
-            [motif.name for motif in ArpeggioMotif],
-        )
-        motif_row = create_left_aligned_row([self.motif_combo])
 
-        self.create_rows_layout(
-            {
-                "duration_row": duration_row,
-                "grid_row": grid_row,
-                "icon_hlayout": icon_hlayout,
-                "motif_row": motif_row,
-                "octave_row": octave_row,
-                "program_zone_row": program_zone_row,
-                "style_row": style_row,
-                "switch_row": switch_row,
-                "velocity_slider": self.velocity_slider,
-                "accent_slider": self.accent_slider,
-            }
-        )
+        # --- 1) build widgets
+        arp_widgets: WidgetGroups = self._build_widgets()
+        # --- 2) setup layout
+        rows_layout = self.editor_helper.get_rows_layout()
+        # Add icon row at top so it is visible
+        rows_layout.insertLayout(0, icon_row_container)
+
+        form_layout_widget = QWidget()
+        form_layout = QFormLayout()
+        form_layout_widget.setLayout(form_layout)
+        rows_layout.addWidget(form_layout_widget)
+        # --- 3) add widgets
+        widgets = arp_widgets.switches + arp_widgets.combos + arp_widgets.sliders
+        for widget in widgets:
+            form_layout.addRow(widget)
+        rows_layout.addStretch()
 
         # Add base widget to editor's layout
         if not hasattr(self, "main_layout") or self.main_layout is None:
@@ -211,18 +152,33 @@ class ArpeggioEditor(BasicEditor):
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
-    def create_rows_layout(self, widgets_dict: dict):
-        """create rows layout"""
-        rows_layout = self.editor_helper.get_rows_layout()
-        # Add all layouts and widgets
-        rows_layout.addLayout(widgets_dict["icon_hlayout"])
-        rows_layout.addLayout(widgets_dict["program_zone_row"])
-        rows_layout.addLayout(widgets_dict["switch_row"])
-        rows_layout.addLayout(widgets_dict["style_row"])
-        rows_layout.addLayout(widgets_dict["grid_row"])
-        rows_layout.addLayout(widgets_dict["duration_row"])
-        rows_layout.addWidget(widgets_dict["velocity_slider"])
-        rows_layout.addWidget(widgets_dict["accent_slider"])
-        rows_layout.addLayout(widgets_dict["octave_row"])
-        rows_layout.addLayout(widgets_dict["motif_row"])
-        rows_layout.addStretch()
+    def _build_widgets(self):
+        """Build widgets"""
+        spec = self._build_layout_spec()
+        return WidgetGroups(
+            switches=self._build_switches(spec.switches),
+            sliders=self._build_sliders(spec.sliders),
+            combos=self._build_combo_boxes(spec.combos),
+        )
+
+    def _build_layout_spec(self):
+        P = self.EDITOR_PARAM
+
+        switches = [
+            SwitchSpec(ProgramZoneParam.ARPEGGIO_SWITCH, ProgramZoneParam.ARPEGGIO_SWITCH.display_name, [switch_setting.display_name for switch_setting in ArpeggioSwitch]),
+            SwitchSpec(P.ARPEGGIO_SWITCH, P.ARPEGGIO_SWITCH.display_name, [switch_setting.display_name for switch_setting in ArpeggioSwitch], ),
+        ]
+
+        combos = [
+            ComboBoxSpec(P.ARPEGGIO_STYLE, P.ARPEGGIO_STYLE.display_name, ARPEGGIO_STYLE),
+            ComboBoxSpec(P.ARPEGGIO_GRID, P.ARPEGGIO_GRID.display_name, [grid.display_name for grid in ArpeggioGrid]),
+            ComboBoxSpec(P.ARPEGGIO_DURATION, P.ARPEGGIO_DURATION.display_name, [duration.display_name for duration in ArpeggioDuration]),
+            ComboBoxSpec(P.ARPEGGIO_OCTAVE_RANGE, P.ARPEGGIO_OCTAVE_RANGE.display_name, [octave.display_name for octave in ArpeggioOctaveRange], [octave.midi_value for octave in ArpeggioOctaveRange] ),
+            ComboBoxSpec(P.ARPEGGIO_MOTIF, P.ARPEGGIO_MOTIF.display_name, [motif.name for motif in ArpeggioMotif]),
+        ]
+        sliders = [
+            SliderSpec(P.ARPEGGIO_VELOCITY, P.ARPEGGIO_VELOCITY.display_name, vertical=False),
+            SliderSpec(P.ARPEGGIO_ACCENT_RATE, P.ARPEGGIO_ACCENT_RATE.display_name, vertical=False),
+        ]
+
+        return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)

@@ -15,13 +15,10 @@ import mido
 import pyaudio
 from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
-
-from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
-from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from picomidi.constant import Midi
 from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
+    QButtonGroup,
     QCheckBox,
     QComboBox,
     QFileDialog,
@@ -34,7 +31,6 @@ from PySide6.QtWidgets import (
     QSlider,
     QVBoxLayout,
     QWidget,
-    QButtonGroup,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -54,19 +50,25 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.track.classification import classify_tracks
 from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
 from jdxi_editor.midi.utils.helpers import start_recording
-from jdxi_editor.midi.track.classification import classify_tracks
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
 from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets, create_centered_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_centered_layout,
+    create_layout_with_widgets,
+)
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box

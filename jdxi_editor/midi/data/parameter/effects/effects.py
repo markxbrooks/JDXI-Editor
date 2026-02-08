@@ -132,6 +132,7 @@ class Effect1Param(AddressParameter):
         0,
         4,
         "Selects the type of effect to be applied:\n00: Thru\n01: Distortion\n02: Fuzz\n03: Compressor\n04: Bit Crusher ",
+        "Effect 1 Type"
     )
     EFX1_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "Sets the level of the effect.")
     EFX1_DELAY_SEND_LEVEL = ParameterSpec(
@@ -141,6 +142,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Depth of delay applied to the sound from effect 1.",
+        "EFX1 Level (0-127)",
     )
     EFX1_REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
@@ -149,6 +151,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Depth of reverb applied to the sound from effect 1.",
+        "EFX1 Reverb Send Level (0-127)",
     )
     EFX1_OUTPUT_ASSIGN = ParameterSpec(
         0x04,
@@ -157,6 +160,7 @@ class Effect1Param(AddressParameter):
         0,
         1,
         "Selects the output destination for the sound from effect 1.\nDIR: Output to the Output jacks.\nEFX2: Output to Effect 2.\nIf you want to use EFX1 and EFX2 separately for each part, set this parameter to DIR. For details, refer to the effect block diagram.",
+        "Output Assign",
     )
     EFX1_PARAM_1 = ParameterSpec(
         0x11,
@@ -165,6 +169,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Sets the first parameter of the effect.",
+        "EFX1 Parameter"
     )
     EFX1_PARAM_1_BITCRUSHER_LEVEL = ParameterSpec(
         0x11,
@@ -173,12 +178,15 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Sets the output volume.",
+        "Level"
     )
     EFX1_PARAM_1_FUZZ_LEVEL = ParameterSpec(
         0x11, 32767, 32894, 0, 127, "Adjusts the volume."
+        "Fuzz Level"
     )
     EFX1_PARAM_1_DISTORTION_LEVEL = ParameterSpec(
         0x11, 32768, 32895, 0, 127, "Adjusts the volume."
+        "Distortion Level"
     )
     EFX1_PARAM_1_COMPRESSOR_THRESHOLD = ParameterSpec(
         0x11,
@@ -187,6 +195,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Level at which compression is applied",
+        "Compressor Threshold"
     )
     EFX1_PARAM_2 = ParameterSpec(
         0x15,
@@ -195,6 +204,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Sets the second parameter of the effect.",
+        "EFX2 parameter"
     )
     EFX1_PARAM_2_BITCRUSHER_RATE = ParameterSpec(
         0x15,
@@ -203,6 +213,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Adjusts the sampling frequency.",
+        "Bitcrusher rate"
     )
     EFX1_PARAM_2_FUZZ_DRIVE = ParameterSpec(
         0x15,
@@ -211,6 +222,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Sets the second parameter of the effect.",
+        "Fuzz Drive"
     )
     EFX1_PARAM_2_DISTORTION_DRIVE = ParameterSpec(
         0x15,
@@ -219,17 +231,18 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Adjusts the depth of distortion",
+        "Distortion Drive"
     )
     EFX1_PARAM_2_COMPRESSOR_RATIO = ParameterSpec(
-        0x15, 32768, 32887, 0, 19, "Compression ratio"
+        0x15, 32768, 32887, 0, 19, "Compression ratio", "Compression ratio"
     )
-    EFX1_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127)
-    EFX1_PARAM_3_BITCRUSHER_DEPTH = ParameterSpec(0x19, 32768, 32895, 0, 127)
+    EFX1_PARAM_3 = ParameterSpec(0x19, 32768, 32895, 0, 127, "EFX3 parameter", "EFX3 parameter")
+    EFX1_PARAM_3_BITCRUSHER_DEPTH = ParameterSpec(0x19, 32768, 32895, 0, 127, "Bitcrusher Depth", "Bitcrusher Depth")
     EFX1_PARAM_3_DISTORTION_TYPE = ParameterSpec(
-        0x19, 32822, 32827, 0, 5
+        0x19, 32822, 32827, 0, 5, "Distortion Type", "Distortion Type"
     )  # 32822 = 08 00 03 06
     EFX1_PARAM_3_FUZZ_TYPE = ParameterSpec(
-        0x19, 32822, 32827, 0, 5
+        0x19, 32822, 32827, 0, 5, "Fuzz Type", "Fuzz Type"
     )  # 32822 = 08 00 03 06
     EFX1_PARAM_3_COMPRESSOR_ATTACK = ParameterSpec(
         0x19,
@@ -238,8 +251,9 @@ class Effect1Param(AddressParameter):
         0,
         32,
         "Attack time (ms)",
+        "Attack time (ms)"
     )  # 32822 = 08 00 03 06
-    EFX1_PARAM_4 = ParameterSpec(0x1D, 32768, 32895, 0, 127)
+    EFX1_PARAM_4 = ParameterSpec(0x1D, 32768, 32895, 0, 127, "EFX1 Param 4", "EFX1 Param 4")
     EFX1_PARAM_4_BITCRUSHER_FILTER = ParameterSpec(
         0x1D,
         32768,
@@ -247,16 +261,17 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Adjusts the filter depth",
+        "Bitcrusher depth",
     )
     EFX1_PARAM_4_COMPRESSOR_RELEASE = ParameterSpec(
-        0x1D, 32822, 32854, 0, 32, "Release time (ms)"
+        0x1D, 32822, 32854, 0, 32, "Release time (ms)", "Compressor Release Tome"
     )
-    EFX1_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127, "")
+    EFX1_PARAM_5 = ParameterSpec(0x21, 32768, 32895, 0, 127, "EFX1 param 5", "EFX1 Param 5")
     EFX1_PARAM_5_COMPRESSOR_LEVEL = ParameterSpec(
-        0x21, 32768, 32895, 0, 127, "Adjusts the volume."
+        0x21, 32768, 32895, 0, 127, "Adjusts the volume.", "Compressor Level"
     )
-    EFX1_PARAM_6 = ParameterSpec(0x25, 32768, 32895, 0, 127)
-    EFX1_PARAM_7 = ParameterSpec(0x29, 32768, 32895, 0, 127)
+    EFX1_PARAM_6 = ParameterSpec(0x25, 32768, 32895, 0, 127, "EFX1 param 6", "EFX1 Param 6")
+    EFX1_PARAM_7 = ParameterSpec(0x29, 32768, 32895, 0, 127, "EFX1 param 7", "EFX1 Param 7")
     EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL = ParameterSpec(
         0x29,
         32768,
@@ -264,8 +279,9 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Side level which to be applied",
+        "Compressor Side level",
     )
-    EFX1_PARAM_8 = ParameterSpec(0x2D, 32768, 32895, 0, 127)
+    EFX1_PARAM_8 = ParameterSpec(0x2D, 32768, 32895, 0, 127, "EFX1 param 8", "EFX1 Param 8")
     EFX1_PARAM_8_COMPRESSOR_SIDE_NOTE = ParameterSpec(
         0x2D,
         32768,
@@ -273,8 +289,9 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Side note to be applied",
+        "Compressor Side note",
     )
-    EFX1_PARAM_9 = ParameterSpec(0x31, 32768, 32895, 0, 127)
+    EFX1_PARAM_9 = ParameterSpec(0x31, 32768, 32895, 0, 127, "EFX1 param 9", "EFX1 Param 9")
     EFX1_PARAM_9_COMPRESSOR_SIDE_TIME = ParameterSpec(
         0x31,
         32768,
@@ -282,8 +299,9 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Side time to be applied",
+        "Compressor Side time",
     )
-    EFX1_PARAM_10 = ParameterSpec(0x35, 32768, 32895, 0, 127)
+    EFX1_PARAM_10 = ParameterSpec(0x35, 32768, 32895, 0, 127, "EFX1 param 10", "EFX1 Param 10")
     EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE = ParameterSpec(
         0x35,
         32768,
@@ -291,13 +309,15 @@ class Effect1Param(AddressParameter):
         0,
         127,
         "Side release to be applied",
+        "Compressor Side release",
+
     )
     EFX1_PARAM_11 = ParameterSpec(
         0x39,
         32768,
         32895,
         0,
-        127,
+        127, "EFX1 param 11", "EFX1 Param 11"
     )  # for posterity 12768, 52768, @@ -20000, 20000
     EFX1_PARAM_12 = ParameterSpec(0x3D, 32768, 32895, 0, 127)
     EFX1_PARAM_13 = ParameterSpec(0x41, 32768, 32895, 0, 127)
@@ -450,10 +470,10 @@ class Effect2Param(AddressParameter):
         return self.display_min, self.display_max
 
     # EFX2 Parameters
-    EFX2_TYPE = ParameterSpec(0x00, 0, 8, 0, 8)
-    EFX2_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127)
-    EFX2_DELAY_SEND_LEVEL = ParameterSpec(0x02, 0, 127, 0, 127)
-    EFX2_REVERB_SEND_LEVEL = ParameterSpec(0x03, 0, 127, 0, 127)
+    EFX2_TYPE = ParameterSpec(0x00, 0, 8, 0, 8, "Effect Type", "Effect Type")
+    EFX2_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "EFX2 Level (0-127)", "Effect Level")
+    EFX2_DELAY_SEND_LEVEL = ParameterSpec(0x02, 0, 127, 0, 127, "EFX2 Delay Send Level (0-127)", "EFX2 Delay Send Level (0-127)")
+    EFX2_REVERB_SEND_LEVEL = ParameterSpec(0x03, 0, 127, 0, 127, "EFX2 Reverb Send Level (0-127)", "EFX2 Reverb Send Level (0-127)")
     EFX2_PARAM_1 = ParameterSpec(0x11, 32768, 32895, 0, 127)
     EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH = ParameterSpec(
         0x11,

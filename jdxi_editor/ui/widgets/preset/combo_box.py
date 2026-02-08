@@ -9,10 +9,13 @@ to filter and select them easily.
 #                 selected_text.split(":")[0].strip()
 """
 
+from typing import Any, Optional
+
 from decologr import Decologr as log
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
@@ -21,6 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
 
@@ -66,12 +70,58 @@ class PresetComboBox(QWidget):
         self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
         layout.addWidget(self.category_combo_box)
 
-        # --- Load Button
-        self.load_button = QPushButton("Load")
-        self.load_button.clicked.connect(self._on_load_clicked)
-        layout.addWidget(self.load_button)
+        # --- Load (round button + label)
+        load_row = QHBoxLayout()
+        self.load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+            "Load",
+            self._on_load_clicked,
+            load_row,
+            name="load",
+        )
+        layout.addLayout(load_row)
         self._populate_presets()
         self.setStyleSheet(JDXi.UI.Style.COMBO_BOX)
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(f"color: {JDXi.UI.Style.FOREGROUND};")
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def _on_load_clicked(self):
         """Handle load button click."""

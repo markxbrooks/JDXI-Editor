@@ -36,9 +36,6 @@ Usage Example:
 from typing import Any, Callable, Dict, Literal, Optional, Union
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
-from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -54,7 +51,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
@@ -65,6 +64,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -74,10 +74,10 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
     create_group_with_layout,
     create_icon_from_qta,
-    create_layout_with_widgets,
-    transfer_layout_items,
     create_layout_with_child,
-    create_widget_with_layout
+    create_layout_with_widgets,
+    create_widget_with_layout,
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -566,32 +566,6 @@ class SectionBaseWidget(SynthBase):
         layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
         return layout
 
-    def _build_sliders(self, specs: list["SliderSpec"]):
-        """build sliders"""
-        return [
-            self._create_parameter_slider(
-                spec.param,
-                spec.label,
-                vertical=spec.vertical,
-            )
-            for spec in specs
-        ]
-
-    def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
-        """build combo boxes"""
-        return [
-            self._create_parameter_combo_box(
-                spec.param, spec.label, spec.options, spec.values
-            )
-            for spec in specs
-        ]
-
-    def _build_switches(self, specs: list["SwitchSpec"]):
-        return [
-            self._create_parameter_switch(spec.param, spec.label, spec.options)
-            for spec in specs
-        ]
-
     # -------------------------------
     # Button Logic
     # -------------------------------
@@ -785,3 +759,29 @@ class SectionBaseWidget(SynthBase):
         row_layout = create_layout_with_widgets(widgets)
         row_widget.setLayout(row_layout)
         return row_widget
+
+    def _build_sliders(self, specs: list["SliderSpec"]):
+        """build sliders"""
+        return [
+            self._create_parameter_slider(
+                spec.param,
+                spec.label,
+                vertical=spec.vertical,
+            )
+            for spec in specs
+        ]
+
+    def _build_combo_boxes(self, specs: list["ComboBoxSpec"]):
+        """build combo boxes"""
+        return [
+            self._create_parameter_combo_box(
+                spec.param, spec.label, spec.options, spec.values
+            )
+            for spec in specs
+        ]
+
+    def _build_switches(self, specs: list["SwitchSpec"]):
+        return [
+            self._create_parameter_switch(spec.param, spec.label, spec.options)
+            for spec in specs
+        ]

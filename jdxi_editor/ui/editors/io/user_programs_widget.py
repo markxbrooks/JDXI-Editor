@@ -9,7 +9,7 @@ Classes:
         A widget for displaying and managing user programs.
 """
 
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
@@ -29,6 +29,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
@@ -158,17 +159,16 @@ class UserProgramsWidget(QWidget):
 
         layout.addWidget(self.user_programs_table)
 
-        # Add save button
+        # Save Changes (round button + label, centered)
         button_layout = QHBoxLayout()
         button_layout.addStretch()
-        self.save_user_programs_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.FLOPPY_DISK, color=JDXi.UI.Style.FOREGROUND
-            ),
+        self.save_user_programs_button = self._add_round_action_button(
+            JDXi.UI.Icon.FLOPPY_DISK,
             "Save Changes",
+            self.save_changes,
+            button_layout,
+            name="save_user_programs",
         )
-        self.save_user_programs_button.clicked.connect(self.save_changes)
-        button_layout.addWidget(self.save_user_programs_button)
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
@@ -183,6 +183,46 @@ class UserProgramsWidget(QWidget):
 
             log.error(traceback.format_exc())
             # Table will be empty but widget will still be visible
+
+    def _add_round_action_button(
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+    ) -> QPushButton:
+        """Create a round button with icon + text label (same style as Transport)."""
+        btn = QPushButton()
+        btn.setCheckable(checkable)
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        if name:
+            setattr(self, f"{name}_button", btn)
+        layout.addWidget(btn)
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(f"color: {JDXi.UI.Style.FOREGROUND};")
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
 
     def _get_table_style(self) -> str:
         """

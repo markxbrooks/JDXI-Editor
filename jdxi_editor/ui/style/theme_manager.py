@@ -11,6 +11,7 @@ from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
+from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 
@@ -182,6 +183,7 @@ class JDXiUIThemeManager(QObject):
             JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.TABS_ANALOG)
         else:
             JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.TABS)
+        # widget.setFixedHeight(JDXiUIDimensions.EDITOR_BASIC.HEIGHT)
 
     @staticmethod
     def apply_transparent(widget: QWidget) -> None:
