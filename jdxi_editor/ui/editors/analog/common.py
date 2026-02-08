@@ -7,6 +7,7 @@ from typing import Callable
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.common import BaseCommonSection
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
@@ -14,55 +15,21 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 class AnalogCommonSection(BaseCommonSection):
     """Common section for analog synth parameters."""
 
-    SLIDER_GROUPS = {
-        "all": [
-            SliderSpec(
-                Analog.Param.PITCH_BEND_UP,
-                Analog.Display.Name.PITCH_BEND_UP,
-                vertical=True,
-            ),
-            SliderSpec(
-                Analog.Param.PITCH_BEND_DOWN,
-                Analog.Display.Name.PITCH_BEND_DOWN,
-                vertical=True,
-            ),
-            SliderSpec(
-                Analog.Param.PORTAMENTO_TIME,
-                Analog.Display.Name.PORTAMENTO_TIME,
-                vertical=True,
-            ),
-        ]
-    }
-    SWITCH_SPECS = [
-        SwitchSpec(
-            Analog.Param.LEGATO_SWITCH,
-            Analog.Display.Name.LEGATO_SWITCH,
-            Analog.Display.Options.LEGATO_SWITCH,
-        ),
-        SwitchSpec(
-            Analog.Param.PORTAMENTO_SWITCH,
-            Analog.Display.Name.PORTAMENTO_SWITCH,
-            Analog.Display.Options.PORTAMENTO_SWITCH,
-        ),
-    ]
-    COMBO_BOXES = [
-        ComboBoxSpec(
-            Analog.Param.OCTAVE_SHIFT,
-            Analog.Display.Name.OCTAVE_SHIFT,
-            Analog.Display.Options.OCTAVE_SHIFT,
-            Analog.Display.Values.OCTAVE_SHIFT,
-        )
-    ]
+    SYNTH_SPEC = Analog
 
     def __init__(
-        self,
-        midi_helper: MidiIOHelper = None,
-        send_midi_parameter: Callable = None,
+            self,
+            midi_helper: MidiIOHelper = None,
+            send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogCommonSection
-        :param controls: dict
+        :param midi_helper: MidiIOHelper
+        :param send_midi_parameter: Callable
         """
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.SWITCH_SPECS = self.SLIDER_GROUPS.switches
+        self.COMBO_BOXES = self.SLIDER_GROUPS.combos
         super().__init__(
             icons_row_type=IconType.GENERIC,
             analog=True,
@@ -71,3 +38,45 @@ class AnalogCommonSection(BaseCommonSection):
         )
         self.build_widgets()
         self.setup_ui()
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(
+                S.Param.PITCH_BEND_UP,
+                S.Param.PITCH_BEND_UP.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.PITCH_BEND_DOWN,
+                S.Param.PITCH_BEND_DOWN.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.PORTAMENTO_TIME,
+                S.Param.PORTAMENTO_TIME.display_name,
+                vertical=True,
+            ),
+        ]
+        switches = [
+            SwitchSpec(
+                S.Param.LEGATO_SWITCH,
+                S.Param.LEGATO_SWITCH.display_name,
+                S.Display.Options.LEGATO_SWITCH,
+            ),
+            SwitchSpec(
+                S.Param.PORTAMENTO_SWITCH,
+                S.Param.PORTAMENTO_SWITCH.display_name,
+                S.Display.Options.PORTAMENTO_SWITCH,
+            ),
+        ]
+        combos = [
+            ComboBoxSpec(
+                S.Param.OCTAVE_SHIFT,
+                S.Param.OCTAVE_SHIFT.display_name,
+                S.Display.Options.OCTAVE_SHIFT,
+                S.Display.Values.OCTAVE_SHIFT,
+            )
+        ]
+        return LayoutSpec(controls=controls, switches=switches, combos=combos)

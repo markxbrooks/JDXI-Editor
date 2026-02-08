@@ -71,9 +71,9 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
+from jdxi_editor.ui.editors.analog.amp.section import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
-from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
+from jdxi_editor.ui.editors.analog.oscillator.section import AnalogOscillatorSection
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.helper import log_changes
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget

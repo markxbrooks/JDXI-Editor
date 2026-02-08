@@ -126,6 +126,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         7,
         "Waveform of the Oscillator; Select from classic waveforms: SAW, SQR, TRI, SINE, NOISE, SUPER SAW or PCM. \nEach offers unique harmonic content for shaping tone and texture",
+        "Waveform Type"
     )  # Waveform preset_type
     OSC_WAVE_VARIATION = ParameterSpec(
         0x01,
@@ -134,6 +135,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         2,
         "You can select variations of the currently selected WAVE",
+        "Wave Variation"
     )  # Wave variation
     OSC_PITCH = ParameterSpec(
         0x03,
@@ -142,7 +144,7 @@ class DigitalPartialParam(AddressParameter):
         -24,
         24,
         "Adjusts the pitch in semitone steps",
-        "Pitch (1/2 tones)",
+        "Coarse Tune"
     )  # Coarse tune
     OSC_DETUNE = ParameterSpec(
         0x04,
@@ -151,6 +153,7 @@ class DigitalPartialParam(AddressParameter):
         -50,
         50,
         "Adjusts the pitch in steps of one cent",
+        "Fine tune"
     )  # Fine tune (-50 to +50)
     OSC_PULSE_WIDTH_MOD_DEPTH = ParameterSpec(
         0x05,
@@ -159,6 +162,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the amount (depth) of LFO that is applied to PW (Pulse Width). \nIf the OSC Wave has selected (PW-SQR), you can use this slider to specify the amount of LFO modulation applied to PW (pulse width).",
+        "PWM Depth"
     )  # PWM Depth
     OSC_PULSE_WIDTH = ParameterSpec(
         0x06,
@@ -167,6 +171,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone",
+        "Pulse Width"
     )  # Pulse Width
     OSC_PITCH_ENV_ATTACK_TIME = ParameterSpec(
         0x07,
@@ -175,6 +180,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point",
+        "Pitch Envelope Attack"
     )  # Pitch Envelope Attack
     OSC_PITCH_ENV_DECAY_TIME = ParameterSpec(
         0x08,
@@ -183,6 +189,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed",
+        "Oscillator Pitch Env Decay"
     )  # Pitch Envelope Decay
     OSC_PITCH_ENV_DEPTH = ParameterSpec(
         0x09,
@@ -191,6 +198,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "This specifies how much the pitch envelope will affect the pitch\nNegative values will invert the shape of the envelope",
+        "Oscillator Pitch Env Depth"
     )  # Pitch Envelope Depth (-63 to +63)
 
     FILTER_MODE_SWITCH = ParameterSpec(
@@ -200,6 +208,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         7,
         "Selects the type of filter; \nBYPASS, LPF1, LPF2, LPF3, LPF4, HPF, BPF, PKG",
+        "Filter Mode"
     )  # Filter mode
     FILTER_SLOPE = ParameterSpec(
         0x0B,
@@ -208,6 +217,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         1,
         "Selects the slope (steepness) of the filter. -12, -24 [dB]",
+        "Filter Slope"
     )  # Filter slope
     FILTER_CUTOFF = ParameterSpec(
         0x0C,
@@ -216,6 +226,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the cutoff frequency",
+        "Filter Cutoff"
     )  # Cutoff frequency
     FILTER_CUTOFF_KEYFOLLOW = ParameterSpec(
         0x0D,
@@ -224,6 +235,7 @@ class DigitalPartialParam(AddressParameter):
         -100,
         100,
         "Specifies how you can make the filter cutoff frequency, \nto vary according to the key you play",
+        "KeyFollow"
     )  # Key follow
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x0E,

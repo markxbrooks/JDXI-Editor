@@ -378,9 +378,10 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         :return: QHBoxLayout
         """
-        # --- Get buttons in order for layout
-        waveform_buttons_list = list(self.waveform_buttons.values())
-        waveform_buttons_list.append(self.sub_oscillator_type_switch)
+        # --- Get buttons in order for layout (skip None so subclasses without sub_osc don't crash)
+        waveform_buttons_list = [w for w in self.waveform_buttons.values() if w is not None]
+        if self.sub_oscillator_type_switch is not None:
+            waveform_buttons_list.append(self.sub_oscillator_type_switch)
         wave_layout = create_layout_with_widgets(waveform_buttons_list)
         return wave_layout
 

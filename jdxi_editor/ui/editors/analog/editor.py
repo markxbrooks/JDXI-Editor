@@ -67,11 +67,11 @@ from decologr import Decologr as log
 
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.amp import AnalogAmpSection
+from jdxi_editor.ui.editors.analog.amp.section import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
-from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
+from jdxi_editor.ui.editors.analog.oscillator.section import AnalogOscillatorSection
 
 
 class AnalogSynthEditor(BaseSynthEditor):
@@ -174,10 +174,10 @@ class AnalogSynthEditor(BaseSynthEditor):
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 on_filter_mode_changed=self._on_filter_mode_changed,
+                analog=True
             )
             self.amp_section = AnalogAmpSection(
                 address=self.synth_data.address,
-                parent=self,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
             )

@@ -2,21 +2,17 @@
 Analog Filter Section
 """
 
-from typing import Callable, Dict, Optional
-
-from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtWidgets import (
-    QWidget,
-)
+from typing import Callable, Dict
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
-from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.filter import BaseFilterSection
+from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
+from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
@@ -37,21 +33,11 @@ class AnalogFilterSection(BaseFilterSection):
         ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Analog.Param.FILTER_ENV_DEPTH),
     }
 
-    SLIDER_GROUPS = {
-        "filter": [
-            SliderSpec(AnalogParam.FILTER_RESONANCE, "Resonance", vertical=True),
-            SliderSpec(AnalogParam.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow", vertical=True),
-            SliderSpec(
-                AnalogParam.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity", vertical=True
-            ),
-        ],
-    }
-
     FILTER_SPECS: Dict[AnalogFilterType, FilterSpec] = {
         AnalogFilterType.BYPASS: FilterSpec(
             param=None,  # No parameter adjustments for bypass
             icon=JDXi.UI.Icon.POWER,  # Power/off icon
-            name="BPF",
+            name="BYPASS",
             description=AnalogFilterType.BYPASS.tooltip,
         ),
         AnalogFilterType.LPF: FilterSpec(
@@ -62,10 +48,14 @@ class AnalogFilterSection(BaseFilterSection):
         ),
     }
 
-
     FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Analog.Param.FILTER_CUTOFF)
 
     SYNTH_SPEC = Analog
+
+    MIDI_TO_FILTER: Dict[int, AnalogFilterType]
+    FILTER_TO_MIDI: Dict[AnalogFilterType, int]
+
+    UI_TO_FILTER: Dict[Analog.Filter.Mode, AnalogFilterType]
 
     # Same mechanism as Digital: used by update_controls_state() in base
     FILTER_MODE_ENABLED_MAP = {
@@ -84,6 +74,44 @@ class AnalogFilterSection(BaseFilterSection):
         Analog.Param.FILTER_ENV_DEPTH,
     ]
 
+    def __init__(
+            self,
+            address: RolandSysExAddress,
+            on_filter_mode_changed: Callable = None,
+            midi_helper: MidiIOHelper = None,
+            send_midi_parameter: Callable = None,
+            analog: bool = True
+    ):
+        """
+        Initialize the AnalogFilterSection
+
+        :param address: RolandSysExAddress
+        :param on_filter_mode_changed: Optional callback for filter mode changes
+        """
+        self.wave_shapes = self.generate_wave_shapes()
+        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.DEFINITION = FilterDefinition(
+            modes=AnalogFilterType,
+            param_mode=Analog.Param.FILTER_MODE_SWITCH,
+            midi_to_mode={0: AnalogFilterType.BYPASS, 1: AnalogFilterType.LPF},
+            mode_to_midi={AnalogFilterType.BYPASS: 0, AnalogFilterType.LPF: 1},
+            specs=self.FILTER_SPECS,
+            widget_spec=self.FILTER_WIDGET_SPEC,
+            sliders=self.SLIDER_GROUPS,
+            adsr=self.ADSR_SPEC,
+            bypass_mode=AnalogFilterType.BYPASS)
+        super().__init__(
+            definition=self.DEFINITION,
+            address=address,
+            midi_helper=midi_helper,
+            send_midi_parameter=send_midi_parameter,
+            on_filter_mode_changed=on_filter_mode_changed,
+            analog=analog
+        )
+
+        self.build_widgets()
+        self.setup_ui()
+
     def generate_wave_shapes(self):
         """Generate filter mode button specs (same pattern as Analog LFO generate_wave_shapes)."""
         return [
@@ -99,27 +127,14 @@ class AnalogFilterSection(BaseFilterSection):
             ),
         ]
 
-    def __init__(
-        self,
-        address: RolandSysExAddress,
-        on_filter_mode_changed: Callable = None,
-        midi_helper: MidiIOHelper = None,
-        send_midi_parameter: Callable = None,
-    ):
-        """
-        Initialize the AnalogFilterSection
-
-        :param address: RolandSysExAddress
-        :param on_filter_mode_changed: Optional callback for filter mode changes
-        """
-        self.wave_shapes = self.generate_wave_shapes()
-        super().__init__(
-            address=address,
-            midi_helper=midi_helper,
-            send_midi_parameter=send_midi_parameter,
-            on_filter_mode_changed=on_filter_mode_changed,
-            analog=True,
-        )
-
-        self.build_widgets()
-        self.setup_ui()
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(S.Param.FILTER_RESONANCE, S.Param.FILTER_RESONANCE.display_name, vertical=True),
+            SliderSpec(S.Param.FILTER_CUTOFF_KEYFOLLOW, S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name, vertical=True),
+            SliderSpec(
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY, S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name, vertical=True
+            ),
+        ]
+        return LayoutSpec(controls=controls)

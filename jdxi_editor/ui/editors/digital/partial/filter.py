@@ -11,7 +11,8 @@ from jdxi_editor.midi.data.digital.filter import (
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.filter import BaseFilterSection
+from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
@@ -24,22 +25,22 @@ class DigitalFilterSection(BaseFilterSection):
         "filter": [
             SliderSpec(
                 Digital.Param.FILTER_RESONANCE,
-                Digital.Display.Name.FILTER_RESONANCE,
+                Digital.Param.FILTER_RESONANCE.display_name,
                 vertical=True,
             ),
             SliderSpec(
                 Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
-                Digital.Display.Name.FILTER_CUTOFF_KEYFOLLOW,
+                Digital.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
                 vertical=True,
             ),
             SliderSpec(
                 Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-                Digital.Display.Name.FILTER_ENV_VELOCITY_SENSITIVITY,
+                Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
                 vertical=True,
             ),
             SliderSpec(
                 Digital.Param.FILTER_ENV_DEPTH,
-                Digital.Display.Name.FILTER_ENV_DEPTH,
+                Digital.Param.FILTER_ENV_DEPTH.display_name,
                 vertical=True,
             ),
         ],
@@ -173,4 +174,14 @@ class DigitalFilterSection(BaseFilterSection):
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
-        super().__init__(icons_row_type=icons_row_type, **kwargs)
+        self.DEFINITION = FilterDefinition(
+            modes=DigitalFilterTypeEnum,
+            param_mode=Digital.Param.FILTER_MODE_SWITCH,
+            midi_to_mode={0: DigitalFilterTypeEnum.BYPASS, 1: DigitalFilterTypeEnum.LPF},
+            mode_to_midi={DigitalFilterTypeEnum.BYPASS: 0, DigitalFilterTypeEnum.LPF: 1},
+            specs=self.FILTER_SPECS,
+            widget_spec=self.FILTER_WIDGET_SPEC,
+            sliders=self.SLIDER_GROUPS,
+            adsr=self.ADSR_SPEC,
+            bypass_mode=DigitalFilterTypeEnum.BYPASS)
+        super().__init__(definition=self.DEFINITION, **kwargs)

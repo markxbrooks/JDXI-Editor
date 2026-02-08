@@ -5,6 +5,9 @@ Analog Oscillator Section
 from typing import Callable
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
+from jdxi_editor.ui.editors.analog.oscillator.widget_spec import AnalogOscillatorLayoutSpec
+from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
@@ -25,37 +28,6 @@ from jdxi_editor.ui.widgets.spec import (
 
 class AnalogOscillatorSection(BaseOscillatorSection):
     """Analog Oscillator Section"""
-
-    SLIDER_GROUPS = {
-        "tuning": [
-            SliderSpec(
-                Analog.Param.OSC_PITCH_COARSE,
-                Analog.Display.Name.OSC_PITCH_COARSE,
-                vertical=True,
-            ),
-            SliderSpec(
-                Analog.Param.OSC_PITCH_FINE,
-                Analog.Display.Name.OSC_PITCH_FINE,
-                vertical=True,
-            ),
-        ],
-        # --- Analog has this extra parameter, so here is the slider
-        "env": [
-            SliderSpec(
-                Analog.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                Analog.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-                vertical=True,
-            )
-        ],
-    }
-
-    SWITCH_SPECS = [
-        SwitchSpec(
-            Analog.Param.SUB_OSCILLATOR_TYPE,
-            Analog.Display.Name.SUB_OSCILLATOR_TYPE,
-            Analog.Display.Options.SUB_OSCILLATOR_TYPE,
-        ),
-    ]
 
     PWM_SPEC = PWMSpec(
         pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
@@ -87,6 +59,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         :param address: RolandSysExAddress
         :param send_midi_parameter: Callable to send MIDI parameter updates
         """
+        self.osc: OscillatorWidgets | None = None
         self.pitch_env_widget: PitchEnvelopeWidget | None = None
         self.pwm_widget: PWMWidget | None = None
         self._on_waveform_selected = waveform_selected_callback
@@ -103,9 +76,33 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         log.info(scope=self.__class__.__name__, message=f"after super init self.controls: {self.controls}")
         self.address = address
+        self._build_widgets()
         self.build_widgets()
         log.info(scope=self.__class__.__name__, message=f"after build_widgets self.controls: {self.controls}")
         self.setup_ui()
+
+    def _build_widgets(self) -> OscillatorWidgets:
+        """Build Widgets"""
+        self.SLIDER_GROUPS: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        self.SWITCH_SPECS = self.SLIDER_GROUPS.switches
+
+        return OscillatorWidgets(
+            switches=self._build_switches(self.SLIDER_GROUPS.switches),
+            tuning=self._build_sliders(self.SLIDER_GROUPS.tuning),
+            env=self._build_sliders(self.SLIDER_GROUPS.env),
+        )
+
+    def build_widgets(self):
+        """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
+        super().build_widgets()
+        # Keep self.osc for any code that expects OscillatorWidgets (switches/tuning/env)
+        self.osc = OscillatorWidgets(
+            switches=[self.sub_oscillator_type_switch] if self.sub_oscillator_type_switch else [],
+            tuning=self.tuning_sliders or [],
+            env=[self.osc_pitch_env_velocity_sensitivity_slider]
+            if self.osc_pitch_env_velocity_sensitivity_slider
+            else [],
+        )
 
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
@@ -159,3 +156,37 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             )
         # --- Finally create Tab widget with all of the above widgets
         self._create_tab_widget()
+
+    def _build_layout_spec(self) -> AnalogOscillatorLayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        switches = [
+            SwitchSpec(
+                S.Param.SUB_OSCILLATOR_TYPE,
+                S.Display.Name.SUB_OSCILLATOR_TYPE,
+                S.Display.Options.SUB_OSCILLATOR_TYPE,
+            ),
+        ]
+
+        tuning = [
+            SliderSpec(
+                S.Param.OSC_PITCH_COARSE,
+                S.Display.Name.OSC_PITCH_COARSE,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.OSC_PITCH_FINE,
+                S.Display.Name.OSC_PITCH_FINE,
+                vertical=True,
+            ),
+        ]
+        # --- Analog has this extra parameter, so here is the slider
+        env = [
+            SliderSpec(
+                S.Param.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                S.Display.Name.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
+                vertical=True,
+            )
+        ]
+
+        return AnalogOscillatorLayoutSpec(switches=switches, tuning=tuning, env=env)

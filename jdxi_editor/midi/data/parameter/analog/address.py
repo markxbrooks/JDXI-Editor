@@ -247,6 +247,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Specifies the resonance level of the filter.\n0: 0%, 127: 100%",
+        "Resonance"
     )  # 0-127
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x24,
@@ -255,6 +256,7 @@ class AnalogParam(AddressParameter):
         -63,
         63,
         "Specifies how the filter envelope depth will vary according to the strength with which you play the key.",
+        "Velocity"
     )  # -63 - +63
     FILTER_ENV_ATTACK_TIME = ParameterSpec(
         0x25,
@@ -263,6 +265,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Attack time for filter envelope",
+        "keyfollow"
     )  # 0-127
     FILTER_ENV_DECAY_TIME = ParameterSpec(
         0x26,
@@ -271,6 +274,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Decay time for filter envelope",
+        "Decay time"
     )  # 0-127
     FILTER_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x27,
@@ -279,6 +283,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Sustain level for filter envelope",
+        "Sustain level"
     )  # 0-127
     FILTER_ENV_RELEASE_TIME = ParameterSpec(
         0x28,
@@ -287,6 +292,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Release time for filter envelope",
+        "Release time"
     )  # 0-127
     FILTER_ENV_DEPTH = ParameterSpec(
         0x29,
@@ -295,6 +301,7 @@ class AnalogParam(AddressParameter):
         -63,
         63,
         "Specifies the direction and depth to which the cutoff frequency will change.",
+        "Depth"
     )  # -63 - +63
 
     # Amplitude Parameters
@@ -305,6 +312,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Sets the overall amplitude level.\n0: 0%, 127: 100%",
+        "Level"
     )  # 0-127
     AMP_LEVEL_KEYFOLLOW = ParameterSpec(
         0x2B,
@@ -313,6 +321,7 @@ class AnalogParam(AddressParameter):
         -100,
         100,
         "Specify this if you want to vary the volume according to the position of the key that you play.\nWith positive (“+”) settings the volume increases as you play upward from the C4 key (middle C);\n with negative (“-”) settings the volume decreases.\n\nHigher values will produce greater change",
+        "Keyfollow"
     )  # -100 - +100
     AMP_LEVEL_VELOCITY_SENSITIVITY = ParameterSpec(
         0x2C,
@@ -321,6 +330,7 @@ class AnalogParam(AddressParameter):
         -63,
         63,
         "Specifies how the volume will vary according to the strength with which you play the keyboard.",
+        "Velocity Sensitivity"
     )  # -63 - +63
     AMP_ENV_ATTACK_TIME = ParameterSpec(
         0x2D,
@@ -371,6 +381,7 @@ class AnalogParam(AddressParameter):
         0,
         127,
         "Sets the portamento time in milliseconds.\n0: 0 ms, 127: 1000 ms",
+        "Portamento Time"
     )  # 0-127
     LEGATO_SWITCH = ParameterSpec(
         0x33,
@@ -379,6 +390,7 @@ class AnalogParam(AddressParameter):
         0,
         1,
         "Enables or disables legato mode.\n0: OFF, 1: ON",
+        "Legato Switch"
     )
     OCTAVE_SHIFT = ParameterSpec(
         0x34,
@@ -387,6 +399,7 @@ class AnalogParam(AddressParameter):
         -3,
         3,
         "Adjusts the octave shift.\n-3: -3 octaves, 0: 0 octaves, 3: +3 octaves",
+        "Octave Shift"
     )  # -3 - +3
     PITCH_BEND_UP = ParameterSpec(
         0x35,
@@ -395,6 +408,7 @@ class AnalogParam(AddressParameter):
         0,
         24,
         "Sets the pitch bend range for upward bends.\n0: 0 semitones, 24: 2 octaves",
+        "Pitch Bend Up"
     )  # 0-24
     PITCH_BEND_DOWN = ParameterSpec(
         0x36,
@@ -403,6 +417,7 @@ class AnalogParam(AddressParameter):
         0,
         24,
         "Sets the pitch bend range for downward bends.\n0: 0 semitones, 24: 2 octaves",
+        "Pitch Bend Down"
     )  # 0-24
 
     # LFO Modulation Control

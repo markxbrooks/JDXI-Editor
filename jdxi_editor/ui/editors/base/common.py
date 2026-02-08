@@ -74,6 +74,11 @@ class BaseCommonSection(SectionBaseWidget):
             self.SWITCH_SPECS
         )
 
-        (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
-            self._build_sliders(self.SLIDER_GROUPS["all"])
-        )
+        if hasattr(self.SLIDER_GROUPS, "controls"):
+            (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
+                self._build_sliders(self.SLIDER_GROUPS.controls)
+            )
+        else:
+            (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
+                self._build_sliders(self.SLIDER_GROUPS["controls"])
+            )

@@ -60,8 +60,7 @@ class FilterWidget(EnvelopeWidgetBase):
         self.setWindowTitle("Filter Widget")
         self.address = address
         self.midi_helper = midi_helper
-        if slope_param:
-            self.slope_param = slope_param
+        self.slope_param = slope_param  # None for analog (no slope control)
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         if controls is not None:
