@@ -50,10 +50,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ],
     }
 
-    # --- Enable rules for dependent widgets
+    # --- Enable rules for dependent widgets (which tab/widgets to enable per waveform)
     BUTTON_ENABLE_RULES = {
-        Digital.Wave.Osc.SQUARE: ["pwm_widget", "pw_shift_slider"],
-        Digital.Wave.Osc.PCM: ["pwm_widget", "pcm_wave_gain", "pcm_wave_number"],
+        Digital.Wave.Osc.PW_SQUARE: ["pwm_widget", "pw_shift_slider"],
+        Digital.Wave.Osc.PCM: ["pcm_wave_gain", "pcm_wave_number"],
         Digital.Wave.Osc.SUPER_SAW: ["super_saw_detune"],
     }
 
@@ -302,14 +302,18 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _add_pitch_env_tab(self):
         """Add pitch env tab"""
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch()
         pitch_env_layout = create_layout_with_widgets(
             widgets=[self.pitch_env_widget], vertical=False
         )
         pitch_env_group = create_group_from_definition(
             key=Digital.GroupBox.PITCH_ENVELOPE,
-            layout_or_widget=pitch_env_layout,
+            layout_or_widget=centered_layout,
             set_attr=self,
         )
+        centered_layout.addLayout(pitch_env_layout)
+        centered_layout.addStretch()
         pitch_env_group.setProperty("adsr", True)
         self._add_tab(key=DigitalOscillatorTab.PITCH, widget=pitch_env_group)
 

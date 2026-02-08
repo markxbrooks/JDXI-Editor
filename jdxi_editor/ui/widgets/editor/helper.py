@@ -479,11 +479,12 @@ def create_centered_layout() -> QHBoxLayout:
 
 
 def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
+    """create centered layout with stretch either side to squish in widgets"""
     layout = QHBoxLayout()
-    layout.addStretch()
     pcm_layout = create_layout_with_widgets(
         widgets=widgets, vertical=True
     )
     layout.addStretch()
     layout.addLayout(pcm_layout)
+    layout.addStretch()
     return layout
