@@ -37,7 +37,7 @@ Dependencies:
 
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, Signal
@@ -53,6 +53,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIDimensions
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -330,15 +331,18 @@ class PresetEditor(BasicEditor):
         self.category_combo_box.addItems(sorted(categories))
         self.category_combo_box.currentIndexChanged.connect(self.on_category_changed)
         preset_vlayout.addWidget(self.category_combo_box)
-        # Load button
-        self.load_button = QPushButton(
-            JDXi.UI.Icon.get_icon(
-                JDXi.UI.Icon.FOLDER_NOTCH_OPEN, color=JDXi.UI.Style.FOREGROUND
-            ),
+        # Load Preset (round button + label, centered)
+        load_row = QHBoxLayout()
+        load_row.addStretch()
+        self.load_button = self._add_round_action_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
             "Load Preset",
+            self.load_preset_by_program_change,
+            load_row,
+            name=None,
         )
-        self.load_button.clicked.connect(self.load_preset_by_program_change)
-        preset_vlayout.addWidget(self.load_button)
+        load_row.addStretch()
+        preset_vlayout.addLayout(load_row)
         return preset_group
 
     def on_preset_type_changed(

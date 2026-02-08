@@ -132,7 +132,7 @@ class InstrumentPresetWidget(QWidget):
             icon_label.setPixmap(pixmap)
             label_layout.addWidget(icon_label)
         text_label = QLabel(text)
-        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        text_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         label_layout.addWidget(text_label)
         layout.addWidget(label_row)
         return btn

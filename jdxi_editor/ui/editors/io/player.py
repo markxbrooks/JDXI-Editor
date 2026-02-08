@@ -205,7 +205,7 @@ class MidiFileEditor(SynthEditor):
             detect_drums_icon_label.setPixmap(detect_drums_icon_pixmap)
             detect_drums_label_layout.addWidget(detect_drums_icon_label)
         self.ui.detect_drums_label = QLabel("Detect Drums")
-        self.ui.detect_drums_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        self.ui.detect_drums_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         detect_drums_label_layout.addWidget(self.ui.detect_drums_label)
         classification_hlayout.addWidget(detect_drums_label_row)
 
@@ -236,7 +236,7 @@ class MidiFileEditor(SynthEditor):
             classify_tracks_icon_label.setPixmap(classify_tracks_icon_pixmap)
             classify_tracks_label_layout.addWidget(classify_tracks_icon_label)
         self.ui.classify_tracks_label = QLabel("Classify Tracks")
-        self.ui.classify_tracks_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        self.ui.classify_tracks_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         classify_tracks_label_layout.addWidget(self.ui.classify_tracks_label)
         classification_hlayout.addWidget(classify_tracks_label_row)
         classification_hlayout.addStretch()
@@ -380,7 +380,7 @@ class MidiFileEditor(SynthEditor):
             load_icon_label.setPixmap(load_icon_pixmap)
             load_label_layout.addWidget(load_icon_label)
         self.ui.load_label = QLabel("Load MIDI File")
-        self.ui.load_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        self.ui.load_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         load_label_layout.addWidget(self.ui.load_label)
         layout.addWidget(load_label_row)
 
@@ -403,7 +403,7 @@ class MidiFileEditor(SynthEditor):
             save_icon_label.setPixmap(save_icon_pixmap)
             save_label_layout.addWidget(save_icon_label)
         self.ui.save_label = QLabel("Save MIDI File")
-        self.ui.save_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        self.ui.save_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         save_label_layout.addWidget(self.ui.save_label)
         layout.addWidget(save_label_row)
         layout.addStretch()
@@ -667,7 +667,7 @@ class MidiFileEditor(SynthEditor):
             insert_icon_label.setPixmap(insert_icon_pixmap)
             insert_cell_layout.addWidget(insert_icon_label)
         self.ui.automation_insert_label = QLabel("Insert Program Change Here")
-        self.ui.automation_insert_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        self.ui.automation_insert_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
         insert_cell_layout.addWidget(self.ui.automation_insert_label)
         insert_cell_layout.addStretch()
         grid.addWidget(insert_cell, row, 4)
@@ -707,7 +707,7 @@ class MidiFileEditor(SynthEditor):
             "Refresh USB Device List"
         )
         self.ui.usb_port_refresh_devices_label.setStyleSheet(
-            JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Style.STYLE_FOREGROUND
         )
         refresh_usb_cell_layout.addWidget(
             self.ui.usb_port_refresh_devices_label
@@ -1008,7 +1008,7 @@ class MidiFileEditor(SynthEditor):
             apply_all_label_layout.addWidget(apply_all_icon_label)
         self.ui.apply_all_track_changes_label = QLabel("Apply All Track Changes")
         self.ui.apply_all_track_changes_label.setStyleSheet(
-            JDXi.UI.Style.FOREGROUND
+            JDXi.UI.Style.STYLE_FOREGROUND
         )
         apply_all_label_layout.addWidget(self.ui.apply_all_track_changes_label)
         apply_all_label_layout.addStretch()
@@ -1176,7 +1176,7 @@ class MidiFileEditor(SynthEditor):
             label_layout.addWidget(icon_label)
 
         text_label = QLabel(spec.text)
-        text_label.setStyleSheet(JDXi.UI.Style.FOREGROUND)
+        text_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
 
         setattr(self.ui, f"{spec.name}_label", text_label)
 

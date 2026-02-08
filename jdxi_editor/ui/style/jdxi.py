@@ -220,6 +220,7 @@ class JDXiUIStyle:
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
     )
+    STYLE_FOREGROUND = f"color: {FOREGROUND};"
 
     # Analog Button Styles (analog=True for blue :hover/:checked gradients)
     BUTTON_RECT_ANALOG = generate_button_style(
