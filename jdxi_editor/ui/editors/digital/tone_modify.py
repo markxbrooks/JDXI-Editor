@@ -90,7 +90,7 @@ class DigitalToneModifySection(SectionBaseWidget):
 
         :param controls: dict
         """
-
+        self.SLIDER_GROUPS = self.build_layout_spec()
         super().__init__(
             icons_row_type=IconType.ADSR,
             analog=False,
