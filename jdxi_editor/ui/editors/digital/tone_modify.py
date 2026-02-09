@@ -102,11 +102,10 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets = {
-            "interval_sens_sliders": self._build_sliders(self.SLIDER_GROUPS["interval_sens"]),
-            "envelope_loop_mode_combo_boxes": self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_mode"]),
-            "envelope_loop_sync_note_combo_boxes": self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_sync_note"]),
-            "chromatic_portamento_switches": self._build_switches(self.SWITCH_GROUPS["chromatic_portamento"]),
+        self.widgets = DigitalToneModifyWidgets(interval_sens_sliders=self._build_sliders(self.SLIDER_GROUPS["interval_sens"]),
+            envelope_loop_mode_combo_boxes=self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_mode"]),
+            envelope_loop_sync_note_combo_boxes=self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_sync_note"]),
+            chromatic_portamento_switches=self._build_switches(self.SWITCH_GROUPS["chromatic_portamento"]),
         }
 
     # ------------------------------------------------------------
@@ -116,9 +115,9 @@ class DigitalToneModifySection(SectionBaseWidget):
     def setup_ui(self) -> None:
         """setup ui"""
         widget_rows = [
-            self.widgets["interval_sens_sliders"],
-            self.widgets["envelope_loop_mode_combo_boxes"],
-            self.widgets["envelope_loop_sync_note_combo_boxes"],
-            self.widgets["chromatic_portamento_switches"],
+            self.widgets.interval_sens_sliders,
+            self.widgets.envelope_loop_mode_combo_boxes,
+            self.widgets.envelope_loop_sync_note_combo_boxes,
+            self.widgets["chromatic_portamento_switches,
         ]
         self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
