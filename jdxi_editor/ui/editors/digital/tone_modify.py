@@ -16,7 +16,16 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 @dataclass
-class   DigitalToneModifyWidgets:
+class DigitalToneModifyWidgets:
+    """Digital Tone Modify"""
+    interval_sens: list[QWidget] = None
+    envelope_loop_mode: list[QWidget] = None
+    envelope_loop_sync_note: list[QWidget] = None
+    chromatic_portamento: list[QWidget] = None
+    
+    
+@dataclass
+class DigitalToneModifySpecs:
     """Digital Tone Modify"""
     interval_sens: list[QWidget] = None
     envelope_loop_mode: list[QWidget] = None
@@ -121,3 +130,45 @@ class DigitalToneModifySection(SectionBaseWidget):
             self.widgets.chromatic_portamento_switches,
         ]
         self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
+        
+    def _build_layout_spec(self):
+        """build layout spec"""
+        interval_sens = [
+            SliderSpec(
+                Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.ATTACK_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.RELEASE_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
+                Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
+                vertical=True,
+            ),
+        ],
+        envelope_loop_mode = [
+            ComboBoxSpec(
+                Digital.ModifyParam.ENVELOPE_LOOP_MODE,
+                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+                Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,
+            ),
+        ]
+        envelope_loop_sync_note = [
+            ComboBoxSpec(
+                Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
+                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+                LFOSyncNote.get_all_display_names(),
+            ),
+        ]
+        chromatic_portamento = [
+            SwitchSpec(
+                Digital.ModifyParam.CHROMATIC_PORTAMENTO,
+                Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
+                Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO,
+            ),
+        ]
+        return DigitalToneModifySpecs(interval_sens=interval_sens, envelope_loop_mode=envelope_loop_mode, envelope_loop_sync_note=envelope_loop_sync_note=, chromatic_portamento=chromatic_portamento)
