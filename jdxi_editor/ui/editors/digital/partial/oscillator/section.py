@@ -16,6 +16,7 @@ from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab, DigitalGroupBox
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
@@ -144,15 +145,26 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        self._create_waveform_buttons()
+        self.waveform_buttons = self._create_waveform_buttons()
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self._create_pitch_env_widget()
+        self.pitch_env_widget = self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
-        self._create_pwm_widget()
+        self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
         if not self.analog:
             self._build_additional_digital_widgets()
+
+        """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
+        # Keep self.osc for any code that expects OscillatorWidgets (switches/tuning/env)
+        self.widgets = OscillatorWidgets(
+            waveform_buttons=(
+                self.waveform_buttons),
+            pitch_env_widget=(
+                self.pitch_env_widget
+            ),
+            pwm_widget=self.pwm_widget
+        )
 
     def _build_additional_digital_widgets(self):
         """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
@@ -167,7 +179,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 w = self.controls.pop(param)
                 if w in self.amp_control_widgets:
                     self.amp_control_widgets.remove(w)
-        control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
+        control_sliders = self._build_sliders(self.SLIDER_GROUPS.controls)
         if len(control_sliders) >= 3:
             self.osc_pitch_slider, self.osc_detune_slider, self.super_saw_detune = (
                 control_sliders[0],

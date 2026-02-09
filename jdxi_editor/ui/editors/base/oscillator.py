@@ -5,6 +5,7 @@ LFO section of the digital partial editor.
 from typing import Callable
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -37,6 +38,7 @@ from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec
 
+OscillatorWidgets
 
 class BaseOscillatorSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
@@ -68,6 +70,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param analog: bool
         """
 
+        self.shape_icon_map = None
         self.sub_oscillator_type_switch = None
         self.tuning_sliders: list | None = None
         self.pwm_widget: QWidget | None = None
@@ -110,11 +113,11 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        self._create_waveform_buttons()
+        self.waveform_buttons = self._create_waveform_buttons()
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self._create_pitch_env_widget()
+        self.pitch_env_widget = self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
-        self._create_pwm_widget()
+        self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
         if not self.analog:
@@ -139,32 +142,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
 
         layout.addStretch()
-
-    def _create_shape_row_layout(self):
-        """Shape and sync controls"""
-        shape_label = QLabel("Shape")
-        shape_row_layout_widgets = [shape_label]
-        for mod_lfo_shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(
-                mod_lfo_shape, JDXi.UI.Icon.Wave.Icon.WAVEFORM
-            )
-            icon = create_icon_from_qta(icon_name)
-            btn = create_button_with_icon(
-                icon_name=mod_lfo_shape.display_name,
-                icon=icon,
-                button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
-                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
-            )
-            btn.clicked.connect(
-                lambda checked, shape=mod_lfo_shape: self._on_wave_shape_selected(shape)
-            )
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            self.wave_shape_buttons[mod_lfo_shape] = btn
-            shape_row_layout_widgets.append(btn)
-
-        shape_row_layout = create_layout_with_widgets(shape_row_layout_widgets)
-        return shape_row_layout
 
     def _create_tab_widget(self):
         """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
@@ -210,7 +187,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_waveform_buttons(self):
         """Override to create waveform buttons with custom icon generation (uses wave_shapes)."""
-        self.waveform_buttons = {}
+        waveform_buttons = {}
         self.wave_layout_widgets = []
 
         for spec in self.wave_shapes:
@@ -247,10 +224,11 @@ class BaseOscillatorSection(SectionBaseWidget):
             btn.clicked.connect(_on_click)
             btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
-            self.waveform_buttons[wave] = btn  # last wins for param-only lookup
+            waveform_buttons[wave] = btn  # last wins for param-only lookup
             self.button_widgets[btn_key] = btn
             self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = btn
             self.wave_layout_widgets.append(btn)
+        return waveform_buttons
 
     def _on_wave_shape_selected(self, lfo_shape: DigitalLFOShape | AnalogLFOShape):
         """
@@ -462,7 +440,7 @@ class BaseOscillatorSection(SectionBaseWidget):
                 JDXi.UI.Theme.apply_button_analog_active(selected_btn)
             self._update_pw_controls_state(waveform)
 
-    def _create_pwm_widget(self) -> None:
+    def _create_pwm_widget(self) -> PWMWidget:
         """Create PWM widget from PWM_SPEC or SYNTH_SPEC params."""
         spec = getattr(self, "PWM_SPEC", None)
         if spec is not None:
@@ -471,7 +449,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         else:
             pulse_width_param = self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH
             mod_depth_param = self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
-        self.pwm_widget = PWMWidget(
+        pwm_widget = PWMWidget(
             pulse_width_param=pulse_width_param,
             mod_depth_param=mod_depth_param,
             midi_helper=self.midi_helper,
@@ -480,8 +458,9 @@ class BaseOscillatorSection(SectionBaseWidget):
             controls=self.controls,
             analog=self.analog,
         )
+        return pwm_widget
 
-    def _create_pitch_env_widget(self) -> None:
+    def _create_pitch_env_widget(self) -> PitchEnvelopeWidget:
         """Create Pitch Envelope widget from PITCH_ENV_SPEC or SYNTH_SPEC params."""
         spec = getattr(self, "PITCH_ENV_SPEC", None)
         if spec is not None:
@@ -492,7 +471,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             attack_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME
             decay_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME
             depth_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH
-        self.pitch_env_widget = PitchEnvelopeWidget(
+        pitch_env_widget = PitchEnvelopeWidget(
             attack_param=attack_param,
             decay_param=decay_param,
             depth_param=depth_param,
@@ -502,6 +481,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             address=self.address,
             analog=self.analog,
         )
+        return pitch_env_widget
 
     def _build_additional_digital_widgets(self):
         raise NotImplementedError("Should be implemented in a Digital subclass")

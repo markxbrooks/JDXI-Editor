@@ -61,7 +61,7 @@ partial_misc_group, _ = create_group_with_layout("Misc", child_layout=form_layou
 
 **Current Code (Duplicated ~10+ times):**
 ```python
-# Example from analog/filter.py
+# Example from analog/section.py
 filter_row = QHBoxLayout()
 filter_row.addStretch()
 filter_row.addWidget(label)

@@ -51,10 +51,10 @@ from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
-from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
+from jdxi_editor.ui.editors.digital.partial.filter.section import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
-from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
+from jdxi_editor.ui.editors.digital.partial.oscillator.section import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialPanel
 
 

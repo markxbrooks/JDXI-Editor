@@ -222,6 +222,9 @@ class SectionBaseWidget(SynthBase):
             )
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
+    def generate_wave_shapes(self):
+        raise NotImplementedError("generate_wave_shapes must be implemented by subclass")
+
     def _create_controls_widget(self) -> QWidget:
         """Controls tab"""
         controls_layout = create_layout_with_widgets(self.amp_control_widgets)

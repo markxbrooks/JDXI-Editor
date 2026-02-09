@@ -115,7 +115,7 @@ class TestEditorValidation(unittest.TestCase):
 
     def test_filter_section_has_correct_adsr_params(self):
         """Test that DigitalFilterSection uses FILTER_ENV parameters."""
-        from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
+        from jdxi_editor.ui.editors.digital.partial.filter.section import DigitalFilterSection
         
         if not hasattr(DigitalFilterSection, "ADSR_SPEC"):
             self.skipTest("DigitalFilterSection has no ADSR_SPEC")
