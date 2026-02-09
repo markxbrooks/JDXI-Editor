@@ -16,7 +16,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -47,12 +47,12 @@ class DrumKitMixer(QWidget):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.mixer_sliders: Dict[str, Slider] = {}
-        self.partial_addresses: Dict[int, RolandSysExAddress] = {}
+        self.partial_addresses: Dict[int, JDXiSysExAddress] = {}
 
         # Base address for drum kit common area
         # Base address for drum kit common area (stored for reference, not currently used)
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
-        self.base_address = RolandSysExAddress(
+        self.base_address = JDXiSysExAddress(
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB.COMMON,
@@ -120,7 +120,7 @@ class DrumKitMixer(QWidget):
         """Create the master (Kit Level) slider."""
         # Use common address for master level
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
-        address = RolandSysExAddress(
+        address = JDXiSysExAddress(
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB.COMMON,
@@ -196,7 +196,7 @@ class DrumKitMixer(QWidget):
 
         # Create address for this partial
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
-        address = RolandSysExAddress(
+        address = JDXiSysExAddress(
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB(lmb_value),
@@ -241,7 +241,7 @@ class DrumKitMixer(QWidget):
         layout.addWidget(label, row, col)
         layout.addWidget(slider, row + 1, col, 2, 1)  # Sliders span 2 rows
 
-    def _on_master_level_changed(self, value: int, address: RolandSysExAddress) -> None:
+    def _on_master_level_changed(self, value: int, address: JDXiSysExAddress) -> None:
         """Handle master level change."""
         if not self.midi_helper:
             return
@@ -261,7 +261,7 @@ class DrumKitMixer(QWidget):
             log.error(f"Error setting master level: {ex}")
 
     def _on_partial_level_changed(
-        self, value: int, address: RolandSysExAddress, partial_index: int
+        self, value: int, address: JDXiSysExAddress, partial_index: int
     ) -> None:
         """Handle partial level change."""
         if not self.midi_helper:
@@ -275,7 +275,7 @@ class DrumKitMixer(QWidget):
             # This matches what the Partial Tabs use (not PARTIAL_LEVEL which is 0x0E)
             # Note: compose_message will automatically add the parameter's offset (0x16) via apply_address_offset
             # So we set LSB to 0x00 and let compose_message add the offset
-            partial_address = RolandSysExAddress(
+            partial_address = JDXiSysExAddress(
                 address.msb,
                 address.umb,
                 address.lmb,

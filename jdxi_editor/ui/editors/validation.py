@@ -19,11 +19,8 @@ Usage:
         # Handle validation errors
 """
 
-from typing import Dict, List, Optional, Set, Type
+from typing import Dict, List, Set
 
-from picomidi.sysex.parameter.address import AddressParameter
-
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 
 
@@ -186,7 +183,7 @@ def validate_digital_sections() -> Dict[str, List[str]]:
     Returns:
         Dictionary mapping section names to lists of error messages
     """
-    from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
+    from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
     from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 
     all_errors = {}

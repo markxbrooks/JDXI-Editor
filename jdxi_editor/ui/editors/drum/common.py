@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetProgramLMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
@@ -48,7 +48,7 @@ class DrumCommonSection(SectionBaseWidget):
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
     ):
         """
         Initialize the DrumCommonSection

@@ -18,12 +18,12 @@ from typing import Any, Dict, Tuple, Type, Union
 
 from picomidi.sysex.parameter.address import AddressParameter
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 
 
 def apply_address_offset(
-    base_address: RolandSysExAddress, param: AddressParameter
-) -> RolandSysExAddress:
+    base_address: JDXiSysExAddress, param: AddressParameter
+) -> JDXiSysExAddress:
     """
     Applies the offset of a parameter to a base address.
 

@@ -40,7 +40,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,
@@ -1704,7 +1704,7 @@ class MidiFileEditor(SynthEditor):
         try:
             # Create SysEx composer and address for effects
             sysex_composer = JDXiSysExComposer()
-            address = RolandSysExAddress(
+            address = JDXiSysExAddress(
                 JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
                 JDXiSysExOffsetSystemUMB.COMMON,
                 JDXiSysExOffsetProgramLMB.COMMON,

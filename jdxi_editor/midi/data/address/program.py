@@ -2,11 +2,11 @@ from picomidi.constant import Midi
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 
 
-class ProgramCommonAddress(RolandSysExAddress):
+class ProgramCommonAddress(JDXiSysExAddress):
     """
     A convenient subclass for the standard "Program Common" address in Roland SysEx messages.
     """

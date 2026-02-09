@@ -29,11 +29,13 @@ Dependencies:
 
 """
 
-from dataclasses import dataclass
-from enum import Enum, auto
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.conversion.adsr import ADSR_BINDINGS
+from jdxi_editor.midi.conversion.pitch_env import PITCH_ENV_BINDINGS
+from jdxi_editor.midi.conversion.pwm import PWM_BINDINGS
+from jdxi_editor.midi.conversion.value import convert_value
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -74,79 +76,6 @@ from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-
-
-class ValueTransform(Enum):
-    MS = auto()
-    FRACTION = auto()
-    PITCH_ENV_TIME = auto()
-
-
-def convert_value(transform: ValueTransform, midi_value: int) -> float:
-    if transform is ValueTransform.FRACTION:
-        return midi_value_to_fraction(midi_value)
-
-    if transform is ValueTransform.PITCH_ENV_TIME:
-        return midi_value_to_ms(midi_value, 10, 5000)
-
-    return midi_value_to_ms(midi_value)
-
-
-@dataclass(frozen=True)
-class ParamBinding:
-    transform: ValueTransform
-    resolver: Callable[[Any, int], QWidget]  # (self, partial_no) -> control
-
-
-ADSR_BINDINGS: dict[DigitalPartialParam, ParamBinding] = {
-    Digital.Param.AMP_ENV_ATTACK_TIME: ParamBinding(
-        ValueTransform.MS,
-        lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.attack_control,
-    ),
-    Digital.Param.AMP_ENV_SUSTAIN_LEVEL: ParamBinding(
-        ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.sustain_control,
-    ),
-    Digital.Param.FILTER_ENV_RELEASE_TIME: ParamBinding(
-        ValueTransform.MS,
-        lambda s, p: s.partial_editors[p].filter_tab.adsr_widget.release_control,
-    ),
-}
-
-PITCH_ENV_BINDINGS = {
-    Digital.Param.OSC_PITCH_ENV_ATTACK_TIME: ParamBinding(
-        ValueTransform.PITCH_ENV_TIME,
-        lambda s, p: s.partial_editors[
-            p
-        ].oscillator_tab.pitch_env_widget.attack_control,
-    ),
-    Digital.Param.OSC_PITCH_ENV_DEPTH: ParamBinding(
-        ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.pitch_env_widget.depth_control,
-    ),
-}
-
-PWM_BINDINGS = {
-    Digital.Param.OSC_PULSE_WIDTH: ParamBinding(
-        ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.pulse_width_control,
-    ),
-    Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH: ParamBinding(
-        ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.mod_depth_control,
-    ),
-}
-
-
-def resolve_pwm(s, p, param):
-    osc = s.partial_editors[p].oscillator_tab
-    if hasattr(osc, "controls") and param in osc.controls:
-        return osc.controls[param]
-    if hasattr(osc, "pwm_widget"):
-        if param == Digital.Param.OSC_PULSE_WIDTH:
-            return osc.pwm_widget.pulse_width_control
-        if param == Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
-            return osc.pwm_widget.mod_depth_control
 
 
 class DigitalSynthEditor(BaseSynthEditor):
@@ -1318,8 +1247,6 @@ class DigitalSynthEditor(BaseSynthEditor):
         if partial_number is None:
             return
 
-        from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-
         lfo_shape_map = {
             0: Digital.LFO.Shape.TRI,
             1: Digital.LFO.Shape.SINE,
@@ -1387,8 +1314,6 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         if partial_number is None:
             return
-
-        from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 
         mod_lfo_shape_map = {
             0: Digital.LFO.Shape.TRI,

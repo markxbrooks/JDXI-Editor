@@ -5,7 +5,7 @@ Analog Filter Section
 from typing import Callable, Dict
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -76,7 +76,7 @@ class AnalogFilterSection(BaseFilterSection):
 
     def __init__(
         self,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
         on_filter_mode_changed: Callable = None,
         midi_helper: MidiIOHelper = None,
         send_midi_parameter: Callable = None,

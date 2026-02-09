@@ -7,7 +7,6 @@ preventing bugs like using FILTER parameters in AMP sections.
 """
 
 import sys
-import os
 import unittest
 from pathlib import Path
 
@@ -17,7 +16,6 @@ sys.path.insert(0, str(project_root))
 
 from jdxi_editor.ui.editors.validation import (
     validate_adsr_spec,
-    validate_section_parameters,
     validate_digital_sections,
 )
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
@@ -97,7 +95,7 @@ class TestEditorValidation(unittest.TestCase):
 
     def test_amp_section_has_correct_adsr_params(self):
         """Test that DigitalAmpSection uses AMP_ENV parameters."""
-        from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
+        from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
         
         if not hasattr(DigitalAmpSection, "ADSR_SPEC"):
             self.skipTest("DigitalAmpSection has no ADSR_SPEC")

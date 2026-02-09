@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
@@ -68,7 +68,7 @@ class BaseFilterSection(SectionBaseWidget):
     def __init__(
         self,
         definition: FilterDefinition,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
         midi_helper: MidiIOHelper,
         send_midi_parameter: Callable | None = None,
         on_filter_mode_changed: Callable | None = None,

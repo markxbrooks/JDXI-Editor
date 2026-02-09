@@ -181,7 +181,7 @@ class Address(SysExByte):
         return f"{self.__class__.__name__}.{self.name}: 0x{value_int:02X}"
 
 
-class RolandSysExAddress:
+class JDXiSysExAddress:
     """
     Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for
     address arithmetic, formatting, and conversion to/from SysEx message bytes.
@@ -198,7 +198,7 @@ class RolandSysExAddress:
         self.lsb = lsb
 
     @classmethod
-    def from_bytes(cls, b: bytes) -> Optional[RolandSysExAddress]:
+    def from_bytes(cls, b: bytes) -> Optional[JDXiSysExAddress]:
         """
         Create a RolandSysExAddress object from a 4-byte bytes object.
 
@@ -227,7 +227,7 @@ class RolandSysExAddress:
 
     def add_offset(
         self, offset: Union[int, tuple[int, int, int]]
-    ) -> RolandSysExAddress:
+    ) -> JDXiSysExAddress:
         """
         Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
         MSB remains unchanged.
@@ -248,7 +248,7 @@ class RolandSysExAddress:
         new_umb = (self.umb + offset_bytes[0]) & BitMask.LOW_7_BITS
         new_lmb = (self.lmb + offset_bytes[1]) & BitMask.LOW_7_BITS
         new_lsb = (self.lsb + offset_bytes[2]) & BitMask.LOW_7_BITS
-        return RolandSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
+        return JDXiSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
 
     def __repr__(self) -> str:
         """
@@ -330,7 +330,7 @@ class RolandSysExAddress:
         :param other: object The other object
         :return: bool True if the objects are equal, False otherwise
         """
-        if not isinstance(other, RolandSysExAddress):
+        if not isinstance(other, JDXiSysExAddress):
             return NotImplemented
         return self.to_bytes() == other.to_bytes()
 
@@ -342,8 +342,8 @@ class RolandSysExAddress:
         """
         return hash(self.to_bytes())
 
-    def copy(self) -> RolandSysExAddress:
-        return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
+    def copy(self) -> JDXiSysExAddress:
+        return JDXiSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
 
 
 # ==========================

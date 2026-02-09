@@ -4,7 +4,7 @@ LFO section of the digital partial editor.
 
 from typing import Callable, Literal
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo import BaseLFOSection
@@ -22,7 +22,7 @@ class DigitalLFOSection(BaseLFOSection):
         self,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
         icons_row_type=IconType.ADSR,
         analog=False,
     ):

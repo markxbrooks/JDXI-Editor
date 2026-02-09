@@ -11,7 +11,7 @@ from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.sections import SysExSection
@@ -137,7 +137,7 @@ class JDXiJSONComposer:
         from jdxi_editor.midi.data.address.address import (
             JDXiSysExOffsetProgramLMB,
             JDXiSysExOffsetSuperNATURALLMB,
-            RolandSysExAddress,
+            JDXiSysExAddress,
         )
         from jdxi_editor.midi.data.parameter.digital import (
             DigitalCommonParam,
@@ -175,7 +175,7 @@ class JDXiJSONComposer:
                 # The editor.address.umb is already correct (0x01 for DS1, 0x21 for DS2)
                 # We just need to ensure LMB is set to COMMON (0x00)
 
-                common_address = RolandSysExAddress(
+                common_address = JDXiSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
                     lmb=JDXiSysExOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
@@ -364,7 +364,7 @@ class JDXiJSONComposer:
             # Always try to save Common if we have any Common controls or KIT_LEVEL
             if common_controls or "KIT_LEVEL" in controls_dict:
                 # For Drum Common: MSB=0x19, UMB=0x70, LMB=0x00 (COMMON), LSB=0x00
-                common_address = RolandSysExAddress(
+                common_address = JDXiSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x70 (DRUM_KIT)
                     lmb=JDXiSysExOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
@@ -424,7 +424,7 @@ class JDXiJSONComposer:
         self,
         editor: "SynthEditor",
         controls_dict: dict,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
         temp_folder: Path,
         section_name: str,
     ) -> Path:

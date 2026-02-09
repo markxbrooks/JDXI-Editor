@@ -11,7 +11,7 @@ from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetSuperNATURALLMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.digital import (
@@ -29,8 +29,8 @@ from jdxi_editor.midi.sysex.validation import (
 
 
 def apply_lmb_offset(
-    address: RolandSysExAddress, param: AddressParameter
-) -> RolandSysExAddress:
+    address: JDXiSysExAddress, param: AddressParameter
+) -> JDXiSysExAddress:
     """
     Set the LMB (Logical Memory Block) of the address depending on the parameter type.
     """
@@ -50,7 +50,7 @@ class JDXiSysExComposer:
 
     def compose_message(
         self,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
         param: AddressParameter,
         value: int,
         size: int = 1,

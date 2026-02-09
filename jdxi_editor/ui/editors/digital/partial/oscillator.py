@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
@@ -114,7 +114,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         analog: bool = False,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
         self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()

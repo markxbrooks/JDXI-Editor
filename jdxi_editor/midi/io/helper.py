@@ -27,7 +27,7 @@ from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
@@ -131,7 +131,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 log.warning(f"Address too short: {address_bytes}")
                 return
 
-            address = RolandSysExAddress(
+            address = JDXiSysExAddress(
                 msb=address_bytes[0],
                 umb=address_bytes[1],
                 lmb=address_bytes[2],

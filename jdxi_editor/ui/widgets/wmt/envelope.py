@@ -25,7 +25,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
@@ -50,7 +50,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         midi_helper: Optional[MidiIOHelper] = None,
         create_parameter_slider: Callable = None,
         controls: dict[AddressParameter, QWidget] = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(

@@ -30,7 +30,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.parameter.digital.spec import TabDefinitionMixin
 from jdxi_editor.midi.io.delay import send_with_delay
@@ -51,7 +51,7 @@ class SynthBase(QWidget):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: QWidget = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
     ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
@@ -76,7 +76,7 @@ class SynthBase(QWidget):
         self._control_registries: Dict[tuple, ControlRegistry] = {}
         self.partial_editors = {}
         self.sysex_data = None
-        self.address: Optional[RolandSysExAddress] = address
+        self.address: Optional[JDXiSysExAddress] = address
         self.partial_number = None
         self.bipolar_parameters = []
         self.analog: bool = False
@@ -116,7 +116,7 @@ class SynthBase(QWidget):
 
     def _get_address_from_hierarchy(
         self, parameter_cls: AddressParameter = None
-    ) -> Optional[RolandSysExAddress]:
+    ) -> Optional[JDXiSysExAddress]:
         """
         Get address from self, parent, or parent.parent if available.
         If no address is found and we're dealing with a ProgramEditor or ProgramCommonParam,
@@ -147,7 +147,7 @@ class SynthBase(QWidget):
 
         # Try self first
         if hasattr(self, "address") and self.address is not None:
-            if isinstance(self.address, RolandSysExAddress) and hasattr(
+            if isinstance(self.address, JDXiSysExAddress) and hasattr(
                 self.address, "add_offset"
             ):
                 return self.address
@@ -161,7 +161,7 @@ class SynthBase(QWidget):
         # Try parent
         if hasattr(self, "parent") and self.parent is not None:
             if hasattr(self.parent, "address") and self.parent.address is not None:
-                if isinstance(self.parent.address, RolandSysExAddress) and hasattr(
+                if isinstance(self.parent.address, JDXiSysExAddress) and hasattr(
                     self.parent.address, "add_offset"
                 ):
                     return self.parent.address
@@ -186,7 +186,7 @@ class SynthBase(QWidget):
                 and self.parent.parent.address is not None
             ):
                 if isinstance(
-                    self.parent.parent.address, RolandSysExAddress
+                    self.parent.parent.address, JDXiSysExAddress
                 ) and hasattr(self.parent.parent.address, "add_offset"):
                     return self.parent.parent.address
             # If parent.parent is ProgramEditor and has no address, create one
@@ -317,7 +317,7 @@ class SynthBase(QWidget):
         self,
         parameter_cls: AddressParameter,
         tone_name: str,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
     ) -> None:
         """
         send_tone_name
@@ -357,7 +357,7 @@ class SynthBase(QWidget):
                 continue
 
     def send_midi_parameter(
-        self, param: AddressParameter, value: int, address: RolandSysExAddress = None
+        self, param: AddressParameter, value: int, address: JDXiSysExAddress = None
     ) -> bool:
         """
         Send MIDI parameter with error handling
@@ -377,7 +377,7 @@ class SynthBase(QWidget):
             )
             return False
         # Validate that address is a proper RolandSysExAddress instance with required methods
-        if not isinstance(address, RolandSysExAddress):
+        if not isinstance(address, JDXiSysExAddress):
             log.error(
                 f"Cannot send MIDI parameter {param.name if param else 'Unknown'}: "
                 f"address is not a RolandSysExAddress instance (got {type(address)})"
@@ -538,7 +538,7 @@ class SynthBase(QWidget):
         self,
         param: AddressParameter,
         display_value: int,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
     ) -> None:
         """
         Handle parameter change event, convert display value to MIDI value,
@@ -564,7 +564,7 @@ class SynthBase(QWidget):
         label: str,
         vertical: bool = False,
         initial_value: Optional[int] = 0,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
         show_value_label: bool = True,
     ) -> Slider:
         """

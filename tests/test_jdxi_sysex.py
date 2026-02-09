@@ -15,7 +15,7 @@ import unittest
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     ModelID,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import RolandID
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -40,7 +40,7 @@ class TestJDXiSysEx(unittest.TestCase):
 
     def test_message_creation_with_sysex_address(self):
         """Test creating message with RolandSysExAddress object."""
-        sysex_address = RolandSysExAddress(
+        sysex_address = JDXiSysExAddress(
             msb=0x19,
             umb=0x42,
             lmb=0x00,
@@ -235,7 +235,7 @@ class TestJDXiSysEx(unittest.TestCase):
 
     def test_sysex_address_overrides_individual_bytes(self):
         """Test that sysex_address overrides individual bytes."""
-        sysex_address = RolandSysExAddress(
+        sysex_address = JDXiSysExAddress(
             msb=0x19,
             umb=0x42,
             lmb=0x00,

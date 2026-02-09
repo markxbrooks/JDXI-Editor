@@ -1,5 +1,13 @@
 """
 AMP section for the digital partial editor.
+
+
+Example Usage:
+==============
+>>> DigitalAmpSection(send_midi_parameter=send_midi_parameter,
+... midi_helper=midi_helper,
+... address=synth_data.address
+... )
 """
 
 from typing import Dict
@@ -10,7 +18,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp import BaseAmpSection
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpWidgetSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
@@ -19,6 +27,8 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 
 class DigitalAmpSection(BaseAmpSection):
     """Digital Amp Section for JD-Xi Editor"""
+
+    SYNTH_SPEC = JDXiMidiDigital
 
     ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
         ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
@@ -32,18 +42,18 @@ class DigitalAmpSection(BaseAmpSection):
         # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
     }
 
-    SYNTH_SPEC = JDXiMidiDigital
-
     def __init__(self, **kwargs):
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.SLIDER_GROUPS: AmpWidgetSpec = self._build_layout_spec()
+        self.widgets: AmpWidgetSpec | None = None
+        self.AMP_PARAMETERS = self._build_amp_parameters()
         super().__init__(**kwargs)
 
     def build_widgets(self):
         """Override to build from SLIDER_GROUPS via _create_parameter_widgets, then base tab/ADSR."""
-        self._create_parameter_widgets()
+        self._build_widgets()
         super(BaseAmpSection, self).build_widgets()
 
-    def _create_parameter_widgets(self):
+    def _build_widgets(self):
         """Override to build from SLIDER_GROUPS; Pan in its own group (horizontal).
         Pop any existing control/pan widgets before adding to avoid duplication."""
         # --- Pop existing control sliders so we don't duplicate
@@ -53,14 +63,15 @@ class DigitalAmpSection(BaseAmpSection):
                 w = self.controls.pop(param)
                 if w in self.tuning_control_widgets:
                     self.tuning_control_widgets.remove(w)
-        pan_specs = self.SLIDER_GROUPS.get("sliders", [])
+        pan_specs = self.SLIDER_GROUPS.pan
         if pan_specs and pan_specs[0].param in self.controls:
             self.controls.pop(pan_specs[0].param, None)
 
         # --- Vertical control sliders
-        control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
+        self.widgets = AmpWidgetSpec(controls=self._build_sliders(self.SLIDER_GROUPS.controls),
+                                     pan=self._build_sliders(self.SLIDER_GROUPS.pan))
         for spec, widget in zip(
-            self.SLIDER_GROUPS.get("controls", []), control_sliders
+            self.SLIDER_GROUPS.controls, self.widgets.controls
         ):
             self.controls[spec.param] = widget
             self.tuning_control_widgets.append(widget)
@@ -89,7 +100,7 @@ class DigitalAmpSection(BaseAmpSection):
         controls_widget.setLayout(controls_layout)
         return controls_widget
 
-    def _build_layout_spec(self) -> LayoutSpec:
+    def _build_layout_spec(self) -> AmpWidgetSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         controls = [
@@ -126,6 +137,10 @@ class DigitalAmpSection(BaseAmpSection):
                 vertical=False,
             ),
         ]
-        return LayoutSpec(
-            controls=controls, sliders=pan
+        return AmpWidgetSpec(
+            controls=controls, pan=pan
         )  # separate place to put the Pan
+
+    def set_pan(self, value: int) -> None:
+        self._set_param(self.SYNTH_SPEC.Param.AMP_PAN, value)
+

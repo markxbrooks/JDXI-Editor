@@ -55,7 +55,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
@@ -1873,7 +1873,7 @@ class JDXiInstrument(JDXiWindow):
                 scope="JDXiInstrument",
                 message=f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})",
             )
-            address = RolandSysExAddress(
+            address = JDXiSysExAddress(
                 msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
                 umb=JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
                 lmb=JDXiSysExOffsetProgramLMB.COMMON,
@@ -1897,13 +1897,13 @@ class JDXiInstrument(JDXiWindow):
                 self.midi_key_hold_latched = not self.midi_key_hold_latched
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                address1 = RolandSysExAddress(
+                address1 = JDXiSysExAddress(
                     msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
                     umb=JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
                     lmb=JDXiSysExOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
-                address2 = RolandSysExAddress(
+                address2 = JDXiSysExAddress(
                     msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
                     umb=0x01,
                     lmb=0x00,
@@ -1964,7 +1964,7 @@ class JDXiInstrument(JDXiWindow):
                     JDXiSysExOffsetProgramLMB.PART_ANALOG,
                     JDXiSysExOffsetProgramLMB.ZONE_DRUM,
                 ]:
-                    address = RolandSysExAddress(
+                    address = JDXiSysExAddress(
                         msb=JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
                         umb=JDXiSysExOffsetSystemUMB.COMMON,
                         lmb=zone,

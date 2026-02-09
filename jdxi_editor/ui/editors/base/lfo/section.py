@@ -7,7 +7,7 @@ from typing import Callable
 from PySide6.QtWidgets import QPushButton, QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -33,7 +33,7 @@ class BaseLFOSection(SectionBaseWidget):
         icons_row_type: str = IconType.ADSR,
         analog: bool = False,
         send_midi_parameter: Callable = None,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
         midi_helper: MidiIOHelper = None,
     ):
         """

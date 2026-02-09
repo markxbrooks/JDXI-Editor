@@ -73,7 +73,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
 from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES
@@ -311,7 +311,7 @@ class EffectsCommonEditor(BasicEditor):
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
-        self.address = RolandSysExAddress(
+        self.address = JDXiSysExAddress(
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
             JDXiSysExOffsetSystemUMB.COMMON,
             JDXiSysExOffsetProgramLMB.COMMON,
@@ -781,7 +781,7 @@ class EffectsCommonEditor(BasicEditor):
         return container
 
     def _on_parameter_changed(
-        self, param: AddressParameter, value: int, address: RolandSysExAddress = None
+        self, param: AddressParameter, value: int, address: JDXiSysExAddress = None
     ):
         """Handle parameter value changes from UI controls."""
         try:

@@ -15,14 +15,14 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
 def log_slider_parameters(
-    address: RolandSysExAddress,
+    address: JDXiSysExAddress,
     param: AddressParameter,
     midi_value: int,
     slider_value: Union[int, float],

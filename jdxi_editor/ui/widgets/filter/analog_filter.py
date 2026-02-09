@@ -19,7 +19,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QHBoxLayout, QSlider, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
@@ -37,7 +37,7 @@ class AnalogFilterWidget(EnvelopeWidgetBase):
         cutoff_param: AddressParameter,
         midi_helper: Optional[MidiIOHelper] = None,
         controls: dict[AddressParameter, QWidget] = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
         create_parameter_slider: Callable = None,
         parent: Optional[QWidget] = None,
     ):

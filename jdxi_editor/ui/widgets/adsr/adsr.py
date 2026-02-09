@@ -19,7 +19,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
@@ -43,7 +43,7 @@ class ADSR(EnvelopeWidgetBase):
         peak_param: Optional[AddressParameter] = None,
         create_parameter_slider: Callable = None,
         midi_helper: Optional[MidiIOHelper] = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
         controls: Dict[AddressParameter, QWidget] = None,
         parent: Optional[QWidget] = None,
         analog: bool = False,

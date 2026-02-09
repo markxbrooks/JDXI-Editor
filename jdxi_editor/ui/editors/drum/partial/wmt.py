@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
@@ -72,7 +72,7 @@ class DrumWMTSection(SectionBaseWidget):
         self,
         controls: dict,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
         on_parameter_changed: Callable = None,
     ):
         super().__init__()

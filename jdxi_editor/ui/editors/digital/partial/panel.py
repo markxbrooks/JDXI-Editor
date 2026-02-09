@@ -48,11 +48,9 @@ from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
-from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
+from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection

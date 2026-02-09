@@ -37,7 +37,7 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     JDXiSysExAddressStartMSB,
     ModelID,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import (
     END_OF_SYSEX,
@@ -71,7 +71,7 @@ class JDXiSysEx(RolandSysExMessage):
     command: int = CommandID.DT1
 
     # --- JD-Xi specific address handling
-    sysex_address: Optional[RolandSysExAddress] = None
+    sysex_address: Optional[JDXiSysExAddress] = None
     msb: int = Midi.VALUE.ZERO
     umb: int = Midi.VALUE.ZERO
     lmb: int = Midi.VALUE.ZERO
@@ -197,7 +197,7 @@ class JDXiSysEx(RolandSysExMessage):
                 f"Invalid address bytes: {[f'{safe_int(x):02X}' for x in address_ints]}"
             )
 
-    def from_sysex_address(self, sysex_address: RolandSysExAddress) -> None:
+    def from_sysex_address(self, sysex_address: JDXiSysExAddress) -> None:
         """
         Update address from RolandSysExAddress object.
 
@@ -291,7 +291,7 @@ class JDXiSysEx(RolandSysExMessage):
 
     def construct_sysex(
         self,
-        address: RolandSysExAddress,
+        address: JDXiSysExAddress,
         *data_bytes: Union[List[int], int],
         request: bool = False,
     ) -> List[int]:

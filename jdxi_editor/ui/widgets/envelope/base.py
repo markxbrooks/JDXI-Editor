@@ -10,7 +10,7 @@ from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.slider import Slider
@@ -38,7 +38,7 @@ class EnvelopeWidgetBase(QWidget):
         envelope_keys: list[str],
         create_parameter_slider: Callable,
         midi_helper: Optional[MidiIOHelper] = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
         controls: Optional[dict[AddressParameter, Slider]] = None,
         parent: Optional[QWidget] = None,
     ):

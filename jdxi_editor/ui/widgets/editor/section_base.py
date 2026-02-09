@@ -33,7 +33,7 @@ Usage Example:
 
 """
 
-from typing import Any, Callable, Dict, Literal, Optional, Union
+from typing import Any, Callable, Literal, Optional
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
@@ -50,11 +50,10 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
-from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
@@ -64,10 +63,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
     create_button_with_icon,
@@ -105,7 +101,7 @@ class SectionBaseWidget(SynthBase):
         self,
         send_midi_parameter: Callable = None,
         midi_helper: Optional[MidiIOHelper] = None,
-        address: RolandSysExAddress = None,
+        address: JDXiSysExAddress = None,
         parent: Optional[QWidget] = None,
         icons_row_type: Literal[
             IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
@@ -133,8 +129,8 @@ class SectionBaseWidget(SynthBase):
         self._icon_added: bool = False
 
         self.midi_helper = midi_helper
-        self.address: RolandSysExAddress | None = address
-        self.send_midi_parameter = send_midi_parameter
+        self.address: JDXiSysExAddress | None = address
+        self._set_param = send_midi_parameter
 
         self.tab_widget = None
         self.adsr_widget = None
@@ -205,7 +201,7 @@ class SectionBaseWidget(SynthBase):
     # -------------------------------
     def build_widgets(self):
         """Build sliders, switches, combo boxes, buttons, and ADSR"""
-        self._create_parameter_widgets()
+        self._build_widgets()
         if self._get_button_specs():
             self._create_waveform_buttons()
         if self.ADSR_SPEC:
@@ -235,7 +231,7 @@ class SectionBaseWidget(SynthBase):
         """Return the main list of specs for widget creation: SLIDER_GROUPS['controls'] when present."""
         return self.SLIDER_GROUPS.get("controls", [])
 
-    def _create_parameter_widgets(self):
+    def _build_widgets(self):
         """Create widgets from SLIDER_GROUPS['controls'] (sliders, switches, combos)."""
         for spec in self._get_param_specs():
             if isinstance(spec, SliderSpec):
@@ -595,7 +591,7 @@ class SectionBaseWidget(SynthBase):
         else:
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         self._update_button_enabled_states(button_param)
-        if self.send_midi_parameter:
+        if self._set_param:
             # --- Map filter mode enums to their corresponding parameter
             if isinstance(button_param, DigitalFilterMode):
                 # --- Filter mode buttons map to FILTER_MODE_SWITCH parameter
@@ -621,7 +617,7 @@ class SectionBaseWidget(SynthBase):
                 )
                 return
 
-            self.send_midi_parameter(actual_param, param_value)
+            self._set_param(actual_param, param_value)
 
     def _add_widget_rows(
         self, layout: QHBoxLayout | QVBoxLayout, rows: list[list[QWidget]]
@@ -734,7 +730,7 @@ class SectionBaseWidget(SynthBase):
 
     def _send_wave_shape_midi(self, shape: DigitalLFOShape | AnalogLFOShape):
         """Send Wave Shape"""
-        if self.send_midi_parameter:
+        if self._set_param:
             address = getattr(self, "address", None)
             log.message(
                 "[LFO Shape] sending MIDI param: %s value %s address %s section %s",
@@ -744,14 +740,14 @@ class SectionBaseWidget(SynthBase):
                 self.__class__.__name__,
                 scope=self.__class__.__name__,
             )
-            if not self.send_midi_parameter(
+            if not self._set_param(
                 self.wave_shape_param, shape.value, address
             ):
                 log.warning(
                     f"Failed to set Mod LFO shape to {shape.name}",
                     scope=self.__class__.__name__,
                 )
-        elif not self.send_midi_parameter:
+        elif not self._set_param:
             log.warning(
                 "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
                 self.__class__.__name__,

@@ -37,7 +37,7 @@ from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetTemporaryToneUMB,
-    RolandSysExAddress,
+    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -98,7 +98,7 @@ class SynthEditor(SynthBase):
         self,
         midi_helper: Optional[object] = None,
         parent: Optional[QWidget] = None,
-        address: Optional[RolandSysExAddress] = None,
+        address: Optional[JDXiSysExAddress] = None,
     ):
         super().__init__(
             midi_helper=midi_helper, parent=parent, address=address
