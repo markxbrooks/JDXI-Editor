@@ -118,6 +118,6 @@ class DigitalToneModifySection(SectionBaseWidget):
             self.widgets.interval_sens_sliders,
             self.widgets.envelope_loop_mode_combo_boxes,
             self.widgets.envelope_loop_sync_note_combo_boxes,
-            self.widgets["chromatic_portamento_switches,
+            self.widgets.chromatic_portamento_switches,
         ]
         self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
