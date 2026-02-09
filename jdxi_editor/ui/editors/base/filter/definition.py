@@ -3,7 +3,6 @@ FilterDefinition
 """
 
 from dataclasses import dataclass
-from enum import IntEnum
 from typing import Any, runtime_checkable, Protocol
 
 from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
