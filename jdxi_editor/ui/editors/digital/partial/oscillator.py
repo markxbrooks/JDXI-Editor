@@ -153,8 +153,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ):
             if param in self.controls:
                 w = self.controls.pop(param)
-                if w in self.tuning_control_widgets:
-                    self.tuning_control_widgets.remove(w)
+                if w in self.amp_control_widgets:
+                    self.amp_control_widgets.remove(w)
         control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
         if len(control_sliders) >= 3:
             self.osc_pitch_slider, self.osc_detune_slider, self.super_saw_detune = (
@@ -164,7 +164,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             )
             for spec, widget in zip(self.SLIDER_GROUPS.controls, control_sliders):
                 self.controls[spec.param] = widget
-                self.tuning_control_widgets.append(widget)
+                self.amp_control_widgets.append(widget)
             # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
             self.super_saw_detune.setEnabled(False)
         self._create_pulse_width_shift_slider()
@@ -321,7 +321,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _add_tuning_tab(self):
         """Add Tuning tab"""
-        tuning_widget = self._create_row_widget(widgets=self.tuning_control_widgets)
+        tuning_widget = self._create_row_widget(widgets=self.amp_control_widgets)
         self._add_tab(key=DigitalOscillatorTab.TUNING, widget=tuning_widget)
 
     def _create_row_widget(

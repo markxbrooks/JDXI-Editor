@@ -134,7 +134,7 @@ class SectionBaseWidget(SynthBase):
 
         self.tab_widget = None
         self.adsr_widget = None
-        self.tuning_control_widgets = []
+        self.amp_control_widgets = []
         self.button_widgets = {}
 
         self.button_widgets: dict[Any, QPushButton] = {}
@@ -224,7 +224,7 @@ class SectionBaseWidget(SynthBase):
 
     def _create_controls_widget(self) -> QWidget:
         """Controls tab"""
-        controls_layout = create_layout_with_widgets(self.tuning_control_widgets)
+        controls_layout = create_layout_with_widgets(self.amp_control_widgets)
         return create_widget_with_layout(controls_layout)
 
     def _get_param_specs(self) -> list:
@@ -250,7 +250,7 @@ class SectionBaseWidget(SynthBase):
                 continue
 
             self.controls[spec.param] = widget
-            self.tuning_control_widgets.append(widget)
+            self.amp_control_widgets.append(widget)
 
     def _update_button_enabled_states(self, button_param):
         """Enable/disable controls based on BUTTON_ENABLE_RULES"""
