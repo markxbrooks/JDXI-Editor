@@ -338,7 +338,12 @@ class PresetEditor(BasicEditor):
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
-            [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2, PresetTitle.DRUMS, PresetTitle.ANALOG_SYNTH]
+            [
+                PresetTitle.DIGITAL_SYNTH1,
+                PresetTitle.DIGITAL_SYNTH2,
+                PresetTitle.DRUMS,
+                PresetTitle.ANALOG_SYNTH,
+            ]
         )
         self.digital_preset_type_combo.currentIndexChanged.connect(
             self.on_preset_type_changed
@@ -520,7 +525,10 @@ class PresetEditor(BasicEditor):
         filtered_list = [  # Filter programs based on bank and genre
             preset
             for preset in self.preset_list
-            if (selected_category in ["[PresetEditor] No Category Selected", preset["category"]])
+            if (
+                selected_category
+                in ["[PresetEditor] No Category Selected", preset["category"]]
+            )
         ]
         filtered_presets = []
         for preset in filtered_list:
@@ -605,7 +613,9 @@ class PresetEditor(BasicEditor):
             self.drum_kit_current_label.setText(program_details["drum"])
             self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
-            log.message(f"[PresetEditor] Program details missing required keys: {program_details}")
+            log.message(
+                f"[PresetEditor] Program details missing required keys: {program_details}"
+            )
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")
             self.drum_kit_current_label.setText("Unknown")

@@ -3,36 +3,20 @@ Digital Tone Modify Section
 """
 
 from typing import Callable, Dict, Optional, Union
-from dataclasses import dataclass
+
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.digital.tone_modify.spec import DigitalToneModifySpecs
+from jdxi_editor.ui.editors.digital.tone_modify.widget import DigitalToneModifyWidgets
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
-@dataclass
-class DigitalToneModifyWidgets:
-    """Digital Tone Modify"""
-    interval_sens: list[QWidget] = None
-    envelope_loop_mode: list[QWidget] = None
-    envelope_loop_sync_note: list[QWidget] = None
-    chromatic_portamento: list[QWidget] = None
-    
-    
-@dataclass
-class DigitalToneModifySpecs:
-    """Digital Tone Modify"""
-    interval_sens: list[SliderSpec] = None
-    envelope_loop_mode: list[ComboBoxSpec] = None
-    envelope_loop_sync_note: list[ComboBoxSpec] = None
-    chromatic_portamento: list[SwitchSpec] = None
-    
-        
 class DigitalToneModifySection(SectionBaseWidget):
     """Digital Tone Modify"""
 
@@ -47,7 +31,7 @@ class DigitalToneModifySection(SectionBaseWidget):
 
         :param controls: dict
         """
-        self.SLIDER_GROUPS = self.build_layout_spec()
+        self.SLIDER_GROUPS: DigitalToneModifySpecs = self._build_layout_spec()
         super().__init__(
             icons_row_type=IconType.ADSR,
             analog=False,
@@ -68,11 +52,18 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets = DigitalToneModifyWidgets(interval_sens_sliders=self._build_sliders(self.SLIDER_GROUPS.interval_sens),
-            envelope_loop_mode_combo_boxes=self._build_combo_boxes(self.SLIDER_GROUPS.envelope_loop_mode),
-            envelope_loop_sync_note_combo_boxes=self._build_combo_boxes(self.SLIDER_GROUPSenvelope_loop_sync_note),
-            chromatic_portamento_switches=self._build_switches(self.SLIDER_GROUPS.chromatic_portamento),
-        }
+        self.widgets = DigitalToneModifyWidgets(
+            interval_sens=self._build_sliders(self.SLIDER_GROUPS.interval_sens),
+            envelope_loop_mode=self._build_combo_boxes(
+                self.SLIDER_GROUPS.envelope_loop_mode
+            ),
+            envelope_loop_sync_note=self._build_combo_boxes(
+                self.SLIDER_GROUPS.envelope_loop_sync_note
+            ),
+            chromatic_portamento=self._build_switches(
+                self.SLIDER_GROUPS.chromatic_portamento
+            ),
+        )
 
     # ------------------------------------------------------------
     # Layout
@@ -81,51 +72,56 @@ class DigitalToneModifySection(SectionBaseWidget):
     def setup_ui(self) -> None:
         """setup ui"""
         widget_rows = [
-            self.widgets.interval_sens_sliders,
-            self.widgets.envelope_loop_mode_combo_boxes,
-            self.widgets.envelope_loop_sync_note_combo_boxes,
-            self.widgets.chromatic_portamento_switches,
+            self.widgets.interval_sens,
+            self.widgets.envelope_loop_mode,
+            self.widgets.envelope_loop_sync_note,
+            self.widgets.chromatic_portamento,
         ]
         self._add_group_with_widget_rows(label="Tone Modify", rows=widget_rows)
-        
+
     def _build_layout_spec(self):
         """build layout spec"""
         interval_sens = [
-            SliderSpec(
-                Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
-                Digital.ModifyDisplay.Names.ATTACK_TIME_INTERVAL_SENS,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
-                Digital.ModifyDisplay.Names.RELEASE_TIME_INTERVAL_SENS,
-                vertical=True,
-            ),
-            SliderSpec(
-                Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-                Digital.ModifyDisplay.Names.PORTAMENTO_TIME_INTERVAL_SENS,
-                vertical=True,
-            ),
-        ],
+                SliderSpec(
+                    Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
+                    Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS.display_name,
+                    vertical=True,
+                ),
+                SliderSpec(
+                    Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
+                    Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS.display_name,
+                    vertical=True,
+                ),
+                SliderSpec(
+                    Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
+                    Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS.display_name,
+                    vertical=True,
+                ),
+            ]
         envelope_loop_mode = [
             ComboBoxSpec(
                 Digital.ModifyParam.ENVELOPE_LOOP_MODE,
-                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_MODE,
+                Digital.ModifyParam.ENVELOPE_LOOP_MODE.display_name,
                 Digital.ModifyDisplay.Options.ENVELOPE_LOOP_MODE,
             ),
         ]
         envelope_loop_sync_note = [
             ComboBoxSpec(
                 Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE,
-                Digital.ModifyDisplay.Names.ENVELOPE_LOOP_SYNC_NOTE,
+                Digital.ModifyParam.ENVELOPE_LOOP_SYNC_NOTE.display_name,
                 LFOSyncNote.get_all_display_names(),
             ),
         ]
         chromatic_portamento = [
             SwitchSpec(
                 Digital.ModifyParam.CHROMATIC_PORTAMENTO,
-                Digital.ModifyDisplay.Names.CHROMATIC_PORTAMENTO,
+                Digital.ModifyParam.CHROMATIC_PORTAMENTO.display_name,
                 Digital.ModifyDisplay.Options.CHROMATIC_PORTAMENTO,
             ),
         ]
-        return DigitalToneModifySpecs(interval_sens=interval_sens, envelope_loop_mode=envelope_loop_mode, envelope_loop_sync_note=envelope_loop_sync_note=, chromatic_portamento=chromatic_portamento)
+        return DigitalToneModifySpecs(
+            interval_sens=interval_sens,
+            envelope_loop_mode=envelope_loop_mode,
+            envelope_loop_sync_note=envelope_loop_sync_note,
+            chromatic_portamento=chromatic_portamento,
+        )

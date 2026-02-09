@@ -17,11 +17,11 @@ class DigitalCommonSection(BaseCommonSection):
     """Digital Common Section"""
 
     def __init__(
-            self,
-            controls: dict = None,
-            address: Optional[RolandSysExAddress] = None,
-            send_midi_parameter: Optional[Callable] = None,
-            midi_helper: Optional[MidiIOHelper] = None,
+        self,
+        controls: dict = None,
+        address: Optional[RolandSysExAddress] = None,
+        send_midi_parameter: Optional[Callable] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
         Initialize the DigitalCommonSection
@@ -63,19 +63,15 @@ class DigitalCommonSection(BaseCommonSection):
         # Register widgets in the shared controls dict so the editor's
         # _update_common_controls can find them when COMMON SysEx arrives.
         if self.controls is not None:
-            for spec, w in zip(
-                    self.SLIDER_GROUPS.controls, self.widgets["sliders"]
-            ):
+            for spec, w in zip(self.SLIDER_GROUPS.controls, self.widgets["sliders"]):
                 self.controls[spec.param] = w
             for spec, w in zip(
-                    self.SLIDER_GROUPS.switches, self.widgets["portamento_switches"]
+                self.SLIDER_GROUPS.switches, self.widgets["portamento_switches"]
             ):
                 self.controls[spec.param] = w
             for spec, w in zip(self.SLIDER_GROUPS.combos, self.widgets["octave_shift"]):
                 self.controls[spec.param] = w
-            for spec, w in zip(
-                    self.SLIDER_GROUPS.misc, self.widgets["other_switches"]
-            ):
+            for spec, w in zip(self.SLIDER_GROUPS.misc, self.widgets["other_switches"]):
                 self.controls[spec.param] = w
 
     # ------------------------------------------------------------
@@ -101,16 +97,10 @@ class DigitalCommonSection(BaseCommonSection):
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         pitch = [
-            SliderSpec(
-                S.Common.PITCH_BEND_UP, S.Common.PITCH_BEND_UP.display_name
-            ),
-            SliderSpec(
-                S.Common.PITCH_BEND_DOWN, S.Common.PITCH_BEND_DOWN.display_name
-            ),
+            SliderSpec(S.Common.PITCH_BEND_UP, S.Common.PITCH_BEND_UP.display_name),
+            SliderSpec(S.Common.PITCH_BEND_DOWN, S.Common.PITCH_BEND_DOWN.display_name),
             SliderSpec(S.Common.TONE_LEVEL, S.Common.TONE_LEVEL.display_name),
-            SliderSpec(
-                S.Common.PORTAMENTO_TIME, S.Common.PORTAMENTO_TIME.display_name
-            ),
+            SliderSpec(S.Common.PORTAMENTO_TIME, S.Common.PORTAMENTO_TIME.display_name),
             SliderSpec(S.Common.ANALOG_FEEL, S.Common.ANALOG_FEEL.display_name),
             SliderSpec(S.Common.WAVE_SHAPE, S.Common.WAVE_SHAPE.display_name),
         ]
@@ -130,7 +120,6 @@ class DigitalCommonSection(BaseCommonSection):
                 S.Common.LEGATO_SWITCH.display_name,
                 Digital.Display.Options.LEGATO_SWITCH,
             ),
-
         ]
         combos = [
             ComboBoxSpec(
@@ -139,7 +128,6 @@ class DigitalCommonSection(BaseCommonSection):
                 Digital.Display.Options.OCTAVE_SHIFT,
                 [61, 62, 63, 64, 65, 66, 67],
             ),
-
         ]
         other_switches = [
             SwitchSpec(
@@ -163,4 +151,9 @@ class DigitalCommonSection(BaseCommonSection):
                 Digital.Display.Options.UNISON_SIZE,
             ),
         ]
-        return LayoutSpec(controls=pitch, switches=portamento_switches, combos=combos, misc=other_switches)
+        return LayoutSpec(
+            controls=pitch,
+            switches=portamento_switches,
+            combos=combos,
+            misc=other_switches,
+        )

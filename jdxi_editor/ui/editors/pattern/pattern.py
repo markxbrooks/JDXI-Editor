@@ -139,13 +139,25 @@ class PatternSequenceEditor(SynthEditor):
         file_layout = QHBoxLayout()
 
         self._add_round_action_button(
-            JDXi.UI.Icon.MUSIC, "Load", self._load_pattern_dialog, file_layout, name="load"
+            JDXi.UI.Icon.MUSIC,
+            "Load",
+            self._load_pattern_dialog,
+            file_layout,
+            name="load",
         )
         self._add_round_action_button(
-            JDXi.UI.Icon.SAVE, "Save", self._save_pattern_dialog, file_layout, name="save"
+            JDXi.UI.Icon.SAVE,
+            "Save",
+            self._save_pattern_dialog,
+            file_layout,
+            name="save",
         )
         self._add_round_action_button(
-            JDXi.UI.Icon.CLEAR, "Clear", self._clear_learned_pattern, file_layout, name="clear_learn"
+            JDXi.UI.Icon.CLEAR,
+            "Clear",
+            self._clear_learned_pattern,
+            file_layout,
+            name="clear_learn",
         )
 
         self.drum_selector = QComboBox()
@@ -162,7 +174,11 @@ class PatternSequenceEditor(SynthEditor):
         # First row: Add Bar button and Copy checkbox
         bar_controls_layout = QHBoxLayout()
         self._add_round_action_button(
-            JDXi.UI.Icon.ADD, "Add Bar", self._add_bar, bar_controls_layout, name="add_bar"
+            JDXi.UI.Icon.ADD,
+            "Add Bar",
+            self._add_bar,
+            bar_controls_layout,
+            name="add_bar",
         )
         self.copy_previous_bar_checkbox = QCheckBox("Copy previous bar")
         self.copy_previous_bar_checkbox.setChecked(False)
@@ -175,11 +191,19 @@ class PatternSequenceEditor(SynthEditor):
         # Copy/Paste controls (round buttons + icon labels)
         copy_paste_layout = QHBoxLayout()
         self._add_round_action_button(
-            JDXi.UI.Icon.FILE_DOCUMENT, "Copy Section", self._copy_section, copy_paste_layout, name="copy"
+            JDXi.UI.Icon.FILE_DOCUMENT,
+            "Copy Section",
+            self._copy_section,
+            copy_paste_layout,
+            name="copy",
         )
         self.copy_button.setToolTip("Copy selected steps from current bar")
         self._add_round_action_button(
-            JDXi.UI.Icon.ADD, "Paste Section", self._paste_section, copy_paste_layout, name="paste"
+            JDXi.UI.Icon.ADD,
+            "Paste Section",
+            self._paste_section,
+            copy_paste_layout,
+            name="paste",
         )
         self.paste_button.setToolTip("Paste copied steps to current bar")
         self.paste_button.setEnabled(False)  # Disabled until something is copied
@@ -211,10 +235,18 @@ class PatternSequenceEditor(SynthEditor):
         learn_layout = QHBoxLayout()
 
         self._add_round_action_button(
-            JDXi.UI.Icon.PLAY, "Start", self.on_learn_pattern_button_clicked, learn_layout, name="learn"
+            JDXi.UI.Icon.PLAY,
+            "Start",
+            self.on_learn_pattern_button_clicked,
+            learn_layout,
+            name="learn",
         )
         self._add_round_action_button(
-            JDXi.UI.Icon.STOP, "Stop", self.on_stop_learn_pattern_button_clicked, learn_layout, name="stop_learn"
+            JDXi.UI.Icon.STOP,
+            "Stop",
+            self.on_stop_learn_pattern_button_clicked,
+            learn_layout,
+            name="stop_learn",
         )
         learn_group.setLayout(learn_layout)
         # control_panel.addWidget(learn_group)
@@ -489,21 +521,27 @@ class PatternSequenceEditor(SynthEditor):
                     )
                     self._update_combo_boxes(mido_msg)
         except Exception as ex:
-            log.debug(f"[PatternSequenceEditor] Error updating combo boxes from outgoing message: {ex}")
+            log.debug(
+                f"[PatternSequenceEditor] Error updating combo boxes from outgoing message: {ex}"
+            )
 
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
         if message.type == "note_on" and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
             channel = message.channel
-            log.message(f"[PatternSequenceEditor] message note: {note} channel: {channel}")
+            log.message(
+                f"[PatternSequenceEditor] message note: {note} channel: {channel}"
+            )
 
             # Calculate combo box index (notes start at MIDI note 36 = C2)
             combo_index = note - 36
 
             # Ensure index is valid
             if combo_index < 0:
-                log.debug(f"[PatternSequenceEditor] Note {note} is below C2 (36), skipping combo box update")
+                log.debug(
+                    f"[PatternSequenceEditor] Note {note} is below C2 (36), skipping combo box update"
+                )
                 return
 
             # Update the appropriate combo box based on channel
@@ -611,7 +649,9 @@ class PatternSequenceEditor(SynthEditor):
         # Sync sequencer buttons with the new (empty) bar
         self._sync_sequencer_with_bar(self.current_bar_index)
 
-        log.message(f"[PatternSequenceEditor] Added bar {bar_number}. Total bars: {self.total_measures}")
+        log.message(
+            f"[PatternSequenceEditor] Added bar {bar_number}. Total bars: {self.total_measures}"
+        )
 
     def _on_bar_selected(self, item: QListWidgetItem):
         """Handle bar selection from list"""
@@ -796,7 +836,9 @@ class PatternSequenceEditor(SynthEditor):
                 button.setChecked(False)
                 button.NOTE = None
                 button.NOTE_DURATION = None
-                button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
+                button.setStyleSheet(
+                    JDXi.UI.Style.generate_sequencer_button_style(False)
+                )
 
         log.message("[PatternSequenceEditor] Cleared learned pattern.")
 
@@ -900,7 +942,9 @@ class PatternSequenceEditor(SynthEditor):
 
         # Update button states based on beats per bar
         self._update_button_states_for_beats_per_bar()
-        log.message(f"[PatternSequenceEditor] Beats per bar changed to {self.beats_per_bar}")
+        log.message(
+            f"[PatternSequenceEditor] Beats per bar changed to {self.beats_per_bar}"
+        )
 
     def _update_button_states_for_beats_per_bar(self):
         """Enable/disable sequencer buttons based on beats per bar setting"""
@@ -1138,11 +1182,15 @@ class PatternSequenceEditor(SynthEditor):
             # Store the reference if it wasn't set before
             if not self.midi_file_editor:
                 self.midi_file_editor = editor
-                log.debug("[PatternSequenceEditor] Stored MidiFileEditor reference in Pattern Sequencer")
+                log.debug(
+                    "[PatternSequenceEditor] Stored MidiFileEditor reference in Pattern Sequencer"
+                )
 
             midi_file = editor.midi_state.file
             if not midi_file:
-                log.debug("[PatternSequenceEditor] No MIDI file loaded in MidiFileEditor")
+                log.debug(
+                    "[PatternSequenceEditor] No MIDI file loaded in MidiFileEditor"
+                )
                 return
 
             # Try to get filename from multiple possible locations
@@ -1155,7 +1203,9 @@ class PatternSequenceEditor(SynthEditor):
                 filename = editor.midi_state.file.filename
 
             if filename:
-                log.message(f"[PatternSequenceEditor] Loading pattern from MidiFileEditor file: {filename}")
+                log.message(
+                    f"[PatternSequenceEditor] Loading pattern from MidiFileEditor file: {filename}"
+                )
                 self.load_pattern(filename)
             else:
                 # Load from the MidiFile object directly
@@ -1164,7 +1214,9 @@ class PatternSequenceEditor(SynthEditor):
                 )
                 self._load_from_midi_file_object(midi_file)
         except Exception as ex:
-            log.error(f"[PatternSequenceEditor] Error loading from MidiFileEditor: {ex}")
+            log.error(
+                f"[PatternSequenceEditor] Error loading from MidiFileEditor: {ex}"
+            )
             import traceback
 
             log.debug(traceback.format_exc())
@@ -1178,7 +1230,9 @@ class PatternSequenceEditor(SynthEditor):
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
-            log.message(f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file")
+            log.message(
+                f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file"
+            )
 
             # Clear existing bars and bars list
             self.bars_list.clear()
@@ -1286,7 +1340,9 @@ class PatternSequenceEditor(SynthEditor):
                     f"[PatternSequenceEditor] Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars"
                 )
             else:
-                log.warning("[PatternSequenceEditor] No bars were created from MIDI file")
+                log.warning(
+                    "[PatternSequenceEditor] No bars were created from MIDI file"
+                )
         except Exception as ex:
             log.error(f"Error loading from MidiFileEditor: {ex}")
             import traceback
@@ -1351,9 +1407,13 @@ class PatternSequenceEditor(SynthEditor):
             try:
                 # Reload the saved file into MidiFileEditor
                 self.midi_file_editor.midi_load_file_from_path(filename)
-                log.message("[PatternSequenceEditor] Updated MidiFileEditor with saved pattern")
+                log.message(
+                    "[PatternSequenceEditor] Updated MidiFileEditor with saved pattern"
+                )
             except Exception as ex:
-                log.warning(f"[PatternSequenceEditor] Could not update MidiFileEditor: {ex}")
+                log.warning(
+                    f"[PatternSequenceEditor] Could not update MidiFileEditor: {ex}"
+                )
 
     def clear_pattern(self):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""
@@ -1397,7 +1457,9 @@ class PatternSequenceEditor(SynthEditor):
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
-            log.message(f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file")
+            log.message(
+                f"[PatternSequenceEditor] Detected {num_bars} bars in MIDI file"
+            )
 
             # Clear existing bars and bars list
             self.bars_list.clear()
@@ -1656,13 +1718,31 @@ class PatternSequenceEditor(SynthEditor):
         transport_button_group.setExclusive(True)
 
         controls = [
-            TransportSpec("play", JDXi.UI.Icon.PLAY, "Play", self._pattern_transport_play, True),
-            TransportSpec("stop", JDXi.UI.Icon.STOP, "Stop", self._pattern_transport_stop, True),
-            TransportSpec("pause", JDXi.UI.Icon.PAUSE, "Pause", self._pattern_transport_pause_toggle, False),
-            TransportSpec("shuffle", JDXi.UI.Icon.SHUFFLE, "Shuffle Play", self._pattern_shuffle_play, True),
+            TransportSpec(
+                "play", JDXi.UI.Icon.PLAY, "Play", self._pattern_transport_play, True
+            ),
+            TransportSpec(
+                "stop", JDXi.UI.Icon.STOP, "Stop", self._pattern_transport_stop, True
+            ),
+            TransportSpec(
+                "pause",
+                JDXi.UI.Icon.PAUSE,
+                "Pause",
+                self._pattern_transport_pause_toggle,
+                False,
+            ),
+            TransportSpec(
+                "shuffle",
+                JDXi.UI.Icon.SHUFFLE,
+                "Shuffle Play",
+                self._pattern_shuffle_play,
+                True,
+            ),
         ]
         for spec in controls:
-            self._create_transport_control(spec, transport_layout, transport_button_group)
+            self._create_transport_control(
+                spec, transport_layout, transport_button_group
+            )
         return group
 
     def _pattern_transport_play(self) -> None:
@@ -1975,7 +2055,9 @@ class PatternSequenceEditor(SynthEditor):
             note = message.note  # mido uses lowercase 'note'
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
-                log.message(f"[PatternSequenceEditor] Note off: {note} at step {self.current_step}")
+                log.message(
+                    f"[PatternSequenceEditor] Note off: {note} at step {self.current_step}"
+                )
                 del self.active_notes[note]  # Remove the note from active notes
 
                 # Add the note_off message to the MIDI track
@@ -1993,7 +2075,9 @@ class PatternSequenceEditor(SynthEditor):
                 button.setChecked(False)
                 button.NOTE = None
                 button.NOTE_DURATION = None
-                button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
+                button.setStyleSheet(
+                    JDXi.UI.Style.generate_sequencer_button_style(False)
+                )
                 if row == 3:
                     drums_note_name = self._midi_to_note_name(button.NOTE, drums=True)
                     button.setToolTip(f"Note: {drums_note_name}")
@@ -2012,7 +2096,9 @@ class PatternSequenceEditor(SynthEditor):
                     button.NOTE_DURATION = self._get_duration_ms()
                     # Set default velocity for learned pattern notes
                     button.NOTE_VELOCITY = self.velocity_spinbox.value()
-                    button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(True))
+                    button.setStyleSheet(
+                        JDXi.UI.Style.generate_sequencer_button_style(True)
+                    )
                     if row == 3:
                         drums_note_name = self._midi_to_note_name(
                             button.NOTE, drums=True
@@ -2084,4 +2170,4 @@ class PatternSequenceEditor(SynthEditor):
         self.update()
 
     def _add_measure(self):
-        pass # TODO: Add a measure
+        pass  # TODO: Add a measure

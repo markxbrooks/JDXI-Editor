@@ -383,7 +383,9 @@ class JDXiSysExParser:
                 parsed_fields[field_name] = parsed_value
             except (ValueError, IndexError) as e:
                 # Field extraction failed, skip it
-                log.debug(scope="JDXiSysExParser", message=f"Failed to parse field {i}: {e}")
+                log.debug(
+                    scope="JDXiSysExParser", message=f"Failed to parse field {i}: {e}"
+                )
                 continue
 
         return parsed_fields
@@ -510,9 +512,17 @@ class JDXiSysExParser:
             manufacturer_name = "Roland"
         else:
             manufacturer_name = "Unknown"
-        log.message(message=f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}", scope="JDXiSysExParser")
-        log.message(message=f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}", scope="JDXiSysExParser")
-        log.message(message=f"🔄 Firmware Version: \t{version_str}", scope="JDXiSysExParser")
+        log.message(
+            message=f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}",
+            scope="JDXiSysExParser",
+        )
+        log.message(
+            message=f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}",
+            scope="JDXiSysExParser",
+        )
+        log.message(
+            message=f"🔄 Firmware Version: \t{version_str}", scope="JDXiSysExParser"
+        )
         return {
             "device_id": device_id,
             "manufacturer_id": manufacturer_id,
@@ -543,7 +553,9 @@ class JDXiSysExParser:
             ):
                 return self._parse_sysex_to_mido(message_content)
         except Exception as ex:
-            log.error(scope="JDXiSysExParser", message=f"Error parsing SysEx message: {ex}")
+            log.error(
+                scope="JDXiSysExParser", message=f"Error parsing SysEx message: {ex}"
+            )
 
         # Parse Program Change messages
         try:
@@ -553,7 +565,9 @@ class JDXiSysExParser:
             ):
                 return self._parse_program_change_to_mido(message_content)
         except Exception as ex:
-            log.error(scope="JDXiSysExParser", message=f"Error parsing Program Change: {ex}")
+            log.error(
+                scope="JDXiSysExParser", message=f"Error parsing Program Change: {ex}"
+            )
 
         # Parse Control Change messages
         try:
@@ -563,9 +577,14 @@ class JDXiSysExParser:
             ):
                 return self._parse_control_change_to_mido(message_content)
         except Exception as ex:
-            log.error(scope="JDXiSysExParser", message=f"Error parsing Control Change: {ex}")
+            log.error(
+                scope="JDXiSysExParser", message=f"Error parsing Control Change: {ex}"
+            )
 
-        log.message(scope="JDXiSysExParser", message=f"Unhandled MIDI message: {message_content}")
+        log.message(
+            scope="JDXiSysExParser",
+            message=f"Unhandled MIDI message: {message_content}",
+        )
         return None
 
     def _parse_sysex_to_mido(

@@ -1,4 +1,3 @@
-
 # --- Note range definitions (MIDI note numbers)
 BASS_NOTE_MAX = 60  # C4 - typical upper limit for bass
 BASS_NOTE_MIN = 24  # C1 - typical lower limit for bass

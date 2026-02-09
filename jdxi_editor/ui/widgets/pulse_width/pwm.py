@@ -61,7 +61,10 @@ class PWMWidget(EnvelopeWidgetBase):
             self.controls = controls
         else:
             self.controls = {}
-        self.envelope = {EnvelopeParameter.PULSE_WIDTH: 0.5, EnvelopeParameter.MOD_DEPTH: 0.5}
+        self.envelope = {
+            EnvelopeParameter.PULSE_WIDTH: 0.5,
+            EnvelopeParameter.MOD_DEPTH: 0.5,
+        }
         self.pulse_width_control = PWMSliderSpinbox(
             pulse_width_param,
             min_value=0,
@@ -205,11 +208,17 @@ class PWMWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.MOD_DEPTH:
                     slider.setValue(
-                        int(self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(
+                            self.envelope[EnvelopeParameter.MOD_DEPTH]
+                            * Midi.VALUE.MAX.SEVEN_BIT
+                        )
                     )
                 if envelope_param_type == EnvelopeParameter.PULSE_WIDTH:
                     slider.setValue(
-                        int(self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(
+                            self.envelope[EnvelopeParameter.PULSE_WIDTH]
+                            * Midi.VALUE.MAX.SEVEN_BIT
+                        )
                     )
                 else:
                     slider.setValue(
@@ -232,11 +241,15 @@ class PWMWidget(EnvelopeWidgetBase):
             if isinstance(pw_val, (int, float)) and pw_val <= 1.0 and pw_val >= 0.0:
                 self.envelope[EnvelopeParameter.PULSE_WIDTH] = float(pw_val)
             else:
-                self.envelope[EnvelopeParameter.PULSE_WIDTH] = pw_val / Midi.VALUE.MAX.SEVEN_BIT
+                self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
+                    pw_val / Midi.VALUE.MAX.SEVEN_BIT
+                )
             if isinstance(md_val, (int, float)) and md_val <= 1.0 and md_val >= 0.0:
                 self.envelope[EnvelopeParameter.MOD_DEPTH] = float(md_val)
             else:
-                self.envelope[EnvelopeParameter.MOD_DEPTH] = md_val / Midi.VALUE.MAX.SEVEN_BIT
+                self.envelope[EnvelopeParameter.MOD_DEPTH] = (
+                    md_val / Midi.VALUE.MAX.SEVEN_BIT
+                )
             self.plot.set_values(self.envelope)
         except Exception as ex:
             log.error(f"[PWMWidget] Error in refresh_plot_from_controls: {ex}")

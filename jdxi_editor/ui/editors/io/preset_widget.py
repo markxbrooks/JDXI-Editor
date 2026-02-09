@@ -65,10 +65,12 @@ class PresetWidget(QWidget):
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
         self.digital_preset_type_combo.addItems(
-            [PresetTitle.DIGITAL_SYNTH1,
-             PresetTitle.DIGITAL_SYNTH2,
-             PresetTitle.DRUMS,
-             PresetTitle.ANALOG_SYNTH]
+            [
+                PresetTitle.DIGITAL_SYNTH1,
+                PresetTitle.DIGITAL_SYNTH2,
+                PresetTitle.DRUMS,
+                PresetTitle.ANALOG_SYNTH,
+            ]
         )
         self.digital_preset_type_combo.currentIndexChanged.connect(
             self.on_preset_type_changed

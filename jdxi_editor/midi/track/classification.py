@@ -29,6 +29,7 @@ def name_contains(keywords):
             return False
         name = s.track_name.lower()
         return any(k in name for k in keywords)
+
     return _check
 
 
@@ -73,13 +74,14 @@ def legato_score_gt(x):
 
 
 def velocity_range_gt(r):
-    return lambda s: (max(s.velocities) - min(s.velocities)) > r if s.velocities else False
+    return lambda s: (
+        (max(s.velocities) - min(s.velocities)) > r if s.velocities else False
+    )
 
 
 def mid_percentage_between(lo, hi):
     return lambda s: (
-        s.note_count > 0
-        and lo <= (s.mid_range_note_count / s.note_count * 100) <= hi
+        s.note_count > 0 and lo <= (s.mid_range_note_count / s.note_count * 100) <= hi
     )
 
 
@@ -88,6 +90,7 @@ def velocity_std_lt(threshold):
         if not s.velocities:
             return False
         return _calculate_std_dev(s.velocities) < threshold
+
     return _check
 
 
@@ -126,7 +129,11 @@ KEYS_RULES = [
     ScoreRule("high_note_density", 15, note_count_gt(200)),
     ScoreRule("medium_note_density", 10, lambda s: 100 < s.note_count <= 200),
     ScoreRule("velocity_range_high", 10, velocity_range_gt(60)),
-    ScoreRule("velocity_range_medium", 5, lambda s: s.velocities and 40 < (max(s.velocities) - min(s.velocities)) <= 60),
+    ScoreRule(
+        "velocity_range_medium",
+        5,
+        lambda s: s.velocities and 40 < (max(s.velocities) - min(s.velocities)) <= 60,
+    ),
     ScoreRule("balanced_mid_notes", 10, mid_percentage_between(30, 70)),
 ]
 
@@ -146,7 +153,9 @@ STRINGS_RULES = [
 ]
 
 
-def analyze_track_for_classification(track: MidiTrack, track_index: int) -> "TrackStats":
+def analyze_track_for_classification(
+    track: MidiTrack, track_index: int
+) -> "TrackStats":
     return TrackAnalyzer(track, track_index).run()
 
 
@@ -164,11 +173,7 @@ def calculate_scores(stats: TrackStats) -> None:
 
 
 def explain_score(stats: TrackStats, rules: list[ScoreRule]):
-    return [
-        (rule.name, rule.weight)
-        for rule in rules
-        if rule.condition(stats)
-    ]
+    return [(rule.name, rule.weight) for rule in rules if rule.condition(stats)]
 
 
 def _calculate_std_dev(values: List[float]) -> float:

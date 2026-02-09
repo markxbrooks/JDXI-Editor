@@ -54,7 +54,11 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(
-            envelope_keys=[EnvelopeParameter.RANGE_LOWER, EnvelopeParameter.DEPTH, EnvelopeParameter.RANGE_UPPER],
+            envelope_keys=[
+                EnvelopeParameter.RANGE_LOWER,
+                EnvelopeParameter.DEPTH,
+                EnvelopeParameter.RANGE_UPPER,
+            ],
             create_parameter_slider=create_parameter_slider,
             parameters=[
                 fade_lower_param,
@@ -226,7 +230,9 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.DEPTH:
-                    self.envelope[EnvelopeParameter.DEPTH] = slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                    self.envelope[EnvelopeParameter.DEPTH] = (
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                    )
                 elif envelope_param_type in [
                     EnvelopeParameter.RANGE_UPPER,
                     EnvelopeParameter.FADE_UPPER,
@@ -249,7 +255,9 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == EnvelopeParameter.DEPTH:
-                    self.envelope[EnvelopeParameter.DEPTH] = slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                    self.envelope[EnvelopeParameter.DEPTH] = (
+                        slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                    )
                     """elif envelope_param_type in [EnvelopeParameter.RANGE_UPPER,
                     EnvelopeParameter.FADE_UPPER,
                     EnvelopeParameter.FADE_LOWER,
@@ -271,7 +279,10 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.DEPTH:
                     slider.setValue(
-                        int(self.envelope[EnvelopeParameter.DEPTH] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(
+                            self.envelope[EnvelopeParameter.DEPTH]
+                            * Midi.VALUE.MAX.SEVEN_BIT
+                        )
                     )
                 elif envelope_param_type == EnvelopeParameter.RANGE_UPPER:
                     pass
@@ -281,7 +292,9 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}")
+            log.error(
+                f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}"
+            )
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -291,11 +304,20 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.DEPTH:
                     slider.setValue(
-                        int(self.envelope[EnvelopeParameter.DEPTH] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(
+                            self.envelope[EnvelopeParameter.DEPTH]
+                            * Midi.VALUE.MAX.SEVEN_BIT
+                        )
                     )
-                elif envelope_param_type in [EnvelopeParameter.RANGE_UPPER, EnvelopeParameter.FADE_UPPER]:
+                elif envelope_param_type in [
+                    EnvelopeParameter.RANGE_UPPER,
+                    EnvelopeParameter.FADE_UPPER,
+                ]:
                     slider.setValue(int(self.envelope[envelope_param_type]))
-                elif envelope_param_type in [EnvelopeParameter.FADE_LOWER, EnvelopeParameter.RANGE_LOWER]:
+                elif envelope_param_type in [
+                    EnvelopeParameter.FADE_LOWER,
+                    EnvelopeParameter.RANGE_LOWER,
+                ]:
                     slider.setValue(
                         ms_to_midi_value(
                             self.envelope[envelope_param_type],
@@ -304,7 +326,9 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                         )
                     )
         except Exception as ex:
-            log.error(f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}")
+            log.error(
+                f"[WMTEnvelopeWidget] Error updating controls from envelope: {ex}"
+            )
 
 
 if __name__ == "__main__":

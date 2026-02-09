@@ -15,6 +15,7 @@ WaveShape = AnalogWaveOsc | DigitalLFOShape | AnalogLFOShape
 @dataclass
 class WaveShapeSpec:
     """LFO wave shape spec. Exposes .param as an alias for .shape so section_base can treat it like SliderSpec (oscillator/filter)."""
+
     shape: Optional[WaveShape]
     icon: str
 

@@ -26,13 +26,19 @@ def on_usb_recording_finished(output_file: str):
         return
 
     if not output_file:
-        log.error("[on_usb_recording_finished] Recording finished, but no output file path provided.")
+        log.error(
+            "[on_usb_recording_finished] Recording finished, but no output file path provided."
+        )
         return
 
     if not os.path.exists(output_file):
-        log.error(f"[on_usb_recording_finished] Recording finished, but output file does not exist: {output_file}")
+        log.error(
+            f"[on_usb_recording_finished] Recording finished, but output file does not exist: {output_file}"
+        )
         return
-    log.message(f"[on_usb_recording_finished] Recording finished. File successfully saved to {output_file}")
+    log.message(
+        f"[on_usb_recording_finished] Recording finished. File successfully saved to {output_file}"
+    )
 
 
 def on_usb_recording_error(message: str):
@@ -45,7 +51,9 @@ def on_usb_recording_error(message: str):
     # Ensure message is a string
     if not isinstance(message, str):
         error_str = str(message) if message is not None else "Unknown error"
-        log.error(f"[on_usb_recording_error] Error during recording: {error_str} (type: {type(message)})")
+        log.error(
+            f"[on_usb_recording_error] Error during recording: {error_str} (type: {type(message)})"
+        )
     else:
         log.error(f"[on_usb_recording_error] Error during recording: {message}")
 

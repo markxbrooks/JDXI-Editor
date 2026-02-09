@@ -139,16 +139,22 @@ class MidiIOController(QObject):
                         port_index = i
                         break
                 else:
-                    log.error(f"[open_input_port] MIDI input port not found: {port_name_or_index}")
+                    log.error(
+                        f"[open_input_port] MIDI input port not found: {port_name_or_index}"
+                    )
                     return False
 
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
-                log.parameter("[open_input_port] Invalid MIDI input port index:", port_index)
+                log.parameter(
+                    "[open_input_port] Invalid MIDI input port index:", port_index
+                )
                 return False
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            log.parameter("[open_input_port] Opened MIDI input port:", ports[port_index])
+            log.parameter(
+                "[open_input_port] Opened MIDI input port:", ports[port_index]
+            )
             return True
 
         except Exception as ex:
@@ -176,7 +182,9 @@ class MidiIOController(QObject):
                     port_index = port_name_or_index
 
             if port_index is None:
-                log.error(f"[open_output_port] Invalid or missing MIDI output port: {port_name_or_index}")
+                log.error(
+                    f"[open_output_port] Invalid or missing MIDI output port: {port_name_or_index}"
+                )
                 return False
 
             # Safely close if already open
@@ -187,7 +195,9 @@ class MidiIOController(QObject):
             self.midi_out = rtmidi.MidiOut()  # <- reinitialize
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
-            log.parameter("[open_output_port] Opened MIDI output port:", ports[port_index])
+            log.parameter(
+                "[open_output_port] Opened MIDI output port:", ports[port_index]
+            )
             return True
 
         except Exception as ex:

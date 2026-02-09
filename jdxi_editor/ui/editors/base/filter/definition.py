@@ -3,11 +3,11 @@ FilterDefinition
 """
 
 from dataclasses import dataclass
-from typing import Any, runtime_checkable, Protocol
+from typing import Any, Protocol, runtime_checkable
 
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
-from jdxi_editor.ui.widgets.spec import FilterWidgetSpec, FilterSpec
+from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec
 
 
 @runtime_checkable
@@ -21,10 +21,10 @@ class FilterDefinition:
     """Complete description of a synth filter implementation."""
 
     # identity
-    modes: type                # canonical filter id enum
+    modes: type  # canonical filter id enum
 
     # midi mapping
-    param_mode: Any                      # parameter that stores filter mode
+    param_mode: Any  # parameter that stores filter mode
     midi_to_mode: dict[int, Any]
     mode_to_midi: dict[Any, int]
 

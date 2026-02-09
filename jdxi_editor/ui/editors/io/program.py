@@ -204,7 +204,10 @@ class ProgramEditor(BasicEditor):
 
         # Add User Programs tab to main tab widget
         try:
-            log.message("🔨Creating User Programs tab for main window...", scope=self.__class__.__name__)
+            log.message(
+                "🔨Creating User Programs tab for main window...",
+                scope=self.__class__.__name__,
+            )
             self.user_programs_widget = UserProgramsWidget(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
@@ -218,13 +221,20 @@ class ProgramEditor(BasicEditor):
                 self.user_programs_widget, user_programs_icon, "User Programs"
             )
             log.message(
-                f"✅ Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})", scope=self.__class__.__name__
+                f"✅ Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
             # Log all tab names for debugging
             for i in range(self.main_tab_widget.count()):
-                log.message(message=f"Main Tab {i}: '{self.main_tab_widget.tabText(i)}'", scope=self.__class__.__name__)
+                log.message(
+                    message=f"Main Tab {i}: '{self.main_tab_widget.tabText(i)}'",
+                    scope=self.__class__.__name__,
+                )
         except Exception as e:
-            log.error(f"❌Error creating User Programs tab: {e}", scope=self.__class__.__name__)
+            log.error(
+                f"❌Error creating User Programs tab: {e}",
+                scope=self.__class__.__name__,
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -237,12 +247,16 @@ class ProgramEditor(BasicEditor):
                 placeholder_widget, user_programs_icon, "User Programs"
             )
             log.message(
-                f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})" , scope=self.__class__.__name__
+                f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
 
         # --- Add Playlist tab to main tab widget
         try:
-            log.message("🔨Creating Playlist tab for main window...", scope=self.__class__.__name__)
+            log.message(
+                "🔨Creating Playlist tab for main window...",
+                scope=self.__class__.__name__,
+            )
             self.playlist_widget = PlaylistWidget(
                 parent=self,
                 on_playlist_changed=self._on_playlist_changed,
@@ -252,10 +266,13 @@ class ProgramEditor(BasicEditor):
             )
             self.main_tab_widget.addTab(self.playlist_widget, playlist_icon, "Playlist")
             log.message(
-                f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})", scope=self.__class__.__name__
+                f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
         except Exception as e:
-            log.error(f"❌Error creating Playlist tab: {e}", scope=self.__class__.__name__)
+            log.error(
+                f"❌Error creating Playlist tab: {e}", scope=self.__class__.__name__
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -266,12 +283,16 @@ class ProgramEditor(BasicEditor):
             )
             self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
             log.message(
-                f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})", scope=self.__class__.__name__
+                f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
 
         # Add Playlist Editor tab to main tab widget
         try:
-            log.message("🔨Creating Playlist Editor tab for main window...", scope=self.__class__.__name__)
+            log.message(
+                "🔨Creating Playlist Editor tab for main window...",
+                scope=self.__class__.__name__,
+            )
             self.playlist_editor_widget = PlaylistEditorWidget(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
@@ -287,10 +308,14 @@ class ProgramEditor(BasicEditor):
                 self.playlist_editor_widget, playlist_editor_icon, "Playlist Editor"
             )
             log.message(
-                f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})", scope=self.__class__.__name__
+                f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
         except Exception as e:
-            log.error(f"❌Error creating Playlist Editor tab: {e}", scope=self.__class__.__name__)
+            log.error(
+                f"❌Error creating Playlist Editor tab: {e}",
+                scope=self.__class__.__name__,
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -304,7 +329,8 @@ class ProgramEditor(BasicEditor):
                 placeholder_widget, playlist_editor_icon, "Playlist Editor"
             )
             log.message(
-                f"✅Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})", scope=self.__class__.__name__
+                f"✅Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
+                scope=self.__class__.__name__,
             )
 
         self.setLayout(main_vlayout)
@@ -340,7 +366,8 @@ class ProgramEditor(BasicEditor):
             self.program_group_widget.preset, presets_icon, "Presets"
         )
         log.message(
-            f"📑Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_group_widget.program_preset_tab_widget.count()})", scope="ProgramEditor "
+            f"📑Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_group_widget.program_preset_tab_widget.count()})",
+            scope="ProgramEditor ",
         )
         program_preset_hlayout.addStretch()
 
@@ -838,7 +865,10 @@ class ProgramEditor(BasicEditor):
         :return: None
         """
         if not self.mixer_widget:
-            log.warning("Mixer widget not available, cannot update synth labels", scope=self.__class__.__name__)
+            log.warning(
+                "Mixer widget not available, cannot update synth labels",
+                scope=self.__class__.__name__,
+            )
             return
 
         try:
@@ -857,8 +887,12 @@ class ProgramEditor(BasicEditor):
                     program_details.analog
                 )
         except (AttributeError, KeyError) as e:
-            log.message(f"Error updating synth labels: {e}", scope=self.__class__.__name__)
-            log.message(f"Program details: {program_details}", scope=self.__class__.__name__)
+            log.message(
+                f"Error updating synth labels: {e}", scope=self.__class__.__name__
+            )
+            log.message(
+                f"Program details: {program_details}", scope=self.__class__.__name__
+            )
             # Set fallback values if labels exist
             if self.mixer_widget.digital_synth_1_current_label:
                 self.mixer_widget.digital_synth_1_current_label.setText("Unknown")
@@ -908,7 +942,8 @@ class ProgramEditor(BasicEditor):
         synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
 
         log.header_message(
-            scope=self.__class__.__name__, message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}"
+            scope=self.__class__.__name__,
+            message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}",
         )
 
         sysex_data = filter_sysex_keys(sysex_data)
@@ -1018,21 +1053,39 @@ class ProgramEditor(BasicEditor):
         :param failures: List of failed parameters
         :return: None
         """
-        log.message(f"Updating controls for partial {partial_number}", scope=self.__class__.__name__)
+        log.message(
+            f"Updating controls for partial {partial_number}",
+            scope=self.__class__.__name__,
+        )
         log.parameter("self.controls", self.controls, scope=self.__class__.__name__)
         for control in self.controls:
-            log.parameter("control", control, silent=False, scope=self.__class__.__name__)
+            log.parameter(
+                "control", control, silent=False, scope=self.__class__.__name__
+            )
         sysex_data.pop(SysExSection.SYNTH_TONE, None)
         for param_name, param_value in sysex_data.items():
-            log.parameter(f"{param_name} {param_value}", param_value, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                f"{param_name} {param_value}",
+                param_value,
+                silent=True,
+                scope=self.__class__.__name__,
+            )
             param = DigitalCommonParam.get_by_name(param_name)
             if not param:
                 log.parameter(
-                    f"param not found: {param_name} ", param_value, silent=True, scope=self.__class__.__name__
+                    f"param not found: {param_name} ",
+                    param_value,
+                    silent=True,
+                    scope=self.__class__.__name__,
                 )
                 failures.append(param_name)
                 continue
-            log.parameter(f"found {param_name}", param_name, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                f"found {param_name}",
+                param_name,
+                silent=True,
+                scope=self.__class__.__name__,
+            )
             try:
                 if param.name in [
                     PartialSwitchState.PARTIAL1_SWITCH,

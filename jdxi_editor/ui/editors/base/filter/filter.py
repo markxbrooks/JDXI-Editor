@@ -1,11 +1,11 @@
 """
 Analog Filter Section
 """
+
 from enum import IntEnum
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
@@ -21,6 +21,7 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -37,24 +38,20 @@ class FilterWidgetFactory:
         pass
 
     @staticmethod
-    def create(spec,
-               midi_helper,
-               create_slider,
-               create_switch,
-               controls,
-               address,
-               analog) -> QWidget:
+    def create(
+        spec, midi_helper, create_slider, create_switch, controls, address, analog
+    ) -> QWidget:
         # spec is FilterWidgetSpec (cutoff_param, slope_param)
         return FilterWidget(
-                cutoff_param=spec.cutoff_param,
-                slope_param=spec.slope_param,
-                midi_helper=midi_helper,
-                create_parameter_slider=create_slider,
-                create_parameter_switch=create_switch,
-                controls=controls,
-                address=address,
-                analog=analog,
-            )
+            cutoff_param=spec.cutoff_param,
+            slope_param=spec.slope_param,
+            midi_helper=midi_helper,
+            create_parameter_slider=create_slider,
+            create_parameter_switch=create_switch,
+            controls=controls,
+            address=address,
+            analog=analog,
+        )
 
 
 class BaseFilterSection(SectionBaseWidget):
@@ -69,13 +66,13 @@ class BaseFilterSection(SectionBaseWidget):
     FILTER_MODE_MIDI_MAP: dict = {}
 
     def __init__(
-            self,
-            definition: FilterDefinition,
-            address: RolandSysExAddress,
-            midi_helper: MidiIOHelper,
-            send_midi_parameter: Callable | None = None,
-            on_filter_mode_changed: Callable | None = None,
-            analog: bool = False
+        self,
+        definition: FilterDefinition,
+        address: RolandSysExAddress,
+        midi_helper: MidiIOHelper,
+        send_midi_parameter: Callable | None = None,
+        on_filter_mode_changed: Callable | None = None,
+        analog: bool = False,
     ):
         """
         Initialize the AnalogFilterSection
@@ -178,7 +175,7 @@ class BaseFilterSection(SectionBaseWidget):
             create_switch=self._create_parameter_switch,
             controls=self.controls,
             address=self.address,
-            analog=self.analog
+            analog=self.analog,
         )
 
         # defn.sliders may be LayoutSpec (.controls) or dict (e.g. Digital "filter")
@@ -233,7 +230,7 @@ class BaseFilterSection(SectionBaseWidget):
         """
         log.message(
             scope=self.__class__.__name__,
-            message=f" _on_filter_mode_selected: filter_mode={filter_mode!r} value={getattr(filter_mode, 'value', None)} analog={getattr(self, 'analog', None)}"
+            message=f" _on_filter_mode_selected: filter_mode={filter_mode!r} value={getattr(filter_mode, 'value', None)} analog={getattr(self, 'analog', None)}",
         )
         # --- Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
@@ -260,7 +257,7 @@ class BaseFilterSection(SectionBaseWidget):
         if self._filter_mode_changed_callback:
             log.message(
                 scope=self.__class__.__name__,
-                message=f"Calling _filter_mode_changed_callback with value={filter_mode.value}"
+                message=f"Calling _filter_mode_changed_callback with value={filter_mode.value}",
             )
             self._filter_mode_changed_callback(filter_mode.value)
 
@@ -296,11 +293,12 @@ class BaseFilterSection(SectionBaseWidget):
             log.message(
                 scope=self.__class__.__name__,
                 message=f"update_controls_state: value={value} selected_filter_mode={selected_filter_mode!r} "
-                        f"FILTER_MODE_ENABLED_MAP keys={_map_keys}"
+                f"FILTER_MODE_ENABLED_MAP keys={_map_keys}",
             )
             if selected_filter_mode is None:
                 log.warning(
-                    scope=self.__class__.__name__, message=f"Unknown filter mode value: {value}, returning early"
+                    scope=self.__class__.__name__,
+                    message=f"Unknown filter mode value: {value}, returning early",
                 )
                 return
 
@@ -308,13 +306,22 @@ class BaseFilterSection(SectionBaseWidget):
             is_bypass = selected_filter_mode == self.SYNTH_SPEC.Filter.Mode.BYPASS
             enabled = not is_bypass
             self.controls_group.setEnabled(enabled)
-            log.message(scope=self.__class__.__name__, message=f"Set controls_group.setEnabled({enabled})")
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"Set controls_group.setEnabled({enabled})",
+            )
             if self.adsr_widget:
                 self.adsr_widget.setEnabled(enabled)
-                log.message(scope=self.__class__.__name__, message=f"Set adsr_widget.setEnabled({enabled})")
+                log.message(
+                    scope=self.__class__.__name__,
+                    message=f"Set adsr_widget.setEnabled({enabled})",
+                )
             if hasattr(self, "filter_widget"):
                 self.filter_widget.setEnabled(enabled)
-                log.message(scope=self.__class__.__name__, message=f"Set filter_widget.setEnabled({enabled})")
+                log.message(
+                    scope=self.__class__.__name__,
+                    message=f"Set filter_widget.setEnabled({enabled})",
+                )
         except Exception as ex:
             log.error(f"Error {ex} occurred updating controls")
 
@@ -333,9 +340,9 @@ class BaseFilterSection(SectionBaseWidget):
 
         # --- Update filter mode in FilterWidget plot
         if (
-                hasattr(self, "filter_widget")
-                and self.filter_widget
-                and hasattr(self.filter_widget, "plot")
+            hasattr(self, "filter_widget")
+            and self.filter_widget
+            and hasattr(self.filter_widget, "plot")
         ):
             filter_mode_str = self.FILTER_MODE_MIDI_MAP.get(
                 button_param, self.SYNTH_SPEC.Filter.ModeType.LPF

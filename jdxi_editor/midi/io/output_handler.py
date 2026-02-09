@@ -137,7 +137,8 @@ class MidiOutHandler(MidiIOController):
 
                 # Log safely
                 log.message(
-                    scope="MidiOutHandler", message=f"[MIDI QC passed] [ Sending message: {formatted_message} ] {filtered_data}",
+                    scope="MidiOutHandler",
+                    message=f"[MIDI QC passed] [ Sending message: {formatted_message} ] {filtered_data}",
                     level=logging.INFO,
                     silent=False,
                 )
@@ -148,7 +149,10 @@ class MidiOutHandler(MidiIOController):
 
             except Exception as ex:
                 # Catch everything to prevent C-level crash from propagating
-                log.error(scope="MidiOutHandler", message=f"Unexpected error sending MIDI message: {ex}")
+                log.error(
+                    scope="MidiOutHandler",
+                    message=f"Unexpected error sending MIDI message: {ex}",
+                )
                 return False
 
     def send_note_on(
@@ -192,7 +196,9 @@ class MidiOutHandler(MidiIOController):
         :raises: ValueError If the channel is out of range (1-16).
         """
         if not 1 <= channel <= 16:
-            raise ValueError("[MidiOutHandler] Invalid MIDI channel: {channel}. Must be 1-16.")
+            raise ValueError(
+                "[MidiOutHandler] Invalid MIDI channel: {channel}. Must be 1-16."
+            )
         channel_message = ChannelMessage(
             status, data1, data2, channel - 1
         )  # convert to 0-based
@@ -208,7 +214,9 @@ class MidiOutHandler(MidiIOController):
         :param channel: int midi channel (0-15).
         :return: bool True if successful, False otherwise.
         """
-        log.message(scope="MidiOutHandler", message="========Sending bank select==========")
+        log.message(
+            scope="MidiOutHandler", message="========Sending bank select=========="
+        )
         log.parameter(scope="MidiOutHandler", message="MSB", parameter=msb)
         log.parameter(scope="MidiOutHandler", message="LSB", parameter=lsb)
         log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
@@ -220,7 +228,9 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message([status, Midi.CC.BANK.LSB, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(scope="MidiOutHandler", message=f"Error sending bank select: {ex}")
+            log.error(
+                scope="MidiOutHandler", message=f"Error sending bank select: {ex}"
+            )
             return False
 
     def send_identity_request(self) -> bool:
@@ -229,18 +239,25 @@ class MidiOutHandler(MidiIOController):
 
         :return: bool True if the message was sent successfully, False otherwise.
         """
-        log.message(scope="MidiOutHandler", message="=========Sending identity_request request========")
+        log.message(
+            scope="MidiOutHandler",
+            message="=========Sending identity_request request========",
+        )
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_message_list()
             log.message(
-                scope="MidiOutHandler", message="sending identity_request request message: "
-                f"{type(identity_request_bytes_list)} {identity_request_bytes_list}"
+                scope="MidiOutHandler",
+                message="sending identity_request request message: "
+                f"{type(identity_request_bytes_list)} {identity_request_bytes_list}",
             )
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(scope="MidiOutHandler", message="Error sending identity_request request: {ex}")
+            log.error(
+                scope="MidiOutHandler",
+                message="Error sending identity_request request: {ex}",
+            )
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage | JDXiSysEx) -> bool:
@@ -276,7 +293,9 @@ class MidiOutHandler(MidiIOController):
             message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log.error(scope="MidiOutHandler", message="Error sending program change: {ex}")
+            log.error(
+                scope="MidiOutHandler", message="Error sending program change: {ex}"
+            )
             return False
 
     def send_control_change(
@@ -291,7 +310,9 @@ class MidiOutHandler(MidiIOController):
         :return: bool True if successful, False otherwise.
         """
         log.message(scope="MidiOutHandler", message="=====Sending control change====")
-        log.parameter(scope="MidiOutHandler", message="controller", parameter=controller)
+        log.parameter(
+            scope="MidiOutHandler", message="controller", parameter=controller
+        )
         log.parameter(scope="MidiOutHandler", message="value", parameter=value)
         log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
         if not 0 <= channel <= 15:
@@ -401,7 +422,9 @@ class MidiOutHandler(MidiIOController):
 
         if ok:
             log.message(scope="MidiOutHandler", message="Sent NRPN:")
-            log.parameter(scope="MidiOutHandler", message="parameter", parameter=parameter)
+            log.parameter(
+                scope="MidiOutHandler", message="parameter", parameter=parameter
+            )
             log.parameter(scope="MidiOutHandler", message="value", parameter=value)
             log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
         else:
@@ -426,10 +449,17 @@ class MidiOutHandler(MidiIOController):
 
             from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 
-            log.message(scope="MidiOutHandler", message="========send_bank_select_and_program_change=========")
+            log.message(
+                scope="MidiOutHandler",
+                message="========send_bank_select_and_program_change=========",
+            )
             log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
-            log.parameter(scope="MidiOutHandler", message="bank_msb", parameter=bank_msb)
-            log.parameter(scope="MidiOutHandler", message="bank_lsb", parameter=bank_lsb)
+            log.parameter(
+                scope="MidiOutHandler", message="bank_msb", parameter=bank_msb
+            )
+            log.parameter(
+                scope="MidiOutHandler", message="bank_lsb", parameter=bank_lsb
+            )
             log.parameter(scope="MidiOutHandler", message="program", parameter=program)
             log.message(
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
@@ -449,7 +479,10 @@ class MidiOutHandler(MidiIOController):
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
-            log.error(scope="MidiOutHandler", message="Error {ex} occurred sending bank and program change message")
+            log.error(
+                scope="MidiOutHandler",
+                message="Error {ex} occurred sending bank and program change message",
+            )
             return False
 
     def identify_device(self) -> None:
@@ -460,7 +493,11 @@ class MidiOutHandler(MidiIOController):
         """
         request = IdentityRequestMessage()
         self.send_message(request)
-        log.parameter(scope="MidiOutHandler", message="sending identity_request request message:", parameter=request)
+        log.parameter(
+            scope="MidiOutHandler",
+            message="sending identity_request request message:",
+            parameter=request,
+        )
 
     def send_message(self, message: MidiMessage) -> None:
         """
@@ -472,6 +509,13 @@ class MidiOutHandler(MidiIOController):
         try:
             raw_message = message.to_message_list()
             self.send_raw_message(raw_message)
-            log.parameter(scope="MidiOutHandler", message="Sent MIDI message:", parameter=raw_message)
+            log.parameter(
+                scope="MidiOutHandler",
+                message="Sent MIDI message:",
+                parameter=raw_message,
+            )
         except Exception as ex:
-            log.error(scope="MidiOutHandler", message="Error sending identity_request request: {str(ex)}")
+            log.error(
+                scope="MidiOutHandler",
+                message="Error sending identity_request request: {str(ex)}",
+            )

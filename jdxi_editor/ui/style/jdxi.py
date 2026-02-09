@@ -88,7 +88,9 @@ class JDXiUIStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
-    BUTTON_SEQUENCER_SMALL = "QPushButton:checked { background-color: #cc0000; color: white; }"
+    BUTTON_SEQUENCER_SMALL = (
+        "QPushButton:checked { background-color: #cc0000; color: white; }"
+    )
     WHITE = "#FFFFFF"
     TRACK_LABEL_WIDTH = 70
     BUTTON_TRACK_WIDTH = 20
@@ -1666,7 +1668,7 @@ class JDXiUIStyle:
 
     @staticmethod
     def generate_sequencer_button_style(
-            is_checked: bool, is_current: bool = False, is_selected_bar: bool = False
+        is_checked: bool, is_current: bool = False, is_selected_bar: bool = False
     ) -> str:
         """Generate button style based on state and current step"""
         base_color = "#3498db" if is_checked else "#2c3e50"

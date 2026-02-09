@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from jdxi_editor.ui.widgets.spec import SwitchSpec, SliderSpec, ComboBoxSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 @dataclass
 class LayoutSpec:
     """Layout of Widgets"""
+
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
     combos: Optional[list[ComboBoxSpec | None]] = None
     sliders: Optional[list[SliderSpec | None]] = None

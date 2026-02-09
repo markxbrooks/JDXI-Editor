@@ -35,6 +35,7 @@ Dependencies:
     - Slider (for smooth control over numerical parameters)
 
 """
+
 from typing import Dict, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
@@ -165,20 +166,53 @@ class ArpeggioEditor(BasicEditor):
         P = self.EDITOR_PARAM
 
         switches = [
-            SwitchSpec(ProgramZoneParam.ARPEGGIO_SWITCH, ProgramZoneParam.ARPEGGIO_SWITCH.display_name, [switch_setting.display_name for switch_setting in ArpeggioSwitch]),
-            SwitchSpec(P.ARPEGGIO_SWITCH, P.ARPEGGIO_SWITCH.display_name, [switch_setting.display_name for switch_setting in ArpeggioSwitch], ),
+            SwitchSpec(
+                ProgramZoneParam.ARPEGGIO_SWITCH,
+                ProgramZoneParam.ARPEGGIO_SWITCH.display_name,
+                [switch_setting.display_name for switch_setting in ArpeggioSwitch],
+            ),
+            SwitchSpec(
+                P.ARPEGGIO_SWITCH,
+                P.ARPEGGIO_SWITCH.display_name,
+                [switch_setting.display_name for switch_setting in ArpeggioSwitch],
+            ),
         ]
 
         combos = [
-            ComboBoxSpec(P.ARPEGGIO_STYLE, P.ARPEGGIO_STYLE.display_name, ARPEGGIO_STYLE),
-            ComboBoxSpec(P.ARPEGGIO_GRID, P.ARPEGGIO_GRID.display_name, [grid.display_name for grid in ArpeggioGrid]),
-            ComboBoxSpec(P.ARPEGGIO_DURATION, P.ARPEGGIO_DURATION.display_name, [duration.display_name for duration in ArpeggioDuration]),
-            ComboBoxSpec(P.ARPEGGIO_OCTAVE_RANGE, P.ARPEGGIO_OCTAVE_RANGE.display_name, [octave.display_name for octave in ArpeggioOctaveRange], [octave.midi_value for octave in ArpeggioOctaveRange] ),
-            ComboBoxSpec(P.ARPEGGIO_MOTIF, P.ARPEGGIO_MOTIF.display_name, [motif.name for motif in ArpeggioMotif]),
+            ComboBoxSpec(
+                P.ARPEGGIO_STYLE, P.ARPEGGIO_STYLE.display_name, ARPEGGIO_STYLE
+            ),
+            ComboBoxSpec(
+                P.ARPEGGIO_GRID,
+                P.ARPEGGIO_GRID.display_name,
+                [grid.display_name for grid in ArpeggioGrid],
+            ),
+            ComboBoxSpec(
+                P.ARPEGGIO_DURATION,
+                P.ARPEGGIO_DURATION.display_name,
+                [duration.display_name for duration in ArpeggioDuration],
+            ),
+            ComboBoxSpec(
+                P.ARPEGGIO_OCTAVE_RANGE,
+                P.ARPEGGIO_OCTAVE_RANGE.display_name,
+                [octave.display_name for octave in ArpeggioOctaveRange],
+                [octave.midi_value for octave in ArpeggioOctaveRange],
+            ),
+            ComboBoxSpec(
+                P.ARPEGGIO_MOTIF,
+                P.ARPEGGIO_MOTIF.display_name,
+                [motif.name for motif in ArpeggioMotif],
+            ),
         ]
         sliders = [
-            SliderSpec(P.ARPEGGIO_VELOCITY, P.ARPEGGIO_VELOCITY.display_name, vertical=False),
-            SliderSpec(P.ARPEGGIO_ACCENT_RATE, P.ARPEGGIO_ACCENT_RATE.display_name, vertical=False),
+            SliderSpec(
+                P.ARPEGGIO_VELOCITY, P.ARPEGGIO_VELOCITY.display_name, vertical=False
+            ),
+            SliderSpec(
+                P.ARPEGGIO_ACCENT_RATE,
+                P.ARPEGGIO_ACCENT_RATE.display_name,
+                vertical=False,
+            ),
         ]
 
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)

@@ -144,7 +144,9 @@ class VocalFXEditor(BasicEditor):
         ]
         switches = [
             SwitchSpec(VocalFXParam.VOCODER_SWITCH, "Effect Part:", ["OFF", "ON"]),
-            SwitchSpec(ProgramCommonParam.AUTO_NOTE_SWITCH, "Auto Note:", ["OFF", "ON"]),
+            SwitchSpec(
+                ProgramCommonParam.AUTO_NOTE_SWITCH, "Auto Note:", ["OFF", "ON"]
+            ),
         ]
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
@@ -192,7 +194,9 @@ class VocalFXEditor(BasicEditor):
         ]
         sliders = [
             SliderSpec(VocalFXParam.VOCODER_LEVEL, "Level", vertical=False),
-            SliderSpec(VocalFXParam.VOCODER_MIC_SENS, "Mic Sensitivity", vertical=False),
+            SliderSpec(
+                VocalFXParam.VOCODER_MIC_SENS, "Mic Sensitivity", vertical=False
+            ),
             SliderSpec(VocalFXParam.VOCODER_SYNTH_LEVEL, "Synth Level", vertical=False),
             SliderSpec(VocalFXParam.VOCODER_MIC_MIX, "Mic Mix", vertical=False),
         ]

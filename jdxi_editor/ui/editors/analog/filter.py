@@ -10,8 +10,8 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
@@ -75,12 +75,12 @@ class AnalogFilterSection(BaseFilterSection):
     ]
 
     def __init__(
-            self,
-            address: RolandSysExAddress,
-            on_filter_mode_changed: Callable = None,
-            midi_helper: MidiIOHelper = None,
-            send_midi_parameter: Callable = None,
-            analog: bool = True
+        self,
+        address: RolandSysExAddress,
+        on_filter_mode_changed: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        send_midi_parameter: Callable = None,
+        analog: bool = True,
     ):
         """
         Initialize the AnalogFilterSection
@@ -99,14 +99,15 @@ class AnalogFilterSection(BaseFilterSection):
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.SLIDER_GROUPS,
             adsr=self.ADSR_SPEC,
-            bypass_mode=AnalogFilterType.BYPASS)
+            bypass_mode=AnalogFilterType.BYPASS,
+        )
         super().__init__(
             definition=self.DEFINITION,
             address=address,
             midi_helper=midi_helper,
             send_midi_parameter=send_midi_parameter,
             on_filter_mode_changed=on_filter_mode_changed,
-            analog=analog
+            analog=analog,
         )
 
         self.build_widgets()
@@ -131,10 +132,20 @@ class AnalogFilterSection(BaseFilterSection):
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         controls = [
-            SliderSpec(S.Param.FILTER_RESONANCE, S.Param.FILTER_RESONANCE.display_name, vertical=True),
-            SliderSpec(S.Param.FILTER_CUTOFF_KEYFOLLOW, S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name, vertical=True),
             SliderSpec(
-                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY, S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name, vertical=True
+                S.Param.FILTER_RESONANCE,
+                S.Param.FILTER_RESONANCE.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_CUTOFF_KEYFOLLOW,
+                S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
+                vertical=True,
             ),
         ]
         return LayoutSpec(controls=controls)

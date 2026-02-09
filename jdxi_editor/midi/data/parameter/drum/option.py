@@ -49,4 +49,3 @@ class DrumDisplayValues:
 
     # TVA Parameters
     TVA_LEVEL_VELOCITY_CURVE = [0, 1, 2, 3, 4, 5, 6, 7]
-

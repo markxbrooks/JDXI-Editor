@@ -197,7 +197,10 @@ class ProgramDatabase:
                 )
                 return True
         except Exception as e:
-            log.error(f"❌ Failed to save program {program.id}: {e}", scope="add_or_replace_program")
+            log.error(
+                f"❌ Failed to save program {program.id}: {e}",
+                scope="add_or_replace_program",
+            )
             return False
 
     def get_program_by_id(self, program_id: str) -> Optional[JDXiProgram]:
@@ -217,7 +220,9 @@ class ProgramDatabase:
                     return self._row_to_program(row)
                 return None
         except Exception as e:
-            log.error(f"Error getting program {program_id}: {e}", scope="get_programs_by_id")
+            log.error(
+                f"Error getting program {program_id}: {e}", scope="get_programs_by_id"
+            )
             return None
 
     def get_all_programs(self) -> List[JDXiProgram]:
@@ -250,10 +255,16 @@ class ProgramDatabase:
                     (pattern,),
                 ).fetchall()
                 programs = [self._row_to_program(row) for row in rows]
-                log.info(f"📊 Bank {bank}: Found {len(programs)} programs in database", scope="get_programs_by_bank")
+                log.info(
+                    f"📊 Bank {bank}: Found {len(programs)} programs in database",
+                    scope="get_programs_by_bank",
+                )
                 return programs
         except Exception as e:
-            log.error(f"Error loading programs for bank {bank}: {e}", scope="get_programs_by_bank")
+            log.error(
+                f"Error loading programs for bank {bank}: {e}",
+                scope="get_programs_by_bank",
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -434,8 +445,8 @@ class ProgramDatabase:
                         migrated += 1
                 except Exception as e:
                     log.error(
-                        f"Error migrating program {program_dict.get('id', 'unknown')}: {e}"
-                        , scope="migrate_from_json"
+                        f"Error migrating program {program_dict.get('id', 'unknown')}: {e}",
+                        scope="migrate_from_json",
                     )
 
             log.message(f"✅ Migrated {migrated} programs from JSON to SQLite")
@@ -468,12 +479,13 @@ def get_database() -> ProgramDatabase:
                 migrated_count = _db_instance.migrate_from_json(json_file)
                 if migrated_count > 0:
                     log.message(
-                        f"✅ Migrated {migrated_count} programs from JSON to database on first run"
-                        , scope="get_database"
+                        f"✅ Migrated {migrated_count} programs from JSON to database on first run",
+                        scope="get_database",
                     )
             else:
                 # Database already has programs, skip migration to avoid overwriting
                 log.message(
-                    f"⚠️  Database already contains {len(existing_programs)} programs. Skipping JSON migration to prevent data loss.", scope="get_database"
+                    f"⚠️  Database already contains {len(existing_programs)} programs. Skipping JSON migration to prevent data loss.",
+                    scope="get_database",
                 )
     return _db_instance

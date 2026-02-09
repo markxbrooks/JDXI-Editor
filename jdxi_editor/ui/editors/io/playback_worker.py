@@ -75,7 +75,9 @@ class MidiPlaybackWorker(QObject):
             self.position_tempo = Midi.TEMPO.BPM_120_USEC
 
         # Debug logging
-        print(f"🎵 [MidiPlaybackWorker] Worker setup: received {len(buffered_msgs)} buffered messages")
+        print(
+            f"🎵 [MidiPlaybackWorker] Worker setup: received {len(buffered_msgs)} buffered messages"
+        )
         if len(buffered_msgs) > 0:
             print(f"🎵 First few buffered messages: {buffered_msgs[:3]}")
 
@@ -129,7 +131,9 @@ class MidiPlaybackWorker(QObject):
 
         # Debug logging
         if len(self.buffered_msgs) == 0:
-            print(f"⚠️ [MidiPlaybackWorker] No buffered messages available (elapsed: {elapsed:.3f}s)")
+            print(
+                f"⚠️ [MidiPlaybackWorker] No buffered messages available (elapsed: {elapsed:.3f}s)"
+            )
             return
 
         while self.index < len(self.buffered_msgs):

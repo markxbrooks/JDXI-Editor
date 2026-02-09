@@ -5,17 +5,19 @@ Analog Oscillator Section
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
-from jdxi_editor.ui.editors.analog.oscillator.widget_spec import AnalogOscillatorLayoutSpec
-from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
+from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
+    AnalogOscillatorLayoutSpec,
+)
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
+from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import (
@@ -43,12 +45,12 @@ class AnalogOscillatorSection(BaseOscillatorSection):
     SYNTH_SPEC = Analog
 
     def __init__(
-            self,
-            waveform_selected_callback: Callable,
-            wave_buttons: dict,
-            midi_helper: MidiIOHelper,
-            address: RolandSysExAddress,
-            send_midi_parameter: Callable = None,
+        self,
+        waveform_selected_callback: Callable,
+        wave_buttons: dict,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress,
+        send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogOscillatorSection
@@ -74,11 +76,17 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             address=address,
             send_midi_parameter=send_midi_parameter,
         )
-        log.info(scope=self.__class__.__name__, message=f"after super init self.controls: {self.controls}")
+        log.info(
+            scope=self.__class__.__name__,
+            message=f"after super init self.controls: {self.controls}",
+        )
         self.address = address
         self._build_widgets()
         self.build_widgets()
-        log.info(scope=self.__class__.__name__, message=f"after build_widgets self.controls: {self.controls}")
+        log.info(
+            scope=self.__class__.__name__,
+            message=f"after build_widgets self.controls: {self.controls}",
+        )
         self.setup_ui()
 
     def _build_widgets(self) -> OscillatorWidgets:
@@ -97,11 +105,17 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         super().build_widgets()
         # Keep self.osc for any code that expects OscillatorWidgets (switches/tuning/env)
         self.osc = OscillatorWidgets(
-            switches=[self.sub_oscillator_type_switch] if self.sub_oscillator_type_switch else [],
+            switches=(
+                [self.sub_oscillator_type_switch]
+                if self.sub_oscillator_type_switch
+                else []
+            ),
             tuning=self.tuning_sliders or [],
-            env=[self.osc_pitch_env_velocity_sensitivity_slider]
-            if self.osc_pitch_env_velocity_sensitivity_slider
-            else [],
+            env=(
+                [self.osc_pitch_env_velocity_sensitivity_slider]
+                if self.osc_pitch_env_velocity_sensitivity_slider
+                else []
+            ),
         )
 
     def generate_wave_shapes(self) -> list:

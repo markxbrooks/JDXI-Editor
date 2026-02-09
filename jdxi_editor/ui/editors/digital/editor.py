@@ -28,6 +28,7 @@ Dependencies:
     - Digital synth parameter definitions
 
 """
+
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any, Callable, Dict, Optional, Union
@@ -98,38 +99,42 @@ class ParamBinding:
 
 
 ADSR_BINDINGS: dict[DigitalPartialParam, ParamBinding] = {
-    Digital.Param.AMP_ENV_ATTACK_TIME:
-        ParamBinding(ValueTransform.MS, lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.attack_control),
-
-    Digital.Param.AMP_ENV_SUSTAIN_LEVEL:
-        ParamBinding(ValueTransform.FRACTION, lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.sustain_control),
-
-    Digital.Param.FILTER_ENV_RELEASE_TIME:
-        ParamBinding(ValueTransform.MS, lambda s, p: s.partial_editors[p].filter_tab.adsr_widget.release_control),
+    Digital.Param.AMP_ENV_ATTACK_TIME: ParamBinding(
+        ValueTransform.MS,
+        lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.attack_control,
+    ),
+    Digital.Param.AMP_ENV_SUSTAIN_LEVEL: ParamBinding(
+        ValueTransform.FRACTION,
+        lambda s, p: s.partial_editors[p].amp_tab.adsr_widget.sustain_control,
+    ),
+    Digital.Param.FILTER_ENV_RELEASE_TIME: ParamBinding(
+        ValueTransform.MS,
+        lambda s, p: s.partial_editors[p].filter_tab.adsr_widget.release_control,
+    ),
 }
 
 PITCH_ENV_BINDINGS = {
-    Digital.Param.OSC_PITCH_ENV_ATTACK_TIME:
-        ParamBinding(ValueTransform.PITCH_ENV_TIME,
-                     lambda s, p: s.partial_editors[p].oscillator_tab.pitch_env_widget.attack_control),
-
-    Digital.Param.OSC_PITCH_ENV_DEPTH:
-        ParamBinding(ValueTransform.FRACTION,
-                     lambda s, p: s.partial_editors[p].oscillator_tab.pitch_env_widget.depth_control),
+    Digital.Param.OSC_PITCH_ENV_ATTACK_TIME: ParamBinding(
+        ValueTransform.PITCH_ENV_TIME,
+        lambda s, p: s.partial_editors[
+            p
+        ].oscillator_tab.pitch_env_widget.attack_control,
+    ),
+    Digital.Param.OSC_PITCH_ENV_DEPTH: ParamBinding(
+        ValueTransform.FRACTION,
+        lambda s, p: s.partial_editors[p].oscillator_tab.pitch_env_widget.depth_control,
+    ),
 }
 
 PWM_BINDINGS = {
-    Digital.Param.OSC_PULSE_WIDTH:
-        ParamBinding(
-            ValueTransform.FRACTION,
-            lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.pulse_width_control
-        ),
-
-    Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
-        ParamBinding(
-            ValueTransform.FRACTION,
-            lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.mod_depth_control
-        ),
+    Digital.Param.OSC_PULSE_WIDTH: ParamBinding(
+        ValueTransform.FRACTION,
+        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.pulse_width_control,
+    ),
+    Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH: ParamBinding(
+        ValueTransform.FRACTION,
+        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.mod_depth_control,
+    ),
 }
 
 
@@ -161,11 +166,11 @@ class DigitalSynthEditor(BaseSynthEditor):
     }
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: JDXiPresetHelper = None,
-            synth_number: int = 1,
-            parent: "JDXiInstrument" = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXiPresetHelper = None,
+        synth_number: int = 1,
+        parent: "JDXiInstrument" = None,
     ):
         super().__init__(
             midi_helper=midi_helper,
@@ -338,7 +343,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         self.base_widget = EditorBaseWidget(parent=self, analog=self.analog)
 
     def _setup_tabs(
-            self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
+        self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper
     ) -> None:
         """
         Create the partial tab widget for the digital synth editor.
@@ -385,7 +390,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         container_layout.addWidget(self.tab_widget)
 
     def _on_partial_state_changed(
-            self, partial: DigitalPartial, enabled: bool, selected: bool
+        self, partial: DigitalPartial, enabled: bool, selected: bool
     ) -> None:
         """
         Handle the state change of a partial (enabled/disabled and selected/unselected).
@@ -406,7 +411,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             self.tab_widget.setCurrentIndex(partial_num)
 
     def set_partial_state(
-            self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
     ) -> Optional[bool]:
         """
         Set the state of a partial (enabled/disabled and selected/unselected).
@@ -417,9 +422,17 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return: True if successful, False otherwise
         """
         try:
-            log.parameter("Setting partial:", partial.switch_param, scope=self.__class__.__name__)
-            log.parameter("Partial state enabled (Yes/No):", enabled, scope=self.__class__.__name__)
-            log.parameter("Partial selected (Yes/No):", selected, scope=self.__class__.__name__)
+            log.parameter(
+                "Setting partial:", partial.switch_param, scope=self.__class__.__name__
+            )
+            log.parameter(
+                "Partial state enabled (Yes/No):",
+                enabled,
+                scope=self.__class__.__name__,
+            )
+            log.parameter(
+                "Partial selected (Yes/No):", selected, scope=self.__class__.__name__
+            )
             self.send_midi_parameter(
                 param=partial.switch_param, value=1 if enabled else 0
             )
@@ -428,7 +441,10 @@ class DigitalSynthEditor(BaseSynthEditor):
             )
             return True
         except Exception as ex:
-            log.error(f"Error setting partial {partial.name} state: {str(ex)}", scope=self.__class__.__name__)
+            log.error(
+                f"Error setting partial {partial.name} state: {str(ex)}",
+                scope=self.__class__.__name__,
+            )
             return False
 
     def _initialize_partial_states(self):
@@ -444,7 +460,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         self.tab_widget.setCurrentIndex(0)
 
     def _handle_special_params(
-            self, partial_no: int, param: AddressParameter, value: int
+        self, partial_no: int, param: AddressParameter, value: int
     ) -> None:
         """
         Handle special parameters that require additional UI updates.
@@ -456,23 +472,39 @@ class DigitalSynthEditor(BaseSynthEditor):
         """
         if param == Digital.Param.OSC_WAVEFORM:
             self._update_waveform_buttons(partial_no, value)
-            log.parameter("Updated waveform buttons for OSC_WAVE", value, scope=self.__class__.__name__)
+            log.parameter(
+                "Updated waveform buttons for OSC_WAVE",
+                value,
+                scope=self.__class__.__name__,
+            )
 
         elif param == Digital.Param.FILTER_MODE_SWITCH:
             self._update_filter_mode_buttons(partial_no, value)
             self._update_filter_state(partial_no, value)
-            log.parameter("Updated filter state for FILTER_MODE_SWITCH", value, scope=self.__class__.__name__)
+            log.parameter(
+                "Updated filter state for FILTER_MODE_SWITCH",
+                value,
+                scope=self.__class__.__name__,
+            )
 
         elif param == Digital.Param.LFO_SHAPE:
             self._update_lfo_shape_buttons(partial_no, value)
-            log.parameter("Updated LFO shape buttons for LFO_SHAPE", value, scope=self.__class__.__name__)
+            log.parameter(
+                "Updated LFO shape buttons for LFO_SHAPE",
+                value,
+                scope=self.__class__.__name__,
+            )
 
         elif param == Digital.Param.MOD_LFO_SHAPE:
             self._update_mod_lfo_shape_buttons(partial_no, value)
-            log.parameter("Updated Mod LFO shape buttons for MOD_LFO_SHAPE", value, scope=self.__class__.__name__)
+            log.parameter(
+                "Updated Mod LFO shape buttons for MOD_LFO_SHAPE",
+                value,
+                scope=self.__class__.__name__,
+            )
 
     def _update_controls(
-            self, partial_no: int, sysex_data: dict, successes: list, failures: list
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
     ) -> None:
         """
         Apply updates to the UI components based on the received SysEx data. @@@
@@ -522,7 +554,9 @@ class DigitalSynthEditor(BaseSynthEditor):
                     partial_no, param, param_value, successes, failures
                 )
 
-        log.debug_info(successes=successes, failures=failures, scope=self.__class__.__name__)
+        log.debug_info(
+            successes=successes, failures=failures, scope=self.__class__.__name__
+        )
 
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
@@ -535,13 +569,13 @@ class DigitalSynthEditor(BaseSynthEditor):
         self.partial_editors[partial_no].filter_tab.update_controls_state(value)
 
     def _update_partial_control(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            bindings: dict,
-            successes: list,
-            failures: list,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        bindings: dict,
+        successes: list,
+        failures: list,
     ):
         binding = bindings.get(param)
         if not binding:
@@ -562,11 +596,11 @@ class DigitalSynthEditor(BaseSynthEditor):
         successes.append(param.name)
 
     def _update_common_controls(
-            self,
-            partial_number: int,
-            sysex_data: Dict,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_number: int,
+        sysex_data: Dict,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -578,7 +612,9 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return: None
         """
         for control in self.controls:
-            log.parameter("Control", control, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                "Control", control, silent=True, scope=self.__class__.__name__
+            )
         sysex_data.pop(SysExSection.SYNTH_TONE, None)
         sysex_data.pop("TONE_CATEGORY", None)
         for param_name, param_value in sysex_data.items():
@@ -586,11 +622,19 @@ class DigitalSynthEditor(BaseSynthEditor):
             param = DigitalCommonParam.get_by_name(param_name)
             if not param:
                 log.parameter(
-                    f"Param not found: {param_name} ", param_value, silent=True, scope=self.__class__.__name__
+                    f"Param not found: {param_name} ",
+                    param_value,
+                    silent=True,
+                    scope=self.__class__.__name__,
                 )
                 failures.append(param_name)
                 continue
-            log.parameter(f"Found {param_name}", param_name, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                f"Found {param_name}",
+                param_name,
+                silent=True,
+                scope=self.__class__.__name__,
+            )
             try:
                 if param.name in [
                     PartialSwitchState.PARTIAL1_SWITCH,
@@ -616,11 +660,11 @@ class DigitalSynthEditor(BaseSynthEditor):
                 log.error(f"Error {ex} occurred")
 
     def _update_modify_controls(
-            self,
-            partial_number: int,
-            sysex_data: dict,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_number: int,
+        sysex_data: dict,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -632,66 +676,85 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return: None
         """
         for control in self.controls:
-            log.parameter("_update_modify_controls control", control, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                "_update_modify_controls control",
+                control,
+                silent=True,
+                scope=self.__class__.__name__,
+            )
         sysex_data.pop(SysExSection.SYNTH_TONE, None)
         for param_name, param_value in sysex_data.items():
-            log.parameter(f"{param_name} {param_value}", param_value, silent=True, scope=self.__class__.__name__)
+            log.parameter(
+                f"{param_name} {param_value}",
+                param_value,
+                silent=True,
+                scope=self.__class__.__name__,
+            )
             param = DigitalModifyParam.get_by_name(param_name)
             if not param:
                 log.parameter(
-                    f"_update_modify_controls param not found: {param_name} ", param_value, silent=True,
-                    scope=self.__class__.__name__
+                    f"_update_modify_controls param not found: {param_name} ",
+                    param_value,
+                    silent=True,
+                    scope=self.__class__.__name__,
                 )
                 failures.append(param_name)
                 continue
             elif "SWITCH" in param_name:
                 self._update_switch(param, param_value, successes, failures)
             else:
-                log.parameter(f"_update_modify_controls control found {param_name}", param_name, silent=True,
-                              scope=self.__class__.__name__)
+                log.parameter(
+                    f"_update_modify_controls control found {param_name}",
+                    param_name,
+                    silent=True,
+                    scope=self.__class__.__name__,
+                )
                 self.address.lmb = JDXiSysExOffsetSuperNATURALLMB.MODIFY
                 self._update_slider(param, param_value, successes, failures)
 
-    def _update_partial_adsr_widgets_new(self,
-                                     partial_no: int,
-                                     param: DigitalPartialParam,
-                                     midi_value: int,
-                                     successes: list = None,
-                                     failures: list = None, ):
+    def _update_partial_adsr_widgets_new(
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ):
         self._update_partial_control(
-            partial_no, param, midi_value,
-            ADSR_BINDINGS, successes, failures
+            partial_no, param, midi_value, ADSR_BINDINGS, successes, failures
         )
 
-    def _update_partial_pitch_env_widgets_new(self,
-                                          partial_no: int,
-                                          param: DigitalPartialParam,
-                                          midi_value: int,
-                                          successes: list = None,
-                                          failures: list = None, ):
+    def _update_partial_pitch_env_widgets_new(
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ):
         self._update_partial_control(
-            partial_no, param, midi_value,
-            PITCH_ENV_BINDINGS, successes, failures
+            partial_no, param, midi_value, PITCH_ENV_BINDINGS, successes, failures
         )
 
-    def _update_pulse_width_widgets_new(self,
-                                    partial_no: int,
-                                    param: DigitalPartialParam,
-                                    midi_value: int,
-                                    successes: list = None,
-                                    failures: list = None, ):
+    def _update_pulse_width_widgets_new(
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
+    ):
         self._update_partial_control(
-            partial_no, param, midi_value,
-            PWM_BINDINGS, successes, failures
+            partial_no, param, midi_value, PWM_BINDINGS, successes, failures
         )
 
     def _update_partial_adsr_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
@@ -751,21 +814,25 @@ class DigitalSynthEditor(BaseSynthEditor):
                 Digital.Param.AMP_ENV_SUSTAIN_LEVEL,
                 Digital.Param.AMP_ENV_RELEASE_TIME,
             ):
-                self.partial_editors[partial_no].amp_tab.adsr_widget.refresh_plot_from_controls()
+                self.partial_editors[
+                    partial_no
+                ].amp_tab.adsr_widget.refresh_plot_from_controls()
             else:
-                self.partial_editors[partial_no].filter_tab.adsr_widget.refresh_plot_from_controls()
+                self.partial_editors[
+                    partial_no
+                ].filter_tab.adsr_widget.refresh_plot_from_controls()
             synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1, partial_no)
             self.address.lmb = synth_data.lmb
             log_slider_parameters(self.address, param, midi_value, control_value)
             successes.append(param.name)
 
     def _update_partial_pitch_env_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
@@ -802,19 +869,23 @@ class DigitalSynthEditor(BaseSynthEditor):
             control.setValue(new_value)
             control.blockSignals(False)
             pe = self.partial_editors.get(partial_no)
-            if pe and getattr(pe, "oscillator_tab", None) and getattr(pe.oscillator_tab, "pitch_env_widget", None):
+            if (
+                pe
+                and getattr(pe, "oscillator_tab", None)
+                and getattr(pe.oscillator_tab, "pitch_env_widget", None)
+            ):
                 pe.oscillator_tab.pitch_env_widget.refresh_plot_from_controls()
             successes.append(param.name)
         else:
             failures.append(param.name)
 
     def _update_pulse_width_widgets(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
@@ -844,13 +915,13 @@ class DigitalSynthEditor(BaseSynthEditor):
 
         # First, try to get from controls dictionary (new parameter-based system)
         if (
-                hasattr(oscillator_section, "controls")
-                and param in oscillator_section.controls
+            hasattr(oscillator_section, "controls")
+            and param in oscillator_section.controls
         ):
             control = oscillator_section.controls[param]
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
         elif (
-                hasattr(oscillator_section, "pwm_widget") and oscillator_section.pwm_widget
+            hasattr(oscillator_section, "pwm_widget") and oscillator_section.pwm_widget
         ):
             if param == Digital.Param.OSC_PULSE_WIDTH:
                 control = oscillator_section.pwm_widget.pulse_width_control
@@ -861,7 +932,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if pe and getattr(pe, "oscillator_tab", None) and getattr(pe.oscillator_tab, "pwm_widget", None):
+            if (
+                pe
+                and getattr(pe, "oscillator_tab", None)
+                and getattr(pe.oscillator_tab, "pwm_widget", None)
+            ):
                 pe.oscillator_tab.pwm_widget.refresh_plot_from_controls()
             successes.append(param.name)
         else:
@@ -886,12 +961,12 @@ class DigitalSynthEditor(BaseSynthEditor):
         return name_to_widget
 
     def _update_partial_slider_digital(
-            self,
-            partial_no: int,
-            param: DigitalPartialParam,
-            value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: DigitalPartialParam,
+        value: int,
+        successes: list = None,
+        failures: list = None,
     ) -> None:
         """
         Update a partial's slider/control from SysEx. Uses the same param object
@@ -914,7 +989,9 @@ class DigitalSynthEditor(BaseSynthEditor):
             scope=scope,
         )
         if value is None:
-            log.message("_update_partial_slider_digital value is None, skipping", scope=scope)
+            log.message(
+                "_update_partial_slider_digital value is None, skipping", scope=scope
+            )
             return
         pe = self.partial_editors.get(partial_no)
         if not pe:
@@ -929,7 +1006,13 @@ class DigitalSynthEditor(BaseSynthEditor):
         controls_dict = pe.controls
         if not controls_dict or len(controls_dict) == 0:
             merged = {}
-            for tab_attr in ("oscillator_tab", "filter_tab", "amp_tab", "lfo_tab", "mod_lfo_tab"):
+            for tab_attr in (
+                "oscillator_tab",
+                "filter_tab",
+                "amp_tab",
+                "lfo_tab",
+                "mod_lfo_tab",
+            ):
                 tab = getattr(pe, tab_attr, None)
                 if tab and getattr(tab, "controls", None):
                     merged.update(tab.controls)
@@ -946,7 +1029,13 @@ class DigitalSynthEditor(BaseSynthEditor):
         # If not in current dict, try merged dict from all section tabs (in case sections use separate refs)
         if not control:
             merged = {}
-            for tab_attr in ("oscillator_tab", "filter_tab", "amp_tab", "lfo_tab", "mod_lfo_tab"):
+            for tab_attr in (
+                "oscillator_tab",
+                "filter_tab",
+                "amp_tab",
+                "lfo_tab",
+                "mod_lfo_tab",
+            ):
                 tab = getattr(pe, tab_attr, None)
                 if tab and getattr(tab, "controls", None):
                     merged.update(tab.controls)
@@ -994,11 +1083,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             successes.append(param_name)
 
     def _update_partial_selection_switch(
-            self,
-            param: AddressParameter,
-            value: int,
-            successes: list,
-            failures: list,
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list,
+        failures: list,
     ) -> None:
         """
         Update the partial selection switches based on parameter and value.
@@ -1025,7 +1114,10 @@ class DigitalSynthEditor(BaseSynthEditor):
         partial_enum = DigitalPartial(partial_number)
         check_box = self.partials_panel.switches.get(partial_enum)
         log.parameter(
-            f"Updating switch for: {param_name}, checkbox:", check_box, silent=True, scope=self.__class__.__name__
+            f"Updating switch for: {param_name}, checkbox:",
+            check_box,
+            silent=True,
+            scope=self.__class__.__name__,
         )
         if check_box:
             check_box.blockSignals(True)
@@ -1036,11 +1128,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             failures.append(param.name)
 
     def _update_partial_selected_state(
-            self,
-            param: AddressParameter,
-            value: int,
-            successes: list,
-            failures: list,
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list,
+        failures: list,
     ) -> None:
         """
         Update the partial selected state based on parameter and value.
@@ -1084,7 +1176,11 @@ class DigitalSynthEditor(BaseSynthEditor):
         :param value: int
         :return:
         """
-        log.parameter(f"Updating waveform buttons for partial {partial_number}", value, scope=self.__class__.__name__)
+        log.parameter(
+            f"Updating waveform buttons for partial {partial_number}",
+            value,
+            scope=self.__class__.__name__,
+        )
         if partial_number is None:
             return
 
@@ -1102,14 +1198,23 @@ class DigitalSynthEditor(BaseSynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            log.warning("Unknown waveform value: %s", value, scope=self.__class__.__name__)
+            log.warning(
+                "Unknown waveform value: %s", value, scope=self.__class__.__name__
+            )
             return
 
-        log.parameter(f"Waveform value {value} found, selecting", selected_waveform, scope=self.__class__.__name__)
+        log.parameter(
+            f"Waveform value {value} found, selecting",
+            selected_waveform,
+            scope=self.__class__.__name__,
+        )
 
         # --- Retrieve waveform buttons for the given partial
         if partial_number not in self.partial_editors:
-            log.warning(f"Partial editor {partial_number} not found", scope=self.__class__.__name__)
+            log.warning(
+                f"Partial editor {partial_number} not found",
+                scope=self.__class__.__name__,
+            )
             return
 
         wave_buttons = self.partial_editors[
@@ -1127,7 +1232,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
         else:
-            log.warning("Waveform button not found for: %s", selected_waveform, scope=self.__class__.__name__)
+            log.warning(
+                "Waveform button not found for: %s",
+                selected_waveform,
+                scope=self.__class__.__name__,
+            )
 
         # Update enabled states of dependent widgets (e.g., SuperSaw Detune)
         oscillator_section = self.partial_editors[partial_number].oscillator_tab
@@ -1143,7 +1252,9 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return:
         """
         log.parameter(
-            f"Updating filter mode buttons for partial {partial_number}", value, scope=self.__class__.__name__
+            f"Updating filter mode buttons for partial {partial_number}",
+            value,
+            scope=self.__class__.__name__,
         )
         if partial_number is None:
             return
@@ -1151,16 +1262,23 @@ class DigitalSynthEditor(BaseSynthEditor):
         selected_filter_mode = self.FILTER_MODE_MAP.get(value)
 
         if selected_filter_mode is None:
-            log.warning("Unknown filter mode value: %s", value, scope=self.__class__.__name__)
+            log.warning(
+                "Unknown filter mode value: %s", value, scope=self.__class__.__name__
+            )
             return
 
         log.parameter(
-            f"Filter mode value {value} found, selecting", selected_filter_mode, scope=self.__class__.__name__
+            f"Filter mode value {value} found, selecting",
+            selected_filter_mode,
+            scope=self.__class__.__name__,
         )
 
         # Retrieve filter mode buttons for the given partial
         if partial_number not in self.partial_editors:
-            log.warning(f"Partial editor {partial_number} not found", scope=self.__class__.__name__)
+            log.warning(
+                f"Partial editor {partial_number} not found",
+                scope=self.__class__.__name__,
+            )
             return
 
         filter_mode_buttons = self.partial_editors[
@@ -1178,7 +1296,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         else:
-            log.warning("Filter mode button not found for: %s", selected_filter_mode, scope=self.__class__.__name__)
+            log.warning(
+                "Filter mode button not found for: %s",
+                selected_filter_mode,
+                scope=self.__class__.__name__,
+            )
 
     def _update_lfo_shape_buttons(self, partial_number: int, value: int):
         """
@@ -1188,7 +1310,11 @@ class DigitalSynthEditor(BaseSynthEditor):
         :param value: int
         :return:
         """
-        log.parameter(f"Updating LFO shape buttons for partial {partial_number}", value, scope=self.__class__.__name__)
+        log.parameter(
+            f"Updating LFO shape buttons for partial {partial_number}",
+            value,
+            scope=self.__class__.__name__,
+        )
         if partial_number is None:
             return
 
@@ -1206,14 +1332,23 @@ class DigitalSynthEditor(BaseSynthEditor):
         selected_lfo_shape = lfo_shape_map.get(value)
 
         if selected_lfo_shape is None:
-            log.warning("Unknown LFO shape value: %s", value, scope=self.__class__.__name__)
+            log.warning(
+                "Unknown LFO shape value: %s", value, scope=self.__class__.__name__
+            )
             return
 
-        log.parameter(f"LFO shape value {value} found, selecting", selected_lfo_shape, scope=self.__class__.__name__)
+        log.parameter(
+            f"LFO shape value {value} found, selecting",
+            selected_lfo_shape,
+            scope=self.__class__.__name__,
+        )
 
         # Retrieve LFO shape buttons for the given partial
         if partial_number not in self.partial_editors:
-            log.warning(f"Partial editor {partial_number} not found", scope=self.__class__.__name__)
+            log.warning(
+                f"Partial editor {partial_number} not found",
+                scope=self.__class__.__name__,
+            )
             return
 
         lfo_shape_buttons = self.partial_editors[
@@ -1231,7 +1366,11 @@ class DigitalSynthEditor(BaseSynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         else:
-            log.warning("LFO shape button not found for: %s", selected_lfo_shape, scope=self.__class__.__name__)
+            log.warning(
+                "LFO shape button not found for: %s",
+                selected_lfo_shape,
+                scope=self.__class__.__name__,
+            )
 
     def _update_mod_lfo_shape_buttons(self, partial_number: int, value: int):
         """
@@ -1242,7 +1381,9 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return:
         """
         log.parameter(
-            f"Updating Mod LFO shape buttons for partial {partial_number}", value, scope=self.__class__.__name__
+            f"Updating Mod LFO shape buttons for partial {partial_number}",
+            value,
+            scope=self.__class__.__name__,
         )
         if partial_number is None:
             return
@@ -1261,16 +1402,23 @@ class DigitalSynthEditor(BaseSynthEditor):
         selected_mod_lfo_shape = mod_lfo_shape_map.get(value)
 
         if selected_mod_lfo_shape is None:
-            log.warning("Unknown Mod LFO shape value: %s", value, scope=self.__class__.__name__)
+            log.warning(
+                "Unknown Mod LFO shape value: %s", value, scope=self.__class__.__name__
+            )
             return
 
         log.parameter(
-            f"Mod LFO shape value {value} found, selecting", selected_mod_lfo_shape, scope=self.__class__.__name__
+            f"Mod LFO shape value {value} found, selecting",
+            selected_mod_lfo_shape,
+            scope=self.__class__.__name__,
         )
 
         # Retrieve Mod LFO shape buttons for the given partial
         if partial_number not in self.partial_editors:
-            log.warning(f"Partial editor {partial_number} not found", scope=self.__class__.__name__)
+            log.warning(
+                f"Partial editor {partial_number} not found",
+                scope=self.__class__.__name__,
+            )
             return
 
         mod_lfo_shape_buttons = self.partial_editors[
@@ -1289,7 +1437,9 @@ class DigitalSynthEditor(BaseSynthEditor):
             selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         else:
             log.warning(
-                "Mod LFO shape button not found for: %s", selected_mod_lfo_shape, scope=self.__class__.__name__
+                "Mod LFO shape button not found for: %s",
+                selected_mod_lfo_shape,
+                scope=self.__class__.__name__,
             )
 
 
@@ -1299,11 +1449,11 @@ class DigitalSynth2Editor(DigitalSynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: JDXiPresetHelper = None,
-            synth_number: int = 2,
-            parent: QWidget = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXiPresetHelper = None,
+        synth_number: int = 2,
+        parent: QWidget = None,
     ):
         super().__init__(
             midi_helper=midi_helper,

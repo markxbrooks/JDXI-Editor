@@ -6,6 +6,7 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 @dataclass(frozen=True)
 class AnalogOscillatorLayoutSpec:
     """Analog Oscillator Widgets"""
+
     switches: list[SwitchSpec]
     tuning: list[SliderSpec]
     env: list[SliderSpec]

@@ -203,7 +203,9 @@ class ADSR(EnvelopeWidgetBase):
         )
         if hasattr(self, "peak_control"):
             self.layout.addWidget(self.peak_control, 0, 5)
-            self.envelope_spinbox_map[EnvelopeParameter.PEAK_LEVEL] = self.peak_control.spinbox
+            self.envelope_spinbox_map[EnvelopeParameter.PEAK_LEVEL] = (
+                self.peak_control.spinbox
+            )
             self.layout.addWidget(self.plot, 0, 6, 3, 1)
             self.layout.setColumnStretch(7, 1)
         else:

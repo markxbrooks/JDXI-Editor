@@ -92,23 +92,71 @@ class DrumPitchEnvSection(DrumBaseSection):
     def _build_layout_spec(self) -> LayoutSpec:
         """Build drum pitch envelope layout spec (controls list for widget creation)."""
         controls = [
-            SliderSpec(DrumPartialParam.PITCH_ENV_DEPTH, DrumPartialParam.PITCH_ENV_DEPTH.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name, vertical=True),
             SliderSpec(
-                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name, vertical=True
+                DrumPartialParam.PITCH_ENV_DEPTH,
+                DrumPartialParam.PITCH_ENV_DEPTH.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name, vertical=True
+                DrumPartialParam.PITCH_ENV_VELOCITY_SENS,
+                DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name,
+                vertical=True,
             ),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_1, DrumPartialParam.PITCH_ENV_TIME_1.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_2, DrumPartialParam.PITCH_ENV_TIME_2.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_3, DrumPartialParam.PITCH_ENV_TIME_3.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_TIME_4, DrumPartialParam.PITCH_ENV_TIME_4.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_0, DrumPartialParam.PITCH_ENV_LEVEL_0.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_1, DrumPartialParam.PITCH_ENV_LEVEL_1.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_2, DrumPartialParam.PITCH_ENV_LEVEL_2.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_3, DrumPartialParam.PITCH_ENV_LEVEL_3.display_name, vertical=True),
-            SliderSpec(DrumPartialParam.PITCH_ENV_LEVEL_4, DrumPartialParam.PITCH_ENV_LEVEL_4.display_name, vertical=True),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS,
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS,
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_1,
+                DrumPartialParam.PITCH_ENV_TIME_1.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_2,
+                DrumPartialParam.PITCH_ENV_TIME_2.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_3,
+                DrumPartialParam.PITCH_ENV_TIME_3.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_TIME_4,
+                DrumPartialParam.PITCH_ENV_TIME_4.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_LEVEL_0,
+                DrumPartialParam.PITCH_ENV_LEVEL_0.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_LEVEL_1,
+                DrumPartialParam.PITCH_ENV_LEVEL_1.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_LEVEL_2,
+                DrumPartialParam.PITCH_ENV_LEVEL_2.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_LEVEL_3,
+                DrumPartialParam.PITCH_ENV_LEVEL_3.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                DrumPartialParam.PITCH_ENV_LEVEL_4,
+                DrumPartialParam.PITCH_ENV_LEVEL_4.display_name,
+                vertical=True,
+            ),
         ]
         return LayoutSpec(controls=controls)
 
@@ -174,7 +222,9 @@ class DrumPitchEnvSection(DrumBaseSection):
         controls_layout.addWidget(t1_v_sens_slider, row, 2)
         t1_v_sens_slider.valueChanged.connect(
             lambda v: self._update_envelope(
-                EnvelopeParameter.T1_V_SENS, v, DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
+                EnvelopeParameter.T1_V_SENS,
+                v,
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS,
             )
         )
 
@@ -185,7 +235,9 @@ class DrumPitchEnvSection(DrumBaseSection):
         controls_layout.addWidget(t4_v_sens_slider, row, 3)
         t4_v_sens_slider.valueChanged.connect(
             lambda v: self._update_envelope(
-                EnvelopeParameter.T4_V_SENS, v, DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
+                EnvelopeParameter.T4_V_SENS,
+                v,
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS,
             )
         )
 

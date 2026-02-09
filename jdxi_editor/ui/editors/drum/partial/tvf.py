@@ -145,31 +145,49 @@ class DrumTVFSection(DrumBaseSection):
                 vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_TIME_1, DrumDisplayName.TVF_TIME_1, vertical=True
+                DrumPartialParam.TVF_ENV_TIME_1,
+                DrumDisplayName.TVF_TIME_1,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_TIME_2, DrumDisplayName.TVF_TIME_2, vertical=True
+                DrumPartialParam.TVF_ENV_TIME_2,
+                DrumDisplayName.TVF_TIME_2,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_TIME_3, DrumDisplayName.TVF_TIME_3, vertical=True
+                DrumPartialParam.TVF_ENV_TIME_3,
+                DrumDisplayName.TVF_TIME_3,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_TIME_4, DrumDisplayName.TVF_TIME_4, vertical=True
+                DrumPartialParam.TVF_ENV_TIME_4,
+                DrumDisplayName.TVF_TIME_4,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_LEVEL_0, DrumDisplayName.TVF_LEVEL_0, vertical=True
+                DrumPartialParam.TVF_ENV_LEVEL_0,
+                DrumDisplayName.TVF_LEVEL_0,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_LEVEL_1, DrumDisplayName.TVF_LEVEL_1, vertical=True
+                DrumPartialParam.TVF_ENV_LEVEL_1,
+                DrumDisplayName.TVF_LEVEL_1,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_LEVEL_2, DrumDisplayName.TVF_LEVEL_2, vertical=True
+                DrumPartialParam.TVF_ENV_LEVEL_2,
+                DrumDisplayName.TVF_LEVEL_2,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_LEVEL_3, DrumDisplayName.TVF_LEVEL_3, vertical=True
+                DrumPartialParam.TVF_ENV_LEVEL_3,
+                DrumDisplayName.TVF_LEVEL_3,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVF_ENV_LEVEL_4, DrumDisplayName.TVF_LEVEL_4, vertical=True
+                DrumPartialParam.TVF_ENV_LEVEL_4,
+                DrumDisplayName.TVF_LEVEL_4,
+                vertical=True,
             ),
         ]
         return LayoutSpec(controls=controls)

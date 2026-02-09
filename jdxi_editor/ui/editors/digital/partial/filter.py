@@ -152,13 +152,20 @@ class DigitalFilterSection(BaseFilterSection):
         self.DEFINITION = FilterDefinition(
             modes=DigitalFilterTypeEnum,
             param_mode=Digital.Param.FILTER_MODE_SWITCH,
-            midi_to_mode={0: DigitalFilterTypeEnum.BYPASS, 1: DigitalFilterTypeEnum.LPF},
-            mode_to_midi={DigitalFilterTypeEnum.BYPASS: 0, DigitalFilterTypeEnum.LPF: 1},
+            midi_to_mode={
+                0: DigitalFilterTypeEnum.BYPASS,
+                1: DigitalFilterTypeEnum.LPF,
+            },
+            mode_to_midi={
+                DigitalFilterTypeEnum.BYPASS: 0,
+                DigitalFilterTypeEnum.LPF: 1,
+            },
             specs=self.FILTER_SPECS,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.SLIDER_GROUPS,
             adsr=self.ADSR_SPEC,
-            bypass_mode=DigitalFilterTypeEnum.BYPASS)
+            bypass_mode=DigitalFilterTypeEnum.BYPASS,
+        )
         super().__init__(definition=self.DEFINITION, **kwargs)
 
     def _build_layout_spec(self) -> LayoutSpec:

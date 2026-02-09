@@ -1,3 +1,3 @@
 from .common import DigitalCommonSection
 from .partial.panel import DigitalPartialPanel
-from .tone_modify import DigitalToneModifySection
+from jdxi_editor.ui.editors.digital.tone_modify.section import DigitalToneModifySection

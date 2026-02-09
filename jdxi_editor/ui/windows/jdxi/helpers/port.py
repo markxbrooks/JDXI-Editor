@@ -34,7 +34,9 @@ def find_jdxi_port(port_list: list[str]) -> str | None:
             log.message(f"Skipping excluded port: {port}", scope="find_jdxi_port")
             continue
         if any(name in port.lower() for name in jdxi_names):
-            log.message(f"[find_jdxi_port] Auto-detected JD-Xi: {port}", scope="find_jdxi_port")
+            log.message(
+                f"[find_jdxi_port] Auto-detected JD-Xi: {port}", scope="find_jdxi_port"
+            )
             return port
 
     return None

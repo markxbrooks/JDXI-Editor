@@ -53,7 +53,11 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         analog: bool = False,
     ):
         super().__init__(
-            envelope_keys=[EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.PEAK_LEVEL],
+            envelope_keys=[
+                EnvelopeParameter.ATTACK_TIME,
+                EnvelopeParameter.DECAY_TIME,
+                EnvelopeParameter.PEAK_LEVEL,
+            ],
             create_parameter_slider=create_parameter_slider,
             parameters=[attack_param, decay_param, depth_param],
             midi_helper=midi_helper,
@@ -185,7 +189,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.SUSTAIN_LEVEL:
-                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = slider.value() / 127
+                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = (
+                        slider.value() / 127
+                    )
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
                     self.envelope[EnvelopeParameter.PEAK_LEVEL] = slider.value() / 127
                 else:
@@ -201,7 +207,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == EnvelopeParameter.SUSTAIN_LEVEL:
-                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = slider.STATUS() / 127
+                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = (
+                        slider.STATUS() / 127
+                    )
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
                     pass
                     # self.envelope[EnvelopeParameter.PEAK_LEVEL] = (slider.value() / 127)
@@ -211,7 +219,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                     )
             log.message(f"{self.envelope}")
         except Exception as ex:
-            log.error(f"[PitchEnvelopeWidget] [update_envelope_from_controls] Error updating envelope from controls: {ex}")
+            log.error(
+                f"[PitchEnvelopeWidget] [update_envelope_from_controls] Error updating envelope from controls: {ex}"
+            )
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -220,7 +230,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.SUSTAIN_LEVEL:
-                    slider.setValue(int(self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] * 127))
+                    slider.setValue(
+                        int(self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] * 127)
+                    )
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
                     pass
                     # slider.setValue(int((self.envelope[EnvelopeParameter.PEAK_LEVEL] + 0.5) * 127))
@@ -229,7 +241,9 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"[PitchEnvelopeWidget] [update_controls_from_envelope] Error updating controls from envelope: {ex}")
+            log.error(
+                f"[PitchEnvelopeWidget] [update_controls_from_envelope] Error updating controls from envelope: {ex}"
+            )
         self.plot.set_values(self.envelope)
 
     def refresh_plot_from_controls(self) -> None:

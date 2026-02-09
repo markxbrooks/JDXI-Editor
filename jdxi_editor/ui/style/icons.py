@@ -19,6 +19,7 @@ from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 class WaveQTAIcon:
     """Wave Icon"""
+
     TRIANGLE = "mdi.triangle-wave"
     SINE = "mdi.sine-wave"
     SAW: str = "mdi.sawtooth-wave"
@@ -29,6 +30,7 @@ class WaveQTAIcon:
 
 class WaveSpec:
     """Wave"""
+
     Form: WaveForm = WaveForm
     Icon: WaveQTAIcon = WaveQTAIcon
 
@@ -306,7 +308,9 @@ class JDXiUIIconRegistry:
         return QIcon(base64_to_pixmap(icon_base64))
 
     @staticmethod
-    def generate_waveform_icon_by_name(icon: QIcon | None, icon_name_str: Any | None) -> QIcon:
+    def generate_waveform_icon_by_name(
+        icon: QIcon | None, icon_name_str: Any | None
+    ) -> QIcon:
         """generate waveform Icon by name"""
         # --- Check if icon_name_str matches a WaveformIconType attribute
         icon_type_value = getattr(WaveForm, icon_name_str, None)

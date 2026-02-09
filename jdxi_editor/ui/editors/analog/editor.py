@@ -78,7 +78,7 @@ class AnalogSynthEditor(BaseSynthEditor):
     """Analog Synth Editor UI."""
 
     SUB_OSC_TYPE_MAP = {0: 0, 1: 1, 2: 2}
-    
+
     SYNTH_SPEC = Analog
 
     def __init__(
@@ -114,7 +114,9 @@ class AnalogSynthEditor(BaseSynthEditor):
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
             log.message(scope=self.__class__.__name__, message="MIDI signals connected")
         else:
-            log.message(scope=self.__class__.__name__, message="MIDI signals not connected")
+            log.message(
+                scope=self.__class__.__name__, message="MIDI signals not connected"
+            )
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -159,7 +161,8 @@ class AnalogSynthEditor(BaseSynthEditor):
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
         log.message(
-            scope=self.__class__.__name__, message=f"[_create_sections] start [self.controls:] {self.controls}"
+            scope=self.__class__.__name__,
+            message=f"[_create_sections] start [self.controls:] {self.controls}",
         )
         try:
             self.oscillator_section = AnalogOscillatorSection(
@@ -174,7 +177,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
                 on_filter_mode_changed=self._on_filter_mode_changed,
-                analog=True
+                analog=True,
             )
             self.amp_section = AnalogAmpSection(
                 address=self.synth_data.address,
@@ -200,12 +203,16 @@ class AnalogSynthEditor(BaseSynthEditor):
                 if hasattr(section, "controls") and section.controls:
                     self.controls.update(section.controls)
         except Exception as ex:
-            log.message(f"Error {ex} occurred in [AnalogSynthEditor] [_create_sections]")
+            log.message(
+                f"Error {ex} occurred in [AnalogSynthEditor] [_create_sections]"
+            )
             import traceback
+
             log.message(traceback.format_exc())
         self.add_tabs()
         log.message(
-            scope=self.__class__.__name__, message=f"[_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}"
+            scope=self.__class__.__name__,
+            message=f"[_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}",
         )
 
     def _init_parameter_mappings(self):
@@ -232,24 +239,31 @@ class AnalogSynthEditor(BaseSynthEditor):
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
-            scope=self.__class__.__name__, message=f"update_filter_controls_state: mode={mode} "
+            scope=self.__class__.__name__,
+            message=f"update_filter_controls_state: mode={mode} ",
         )
         log.message(
-            scope=self.__class__.__name__, message=f"has filter_section={hasattr(self, 'filter_section')} "
+            scope=self.__class__.__name__,
+            message=f"has filter_section={hasattr(self, 'filter_section')} ",
         )
         log.message(
-            scope=self.__class__.__name__, message=f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
+            scope=self.__class__.__name__,
+            message=f"filter_section is not None={getattr(self, 'filter_section', None) is not None}",
         )
         if hasattr(self, "filter_section") and self.filter_section is not None:
             self.filter_section.update_controls_state(mode)
         else:
             log.warning(
-                scope=self.__class__.__name__, message="Update_filter_controls_state: no filter_section, skipping"
+                scope=self.__class__.__name__,
+                message="Update_filter_controls_state: no filter_section, skipping",
             )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
-        log.message(scope=self.__class__.__name__, message=f"_on_filter_mode_changed: mode={mode}")
+        log.message(
+            scope=self.__class__.__name__,
+            message=f"_on_filter_mode_changed: mode={mode}",
+        )
         self.update_filter_controls_state(mode)
 
 
@@ -259,6 +273,7 @@ if __name__ == "__main__":
 
     from jdxi_editor.core.jdxi import JDXi
     from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+
     app = QApplication([])
     midi_helper = MidiIOHelper()
     preset_helper = JDXiPresetHelper(midi_helper, JDXi.UI.Preset.Analog.ENUMERATED)

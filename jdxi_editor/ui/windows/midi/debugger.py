@@ -118,7 +118,9 @@ def parse_sysex_byte(byte_value: int, enum_cls: Type[SysExEnumProtocol]) -> str:
     return enum_member.name if enum_member else f"COMMON (0x{byte_value:02X})"
 
 
-def parse_sysex_message(message: bytes, enum_cls: Type[SysExEnumProtocol]) -> Tuple[str, int]:
+def parse_sysex_message(
+    message: bytes, enum_cls: Type[SysExEnumProtocol]
+) -> Tuple[str, int]:
     """
     Parse a SysEx message and return the name and byte value of the specified parameter.
 

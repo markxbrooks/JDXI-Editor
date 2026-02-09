@@ -94,7 +94,9 @@ class SectionBaseWidget(SynthBase):
 
     ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
-    SLIDER_GROUPS: dict[str, list] = {}  # e.g. {"controls": [SliderSpec, ...], "pan": [...]}
+    SLIDER_GROUPS: dict[str, list] = (
+        {}
+    )  # e.g. {"controls": [SliderSpec, ...], "pan": [...]}
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
     BUTTON_SPECS: list = []  # optional waveform/mode/shape buttons
     SYNTH_SPEC = JDXiMidiDigital
@@ -356,6 +358,7 @@ class SectionBaseWidget(SynthBase):
         # 3 — QTA fallback
         try:
             from jdxi_editor.ui.widgets.editor.helper import create_icon_from_qta
+
             icon = create_icon_from_qta(icon_name)
             if icon and not icon.isNull():
                 return icon
@@ -384,10 +387,12 @@ class SectionBaseWidget(SynthBase):
         icon = self._resolve_icon(getattr(spec, "icon_name", None))
         if icon:
             btn.setIcon(icon)
-            btn.setIconSize(QSize(
-                JDXi.UI.Dimensions.LFOIcon.WIDTH,
-                JDXi.UI.Dimensions.LFOIcon.HEIGHT,
-            ))
+            btn.setIconSize(
+                QSize(
+                    JDXi.UI.Dimensions.LFOIcon.WIDTH,
+                    JDXi.UI.Dimensions.LFOIcon.HEIGHT,
+                )
+            )
 
         btn.clicked.connect(lambda _, p=spec.param: self._on_button_selected(p))
         return btn
@@ -446,6 +451,7 @@ class SectionBaseWidget(SynthBase):
 
     def build_adsr_widget(self) -> ADSR:
         """build ADSR widget"""
+
         # --- Extract parameters from ADSRSpec objects
         def get_param(spec_or_param):
             """Extract parameter from ADSRSpec or return parameter directly"""
@@ -617,12 +623,12 @@ class SectionBaseWidget(SynthBase):
 
             self.send_midi_parameter(actual_param, param_value)
 
-    def _add_widget_rows(self, layout: QHBoxLayout | QVBoxLayout, rows: list[list[QWidget]]):
+    def _add_widget_rows(
+        self, layout: QHBoxLayout | QVBoxLayout, rows: list[list[QWidget]]
+    ):
         """add a list of rows of widgets to a layout"""
         for row in rows:
-            layout.addLayout(
-                    create_layout_with_widgets(row)
-                    )
+            layout.addLayout(create_layout_with_widgets(row))
 
     def _add_group_with_widget_rows(self, label: str, rows: list[list[QWidget]]):
         """Create a group box, populate it with rows of widgets, and add it to the parent layout."""
@@ -683,7 +689,10 @@ class SectionBaseWidget(SynthBase):
         """on shape group changed"""
         log.message(
             "[LFO Shape] _on_shape_group_changed shape_value %s, checked: %s section: %s",
-            shape_value, checked, self.__class__.__name__, scope=self.__class__.__name__
+            shape_value,
+            checked,
+            self.__class__.__name__,
+            scope=self.__class__.__name__,
         )
         if not checked:
             return
@@ -691,7 +700,11 @@ class SectionBaseWidget(SynthBase):
             shape = self.SYNTH_SPEC.LFO.Shape(shape_value)
             self.set_wave_shape(shape, send_midi=True)
         except Exception as ex:
-            log.error("[SectionBaseWidget] [_on_shape_group_changed] error %s occurred", ex, scope=self.__class__.__name__)
+            log.error(
+                "[SectionBaseWidget] [_on_shape_group_changed] error %s occurred",
+                ex,
+                scope=self.__class__.__name__,
+            )
 
     def _get_wave_shape_button(self, shape: DigitalLFOShape | AnalogLFOShape):
         """get wave shape button"""
@@ -701,11 +714,13 @@ class SectionBaseWidget(SynthBase):
                 "[LFO Shape] No button for %s (section=%s)",
                 shape,
                 self.__class__.__name__,
-                scope=self.__class__.__name__
+                scope=self.__class__.__name__,
             )
         return btn
 
-    def set_wave_shape(self, shape: DigitalLFOShape | AnalogLFOShape, send_midi: bool = False):
+    def set_wave_shape(
+        self, shape: DigitalLFOShape | AnalogLFOShape, send_midi: bool = False
+    ):
         """Update UI + optionally send MIDI"""
 
         btn = self._get_wave_shape_button(shape)
@@ -727,20 +742,25 @@ class SectionBaseWidget(SynthBase):
                 shape.value,
                 address,
                 self.__class__.__name__,
-                scope=self.__class__.__name__
+                scope=self.__class__.__name__,
             )
             if not self.send_midi_parameter(
-                    self.wave_shape_param, shape.value, address
+                self.wave_shape_param, shape.value, address
             ):
-                log.warning(f"Failed to set Mod LFO shape to {shape.name}", scope=self.__class__.__name__)
+                log.warning(
+                    f"Failed to set Mod LFO shape to {shape.name}",
+                    scope=self.__class__.__name__,
+                )
         elif not self.send_midi_parameter:
             log.warning(
                 "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
                 self.__class__.__name__,
-                scope=self.__class__.__name__
+                scope=self.__class__.__name__,
             )
 
-    def _apply_wave_shape_ui(self, btn: Any | None, shape: DigitalLFOShape | AnalogLFOShape):
+    def _apply_wave_shape_ui(
+        self, btn: Any | None, shape: DigitalLFOShape | AnalogLFOShape
+    ):
         """Apply wave shape UI"""
         # --- Prevent recursive signals when updating from MIDI
         self.wave_shape_group.blockSignals(True)

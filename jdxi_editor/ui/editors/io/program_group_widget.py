@@ -93,7 +93,8 @@ class ProgramGroupWidget(QGroupBox):
             )
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
-            f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})", scope=self.__class__.__name__
+            f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})",
+            scope=self.__class__.__name__,
         )
 
         # Edit Program Name (round button + icon + label, centered)

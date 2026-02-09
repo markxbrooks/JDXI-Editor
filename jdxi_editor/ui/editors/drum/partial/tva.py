@@ -115,25 +115,39 @@ class DrumTVASection(DrumBaseSection):
                 vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_TIME_1, DrumPartialParam.TVA_ENV_TIME_1.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_TIME_1,
+                DrumPartialParam.TVA_ENV_TIME_1.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_TIME_2, DrumPartialParam.TVA_ENV_TIME_2.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_TIME_2,
+                DrumPartialParam.TVA_ENV_TIME_2.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_TIME_3, DrumPartialParam.TVA_ENV_TIME_3.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_TIME_3,
+                DrumPartialParam.TVA_ENV_TIME_3.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_TIME_4, DrumPartialParam.TVA_ENV_TIME_4.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_TIME_4,
+                DrumPartialParam.TVA_ENV_TIME_4.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_LEVEL_1, DrumPartialParam.TVA_ENV_LEVEL_1.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_LEVEL_1,
+                DrumPartialParam.TVA_ENV_LEVEL_1.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_LEVEL_2, DrumPartialParam.TVA_ENV_LEVEL_2.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_LEVEL_2,
+                DrumPartialParam.TVA_ENV_LEVEL_2.display_name,
+                vertical=True,
             ),
             SliderSpec(
-                DrumPartialParam.TVA_ENV_LEVEL_3, DrumPartialParam.TVA_ENV_LEVEL_3.display_name, vertical=True
+                DrumPartialParam.TVA_ENV_LEVEL_3,
+                DrumPartialParam.TVA_ENV_LEVEL_3.display_name,
+                vertical=True,
             ),
         ]
         return LayoutSpec(controls=controls)
@@ -185,7 +199,9 @@ class DrumTVASection(DrumBaseSection):
         envelope_slider_layout.addWidget(t1_v_sens_slider, row, 1)
         t1_v_sens_slider.valueChanged.connect(
             lambda v: self._update_envelope(
-                EnvelopeParameter.T1_V_SENS, v, DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS
+                EnvelopeParameter.T1_V_SENS,
+                v,
+                DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
             )
         )
 
@@ -194,7 +210,9 @@ class DrumTVASection(DrumBaseSection):
         envelope_slider_layout.addWidget(t4_v_sens_slider, row, 2)
         t4_v_sens_slider.valueChanged.connect(
             lambda v: self._update_envelope(
-                EnvelopeParameter.T4_V_SENS, v, DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS
+                EnvelopeParameter.T4_V_SENS,
+                v,
+                DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
             )
         )
 

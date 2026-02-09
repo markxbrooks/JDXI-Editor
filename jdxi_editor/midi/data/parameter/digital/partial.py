@@ -126,7 +126,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         7,
         "Waveform of the Oscillator; Select from classic waveforms: SAW, SQR, TRI, SINE, NOISE, SUPER SAW or PCM. \nEach offers unique harmonic content for shaping tone and texture",
-        "Waveform Type"
+        "Waveform Type",
     )  # Waveform preset_type
     OSC_WAVE_VARIATION = ParameterSpec(
         0x01,
@@ -135,25 +135,13 @@ class DigitalPartialParam(AddressParameter):
         0,
         2,
         "You can select variations of the currently selected WAVE",
-        "Wave Variation"
+        "Wave Variation",
     )  # Wave variation
     OSC_PITCH = ParameterSpec(
-        0x03,
-        -24,
-        24,
-        -24,
-        24,
-        "Adjusts the pitch in semitone steps",
-        "Coarse Tune"
+        0x03, -24, 24, -24, 24, "Adjusts the pitch in semitone steps", "Coarse Tune"
     )  # Coarse tune
     OSC_DETUNE = ParameterSpec(
-        0x04,
-        -50,
-        50,
-        -50,
-        50,
-        "Adjusts the pitch in steps of one cent",
-        "Fine tune"
+        0x04, -50, 50, -50, 50, "Adjusts the pitch in steps of one cent", "Fine tune"
     )  # Fine tune (-50 to +50)
     OSC_PULSE_WIDTH_MOD_DEPTH = ParameterSpec(
         0x05,
@@ -162,7 +150,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the amount (depth) of LFO that is applied to PW (Pulse Width). \nIf the OSC Wave has selected (PW-SQR), you can use this slider to specify the amount of LFO modulation applied to PW (pulse width).",
-        "PWM Depth"
+        "PWM Depth",
     )  # PWM Depth
     OSC_PULSE_WIDTH = ParameterSpec(
         0x06,
@@ -171,7 +159,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone",
-        "Pulse Width"
+        "Pulse Width",
     )  # Pulse Width
     OSC_PITCH_ENV_ATTACK_TIME = ParameterSpec(
         0x07,
@@ -180,7 +168,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point",
-        "Pitch Envelope Attack"
+        "Pitch Envelope Attack",
     )  # Pitch Envelope Attack
     OSC_PITCH_ENV_DECAY_TIME = ParameterSpec(
         0x08,
@@ -189,7 +177,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed",
-        "Oscillator Pitch Env Decay"
+        "Oscillator Pitch Env Decay",
     )  # Pitch Envelope Decay
     OSC_PITCH_ENV_DEPTH = ParameterSpec(
         0x09,
@@ -198,7 +186,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "This specifies how much the pitch envelope will affect the pitch\nNegative values will invert the shape of the envelope",
-        "Oscillator Pitch Env Depth"
+        "Oscillator Pitch Env Depth",
     )  # Pitch Envelope Depth (-63 to +63)
 
     FILTER_MODE_SWITCH = ParameterSpec(
@@ -208,7 +196,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         7,
         "Selects the type of filter; \nBYPASS, LPF1, LPF2, LPF3, LPF4, HPF, BPF, PKG",
-        "Filter Mode"
+        "Filter Mode",
     )  # Filter mode
     FILTER_SLOPE = ParameterSpec(
         0x0B,
@@ -217,16 +205,10 @@ class DigitalPartialParam(AddressParameter):
         0,
         1,
         "Selects the slope (steepness) of the filter. -12, -24 [dB]",
-        "Filter Slope"
+        "Filter Slope",
     )  # Filter slope
     FILTER_CUTOFF = ParameterSpec(
-        0x0C,
-        0,
-        127,
-        0,
-        127,
-        "Specifies the cutoff frequency",
-        "Filter Cutoff"
+        0x0C, 0, 127, 0, 127, "Specifies the cutoff frequency", "Filter Cutoff"
     )  # Cutoff frequency
     FILTER_CUTOFF_KEYFOLLOW = ParameterSpec(
         0x0D,
@@ -235,7 +217,7 @@ class DigitalPartialParam(AddressParameter):
         -100,
         100,
         "Specifies how you can make the filter cutoff frequency, \nto vary according to the key you play",
-        "KeyFollow"
+        "KeyFollow",
     )  # Key follow
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x0E,
@@ -244,7 +226,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies how you can make the filter envelope depth vary, \naccording to the strength with which you play the key",
-        "Velocity sensitivity"
+        "Velocity sensitivity",
     )  # Velocity sensitivity
     FILTER_RESONANCE = ParameterSpec(
         0x0F,
@@ -253,7 +235,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Emphasizes the sound in the region of the filter cutoff frequency",
-        "Resonance"
+        "Resonance",
     )  # Resonance
     FILTER_ENV_ATTACK_TIME = ParameterSpec(
         0x10,
@@ -262,7 +244,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from the moment you press the key until\n the cutoff frequency reaches its highest (or lowest) point",
-        "Filter envelope attack"
+        "Filter envelope attack",
     )  #
     FILTER_ENV_DECAY_TIME = ParameterSpec(
         0x11,
@@ -271,7 +253,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when the cutoff frequency reaches its\n highest (or lowest) point, until it decays to the sustain level",
-        "Filter envelope decay"
+        "Filter envelope decay",
     )  #
     FILTER_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x12,
@@ -280,7 +262,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the cutoff frequency that will be maintained\n from when the decay time has elapsed until you release the key",
-        "Filter envelope sustain"
+        "Filter envelope sustain",
     )  #
     FILTER_ENV_RELEASE_TIME = ParameterSpec(
         0x13,
@@ -289,7 +271,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when you release the key until\n the cutoff frequency reaches its minimum value",
-        "Filter envelope release"
+        "Filter envelope release",
     )  #
     FILTER_ENV_DEPTH = ParameterSpec(
         0x14,
@@ -298,7 +280,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies the direction and depth to which the cutoff frequency will change",
-        "Filter envelope depth"
+        "Filter envelope depth",
     )
 
     # Amplitude parameters
@@ -310,7 +292,7 @@ class DigitalPartialParam(AddressParameter):
         -63,
         63,
         "Specifies how the volume will vary according to the strength with which you play the keyboard.",
-        "Velocity Sensitivity"
+        "Velocity Sensitivity",
     )  # Velocity sensitivity
     AMP_ENV_ATTACK_TIME = ParameterSpec(
         0x17,
@@ -319,7 +301,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from the \nmoment you press the key until \n the maximum volume is reached.",
-        "Amp Env Attack"
+        "Amp Env Attack",
     )  # Amplitude envelope attack
     AMP_ENV_DECAY_TIME = ParameterSpec(
         0x18,
@@ -328,7 +310,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when the\nmaximum volume is reached, until\nit decays to the sustain level.",
-        "Amp Env decay"
+        "Amp Env decay",
     )  # Amplitude envelope decay
     AMP_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x19,
@@ -337,7 +319,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the volume level that\nwill be maintained from when\nthe attack and decay times have\nelapsed until you release the key",
-        "Amp Env Sustain"
+        "Amp Env Sustain",
     )  # Amplitude envelope sustain
     AMP_ENV_RELEASE_TIME = ParameterSpec(
         0x1A,
@@ -346,7 +328,7 @@ class DigitalPartialParam(AddressParameter):
         0,
         127,
         "Specifies the time from when you\nrelease the key until the volume\nreaches its minimum value.",
-        "Amp Env Release"
+        "Amp Env Release",
     )  # Amplitude envelope release
     AMP_PAN = ParameterSpec(
         0x1B,
@@ -355,7 +337,7 @@ class DigitalPartialParam(AddressParameter):
         -64,
         63,
         "Specifies the stereo position of the partial; Left-Right",
-        "Pan"
+        "Pan",
     )  # Pan position
     AMP_LEVEL_KEYFOLLOW = ParameterSpec(
         0x1C,

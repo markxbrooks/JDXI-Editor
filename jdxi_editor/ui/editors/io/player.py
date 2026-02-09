@@ -535,7 +535,8 @@ class MidiFileEditor(SynthEditor):
                         ]
                         spin.setValue(channel)
                         track_name = (
-                            getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                            getattr(analysis, "track_name", None)
+                            or f"Track {track_index + 1}"
                         )
                         score = analysis.scores[category]
                         updated_tracks[category].append(
@@ -544,7 +545,9 @@ class MidiFileEditor(SynthEditor):
 
             # Handle unclassified tracks
             for track_index, analysis in classifications["unclassified"]:
-                track_name = getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                track_name = (
+                    getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                )
                 scores = analysis.scores
                 max_score = max(scores.values())
                 max_category = max(scores.items(), key=lambda x: x[1])[0]
@@ -681,9 +684,7 @@ class MidiFileEditor(SynthEditor):
         self.usb_populate_devices()
         grid.addWidget(self.ui.usb_port_select_combo, row, 1, 1, 2)
         self.ui.usb_port_refresh_devices_button = QPushButton()
-        self.ui.usb_port_refresh_devices_button.setStyleSheet(
-            JDXiUIStyle.BUTTON_ROUND
-        )
+        self.ui.usb_port_refresh_devices_button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
         self.ui.usb_port_refresh_devices_button.setFixedWidth(
             JDXiUIDimensions.BUTTON_ROUND.WIDTH
         )
@@ -705,15 +706,11 @@ class MidiFileEditor(SynthEditor):
             refresh_usb_icon_label = QLabel()
             refresh_usb_icon_label.setPixmap(refresh_usb_icon_pixmap)
             refresh_usb_cell_layout.addWidget(refresh_usb_icon_label)
-        self.ui.usb_port_refresh_devices_label = QLabel(
-            "Refresh USB Device List"
-        )
+        self.ui.usb_port_refresh_devices_label = QLabel("Refresh USB Device List")
         self.ui.usb_port_refresh_devices_label.setStyleSheet(
             JDXi.UI.Style.STYLE_FOREGROUND
         )
-        refresh_usb_cell_layout.addWidget(
-            self.ui.usb_port_refresh_devices_label
-        )
+        refresh_usb_cell_layout.addWidget(self.ui.usb_port_refresh_devices_label)
         grid.addWidget(refresh_usb_cell, row, 3)
         row += 1
 
@@ -725,9 +722,7 @@ class MidiFileEditor(SynthEditor):
         # row += 1
 
         # --- Row 2 still: Save USB recording checkbox
-        self.ui.usb_file_record_checkbox = QCheckBox(
-            "Save USB recording to file"
-        )
+        self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
         JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_record_checkbox)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
@@ -962,9 +957,7 @@ class MidiFileEditor(SynthEditor):
             btn.toggled.connect(
                 lambda checked, c=ch: self._toggle_channel_mute(c, checked, btn)
             )
-            btn.setStyleSheet(
-                JDXiUIStyle.BUTTON_SEQUENCER_SMALL
-            )
+            btn.setStyleSheet(JDXiUIStyle.BUTTON_SEQUENCER_SMALL)
             btn.setCheckable(True)
             btn.setChecked(False)
             btn.setStyleSheet(generate_sequencer_button_style(btn.isChecked()))
@@ -1030,7 +1023,9 @@ class MidiFileEditor(SynthEditor):
             # Sync the track viewer's mute buttons
             if channel in self.ui.midi_track_viewer.mute_buttons:
                 self.ui.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
-                self.ui.midi_track_viewer.mute_buttons[channel].setStyleSheet(generate_sequencer_button_style(is_muted))
+                self.ui.midi_track_viewer.mute_buttons[channel].setStyleSheet(
+                    generate_sequencer_button_style(is_muted)
+                )
 
         # Update player's muted channels state
         self.midi_state.muted_channels = self.get_muted_channels()
@@ -1136,10 +1131,10 @@ class MidiFileEditor(SynthEditor):
         )
 
     def _create_transport_control(
-            self,
-            spec: TransportSpec,
-            layout: QHBoxLayout,
-            button_group: QButtonGroup | None
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: QButtonGroup | None,
     ) -> None:
         """Create a transport button + label row"""
 
@@ -1208,13 +1203,25 @@ class MidiFileEditor(SynthEditor):
         transport_button_group.setExclusive(True)
 
         controls = [
-            TransportSpec("play", JDXi.UI.Icon.PLAY, "Play", self.midi_playback_start, True),
-            TransportSpec("stop", JDXi.UI.Icon.STOP, "Stop", self.midi_playback_stop, True),
-            TransportSpec("pause", JDXi.UI.Icon.PAUSE, "Pause", self.midi_playback_pause_toggle, False),
+            TransportSpec(
+                "play", JDXi.UI.Icon.PLAY, "Play", self.midi_playback_start, True
+            ),
+            TransportSpec(
+                "stop", JDXi.UI.Icon.STOP, "Stop", self.midi_playback_stop, True
+            ),
+            TransportSpec(
+                "pause",
+                JDXi.UI.Icon.PAUSE,
+                "Pause",
+                self.midi_playback_pause_toggle,
+                False,
+            ),
         ]
 
         for spec in controls:
-            self._create_transport_control(spec, transport_layout, transport_button_group)
+            self._create_transport_control(
+                spec, transport_layout, transport_button_group
+            )
 
         return group
 

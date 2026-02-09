@@ -145,7 +145,9 @@ class BaseOscillatorSection(SectionBaseWidget):
         shape_label = QLabel("Shape")
         shape_row_layout_widgets = [shape_label]
         for mod_lfo_shape in self.wave_shapes:
-            icon_name = self.shape_icon_map.get(mod_lfo_shape, JDXi.UI.Icon.Wave.Icon.WAVEFORM)
+            icon_name = self.shape_icon_map.get(
+                mod_lfo_shape, JDXi.UI.Icon.Wave.Icon.WAVEFORM
+            )
             icon = create_icon_from_qta(icon_name)
             btn = create_button_with_icon(
                 icon_name=mod_lfo_shape.display_name,
@@ -379,7 +381,9 @@ class BaseOscillatorSection(SectionBaseWidget):
         :return: QHBoxLayout
         """
         # --- Get buttons in order for layout (skip None so subclasses without sub_osc don't crash)
-        waveform_buttons_list = [w for w in self.waveform_buttons.values() if w is not None]
+        waveform_buttons_list = [
+            w for w in self.waveform_buttons.values() if w is not None
+        ]
         if self.sub_oscillator_type_switch is not None:
             waveform_buttons_list.append(self.sub_oscillator_type_switch)
         wave_layout = create_layout_with_widgets(waveform_buttons_list)

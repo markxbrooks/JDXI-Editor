@@ -5,6 +5,7 @@ Envelope Parameters
 
 class EnvelopeParameter:
     """Parameters for Envelope Widgets"""
+
     RANGE_LOWER = "range_lower"
     RANGE_UPPER = "range_upper"
     FILTER_CUTOFF = "filter_cutoff"

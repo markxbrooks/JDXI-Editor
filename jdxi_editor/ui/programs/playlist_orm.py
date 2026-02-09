@@ -44,7 +44,10 @@ class PlaylistORM:
                 session.add(playlist)
                 session.flush()  # Get the ID before commit
                 playlist_id = playlist.id
-                log.info(f"✅ Created playlist: {name} (ID: {playlist_id})", scope="PlaylistORM")
+                log.info(
+                    f"✅ Created playlist: {name} (ID: {playlist_id})",
+                    scope="PlaylistORM",
+                )
                 return playlist_id
         except Exception as e:
             log.error(f"❌Failed to create playlist '{name}': {e}", scope="PlaylistORM")
@@ -84,7 +87,10 @@ class PlaylistORM:
                     return playlist.to_dict()
                 return None
         except Exception as e:
-            log.error(scope="PlaylistORM", message=f"Error getting playlist {playlist_id}: {e}")
+            log.error(
+                scope="PlaylistORM",
+                message=f"Error getting playlist {playlist_id}: {e}",
+            )
             return None
 
     def update_playlist(
@@ -105,7 +111,9 @@ class PlaylistORM:
             with self.db_session.get_session() as session:
                 playlist = session.query(PlayList).filter_by(id=playlist_id).first()
                 if not playlist:
-                    log.error(scope="PlaylistORM", message=f"Playlist {playlist_id} not found")
+                    log.error(
+                        scope="PlaylistORM", message=f"Playlist {playlist_id} not found"
+                    )
                     return False
 
                 if name is not None:
@@ -116,7 +124,9 @@ class PlaylistORM:
                 log.info(f"✅ Updated playlist {playlist_id}", scope="PlaylistORM")
                 return True
         except Exception as e:
-            log.error(f"❌Failed to update playlist {playlist_id}: {e}", scope="PlaylistORM")
+            log.error(
+                f"❌Failed to update playlist {playlist_id}: {e}", scope="PlaylistORM"
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -138,7 +148,9 @@ class PlaylistORM:
                     return True
                 return False
         except Exception as e:
-            log.error(f"❌Failed to delete playlist {playlist_id}: {e}", scope="PlaylistORM")
+            log.error(
+                f"❌Failed to delete playlist {playlist_id}: {e}", scope="PlaylistORM"
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -160,7 +172,9 @@ class PlaylistORM:
                 # Check if playlist exists
                 playlist = session.query(PlayList).filter_by(id=playlist_id).first()
                 if not playlist:
-                    log.error(scope="PlaylistORM", message=f"Playlist {playlist_id} not found")
+                    log.error(
+                        scope="PlaylistORM", message=f"Playlist {playlist_id} not found"
+                    )
                     return False
 
                 # If position not provided, get the next position
@@ -185,7 +199,8 @@ class PlaylistORM:
                 )
                 if existing:
                     log.warning(
-                        f"⚠️Program {program_id} already in playlist {playlist_id} at position {position}", scope="PlaylistORM"
+                        f"⚠️Program {program_id} already in playlist {playlist_id} at position {position}",
+                        scope="PlaylistORM",
                     )
                     return False
 
@@ -195,12 +210,14 @@ class PlaylistORM:
                 )
                 session.add(item)
                 log.info(
-                    f"✅ Added program {program_id} to playlist {playlist_id} at position {position}", scope="PlaylistORM"
+                    f"✅ Added program {program_id} to playlist {playlist_id} at position {position}",
+                    scope="PlaylistORM",
                 )
                 return True
         except Exception as e:
             log.error(
-                f"❌Failed to add program {program_id} to playlist {playlist_id}: {e}", scope="PlaylistORM"
+                f"❌Failed to add program {program_id} to playlist {playlist_id}: {e}",
+                scope="PlaylistORM",
             )
             import traceback
 
@@ -225,13 +242,15 @@ class PlaylistORM:
                 if item:
                     session.delete(item)
                     log.info(
-                        f"✅ Removed program {program_id} from playlist {playlist_id}", scope="PlaylistORM"
+                        f"✅ Removed program {program_id} from playlist {playlist_id}",
+                        scope="PlaylistORM",
                     )
                     return True
                 return False
         except Exception as e:
             log.error(
-                f"❌Failed to remove program {program_id} from playlist {playlist_id}: {e}", scope="PlaylistORM"
+                f"❌Failed to remove program {program_id} from playlist {playlist_id}: {e}",
+                scope="PlaylistORM",
             )
             import traceback
 
@@ -273,7 +292,10 @@ class PlaylistORM:
                     )
                 return result
         except Exception as e:
-            log.error(scope="PlaylistORM", message=f"Error loading programs for playlist {playlist_id}: {e}")
+            log.error(
+                scope="PlaylistORM",
+                message=f"Error loading programs for playlist {playlist_id}: {e}",
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -300,13 +322,15 @@ class PlaylistORM:
                 if item:
                     item.midi_file_path = midi_file_path
                     log.info(
-                        f"✅ Updated MIDI file for playlist {playlist_id}, program {program_id}", scope="PlaylistORM"
+                        f"✅ Updated MIDI file for playlist {playlist_id}, program {program_id}",
+                        scope="PlaylistORM",
                     )
                     return True
                 return False
         except Exception as e:
             log.error(
-                f"❌Failed to update MIDI file for playlist {playlist_id}, program {program_id}: {e}", scope="PlaylistORM"
+                f"❌Failed to update MIDI file for playlist {playlist_id}, program {program_id}: {e}",
+                scope="PlaylistORM",
             )
             import traceback
 
@@ -334,13 +358,15 @@ class PlaylistORM:
                 if item:
                     item.cheat_preset_id = cheat_preset_id
                     log.info(
-                        f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}", scope="PlaylistORM"
+                        f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}",
+                        scope="PlaylistORM",
                     )
                     return True
                 return False
         except Exception as e:
             log.error(
-                f"❌ Failed to update cheat preset for playlist {playlist_id}, program {program_id}: {e}", scope="PlaylistORM"
+                f"❌ Failed to update cheat preset for playlist {playlist_id}, program {program_id}: {e}",
+                scope="PlaylistORM",
             )
             import traceback
 

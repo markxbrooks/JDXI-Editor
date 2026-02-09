@@ -109,12 +109,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ]
 
     def __init__(
-            self,
-            icons_row_type: str = IconType.ADSR,
-            analog: bool = False,
-            send_midi_parameter: Callable = None,
-            midi_helper: MidiIOHelper = None,
-            address: RolandSysExAddress = None,
+        self,
+        icons_row_type: str = IconType.ADSR,
+        analog: bool = False,
+        send_midi_parameter: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        address: RolandSysExAddress = None,
     ):
         self.wave_shapes = self.generate_wave_shapes()
         self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
@@ -144,11 +144,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _build_additional_digital_widgets(self):
         """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
-        Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3."""
+        Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3.
+        """
         for param in (
-                Digital.Param.OSC_PITCH,
-                Digital.Param.OSC_DETUNE,
-                Digital.Param.SUPER_SAW_DETUNE,
+            Digital.Param.OSC_PITCH,
+            Digital.Param.OSC_DETUNE,
+            Digital.Param.SUPER_SAW_DETUNE,
         ):
             if param in self.controls:
                 w = self.controls.pop(param)
@@ -161,9 +162,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 control_sliders[1],
                 control_sliders[2],
             )
-            for spec, widget in zip(
-                    self.SLIDER_GROUPS.controls, control_sliders
-            ):
+            for spec, widget in zip(self.SLIDER_GROUPS.controls, control_sliders):
                 self.controls[spec.param] = widget
                 self.tuning_control_widgets.append(widget)
             # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
@@ -248,8 +247,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         return getattr(self, "pitch_env_widget", None) is not None
 
     def _has_pcm(self) -> bool:
-        return all(getattr(self, attr, None) is not None
-                   for attr in ("pcm_wave_gain", "pcm_wave_number"))
+        return all(
+            getattr(self, attr, None) is not None
+            for attr in ("pcm_wave_gain", "pcm_wave_number")
+        )
 
     def _has_adsr(self) -> bool:
         return getattr(self, "adsr_widget", None) is not None
@@ -275,8 +276,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _add_pcm_wave_gain_tab(self):
         """Add PCM Wave gain tab"""
-        centered_layout = create_centered_layout_with_widgets(widgets=[self.pcm_wave_gain,
-                                                                       self.pcm_wave_number])
+        centered_layout = create_centered_layout_with_widgets(
+            widgets=[self.pcm_wave_gain, self.pcm_wave_number]
+        )
         pcm_group = create_group_from_definition(
             key=Digital.GroupBox.PCM_WAVE,
             layout_or_widget=centered_layout,
@@ -323,8 +325,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self._add_tab(key=DigitalOscillatorTab.TUNING, widget=tuning_widget)
 
     def _create_row_widget(
-            self,
-            widgets: list[QWidget],
+        self,
+        widgets: list[QWidget],
     ) -> QWidget:
         """Create a QWidget containing a horizontal row of widgets."""
         widget = QWidget()

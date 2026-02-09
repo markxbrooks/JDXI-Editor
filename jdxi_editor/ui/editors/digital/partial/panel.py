@@ -105,7 +105,9 @@ class DigitalPartialPanel(PartialPanel):
         self._init_state()
         self._build_ui()
 
-        log.parameter("DigitalPartialEditor initialized:", self, scope=self.__class__.__name__)
+        log.parameter(
+            "DigitalPartialEditor initialized:", self, scope=self.__class__.__name__
+        )
 
     # ------------------------------------------------------------------
     # Initialization helpers
@@ -125,13 +127,17 @@ class DigitalPartialPanel(PartialPanel):
             partial_number=self.partial_number,
         )
 
-        log.parameter("Synth address:", self.synth_data.address, scope=self.__class__.__name__)
+        log.parameter(
+            "Synth address:", self.synth_data.address, scope=self.__class__.__name__
+        )
 
     def _resolve_partial_name(self) -> None:
         try:
             self.part_name = DIGITAL_PARTIAL_NAMES[self.partial_number]
         except IndexError:
-            log.error(f"[[DigitalPartialPanel] Invalid partial_number: {self.partial_number}")
+            log.error(
+                f"[[DigitalPartialPanel] Invalid partial_number: {self.partial_number}"
+            )
             self.part_name = "Unknown"
 
         log.parameter("Partial name:", self.part_name, scope=self.__class__.__name__)
@@ -267,7 +273,10 @@ class DigitalPartialPanel(PartialPanel):
             selected.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         if not self.send_midi_parameter(Digital.Param.OSC_WAVEFORM, waveform.value):
-            log.warning(scope=self.__class__.__name__, message=f"Failed to set waveform: {waveform.name}")
+            log.warning(
+                scope=self.__class__.__name__,
+                message=f"Failed to set waveform: {waveform.name}",
+            )
 
     # ------------------------------------------------------------------
 

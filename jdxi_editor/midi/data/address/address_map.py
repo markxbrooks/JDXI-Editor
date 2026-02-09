@@ -235,7 +235,9 @@ PARAMETER_ADDRESS_MAP = {
             OFFSETS[
                 OffsetName.PROGRAM_ZONE_DRUMS
             ]: JDXiSysExOffsetProgramLMB.ZONE_DRUM,  # "Program Zone (Drums Part)",
-            OFFSETS[OffsetName.PROGRAM_CONTROLLER]: JDXiSysExOffsetProgramLMB.CONTROLLER,
+            OFFSETS[
+                OffsetName.PROGRAM_CONTROLLER
+            ]: JDXiSysExOffsetProgramLMB.CONTROLLER,
         }
     },
     ParameterAreas.SUPERNATURAL_SYNTH_TONE: {

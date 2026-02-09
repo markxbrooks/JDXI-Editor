@@ -58,9 +58,7 @@ class DigitalAmpSection(BaseAmpSection):
             self.controls.pop(pan_specs[0].param, None)
 
         # --- Vertical control sliders
-        control_sliders = self._build_sliders(
-            self.SLIDER_GROUPS.get("controls", [])
-        )
+        control_sliders = self._build_sliders(self.SLIDER_GROUPS.get("controls", []))
         for spec, widget in zip(
             self.SLIDER_GROUPS.get("controls", []), control_sliders
         ):
@@ -128,5 +126,6 @@ class DigitalAmpSection(BaseAmpSection):
                 vertical=False,
             ),
         ]
-        return LayoutSpec(controls=controls,
-                          sliders=pan)  # separate place to put the Pan
+        return LayoutSpec(
+            controls=controls, sliders=pan
+        )  # separate place to put the Pan

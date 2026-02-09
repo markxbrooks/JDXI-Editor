@@ -364,7 +364,9 @@ def create_group_with_form_layout(
     return group, form_layout
 
 
-def create_centered_layout_with_child(layout: QFormLayout | QHBoxLayout | QVBoxLayout) -> QHBoxLayout:
+def create_centered_layout_with_child(
+    layout: QFormLayout | QHBoxLayout | QVBoxLayout,
+) -> QHBoxLayout:
     """create centered layout with a child layout"""
     centered_layout = QHBoxLayout()
     centered_layout.addStretch()
@@ -462,12 +464,16 @@ def create_icon_from_name(icon_name: str) -> Any:
     return icon
 
 
-def add_sublayout_to_layout(layout: QVBoxLayout | QHBoxLayout, sub_layouts: list[QHBoxLayout| QVBoxLayout]):
+def add_sublayout_to_layout(
+    layout: QVBoxLayout | QHBoxLayout, sub_layouts: list[QHBoxLayout | QVBoxLayout]
+):
     for sub_layout in sub_layouts:
         layout.addLayout(sub_layout)
 
 
-def add_widgets_to_layout(layout: QVBoxLayout | QHBoxLayout, widgets: list[QWidget | None]):
+def add_widgets_to_layout(
+    layout: QVBoxLayout | QHBoxLayout, widgets: list[QWidget | None]
+):
     for widget in widgets:
         layout.addWidget(widget)
 
@@ -481,9 +487,7 @@ def create_centered_layout() -> QHBoxLayout:
 def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
     """create centered layout with stretch either side to squish in widgets"""
     layout = QHBoxLayout()
-    pcm_layout = create_layout_with_widgets(
-        widgets=widgets, vertical=True
-    )
+    pcm_layout = create_layout_with_widgets(widgets=widgets, vertical=True)
     layout.addStretch()
     layout.addLayout(pcm_layout)
     layout.addStretch()

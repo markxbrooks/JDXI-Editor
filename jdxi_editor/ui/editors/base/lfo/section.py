@@ -133,9 +133,19 @@ class BaseLFOSection(SectionBaseWidget):
         D = self.SYNTH_SPEC.Display
 
         switches = [
-            SwitchSpec(P.LFO_TEMPO_SYNC_SWITCH, D.Name.LFO_TEMPO_SYNC_SWITCH, D.Options.LFO_TEMPO_SYNC_SWITCH),
-            SwitchSpec(P.LFO_TEMPO_SYNC_NOTE, D.Name.LFO_TEMPO_SYNC_NOTE, D.Options.LFO_TEMPO_SYNC_NOTE),
-            SwitchSpec(P.LFO_KEY_TRIGGER, D.Name.LFO_KEY_TRIGGER, D.Options.LFO_KEY_TRIGGER),
+            SwitchSpec(
+                P.LFO_TEMPO_SYNC_SWITCH,
+                D.Name.LFO_TEMPO_SYNC_SWITCH,
+                D.Options.LFO_TEMPO_SYNC_SWITCH,
+            ),
+            SwitchSpec(
+                P.LFO_TEMPO_SYNC_NOTE,
+                D.Name.LFO_TEMPO_SYNC_NOTE,
+                D.Options.LFO_TEMPO_SYNC_NOTE,
+            ),
+            SwitchSpec(
+                P.LFO_KEY_TRIGGER, D.Name.LFO_KEY_TRIGGER, D.Options.LFO_KEY_TRIGGER
+            ),
         ]
 
         depths = [
@@ -145,7 +155,9 @@ class BaseLFOSection(SectionBaseWidget):
         ]
 
         if hasattr(P, "LFO_PAN_DEPTH"):
-            depths.append(SliderSpec(P.LFO_PAN_DEPTH, getattr(D.Name, "LFO_PAN_DEPTH", "Pan")))
+            depths.append(
+                SliderSpec(P.LFO_PAN_DEPTH, getattr(D.Name, "LFO_PAN_DEPTH", "Pan"))
+            )
 
         rate = [
             SliderSpec(P.LFO_RATE, D.Name.LFO_RATE),

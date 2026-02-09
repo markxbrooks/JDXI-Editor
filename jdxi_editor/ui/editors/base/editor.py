@@ -254,20 +254,24 @@ class BaseSynthEditor(SynthEditor):
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state (delegate to section, same mechanism as Digital)."""
         log.message(
-            scope="BaseSynthEditor", message=f"update_filter_controls_state: mode={mode} "
+            scope="BaseSynthEditor",
+            message=f"update_filter_controls_state: mode={mode} "
             f"has filter_section={hasattr(self, 'filter_section')} "
-            f"filter_section is not None={getattr(self, 'filter_section', None) is not None}"
+            f"filter_section is not None={getattr(self, 'filter_section', None) is not None}",
         )
         if hasattr(self, "filter_section") and self.filter_section is not None:
             self.filter_section.update_controls_state(mode)
         else:
             log.warning(
-                scope="BaseSynthEditor", message="update_filter_controls_state: no filter_section, skipping"
+                scope="BaseSynthEditor",
+                message="update_filter_controls_state: no filter_section, skipping",
             )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes (callback from filter section when mode button clicked)."""
-        log.message(scope="BaseSynthEditor", message=f"_on_filter_mode_changed: mode={mode}")
+        log.message(
+            scope="BaseSynthEditor", message=f"_on_filter_mode_changed: mode={mode}"
+        )
         self.update_filter_controls_state(mode)
 
     def update_filter_state(self, value: int):
@@ -309,7 +313,11 @@ class BaseSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
         else:
-            log.warning("Filter mode button not found for: %s", selected_filter_mode, scope=self.__class__.__name__)
+            log.warning(
+                "Filter mode button not found for: %s",
+                selected_filter_mode,
+                scope=self.__class__.__name__,
+            )
 
     def _on_waveform_selected(self, waveform: AnalogWaveOsc):
         """
@@ -362,7 +370,9 @@ class BaseSynthEditor(SynthEditor):
             # --- Check which waveform button is currently checked
             for waveform, btn in self.wave_buttons.items():
                 if btn.isChecked():
-                    controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = waveform.STATUS
+                    controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = (
+                        waveform.STATUS
+                    )
                     break
             # --- If no button is checked, use default (SAW = 0)
             if self.SYNTH_SPEC.Param.OSC_WAVEFORM.name not in controls_data:
@@ -477,9 +487,19 @@ class BaseSynthEditor(SynthEditor):
                 self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL,
                 self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME,
             )
-            if param in amp_env and hasattr(self, "amp_section") and self.amp_section and getattr(self.amp_section, "adsr_widget", None):
+            if (
+                param in amp_env
+                and hasattr(self, "amp_section")
+                and self.amp_section
+                and getattr(self.amp_section, "adsr_widget", None)
+            ):
                 self.amp_section.adsr_widget.refresh_plot_from_controls()
-            elif param not in amp_env and hasattr(self, "filter_section") and self.filter_section and getattr(self.filter_section, "adsr_widget", None):
+            elif (
+                param not in amp_env
+                and hasattr(self, "filter_section")
+                and self.filter_section
+                and getattr(self.filter_section, "adsr_widget", None)
+            ):
                 self.filter_section.adsr_widget.refresh_plot_from_controls()
             successes.append(param.name)
             log_slider_parameters(self.address, param, midi_value, slider_value)
@@ -516,7 +536,11 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if hasattr(self, "oscillator_section") and self.oscillator_section and getattr(self.oscillator_section, "pitch_env_widget", None):
+            if (
+                hasattr(self, "oscillator_section")
+                and self.oscillator_section
+                and getattr(self.oscillator_section, "pitch_env_widget", None)
+            ):
                 self.oscillator_section.pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
@@ -553,7 +577,11 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if hasattr(self, "oscillator_section") and self.oscillator_section and getattr(self.oscillator_section, "pwm_widget", None):
+            if (
+                hasattr(self, "oscillator_section")
+                and self.oscillator_section
+                and getattr(self.oscillator_section, "pwm_widget", None)
+            ):
                 self.oscillator_section.pwm_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
@@ -607,14 +635,18 @@ class BaseSynthEditor(SynthEditor):
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
-                    control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH)
+                    control = self.controls.get(
+                        self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH
+                    )
                     if control:
                         control.setValue(param_value)
                         successes.append(param_name)
                     else:
                         failures.append(param_name)
                 elif param_name == "LFO_TEMPO_SYNC_NOTE":
-                    control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE)
+                    control = self.controls.get(
+                        self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE
+                    )
                     if control:
                         control.setValue(param_value)
                         successes.append(param_name)
@@ -721,11 +753,13 @@ class BaseSynthEditor(SynthEditor):
         if self.oscillator_section and self.oscillator_section.pwm_widget:
             pwm_controls = self.oscillator_section.pwm_widget.controls
             if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:
-                pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
-                pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
+                pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH].setEnabled(
                     pw_enabled
                 )
+            if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH in pwm_controls:
+                pwm_controls[
+                    self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
+                ].setEnabled(pw_enabled)
 
             # --- Update the visual state (if controls are sliders)
             if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:

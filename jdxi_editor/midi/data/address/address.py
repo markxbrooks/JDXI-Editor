@@ -52,9 +52,7 @@ class SysExOffsetByte(IntEnum):
 
     @classmethod
     def message_position(cls) -> int:
-        raise NotImplementedError(
-            f"{cls.__name__} must implement message_position()"
-        )
+        raise NotImplementedError(f"{cls.__name__} must implement message_position()")
 
     @classmethod
     def as_int(cls, value: "SysExOffsetByte | int") -> int:
@@ -419,6 +417,7 @@ class JDXiSysExOffsetTemporaryToneUMB(SysExUMB):
     """
     Address Offset Temporary Tone UMB
     """
+
     DIGITAL_SYNTH_1 = 0x01  # Avoiding "Part" because of Partials
     DIGITAL_SYNTH_2 = 0x21
     ANALOG_SYNTH = 0x42
@@ -467,6 +466,7 @@ class JDXiSysExOffsetAnalogLMB(SysExLMB):
     """
     Analog Synth Tone
     """
+
     COMMON = 0x00
 
 

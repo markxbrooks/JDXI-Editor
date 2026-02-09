@@ -90,7 +90,10 @@ class PitchEnvSliderSpinbox(QWidget):
             initial_value=value,
         )
         param_type = param.get_envelope_param_type()
-        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL]:
+        if param_type in [
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+        ]:
             self.spinbox = create_double_spinbox(
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
@@ -120,7 +123,11 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: float
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL, EnvelopeParameter.DEPTH]:
+        if param_type in [
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.DEPTH,
+        ]:
             converted_value = value / Midi.VALUE.MAX.SEVEN_BIT
         elif param_type in [
             EnvelopeParameter.ATTACK_TIME,
@@ -146,10 +153,12 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: int
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in [EnvelopeParameter.PEAK_LEVEL,
-                          EnvelopeParameter.SUSTAIN_LEVEL,
-                          EnvelopeParameter.MOD_DEPTH,
-                          EnvelopeParameter.DEPTH]:
+        if param_type in [
+            EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.MOD_DEPTH,
+            EnvelopeParameter.DEPTH,
+        ]:
             converted_value = int(value * Midi.VALUE.MAX.SEVEN_BIT)
         elif param_type in [
             EnvelopeParameter.ATTACK_TIME,

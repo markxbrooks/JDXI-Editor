@@ -122,7 +122,10 @@ class PWMSliderSpinbox(QWidget):
                 f"Parameter type for {self.param.name} is None, cannot convert to envelope"
             )
             return 0.0
-        if param_type in [EnvelopeParameter.FILTER_CUTOFF, EnvelopeParameter.FILTER_RESONANCE]:
+        if param_type in [
+            EnvelopeParameter.FILTER_CUTOFF,
+            EnvelopeParameter.FILTER_RESONANCE,
+        ]:
             return value
         if param_type == EnvelopeParameter.MOD_DEPTH:
             return value / self.factor
@@ -139,7 +142,10 @@ class PWMSliderSpinbox(QWidget):
                 f"Parameter type for {self.param.name} is None, cannot convert from envelope"
             )
             return 0.0
-        if param_type in [EnvelopeParameter.FILTER_CUTOFF, EnvelopeParameter.FILTER_RESONANCE]:
+        if param_type in [
+            EnvelopeParameter.FILTER_CUTOFF,
+            EnvelopeParameter.FILTER_RESONANCE,
+        ]:
             return value
         if param_type in [EnvelopeParameter.MOD_DEPTH]:
             return int(value * self.factor)

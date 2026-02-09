@@ -111,6 +111,7 @@ class TrackAnalyzer:
             s.legato_score /= s.note_count
         # To avoid circular import error
         from jdxi_editor.midi.track.classification import calculate_scores
+
         calculate_scores(s)
 
     def _read_track_name(self):

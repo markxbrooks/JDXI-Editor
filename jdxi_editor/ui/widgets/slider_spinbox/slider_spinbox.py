@@ -93,7 +93,10 @@ class AdsrSliderSpinbox(QWidget):
             vertical=True,
         )
         param_type = param.get_envelope_param_type()
-        if param_type in [EnvelopeParameter.SUSTAIN_LEVEL, EnvelopeParameter.PEAK_LEVEL]:
+        if param_type in [
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+        ]:
             self.spinbox = create_double_spinbox(
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
@@ -142,7 +145,11 @@ class AdsrSliderSpinbox(QWidget):
             return converted_value
         if param_type == EnvelopeParameter.PEAK_LEVEL:
             return value / self.factor
-        elif param_type in [EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.RELEASE_TIME]:
+        elif param_type in [
+            EnvelopeParameter.ATTACK_TIME,
+            EnvelopeParameter.DECAY_TIME,
+            EnvelopeParameter.RELEASE_TIME,
+        ]:
             return midi_value_to_ms(int(value))
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
@@ -161,7 +168,11 @@ class AdsrSliderSpinbox(QWidget):
                 silent=True,
             )
             return converted_value
-        elif param_type in [EnvelopeParameter.ATTACK_TIME, EnvelopeParameter.DECAY_TIME, EnvelopeParameter.RELEASE_TIME]:
+        elif param_type in [
+            EnvelopeParameter.ATTACK_TIME,
+            EnvelopeParameter.DECAY_TIME,
+            EnvelopeParameter.RELEASE_TIME,
+        ]:
             return ms_to_midi_value(value)
         else:
             return 64

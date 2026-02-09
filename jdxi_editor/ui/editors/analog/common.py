@@ -18,9 +18,9 @@ class AnalogCommonSection(BaseCommonSection):
     SYNTH_SPEC = Analog
 
     def __init__(
-            self,
-            midi_helper: MidiIOHelper = None,
-            send_midi_parameter: Callable = None,
+        self,
+        midi_helper: MidiIOHelper = None,
+        send_midi_parameter: Callable = None,
     ):
         """
         Initialize the AnalogCommonSection

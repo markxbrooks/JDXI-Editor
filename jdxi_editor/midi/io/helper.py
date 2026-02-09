@@ -156,8 +156,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
                 param_class = AnalogParam
             elif (
-                    temporary_area == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name
-                    or temporary_area == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name
+                temporary_area == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name
+                or temporary_area
+                == JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name
             ):
                 if synth_tone in [
                     "PARTIAL_1",
@@ -342,16 +343,24 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     # Extract and load MIDI files first (if any)
                     midi_files = [f for f in zip_ref.namelist() if f.endswith(".mid")]
                     if midi_files:
-                        log.message(f"Found {len(midi_files)} MIDI file(s) in bundle", scope="MidiIOHelper")
+                        log.message(
+                            f"Found {len(midi_files)} MIDI file(s) in bundle",
+                            scope="MidiIOHelper",
+                        )
                         # Emit signal for MIDI file loading (will be handled by PatchManager)
                         for midi_file in midi_files:
-                            log.message(f"MIDI file in bundle: {midi_file}", scope="MidiIOHelper")
+                            log.message(
+                                f"MIDI file in bundle: {midi_file}",
+                                scope="MidiIOHelper",
+                            )
 
                     # Load JSON files and send to instrument
                     for json_file in zip_ref.namelist():
                         log.message(f"File in zip: {json_file}", scope="MidiIOHelper")
                         if json_file.endswith(".json"):
-                            log.message(f"Loading JSON file: {json_file}", scope="MidiIOHelper")
+                            log.message(
+                                f"Loading JSON file: {json_file}", scope="MidiIOHelper"
+                            )
                             # Read the JSON file from the zip archive
                             with zip_ref.open(json_file) as json_file_handle:
                                 json_string = json_file_handle.read().decode("utf-8")
@@ -360,7 +369,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                                 # Send to instrument
                                 self.send_json_patch_to_instrument(json_string)
             except Exception as ex:
-                log.error(f"Error reading or emitting sysex JSON: {ex}", scope="MidiIOHelper")
+                log.error(
+                    f"Error reading or emitting sysex JSON: {ex}", scope="MidiIOHelper"
+                )
             return
         try:
             with open(file_path, "r", encoding="utf-8") as file_handle:
@@ -402,7 +413,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
         self.midi_messages.append(sysex_data)
         try:
-            log.message(f"attempting to send message: {sysex_data}", scope="MidiIOHelper")
+            log.message(
+                f"attempting to send message: {sysex_data}", scope="MidiIOHelper"
+            )
             sysex_list = list(sysex_data)
             self.send_raw_message(sysex_list)
         except Exception as ex:
@@ -438,19 +451,29 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
-                log.message("JD-Xi MIDI auto-connect failed", level=logging.WARNING, scope="MidiIOHelper")
+                log.message(
+                    "JD-Xi MIDI auto-connect failed",
+                    level=logging.WARNING,
+                    scope="MidiIOHelper",
+                )
                 log.parameter("MIDI in_port", in_port, scope="MidiIOHelper")
                 log.parameter("MIDI out_port", out_port, scope="MidiIOHelper")
                 return False
             self.set_midi_ports(in_port, out_port)
             # Verify connection
-            log.parameter("Successfully connected to JD-Xi MIDI:", in_port, scope="MidiIOHelper")
-            log.parameter("Successfully connected to JD-Xi MIDI", out_port, scope="MidiIOHelper")
+            log.parameter(
+                "Successfully connected to JD-Xi MIDI:", in_port, scope="MidiIOHelper"
+            )
+            log.parameter(
+                "Successfully connected to JD-Xi MIDI", out_port, scope="MidiIOHelper"
+            )
             self.identify_device()
             return True
 
         except Exception as ex:
-            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}", scope="MidiIOHelper")
+            log.error(
+                f"Error auto-connecting to JD-Xi: {str(ex)}", scope="MidiIOHelper"
+            )
             return False
 
     def reconnect_port_names(self, in_port: str, out_port: str) -> None:
@@ -483,5 +506,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             # self.identify_device()
             return True
         except Exception as ex:
-            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}", scope="MidiIOHelper")
+            log.error(
+                f"Error auto-connecting to JD-Xi: {str(ex)}", scope="MidiIOHelper"
+            )
             return False

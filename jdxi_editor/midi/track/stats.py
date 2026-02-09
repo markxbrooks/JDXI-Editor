@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 @dataclass
 class TrackStats:
     """Track Stats"""
+
     track_index: int
     track_name: str | None = None
 
@@ -29,8 +30,8 @@ class TrackStats:
     mid_range_note_count: int = 0
     high_note_count: int = 0
 
-    note_ons: list[tuple[int,int,int]] = field(default_factory=list)
-    note_offs: list[tuple[int,int]] = field(default_factory=list)
+    note_ons: list[tuple[int, int, int]] = field(default_factory=list)
+    note_offs: list[tuple[int, int]] = field(default_factory=list)
 
     has_pitch_bend: bool = False
     has_control_change: bool = False
@@ -41,8 +42,6 @@ class TrackStats:
     note_range: int = 0
     legato_score: float = 0.0
 
-    scores: dict[str, float] = field(default_factory=lambda: {
-        "bass":0.0,
-        "keys_guitars":0.0,
-        "strings":0.0
-    })
+    scores: dict[str, float] = field(
+        default_factory=lambda: {"bass": 0.0, "keys_guitars": 0.0, "strings": 0.0}
+    )

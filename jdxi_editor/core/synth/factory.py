@@ -67,13 +67,17 @@ def create_synth_data(
 
         if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             synth_number = 1
-            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            digital_partial_address_umb = (
+                JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            )
             midi_channel = MidiChannel.DIGITAL_SYNTH_1
             midi_requests = MidiRequests.DIGITAL1
 
         elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             synth_number = 2
-            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2
+            digital_partial_address_umb = (
+                JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2
+            )
             midi_channel = MidiChannel.DIGITAL_SYNTH_2
             midi_requests = MidiRequests.DIGITAL2
 
@@ -81,7 +85,9 @@ def create_synth_data(
             # --- Default to Synth 1
             synth_type = JDXiSynth.DIGITAL_SYNTH_1
             synth_number = 1
-            digital_partial_address_umb = JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            digital_partial_address_umb = (
+                JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1
+            )
             midi_channel = MidiChannel.DIGITAL_SYNTH_1
             midi_requests = MidiRequests.DIGITAL1
 

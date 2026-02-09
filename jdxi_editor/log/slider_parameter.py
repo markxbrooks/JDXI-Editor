@@ -27,7 +27,7 @@ def log_slider_parameters(
     midi_value: int,
     slider_value: Union[int, float],
     level: int = logging.INFO,
-    scope: str = None
+    scope: str = None,
 ) -> None:
     """
     Log slider parameters for debugging.
@@ -74,6 +74,4 @@ def log_slider_parameters(
         if LOGGING:
             logger.log(level, decorated_message, stacklevel=2)
     except Exception as ex:
-        logger.error(
-            "[log_slider_parameters] Error %s occurred logging parameter", ex
-        )
+        logger.error("[log_slider_parameters] Error %s occurred logging parameter", ex)
