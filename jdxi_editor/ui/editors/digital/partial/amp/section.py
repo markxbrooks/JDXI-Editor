@@ -63,9 +63,12 @@ class DigitalAmpSection(BaseAmpSection):
                 w = self.controls.pop(param)
                 if w in self.amp_control_widgets:
                     self.amp_control_widgets.remove(w)
+        # --- Remove Pan from controls and amp_control_widgets if it was previously added
         pan_specs = self.SLIDER_GROUPS.pan
         if pan_specs and pan_specs[0].param in self.controls:
-            self.controls.pop(pan_specs[0].param, None)
+            pan_widget = self.controls.pop(pan_specs[0].param, None)
+            if pan_widget and pan_widget in self.amp_control_widgets:
+                self.amp_control_widgets.remove(pan_widget)
 
         # --- Vertical control sliders
         self.widgets = AmpWidgetSpec(controls=self._build_sliders(self.SLIDER_GROUPS.controls),
@@ -77,11 +80,13 @@ class DigitalAmpSection(BaseAmpSection):
             self.controls[spec.param] = widget
             self.amp_control_widgets.append(widget)
 
+        # Register Pan in controls but don't add to amp_control_widgets
+        # (it will be added separately below the sliders)
         for spec, widget in zip(
             self.SLIDER_GROUPS.pan, self.widgets.pan
         ):
             self.controls[spec.param] = widget
-            self.amp_control_widgets.append(widget)
+            # Don't add to amp_control_widgets - it's added separately below
 
     def _create_controls_widget(self) -> QWidget:
         """Override to add Pan slider in its own horizontal layout"""
