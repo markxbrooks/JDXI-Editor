@@ -50,7 +50,7 @@ class WaveForm:
     """Types of Digital Oscillator Waves"""
 
     ADSR: str = "ADSR"
-    UPSAW: str = "Upsaw"
+    UPSAW: str = "UpSaw"
     SQUARE: str = "Square"
     PWSQU: str = "PWSqu"
     TRIANGLE: str = "Triangle"
