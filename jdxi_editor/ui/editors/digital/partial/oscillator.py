@@ -13,20 +13,19 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab
+from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab, DigitalGroupBox
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
-from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_centered_layout_with_widgets,
     create_envelope_group,
     create_group_from_definition,
     create_layout_with_widgets,
 )
+from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
+from jdxi_editor.ui.widgets.pcm.wave import PCMWaveWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
 
@@ -118,6 +117,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     ):
         self.wave_shapes = self.generate_wave_shapes()
         self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        # Initialize controls before creating PCMWaveWidget so it can register controls
+        # (ControlRegistry is a singleton, so this ensures self.controls exists)
+        self.controls = ControlRegistry()
+        self.pcm_wave = PCMWaveWidget(groupbox_spec=DigitalGroupBox,
+                                      create_parameter_combo_box=self._create_parameter_combo_box,
+                                      send_param=send_midi_parameter)
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -125,6 +130,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             icons_row_type=icons_row_type,
             analog=analog,
         )
+        # With singleton, controls registered by PCMWaveWidget are already in the shared registry
+        # Just ensure they're accessible via self.controls
+        self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave.pcm_wave_gain
+        self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave.pcm_wave_number
+        # Also set as direct attributes for _has_pcm() compatibility (though we check pcm_wave now)
+        self.pcm_wave_gain = self.pcm_wave.pcm_wave_gain
+        self.pcm_wave_number = self.pcm_wave.pcm_wave_number
 
     def _get_param_specs(self):
         """Return [] so section_base does not build control sliders; we build them in _build_additional_digital_widgets() to avoid duplicate tuning sliders."""
@@ -168,7 +180,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
             self.super_saw_detune.setEnabled(False)
         self._create_pulse_width_shift_slider()
-        self._create_pcm_wave_controls()
 
     def _create_pulse_width_shift_slider(self):
         """Create OSC_PULSE_WIDTH_SHIFT slider and register in controls (PWM tab)."""
@@ -181,65 +192,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.controls[Digital.Param.OSC_PULSE_WIDTH_SHIFT] = self.pw_shift_slider
         self.pw_shift_slider.setEnabled(False)
 
-    def _create_pcm_wave_controls(self):
-        """Create PCM Wave controls (Gain and Number) after parent builds widgets
-        These will be added to a separate "PCM" tab, not the Controls tab
-        PCM Wave Gain: combo box with -6, 0, +6, +12 dB options"""
-        self.pcm_wave_gain = self._create_parameter_combo_box(
-            Digital.Param.PCM_WAVE_GAIN,
-            Digital.Display.Name.PCM_WAVE_GAIN,
-            options=Digital.Display.Options.PCM_WAVE_GAIN,
-            values=Digital.Display.Values.PCM_WAVE_GAIN,  # MIDI values for -6, 0, +6, +12 dB
-        )
-        self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave_gain
-        # --- Don't add to control_widgets - it will be in the PCM tab
-
-        # --- Build options, values, and categories from PCM_WAVES_CATEGORIZED
-        pcm_options = [
-            f"{w['Wave Number']:03d}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED
-        ]
-        pcm_values = [w["Wave Number"] for w in PCM_WAVES_CATEGORIZED]
-        pcm_categories = sorted(
-            set(w["Category"] for w in PCM_WAVES_CATEGORIZED if w["Category"] != "None")
-        )
-
-        # --- Category filter function
-        def pcm_category_filter(wave_name: str, category: str) -> bool:
-            """Check if a PCM wave matches a category."""
-            if not category:
-                return True
-            # --- Find the wave in PCM_WAVES_CATEGORIZED and check its category
-            wave_num_str = wave_name.split(":")[0].strip()
-            try:
-                wave_num = int(wave_num_str)
-                for w in PCM_WAVES_CATEGORIZED:
-                    if w["Wave Number"] == wave_num:
-                        return w["Category"] == category
-            except ValueError:
-                pass
-            return False
-
-        self.pcm_wave_number = SearchableFilterableComboBox(
-            label=Digital.Display.Name.PCM_WAVE_NUMBER,
-            options=pcm_options,
-            values=pcm_values,
-            categories=pcm_categories,
-            category_filter_func=pcm_category_filter,
-            show_label=True,
-            show_search=True,
-            show_category=True,
-            show_bank=False,
-            search_placeholder="Search PCM waves...",
-            category_label="Category:",
-        )
-        # --- Connect to MIDI parameter sending
-        if self.send_midi_parameter:
-            self.pcm_wave_number.valueChanged.connect(
-                lambda v: self.send_midi_parameter(Digital.Param.PCM_WAVE_NUMBER, v)
-            )
-        self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave_number
-        # --- Don't add to control_widgets - it will be in the PCM tab
-
     def _has_pwm(self) -> bool:
         return getattr(self, "pwm_widget", None) is not None
 
@@ -247,9 +199,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         return getattr(self, "pitch_env_widget", None) is not None
 
     def _has_pcm(self) -> bool:
-        return all(
-            getattr(self, attr, None) is not None
-            for attr in ("pcm_wave_gain", "pcm_wave_number")
+        """Check if PCM wave widget exists and has both gain and number controls."""
+        if not hasattr(self, "pcm_wave") or self.pcm_wave is None:
+            return False
+        return (
+            hasattr(self.pcm_wave, "pcm_wave_gain")
+            and self.pcm_wave.pcm_wave_gain is not None
+            and hasattr(self.pcm_wave, "pcm_wave_number")
+            and self.pcm_wave.pcm_wave_number is not None
         )
 
     def _has_adsr(self) -> bool:
@@ -276,15 +233,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _add_pcm_wave_gain_tab(self):
         """Add PCM Wave gain tab"""
-        centered_layout = create_centered_layout_with_widgets(
-            widgets=[self.pcm_wave_gain, self.pcm_wave_number]
-        )
-        pcm_group = create_group_from_definition(
-            key=Digital.GroupBox.PCM_WAVE,
-            layout_or_widget=centered_layout,
-            set_attr=self,
-        )
-        self._add_tab(key=DigitalOscillatorTab.PCM, widget=pcm_group)
+        self._add_tab(key=DigitalOscillatorTab.PCM, widget=self.pcm_wave)
 
     def _add_pitch_env_tab(self):
         """Add pitch env tab"""

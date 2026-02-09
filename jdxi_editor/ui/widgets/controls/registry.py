@@ -18,10 +18,22 @@ class ControlResolver(Protocol):
 
 
 class ControlRegistry:
-    """Registry of parameter -> control widget. Dict-like; use per partial (Analog, Digital1, Digital2, Drums)."""
+    """Registry of parameter -> control widget. Dict-like; singleton instance shared across all partials."""
+
+    _instance: "ControlRegistry | None" = None
+    _initialized: bool = False
+
+    def __new__(cls) -> "ControlRegistry":
+        """Singleton pattern: return the same instance on every instantiation."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self) -> None:
-        self._controls: dict[Any, QWidget] = {}
+        """Initialize the registry only once."""
+        if not ControlRegistry._initialized:
+            self._controls: dict[Any, QWidget] = {}
+            ControlRegistry._initialized = True
 
     def register(self, param: Any, widget: QWidget) -> None:
         self._controls[param] = widget

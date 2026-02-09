@@ -76,7 +76,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.switch_row_widgets: list | None = None
         self.rate_layout_widgets: list | None = None
         self.depths_layout_widgets: list | None = None
-        self.send_midi_parameter: Callable | None = send_midi_parameter
+        self._send_param: Callable | None = send_midi_parameter
         self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
         self.analog = analog
         # Subclasses (Analog/Digital oscillator) set wave_shapes before super().__init__; do not overwrite
@@ -275,8 +275,8 @@ class BaseOscillatorSection(SectionBaseWidget):
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
         # ---  Send MIDI message
-        if self.send_midi_parameter:
-            if not self.send_midi_parameter(self.wave_shape_param, lfo_shape.value):
+        if self._send_param:
+            if not self._send_param(self.wave_shape_param, lfo_shape.value):
                 log.warning(f"Failed to set Mod LFO shape to {lfo_shape.name}")
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
@@ -323,8 +323,8 @@ class BaseOscillatorSection(SectionBaseWidget):
         self._update_button_enabled_states(button_param)
 
         # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
-        if self.send_midi_parameter:
-            self.send_midi_parameter(
+        if self._send_param:
+            self._send_param(
                 self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value
             )
 

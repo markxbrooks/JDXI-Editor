@@ -91,11 +91,17 @@ class EnvelopeWidgetBase(QWidget):
 
         :return:
         """
+        if self.controls is None:
+            return
         try:
             for param, slider in self.controls.items():
                 if not hasattr(param, "get_envelope_param_type"):
                     continue
-                key = param.get_envelope_param_type()
+                try:
+                    key = param.get_envelope_param_type()
+                except NotImplementedError:
+                    # Parameter doesn't implement get_envelope_param_type, skip it
+                    continue
                 val = slider.value()
                 if isinstance(self.envelope.get(key), float):
                     if key.endswith("_level"):
@@ -116,11 +122,17 @@ class EnvelopeWidgetBase(QWidget):
 
         :return: None
         """
+        if self.controls is None:
+            return
         try:
             for param, slider in self.controls.items():
                 if not hasattr(param, "get_envelope_param_type"):
                     continue
-                key = param.get_envelope_param_type()
+                try:
+                    key = param.get_envelope_param_type()
+                except NotImplementedError:
+                    # Parameter doesn't implement get_envelope_param_type, skip it
+                    continue
                 if key is None:
                     log.info(
                         scope="EnvelopeWidgetBase",
