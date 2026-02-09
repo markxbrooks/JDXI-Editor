@@ -3,7 +3,7 @@ Digital Tone Modify Section
 """
 
 from typing import Callable, Dict, Optional, Union
-
+from dataclasses import dataclass
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
@@ -15,6 +15,15 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
+@dataclass
+class   DigitalToneModifyWidgets:
+    """Digital Tone Modify"""
+    interval_sens: list[QWidget] = None
+    envelope_loop_mode: list[QWidget] = None
+    envelope_loop_sync_note: list[QWidget] = None
+    chromatic_portamento: list[QWidget] = None
+    
+        
 class DigitalToneModifySection(SectionBaseWidget):
     SLIDER_GROUPS = {
         "interval_sens": [
