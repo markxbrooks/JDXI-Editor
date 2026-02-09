@@ -111,10 +111,10 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets = DigitalToneModifyWidgets(interval_sens_sliders=self._build_sliders(self.SLIDER_GROUPS["interval_sens"]),
-            envelope_loop_mode_combo_boxes=self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_mode"]),
-            envelope_loop_sync_note_combo_boxes=self._build_combo_boxes(self.COMBO_BOX_GROUPS["envelope_loop_sync_note"]),
-            chromatic_portamento_switches=self._build_switches(self.SWITCH_GROUPS["chromatic_portamento"]),
+        self.widgets = DigitalToneModifyWidgets(interval_sens_sliders=self._build_sliders(self.SLIDER_GROUPS.interval_sens),
+            envelope_loop_mode_combo_boxes=self._build_combo_boxes(self.SLIDER_GROUPS.envelope_loop_mode),
+            envelope_loop_sync_note_combo_boxes=self._build_combo_boxes(self.SLIDER_GROUPSenvelope_loop_sync_note),
+            chromatic_portamento_switches=self._build_switches(self.SLIDER_GROUPS.chromatic_portamento),
         }
 
     # ------------------------------------------------------------
