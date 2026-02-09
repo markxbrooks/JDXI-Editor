@@ -167,30 +167,3 @@ class DigitalFilterSection(BaseFilterSection):
             bypass_mode=DigitalFilterTypeEnum.BYPASS,
         )
         super().__init__(definition=self.DEFINITION, **kwargs)
-
-    def _build_layout_spec(self) -> LayoutSpec:
-        """build Analog Oscillator Layout Spec"""
-        S = self.SYNTH_SPEC
-        controls = [
-            SliderSpec(
-                S.Param.FILTER_RESONANCE,
-                S.Param.FILTER_RESONANCE.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                S.Param.FILTER_CUTOFF_KEYFOLLOW,
-                S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
-                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
-                vertical=True,
-            ),
-            SliderSpec(
-                S.Param.FILTER_ENV_DEPTH,
-                S.Param.FILTER_ENV_DEPTH.display_name,
-                vertical=True,
-            ),
-        ]
-        return LayoutSpec(controls=controls)

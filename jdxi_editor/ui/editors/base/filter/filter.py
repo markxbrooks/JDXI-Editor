@@ -22,6 +22,7 @@ from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -30,7 +31,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.spec import FilterWidgetSpec
+from jdxi_editor.ui.widgets.spec import FilterWidgetSpec, SliderSpec
 
 
 class FilterWidgetFactory:
@@ -358,3 +359,34 @@ class BaseFilterSection(SectionBaseWidget):
         # --- Enable/disable ADSR widget based on filter mode (like PWM widget)
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
+
+    def _build_layout_spec(self) -> LayoutSpec:
+        """build Analog Oscillator Layout Spec"""
+        S = self.SYNTH_SPEC
+        controls = [
+            SliderSpec(
+                S.Param.FILTER_RESONANCE,
+                S.Param.FILTER_RESONANCE.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_CUTOFF_KEYFOLLOW,
+                S.Param.FILTER_CUTOFF_KEYFOLLOW.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
+                S.Param.FILTER_ENV_VELOCITY_SENSITIVITY.display_name,
+                vertical=True,
+            ),
+        ]
+        if hasattr(S.Param, "FILTER_ENV_DEPTH"):
+            filter_env_depth = [
+                SliderSpec(
+                    S.Param.FILTER_ENV_DEPTH,
+                    S.Param.FILTER_ENV_DEPTH.display_name,
+                    vertical=True,
+                )
+            ]
+            controls = controls + filter_env_depth
+        return LayoutSpec(controls=controls)
