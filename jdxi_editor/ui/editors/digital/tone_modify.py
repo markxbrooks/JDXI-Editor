@@ -27,10 +27,10 @@ class DigitalToneModifyWidgets:
 @dataclass
 class DigitalToneModifySpecs:
     """Digital Tone Modify"""
-    interval_sens: list[QWidget] = None
-    envelope_loop_mode: list[QWidget] = None
-    envelope_loop_sync_note: list[QWidget] = None
-    chromatic_portamento: list[QWidget] = None
+    interval_sens: list[SliderSpec] = None
+    envelope_loop_mode: list[ComboBoxSpec] = None
+    envelope_loop_sync_note: list[ComboBoxSpec] = None
+    chromatic_portamento: list[SwitchSpec] = None
     
         
 class DigitalToneModifySection(SectionBaseWidget):
