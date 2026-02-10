@@ -395,7 +395,7 @@ class PresetEditor(BasicEditor):
     ) -> None:  # pylint: disable=unused-argument
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
-        log.message(f"[PresetEditor] preset_type: {preset_type}")
+        log.message(f"preset_type: {preset_type}", scope=self.__class__.__name__)
         if preset_type == PresetTitle.DIGITAL_SYNTH1:
             self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = JDXiUIPreset.Digital.PROGRAM_CHANGE
@@ -429,14 +429,14 @@ class PresetEditor(BasicEditor):
         :param tone_name: str
         :param synth_type: str
         """
-        log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}")
+        log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}", scope=self.__class__.__name__)
 
         label = self.synth_label_map.get(synth_type)
         if label:
             label.setText(tone_name)
         else:
             log.warning(
-                f"synth type: {synth_type} not found in mapping. Cannot update tone name."
+                f"synth type: {synth_type} not found in mapping. Cannot update tone name.", scope=self.__class__.__name__
             )
 
     def load_preset_by_program_change(
@@ -448,10 +448,10 @@ class PresetEditor(BasicEditor):
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
-        log.message("[PresetEditor] =======load_preset_by_program_change=======")
-        log.parameter("[PresetEditor] combo box preset_name", preset_name)
+        log.message("=======load_preset_by_program_change=======", scope=self.__class__.__name__)
+        log.parameter("combo box preset_name", preset_name, scope=self.__class__.__name__)
         program_number = preset_name[:3]
-        log.parameter("[PresetEditor] combo box program_number", program_number)
+        log.parameter("combo box program_number", program_number, scope=self.__class__.__name__)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -460,14 +460,14 @@ class PresetEditor(BasicEditor):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"[PresetEditor] Could not retrieve preset parameters for program {program_number}"
+                f"Could not retrieve preset parameters for program {program_number}", scope=self.__class__.__name__
             )
             return
 
-        log.message("[PresetEditor] retrieved msb, lsb, pc :")
-        log.parameter("[PresetEditor] combo box msb", msb)
-        log.parameter("[PresetEditor] combo box lsb", lsb)
-        log.parameter("[PresetEditor] combo box pc", pc)
+        log.message("retrieved msb, lsb, pc :", scope=self.__class__.__name__)
+        log.parameter("combo box msb", msb, scope=self.__class__.__name__)
+        log.parameter("combo box lsb", lsb, scope=self.__class__.__name__)
+        log.parameter("combo box pc", pc, scope=self.__class__.__name__)
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -491,7 +491,7 @@ class PresetEditor(BasicEditor):
         """
         if hasattr(self, "preset_combo_box") and self.preset_combo_box:
             return self.preset_combo_box.currentText()
-        log.error("[PresetEditor] Preset combo box is missing or malformed.")
+        log.error("Preset combo box is missing or malformed.", scope=self.__class__.__name__)
         return ""
 
     def _populate_presets(self, search_text: str = ""):
@@ -517,7 +517,7 @@ class PresetEditor(BasicEditor):
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()
-        log.message(f"[PresetEditor] Selected Category: {selected_category}")
+        log.message(f"Selected Category: {selected_category}", scope=self.__class__.__name__)
 
         self.preset_combo_box.clear()
         self.presets.clear()
@@ -527,7 +527,7 @@ class PresetEditor(BasicEditor):
             for preset in self.preset_list
             if (
                 selected_category
-                in ["[PresetEditor] No Category Selected", preset["category"]]
+                in ["No Category Selected", preset["category"]]
             )
         ]
         filtered_presets = []
@@ -586,17 +586,17 @@ class PresetEditor(BasicEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        log.parameter("[PresetEditor] combo box bank_letter", bank_letter)
-        log.parameter("[PresetEditor] combo box bank_number", bank_number)
+        log.parameter("combo box bank_letter", bank_letter, scope=self.__class__.__name__)
+        log.parameter("combo box bank_number", bank_number, scope=self.__class__.__name__)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
-            log.parameter("program_details", program_details)
+            log.parameter("program_details", program_details, scope=self.__class__.__name__)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log.message("[PresetEditor] calculated msb, lsb, pc :")
-        log.parameter("[PresetEditor] combo box msb", msb)
-        log.parameter("[PresetEditor] combo box lsb", lsb)
-        log.parameter("[PresetEditor] combo box pc", pc)
+        log.message("calculated msb, lsb, pc :", scope=self.__class__.__name__)
+        log.parameter("combo box msb", msb, scope=self.__class__.__name__)
+        log.parameter("combo box lsb", lsb, scope=self.__class__.__name__)
+        log.parameter("combo box pc", pc, scope=self.__class__.__name__)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel, msb, lsb, pc
@@ -614,7 +614,7 @@ class PresetEditor(BasicEditor):
             self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
             log.message(
-                f"[PresetEditor] Program details missing required keys: {program_details}"
+                f"Program details missing required keys: {program_details}", scope=self.__class__.__name__
             )
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")
