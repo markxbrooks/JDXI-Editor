@@ -3,7 +3,7 @@ Analog Filter Section
 """
 
 from enum import IntEnum
-from typing import Callable
+from typing import Callable, Dict
 
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
@@ -21,9 +21,10 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
-from jdxi_editor.ui.editors.base.filter.spec import FilterSpec
+from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -369,7 +370,7 @@ class BaseFilterSection(SectionBaseWidget):
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
 
-    def _build_layout_spec(self) -> LayoutSpec:
+    def _build_layout_spec(self) -> FilterLayoutSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         controls = [
@@ -400,15 +401,15 @@ class BaseFilterSection(SectionBaseWidget):
             controls = controls + filter_env_depth
         adsr: Dict[ADSRStage, ADSRSpec] = {
             ADSRStage.ATTACK: ADSRSpec(
-                ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME
+                ADSRStage.ATTACK, S.Param.FILTER_ENV_ATTACK_TIME
             ),
-            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
+            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, S.Param.FILTER_ENV_DECAY_TIME),
             ADSRStage.SUSTAIN: ADSRSpec(
-                ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL
+                ADSRStage.SUSTAIN, S.Param.FILTER_ENV_SUSTAIN_LEVEL
             ),
             ADSRStage.RELEASE: ADSRSpec(
-                ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME
+                ADSRStage.RELEASE, S.Param.FILTER_ENV_RELEASE_TIME
             ),
-            ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
+            ADSRStage.DEPTH: ADSRSpec(ADSRStage.DEPTH, S.Param.FILTER_ENV_DEPTH),
         }
-        return FilterSpec(controls=controls, adsr=adsr)
+        return FilterLayoutSpec(controls=controls, adsr=adsr)

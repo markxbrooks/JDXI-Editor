@@ -1,3 +1,13 @@
+"""
+FilterFeature and Filter Spec classes
+"""
+from dataclasses import field, dataclass
+from enum import auto, Enum
+from typing import Optional
+
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec, ComboBoxSpec
+
+
 class FilterFeature(Enum):
     """Oscillator capability flags; defined here to avoid circular import (layout.spec must not import from digital)."""
 
@@ -10,11 +20,11 @@ class FilterFeature(Enum):
 
 
 @dataclass
-class FilterSpec:
+class FilterLayoutSpec:
     """Layout of Widgets"""
 
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
-    adsr: Optional[dict[] = None
+    adsr: Optional[dict] = None
     features: set[FilterFeature] = field(default_factory=set)
 
     def get(self, item, fallback=None):

@@ -58,7 +58,7 @@ class TestEditorValidation(unittest.TestCase):
             ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
             ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL),
             ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME),
-            ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
+            ADSRStage.DEPTH: ADSRSpec(ADSRStage.DEPTH, Digital.Param.FILTER_ENV_DEPTH),
         }
         
         errors = validate_adsr_spec("TestFilterSection", correct_spec, "FILTER_ENV")
@@ -97,10 +97,10 @@ class TestEditorValidation(unittest.TestCase):
         """Test that DigitalAmpSection uses AMP_ENV parameters."""
         from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
         
-        if not hasattr(DigitalAmpSection, "ADSR_SPEC"):
-            self.skipTest("DigitalAmpSection has no ADSR_SPEC")
+        if not hasattr(DigitalAmpSection, "spec_adsr"):
+            self.skipTest("DigitalAmpSection has no spec_adsr")
         
-        adsr_spec = DigitalAmpSection.ADSR_SPEC
+        adsr_spec = DigitalAmpSection.spec_adsr
         
         # Check each stage uses AMP_ENV parameters
         for stage, spec in adsr_spec.items():
@@ -109,7 +109,7 @@ class TestEditorValidation(unittest.TestCase):
             
             self.assertTrue(
                 param_name.startswith("AMP_ENV"),
-                f"DigitalAmpSection ADSR_SPEC[{stage}] uses '{param_name}' "
+                f"DigitalAmpSection spec_adsr[{stage}] uses '{param_name}' "
                 f"but should use AMP_ENV parameter"
             )
 
@@ -117,10 +117,10 @@ class TestEditorValidation(unittest.TestCase):
         """Test that DigitalFilterSection uses FILTER_ENV parameters."""
         from jdxi_editor.ui.editors.digital.partial.filter.section import DigitalFilterSection
         
-        if not hasattr(DigitalFilterSection, "ADSR_SPEC"):
-            self.skipTest("DigitalFilterSection has no ADSR_SPEC")
+        if not hasattr(DigitalFilterSection, "spec_adsr"):
+            self.skipTest("DigitalFilterSection has no spec_adsr")
         
-        adsr_spec = DigitalFilterSection.ADSR_SPEC
+        adsr_spec = DigitalFilterSection.spec_adsr
         
         # Check each stage uses FILTER_ENV parameters
         for stage, spec in adsr_spec.items():
@@ -129,7 +129,7 @@ class TestEditorValidation(unittest.TestCase):
             
             self.assertTrue(
                 param_name.startswith("FILTER_ENV"),
-                f"DigitalFilterSection ADSR_SPEC[{stage}] uses '{param_name}' "
+                f"DigitalFilterSection spec_adsr[{stage}] uses '{param_name}' "
                 f"but should use FILTER_ENV parameter"
             )
 

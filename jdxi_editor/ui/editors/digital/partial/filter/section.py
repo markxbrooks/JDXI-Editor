@@ -10,10 +10,9 @@ from jdxi_editor.midi.data.digital.filter import (
     DigitalFilterTypeEnum,
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
@@ -24,20 +23,6 @@ class DigitalFilterSection(BaseFilterSection):
     BUTTON_ENABLE_RULES = {
         Digital.Filter.Mode.BYPASS: [],  # disables everything
         # --- Other modes: all sliders are enabled (default)
-    }
-
-    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
-        ADSRStage.ATTACK: ADSRSpec(
-            ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME
-        ),
-        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(
-            ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL
-        ),
-        ADSRStage.RELEASE: ADSRSpec(
-            ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME
-        ),
-        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
     }
 
     FILTER_SPECS: Dict[DigitalFilterType, FilterSpec] = {
@@ -148,7 +133,8 @@ class DigitalFilterSection(BaseFilterSection):
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
-        self.spec: LayoutSpec = self._build_layout_spec()
+        self.spec: FilterLayoutSpec = self._build_layout_spec()
+        self.spec_adsr = self.spec.adsr
         self.DEFINITION = FilterDefinition(
             modes=DigitalFilterTypeEnum,
             param_mode=Digital.Param.FILTER_MODE_SWITCH,
@@ -163,7 +149,7 @@ class DigitalFilterSection(BaseFilterSection):
             specs=self.FILTER_SPECS,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.spec,
-            adsr=self.ADSR_SPEC,
+            adsr=self.spec_adsr,
             bypass_mode=DigitalFilterTypeEnum.BYPASS,
         )
         super().__init__(definition=self.DEFINITION, **kwargs)

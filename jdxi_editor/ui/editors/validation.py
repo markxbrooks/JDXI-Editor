@@ -30,11 +30,11 @@ def validate_adsr_spec(
     expected_prefix: str,
 ) -> List[str]:
     """
-    Validate that ADSR_SPEC uses parameters with the expected prefix.
+    Validate that spec_adsr uses parameters with the expected prefix.
 
     Args:
         section_name: Name of the section being validated (e.g., "DigitalAmpSection")
-        adsr_spec: The ADSR_SPEC dictionary to validate
+        adsr_spec: The spec_adsr dictionary to validate
         expected_prefix: Expected parameter prefix (e.g., "AMP_ENV", "FILTER_ENV")
 
     Returns:
@@ -55,18 +55,18 @@ def validate_adsr_spec(
 
     # PEAK is optional and may not exist for all envelope types
     if expected_prefix == "FILTER_ENV":
-        stage_to_param[ADSRStage.PEAK] = f"{expected_prefix}_DEPTH"
+        stage_to_param[ADSRStage.DEPTH] = f"{expected_prefix}_DEPTH"
 
     for stage, spec in adsr_spec.items():
         if not isinstance(spec, ADSRSpec):
             errors.append(
-                f"{section_name}: ADSR_SPEC[{stage}] is not an ADSRSpec instance"
+                f"{section_name}: spec_adsr[{stage}] is not an ADSRSpec instance"
             )
             continue
 
         param = spec.param
         if param is None:
-            errors.append(f"{section_name}: ADSR_SPEC[{stage}].param is None")
+            errors.append(f"{section_name}: spec_adsr[{stage}].param is None")
             continue
 
         # Get parameter name
@@ -79,12 +79,12 @@ def validate_adsr_spec(
         expected_param_pattern = stage_to_param.get(stage)
         if expected_param_pattern is None:
             # PEAK might not be required for all envelope types
-            if stage == ADSRStage.PEAK and expected_prefix == "AMP_ENV":
+            if stage == ADSRStage.DEPTH and expected_prefix == "AMP_ENV":
                 # AMP doesn't have a PEAK parameter, so this is OK if missing
                 continue
             else:
                 errors.append(
-                    f"{section_name}: ADSR_SPEC[{stage}] has unexpected stage "
+                    f"{section_name}: spec_adsr[{stage}] has unexpected stage "
                     f"(expected one of: {list(stage_to_param.keys())})"
                 )
             continue
@@ -98,14 +98,14 @@ def validate_adsr_spec(
                     wrong_prefix
                 ):
                     errors.append(
-                        f"{section_name}: ADSR_SPEC[{stage}] uses wrong parameter: "
+                        f"{section_name}: spec_adsr[{stage}] uses wrong parameter: "
                         f"{param_name} (expected {expected_param_pattern}, "
                         f"found {wrong_prefix} parameter)"
                     )
                     break
             else:
                 errors.append(
-                    f"{section_name}: ADSR_SPEC[{stage}] parameter '{param_name}' "
+                    f"{section_name}: spec_adsr[{stage}] parameter '{param_name}' "
                     f"doesn't match expected pattern '{expected_param_pattern}'"
                 )
 
@@ -190,10 +190,10 @@ def validate_digital_sections() -> Dict[str, List[str]]:
 
     # Validate DigitalAmpSection
     amp_errors = []
-    if hasattr(DigitalAmpSection, "ADSR_SPEC"):
+    if hasattr(DigitalAmpSection, "spec_adsr"):
         amp_adsr_errors = validate_adsr_spec(
             "DigitalAmpSection",
-            DigitalAmpSection.ADSR_SPEC,
+            DigitalAmpSection.spec_adsr,
             "AMP_ENV",
         )
         amp_errors.extend(amp_adsr_errors)
@@ -212,10 +212,10 @@ def validate_digital_sections() -> Dict[str, List[str]]:
 
     # Validate DigitalFilterSection
     filter_errors = []
-    if hasattr(DigitalFilterSection, "ADSR_SPEC"):
+    if hasattr(DigitalFilterSection, "spec_adsr"):
         filter_adsr_errors = validate_adsr_spec(
             "DigitalFilterSection",
-            DigitalFilterSection.ADSR_SPEC,
+            DigitalFilterSection.spec_adsr,
             "FILTER_ENV",
         )
         filter_errors.extend(filter_adsr_errors)

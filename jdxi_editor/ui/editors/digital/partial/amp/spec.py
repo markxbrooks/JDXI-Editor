@@ -5,7 +5,7 @@ from jdxi_editor.ui.widgets.spec import SwitchSpec, ComboBoxSpec, SliderSpec
 
 
 @dataclass
-class AmpWidgetSpec:
+class AmpLayoutSpec:
     """Layout of Widgets"""
 
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None

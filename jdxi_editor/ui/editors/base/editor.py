@@ -42,7 +42,7 @@ Example:
 """
 
 import logging
-from typing import TYPE_CHECKING, Dict, Optional, Union
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -55,7 +55,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 
 if TYPE_CHECKING:
@@ -72,7 +71,7 @@ from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.amp.section import AnalogAmpSection
-from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
+from jdxi_editor.ui.editors.analog.filter.section import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.oscillator.section import AnalogOscillatorSection
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.helper import log_changes

@@ -40,7 +40,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     }
 
     # --- Optional ADSR can be added if Oscillator has one (Digital usually has pitch envelope)
-    ADSR_SPEC = None
+    spec_adsr = None
 
     PWM_SPEC = PWMSpec(
         pulse_width_param=Digital.Param.OSC_PULSE_WIDTH,

@@ -15,11 +15,10 @@ from typing import Dict
 
 from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp.section import AmpWidgets, BaseAmpSection
-from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpWidgetSpec
+from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpLayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
     create_envelope_group,
@@ -30,22 +29,12 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 class DigitalAmpSection(BaseAmpSection):
     """Digital Amp Section for JD-Xi Editor"""
 
-    SYNTH_SPEC = JDXiMidiDigital
-
-    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
-        ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
-        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.AMP_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(
-            ADSRStage.SUSTAIN, Digital.Param.AMP_ENV_SUSTAIN_LEVEL
-        ),
-        ADSRStage.RELEASE: ADSRSpec(
-            ADSRStage.RELEASE, Digital.Param.AMP_ENV_RELEASE_TIME
-        ),
-        # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
-    }
+    SYNTH_SPEC = Digital
 
     def __init__(self, **kwargs):
-        self.spec: AmpWidgetSpec = self._build_layout_spec()
+        self.spec: AmpLayoutSpec = self._build_layout_spec()
+        self.spec_adsr = self.spec.adsr
+        # self.spec_adsr = self.spec.adsr
         self.widgets: AmpWidgets | None = None
         self.AMP_PARAMETERS = self._build_amp_parameters()
         super().__init__(**kwargs)
@@ -131,7 +120,7 @@ class DigitalAmpSection(BaseAmpSection):
         controls_widget.setLayout(controls_layout)
         return controls_widget
 
-    def _build_layout_spec(self) -> AmpWidgetSpec:
+    def _build_layout_spec(self) -> AmpLayoutSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         controls = [
@@ -179,7 +168,7 @@ class DigitalAmpSection(BaseAmpSection):
             ),
             # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
         }
-        return AmpWidgetSpec(
+        return AmpLayoutSpec(
             controls=controls, pan=pan, adsr=adsr
         )  # separate place to put the Pan
 

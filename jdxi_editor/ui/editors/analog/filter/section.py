@@ -12,26 +12,12 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
 class AnalogFilterSection(BaseFilterSection):
     """Analog Filter Section"""
-
-    ADSR_SPEC: Dict[ADSRStage, ADSRSpec] = {
-        ADSRStage.ATTACK: ADSRSpec(
-            ADSRStage.ATTACK, Analog.Param.FILTER_ENV_ATTACK_TIME
-        ),
-        ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME),
-        ADSRStage.SUSTAIN: ADSRSpec(
-            ADSRStage.SUSTAIN, Analog.Param.FILTER_ENV_SUSTAIN_LEVEL
-        ),
-        ADSRStage.RELEASE: ADSRSpec(
-            ADSRStage.RELEASE, Analog.Param.FILTER_ENV_RELEASE_TIME
-        ),
-        ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Analog.Param.FILTER_ENV_DEPTH),
-    }
 
     FILTER_SPECS: Dict[AnalogFilterType, FilterSpec] = {
         AnalogFilterType.BYPASS: FilterSpec(
@@ -75,12 +61,12 @@ class AnalogFilterSection(BaseFilterSection):
     ]
 
     def __init__(
-        self,
-        address: JDXiSysExAddress,
-        on_filter_mode_changed: Callable = None,
-        midi_helper: MidiIOHelper = None,
-        send_midi_parameter: Callable = None,
-        analog: bool = True,
+            self,
+            address: JDXiSysExAddress,
+            on_filter_mode_changed: Callable = None,
+            midi_helper: MidiIOHelper = None,
+            send_midi_parameter: Callable = None,
+            analog: bool = True,
     ):
         """
         Initialize the AnalogFilterSection
@@ -89,7 +75,8 @@ class AnalogFilterSection(BaseFilterSection):
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.wave_shapes = self.generate_wave_shapes()
-        self.spec: LayoutSpec = self._build_layout_spec()
+        self.spec: FilterLayoutSpec = self._build_layout_spec()
+        self.spec_adsr = self.spec.adsr
         self.DEFINITION = FilterDefinition(
             modes=AnalogFilterType,
             param_mode=Analog.Param.FILTER_MODE_SWITCH,
@@ -98,7 +85,7 @@ class AnalogFilterSection(BaseFilterSection):
             specs=self.FILTER_SPECS,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.spec,
-            adsr=self.ADSR_SPEC,
+            adsr=self.spec_adsr,
             bypass_mode=AnalogFilterType.BYPASS,
         )
         super().__init__(
@@ -128,7 +115,7 @@ class AnalogFilterSection(BaseFilterSection):
             ),
         ]
 
-    def _build_layout_spec(self) -> LayoutSpec:
+    def _build_layout_spec(self) -> FilterLayoutSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         controls = [
@@ -148,4 +135,17 @@ class AnalogFilterSection(BaseFilterSection):
                 vertical=True,
             ),
         ]
-        return LayoutSpec(controls=controls)
+        adsr: Dict[ADSRStage, ADSRSpec] = {
+            ADSRStage.ATTACK: ADSRSpec(
+                ADSRStage.ATTACK, Analog.Param.FILTER_ENV_ATTACK_TIME
+            ),
+            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME),
+            ADSRStage.SUSTAIN: ADSRSpec(
+                ADSRStage.SUSTAIN, Analog.Param.FILTER_ENV_SUSTAIN_LEVEL
+            ),
+            ADSRStage.RELEASE: ADSRSpec(
+                ADSRStage.RELEASE, Analog.Param.FILTER_ENV_RELEASE_TIME
+            ),
+            ADSRStage.DEPTH: ADSRSpec(ADSRStage.DEPTH, Analog.Param.FILTER_ENV_DEPTH),
+        }
+        return FilterLayoutSpec(controls=controls, adsr=adsr)

@@ -22,6 +22,7 @@ class LayoutSpec:
 
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
     combos: Optional[list[ComboBoxSpec | None]] = None
+    adsr: Optional[dict] = None
     sliders: Optional[list[SliderSpec | None]] = None
     switches: Optional[list[SwitchSpec | None]] = None
     misc: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None

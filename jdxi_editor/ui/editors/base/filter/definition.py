@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec
 
 
@@ -31,7 +31,7 @@ class FilterDefinition:
     # UI
     specs: dict[Any, FilterSpec]
     widget_spec: FilterWidgetSpec
-    sliders: LayoutSpec
+    sliders: FilterLayoutSpec
     adsr: dict[ADSRStage, ADSRSpec]
 
     # behavior

@@ -88,7 +88,7 @@ class SectionBaseWidget(SynthBase):
     and ensuring consistency.
     """
     from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
-    ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
+    spec_adsr: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
     spec: LayoutSpec | None = None
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
@@ -204,9 +204,18 @@ class SectionBaseWidget(SynthBase):
     def build_widgets(self):
         """Build sliders, switches, combo boxes, buttons, and ADSR"""
         self._build_widgets()
+
+        # Optional waveform / mode / shape buttons
         if self._get_button_specs():
             self._create_waveform_buttons()
-        if self.ADSR_SPEC:
+
+        # Optional ADSR envelope:
+        # - Most sections advertise ADSR via class-level spec_adsr
+        # - Some newer specs may carry an `adsr` field on `self.spec`
+        adsr_spec = getattr(self, "spec_adsr", None)
+        if adsr_spec is None and getattr(self, "spec", None) is not None:
+            adsr_spec = getattr(self.spec, "adsr", None)
+        if adsr_spec:
             self._create_adsr()
 
     def _create_tab_widget(self):
@@ -289,12 +298,12 @@ class SectionBaseWidget(SynthBase):
         return layout
 
     def _create_adsr(self):
-        """Create ADSR widget from ADSR_SPEC"""
+        """Create ADSR widget from spec_adsr"""
         attack_key = ADSRStage.ATTACK
         decay_key = ADSRStage.DECAY
         sustain_key = ADSRStage.SUSTAIN
         release_key = ADSRStage.RELEASE
-        peak_key = ADSRStage.PEAK
+        peak_key = ADSRStage.DEPTH
 
         def get_param(spec_or_param):
             """Extract parameter from ADSRSpec or return parameter directly"""
@@ -302,11 +311,11 @@ class SectionBaseWidget(SynthBase):
                 return spec_or_param.param
             return spec_or_param
 
-        attack_spec = self.ADSR_SPEC.get(attack_key)
-        decay_spec = self.ADSR_SPEC.get(decay_key)
-        sustain_spec = self.ADSR_SPEC.get(sustain_key)
-        release_spec = self.ADSR_SPEC.get(release_key)
-        peak_spec = self.ADSR_SPEC.get(peak_key) if peak_key else None
+        attack_spec = self.spec_adsr.get(attack_key)
+        decay_spec = self.spec_adsr.get(decay_key)
+        sustain_spec = self.spec_adsr.get(sustain_key)
+        release_spec = self.spec_adsr.get(release_key)
+        peak_spec = self.spec_adsr.get(peak_key) if peak_key else None
 
         attack_param = get_param(attack_spec) if attack_spec else None
         decay_param = get_param(decay_spec) if decay_spec else None
@@ -465,11 +474,11 @@ class SectionBaseWidget(SynthBase):
                 return spec_or_param.param
             return spec_or_param
 
-        attack_spec = self.ADSR_SPEC.get(ADSRStage.ATTACK)
-        decay_spec = self.ADSR_SPEC.get(ADSRStage.DECAY)
-        sustain_spec = self.ADSR_SPEC.get(ADSRStage.SUSTAIN)
-        release_spec = self.ADSR_SPEC.get(ADSRStage.RELEASE)
-        peak_spec = self.ADSR_SPEC.get(ADSRStage.PEAK)
+        attack_spec = self.spec_adsr.get(ADSRStage.ATTACK)
+        decay_spec = self.spec_adsr.get(ADSRStage.DECAY)
+        sustain_spec = self.spec_adsr.get(ADSRStage.SUSTAIN)
+        release_spec = self.spec_adsr.get(ADSRStage.RELEASE)
+        peak_spec = self.spec_adsr.get(ADSRStage.DEPTH)
 
         attack_param = get_param(attack_spec) if attack_spec else None
         decay_param = get_param(decay_spec) if decay_spec else None

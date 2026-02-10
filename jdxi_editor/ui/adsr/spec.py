@@ -7,7 +7,7 @@ class ADSRStage(Enum):
     DECAY = "decay"
     SUSTAIN = "sustain"
     RELEASE = "release"
-    PEAK = "peak"
+    DEPTH = "peak"
 
 
 @dataclass(frozen=True, slots=True)
