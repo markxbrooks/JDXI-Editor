@@ -10,7 +10,7 @@ class FilterFeature(Enum):
 
 
 @dataclass
-class LayoutSpec:
+class FilterSpec:
     """Layout of Widgets"""
 
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
