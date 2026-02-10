@@ -10,6 +10,7 @@ class AmpWidgetSpec:
 
     controls: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
     pan: Optional[list[SliderSpec | None]] = None
+    adsr: Optional[dict] = None
 
     def get(self, item, fallback=None):
         """Dict-like access: return the attribute named `item`, else `fallback`."""
