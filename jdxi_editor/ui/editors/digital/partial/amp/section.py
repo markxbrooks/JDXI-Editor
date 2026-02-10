@@ -180,7 +180,7 @@ class DigitalAmpSection(BaseAmpSection):
             # Note: AMP envelope does not have a PEAK/DEPTH parameter like Filter envelope
         }
         return AmpWidgetSpec(
-            controls=controls, pan=pan
+            controls=controls, pan=pan, adsr=adsr
         )  # separate place to put the Pan
 
     def set_pan(self, value: int) -> None:
