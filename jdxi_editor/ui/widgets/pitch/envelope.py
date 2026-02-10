@@ -148,7 +148,6 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             control.envelope_changed.connect(self.on_control_changed)
         if analog:
             JDXi.UI.Theme.apply_adsr_style(self, analog=True)
-        self.show()
 
     def on_control_changed(self, change: dict) -> None:
         """

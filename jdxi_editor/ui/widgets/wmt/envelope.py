@@ -176,7 +176,6 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.plot.set_values(self.envelope)
         for control in self._control_widgets:
             control.envelope_changed.connect(self.on_control_changed)
-        self.show()
 
     def set_values(self, envelope: dict):
         self.envelope = envelope
