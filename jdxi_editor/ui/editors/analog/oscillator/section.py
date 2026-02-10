@@ -5,7 +5,6 @@ Analog Oscillator Section
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
@@ -15,6 +14,7 @@ from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import (
     PitchEnvelopeSpec,
@@ -85,7 +85,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def _create_feature_widgets(self):
         env_sliders = self._build_sliders(self.spec.env)
-        self.osc_pitch_env_velocity_sensitivity_slider = env_sliders[0] if env_sliders else None
+        self.osc_pitch_env_velocity_sensitivity_slider = (
+            env_sliders[0] if env_sliders else None
+        )
 
         switches = self._build_switches(self.SWITCH_SPECS)
         self.sub_oscillator_type_switch = switches[0] if switches else None
@@ -214,5 +216,5 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,
                 OscillatorFeature.SUB_OSC,
-            }
+            },
         )

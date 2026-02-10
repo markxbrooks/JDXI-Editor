@@ -21,10 +21,10 @@ from jdxi_editor.midi.data.analog.filter import AnalogFilterType
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.adsr.spec import ADSRStage, ADSRSpec
+from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
-from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
 from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
+from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,

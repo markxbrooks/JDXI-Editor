@@ -26,8 +26,8 @@ import mido
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetTemporaryToneUMB,
     JDXiSysExAddress,
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam

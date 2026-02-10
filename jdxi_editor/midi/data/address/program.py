@@ -1,8 +1,8 @@
 from picomidi.constant import Midi
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExAddressStartMSB,
     JDXiSysExAddress,
+    JDXiSysExAddressStartMSB,
 )
 
 

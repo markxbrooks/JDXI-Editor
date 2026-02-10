@@ -20,10 +20,10 @@ class AnalogAmpSection(BaseAmpSection):
     SYNTH_SPEC = Analog
 
     def __init__(
-            self,
-            address,
-            send_midi_parameter=None,
-            midi_helper: MidiIOHelper = None,
+        self,
+        address,
+        send_midi_parameter=None,
+        midi_helper: MidiIOHelper = None,
     ):
         # Build layout spec (including ADSR mapping) before base init so widgets/ADSR
         # can be constructed correctly in BaseAmpSection.build_widgets().
@@ -65,7 +65,9 @@ class AnalogAmpSection(BaseAmpSection):
             ),
         ]
         adsr: Dict[ADSRStage, ADSRSpec] = {
-            ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME),
+            ADSRStage.ATTACK: ADSRSpec(
+                ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME
+            ),
             ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.AMP_ENV_DECAY_TIME),
             ADSRStage.SUSTAIN: ADSRSpec(
                 ADSRStage.SUSTAIN, Analog.Param.AMP_ENV_SUSTAIN_LEVEL

@@ -187,9 +187,9 @@ class SynthBase(QWidget):
                 hasattr(self.parent.parent, "address")
                 and self.parent.parent.address is not None
             ):
-                if isinstance(
-                    self.parent.parent.address, JDXiSysExAddress
-                ) and hasattr(self.parent.parent.address, "add_offset"):
+                if isinstance(self.parent.parent.address, JDXiSysExAddress) and hasattr(
+                    self.parent.parent.address, "add_offset"
+                ):
                     return self.parent.parent.address
             # If parent.parent is ProgramEditor and has no address, create one
             if (

@@ -54,15 +54,11 @@ class DigitalToneModifySection(SectionBaseWidget):
         """Build all the necessary widgets for the digital common section."""
         self.widgets = DigitalToneModifyWidgets(
             interval_sens=self._build_sliders(self.spec.interval_sens),
-            envelope_loop_mode=self._build_combo_boxes(
-                self.spec.envelope_loop_mode
-            ),
+            envelope_loop_mode=self._build_combo_boxes(self.spec.envelope_loop_mode),
             envelope_loop_sync_note=self._build_combo_boxes(
                 self.spec.envelope_loop_sync_note
             ),
-            chromatic_portamento=self._build_switches(
-                self.spec.chromatic_portamento
-            ),
+            chromatic_portamento=self._build_switches(self.spec.chromatic_portamento),
         )
 
     # ------------------------------------------------------------
@@ -82,22 +78,22 @@ class DigitalToneModifySection(SectionBaseWidget):
     def _build_layout_spec(self):
         """build layout spec"""
         interval_sens = [
-                SliderSpec(
-                    Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
-                    Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS.display_name,
-                    vertical=True,
-                ),
-                SliderSpec(
-                    Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
-                    Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS.display_name,
-                    vertical=True,
-                ),
-                SliderSpec(
-                    Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
-                    Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS.display_name,
-                    vertical=True,
-                ),
-            ]
+            SliderSpec(
+                Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS,
+                Digital.ModifyParam.ATTACK_TIME_INTERVAL_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS,
+                Digital.ModifyParam.RELEASE_TIME_INTERVAL_SENS.display_name,
+                vertical=True,
+            ),
+            SliderSpec(
+                Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS,
+                Digital.ModifyParam.PORTAMENTO_TIME_INTERVAL_SENS.display_name,
+                vertical=True,
+            ),
+        ]
         envelope_loop_mode = [
             ComboBoxSpec(
                 Digital.ModifyParam.ENVELOPE_LOOP_MODE,

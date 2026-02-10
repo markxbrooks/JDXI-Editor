@@ -20,8 +20,8 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp.section import AmpWidgets, BaseAmpSection
 from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpLayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_layout_with_widgets,
     create_envelope_group,
+    create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.spec import SliderSpec
 
@@ -158,8 +158,12 @@ class DigitalAmpSection(BaseAmpSection):
             ),
         ]
         adsr: Dict[ADSRStage, ADSRSpec] = {
-            ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME),
-            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.AMP_ENV_DECAY_TIME),
+            ADSRStage.ATTACK: ADSRSpec(
+                ADSRStage.ATTACK, Digital.Param.AMP_ENV_ATTACK_TIME
+            ),
+            ADSRStage.DECAY: ADSRSpec(
+                ADSRStage.DECAY, Digital.Param.AMP_ENV_DECAY_TIME
+            ),
             ADSRStage.SUSTAIN: ADSRSpec(
                 ADSRStage.SUSTAIN, Digital.Param.AMP_ENV_SUSTAIN_LEVEL
             ),
@@ -174,4 +178,3 @@ class DigitalAmpSection(BaseAmpSection):
 
     def set_pan(self, value: int) -> None:
         self._set_param(self.SYNTH_SPEC.Param.AMP_PAN, value)
-

@@ -1,8 +1,8 @@
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE

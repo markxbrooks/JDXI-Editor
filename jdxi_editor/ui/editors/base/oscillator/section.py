@@ -1,11 +1,11 @@
 """
 LFO section of the digital partial editor.
 """
-from enum import auto, Enum
+
+from enum import Enum, auto
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -22,6 +22,7 @@ from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -388,9 +389,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
         if self._send_param:
-            self._send_param(
-                self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value
-            )
+            self._send_param(self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value)
 
     def _update_button_enabled_states(self, button_param):
         """Override to enable/disable widgets based on selected waveform.

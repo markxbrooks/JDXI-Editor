@@ -35,9 +35,9 @@ from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper

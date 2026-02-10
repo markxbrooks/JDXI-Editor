@@ -37,10 +37,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import PROFILING
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,

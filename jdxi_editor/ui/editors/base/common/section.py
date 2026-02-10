@@ -14,7 +14,9 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 class BaseCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
+
     from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+
     SLIDER_GROUPS: LayoutSpec = None
     SWITCH_SPECS = []
     COMBO_BOXES = []

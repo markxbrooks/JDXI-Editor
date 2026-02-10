@@ -5,7 +5,7 @@ Oscillator Layout Spec
 from dataclasses import dataclass, field
 
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
-from jdxi_editor.ui.widgets.spec import SwitchSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 @dataclass
@@ -31,4 +31,3 @@ class OscillatorLayoutSpec:
 
     def supports(self, feature: OscillatorFeature) -> bool:
         return feature in self.features
-

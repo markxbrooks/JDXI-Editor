@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from jdxi_editor.ui.widgets.spec import SwitchSpec, ComboBoxSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 @dataclass

@@ -13,18 +13,24 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab, DigitalGroupBox
+from jdxi_editor.midi.data.parameter.digital.spec import (
+    DigitalGroupBox,
+    DigitalOscillatorTab,
+)
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec, OscillatorFeature
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
+    OscillatorFeature,
+    OscillatorLayoutSpec,
+)
+from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_from_definition,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.pcm.wave import PCMWaveWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
@@ -121,9 +127,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # Initialize controls before creating PCMWaveWidget so it can register controls
         # (ControlRegistry is a singleton, so this ensures self.controls exists)
         self.controls = ControlRegistry()
-        self.pcm_wave = PCMWaveWidget(groupbox_spec=DigitalGroupBox,
-                                      create_parameter_combo_box=self._create_parameter_combo_box,
-                                      send_param=send_midi_parameter)
+        self.pcm_wave = PCMWaveWidget(
+            groupbox_spec=DigitalGroupBox,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            send_param=send_midi_parameter,
+        )
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
@@ -134,7 +142,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # With singleton, controls registered by PCMWaveWidget are already in the shared registry
         # Just ensure they're accessible via self.controls
         self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_GAIN] = self.pcm_wave.pcm_wave_gain
-        self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_NUMBER] = self.pcm_wave.pcm_wave_number
+        self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_NUMBER] = (
+            self.pcm_wave.pcm_wave_number
+        )
         # Also set as direct attributes for _has_pcm() compatibility (though we check pcm_wave now)
         self.pcm_wave_gain = self.pcm_wave.pcm_wave_gain
         self.pcm_wave_number = self.pcm_wave.pcm_wave_number
@@ -202,7 +212,11 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                     self.amp_control_widgets.remove(w)
         control_sliders = self._build_sliders(self.spec.tuning)
         if len(control_sliders) >= 3:
-            self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider, self.super_saw_detune = (
+            (
+                self.osc_pitch_coarse_slider,
+                self.osc_pitch_fine_slider,
+                self.super_saw_detune,
+            ) = (
                 control_sliders[0],
                 control_sliders[1],
                 control_sliders[2],
@@ -359,7 +373,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             SliderSpec(
                 param=S.Param.OSC_PULSE_WIDTH_SHIFT,
                 label=S.Display.Name.OSC_PULSE_WIDTH_SHIFT,
-                vertical=False
+                vertical=False,
             ),
         ]
         return OscillatorLayoutSpec(
@@ -370,5 +384,5 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.PITCH_ENV,
                 OscillatorFeature.PCM,
                 OscillatorFeature.SUPER_SAW,
-            }
+            },
         )

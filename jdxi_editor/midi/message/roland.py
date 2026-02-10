@@ -35,9 +35,9 @@ from picomidi.utils.conversion import split_16bit_value_to_nibbles
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
     CommandID,
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     ModelID,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import (
     END_OF_SYSEX,

@@ -1,11 +1,12 @@
 """
 FilterFeature and Filter Spec classes
 """
-from dataclasses import field, dataclass
-from enum import auto, Enum
+
+from dataclasses import dataclass, field
+from enum import Enum, auto
 from typing import Optional
 
-from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec, ComboBoxSpec
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 
 class FilterFeature(Enum):

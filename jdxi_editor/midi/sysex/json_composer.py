@@ -10,8 +10,8 @@ from typing import Any, Optional, Union
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetTemporaryToneUMB,
     JDXiSysExAddress,
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.sections import SysExSection
@@ -135,9 +135,9 @@ class JDXiJSONComposer:
         from picomidi.constant import Midi
 
         from jdxi_editor.midi.data.address.address import (
+            JDXiSysExAddress,
             JDXiSysExOffsetProgramLMB,
             JDXiSysExOffsetSuperNATURALLMB,
-            JDXiSysExAddress,
         )
         from jdxi_editor.midi.data.parameter.digital import (
             DigitalCommonParam,

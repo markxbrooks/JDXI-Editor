@@ -15,4 +15,3 @@ class AnalogOscillatorLayoutSpec(OscillatorLayoutSpec):
     @property
     def has_switches(self) -> bool:
         return bool(self.switches)
-

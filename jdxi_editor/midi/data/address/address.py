@@ -225,9 +225,7 @@ class JDXiSysExAddress:
         """
         return bytes([self.msb, self.umb, self.lmb, self.lsb])
 
-    def add_offset(
-        self, offset: Union[int, tuple[int, int, int]]
-    ) -> JDXiSysExAddress:
+    def add_offset(self, offset: Union[int, tuple[int, int, int]]) -> JDXiSysExAddress:
         """
         Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
         MSB remains unchanged.

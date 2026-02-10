@@ -6,21 +6,28 @@ from typing import Callable
 
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.parameter.digital.spec import DigitalGroupBox, JDXiMidiDigital as Digital
+from jdxi_editor.midi.data.parameter.digital.spec import DigitalGroupBox
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
-from jdxi_editor.ui.widgets.editor.helper import create_centered_layout_with_widgets, create_group_from_definition
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_centered_layout_with_widgets,
+    create_group_from_definition,
+)
 
 
 class PCMWaveWidget(QWidget):
 
-    def __init__(self, groupbox_spec: type[DigitalGroupBox],
-                 create_parameter_combo_box: Callable,
-                 send_param: Callable):
+    def __init__(
+        self,
+        groupbox_spec: type[DigitalGroupBox],
+        create_parameter_combo_box: Callable,
+        send_param: Callable,
+    ):
         super().__init__()
         self._send_param = send_param
         self.pcm_wave_number: QWidget | None = None
-        self.pcm_wave_gain: QWidget | None  = None
+        self.pcm_wave_gain: QWidget | None = None
         self.groupbox_spec = groupbox_spec
         self._create_parameter_combo_box = create_parameter_combo_box
         self.build_widgets()

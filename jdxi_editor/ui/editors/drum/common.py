@@ -28,8 +28,8 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetProgramLMB,
     JDXiSysExAddress,
+    JDXiSysExOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Any
+from typing import Any, Callable
 
 from PySide6.QtWidgets import QWidget
 

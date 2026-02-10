@@ -18,11 +18,11 @@ class DigitalCommonSection(BaseCommonSection):
     """Digital Common Section"""
 
     def __init__(
-            self,
-            controls: dict = None,
-            address: Optional[JDXiSysExAddress] = None,
-            send_midi_parameter: Optional[Callable] = None,
-            midi_helper: Optional[MidiIOHelper] = None,
+        self,
+        controls: dict = None,
+        address: Optional[JDXiSysExAddress] = None,
+        send_midi_parameter: Optional[Callable] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
         Initialize the DigitalCommonSection
@@ -55,19 +55,18 @@ class DigitalCommonSection(BaseCommonSection):
 
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets = CommonEditorWidgets(pitch=self._build_sliders(self.spec.pitch),
-                                           portamento=self._build_switches(self.spec.portamento_switches),
-                                           octave_shift=self._build_combo_boxes(self.spec.octave_shift),
-                                           other_switches=self._build_switches(self.spec.other_switches),
-                                           )
+        self.widgets = CommonEditorWidgets(
+            pitch=self._build_sliders(self.spec.pitch),
+            portamento=self._build_switches(self.spec.portamento_switches),
+            octave_shift=self._build_combo_boxes(self.spec.octave_shift),
+            other_switches=self._build_switches(self.spec.other_switches),
+        )
         # Register widgets in the shared controls dict so the editor's
         # _update_common_controls can find them when COMMON SysEx arrives.
         if self.controls is not None:
             for spec, w in zip(self.spec.pitch, self.widgets.pitch):
                 self.controls[spec.param] = w
-            for spec, w in zip(
-                    self.spec.portamento_switches, self.widgets.portamento
-            ):
+            for spec, w in zip(self.spec.portamento_switches, self.widgets.portamento):
                 self.controls[spec.param] = w
             for spec, w in zip(self.spec.octave_shift, self.widgets.octave_shift):
                 self.controls[spec.param] = w

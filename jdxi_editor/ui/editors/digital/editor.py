@@ -32,10 +32,6 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.midi.conversion.adsr import ADSR_BINDINGS
-from jdxi_editor.midi.conversion.pitch_env import PITCH_ENV_BINDINGS
-from jdxi_editor.midi.conversion.pwm import PWM_BINDINGS
-from jdxi_editor.midi.conversion.value import convert_value
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -54,6 +50,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.conversion.adsr import ADSR_BINDINGS
+from jdxi_editor.midi.conversion.pitch_env import PITCH_ENV_BINDINGS
+from jdxi_editor.midi.conversion.pwm import PWM_BINDINGS
+from jdxi_editor.midi.conversion.value import convert_value
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital import (
@@ -915,18 +915,22 @@ class DigitalSynthEditor(BaseSynthEditor):
         param_name = getattr(param, "name", None) or str(param)
         log.message(
             f"_update_partial_slider_digital entry: partial_no={partial_no} param={param_name} value={value}",
-            scope=scope, silent=True
+            scope=scope,
+            silent=True,
         )
         if value is None:
             log.message(
-                "_update_partial_slider_digital value is None, skipping", scope=scope, silent=True
+                "_update_partial_slider_digital value is None, skipping",
+                scope=scope,
+                silent=True,
             )
             return
         pe = self.partial_editors.get(partial_no)
         if not pe:
             log.message(
                 f"_update_partial_slider_digital no partial_editor for partial_no={partial_no}",
-                scope=scope, silent=True
+                scope=scope,
+                silent=True,
             )
             if failures is not None:
                 failures.append(param_name)
@@ -949,7 +953,8 @@ class DigitalSynthEditor(BaseSynthEditor):
         if not controls_dict:
             log.message(
                 f"_update_partial_slider_digital no controls dict for partial_no={partial_no}",
-                scope=scope, silent=True
+                scope=scope,
+                silent=True,
             )
             if failures is not None:
                 failures.append(param_name)
@@ -983,7 +988,8 @@ class DigitalSynthEditor(BaseSynthEditor):
                 f"_update_partial_slider_digital param {param_name!r} not in controls "
                 f"(param id={id(param)}). controls: count={len(controls_dict)} "
                 f"keys={control_key_names}",
-                scope=scope, silent=True
+                scope=scope,
+                silent=True,
             )
             if failures is not None:
                 failures.append(param_name)
@@ -994,7 +1000,8 @@ class DigitalSynthEditor(BaseSynthEditor):
         log.message(
             f"_update_partial_slider_digital updating: param={param_name} value={value} -> "
             f"control_value={control_value} control type={type(control).__name__}",
-            scope=scope, silent=True
+            scope=scope,
+            silent=True,
         )
         log_slider_parameters(self.address, param, value, control_value)
         if hasattr(control, "blockSignals"):
@@ -1006,7 +1013,8 @@ class DigitalSynthEditor(BaseSynthEditor):
         log.message(
             f"_update_partial_slider_digital success: param={param_name} "
             f"(controls count={len(controls_dict)})",
-            scope=scope, silent=True
+            scope=scope,
+            silent=True,
         )
         if successes is not None:
             successes.append(param_name)

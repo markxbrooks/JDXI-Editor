@@ -14,8 +14,8 @@ from jdxi_editor.core.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.core.synth.midi_config import MidiSynthConfig
 from jdxi_editor.midi.data.address.address import (
     Address,
-    JDXiSysExOffsetProgramLMB,
     JDXiSysExAddress,
+    JDXiSysExOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam

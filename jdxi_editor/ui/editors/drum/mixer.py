@@ -13,10 +13,10 @@ from PySide6.QtWidgets import QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWi
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetTemporaryToneUMB,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam

@@ -87,7 +87,9 @@ class SectionBaseWidget(SynthBase):
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
     """
+
     from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+
     spec_adsr: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
     spec: LayoutSpec | None = None
@@ -116,9 +118,7 @@ class SectionBaseWidget(SynthBase):
         :param midi_helper: Optional MIDI helper for communication
         :param controls: Optional dict-like for parameter widgets; passed to SynthBase when provided.
         """
-        super().__init__(
-            midi_helper=midi_helper, parent=parent, controls=controls
-        )
+        super().__init__(midi_helper=midi_helper, parent=parent, controls=controls)
         self.wave_shape_param: list | None = None
         self.wave_shape_buttons = None
         # Only set default if subclass (e.g. oscillator/filter) did not set wave_shapes before super().__init__()
@@ -234,7 +234,9 @@ class SectionBaseWidget(SynthBase):
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
     def generate_wave_shapes(self):
-        raise NotImplementedError("generate_wave_shapes must be implemented by subclass")
+        raise NotImplementedError(
+            "generate_wave_shapes must be implemented by subclass"
+        )
 
     def _create_controls_widget(self) -> QWidget:
         """Controls tab"""
@@ -759,9 +761,7 @@ class SectionBaseWidget(SynthBase):
                 self.__class__.__name__,
                 scope=self.__class__.__name__,
             )
-            if not self._set_param(
-                self.wave_shape_param, shape.value, address
-            ):
+            if not self._set_param(self.wave_shape_param, shape.value, address):
                 log.warning(
                     f"Failed to set Mod LFO shape to {shape.name}",
                     scope=self.__class__.__name__,

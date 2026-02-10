@@ -70,10 +70,10 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSystemUMB,
-    JDXiSysExAddress,
 )
 from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
 from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES

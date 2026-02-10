@@ -429,14 +429,18 @@ class PresetEditor(BasicEditor):
         :param tone_name: str
         :param synth_type: str
         """
-        log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}", scope=self.__class__.__name__)
+        log.message(
+            f"Update tone name triggered: tone_name {tone_name} {synth_type}",
+            scope=self.__class__.__name__,
+        )
 
         label = self.synth_label_map.get(synth_type)
         if label:
             label.setText(tone_name)
         else:
             log.warning(
-                f"synth type: {synth_type} not found in mapping. Cannot update tone name.", scope=self.__class__.__name__
+                f"synth type: {synth_type} not found in mapping. Cannot update tone name.",
+                scope=self.__class__.__name__,
             )
 
     def load_preset_by_program_change(
@@ -448,10 +452,16 @@ class PresetEditor(BasicEditor):
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
-        log.message("=======load_preset_by_program_change=======", scope=self.__class__.__name__)
-        log.parameter("combo box preset_name", preset_name, scope=self.__class__.__name__)
+        log.message(
+            "=======load_preset_by_program_change=======", scope=self.__class__.__name__
+        )
+        log.parameter(
+            "combo box preset_name", preset_name, scope=self.__class__.__name__
+        )
         program_number = preset_name[:3]
-        log.parameter("combo box program_number", program_number, scope=self.__class__.__name__)
+        log.parameter(
+            "combo box program_number", program_number, scope=self.__class__.__name__
+        )
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -460,7 +470,8 @@ class PresetEditor(BasicEditor):
 
         if None in [msb, lsb, pc]:
             log.message(
-                f"Could not retrieve preset parameters for program {program_number}", scope=self.__class__.__name__
+                f"Could not retrieve preset parameters for program {program_number}",
+                scope=self.__class__.__name__,
             )
             return
 
@@ -491,7 +502,9 @@ class PresetEditor(BasicEditor):
         """
         if hasattr(self, "preset_combo_box") and self.preset_combo_box:
             return self.preset_combo_box.currentText()
-        log.error("Preset combo box is missing or malformed.", scope=self.__class__.__name__)
+        log.error(
+            "Preset combo box is missing or malformed.", scope=self.__class__.__name__
+        )
         return ""
 
     def _populate_presets(self, search_text: str = ""):
@@ -517,7 +530,9 @@ class PresetEditor(BasicEditor):
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()
-        log.message(f"Selected Category: {selected_category}", scope=self.__class__.__name__)
+        log.message(
+            f"Selected Category: {selected_category}", scope=self.__class__.__name__
+        )
 
         self.preset_combo_box.clear()
         self.presets.clear()
@@ -525,10 +540,7 @@ class PresetEditor(BasicEditor):
         filtered_list = [  # Filter programs based on bank and genre
             preset
             for preset in self.preset_list
-            if (
-                selected_category
-                in ["No Category Selected", preset["category"]]
-            )
+            if (selected_category in ["No Category Selected", preset["category"]])
         ]
         filtered_presets = []
         for preset in filtered_list:
@@ -586,11 +598,17 @@ class PresetEditor(BasicEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        log.parameter("combo box bank_letter", bank_letter, scope=self.__class__.__name__)
-        log.parameter("combo box bank_number", bank_number, scope=self.__class__.__name__)
+        log.parameter(
+            "combo box bank_letter", bank_letter, scope=self.__class__.__name__
+        )
+        log.parameter(
+            "combo box bank_number", bank_number, scope=self.__class__.__name__
+        )
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
-            log.parameter("program_details", program_details, scope=self.__class__.__name__)
+            log.parameter(
+                "program_details", program_details, scope=self.__class__.__name__
+            )
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
         log.message("calculated msb, lsb, pc :", scope=self.__class__.__name__)
@@ -614,7 +632,8 @@ class PresetEditor(BasicEditor):
             self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
             log.message(
-                f"Program details missing required keys: {program_details}", scope=self.__class__.__name__
+                f"Program details missing required keys: {program_details}",
+                scope=self.__class__.__name__,
             )
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")

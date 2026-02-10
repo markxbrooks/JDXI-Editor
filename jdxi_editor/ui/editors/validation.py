@@ -184,7 +184,9 @@ def validate_digital_sections() -> Dict[str, List[str]]:
         Dictionary mapping section names to lists of error messages
     """
     from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
-    from jdxi_editor.ui.editors.digital.partial.filter.section import DigitalFilterSection
+    from jdxi_editor.ui.editors.digital.partial.filter.section import (
+        DigitalFilterSection,
+    )
 
     all_errors = {}
 

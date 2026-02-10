@@ -61,12 +61,12 @@ class AnalogFilterSection(BaseFilterSection):
     ]
 
     def __init__(
-            self,
-            address: JDXiSysExAddress,
-            on_filter_mode_changed: Callable = None,
-            midi_helper: MidiIOHelper = None,
-            send_midi_parameter: Callable = None,
-            analog: bool = True,
+        self,
+        address: JDXiSysExAddress,
+        on_filter_mode_changed: Callable = None,
+        midi_helper: MidiIOHelper = None,
+        send_midi_parameter: Callable = None,
+        analog: bool = True,
     ):
         """
         Initialize the AnalogFilterSection
@@ -139,7 +139,9 @@ class AnalogFilterSection(BaseFilterSection):
             ADSRStage.ATTACK: ADSRSpec(
                 ADSRStage.ATTACK, Analog.Param.FILTER_ENV_ATTACK_TIME
             ),
-            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME),
+            ADSRStage.DECAY: ADSRSpec(
+                ADSRStage.DECAY, Analog.Param.FILTER_ENV_DECAY_TIME
+            ),
             ADSRStage.SUSTAIN: ADSRSpec(
                 ADSRStage.SUSTAIN, Analog.Param.FILTER_ENV_SUSTAIN_LEVEL
             ),

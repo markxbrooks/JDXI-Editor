@@ -10,8 +10,8 @@ from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
-    JDXiSysExOffsetSuperNATURALLMB,
     JDXiSysExAddress,
+    JDXiSysExOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.digital import (
