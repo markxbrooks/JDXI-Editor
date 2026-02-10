@@ -9,7 +9,7 @@ from typing import Dict
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.amp import BaseAmpSection
+from jdxi_editor.ui.editors.base.amp.section import BaseAmpSection
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.spec import SliderSpec
 

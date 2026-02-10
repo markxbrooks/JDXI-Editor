@@ -197,7 +197,7 @@ def run_inno_setup():
 if __name__ == "__main__":
     """main entry point"""
     log.message(f"{__package_name__} version {__version__} build system\n")
-    setup_logging(project_name=__package_name__+ " builder")
+    setup_logging(project_name=__package_name__+ " builder", use_rich=True)
     try:
         clean_build_dirs()
         build_with_pyinstaller()

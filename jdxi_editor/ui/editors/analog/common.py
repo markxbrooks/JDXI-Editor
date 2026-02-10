@@ -6,7 +6,7 @@ from typing import Callable
 
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.base.common import BaseCommonSection
+from jdxi_editor.ui.editors.base.common.section import BaseCommonSection
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec

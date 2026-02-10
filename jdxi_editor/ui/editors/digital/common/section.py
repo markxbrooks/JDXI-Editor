@@ -7,7 +7,7 @@ from typing import Callable, Optional
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.base.common import BaseCommonSection
+from jdxi_editor.ui.editors.base.common.section import BaseCommonSection
 from jdxi_editor.ui.editors.digital.common.spec import CommonWidgetSpec
 from jdxi_editor.ui.editors.digital.common.widget import CommonEditorWidgets
 from jdxi_editor.ui.widgets.editor import IconType

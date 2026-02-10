@@ -17,7 +17,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab, D
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
-from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
+from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec, OscillatorFeature
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (

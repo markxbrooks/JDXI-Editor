@@ -14,10 +14,8 @@ from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
-from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
+from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import (
     PitchEnvelopeSpec,
     PWMSpec,
