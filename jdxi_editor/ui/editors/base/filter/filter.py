@@ -22,6 +22,7 @@ from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
@@ -83,6 +84,7 @@ class BaseFilterSection(SectionBaseWidget):
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.defn: FilterDefinition = definition
+        self.widgets: FilterWidgets | None = None
         self.tab_widget: QTabWidget | None = None
         self.filter_resonance: QWidget | None = None
         self.filter_mode_buttons: dict = {}  # Dictionary to store filter mode buttons
@@ -106,6 +108,13 @@ class BaseFilterSection(SectionBaseWidget):
         self.controls_group = self._create_controls_group()
         self._create_adsr_group()
         self._create_tab_widget()
+        self.widgets = FilterWidgets(
+            filter_widget=self.filter_widget,
+            controls_group=self.controls_group,
+            adsr_widget=getattr(self, "adsr_widget", None),
+            filter_mode_buttons=self.filter_mode_buttons,
+            tab_widget=self.tab_widget,
+        )
 
     def setup_ui(self):
         """Setup the UI (standardized method name matching Digital Filter)"""

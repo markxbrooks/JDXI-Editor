@@ -1,18 +1,16 @@
 """
 LFO section of the digital partial editor.
 """
-
+from enum import auto, Enum
 from typing import Callable
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
-from picomidi.sysex.parameter.address import AddressParameter
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QPushButton,
     QTabWidget,
     QWidget,
@@ -27,9 +25,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digi
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_button_with_icon,
     create_group_with_widgets,
-    create_icon_from_qta,
     create_layout_with_widgets,
     create_widget_with_layout,
 )
@@ -38,7 +34,16 @@ from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec
 
-OscillatorWidgets
+
+class OscillatorComponent(Enum):
+    WAVE_SELECTOR = auto()
+    TUNING = auto()
+    PWM = auto()
+    PITCH_ENV = auto()
+    PCM = auto()
+    SUB_OSC = auto()
+    ADSR = auto()
+
 
 class BaseOscillatorSection(SectionBaseWidget):
     """Abstract base class for LFO sections."""
@@ -49,6 +54,16 @@ class BaseOscillatorSection(SectionBaseWidget):
     SYNTH_SPEC = Digital
     PWM_SPEC: PWMSpec | None = None
     PITCH_ENV_SPEC: PitchEnvelopeSpec | None = None
+
+    COMPONENT_BUILDERS = {
+        OscillatorComponent.WAVE_SELECTOR: "_build_wave_selector",
+        OscillatorComponent.TUNING: "_build_tuning",
+        OscillatorComponent.PWM: "_build_pwm",
+        OscillatorComponent.PITCH_ENV: "_build_pitch_env",
+        OscillatorComponent.PCM: "_build_pcm",
+        OscillatorComponent.SUB_OSC: "_build_sub_osc",
+        OscillatorComponent.ADSR: "_build_adsr",
+    }
 
     def __init__(
         self,
@@ -111,6 +126,74 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=analog,
         )
 
+    def _create_tabs(self):
+        if OscillatorFeature.PWM in self.spec.features:
+            self._add_pwm_tab()
+
+        if OscillatorFeature.PITCH_ENV in self.spec.features:
+            self._add_pitch_env_tab()
+
+        if OscillatorFeature.PCM in self.spec.features:
+            self._add_pcm_wave_gain_tab()
+
+    def finalize(self):
+        self._define_spec()
+        self._create_core_widgets()
+        self._create_feature_widgets()
+        self._assemble_ui()
+        self._initialize_states()
+
+    def _define_spec(self):
+        """Subclass must populate self.spec"""
+        raise NotImplementedError
+
+    def _create_core_widgets(self):
+        self.waveform_buttons = self._create_waveform_buttons()
+
+        if self.PITCH_ENV_SPEC:
+            self.pitch_env_widget = self._create_pitch_env_widget()
+
+        if self.PWM_SPEC:
+            self.pwm_widget = self._create_pwm_widget()
+
+    def _create_feature_widgets(self):
+        """Subclass optional extension point"""
+        pass
+
+    def _assemble_ui(self):
+        self.build_widgets()
+        self.setup_ui()
+
+    def _initialize_states(self):
+        if getattr(self, "wave_shapes", None):
+            self._on_button_selected(self.wave_shapes[0])
+
+    def _build_plan(self) -> list[OscillatorComponent]:
+        plan = [OscillatorComponent.WAVE_SELECTOR, OscillatorComponent.TUNING]
+
+        if self.spec.supports(OscillatorFeature.PWM):
+            plan.append(OscillatorComponent.PWM)
+
+        if self.spec.supports(OscillatorFeature.PITCH_ENV):
+            plan.append(OscillatorComponent.PITCH_ENV)
+
+        if self.spec.supports(OscillatorFeature.PCM):
+            plan.append(OscillatorComponent.PCM)
+
+        if self.spec.supports(OscillatorFeature.SUB_OSC):
+            plan.append(OscillatorComponent.SUB_OSC)
+
+        if self.spec.supports(OscillatorFeature.ADSR):
+            plan.append(OscillatorComponent.ADSR)
+
+        return plan
+
+    def _get_param_specs(self) -> list:
+        """Return param specs for section_base._build_widgets. Oscillator layout specs (Analog) use .env/.tuning, not .controls."""
+        if not hasattr(self.spec, "controls"):
+            return []
+        return getattr(self.spec, "controls", [])
+
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
         self.waveform_buttons = self._create_waveform_buttons()
@@ -142,6 +225,9 @@ class BaseOscillatorSection(SectionBaseWidget):
         self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
 
         layout.addStretch()
+
+    def _has(self, feature: OscillatorFeature) -> bool:
+        return self.spec.supports(feature)
 
     def _create_tab_widget(self):
         """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
@@ -488,3 +574,12 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _build_additional_analog_widgets(self):
         raise NotImplementedError("Should be implemented in an Analog subclass")
+
+    def _add_pwm_tab(self):
+        raise NotImplementedError("Should be implemented in a subclass")
+
+    def _add_pitch_env_tab(self):
+        raise NotImplementedError("Should be implemented in a subclass")
+
+    def _add_pcm_wave_gain_tab(self):
+        raise NotImplementedError("Should be implemented in a subclass")

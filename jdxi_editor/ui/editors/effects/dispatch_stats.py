@@ -9,6 +9,7 @@ class DispatchStats:
     applied: List[str]
     skipped: List[str]
     failed: List[str]
+    successes: List[str]
 
     def record_applied(self, name: str):
         self.applied.append(name)

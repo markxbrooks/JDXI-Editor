@@ -148,7 +148,7 @@ class DigitalFilterSection(BaseFilterSection):
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: LayoutSpec = self._build_layout_spec()
         self.DEFINITION = FilterDefinition(
             modes=DigitalFilterTypeEnum,
             param_mode=Digital.Param.FILTER_MODE_SWITCH,
@@ -162,7 +162,7 @@ class DigitalFilterSection(BaseFilterSection):
             },
             specs=self.FILTER_SPECS,
             widget_spec=self.FILTER_WIDGET_SPEC,
-            sliders=self.SLIDER_GROUPS,
+            sliders=self.spec,
             adsr=self.ADSR_SPEC,
             bypass_mode=DigitalFilterTypeEnum.BYPASS,
         )

@@ -87,12 +87,10 @@ class SectionBaseWidget(SynthBase):
     appropriate icon rows based on section type, reducing boilerplate
     and ensuring consistency.
     """
-
+    from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
     ADSR_SPEC: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
-    SLIDER_GROUPS: dict[str, list] = (
-        {}
-    )  # e.g. {"controls": [SliderSpec, ...], "pan": [...]}
+    spec: LayoutSpec | None = None
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
     BUTTON_SPECS: list = []  # optional waveform/mode/shape buttons
     SYNTH_SPEC = JDXiMidiDigital
@@ -107,6 +105,7 @@ class SectionBaseWidget(SynthBase):
             IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
         ] = "adsr",
         analog: bool = False,
+        controls=None,
     ):
         """
         Initialize the SectionBaseWidget.
@@ -115,8 +114,11 @@ class SectionBaseWidget(SynthBase):
         :param icons_row_type: Type of icon row to add ("adsr", "oscillator", "generic", or "none")
         :param analog: Whether to apply analog-specific styling
         :param midi_helper: Optional MIDI helper for communication
+        :param controls: Optional dict-like for parameter widgets; passed to SynthBase when provided.
         """
-        super().__init__(midi_helper=midi_helper, parent=parent)
+        super().__init__(
+            midi_helper=midi_helper, parent=parent, controls=controls
+        )
         self.wave_shape_param: list | None = None
         self.wave_shape_buttons = None
         # Only set default if subclass (e.g. oscillator/filter) did not set wave_shapes before super().__init__()
@@ -218,7 +220,7 @@ class SectionBaseWidget(SynthBase):
         # --- ADSR tab if any
         if self.adsr_widget:
             adsr_group = create_envelope_group(
-                "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
+                adsr_widget=self.adsr_widget, analog=self.analog
             )
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
@@ -231,8 +233,13 @@ class SectionBaseWidget(SynthBase):
         return create_widget_with_layout(controls_layout)
 
     def _get_param_specs(self) -> list:
-        """Return the main list of specs for widget creation: SLIDER_GROUPS['controls'] when present."""
-        return self.SLIDER_GROUPS.get("controls", [])
+        """Return the main list of specs for widget creation. Supports SLIDER_GROUPS as dict or object with .controls."""
+        groups = self.spec
+        if hasattr(groups, "get"):
+            return groups.get("controls", [])
+        if hasattr(groups, "controls"):
+            return groups.controls
+        return []
 
     def _build_widgets(self):
         """Create widgets from SLIDER_GROUPS['controls'] (sliders, switches, combos)."""

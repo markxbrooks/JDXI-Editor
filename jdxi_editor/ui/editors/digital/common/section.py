@@ -32,10 +32,10 @@ class DigitalCommonSection(BaseCommonSection):
         :param send_midi_parameter: Optional[Callable] Function to send MIDI parameters
         :param midi_helper: Optional[MidiIOHelper] MIDI helper instance
         """
-        self.SLIDER_GROUPS: CommonWidgetSpec = self._build_layout_spec()
-        self.OTHER_SWITCHES = self.SLIDER_GROUPS.other_switches
-        self.PORTAMENTO_SWITCHES = self.SLIDER_GROUPS.portamento_switches
-        self.COMBO_BOXES = self.SLIDER_GROUPS.octave_shift
+        self.spec: CommonWidgetSpec = self._build_layout_spec()
+        self.OTHER_SWITCHES = self.spec.other_switches
+        self.PORTAMENTO_SWITCHES = self.spec.portamento_switches
+        self.COMBO_BOXES = self.spec.octave_shift
 
         super().__init__(
             controls=controls,
@@ -55,23 +55,23 @@ class DigitalCommonSection(BaseCommonSection):
 
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
-        self.widgets = CommonEditorWidgets(pitch=self._build_sliders(self.SLIDER_GROUPS.pitch),
-                                           portamento=self._build_switches(self.SLIDER_GROUPS.portamento_switches),
-                                           octave_shift=self._build_combo_boxes(self.SLIDER_GROUPS.octave_shift),
-                                           other_switches=self._build_switches(self.SLIDER_GROUPS.other_switches),
+        self.widgets = CommonEditorWidgets(pitch=self._build_sliders(self.spec.pitch),
+                                           portamento=self._build_switches(self.spec.portamento_switches),
+                                           octave_shift=self._build_combo_boxes(self.spec.octave_shift),
+                                           other_switches=self._build_switches(self.spec.other_switches),
                                            )
         # Register widgets in the shared controls dict so the editor's
         # _update_common_controls can find them when COMMON SysEx arrives.
         if self.controls is not None:
-            for spec, w in zip(self.SLIDER_GROUPS.pitch, self.widgets.pitch):
+            for spec, w in zip(self.spec.pitch, self.widgets.pitch):
                 self.controls[spec.param] = w
             for spec, w in zip(
-                    self.SLIDER_GROUPS.portamento_switches, self.widgets.portamento
+                    self.spec.portamento_switches, self.widgets.portamento
             ):
                 self.controls[spec.param] = w
-            for spec, w in zip(self.SLIDER_GROUPS.octave_shift, self.widgets.octave_shift):
+            for spec, w in zip(self.spec.octave_shift, self.widgets.octave_shift):
                 self.controls[spec.param] = w
-            for spec, w in zip(self.SLIDER_GROUPS.other_switches, self.widgets.other_switches):
+            for spec, w in zip(self.spec.other_switches, self.widgets.other_switches):
                 self.controls[spec.param] = w
 
     # ------------------------------------------------------------

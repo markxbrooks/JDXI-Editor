@@ -863,7 +863,7 @@ class EffectsCommonEditor(BasicEditor):
                     message=f"ℹ️✅  Successes ({len(stats.successes)}): {stats.successes[:10]}",
                 )
 
-            if stats.failures:
+            if stats.failed:
                 log.warning(
                     scope=self.__class__.__name__,
                     message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}",

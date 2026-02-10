@@ -68,8 +68,8 @@ class BasePartialPanel(PartialPanel):
     }
 
     BIPOLAR_PARAMETERS = {
-        Digital.Param.OSC_DETUNE,
-        Digital.Param.OSC_PITCH,
+        Digital.Param.OSC_PITCH_FINE,
+        Digital.Param.OSC_PITCH_COARSE,
         Digital.Param.OSC_PITCH_ENV_DEPTH,
         Digital.Param.AMP_PAN,
     }

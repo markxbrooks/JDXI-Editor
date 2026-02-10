@@ -86,7 +86,7 @@ class BaseLFOSection(SectionBaseWidget):
             self.wave_shape_buttons = {}
 
         # 1) build widgets
-        self.lfo: LFOWidgets = self._build_widgets()
+        self.widgets: LFOWidgets = self._build_widgets()
 
         # 2) root layout
         layout = self.create_layout()
@@ -110,19 +110,19 @@ class BaseLFOSection(SectionBaseWidget):
 
     def _build_analog_layout(self, layout):
         layout.addLayout(self._create_shape_row())
-        rows = [self.lfo.switches, self.lfo.depth, self.lfo.rate]
+        rows = [self.widgets.switches, self.widgets.depth, self.widgets.rate]
         self._add_group_with_widget_rows(LFOGroup.label, rows)
 
     def _build_digital_layout(self, layout):
         layout.addLayout(self._create_shape_row())
 
         # switch row
-        layout.addWidget(self._wrap_row(self.lfo.switches))
+        layout.addWidget(self._wrap_row(self.widgets.switches))
 
         # tabs
         tabs = QTabWidget()
-        tabs.addTab(self._wrap_row(self.lfo.rate), self.rate_tab_label)
-        tabs.addTab(self._wrap_row(self.lfo.depth), self.depths_tab_label)
+        tabs.addTab(self._wrap_row(self.widgets.rate), self.rate_tab_label)
+        tabs.addTab(self._wrap_row(self.widgets.depth), self.depths_tab_label)
 
         JDXi.UI.Theme.apply_tabs_style(tabs, analog=False)
 

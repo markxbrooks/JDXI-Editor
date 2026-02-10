@@ -915,18 +915,18 @@ class DigitalSynthEditor(BaseSynthEditor):
         param_name = getattr(param, "name", None) or str(param)
         log.message(
             f"_update_partial_slider_digital entry: partial_no={partial_no} param={param_name} value={value}",
-            scope=scope,
+            scope=scope, silent=True
         )
         if value is None:
             log.message(
-                "_update_partial_slider_digital value is None, skipping", scope=scope
+                "_update_partial_slider_digital value is None, skipping", scope=scope, silent=True
             )
             return
         pe = self.partial_editors.get(partial_no)
         if not pe:
             log.message(
                 f"_update_partial_slider_digital no partial_editor for partial_no={partial_no}",
-                scope=scope,
+                scope=scope, silent=True
             )
             if failures is not None:
                 failures.append(param_name)
@@ -949,7 +949,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         if not controls_dict:
             log.message(
                 f"_update_partial_slider_digital no controls dict for partial_no={partial_no}",
-                scope=scope,
+                scope=scope, silent=True
             )
             if failures is not None:
                 failures.append(param_name)
@@ -983,7 +983,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                 f"_update_partial_slider_digital param {param_name!r} not in controls "
                 f"(param id={id(param)}). controls: count={len(controls_dict)} "
                 f"keys={control_key_names}",
-                scope=scope,
+                scope=scope, silent=True
             )
             if failures is not None:
                 failures.append(param_name)
@@ -994,7 +994,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         log.message(
             f"_update_partial_slider_digital updating: param={param_name} value={value} -> "
             f"control_value={control_value} control type={type(control).__name__}",
-            scope=scope,
+            scope=scope, silent=True
         )
         log_slider_parameters(self.address, param, value, control_value)
         if hasattr(control, "blockSignals"):
@@ -1006,7 +1006,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         log.message(
             f"_update_partial_slider_digital success: param={param_name} "
             f"(controls count={len(controls_dict)})",
-            scope=scope,
+            scope=scope, silent=True
         )
         if successes is not None:
             successes.append(param_name)

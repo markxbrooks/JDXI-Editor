@@ -89,7 +89,7 @@ class AnalogFilterSection(BaseFilterSection):
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
         self.wave_shapes = self.generate_wave_shapes()
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: LayoutSpec = self._build_layout_spec()
         self.DEFINITION = FilterDefinition(
             modes=AnalogFilterType,
             param_mode=Analog.Param.FILTER_MODE_SWITCH,
@@ -97,7 +97,7 @@ class AnalogFilterSection(BaseFilterSection):
             mode_to_midi={AnalogFilterType.BYPASS: 0, AnalogFilterType.LPF: 1},
             specs=self.FILTER_SPECS,
             widget_spec=self.FILTER_WIDGET_SPEC,
-            sliders=self.SLIDER_GROUPS,
+            sliders=self.spec,
             adsr=self.ADSR_SPEC,
             bypass_mode=AnalogFilterType.BYPASS,
         )

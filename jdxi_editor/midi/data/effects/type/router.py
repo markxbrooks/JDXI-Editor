@@ -23,10 +23,10 @@ class EffectTypeRouter:
 
     def _handle_type(self, kind: str, value: int):
         if kind == "efx1":
-            ctrl = self.editor.controls.get(self.editor.Effect1Param.EFX1_TYPE)
+            ctrl = self.editor.tuning.get(self.editor.Effect1Param.EFX1_TYPE)
             values = self.editor.EffectsData.efx1_type_values
         else:
-            ctrl = self.editor.controls.get(self.editor.Effect2Param.EFX2_TYPE)
+            ctrl = self.editor.tuning.get(self.editor.Effect2Param.EFX2_TYPE)
             values = self.editor.EffectsData.efx2_type_values
 
         if not ctrl:

@@ -14,8 +14,8 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 class BaseCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
-
-    SLIDER_GROUPS = {}
+    from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+    SLIDER_GROUPS: LayoutSpec = None
     SWITCH_SPECS = []
     COMBO_BOXES = []
 
@@ -74,11 +74,11 @@ class BaseCommonSection(SectionBaseWidget):
             self.SWITCH_SPECS
         )
 
-        if hasattr(self.SLIDER_GROUPS, "controls"):
+        if hasattr(self.spec, "controls"):
             (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
-                self._build_sliders(self.SLIDER_GROUPS.controls)
+                self._build_sliders(self.spec.controls)
             )
         else:
             (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
-                self._build_sliders(self.SLIDER_GROUPS["controls"])
+                self._build_sliders(self.spec["controls"])
             )

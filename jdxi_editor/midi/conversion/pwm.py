@@ -16,8 +16,8 @@ PWM_BINDINGS = {
 
 def resolve_pwm(s, p, param):
     osc = s.partial_editors[p].oscillator_tab
-    if hasattr(osc, "controls") and param in osc.controls:
-        return osc.controls[param]
+    if hasattr(osc, "controls") and param in osc.tuning:
+        return osc.tuning[param]
     if hasattr(osc, "pwm_widget"):
         if param == Digital.Param.OSC_PULSE_WIDTH:
             return osc.pwm_widget.pulse_width_control

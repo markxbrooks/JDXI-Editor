@@ -82,7 +82,7 @@ class DrumTVFSection(DrumBaseSection):
         :param controls: dict
         :param midi_helper: MidiIOHelper
         """
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: LayoutSpec = self._build_layout_spec()
         self.envelope = {
             "depth": 64,
             "v_sens": 64,

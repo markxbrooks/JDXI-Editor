@@ -10,17 +10,19 @@ Example Usage:
 ... )
 """
 
+import dataclasses
 from typing import Dict
 
-from PySide6.QtWidgets import QVBoxLayout, QWidget
+from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.amp import BaseAmpSection
+from jdxi_editor.ui.editors.base.amp import AmpWidgets, BaseAmpSection
 from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpWidgetSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
+    create_envelope_group,
 )
 from jdxi_editor.ui.widgets.spec import SliderSpec
 
@@ -43,8 +45,8 @@ class DigitalAmpSection(BaseAmpSection):
     }
 
     def __init__(self, **kwargs):
-        self.SLIDER_GROUPS: AmpWidgetSpec = self._build_layout_spec()
-        self.widgets: AmpWidgetSpec | None = None
+        self.spec: AmpWidgetSpec = self._build_layout_spec()
+        self.widgets: AmpWidgets | None = None
         self.AMP_PARAMETERS = self._build_amp_parameters()
         super().__init__(**kwargs)
 
@@ -57,25 +59,28 @@ class DigitalAmpSection(BaseAmpSection):
         """Override to build from SLIDER_GROUPS; Pan in its own group (horizontal).
         Pop any existing control/pan widgets before adding to avoid duplication."""
         # --- Pop existing control sliders so we don't duplicate
-        control_params = [s.param for s in self.SLIDER_GROUPS.controls]
+        control_params = [s.param for s in self.spec.controls]
         for param in control_params:
             if param in self.controls:
                 w = self.controls.pop(param)
                 if w in self.amp_control_widgets:
                     self.amp_control_widgets.remove(w)
         # --- Remove Pan from controls and amp_control_widgets if it was previously added
-        pan_specs = self.SLIDER_GROUPS.pan
+        pan_specs = self.spec.pan
         if pan_specs and pan_specs[0].param in self.controls:
             pan_widget = self.controls.pop(pan_specs[0].param, None)
             if pan_widget and pan_widget in self.amp_control_widgets:
                 self.amp_control_widgets.remove(pan_widget)
 
         # --- Vertical control sliders
-        self.widgets = AmpWidgetSpec(controls=self._build_sliders(self.SLIDER_GROUPS.controls),
-                                     pan=self._build_sliders(self.SLIDER_GROUPS.pan))
+        self.widgets = AmpWidgets(
+            controls=self._build_sliders(self.spec.controls),
+            pan=self._build_sliders(self.spec.pan),
+        )
 
         for spec, widget in zip(
-            self.SLIDER_GROUPS.controls, self.widgets.controls
+            self.spec.controls,
+            self.widgets.controls or [],
         ):
             self.controls[spec.param] = widget
             self.amp_control_widgets.append(widget)
@@ -83,10 +88,32 @@ class DigitalAmpSection(BaseAmpSection):
         # Register Pan in controls but don't add to amp_control_widgets
         # (it will be added separately below the sliders)
         for spec, widget in zip(
-            self.SLIDER_GROUPS.pan, self.widgets.pan
+            self.spec.pan,
+            self.widgets.pan or [],
         ):
             self.controls[spec.param] = widget
             # Don't add to amp_control_widgets - it's added separately below
+
+    def _create_tab_widget(self):
+        """Build tabs and update self.widgets with tab_widget, level_controls_widget, adsr_widget."""
+        from jdxi_editor.core.jdxi import JDXi
+
+        self.tab_widget = QTabWidget()
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
+        controls_widget = self._create_controls_widget()
+        self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.CONTROLS, widget=controls_widget)
+        if self.adsr_widget:
+            adsr_group = create_envelope_group(
+                adsr_widget=self.adsr_widget, analog=self.analog
+            )
+            self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
+        if self.widgets is not None:
+            self.widgets = dataclasses.replace(
+                self.widgets,
+                tab_widget=self.tab_widget,
+                level_controls_widget=controls_widget,
+                adsr_widget=self.adsr_widget,
+            )
 
     def _create_controls_widget(self) -> QWidget:
         """Override to add Pan slider in its own horizontal layout"""
@@ -98,7 +125,7 @@ class DigitalAmpSection(BaseAmpSection):
         controls_layout.addLayout(regular_layout)
 
         # --- Add Pan slider in its own horizontal layout
-        pan_layout = create_layout_with_widgets(self.widgets.pan)
+        pan_layout = create_layout_with_widgets(self.widgets.pan or [])
         controls_layout.addLayout(pan_layout)
 
         controls_widget.setLayout(controls_layout)

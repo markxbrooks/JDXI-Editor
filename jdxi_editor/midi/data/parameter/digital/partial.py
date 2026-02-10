@@ -137,10 +137,10 @@ class DigitalPartialParam(AddressParameter):
         "You can select variations of the currently selected WAVE",
         "Wave Variation",
     )  # Wave variation
-    OSC_PITCH = ParameterSpec(
+    OSC_PITCH_COARSE = ParameterSpec(
         0x03, -24, 24, -24, 24, "Adjusts the pitch in semitone steps", "Coarse Tune"
     )  # Coarse tune
-    OSC_DETUNE = ParameterSpec(
+    OSC_PITCH_FINE = ParameterSpec(
         0x04, -50, 50, -50, 50, "Adjusts the pitch in steps of one cent", "Fine tune"
     )  # Fine tune (-50 to +50)
     OSC_PULSE_WIDTH_MOD_DEPTH = ParameterSpec(

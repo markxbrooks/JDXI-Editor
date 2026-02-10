@@ -68,7 +68,7 @@ class DrumOutputSection(DrumBaseSection):
         controls: dict[DrumPartialParam, QWidget],
         midi_helper: MidiIOHelper,
     ):
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: LayoutSpec = self._build_layout_spec()
         super().__init__(controls=controls or {}, midi_helper=midi_helper)
         self.setup_ui()
 

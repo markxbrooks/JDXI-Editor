@@ -31,7 +31,7 @@ class DigitalToneModifySection(SectionBaseWidget):
 
         :param controls: dict
         """
-        self.SLIDER_GROUPS: DigitalToneModifySpecs = self._build_layout_spec()
+        self.spec: DigitalToneModifySpecs = self._build_layout_spec()
         super().__init__(
             icons_row_type=IconType.ADSR,
             analog=False,
@@ -53,15 +53,15 @@ class DigitalToneModifySection(SectionBaseWidget):
     def build_widgets(self) -> None:
         """Build all the necessary widgets for the digital common section."""
         self.widgets = DigitalToneModifyWidgets(
-            interval_sens=self._build_sliders(self.SLIDER_GROUPS.interval_sens),
+            interval_sens=self._build_sliders(self.spec.interval_sens),
             envelope_loop_mode=self._build_combo_boxes(
-                self.SLIDER_GROUPS.envelope_loop_mode
+                self.spec.envelope_loop_mode
             ),
             envelope_loop_sync_note=self._build_combo_boxes(
-                self.SLIDER_GROUPS.envelope_loop_sync_note
+                self.spec.envelope_loop_sync_note
             ),
             chromatic_portamento=self._build_switches(
-                self.SLIDER_GROUPS.chromatic_portamento
+                self.spec.chromatic_portamento
             ),
         )
 

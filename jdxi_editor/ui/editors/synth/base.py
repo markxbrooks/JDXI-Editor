@@ -52,6 +52,7 @@ class SynthBase(QWidget):
         midi_helper: Optional[MidiIOHelper] = None,
         parent: QWidget = None,
         address: Optional[JDXiSysExAddress] = None,
+        controls=None,
     ):
         """
         Initialize the SynthBase editor with MIDI helper and parent widget.
@@ -59,6 +60,7 @@ class SynthBase(QWidget):
         :param midi_helper: Optional[MidiIOHelper] instance for MIDI communication
         :param parent: QWidget Parent widget for this editor
         :param address: Optional[RolandSysExAddress] Address for MIDI communication (can be set later)
+        :param controls: Optional dict-like to use for parameter widgets; if None, a new ControlRegistry is created.
         """
         super().__init__(parent)
         self.midi_channel: int | None = None  # Default to Digital
@@ -72,7 +74,7 @@ class SynthBase(QWidget):
             JDXiSynth.ANALOG_SYNTH: "",
             JDXiSynth.DRUM_KIT: "",
         }
-        self.controls = ControlRegistry()
+        self.controls = controls if controls is not None else ControlRegistry()
         self._control_registries: Dict[tuple, ControlRegistry] = {}
         self.partial_editors = {}
         self.sysex_data = None

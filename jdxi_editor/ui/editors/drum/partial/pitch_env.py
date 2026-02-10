@@ -70,7 +70,7 @@ class DrumPitchEnvSection(DrumBaseSection):
         :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
         """
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: LayoutSpec = self._build_layout_spec()
         self.envelope = {
             EnvelopeParameter.DEPTH: 64,
             EnvelopeParameter.V_SENS: 64,

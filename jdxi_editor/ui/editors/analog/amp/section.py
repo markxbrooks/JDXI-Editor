@@ -36,7 +36,7 @@ class AnalogAmpSection(BaseAmpSection):
         send_midi_parameter=None,
         midi_helper: MidiIOHelper = None,
     ):
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec = self._build_layout_spec()
         super().__init__(
             analog=True,
             address=address,

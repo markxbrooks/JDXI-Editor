@@ -27,9 +27,9 @@ class AnalogCommonSection(BaseCommonSection):
         :param midi_helper: MidiIOHelper
         :param send_midi_parameter: Callable
         """
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
-        self.SWITCH_SPECS = self.SLIDER_GROUPS.switches
-        self.COMBO_BOXES = self.SLIDER_GROUPS.combos
+        self.spec: LayoutSpec = self._build_layout_spec()
+        self.SWITCH_SPECS = self.spec.switches
+        self.COMBO_BOXES = self.spec.combos
         super().__init__(
             icons_row_type=IconType.GENERIC,
             analog=True,

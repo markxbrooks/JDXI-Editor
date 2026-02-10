@@ -5,8 +5,7 @@ Analog Oscillator Section
 from typing import Callable
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtWidgets import QWidget
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
@@ -17,7 +16,6 @@ from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
 )
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import (
@@ -61,14 +59,14 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         :param address: RolandSysExAddress
         :param send_midi_parameter: Callable to send MIDI parameter updates
         """
-        self.osc: OscillatorWidgets | None = None
-        self.pitch_env_widget: PitchEnvelopeWidget | None = None
-        self.pwm_widget: PWMWidget | None = None
+        self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
         self.waveform_buttons: dict = wave_buttons or {}
         self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
+        # Set SLIDER_GROUPS before super().__init__() so build_widgets() (called during init) can use .env, .tuning, etc.
+        self._define_spec()
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
             analog=True,
@@ -81,30 +79,32 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             message=f"after super init self.controls: {self.controls}",
         )
         self.address = address
-        self._build_widgets()
-        self.build_widgets()
-        log.info(
-            scope=self.__class__.__name__,
-            message=f"after build_widgets self.controls: {self.controls}",
-        )
-        self.setup_ui()
+        self.finalize()
 
-    def _build_widgets(self) -> OscillatorWidgets:
-        """Build Widgets"""
-        self.SLIDER_GROUPS: AnalogOscillatorLayoutSpec = self._build_layout_spec()
-        self.SWITCH_SPECS = self.SLIDER_GROUPS.switches
+    def _define_spec(self):
+        self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        self.SWITCH_SPECS = self.spec.switches
 
-        return OscillatorWidgets(
-            switches=self._build_switches(self.SLIDER_GROUPS.switches),
-            tuning=self._build_sliders(self.SLIDER_GROUPS.tuning),
-            env=self._build_sliders(self.SLIDER_GROUPS.env),
-        )
+    def _create_feature_widgets(self):
+        env_sliders = self._build_sliders(self.spec.env)
+        self.osc_pitch_env_velocity_sensitivity_slider = env_sliders[0] if env_sliders else None
+
+        switches = self._build_switches(self.SWITCH_SPECS)
+        self.sub_oscillator_type_switch = switches[0] if switches else None
+
+        tuning = self._build_sliders(self.spec.tuning)
+        self.tuning_sliders = tuning
 
     def build_widgets(self):
         """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
         super().build_widgets()
-        # Keep self.osc for any code that expects OscillatorWidgets (switches/tuning/env)
-        self.osc = OscillatorWidgets(
+        # Base does not call _build_additional_analog_widgets; we must call it so env/tuning/switch sliders exist
+        self._build_additional_analog_widgets()
+        # All oscillator widgets in one container
+        self.widgets = OscillatorWidgets(
+            waveform_buttons=getattr(self, "waveform_buttons", None),
+            pitch_env_widget=self.pitch_env_widget,
+            pwm_widget=self.pwm_widget,
             switches=(
                 [self.sub_oscillator_type_switch]
                 if self.sub_oscillator_type_switch
@@ -116,6 +116,11 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 if self.osc_pitch_env_velocity_sensitivity_slider
                 else []
             ),
+            sub_oscillator_type_switch=self.sub_oscillator_type_switch,
+            osc_pitch_env_velocity_sensitivity_slider=self.osc_pitch_env_velocity_sensitivity_slider,
+            osc_pitch_coarse_slider=getattr(self, "osc_pitch_coarse_slider", None),
+            osc_pitch_fine_slider=getattr(self, "osc_pitch_fine_slider", None),
+            pitch_env_widgets=getattr(self, "pitch_env_widgets", []),
         )
 
     def generate_wave_shapes(self) -> list:
@@ -141,7 +146,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def _build_additional_analog_widgets(self):
         # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
-        env_sliders = self._build_sliders(self.SLIDER_GROUPS.get("env", []))
+        env_sliders = self._build_sliders(self.spec.env)
         self.osc_pitch_env_velocity_sensitivity_slider = (
             env_sliders[0] if len(env_sliders) == 1 else None
         )
@@ -149,7 +154,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         switches = self._build_switches(self.SWITCH_SPECS)
         self.sub_oscillator_type_switch = switches[0] if len(switches) == 1 else None
         # --- Tuning Group sliders; optional for Digital
-        tuning_slider_list = self._build_sliders(self.SLIDER_GROUPS.get("tuning", []))
+        tuning_slider_list = self._build_sliders(self.spec.tuning)
         if len(tuning_slider_list) == 2:
             self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider = (
                 tuning_slider_list
@@ -203,4 +208,13 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             )
         ]
 
-        return AnalogOscillatorLayoutSpec(switches=switches, tuning=tuning, env=env)
+        return AnalogOscillatorLayoutSpec(
+            switches=switches,
+            tuning=tuning,
+            env=env,
+            features={
+                OscillatorFeature.PWM,
+                OscillatorFeature.PITCH_ENV,
+                OscillatorFeature.SUB_OSC,
+            }
+        )

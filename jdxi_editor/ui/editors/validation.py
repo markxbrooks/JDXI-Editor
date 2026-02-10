@@ -199,7 +199,7 @@ def validate_digital_sections() -> Dict[str, List[str]]:
         amp_errors.extend(amp_adsr_errors)
 
     if hasattr(DigitalAmpSection, "SLIDER_GROUPS"):
-        amp_specs = DigitalAmpSection.SLIDER_GROUPS.get("controls", [])
+        amp_specs = DigitalAmpSection.spec.get("controls", [])
         amp_param_errors = validate_section_parameters(
             "DigitalAmpSection",
             amp_specs,
@@ -221,7 +221,7 @@ def validate_digital_sections() -> Dict[str, List[str]]:
         filter_errors.extend(filter_adsr_errors)
 
     if hasattr(DigitalFilterSection, "SLIDER_GROUPS"):
-        filter_specs = DigitalFilterSection.SLIDER_GROUPS.get("filter", [])
+        filter_specs = DigitalFilterSection.spec.get("filter", [])
         filter_param_errors = validate_section_parameters(
             "DigitalFilterSection",
             filter_specs,

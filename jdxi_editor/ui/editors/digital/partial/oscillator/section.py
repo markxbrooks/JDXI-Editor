@@ -17,11 +17,10 @@ from jdxi_editor.midi.data.parameter.digital.spec import DigitalOscillatorTab, D
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.base.oscillator import BaseOscillatorSection
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec, OscillatorFeature
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_envelope_group,
     create_group_from_definition,
     create_layout_with_widgets,
 )
@@ -56,10 +55,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     TAB_BUILDERS = (
         "_add_tuning_tab",
-        ("_has_pwm", "_add_pwm_tab"),
-        ("_has_pitch_env", "_add_pitch_env_tab"),
-        ("_has_pcm", "_add_pcm_wave_gain_tab"),
-        ("_has_adsr", "_add_adsr_tab"),
+        (OscillatorFeature.PWM, "_add_pwm_tab"),
+        (OscillatorFeature.PITCH_ENV, "_add_pitch_env_tab"),
+        (OscillatorFeature.PCM, "_add_pcm_wave_gain_tab"),
+        (OscillatorFeature.ADSR, "_add_adsr_tab"),
     )
 
     def generate_wave_shapes(self):
@@ -116,8 +115,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         midi_helper: MidiIOHelper = None,
         address: JDXiSysExAddress = None,
     ):
+        self.widgets: OscillatorWidgets | None = None
         self.wave_shapes = self.generate_wave_shapes()
-        self.SLIDER_GROUPS: LayoutSpec = self._build_layout_spec()
+        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
         # Initialize controls before creating PCMWaveWidget so it can register controls
         # (ControlRegistry is a singleton, so this ensures self.controls exists)
         self.controls = ControlRegistry()
@@ -133,11 +133,24 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         )
         # With singleton, controls registered by PCMWaveWidget are already in the shared registry
         # Just ensure they're accessible via self.controls
-        self.controls[Digital.Param.PCM_WAVE_GAIN] = self.pcm_wave.pcm_wave_gain
-        self.controls[Digital.Param.PCM_WAVE_NUMBER] = self.pcm_wave.pcm_wave_number
+        self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_GAIN] = self.pcm_wave.pcm_wave_gain
+        self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_NUMBER] = self.pcm_wave.pcm_wave_number
         # Also set as direct attributes for _has_pcm() compatibility (though we check pcm_wave now)
         self.pcm_wave_gain = self.pcm_wave.pcm_wave_gain
         self.pcm_wave_number = self.pcm_wave.pcm_wave_number
+        self.finalize()
+
+    def _define_spec(self):
+        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
+
+    def _create_feature_widgets(self):
+        # pcm_wave is already created in __init__ before super().__init__()/finalize()
+        self._build_additional_digital_widgets()
+
+        self.tuning_sliders = [
+            self.osc_pitch_coarse_slider,
+            self.osc_pitch_fine_slider,
+        ]
 
     def _get_param_specs(self):
         """Return [] so section_base does not build control sliders; we build them in _build_additional_digital_widgets() to avoid duplicate tuning sliders."""
@@ -155,15 +168,23 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         if not self.analog:
             self._build_additional_digital_widgets()
 
-        """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
-        # Keep self.osc for any code that expects OscillatorWidgets (switches/tuning/env)
+        self.tuning_sliders = [
+            self.osc_pitch_coarse_slider,
+            self.osc_pitch_fine_slider,
+        ]
+
+        # All oscillator widgets in one container (same shape as Analog)
         self.widgets = OscillatorWidgets(
-            waveform_buttons=(
-                self.waveform_buttons),
-            pitch_env_widget=(
-                self.pitch_env_widget
-            ),
-            pwm_widget=self.pwm_widget
+            waveform_buttons=self.waveform_buttons,
+            pitch_env_widget=self.pitch_env_widget,
+            pwm_widget=self.pwm_widget,
+            tuning=self.tuning_sliders,
+            env=[],
+            pcm_wave=getattr(self, "pcm_wave", None),
+            pw_shift_slider=getattr(self, "pw_shift_slider", None),
+            osc_pitch_coarse_slider=getattr(self, "osc_pitch_coarse_slider", None),
+            osc_pitch_fine_slider=getattr(self, "osc_pitch_fine_slider", None),
+            super_saw_detune=getattr(self, "super_saw_detune", None),
         )
 
     def _build_additional_digital_widgets(self):
@@ -171,22 +192,22 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3.
         """
         for param in (
-            Digital.Param.OSC_PITCH,
-            Digital.Param.OSC_DETUNE,
-            Digital.Param.SUPER_SAW_DETUNE,
+            self.SYNTH_SPEC.Param.OSC_PITCH_COARSE,
+            self.SYNTH_SPEC.Param.OSC_PITCH_FINE,
+            self.SYNTH_SPEC.Param.SUPER_SAW_DETUNE,
         ):
             if param in self.controls:
                 w = self.controls.pop(param)
                 if w in self.amp_control_widgets:
                     self.amp_control_widgets.remove(w)
-        control_sliders = self._build_sliders(self.SLIDER_GROUPS.controls)
+        control_sliders = self._build_sliders(self.spec.tuning)
         if len(control_sliders) >= 3:
-            self.osc_pitch_slider, self.osc_detune_slider, self.super_saw_detune = (
+            self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider, self.super_saw_detune = (
                 control_sliders[0],
                 control_sliders[1],
                 control_sliders[2],
             )
-            for spec, widget in zip(self.SLIDER_GROUPS.controls, control_sliders):
+            for spec, widget in zip(self.spec.tuning, control_sliders):
                 self.controls[spec.param] = widget
                 self.amp_control_widgets.append(widget)
             # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
@@ -195,14 +216,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _create_pulse_width_shift_slider(self):
         """Create OSC_PULSE_WIDTH_SHIFT slider and register in controls (PWM tab)."""
-        if not hasattr(Digital.Param, "OSC_PULSE_WIDTH_SHIFT"):
-            return
-        self.pw_shift_slider = self._create_parameter_slider(
-            Digital.Param.OSC_PULSE_WIDTH_SHIFT,
-            Digital.Display.Name.OSC_PULSE_WIDTH_SHIFT,
-        )
+        if not hasattr(self.SYNTH_SPEC.Param, "OSC_PULSE_WIDTH_SHIFT"):
+            return None
+        self.pw_shift_sliders = self._build_sliders(self.spec.pw_controls)
+        self.pw_shift_slider = self.pw_shift_sliders[0]
         self.controls[Digital.Param.OSC_PULSE_WIDTH_SHIFT] = self.pw_shift_slider
         self.pw_shift_slider.setEnabled(False)
+        return self.pw_shift_slider
 
     def _has_pwm(self) -> bool:
         return getattr(self, "pwm_widget", None) is not None
@@ -233,15 +253,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             if isinstance(entry, str):
                 getattr(self, entry)()
             else:
-                predicate, builder = entry
-                if getattr(self, predicate)():
+                feature, builder = entry
+                if self._has(feature):
                     getattr(self, builder)()
-
-    def _add_adsr_tab(self):
-        adsr_group = create_envelope_group(
-            "Envelope", adsr_widget=self.adsr_widget, analog=self.analog
-        )
-        self._add_tab(key=DigitalOscillatorTab.ADSR, widget=adsr_group)
 
     def _add_pcm_wave_gain_tab(self):
         """Add PCM Wave gain tab"""
@@ -267,11 +281,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _add_pwm_tab(self):
         """Add PWM tab with optional pulse width shift slider and PWM widget."""
         pw_layout = QVBoxLayout()
-        pw_layout.addStretch()
-        if getattr(self, "pw_shift_slider", None) is not None:
-            pw_layout.addWidget(self.pw_shift_slider)
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
+        if getattr(self, "pw_shift_slider", None) is not None:
+            pw_layout.addWidget(self.pw_shift_slider)
         pw_layout.addStretch()
         pw_group = create_group_from_definition(
             key=Digital.GroupBox.PULSE_WIDTH,
@@ -325,21 +338,37 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         if self.wave_shapes:
             self._on_button_selected(self.wave_shapes[0])
 
-    def _build_layout_spec(self) -> LayoutSpec:
+    def _build_layout_spec(self) -> OscillatorLayoutSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
-        controls = [
+        tuning = [
             SliderSpec(
-                param=S.Param.OSC_PITCH,
-                label=S.Param.OSC_PITCH.display_name,
+                param=S.Param.OSC_PITCH_COARSE,
+                label=S.Param.OSC_PITCH_COARSE.display_name,
             ),
             SliderSpec(
-                param=S.Param.OSC_DETUNE,
-                label=S.Param.OSC_DETUNE.display_name,
+                param=S.Param.OSC_PITCH_FINE,
+                label=S.Param.OSC_PITCH_FINE.display_name,
             ),
             SliderSpec(
                 param=S.Param.SUPER_SAW_DETUNE,
                 label=S.Param.SUPER_SAW_DETUNE.display_name,
             ),
         ]
-        return LayoutSpec(controls=controls)
+        pw_controls = [
+            SliderSpec(
+                param=S.Param.OSC_PULSE_WIDTH_SHIFT,
+                label=S.Display.Name.OSC_PULSE_WIDTH_SHIFT,
+                vertical=False
+            ),
+        ]
+        return OscillatorLayoutSpec(
+            tuning=tuning,
+            pw_controls=pw_controls,
+            features={
+                OscillatorFeature.PWM,
+                OscillatorFeature.PITCH_ENV,
+                OscillatorFeature.PCM,
+                OscillatorFeature.SUPER_SAW,
+            }
+        )

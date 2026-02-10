@@ -24,7 +24,7 @@ class EffectsSysExDispatcher:
         self.type_handler = type_handler
 
     def dispatch(self, sysex_data: Dict[str, Any]) -> DispatchStats:
-        stats = DispatchStats([], [], [])
+        stats = DispatchStats(applied=[], skipped=[], failed=[], successes=[])
 
         for name, raw_value in sysex_data.items():
             if name in self.METADATA_KEYS:

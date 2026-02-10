@@ -1,4 +1,5 @@
-from typing import Callable, Optional
+from dataclasses import dataclass
+from typing import Callable, List, Optional
 
 from PySide6.QtWidgets import QTabWidget, QWidget
 
@@ -9,6 +10,17 @@ from jdxi_editor.ui.adsr.parameters import ADSRParameters
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+
+
+@dataclass
+class AmpWidgets:
+    """Single container for all amp UI widgets (Analog and Digital)."""
+
+    tab_widget: Optional[QTabWidget] = None
+    level_controls_widget: Optional[QWidget] = None
+    controls: Optional[List[QWidget]] = None
+    adsr_widget: Optional[QWidget] = None
+    pan: Optional[List[QWidget]] = None
 
 
 class BaseAmpSection(SectionBaseWidget):
@@ -25,6 +37,7 @@ class BaseAmpSection(SectionBaseWidget):
         # Dynamic widgets storage
         self.AMP_PARAMETERS = {}
         self.amp_sliders = {}
+        self.widgets: Optional[AmpWidgets] = None
         self.tab_widget = None
         self.layout = None
 
@@ -43,7 +56,7 @@ class BaseAmpSection(SectionBaseWidget):
         """Build all amp widgets from SLIDER_GROUPS['controls'] when present; Digital builds in _create_parameter_widgets override."""
         self.tab_widget = QTabWidget()
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
-        control_specs = self.SLIDER_GROUPS.get("controls", [])
+        control_specs = self.spec.get("controls", []) if self.spec else []
         if control_specs:
             sliders = self._build_sliders(control_specs)
             for entry, slider in zip(control_specs, sliders):
@@ -75,6 +88,14 @@ class BaseAmpSection(SectionBaseWidget):
         # --- Add tab widget to main layout
         self.layout.addWidget(self.tab_widget)
         self.layout.addStretch()
+
+        self.widgets = AmpWidgets(
+            tab_widget=self.tab_widget,
+            level_controls_widget=self.level_controls_widget,
+            controls=list(self.amp_sliders.values()),
+            adsr_widget=getattr(self, "adsr_widget", None),
+            pan=None,
+        )
 
     def set_level(self, value: int) -> None:
         self._set_param(self.SYNTH_SPEC.Param.AMP_LEVEL, value)

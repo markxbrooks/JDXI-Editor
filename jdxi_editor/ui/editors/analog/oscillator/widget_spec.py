@@ -1,18 +1,18 @@
-from dataclasses import dataclass
+"""
+Oscillator Spec
+"""
 
-from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
+from dataclasses import dataclass, field
+
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec
+from jdxi_editor.ui.widgets.spec import SwitchSpec
 
 
-@dataclass(frozen=True)
-class AnalogOscillatorLayoutSpec:
-    """Analog Oscillator Widgets"""
+@dataclass
+class AnalogOscillatorLayoutSpec(OscillatorLayoutSpec):
+    switches: list[SwitchSpec] = field(default_factory=list)
 
-    switches: list[SwitchSpec]
-    tuning: list[SliderSpec]
-    env: list[SliderSpec]
+    @property
+    def has_switches(self) -> bool:
+        return bool(self.switches)
 
-    def get(self, item, fallback=None):
-        """Dict-like access: return the attribute named `item`, else `fallback`."""
-        if hasattr(self, item):
-            return getattr(self, item)
-        return fallback
