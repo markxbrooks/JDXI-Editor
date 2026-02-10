@@ -398,4 +398,17 @@ class BaseFilterSection(SectionBaseWidget):
                 )
             ]
             controls = controls + filter_env_depth
-        return LayoutSpec(controls=controls)
+        adsr: Dict[ADSRStage, ADSRSpec] = {
+            ADSRStage.ATTACK: ADSRSpec(
+                ADSRStage.ATTACK, Digital.Param.FILTER_ENV_ATTACK_TIME
+            ),
+            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Digital.Param.FILTER_ENV_DECAY_TIME),
+            ADSRStage.SUSTAIN: ADSRSpec(
+                ADSRStage.SUSTAIN, Digital.Param.FILTER_ENV_SUSTAIN_LEVEL
+            ),
+            ADSRStage.RELEASE: ADSRSpec(
+                ADSRStage.RELEASE, Digital.Param.FILTER_ENV_RELEASE_TIME
+            ),
+            ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
+        }
+        return LayoutSpec(controls=controls, adsr=adsr)
