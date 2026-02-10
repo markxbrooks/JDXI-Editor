@@ -583,7 +583,7 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Program change {program} detected on channel {channel}, requesting data update",
         )
-        self.data_request()
+        # self.data_request() reducing midi flood
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
@@ -592,7 +592,7 @@ class SynthEditor(SynthBase):
             message=f"Control change {channel} {control} detected on channel {channel} with value {value}, ",
         )
         log.message(scope=self.__class__.__name__, message="requesting data update")
-        self.data_request()
+        # self.data_request() reducing midi flood
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""

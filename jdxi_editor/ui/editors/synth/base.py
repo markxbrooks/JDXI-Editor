@@ -312,7 +312,7 @@ class SynthBase(QWidget):
         if not message.type == "clock":
             log.message(f"MIDI message: {message}")
             self.blockSignals(True)
-            self.data_request()
+            # self.data_request() reducing midi flood
             self.blockSignals(False)
 
     def send_tone_name(

@@ -121,11 +121,10 @@ class NRPNSlider(Slider):
                     self.midi_helper.send_nrpn(
                         parameter=parameter, value=value, channel=channel
                     )
-                    self.data_request()
                 elif self.param_type == "rpn":
                     self.midi_helper.send_rpn(
                         parameter=parameter, value=value, channel=channel
                     )
-                    self.data_request()
                 else:
                     raise ValueError(f"Unsupported parameter type: {self.param_type}")
+            self.data_request()

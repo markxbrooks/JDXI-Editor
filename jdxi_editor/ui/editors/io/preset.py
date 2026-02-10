@@ -621,15 +621,6 @@ class PresetEditor(BasicEditor):
             self.drum_kit_current_label.setText("Unknown")
             self.analog_synth_current_label.setText("Unknown")
 
-    def load_preset_temp(self, preset_number: int) -> None:
-        """Load preset data and update UI.
-        :param preset_number: int
-        """
-        if not self.preset_helper:
-            return
-        self.preset_helper.load_preset(preset_number)
-        self.data_request()
-
     def _update_preset_list(self) -> None:
         """Update the preset list with available presets."""
         self._populate_presets()

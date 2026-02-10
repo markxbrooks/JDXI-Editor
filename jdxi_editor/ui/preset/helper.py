@@ -155,4 +155,4 @@ class JDXiPresetHelper(QObject):
 
         # Convert 1-based PC to 0-based
         self.midi_helper.send_bank_select_and_program_change(channel, msb, lsb, pc - 1)
-        self.data_request()
+        # self.data_request() reducing midi flood
