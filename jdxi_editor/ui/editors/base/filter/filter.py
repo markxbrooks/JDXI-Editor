@@ -23,7 +23,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
-from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
+from jdxi_editor.ui.editors.base.filter.spec import FilterSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -411,4 +411,4 @@ class BaseFilterSection(SectionBaseWidget):
             ),
             ADSRStage.PEAK: ADSRSpec(ADSRStage.PEAK, Digital.Param.FILTER_ENV_DEPTH),
         }
-        return LayoutSpec(controls=controls, adsr=adsr)
+        return FilterSpec(controls=controls, adsr=adsr)
