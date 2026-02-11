@@ -793,11 +793,11 @@ class ProgramEditor(BasicEditor):
             self.playlist_editor_widget.populate_playlist_combo()
             # Clear the programs table if the deleted playlist was selected
             if self.playlist_editor_widget.playlist_editor_combo:
-                current_playlist_id = (
-                    self.playlist_editor_widget.playlist_editor_combo.currentData()
-                )
+                # Use .value() for SearchableFilterableComboBox (0 means no playlist selected)
+                current_value = self.playlist_editor_widget.playlist_editor_combo.value()
+                playlist_id = self.playlist_editor_widget._playlist_value_to_id.get(current_value)
                 if (
-                    current_playlist_id is None
+                    playlist_id is None
                     and self.playlist_editor_widget.playlist_programs_table
                 ):
                     self.playlist_editor_widget.playlist_programs_table.setRowCount(0)

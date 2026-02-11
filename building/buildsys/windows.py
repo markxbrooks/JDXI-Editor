@@ -8,14 +8,6 @@ import shutil
 from pathlib import Path
 from decologr import Decologr as log, setup_logging
 
-# from jdxi_editor.project import __version__, __package_name__
-
-# Import project metadata
-# Navigate up from building/apple/ to project root
-SCRIPT_DIR = Path(__file__).parent.absolute()
-PROJECT_ROOT = SCRIPT_DIR.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
 try:
     from jdxi_editor.project import (
         __version__,
@@ -46,6 +38,18 @@ DIST_DIR = PROJECT_ROOT / "dist"
 VENV_PATH = PROJECT_ROOT / "venv"
 PYTHON_PATH = VENV_PATH / "bin" / "python"
 
+from pathlib import Path
+from decologr import Decologr as log, setup_logging
+import subprocess, shutil
+
+def build(ctx):
+    project_root = ctx.project_root
+    setup_logging(project_name="windows builder", use_rich=True)
+
+    clean_build_dirs(project_root)
+    build_with_pyinstaller(project_root)
+    copy_internal_dirs(project_root)
+    run_inno_setup(project_root)
 
 def clean_build_dirs():
     """Remove previous build artifacts."""
