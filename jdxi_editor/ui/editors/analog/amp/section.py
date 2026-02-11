@@ -33,8 +33,6 @@ class AnalogAmpSection(BaseAmpSection):
         # This ensures self.adsr_widget is created for the Analog amp section.
         from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
-        # Instance-level override; fall back to empty dict if adsr is missing.
-        self.spec_adsr = getattr(self.spec, "adsr", None) or {}
         super().__init__(
             analog=True,
             address=address,
