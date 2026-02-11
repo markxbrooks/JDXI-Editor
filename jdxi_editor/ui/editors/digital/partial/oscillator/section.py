@@ -107,7 +107,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         midi_helper: MidiIOHelper = None,
         address: JDXiSysExAddress = None,
     ):
-        self.widgets: OscillatorWidgets | None = None
+        self.widgets: DigitalOscillatorWidgets | None = None
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: OscillatorLayoutSpec = self._build_layout_spec()
         self.spec_pwm: PWMSpec = self.spec.pwm
@@ -172,7 +172,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ]
 
         # All oscillator widgets in one container (same shape as Analog)
-        self.widgets = OscillatorWidgets(
+        self.widgets = DigitalOscillatorWidgets(
             waveform_buttons=self.waveform_buttons,
             pitch_env_widget=self.pitch_env_widget,
             pwm_widget=self.pwm_widget,
@@ -365,13 +365,13 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             ),
         ]
         pwm = PWMSpec(
-            pulse_width_param=Digital.Param.OSC_PULSE_WIDTH,
-            mod_depth_param=Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+            pulse_width_param=S.Param.OSC_PULSE_WIDTH,
+            mod_depth_param=S.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
         )
         pitch_env = PitchEnvelopeSpec(
-            attack_param=Digital.Param.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=Digital.Param.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
+            attack_param=S.Param.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=S.Param.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=S.Param.OSC_PITCH_ENV_DEPTH,
         )
         return OscillatorLayoutSpec(
             tuning=tuning,
