@@ -212,8 +212,7 @@ class SectionBaseWidget(SynthBase):
         # Optional ADSR envelope:
         # - Most sections advertise ADSR via class-level spec_adsr
         # - Some newer specs may carry an `adsr` field on `self.spec`
-        adsr_spec = getattr(self, "spec_adsr", None)
-        if adsr_spec is None and getattr(self, "spec", None) is not None:
+        if getattr(self, "spec", None) is not None:
             adsr_spec = getattr(self.spec, "adsr", None)
         if adsr_spec:
             self._create_adsr()
