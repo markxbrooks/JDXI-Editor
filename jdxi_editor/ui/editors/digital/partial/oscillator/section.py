@@ -45,9 +45,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         Digital.Wave.Osc.SUPER_SAW: ["super_saw_detune"],
     }
 
-    # --- Optional ADSR can be added if Oscillator has one (Digital usually has pitch envelope)
-    spec_adsr = None
-
     TAB_BUILDERS = (
         "_add_tuning_tab",
         (OscillatorFeature.PWM, "_add_pwm_tab"),
