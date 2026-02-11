@@ -102,7 +102,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         # Base does not call _build_additional_analog_widgets; we must call it so env/tuning/switch sliders exist
         self._build_additional_analog_widgets()
         # All oscillator widgets in one container
-        self.widgets = OscillatorWidgets(
+        self.widgets = AnalogOscillatorWidgets(
             waveform_buttons=getattr(self, "waveform_buttons", None),
             pitch_env_widget=self.pitch_env_widget,
             pwm_widget=self.pwm_widget,
