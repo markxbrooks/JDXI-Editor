@@ -17,7 +17,8 @@ from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
-from jdxi_editor.ui.editors.base.amp.section import AmpWidgets, BaseAmpSection
+from jdxi_editor.ui.editors.base.amp.section import BaseAmpSection
+from jdxi_editor.ui.editors.base.amp.widget import DigitalAmpWidgets
 from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpLayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,
@@ -35,7 +36,7 @@ class DigitalAmpSection(BaseAmpSection):
         self.spec: AmpLayoutSpec = self._build_layout_spec()
         self.spec_adsr = self.spec.adsr
         # self.spec_adsr = self.spec.adsr
-        self.widgets: AmpWidgets | None = None
+        self.widgets: DigitalAmpWidgets | None = None
         self.AMP_PARAMETERS = self._build_amp_parameters()
         super().__init__(**kwargs)
 
@@ -62,7 +63,7 @@ class DigitalAmpSection(BaseAmpSection):
                 self.amp_control_widgets.remove(pan_widget)
 
         # --- Vertical control sliders
-        self.widgets = AmpWidgets(
+        self.widgets = DigitalAmpWidgets(
             controls=self._build_sliders(self.spec.controls),
             pan=self._build_sliders(self.spec.pan),
         )
