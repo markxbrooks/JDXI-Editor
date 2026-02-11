@@ -61,7 +61,6 @@ class AnalogFilterSection(BaseFilterSection):
         """
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: FilterLayoutSpec = self._build_layout_spec()
-        self.spec_adsr: Dict[ADSRStage, ADSRSpec] = self.spec.adsr
         self.spec_filter: Dict[AnalogFilterType, FilterSpec] = self._build_filter_spec()
         self.DEFINITION = FilterDefinition(
             modes=AnalogFilterType,
