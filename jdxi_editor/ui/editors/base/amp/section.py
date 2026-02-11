@@ -12,16 +12,6 @@ from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 
-@dataclass
-class AmpWidgets:
-    """Single container for all amp UI widgets (Analog and Digital)."""
-
-    tab_widget: Optional[QTabWidget] = None
-    level_controls_widget: Optional[QWidget] = None
-    controls: Optional[List[QWidget]] = None
-    adsr_widget: Optional[QWidget] = None
-    pan: Optional[List[QWidget]] = None
-
 
 class BaseAmpSection(SectionBaseWidget):
     """Base Amp Section"""
