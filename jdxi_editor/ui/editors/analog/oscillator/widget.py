@@ -10,25 +10,25 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from PySide6.QtWidgets import QWidget
-
+from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 
 @dataclass
-class OscillatorWidgets:
-    """All oscillator widgets in one place (Analog and Digital)."""
+class AnalogOscillatorWidgets[OscillatorWidgets]:
+    """Analog oscillator widgets in one place (Analog and Digital)."""
 
     # Common
-    waveform_buttons: dict[Any, QWidget] | None = None
-    pitch_env_widget: QWidget | None = None
-    pwm_widget: QWidget | None = None
-    switches: list[QWidget] | None = field(default_factory=list)
-    tuning: list[QWidget] | None = field(default_factory=list)
-    env: list[QWidget] | None = field(default_factory=list)
+    # waveform_buttons: dict[Any, QWidget] | None = None
+    # pitch_env_widget: QWidget | None = None
+    # pwm_widget: QWidget | None = None
+    # switches: list[QWidget] | None = field(default_factory=list)
+    # tuning: list[QWidget] | None = field(default_factory=list)
+    # env: list[QWidget] | None = field(default_factory=list)
     # Analog-specific
-    # sub_oscillator_type_switch: QWidget | None = None
-    # osc_pitch_env_velocity_sensitivity_slider: QWidget | None = None
-    # osc_pitch_coarse_slider: QWidget | None = None
-    # osc_pitch_fine_slider: QWidget | None = None
-    # pitch_env_widgets: list[QWidget] | None = field(default_factory=list)
+    sub_oscillator_type_switch: QWidget | None = None
+    osc_pitch_env_velocity_sensitivity_slider: QWidget | None = None
+    osc_pitch_coarse_slider: QWidget | None = None
+    osc_pitch_fine_slider: QWidget | None = None
+    pitch_env_widgets: list[QWidget] | None = field(default_factory=list)
     # Digital-specific
     # pcm_wave: QWidget | None = None
     # pw_shift_slider: QWidget | None = None
