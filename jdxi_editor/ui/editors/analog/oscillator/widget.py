@@ -24,12 +24,12 @@ class OscillatorWidgets:
     tuning: list[QWidget] | None = field(default_factory=list)
     env: list[QWidget] | None = field(default_factory=list)
     # Analog-specific
-    sub_oscillator_type_switch: QWidget | None = None
-    osc_pitch_env_velocity_sensitivity_slider: QWidget | None = None
-    osc_pitch_coarse_slider: QWidget | None = None
-    osc_pitch_fine_slider: QWidget | None = None
-    pitch_env_widgets: list[QWidget] | None = field(default_factory=list)
+    # sub_oscillator_type_switch: QWidget | None = None
+    # osc_pitch_env_velocity_sensitivity_slider: QWidget | None = None
+    # osc_pitch_coarse_slider: QWidget | None = None
+    # osc_pitch_fine_slider: QWidget | None = None
+    # pitch_env_widgets: list[QWidget] | None = field(default_factory=list)
     # Digital-specific
-    pcm_wave: QWidget | None = None
-    pw_shift_slider: QWidget | None = None
-    super_saw_detune: QWidget | None = None
+    # pcm_wave: QWidget | None = None
+    # pw_shift_slider: QWidget | None = None
+    # super_saw_detune: QWidget | None = None
