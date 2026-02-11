@@ -10,7 +10,7 @@ from jdxi_editor.ui.adsr.parameters import ADSRParameters
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-
+from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 
 @dataclass
 class AmpWidgets:
