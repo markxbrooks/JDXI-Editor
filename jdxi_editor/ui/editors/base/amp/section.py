@@ -1,3 +1,7 @@
+"""
+Base Amp Section 
+"""
+
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
