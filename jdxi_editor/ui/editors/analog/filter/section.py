@@ -70,7 +70,7 @@ class AnalogFilterSection(BaseFilterSection):
             specs=self.spec_filter,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.spec,
-            adsr=self.spec_adsr,
+            adsr=self.spec.adsr,
             bypass_mode=AnalogFilterType.BYPASS,
         )
         super().__init__(

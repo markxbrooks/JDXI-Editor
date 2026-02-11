@@ -18,7 +18,7 @@ from PySide6.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.amp.section import BaseAmpSection
-from jdxi_editor.ui.editors.base.amp.widget import DigitalAmpWidgets
+from jdxi_editor.ui.editors.digital.partial.amp.widget import DigitalAmpWidgets
 from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpLayoutSpec
 from jdxi_editor.ui.widgets.editor.helper import (
     create_envelope_group,

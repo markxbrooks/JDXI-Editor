@@ -14,7 +14,7 @@ from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 
 
 @dataclass
-class DigitalOscillatorWidgets[OscillatorWidgets]:
+class DigitalOscillatorWidgets(OscillatorWidgets):
     """Digital oscillator widgets"""
     pcm_wave: QWidget | None = None
     pw_shift_slider: QWidget | None = None

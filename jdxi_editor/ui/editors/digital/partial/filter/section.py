@@ -204,7 +204,7 @@ class DigitalFilterSection(BaseFilterSection):
             specs=self.spec_filter,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.spec,
-            adsr=self.spec_adsr,
+            adsr=self.spec.adsr,
             bypass_mode=DigitalFilterTypeEnum.BYPASS,
         )
         super().__init__(definition=self.DEFINITION, **kwargs)

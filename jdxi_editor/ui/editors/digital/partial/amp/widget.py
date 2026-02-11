@@ -1,7 +1,11 @@
+"""
+Digital Amp Widgets
+"""
+
 from dataclasses import dataclass
 from typing import List, Optional
 
-from PySide6.QtWidgets import QTabWidget, QWidget
+from PySide6.QtWidgets import QWidget
 from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 
 

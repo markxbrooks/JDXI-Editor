@@ -192,13 +192,14 @@ def validate_digital_sections() -> Dict[str, List[str]]:
 
     # Validate DigitalAmpSection
     amp_errors = []
-    if hasattr(DigitalAmpSection, "spec_adsr"):
-        amp_adsr_errors = validate_adsr_spec(
-            "DigitalAmpSection",
-            DigitalAmpSection.spec_adsr,
-            "AMP_ENV",
-        )
-        amp_errors.extend(amp_adsr_errors)
+    if hasattr(DigitalAmpSection, "spec"):
+        if hasattr(DigitalAmpSection.spec, "adsr"):
+            amp_adsr_errors = validate_adsr_spec(
+                "DigitalAmpSection",
+                DigitalAmpSection.spec.adsr,
+                "AMP_ENV",
+            )
+            amp_errors.extend(amp_adsr_errors)
 
     if hasattr(DigitalAmpSection, "SLIDER_GROUPS"):
         amp_specs = DigitalAmpSection.spec.get("controls", [])

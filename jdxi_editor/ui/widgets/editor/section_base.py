@@ -213,8 +213,8 @@ class SectionBaseWidget(SynthBase):
         # - Some newer specs may carry an `adsr` field on `self.spec`
         if getattr(self, "spec", None) is not None:
             adsr_spec = getattr(self.spec, "adsr", None)
-        if adsr_spec:
-            self._create_adsr()
+            if adsr_spec:
+                self._create_adsr()
 
     def _create_tab_widget(self):
         """Override to add Pan slider in its own horizontal layout"""
@@ -471,11 +471,11 @@ class SectionBaseWidget(SynthBase):
                 return spec_or_param.param
             return spec_or_param
 
-        attack_spec = self.spec_adsr.get(ADSRStage.ATTACK)
-        decay_spec = self.spec_adsr.get(ADSRStage.DECAY)
-        sustain_spec = self.spec_adsr.get(ADSRStage.SUSTAIN)
-        release_spec = self.spec_adsr.get(ADSRStage.RELEASE)
-        peak_spec = self.spec_adsr.get(ADSRStage.DEPTH)
+        attack_spec = self.spec.adsr.get(ADSRStage.ATTACK)
+        decay_spec = self.spec.adsr.get(ADSRStage.DECAY)
+        sustain_spec = self.spec.adsr.get(ADSRStage.SUSTAIN)
+        release_spec = self.spec.adsr.get(ADSRStage.RELEASE)
+        peak_spec = self.spec.adsr.get(ADSRStage.DEPTH)
 
         attack_param = get_param(attack_spec) if attack_spec else None
         decay_param = get_param(decay_spec) if decay_spec else None
