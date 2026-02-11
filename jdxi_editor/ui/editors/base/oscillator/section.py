@@ -53,8 +53,8 @@ class BaseOscillatorSection(SectionBaseWidget):
     adsr_tab_label: str = "ADSR"
     SWITCH_SPECS = []
     SYNTH_SPEC = Digital
-    PWM_SPEC: PWMSpec | None = None
-    PITCH_ENV_SPEC: PitchEnvelopeSpec | None = None
+    spec_pwm: PWMSpec | None = None
+    spec_pitch_env: PitchEnvelopeSpec | None = None
 
     COMPONENT_BUILDERS = {
         OscillatorComponent.WAVE_SELECTOR: "_build_wave_selector",
@@ -127,6 +127,12 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=analog,
         )
 
+    def _get_button_specs(self):
+        """Oscillator creates waveform buttons in its own build_widgets() / _create_core_widgets().
+        Return [] so SectionBaseWidget.build_widgets() does not create a second set and overwrite
+        button_widgets with param-only keys (which breaks _on_button_selected lookup by (param, label))."""
+        return []
+
     def _create_tabs(self):
         if OscillatorFeature.PWM in self.spec.features:
             self._add_pwm_tab()
@@ -151,10 +157,10 @@ class BaseOscillatorSection(SectionBaseWidget):
     def _create_core_widgets(self):
         self.waveform_buttons = self._create_waveform_buttons()
 
-        if self.PITCH_ENV_SPEC:
+        if self.spec_pitch_env:
             self.pitch_env_widget = self._create_pitch_env_widget()
 
-        if self.PWM_SPEC:
+        if self.spec_pwm:
             self.pwm_widget = self._create_pwm_widget()
 
     def _create_feature_widgets(self):
@@ -309,7 +315,8 @@ class BaseOscillatorSection(SectionBaseWidget):
                     self._on_waveform_selected(s.param)
 
             btn.clicked.connect(_on_click)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
             waveform_buttons[wave] = btn  # last wins for param-only lookup
             self.button_widgets[btn_key] = btn
@@ -325,10 +332,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         """
         for btn in self.wave_shape_buttons.values():
             btn.setChecked(False)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
         selected_btn = self.wave_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
@@ -371,7 +375,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         # Reset all buttons (use wave_layout_widgets so every button is reset; button_widgets may have duplicate keys)
         for btn in self.wave_layout_widgets:
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         selected_btn = self.button_widgets.get(btn_key)
         if selected_btn is None:
@@ -382,7 +386,10 @@ class BaseOscillatorSection(SectionBaseWidget):
                     break
         if selected_btn is not None:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            if self.analog:
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            else:
+                selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
 
         # Update enabled states
         self._update_button_enabled_states(button_param)
@@ -516,8 +523,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             # --- Reset all buttons to default style
             for btn in self.waveform_buttons.values():
                 btn.setChecked(False)
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-
+                JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
             # --- Apply active style to the selected waveform button
             selected_btn = self.waveform_buttons.get(waveform)
             if selected_btn:

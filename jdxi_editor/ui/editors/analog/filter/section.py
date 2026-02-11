@@ -19,21 +19,6 @@ from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 class AnalogFilterSection(BaseFilterSection):
     """Analog Filter Section"""
 
-    FILTER_SPECS: Dict[AnalogFilterType, FilterSpec] = {
-        AnalogFilterType.BYPASS: FilterSpec(
-            param=None,  # No parameter adjustments for bypass
-            icon=JDXi.UI.Icon.POWER,  # Power/off icon
-            name="BYPASS",
-            description=AnalogFilterType.BYPASS.tooltip,
-        ),
-        AnalogFilterType.LPF: FilterSpec(
-            param=Analog.Param.FILTER_MODE_SWITCH,  # Key parameter for low-pass filter
-            icon=JDXi.UI.Icon.FILTER,  # Filter icon
-            name="LPF",
-            description=AnalogFilterType.LPF.tooltip,
-        ),
-    }
-
     FILTER_WIDGET_SPEC = FilterWidgetSpec(cutoff_param=Analog.Param.FILTER_CUTOFF)
 
     SYNTH_SPEC = Analog
@@ -76,13 +61,14 @@ class AnalogFilterSection(BaseFilterSection):
         """
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: FilterLayoutSpec = self._build_layout_spec()
-        self.spec_adsr = self.spec.adsr
+        self.spec_adsr: Dict[ADSRStage, ADSRSpec] = self.spec.adsr
+        self.spec_filter: Dict[AnalogFilterType, FilterSpec] = self._build_filter_spec()
         self.DEFINITION = FilterDefinition(
             modes=AnalogFilterType,
             param_mode=Analog.Param.FILTER_MODE_SWITCH,
             midi_to_mode={0: AnalogFilterType.BYPASS, 1: AnalogFilterType.LPF},
             mode_to_midi={AnalogFilterType.BYPASS: 0, AnalogFilterType.LPF: 1},
-            specs=self.FILTER_SPECS,
+            specs=self.spec_filter,
             widget_spec=self.FILTER_WIDGET_SPEC,
             sliders=self.spec,
             adsr=self.spec_adsr,
@@ -114,6 +100,24 @@ class AnalogFilterSection(BaseFilterSection):
                 icon_name=JDXi.UI.Icon.WaveForm.LPF_FILTER,
             ),
         ]
+
+    def _build_filter_spec(self) -> Dict[AnalogFilterType, FilterSpec]:
+        """build filter spec"""
+        filter_spec: Dict[AnalogFilterType, FilterSpec] = {
+            AnalogFilterType.BYPASS: FilterSpec(
+                param=None,  # No parameter adjustments for bypass
+                icon=JDXi.UI.Icon.POWER,  # Power/off icon
+                name="BYPASS",
+                description=AnalogFilterType.BYPASS.tooltip,
+            ),
+            AnalogFilterType.LPF: FilterSpec(
+                param=Analog.Param.FILTER_MODE_SWITCH,  # Key parameter for low-pass filter
+                icon=JDXi.UI.Icon.FILTER,  # Filter icon
+                name="LPF",
+                description=AnalogFilterType.LPF.tooltip,
+            ),
+        }
+        return filter_spec
 
     def _build_layout_spec(self) -> FilterLayoutSpec:
         """build Analog Oscillator Layout Spec"""

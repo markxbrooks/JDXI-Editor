@@ -33,7 +33,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.spec import FilterWidgetSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import FilterWidgetSpec, SliderSpec, FilterSpec
 
 
 class FilterWidgetFactory:
@@ -60,7 +60,7 @@ class FilterWidgetFactory:
 class BaseFilterSection(SectionBaseWidget):
     """Base Filter Section"""
 
-    FILTER_SPECS: dict = {}
+    spec_filter: dict = {}
     FILTER_WIDGET_SPEC: FilterWidgetSpec = None
     SYNTH_SPEC = JDXiMidiDigital
     # Subclasses (e.g. DigitalFilterSection) override these; do not set in __init__
@@ -99,6 +99,10 @@ class BaseFilterSection(SectionBaseWidget):
             analog=analog,
         )
         self.address = address
+
+    def _build_filter_spec(self) -> dict[str, FilterSpec]:
+        """build filter spec"""
+        raise NotImplementedError("Must be implemented in subclass")
 
     def build_widgets(self):
         """build widgets"""
@@ -246,7 +250,7 @@ class BaseFilterSection(SectionBaseWidget):
         # --- Reset all buttons to default style
         for btn in self.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_mode_buttons.get(filter_mode)

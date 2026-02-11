@@ -447,8 +447,8 @@ def create_group_with_widgets(
 
 def set_button_style_and_dimensions(btn: QPushButton, dimensions: Dimensions):
     """set a button styling and dimensions"""
-    btn.setIconSize(QSize(dimensions.Icon.WIDTH, dimensions.Icon.HEIGHT))
-    JDXi.UI.Theme.apply_button_rect_analog(btn)
+    btn.setIconSize(QSize(dimensions.WIDTH, dimensions.HEIGHT))
+    JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
     btn.setFixedSize(
         dimensions.WIDTH,
         dimensions.HEIGHT,

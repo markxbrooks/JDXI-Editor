@@ -304,7 +304,7 @@ class BaseSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in self.filter_section.filter_mode_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         # --- Apply active style to the selected filter mode button
         selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
@@ -345,7 +345,7 @@ class BaseSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in buttons_dict.values():
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         # --- Apply active style to the selected waveform button
         selected_btn = buttons_dict.get(waveform)
@@ -413,7 +413,7 @@ class BaseSynthEditor(SynthEditor):
             # --- Reset all buttons to default style ---
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
+                JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
             # --- Apply active style to the selected button ---
             selected_btn = self.lfo_shape_buttons.get(value)
@@ -711,7 +711,7 @@ class BaseSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         # --- Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
@@ -729,7 +729,7 @@ class BaseSynthEditor(SynthEditor):
         # --- Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         # --- Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)

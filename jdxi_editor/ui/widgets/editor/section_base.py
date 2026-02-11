@@ -391,10 +391,7 @@ class SectionBaseWidget(SynthBase):
         btn = QPushButton(label)
         btn.setCheckable(True)
 
-        if self.analog:
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
-        else:
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+        JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         btn.setFixedSize(
             JDXi.UI.Dimensions.WaveformIcon.WIDTH,
@@ -599,10 +596,7 @@ class SectionBaseWidget(SynthBase):
             return
         for btn in self.button_widgets.values():
             btn.setChecked(False)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
         selected_btn = self.button_widgets.get(button_param)
         if selected_btn is None:
             return
@@ -677,8 +671,7 @@ class SectionBaseWidget(SynthBase):
 
             btn.setCheckable(True)
 
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
             self.wave_shape_group.addButton(btn, wave.shape.value)
             self.wave_shape_buttons[wave.shape] = btn
@@ -697,10 +690,7 @@ class SectionBaseWidget(SynthBase):
                 else:
                     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
             else:
-                if self.analog:
-                    JDXi.UI.Theme.apply_button_rect_analog(btn)
-                else:
-                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+                JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
     def _on_shape_group_changed(self, shape_value: int, checked: bool) -> None:
         """on shape group changed"""

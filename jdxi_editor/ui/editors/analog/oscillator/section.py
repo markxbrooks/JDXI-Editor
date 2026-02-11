@@ -14,7 +14,7 @@ from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
+from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature, OscillatorLayoutSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import (
     PitchEnvelopeSpec,
@@ -27,16 +27,16 @@ from jdxi_editor.ui.widgets.spec import (
 class AnalogOscillatorSection(BaseOscillatorSection):
     """Analog Oscillator Section"""
 
-    PWM_SPEC = PWMSpec(
+    """spec_pwm = PWMSpec(
         pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
         mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-    )
+    )"""
 
-    PITCH_ENV_SPEC = PitchEnvelopeSpec(
+    """spec_pitch_env = PitchEnvelopeSpec(
         attack_param=Analog.Param.OSC_PITCH_ENV_ATTACK_TIME,
         decay_param=Analog.Param.OSC_PITCH_ENV_DECAY_TIME,
         depth_param=Analog.Param.OSC_PITCH_ENV_DEPTH,
-    )
+    )"""
 
     SYNTH_SPEC = Analog
 
@@ -63,7 +63,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
-        # Set SLIDER_GROUPS before super().__init__() so build_widgets() (called during init) can use .env, .tuning, etc.
         self._define_spec()
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
@@ -81,6 +80,8 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        self.spec_pwm = self.spec.pwm
+        self.spec_pitch_env = self.spec.pitch_env
         self.SWITCH_SPECS = self.spec.switches
 
     def _create_feature_widgets(self):
@@ -207,11 +208,21 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 vertical=True,
             )
         ]
-
+        pwm = PWMSpec(
+            pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
+            mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+        )
+        pitch_env = PitchEnvelopeSpec(
+            attack_param=Analog.Param.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=Analog.Param.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=Analog.Param.OSC_PITCH_ENV_DEPTH,
+        )
         return AnalogOscillatorLayoutSpec(
             switches=switches,
             tuning=tuning,
             env=env,
+            pwm=pwm,
+            pitch_env=pitch_env,
             features={
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,

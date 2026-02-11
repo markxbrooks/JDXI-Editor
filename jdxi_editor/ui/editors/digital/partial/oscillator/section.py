@@ -48,17 +48,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     # --- Optional ADSR can be added if Oscillator has one (Digital usually has pitch envelope)
     spec_adsr = None
 
-    PWM_SPEC = PWMSpec(
-        pulse_width_param=Digital.Param.OSC_PULSE_WIDTH,
-        mod_depth_param=Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-    )
-
-    PITCH_ENV_SPEC = PitchEnvelopeSpec(
-        attack_param=Digital.Param.OSC_PITCH_ENV_ATTACK_TIME,
-        decay_param=Digital.Param.OSC_PITCH_ENV_DECAY_TIME,
-        depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
-    )
-
     TAB_BUILDERS = (
         "_add_tuning_tab",
         (OscillatorFeature.PWM, "_add_pwm_tab"),
@@ -124,6 +113,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.widgets: OscillatorWidgets | None = None
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: OscillatorLayoutSpec = self._build_layout_spec()
+        self.spec_pwm: PWMSpec = self.spec.pwm
+        self.spec_pitch_env: PitchEnvelopeSpec = self.spec.pitch_env
         # Initialize controls before creating PCMWaveWidget so it can register controls
         # (ControlRegistry is a singleton, so this ensures self.controls exists)
         self.controls = ControlRegistry()
@@ -376,9 +367,20 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 vertical=False,
             ),
         ]
+        pwm = PWMSpec(
+            pulse_width_param=Digital.Param.OSC_PULSE_WIDTH,
+            mod_depth_param=Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+        )
+        pitch_env = PitchEnvelopeSpec(
+            attack_param=Digital.Param.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=Digital.Param.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=Digital.Param.OSC_PITCH_ENV_DEPTH,
+        )
         return OscillatorLayoutSpec(
             tuning=tuning,
             pw_controls=pw_controls,
+            pwm=pwm,
+            pitch_env=pitch_env,
             features={
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,
