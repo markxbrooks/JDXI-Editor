@@ -46,34 +46,35 @@ class AnalogAmpSection(BaseAmpSection):
 
     def _build_layout_spec(self) -> AmpLayoutSpec:
         """build Analog Oscillator Layout Spec"""
-        S = self.SYNTH_SPEC
+        P = self.SYNTH_SPEC.Param
         controls = [
             SliderSpec(
-                S.Param.AMP_LEVEL,
-                S.Param.AMP_LEVEL.display_name,
+                P.AMP_LEVEL,
+                P.AMP_LEVEL.display_name,
                 vertical=True,
             ),
             SliderSpec(
-                S.Param.AMP_LEVEL_KEYFOLLOW,
-                S.Param.AMP_LEVEL_KEYFOLLOW.display_name,
+                P.AMP_LEVEL_KEYFOLLOW,
+                P.AMP_LEVEL_KEYFOLLOW.display_name,
                 vertical=True,
             ),
             SliderSpec(
-                S.Param.AMP_LEVEL_VELOCITY_SENSITIVITY,
-                S.Param.AMP_LEVEL_VELOCITY_SENSITIVITY.display_name,
+                P.AMP_LEVEL_VELOCITY_SENSITIVITY,
+                P.AMP_LEVEL_VELOCITY_SENSITIVITY.display_name,
                 vertical=True,
             ),
         ]
         adsr: Dict[ADSRStage, ADSRSpec] = {
             ADSRStage.ATTACK: ADSRSpec(
-                ADSRStage.ATTACK, Analog.Param.AMP_ENV_ATTACK_TIME
+                ADSRStage.ATTACK, P.AMP_ENV_ATTACK_TIME
             ),
-            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, Analog.Param.AMP_ENV_DECAY_TIME),
+            ADSRStage.DECAY: ADSRSpec(
+                ADSRStage.DECAY, P.AMP_ENV_DECAY_TIME),
             ADSRStage.SUSTAIN: ADSRSpec(
-                ADSRStage.SUSTAIN, Analog.Param.AMP_ENV_SUSTAIN_LEVEL
+                ADSRStage.SUSTAIN, P.AMP_ENV_SUSTAIN_LEVEL
             ),
             ADSRStage.RELEASE: ADSRSpec(
-                ADSRStage.RELEASE, Analog.Param.AMP_ENV_RELEASE_TIME
+                ADSRStage.RELEASE, P.AMP_ENV_RELEASE_TIME
             ),
         }
         return AmpLayoutSpec(controls=controls, adsr=adsr)
