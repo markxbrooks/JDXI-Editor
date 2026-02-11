@@ -19,7 +19,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
+from jdxi_editor.ui.editors.digital.oscillator.widget import DigitalOscillatorWidgets
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
     OscillatorFeature,
