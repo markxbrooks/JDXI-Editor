@@ -90,7 +90,6 @@ class SectionBaseWidget(SynthBase):
 
     from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 
-    spec_adsr: dict[ADSRStage, ADSRSpec] = {}
     WAVEFORM_SPECS: list[SliderSpec] = []
     spec: LayoutSpec | None = None
     BUTTON_ENABLE_RULES: dict[Any, list[str]] = {}
