@@ -25,57 +25,6 @@ class DigitalFilterSection(BaseFilterSection):
         # --- Other modes: all sliders are enabled (default)
     }
 
-    """spec_filter: Dict[DigitalFilterType, FilterSpec] = {
-        DigitalFilterType.BYPASS: FilterSpec(
-            param=None,
-            icon=JDXi.UI.Icon.POWER,
-            name=DigitalFilterTypeEnum.BYPASS.name,
-            description=DigitalFilterTypeEnum.BYPASS.tooltip,
-        ),
-        DigitalFilterType.LPF: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.LPF.name,
-            description=DigitalFilterTypeEnum.LPF.tooltip,
-        ),
-        DigitalFilterType.HPF: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.HPF.name,
-            description=DigitalFilterTypeEnum.HPF.tooltip,
-        ),
-        DigitalFilterType.BPF: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.BPF.name,
-            description=DigitalFilterTypeEnum.BPF.tooltip,
-        ),
-        DigitalFilterType.PKG: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.PKG.name,
-            description=DigitalFilterTypeEnum.PKG.tooltip,
-        ),
-        DigitalFilterType.LPF2: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.LPF2.name,
-            description=DigitalFilterTypeEnum.LPF2.tooltip,
-        ),
-        DigitalFilterType.LPF3: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.LPF3.name,
-            description=DigitalFilterTypeEnum.LPF3.tooltip,
-        ),
-        DigitalFilterType.LPF4: FilterSpec(
-            param=Digital.Param.FILTER_MODE_SWITCH,
-            icon=JDXi.UI.Icon.FILTER,
-            name=DigitalFilterTypeEnum.LPF4.name,
-            description=DigitalFilterTypeEnum.LPF4.tooltip,
-        ),
-    }"""
-
     FILTER_WIDGET_SPEC = FilterWidgetSpec(
         cutoff_param=Digital.Param.FILTER_CUTOFF,
         slope_param=Digital.Param.FILTER_SLOPE,
