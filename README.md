@@ -177,6 +177,27 @@ JDXI-Editor is a growing project!
 
 ---
 
+## Building
+
+```bash
+python -m building.buildsys 2>&1 | head -50
+
+Building on: linux
+Project root: /home/brooks/PycharmProjects/JDXI-Editor
+╭─────────── linux builder ────────────╮
+│  linux builder Application Starting  │
+╰──────────────────────────────────────╯
+[02/10/26 23:12:10] INFO                        ℹ️ linux builder starting up with log file /home/brooks/.linux builder/logs/linux builder-10Feb2026-23-12-10.log...                                                         
+                    INFO                        ℹ️ 🎹 JD-Xi Editor v0.9.5 - Linux Build System                                                                                                                              
+                    INFO                        ℹ️ ==================================================                                                                                                                       
+                    INFO                        ℹ️                                                                                                                                                                          
+                             🧹 Cleaning previous builds...                                                                                                                                                                
+                    INFO                        ℹ️                                                                                                                                                                          
+                             📦 Building with PyInstaller...                                                                                                                                                               
+                    INFO                        ℹ️   This may take a few minutes... 
+```
+
+
 ## 🙏 Credits
 
 - [Qt](https://www.qt.io/)
