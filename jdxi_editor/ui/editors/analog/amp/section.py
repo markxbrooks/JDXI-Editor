@@ -28,7 +28,6 @@ class AnalogAmpSection(BaseAmpSection):
         # Build layout spec (including ADSR mapping) before base init so widgets/ADSR
         # can be constructed correctly in BaseAmpSection.build_widgets().
         self.spec: AmpLayoutSpec = self._build_layout_spec()
-        self.spec_adsr = self.spec.adsr
         # Bridge newer AmpLayoutSpec.adsr into the shared spec_adsr field used by
         # SectionBaseWidget / BaseAmpSection ADSR helpers.
         # This ensures self.adsr_widget is created for the Analog amp section.
