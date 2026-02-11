@@ -9,7 +9,7 @@ from decologr import Decologr as log
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.analog.oscillator.widget import OscillatorWidgets
+from jdxi_editor.ui.editors.analog.oscillator.widget import AnalogOscillatorWidgets
 from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
