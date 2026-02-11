@@ -1146,7 +1146,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             scope=self.__class__.__name__,
         )
 
-        # --- Retrieve waveform buttons for the given partial
+        # --- Retrieve oscillator section for this partial
         if partial_number not in self.partial_editors:
             log.warning(
                 f"Partial editor {partial_number} not found",
@@ -1154,26 +1154,15 @@ class DigitalSynthEditor(BaseSynthEditor):
             )
             return
 
-        wave_buttons = self.partial_editors[
-            partial_number
-        ].oscillator_tab.waveform_buttons
+        osc_section = self.partial_editors[partial_number].oscillator_tab
 
-        # --- Reset all buttons to default style
-        for btn in wave_buttons.values():
-            btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-
-        # Apply active style to the selected waveform button
-        selected_btn = wave_buttons.get(selected_waveform)
-        if selected_btn:
-            selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
-        else:
-            log.warning(
-                "Waveform button not found for: %s",
-                selected_waveform,
-                scope=self.__class__.__name__,
-            )
+        # Route through oscillator section's selection logic so UI state and
+        # BUTTON_ENABLE_RULES are applied consistently, but suppress MIDI echo.
+        osc_section._suppress_waveform_midi = True
+        try:
+            osc_section._on_button_selected(selected_waveform)
+        finally:
+            osc_section._suppress_waveform_midi = False
 
         # Update enabled states of dependent widgets (e.g., SuperSaw Detune)
         oscillator_section = self.partial_editors[partial_number].oscillator_tab

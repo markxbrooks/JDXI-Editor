@@ -227,6 +227,13 @@ class JDXiUIThemeManager(QObject):
             JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_RECT)
 
     @staticmethod
+    def apply_button_active(widget: QWidget, analog: bool) -> None:
+        if analog:
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_ANALOG_ACTIVE)
+        else:
+            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_RECT_ACTIVE)
+
+    @staticmethod
     def apply_button_analog_active(widget: QWidget) -> None:
         """Apply analog active button style (blue, active state)"""
         JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.BUTTON_ANALOG_ACTIVE)

@@ -9,6 +9,7 @@ from decologr import Decologr as log
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
+    QButtonGroup,
     QGroupBox,
     QHBoxLayout,
     QPushButton,
@@ -86,8 +87,8 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param analog: bool
         """
 
-        self.shape_icon_map = None
-        self.sub_oscillator_type_switch = None
+        self.shape_icon_map: dict | None = None
+        self.sub_oscillator_type_switch: QWidget | None = None
         self.tuning_sliders: list | None = None
         self.pwm_widget: QWidget | None = None
         self.wave_layout_widgets: list = []
@@ -96,8 +97,10 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.rate_layout_widgets: list | None = None
         self.depths_layout_widgets: list | None = None
         self._send_param: Callable | None = send_midi_parameter
-        self.wave_shape_buttons = {}  # --- Dictionary to store LFO shape buttons
-        self.analog = analog
+        self.wave_shape_buttons: dict = {}  # --- Dictionary to store LFO shape buttons
+        # QButtonGroup to enforce wave button exclusivity (Analog + Digital)
+        self.wave_button_group: QButtonGroup | None = None
+        self.analog: bool = analog
         # Subclasses (Analog/Digital oscillator) set wave_shapes before super().__init__; do not overwrite
         if getattr(self, "wave_shapes", None) is None:
             self.common_wave_shapes = [
@@ -134,6 +137,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         return []
 
     def _create_tabs(self):
+        """_create_tabs"""
         if OscillatorFeature.PWM in self.spec.features:
             self._add_pwm_tab()
 
@@ -144,6 +148,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             self._add_pcm_wave_gain_tab()
 
     def finalize(self):
+        """finalize"""
         self._define_spec()
         self._create_core_widgets()
         self._create_feature_widgets()
@@ -283,6 +288,12 @@ class BaseOscillatorSection(SectionBaseWidget):
         waveform_buttons = {}
         self.wave_layout_widgets = []
 
+        # Lazily create a button group so Analog and Digital oscillator wave buttons
+        # are mutually exclusive at the Qt level.
+        if self.wave_button_group is None:
+            self.wave_button_group = QButtonGroup(self)
+            self.wave_button_group.setExclusive(True)
+
         for spec in self.wave_shapes:
             wave = spec.param
             icon_name = spec.icon_name  # This is a WaveformIconType enum
@@ -316,7 +327,14 @@ class BaseOscillatorSection(SectionBaseWidget):
 
             btn.clicked.connect(_on_click)
 
-            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
+            # Base styling for each button
+            if self.analog:
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+            else:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+
+            # Add to the exclusive button group
+            self.wave_button_group.addButton(btn)
 
             waveform_buttons[wave] = btn  # last wins for param-only lookup
             self.button_widgets[btn_key] = btn
@@ -337,7 +355,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         if selected_btn:
             selected_btn.setChecked(True)
             if self.analog:
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+                JDXi.UI.Theme.apply_button_analog_active(selected_btn, self.analog)
             else:
                 selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
         if self.analog:
@@ -375,7 +393,10 @@ class BaseOscillatorSection(SectionBaseWidget):
         # Reset all buttons (use wave_layout_widgets so every button is reset; button_widgets may have duplicate keys)
         for btn in self.wave_layout_widgets:
             btn.setChecked(False)
-            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
+            if self.analog:
+                JDXi.UI.Theme.apply_button_rect_analog(btn)
+            else:
+                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
 
         selected_btn = self.button_widgets.get(btn_key)
         if selected_btn is None:
@@ -394,8 +415,9 @@ class BaseOscillatorSection(SectionBaseWidget):
         # Update enabled states
         self._update_button_enabled_states(button_param)
 
-        # --- Send MIDI parameter - button_param is a Digital.Wave.Osc enum
-        if self._send_param:
+        # --- Send MIDI parameter - button_param is a Digital.Wave.Osc / AnalogWaveOsc enum.
+        # Guard with _suppress_waveform_midi so data_request-driven UI updates don't echo MIDI.
+        if self._send_param and not getattr(self, "_suppress_waveform_midi", False):
             self._send_param(self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value)
 
     def _update_button_enabled_states(self, button_param):

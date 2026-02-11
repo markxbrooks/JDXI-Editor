@@ -208,9 +208,9 @@ class JDXiUIStyle:
     BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    BUTTON_RECT_ANALOG = generate_button_style(
+    """BUTTON_RECT_ANALOG = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
-    )
+    )"""
     BUTTON_RECT_SELECTED = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
@@ -226,12 +226,12 @@ class JDXiUIStyle:
 
     # Analog Button Styles (analog=True for blue :hover/:checked gradients)
     BUTTON_RECT_ANALOG = generate_button_style(
-        BACKGROUND,
-        ACCENT_ANALOG,
-        BUTTON_RECT_RADIUS,
-        FOREGROUND,
-        ACCENT_ANALOG_HOVER,
-        ACCENT_PRESSED,
+        bg=BACKGROUND,
+        border=ACCENT_ANALOG,
+        border_radius=BUTTON_RECT_RADIUS,
+        text_color=FOREGROUND,
+        hover=ACCENT_ANALOG_HOVER,
+        border_pressed=ACCENT_PRESSED,
         analog=True,
     )
     BUTTON_ANALOG_ACTIVE = generate_button_style(

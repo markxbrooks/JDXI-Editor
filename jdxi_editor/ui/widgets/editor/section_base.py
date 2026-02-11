@@ -683,12 +683,7 @@ class SectionBaseWidget(SynthBase):
         """apply wave shape style"""
         for shape, btn in self.wave_shape_buttons.items():
             if shape == active_shape:
-                if self.analog:
-                    JDXi.UI.Theme.apply_button_analog_active(btn)
-                else:
-                    btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
-            else:
-                JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
+                JDXi.UI.Theme.apply_button_active(btn, analog=self.analog)
 
     def _on_shape_group_changed(self, shape_value: int, checked: bool) -> None:
         """on shape group changed"""
@@ -729,6 +724,7 @@ class SectionBaseWidget(SynthBase):
         """Update UI + optionally send MIDI"""
 
         btn = self._get_wave_shape_button(shape)
+        log.message(f"selected {shape}", scope="set_wave_shape")
         if not btn:
             return
 
