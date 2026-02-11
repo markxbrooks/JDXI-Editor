@@ -7,5 +7,5 @@ from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 
 @dataclass
 class DigitalAmpWidgets(AmpWidgets):
-    """Single container for all amp UI widgets (Analog and Digital)."""
+    """Container for Digital amp UI widgets"""
     pan: Optional[List[QWidget]] = None
