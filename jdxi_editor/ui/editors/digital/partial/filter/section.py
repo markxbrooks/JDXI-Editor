@@ -2,8 +2,6 @@
 Digital Filter Section for the JDXI Editor
 """
 
-from typing import Dict
-
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.filter import (
     DigitalFilterType,
@@ -137,7 +135,6 @@ class DigitalFilterSection(BaseFilterSection):
         """Initialize DigitalFilterSection with ADSR icon type"""
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: FilterLayoutSpec = self._build_layout_spec()
-        self.spec_adsr = self.spec.adsr
         self.spec_filter: dict[str, FilterSpec] = self._build_filter_spec()
         self.DEFINITION = FilterDefinition(
             modes=DigitalFilterTypeEnum,

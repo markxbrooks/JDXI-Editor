@@ -141,6 +141,26 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.pcm_wave_number = self.pcm_wave.pcm_wave_number
         self.finalize()
 
+    def finalize(self):
+        """Skip base _assemble_ui(); Digital builds UI via SectionBaseWidget._setup_ui and TAB_BUILDERS (no pitch_widget/tuning_group/pw_group)."""
+        self._define_spec()
+        self._initialize_states()
+
+    def _setup_ui(self):
+        """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
+        layout = self.create_layout()
+        # Centered waveform button row
+        if self.wave_mode_group is not None:
+            if self.wave_mode_group.parent() is None:
+                self.wave_mode_group.setParent(self)
+            row = QHBoxLayout()
+            row.addStretch()
+            row.addWidget(self.wave_mode_group)
+            row.addStretch()
+            layout.addLayout(row)
+        self._create_tab_widget()
+        layout.addWidget(self.tab_widget)
+
     # ------------------------------------------------------------------
     # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
     # ------------------------------------------------------------------
@@ -171,7 +191,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             midi_param=Digital.Param.OSC_WAVEFORM,
             on_mode_changed=_on_mode_changed,
             icon_factory=_waveform_icon_factory,
-            parent=self,
+            parent=None,
         )
 
         # Expose legacy mapping API used elsewhere
@@ -200,6 +220,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.waveform_buttons = self._create_waveform_buttons()
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
         self.pitch_env_widget = self._create_pitch_env_widget()
+        self.pitch_env_widgets = [self.pitch_env_widget]
+
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
         self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
@@ -363,17 +385,26 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         to avoid duplicate tuning sliders and ensure super_saw_detune enable targets the visible widget.
         """
         layout = self.get_layout()
-
+        # layout.addLayout(self._create_shape_row())
+        # layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR.MARGINS)
+        # --- Waveform buttons ---
+        self.waveform_button_layout = self._create_wave_layout()
+        layout.addLayout(self.waveform_button_layout)
+        """
         # Only add button row and tab widget if not already added by SectionBaseWidget._setup_ui()
         if self.tab_widget is None or self.tab_widget.parent() is None:
-            if self.button_widgets:
-                button_layout = self._create_button_row_layout()
-                if button_layout is not None:
-                    layout.addLayout(button_layout)
+            #if self.button_widgets:
+                # button_layout = self._create_button_row_layout()
+                # if button_layout is not None:
+                #    layout.addLayout(button_layout)
             self._create_tab_widget()
             if self.tab_widget:
-                layout.addWidget(self.tab_widget)
-
+                layout.addWidget(self.tab_widget)"""
+        JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
+        layout.addWidget(self.tab_widget)
+        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
+        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
+        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
         layout.addStretch()
 
         # Now that all widgets are created, initialize button states

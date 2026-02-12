@@ -87,6 +87,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param analog: bool
         """
 
+        self.pitch_env_widgets = None
         self.shape_icon_map: dict | None = None
         self.sub_oscillator_type_switch: QWidget | None = None
         self.tuning_sliders: list | None = None
