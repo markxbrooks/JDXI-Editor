@@ -9,7 +9,7 @@ Builds distributable packages for macOS:
 
 Usage:
     python build_macos.py [--app] [--dmg] [--pkg] [--all]
-    
+
 Requirements:
     - py2app: pip install py2app
     - For DMG: hdiutil (built-in macOS tool)
@@ -77,7 +77,7 @@ def run_command(cmd, cwd=None, check=True, shell=False, capture_output=True):
     else:
         cmd_str = str(cmd)
     print(f"  → Running: {cmd_str}")
-    
+
     result = subprocess.run(
         cmd,
         cwd=cwd,
@@ -85,7 +85,7 @@ def run_command(cmd, cwd=None, check=True, shell=False, capture_output=True):
         capture_output=capture_output,
         text=True,
     )
-    
+
     if check and result.returncode != 0:
         print(f"  ✗ Command failed with exit code {result.returncode}")
         if capture_output:
@@ -100,19 +100,19 @@ def run_command(cmd, cwd=None, check=True, shell=False, capture_output=True):
 def check_dependencies():
     """Check if required build tools are installed."""
     print("\n🔍 Checking dependencies...")
-    
+
     # Check Python virtual environment
     if not VENV_PATH.exists():
         print(f"  ✗ Virtual environment not found at {VENV_PATH}")
         print("     Please create a virtual environment first.")
         sys.exit(1)
     print(f"  ✓ Virtual environment found: {VENV_PATH}")
-    
+
     # Check Python
     if not PYTHON_PATH.exists():
         print(f"  ✗ Python not found at {PYTHON_PATH}")
         sys.exit(1)
-    
+
     python_version = run_command(
         [str(PYTHON_PATH), "--version"],
         check=False,
@@ -120,43 +120,55 @@ def check_dependencies():
     )
     if python_version:
         print(f"  ✓ Python: {python_version.stdout.strip()}")
-    
+
     # Check setup.py
     setup_py = PROJECT_ROOT / "setup.py"
     if not setup_py.exists():
         print(f"  ✗ setup.py not found at {setup_py}")
         sys.exit(1)
     print(f"  ✓ setup.py found")
-    
-    # Check py2app (optional, will be checked when needed)
+
+    # Install py2app and setuptools so py2app has pkg_resources and we avoid Errno 17 duplicate dist-info
+    # - setuptools 70.3: has pkg_resources; 71+ causes duplicate dist-info copy; 75+ removes pkg_resources
+    # - py2app<0.28.9: 0.28.9 errors when dist has install_requires
+    pip_install = run_command(
+        [str(PYTHON_PATH), "-m", "pip", "install", "-q", "setuptools==70.3.0", "py2app>=0.28.2,<0.28.9"],
+        check=False,
+        capture_output=True,
+    )
+    if pip_install and pip_install.returncode == 0:
+        print("  ✓ Build tools (setuptools 70.3, py2app) ready")
+    else:
+        print("  ⚠ pip install of setuptools/py2app failed; ensure setuptools<75 and py2app<0.28.9 for pkg_resources")
+
     print("  ✓ Dependencies validated")
 
 
 def clean_build_dirs():
     """Remove previous build artifacts."""
     print("\n🧹 Cleaning previous builds...")
-    
+
     dirs_to_clean = [
         BUILD_DIR,
         PROJECT_ROOT / "pkg_build",
         PROJECT_ROOT / "jdxi_dmg",
     ]
-    
+
     files_to_clean = [
         PROJECT_ROOT / f"JD-Xi_Editor_{VERSION}_MacOS_Universal.pkg",
         PROJECT_ROOT / f"JD-Xi_Editor_{VERSION}_MacOS_Universal.dmg",
     ]
-    
+
     for path in dirs_to_clean:
         if path.exists():
             print(f"  Removing: {path}")
             shutil.rmtree(path)
-    
+
     for path in files_to_clean:
         if path.exists():
             print(f"  Removing: {path}")
             path.unlink()
-    
+
     # Also clean py2app artifacts
     py2app_build = PROJECT_ROOT / "build"
     py2app_dist = PROJECT_ROOT / "dist" / APP_NAME
@@ -165,22 +177,22 @@ def clean_build_dirs():
             if item.is_dir() and item.name != "macos":
                 print(f"  Removing: {item}")
                 shutil.rmtree(item)
-    
+
     print("  ✓ Clean complete")
 
 
 def build_with_py2app():
     """Build the application using py2app."""
     print("\n🔨 Building app with py2app...")
-    
+
     setup_py = PROJECT_ROOT / "setup.py"
     if not setup_py.exists():
         print(f"  ✗ setup.py not found: {setup_py}")
         return None
-    
+
     # Prepare environment with PYTHONPATH to include editable packages
     env = os.environ.copy()
-    
+
     # Add editable package paths to PYTHONPATH so py2app can find them
     pythonpath_parts = [str(PROJECT_ROOT)]
     if DECOLOGR_PATH.exists():
@@ -188,27 +200,27 @@ def build_with_py2app():
         print(f"  ✓ Adding decologr to PYTHONPATH: {DECOLOGR_PATH.resolve()}")
     else:
         print(f"  ⚠ decologr not found at {DECOLOGR_PATH}")
-    
+
     if PICOMIDI_PATH.exists():
         pythonpath_parts.append(str(PICOMIDI_PATH.resolve()))
         print(f"  ✓ Adding picomidi to PYTHONPATH: {PICOMIDI_PATH.resolve()}")
     else:
         print(f"  ⚠ picomidi not found at {PICOMIDI_PATH}")
-    
+
     # Update PYTHONPATH
     existing_pythonpath = env.get("PYTHONPATH", "")
     if existing_pythonpath:
         env["PYTHONPATH"] = ":".join(pythonpath_parts + [existing_pythonpath])
     else:
         env["PYTHONPATH"] = ":".join(pythonpath_parts)
-    
+
     # Activate venv and run py2app
     # On macOS, we need to use the venv's Python directly
     cmd = [str(PYTHON_PATH), "setup.py", "py2app"]
-    
+
     print("  This may take a few minutes...")
     print("  (Showing output in real-time...)")
-    
+
     # Run py2app with real-time output for better visibility
     process = subprocess.Popen(
         cmd,
@@ -219,7 +231,7 @@ def build_with_py2app():
         text=True,
         bufsize=1,  # Line buffered
     )
-    
+
     # Print output in real-time
     output_lines = []
     for line in process.stdout:
@@ -227,10 +239,10 @@ def build_with_py2app():
         if line:
             print(f"    {line}")
             output_lines.append(line)
-    
+
     # Wait for process to complete
     returncode = process.wait()
-    
+
     if returncode != 0:
         print(f"\n  ✗ py2app build failed with exit code {returncode}")
         if output_lines:
@@ -239,13 +251,13 @@ def build_with_py2app():
             for line in output_lines[-30:]:
                 print(f"    {line}")
         return None
-    
+
     # Verify app bundle was created
     app_bundle = DIST_DIR / APP_NAME
     if not app_bundle.exists():
         print(f"  ✗ App bundle not found at {app_bundle}")
         return None
-    
+
     print(f"  ✓ App bundle created: {app_bundle}")
     return app_bundle
 
@@ -253,31 +265,31 @@ def build_with_py2app():
 def create_app_bundle():
     """Create a simple app bundle (alternative to py2app)."""
     print("\n📦 Creating app bundle...")
-    
+
     app_dir = Path(APP_NAME.replace(".app", ".app"))
     contents_dir = app_dir / "Contents"
     macos_dir = contents_dir / "MacOS"
     resources_dir = contents_dir / "Resources"
-    
+
     # Clean up existing app
     if app_dir.exists():
         print(f"  Removing existing {app_dir}...")
         shutil.rmtree(app_dir)
-    
+
     # Create directory structure
     macos_dir.mkdir(parents=True, exist_ok=True)
     resources_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Create executable stub
     executable = macos_dir / "jdxi_editor"
     icon_path = PROJECT_ROOT / "jdxi_icon.icns"
-    
+
     # Resolve paths to absolute
     decologr_abs = DECOLOGR_PATH.resolve() if DECOLOGR_PATH.exists() else DECOLOGR_PATH
     picomidi_abs = PICOMIDI_PATH.resolve() if PICOMIDI_PATH.exists() else PICOMIDI_PATH
     project_root_abs = PROJECT_ROOT.resolve()
     python_path_abs = PYTHON_PATH.resolve()
-    
+
     executable_content = f"""#!/bin/bash
 # Set PYTHONPATH to include project root and editable packages (decologr and picomidi)
 # PROJECT_ROOT must be first so jdxi_editor module can be found
@@ -286,11 +298,11 @@ export PYTHONPATH="{project_root_abs}:{decologr_abs}:{picomidi_abs}:${{PYTHONPAT
 cd "{project_root_abs}"
 exec "{python_path_abs}" -m jdxi_editor.main
 """
-    
+
     executable.write_text(executable_content)
     executable.chmod(0o755)
     print(f"  ✓ Executable created: {executable}")
-    
+
     # Create Info.plist
     plist = contents_dir / "Info.plist"
     plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -315,7 +327,7 @@ exec "{python_path_abs}" -m jdxi_editor.main
 """
     plist.write_text(plist_content)
     print(f"  ✓ Info.plist created: {plist}")
-    
+
     # Copy icon
     if icon_path.exists():
         icon_dest = resources_dir / "jdxi_editor.icns"
@@ -323,18 +335,18 @@ exec "{python_path_abs}" -m jdxi_editor.main
         print(f"  ✓ Icon copied: {icon_dest}")
     else:
         print(f"  ⚠ Icon not found: {icon_path}")
-    
+
     # Validate package paths
     if not DECOLOGR_PATH.exists():
         print(f"  ⚠ WARNING: decologr directory not found: {DECOLOGR_PATH}")
     else:
         print(f"  ✓ decologr found: {DECOLOGR_PATH}")
-    
+
     if not PICOMIDI_PATH.exists():
         print(f"  ⚠ WARNING: picomidi directory not found: {PICOMIDI_PATH}")
     else:
         print(f"  ✓ picomidi found: {PICOMIDI_PATH}")
-    
+
     print(f"  ✓ App bundle created: {app_dir.absolute()}")
     return app_dir.absolute()
 
@@ -342,41 +354,41 @@ exec "{python_path_abs}" -m jdxi_editor.main
 def make_dmg(app_bundle_path):
     """Create a DMG file from the app bundle."""
     print("\n💿 Creating DMG...")
-    
+
     if not app_bundle_path or not Path(app_bundle_path).exists():
         print("  ✗ App bundle not found, cannot create DMG")
         return None
-    
+
     dmg_name = f"JD-Xi_Editor_{VERSION}_MacOS_Universal.dmg"
     volume_name = "JDXI Editor"
     build_dir = PROJECT_ROOT / "jdxi_dmg" / "JDXI-Editor"
     dmg_path = PROJECT_ROOT / dmg_name
-    
+
     # Clean previous builds
     if build_dir.exists():
         print(f"  Removing existing {build_dir}...")
         shutil.rmtree(build_dir)
-    
+
     if dmg_path.exists():
         print(f"  Removing existing {dmg_path}...")
         dmg_path.unlink()
-    
+
     # Prepare DMG content folder
     print(f"  Creating DMG staging directory: {build_dir}")
     build_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Copy app bundle
     print(f"  Copying app bundle to staging directory...")
     shutil.copytree(app_bundle_path, build_dir / APP_NAME)
     print("  ✓ App bundle copied")
-    
+
     # Create Applications symlink
     apps_link = build_dir / "Applications"
     if apps_link.exists() or apps_link.is_symlink():
         apps_link.unlink()
     apps_link.symlink_to("/Applications")
     print("  ✓ Applications symlink created")
-    
+
     # Create DMG
     print(f"  Creating DMG: {dmg_name}...")
     cmd = [
@@ -387,55 +399,55 @@ def make_dmg(app_bundle_path):
         "-format", "UDZO",
         str(dmg_path),
     ]
-    
+
     result = run_command(cmd, check=False)
     if result is None or result.returncode != 0:
         print("  ✗ DMG creation failed")
         return None
-    
+
     if not dmg_path.exists():
         print("  ✗ DMG was not created")
         return None
-    
+
     # Get DMG size
     dmg_size = shutil.disk_usage(dmg_path).used / (1024 * 1024)  # MB
     print(f"  ✓ DMG created: {dmg_path}")
     print(f"  ✓ DMG size: {dmg_size:.1f} MB")
-    
+
     return dmg_path
 
 
 def make_pkg(app_bundle_path):
     """Create a PKG installer from the app bundle."""
     print("\n📦 Creating PKG installer...")
-    
+
     if not app_bundle_path or not Path(app_bundle_path).exists():
         print("  ✗ App bundle not found, cannot create PKG")
         return None
-    
+
     pkg_name = f"JD-Xi_Editor_{VERSION}_MacOS_Universal.pkg"
     build_dir = PROJECT_ROOT / "pkg_build"
     install_dir = build_dir / INSTALL_LOCATION.lstrip("/")
     pkg_path = PROJECT_ROOT / pkg_name
-    
+
     # Clean previous builds
     if build_dir.exists():
         print(f"  Removing existing {build_dir}...")
         shutil.rmtree(build_dir)
-    
+
     if pkg_path.exists():
         print(f"  Removing existing {pkg_path}...")
         pkg_path.unlink()
-    
+
     # Create staging directory
     print(f"  Creating staging directory: {install_dir}")
     install_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Copy app bundle
     print(f"  Copying app bundle to staging directory...")
     shutil.copytree(app_bundle_path, install_dir / APP_NAME)
     print("  ✓ App bundle copied")
-    
+
     # Build PKG
     print(f"  Building PKG installer: {pkg_name}...")
     cmd = [
@@ -446,25 +458,25 @@ def make_pkg(app_bundle_path):
         "--install-location", "/",
         str(pkg_path),
     ]
-    
+
     result = run_command(cmd, check=False)
     if result is None or result.returncode != 0:
         print("  ✗ PKG creation failed")
         return None
-    
+
     if not pkg_path.exists():
         print("  ✗ PKG was not created")
         return None
-    
+
     # Get PKG size
     pkg_size = shutil.disk_usage(pkg_path).used / (1024 * 1024)  # MB
     print(f"  ✓ PKG created: {pkg_path}")
     print(f"  ✓ PKG size: {pkg_size:.1f} MB")
-    
+
     # Clean up staging directory
     print("  Cleaning up staging directory...")
     shutil.rmtree(build_dir)
-    
+
     return pkg_path
 
 
@@ -516,30 +528,30 @@ Examples:
         action="store_true",
         help="Skip py2app build (use with --app for simple bundle)"
     )
-    
+
     args = parser.parse_args()
-    
+
     print(f"🎹 {APP_DISPLAY_NAME} v{VERSION} - macOS Build System")
     print("=" * 50)
-    
+
     if args.clean:
         clean_build_dirs()
         print("\n✓ Clean complete")
         return
-    
+
     # Determine what to build
     build_py2app = not args.no_py2app and not args.app
     build_simple_app = args.app
     build_dmg = args.dmg or args.all
     build_pkg = args.pkg or args.all
-    
+
     check_dependencies()
-    
+
     if not args.no_clean:
         clean_build_dirs()
-    
+
     app_bundle = None
-    
+
     # Build app bundle
     if build_py2app:
         app_bundle = build_with_py2app()
@@ -547,16 +559,16 @@ Examples:
             print("\n✗ py2app build failed")
             if not build_simple_app:
                 sys.exit(1)
-    
+
     if build_simple_app:
         app_bundle = create_app_bundle()
         if app_bundle is None:
             print("\n✗ App bundle creation failed")
             sys.exit(1)
-    
+
     # Build DMG and PKG if requested
     results = []
-    
+
     if build_dmg:
         if app_bundle:
             dmg_path = make_dmg(app_bundle)
@@ -564,7 +576,7 @@ Examples:
         else:
             print("\n⚠ Cannot create DMG: no app bundle available")
             results.append(("DMG", None))
-    
+
     if build_pkg:
         if app_bundle:
             pkg_path = make_pkg(app_bundle)
@@ -572,14 +584,14 @@ Examples:
         else:
             print("\n⚠ Cannot create PKG: no app bundle available")
             results.append(("PKG", None))
-    
+
     # Summary
     print("\n" + "=" * 50)
     print("📋 Build Summary:")
-    
+
     if app_bundle:
         print(f"  ✓ App Bundle: {app_bundle}")
-    
+
     success_count = 0
     for name, path in results:
         if path:
@@ -587,10 +599,10 @@ Examples:
             success_count += 1
         else:
             print(f"  ✗ {name}: Failed")
-    
+
     if results:
         print(f"\n✓ {success_count}/{len(results)} packages built successfully")
-    
+
     if app_bundle or success_count > 0:
         print(f"\n📁 Output directory: {DIST_DIR if build_py2app else PROJECT_ROOT}")
 

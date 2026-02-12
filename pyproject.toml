@@ -28,8 +28,14 @@ classifiers = [
 dependencies = [
     "PySide6>=6.8.1.1",
     "PySide6_Addons>=6.8.1.1",
-    "PySide6_Essentials>=6.8.1.1", 
+    "PySide6_Essentials>=6.8.1.1",
     "python-rtmidi>=1.5.8",
+    "qtpy",
+    "qtawesome",
+    "mido",
+    "Pillow",
+    "decologr",
+    "picomidi",
 ]
 
 [project.urls]
