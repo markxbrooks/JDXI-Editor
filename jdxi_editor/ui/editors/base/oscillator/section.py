@@ -354,12 +354,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         selected_btn = self.wave_shape_buttons.get(lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn, self.analog)
-            else:
-                selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
-        if self.analog:
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(widget=selected_btn, analog=self.analog)
 
         # ---  Send MIDI message
         if self._send_param:

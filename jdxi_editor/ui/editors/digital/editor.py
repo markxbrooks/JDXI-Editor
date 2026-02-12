@@ -1156,8 +1156,15 @@ class DigitalSynthEditor(BaseSynthEditor):
 
         osc_section = self.partial_editors[partial_number].oscillator_tab
 
-        # Route through oscillator section's selection logic so UI state and
-        # BUTTON_ENABLE_RULES are applied consistently, but suppress MIDI echo.
+        # If the oscillator uses a ModeButtonGroup for waveforms, drive it directly
+        # so UI state and BUTTON_ENABLE_RULES are applied consistently without
+        # echoing MIDI from data_request/SysEx updates.
+        if hasattr(osc_section, "wave_mode_group") and osc_section.wave_mode_group:
+            osc_section.wave_mode_group.set_mode(selected_waveform, send_midi=False)
+            osc_section._update_button_enabled_states(selected_waveform)
+            return
+
+        # Fallback: legacy path using _on_button_selected with MIDI suppression
         osc_section._suppress_waveform_midi = True
         try:
             osc_section._on_button_selected(selected_waveform)

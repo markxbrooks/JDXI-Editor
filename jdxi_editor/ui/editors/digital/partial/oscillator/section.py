@@ -31,6 +31,8 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_group_from_definition,
     create_layout_with_widgets,
 )
+from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
+from jdxi_editor.ui.widgets.editor.mode_button_group import ModeButtonGroup, ModeButtonSpec
 from jdxi_editor.ui.widgets.pcm.wave import PCMWaveWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
@@ -112,6 +114,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.spec: OscillatorLayoutSpec = self._build_layout_spec()
         self.spec_pwm: PWMSpec = self.spec.pwm
         self.spec_pitch_env: PitchEnvelopeSpec = self.spec.pitch_env
+        self.wave_mode_group: ModeButtonGroup | None = None
         # Initialize controls before creating PCMWaveWidget so it can register controls
         # (ControlRegistry is a singleton, so this ensures self.controls exists)
         self.controls = ControlRegistry()
@@ -137,6 +140,44 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.pcm_wave_gain = self.pcm_wave.pcm_wave_gain
         self.pcm_wave_number = self.pcm_wave.pcm_wave_number
         self.finalize()
+
+    # ------------------------------------------------------------------
+    # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
+    # ------------------------------------------------------------------
+    def _create_waveform_buttons(self):
+        """Create Digital wave buttons using ModeButtonGroup instead of raw QPushButtons."""
+        specs = [
+            ModeButtonSpec(
+                mode=spec.param,  # Digital.Wave.Osc.*
+                label=spec.label,
+                icon_name=spec.icon_name,
+            )
+            for spec in self.wave_shapes
+        ]
+
+        def _on_mode_changed(mode):
+            # Enable/disable dependent widgets per BUTTON_ENABLE_RULES
+            self._update_button_enabled_states(mode)
+
+        def _waveform_icon_factory(icon_name):
+            # Waveform icons use PIL-generated pixmaps, not QtAwesome names
+            key = getattr(icon_name, "value", icon_name)
+            return generate_icon_from_waveform(key)
+
+        self.wave_mode_group = ModeButtonGroup(
+            specs,
+            analog=self.analog,
+            send_midi_parameter=self._send_param,
+            midi_param=Digital.Param.OSC_WAVEFORM,
+            on_mode_changed=_on_mode_changed,
+            icon_factory=_waveform_icon_factory,
+            parent=self,
+        )
+
+        # Expose legacy mapping API used elsewhere
+        self.waveform_buttons = self.wave_mode_group.buttons
+        self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
+        return self.waveform_buttons
 
     def _define_spec(self):
         self.spec: OscillatorLayoutSpec = self._build_layout_spec()
