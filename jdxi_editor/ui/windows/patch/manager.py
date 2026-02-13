@@ -45,7 +45,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.editors import ProgramEditor
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 
 
@@ -158,7 +158,7 @@ class PatchManager(QMainWindow):
                         continue
                     if isinstance(editor, ProgramEditor):
                         continue
-                    if isinstance(editor, MidiFileEditor):
+                    if isinstance(editor, MidiFilePlayer):
                         continue
                     if not hasattr(editor, "address"):
                         log.warning(
@@ -175,7 +175,7 @@ class PatchManager(QMainWindow):
                 # Save MIDI file if available
                 midi_file_saved = False
                 if self.parent and hasattr(self.parent, "get_existing_editor"):
-                    midi_file_editor = self.parent.get_existing_editor(MidiFileEditor)
+                    midi_file_editor = self.parent.get_existing_editor(MidiFilePlayer)
                     if midi_file_editor and hasattr(midi_file_editor, "midi_state"):
                         if (
                             hasattr(midi_file_editor.midi_state, "file")
@@ -237,15 +237,15 @@ class PatchManager(QMainWindow):
 
                                 # Load MIDI file into editor
                                 midi_file_editor = self.parent.get_existing_editor(
-                                    MidiFileEditor
+                                    MidiFilePlayer
                                 )
                                 if not midi_file_editor and hasattr(
                                     self.parent, "show_editor"
                                 ):
                                     # Create editor if it doesn't exist (but don't show it yet)
-                                    self.parent.show_editor("midi_file")
+                                    self.parent.show_editor("midi_player")
                                     midi_file_editor = self.parent.get_existing_editor(
-                                        MidiFileEditor
+                                        MidiFilePlayer
                                     )
 
                                 if midi_file_editor:

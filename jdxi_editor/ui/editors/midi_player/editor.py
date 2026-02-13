@@ -54,11 +54,11 @@ from jdxi_editor.midi.track.classification import classify_tracks
 from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
-from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
-from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
-from jdxi_editor.ui.editors.io.ui_midi_player import UiMidi
-from jdxi_editor.ui.editors.io.utils import format_time, tempo2bpm
+from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
+from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
+from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
@@ -66,7 +66,6 @@ from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_centered_layout,
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
@@ -81,7 +80,7 @@ Signal = None
 Slot = None
 
 
-class MidiFileEditor(SynthEditor):
+class MidiFilePlayer(SynthEditor):
     """
     Midi File Editor
     """
@@ -123,7 +122,7 @@ class MidiFileEditor(SynthEditor):
         # self.usb_recording_thread = None
         self.usb_recorder = USBRecorder(channels=1)
         # Initialize UI attributes
-        self.ui = UiMidi()
+        self.ui = MidiPlayerWidgets()
         self.ui_init()
 
     def midi_timer_init(self):

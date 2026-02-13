@@ -11,10 +11,9 @@ Tests cover:
 import os
 import tempfile
 import unittest
-from unittest.mock import MagicMock, Mock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pyaudio
-import wave
 
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.midi.utils.helpers import (
@@ -22,7 +21,7 @@ from jdxi_editor.midi.utils.helpers import (
     on_usb_recording_finished,
     on_usb_recording_error,
 )
-from jdxi_editor.ui.editors.io.recording_thread import WavRecordingThread
+from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
 
 
 class TestUSBRecorder(unittest.TestCase):

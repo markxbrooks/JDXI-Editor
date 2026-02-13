@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Integration test for sheep.mid playback through player.py interface with Qt mocked.
+Integration test for sheep.mid playback through editor.py interface with Qt mocked.
 This test verifies that the actual MIDI file plays at the correct tempo and that
 tempo changes occur at the expected times (e.g., Bar 27).
 """
@@ -11,13 +11,12 @@ import sys
 import os
 import time
 from mido import MidiFile
-import mido  # is required lower down
 from PySide6.QtWidgets import QApplication
 
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
@@ -41,9 +40,9 @@ class TestSheepIntegration(unittest.TestCase):
         self.mock_preset_helper = Mock(spec=JDXiPresetHelper)
         
         # Mock ui_init to skip UI initialization (which requires real Qt widgets)
-        with patch.object(MidiFileEditor, 'ui_init', return_value=None):
+        with patch.object(MidiFilePlayer, 'ui_init', return_value=None):
             # Create player instance
-            self.player = MidiFileEditor(
+            self.player = MidiFilePlayer(
                 midi_helper=self.mock_midi_helper,
                 preset_helper=self.mock_preset_helper
             )
@@ -173,7 +172,7 @@ class TestSheepIntegration(unittest.TestCase):
         self.player.midi_message_buffer_refill()
         
         # Create worker with the buffered messages
-        from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+        from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
         
         worker = MidiPlaybackWorker()
         worker.setup(
@@ -206,7 +205,7 @@ class TestSheepIntegration(unittest.TestCase):
             print(f"First few tempo changes: {tempo_changes_in_buffer[:5]}")
         
         # Create worker
-        from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+        from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
         
         worker = MidiPlaybackWorker()
         worker.setup(

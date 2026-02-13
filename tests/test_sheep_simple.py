@@ -13,8 +13,7 @@ from mido import MidiFile
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
-from picomidi.constant import Midi
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 
 
 def test_sheep_midi_analysis():
@@ -71,7 +70,7 @@ def test_buffer_processing():
     midi_file_path = 'tests/sheep.mid'
     midi_file = MidiFile(midi_file_path)
     
-    # Simulate the buffer processing logic from player.py
+    # Simulate the buffer processing logic from editor.py
     buffered_msgs = []
     tempo_at_position = 967745  # 62 BPM
     

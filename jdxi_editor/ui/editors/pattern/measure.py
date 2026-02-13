@@ -6,9 +6,9 @@ Extracts a single measure from a midi file.
 
 Example usage
 =============
->>>midi_file = 'your_midi_file.mid'  # Replace with your MIDI file path
+>>>midi_player = 'your_midi_file.mid'  # Replace with your MIDI file path
 ...measure_to_extract = 2  # Extract notes from the second measure
-...extracted_notes = extract_measure(midi_file, measure_to_extract)
+...extracted_notes = extract_measure(midi_player, measure_to_extract)
 
 >>>print(f"Notes in measure {measure_to_extract}:")
 ...for note in extracted_notes:

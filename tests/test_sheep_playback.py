@@ -4,7 +4,6 @@ Unit test for sheep.mid playback with tempo changes
 
 import unittest
 import time
-import threading
 from unittest.mock import Mock, patch
 import sys
 import os
@@ -12,10 +11,8 @@ import os
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
-from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 import mido
 
 
@@ -228,7 +225,7 @@ class TestSheepPlayback(unittest.TestCase):
 
     def test_realtime_playback_timing_simulation(self):
         """Test that tempo changes would occur at correct times during simulated playback"""
-        from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+        from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
         from unittest.mock import Mock, patch
         import time
         

@@ -63,7 +63,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
 )
-from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
+from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset

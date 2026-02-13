@@ -13,16 +13,15 @@ import tempfile
 import unittest
 from pathlib import Path
 from typing import Dict, Any
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock
 
 from PySide6.QtWidgets import QApplication
 from mido import MidiFile, Message, MetaMessage
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
-from jdxi_editor.ui.editors import AnalogSynthEditor, DigitalSynthEditor, DrumCommonEditor
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
-from jdxi_editor.ui.windows.patch.manager import PatchManager, zip_directory
+from jdxi_editor.ui.editors import AnalogSynthEditor
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
+from jdxi_editor.ui.windows.patch.manager import PatchManager
 
 # Initialize QApplication for tests
 _app = None
@@ -120,7 +119,7 @@ class TestMSZRoundTrip(unittest.TestCase):
 
     def _create_mock_midi_file_editor(self) -> Mock:
         """Create a mock MidiFileEditor with a loaded MIDI file."""
-        mock_editor = Mock(spec=MidiFileEditor)
+        mock_editor = Mock(spec=MidiFilePlayer)
         mock_editor.midi_state = Mock()
         mock_editor.midi_state.file = MidiFile(str(self.test_midi_file))
         return mock_editor
@@ -131,7 +130,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         mock_parent = QWidget()
         
         def get_existing_editor(editor_class):
-            if editor_class == MidiFileEditor and midi_file_editor:
+            if editor_class == MidiFilePlayer and midi_file_editor:
                 return midi_file_editor
             return None
         
@@ -170,7 +169,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         midi_file_editor = self._create_mock_midi_file_editor()
         from PySide6.QtWidgets import QWidget
         mock_parent = QWidget()
-        mock_parent.get_existing_editor = lambda editor_class: midi_file_editor if editor_class == MidiFileEditor else None
+        mock_parent.get_existing_editor = lambda editor_class: midi_file_editor if editor_class == MidiFilePlayer else None
         
         # Save as .msz
         editors = [editor]
@@ -296,7 +295,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         midi_file_editor = self._create_mock_midi_file_editor()
         from PySide6.QtWidgets import QWidget
         mock_parent = QWidget()
-        mock_parent.get_existing_editor = lambda editor_class: midi_file_editor if editor_class == MidiFileEditor else None
+        mock_parent.get_existing_editor = lambda editor_class: midi_file_editor if editor_class == MidiFilePlayer else None
         
         # Save as .msz
         editors = [analog_editor, drum_editor]

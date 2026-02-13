@@ -88,7 +88,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_id_by_name,
 )
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.preset.editor import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
@@ -203,8 +203,8 @@ class JDXiInstrument(JDXiWindow):
             "program": EditorConfig(
                 title="Program", editor_class=ProgramEditor, icon="ri.speaker-line"
             ),
-            "midi_file": EditorConfig(
-                title="MIDI File", editor_class=MidiFileEditor, icon="mdi.midi-port"
+            "midi_player": EditorConfig(
+                title="MIDI File", editor_class=MidiFilePlayer, icon="mdi.midi-port"
             ),
         }
 
@@ -633,7 +633,7 @@ class JDXiInstrument(JDXiWindow):
         self.show_editor("effects")
         self.show_editor("vocal_fx")
         self.show_editor("pattern")
-        self.show_editor("midi_file")
+        self.show_editor("midi_player")
         self.main_editor.editor_tab_widget.setCurrentIndex(0)
         self.main_editor.blockSignals(False)
         self.main_editor.setUpdatesEnabled(True)
@@ -734,7 +734,7 @@ class JDXiInstrument(JDXiWindow):
                     PatternSequenceEditor,
                     ProgramEditor,
                     PresetEditor,
-                    MidiFileEditor,
+                    MidiFilePlayer,
                     VocalFXEditor,
                     EffectsCommonEditor,
                 }
@@ -743,10 +743,10 @@ class JDXiInstrument(JDXiWindow):
 
             # Connect Pattern Sequencer to MidiFileEditor if both exist
             if editor_class == PatternSequenceEditor:
-                midi_file_editor = self.get_existing_editor(MidiFileEditor)
+                midi_file_editor = self.get_existing_editor(MidiFilePlayer)
                 if midi_file_editor:
                     kwargs["midi_file_editor"] = midi_file_editor
-            elif editor_class == MidiFileEditor:
+            elif editor_class == MidiFilePlayer:
                 # After creating MidiFileEditor, connect it to Pattern Sequencer
                 def connect_pattern_sequencer():
                     pattern_editor = self.get_existing_editor(PatternSequenceEditor)
@@ -821,14 +821,14 @@ class JDXiInstrument(JDXiWindow):
             self.register_editor(editor)
 
             # Connect Pattern Sequencer to MidiFileEditor after creation
-            if editor_class == MidiFileEditor:
+            if editor_class == MidiFilePlayer:
                 # Connect to Pattern Sequencer if it exists
                 pattern_editor = self.get_existing_editor(PatternSequenceEditor)
                 if pattern_editor and hasattr(pattern_editor, "set_midi_file_editor"):
                     pattern_editor.set_midi_file_editor(editor)
             elif editor_class == PatternSequenceEditor:
                 # Connect to MidiFileEditor if it exists
-                midi_file_editor = self.get_existing_editor(MidiFileEditor)
+                midi_file_editor = self.get_existing_editor(MidiFilePlayer)
                 if midi_file_editor:
                     editor.set_midi_file_editor(midi_file_editor)
 
@@ -901,7 +901,7 @@ class JDXiInstrument(JDXiWindow):
                     PatternSequenceEditor,
                     ProgramEditor,
                     PresetEditor,
-                    MidiFileEditor,
+                    MidiFilePlayer,
                     VocalFXEditor,
                     EffectsCommonEditor,
                 ]
@@ -1122,13 +1122,13 @@ class JDXiInstrument(JDXiWindow):
             return
 
         # Get or create MIDI file editor
-        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
         if not self.midi_file_editor:
-            self.show_editor("midi_file")
+            self.show_editor("midi_player")
 
         # Load the file directly
         self.midi_file_editor.midi_load_file_from_path(file_path)
-        self.show_editor("midi_file")
+        self.show_editor("midi_player")
 
     def _clear_recent_files(self) -> None:
         """Clear all recent files."""
@@ -1145,14 +1145,14 @@ class JDXiInstrument(JDXiWindow):
         2. If the editor does not exist, create and show it.
         3. After saving, show the editor again.
         """
-        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
         if not self.midi_file_editor:
-            self.show_editor("midi_file")
+            self.show_editor("midi_player")
         # Set parent so midi_load_file can access recent_files_manager
         if self.midi_file_editor:
             self.midi_file_editor.parent = self
         self.midi_file_editor.midi_load_file()
-        self.show_editor("midi_file")
+        self.show_editor("midi_player")
 
     def _midi_file_save(self):
         """
@@ -1162,11 +1162,11 @@ class JDXiInstrument(JDXiWindow):
         2. If the editor does not exist, create and show it.
         3. After saving, show the editor again.
         """
-        self.midi_file_editor = self.get_existing_editor(MidiFileEditor)
+        self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
         if not self.midi_file_editor:
-            self.show_editor("midi_file")
+            self.show_editor("midi_player")
         self.midi_file_editor.midi_save_file()
-        self.show_editor("midi_file")
+        self.show_editor("midi_player")
 
     def _patch_load(self) -> None:
         """Show load patch dialog"""
@@ -1243,11 +1243,11 @@ class JDXiInstrument(JDXiWindow):
 
                 # Skip certain editor types
                 from jdxi_editor.ui.editors import ProgramEditor
-                from jdxi_editor.ui.editors.io.player import MidiFileEditor
+                from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
                 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 
                 if isinstance(
-                    editor, (PatternSequenceEditor, ProgramEditor, MidiFileEditor)
+                    editor, (PatternSequenceEditor, ProgramEditor, MidiFilePlayer)
                 ):
                     continue
 

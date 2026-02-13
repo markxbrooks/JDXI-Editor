@@ -7,14 +7,13 @@ during sheep.mid playback, not immediately during setup.
 import os
 import sys
 import time
-import threading
 from unittest.mock import Mock, patch
 
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import mido
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 
 
 def test_emitting_timing():

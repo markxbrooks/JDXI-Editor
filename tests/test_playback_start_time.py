@@ -11,8 +11,7 @@ from unittest.mock import Mock, patch
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from jdxi_editor.ui.editors.io.player import MidiFileEditor
-from jdxi_editor.ui.editors.io.midi_playback_state import MidiPlaybackState
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.midi.io.helper import MidiIOHelper
 import mido
 
@@ -30,7 +29,7 @@ def test_playback_start_time_fix():
         mock_midi_helper.midi_out.send_message = Mock()
         
         # Create player
-        player = MidiFileEditor(midi_helper=mock_midi_helper)
+        player = MidiFilePlayer(midi_helper=mock_midi_helper)
         
         # Load a test MIDI file
         midi_file_path = os.path.join(os.path.dirname(__file__), 'sheep.mid')

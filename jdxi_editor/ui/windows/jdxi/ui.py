@@ -321,7 +321,7 @@ class JDXiWindow(QMainWindow):
 
         # --- Add MIDI file action
         midi_file_action = QAction("MIDI File", self)
-        midi_file_action.triggered.connect(lambda: self.show_editor("midi_file"))
+        midi_file_action.triggered.connect(lambda: self.show_editor("midi_player"))
         playback_menu.addAction(midi_file_action)
 
         arpeggiator_action = playback_menu.addAction("Arpeggiator")

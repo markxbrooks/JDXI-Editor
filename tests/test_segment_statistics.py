@@ -25,7 +25,7 @@ def test_segment_statistics():
     midi_file = MidiFile(midi_file_path)
     ticks_per_beat = midi_file.ticks_per_beat
     
-    # Create the full buffer with all messages (simulating what player.py does)
+    # Create the full buffer with all messages (simulating what editor.py does)
     buffered_msgs = []
     tempo_at_position = 967745  # 62 BPM
     

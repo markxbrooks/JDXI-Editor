@@ -38,7 +38,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
-from jdxi_editor.ui.editors.io.transport.spec import TransportSpec
+from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
@@ -958,15 +958,15 @@ class PlaylistEditor(QWidget):
 
             if parent_instrument and hasattr(parent_instrument, "get_existing_editor"):
                 # Get or create MidiFileEditor
-                from jdxi_editor.ui.editors.io.player import MidiFileEditor
+                from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 
-                midi_file_editor = parent_instrument.get_existing_editor(MidiFileEditor)
+                midi_file_editor = parent_instrument.get_existing_editor(MidiFilePlayer)
 
                 if not midi_file_editor:
                     # Create the editor if it doesn't exist
-                    parent_instrument.show_editor("midi_file")
+                    parent_instrument.show_editor("midi_player")
                     midi_file_editor = parent_instrument.get_existing_editor(
-                        MidiFileEditor
+                        MidiFilePlayer
                     )
 
                 if midi_file_editor:

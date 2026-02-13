@@ -303,7 +303,7 @@ def find_drum_track(midi_file_path: str) -> Optional[Tuple[int, dict]]:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python analyze_drum_track.py <midi_file>")
+        print("Usage: python analyze_drum_track.py <midi_player>")
         print("\nExample:")
         print("  python analyze_drum_track.py theperfectkiss.mid")
         sys.exit(1)

@@ -71,14 +71,14 @@ from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
-from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
-from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
+from jdxi_editor.ui.editors.preset.type import PresetTitle
+from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.program.mixer import ProgramMixer
 from jdxi_editor.ui.editors.playlist.editor import PlaylistEditor
 from jdxi_editor.ui.editors.playlist.table import PlaylistTable
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
-from jdxi_editor.ui.editors.io.user_programs_widget import UserProgramsWidget
+from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset

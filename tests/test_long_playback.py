@@ -13,8 +13,7 @@ from mido import MidiFile
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
-from picomidi.constant import Midi
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 
 
 def test_long_playback():

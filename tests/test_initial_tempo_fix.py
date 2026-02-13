@@ -5,14 +5,14 @@ Test script to verify that the initial tempo fix works correctly.
 
 import unittest
 import time
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import sys
 import os
 
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from jdxi_editor.ui.editors.io.playback_worker import MidiPlaybackWorker
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 
 
 class TestInitialTempoFix(unittest.TestCase):
