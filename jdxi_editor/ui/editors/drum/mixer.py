@@ -57,31 +57,31 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
     DrumLaneRow(
         title="Low End",
         lanes=[
-            DrumLane("Kick", ["BD1", "BD2", "BD3"]),
-            DrumLane("Toms", ["TOM1", "TOM2", "TOM3"]),
+            DrumLane(name="Kick", partials=["BD1", "BD2", "BD3"]),
+            DrumLane(name="Toms", partials=["TOM1", "TOM2", "TOM3"]),
         ],
     ),
 
     DrumLaneRow(
         title="Snares",
         lanes=[
-            DrumLane("Snare", ["SD1", "SD2", "SD3", "SD4", "RIM", "CLAP"]),
+            DrumLane(name="Snare", partials=["SD1", "SD2", "SD3", "SD4", "RIM", "CLAP"], colspan=2),
         ],
     ),
 
     DrumLaneRow(
         title="Backbeat",
         lanes=[
-            DrumLane("Hi-Hat", ["CHH", "PHH", "OHH"]),
-            DrumLane("Cymbals", ["CYM1", "CYM2", "CYM3"]),
+            DrumLane(name="Hi-Hat", partials=["CHH", "PHH", "OHH"]),
+            DrumLane(name="Cymbals", partials=["CYM1", "CYM2", "CYM3"]),
         ],
     ),
 
     DrumLaneRow(
         title="Time",
         lanes=[
-            DrumLane("Percussion", ["PRC1", "PRC2", "PRC3", "PRC4", "PRC5"]),
-            DrumLane("Other", ["HIT", "OTH1", "OTH2"]),
+            DrumLane(name="Percussion", partials=["PRC1", "PRC2", "PRC3", "PRC4", "PRC5"]),
+            DrumLane(name="Other", partials=["HIT", "OTH1", "OTH2"]),
         ],
     ),
 
@@ -89,8 +89,8 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
         title="Notes",
         lanes=[
             DrumLane(
-                "Chromatic",
-                ["D4", "Eb4", "E4", "F4", "F#4", "G4", "G#4", "A4", "Bb4", "B4", "C5", "C#5"],
+                name="Chromatic",
+                partials=["D4", "Eb4", "E4", "F4", "F#4", "G4", "G#4", "A4", "Bb4", "B4", "C5", "C#5"],
                 colspan=2,
             ),
         ],
