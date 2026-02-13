@@ -11,7 +11,7 @@ Classes:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.program.track_entity import MixerTrackEntity, MixerTrack
+from jdxi_editor.ui.editors.program.track import MixerTrackEntity, MixerTrack
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
