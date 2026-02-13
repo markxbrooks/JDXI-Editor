@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.io.preset import PresetEditor
+from jdxi_editor.ui.editors.preset.editor import PresetEditor
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 
 

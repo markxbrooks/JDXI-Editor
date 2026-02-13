@@ -73,11 +73,11 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.program.mixer_widget import ProgramMixerWidget
-from jdxi_editor.ui.editors.io.playlist_editor_widget import PlaylistEditorWidget
-from jdxi_editor.ui.editors.io.playlist_widget import PlaylistWidget
-from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
-from jdxi_editor.ui.editors.io.program_group_widget import ProgramGroupWidget
+from jdxi_editor.ui.editors.program.mixer import ProgramMixer
+from jdxi_editor.ui.editors.playlist.editor import PlaylistEditor
+from jdxi_editor.ui.editors.playlist.table import PlaylistTable
+from jdxi_editor.ui.editors.preset.widget import PresetWidget
+from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.io.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -142,11 +142,11 @@ class ProgramEditor(BasicEditor):
         # Initialize widget references before setup_ui() to prevent AttributeError
         # if callbacks are triggered during widget creation
         self.controls: Dict[AddressParameter, QWidget] = {}
-        self.mixer_widget: Optional[ProgramMixerWidget] = None
-        self.program_group_widget: Optional[ProgramGroupWidget] = None
+        self.mixer_widget: Optional[ProgramMixer] = None
+        self.program_group_widget: Optional[ProgramGroup] = None
         self.user_programs_widget: Optional[UserProgramsWidget] = None
-        self.playlist_widget: Optional[PlaylistWidget] = None
-        self.playlist_editor_widget: Optional[PlaylistEditorWidget] = None
+        self.playlist_widget: Optional[PlaylistTable] = None
+        self.playlist_editor_widget: Optional[PlaylistEditor] = None
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
@@ -257,7 +257,7 @@ class ProgramEditor(BasicEditor):
                 "🔨Creating Playlist tab for main window...",
                 scope=self.__class__.__name__,
             )
-            self.playlist_widget = PlaylistWidget(
+            self.playlist_widget = PlaylistTable(
                 parent=self,
                 on_playlist_changed=self._on_playlist_changed,
             )
@@ -293,7 +293,7 @@ class ProgramEditor(BasicEditor):
                 "🔨Creating Playlist Editor tab for main window...",
                 scope=self.__class__.__name__,
             )
-            self.playlist_editor_widget = PlaylistEditorWidget(
+            self.playlist_editor_widget = PlaylistEditor(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
                 parent=self,
@@ -340,7 +340,7 @@ class ProgramEditor(BasicEditor):
         program_preset_hlayout.addStretch()
 
         # Create ProgramGroupWidget
-        self.program_group_widget = ProgramGroupWidget(parent=self)
+        self.program_group_widget = ProgramGroup(parent=self)
         self.program_group_widget.channel = self.channel
         # Sync program_preset reference for backward compatibility
         self.program_preset = self.program_group_widget.preset
@@ -377,7 +377,7 @@ class ProgramEditor(BasicEditor):
         self.populate_programs()
 
         # Create mixer widget
-        self.mixer_widget = ProgramMixerWidget(
+        self.mixer_widget = ProgramMixer(
             midi_helper=self.midi_helper, parent=self
         )
         mixer_group = self.mixer_widget.create_mixer_widget()

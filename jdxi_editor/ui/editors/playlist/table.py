@@ -30,7 +30,7 @@ from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
-class PlaylistWidget(QWidget):
+class PlaylistTable(QWidget):
     """Widget for managing playlists in a database table."""
 
     # Signal emitted when a playlist is created, deleted, or updated

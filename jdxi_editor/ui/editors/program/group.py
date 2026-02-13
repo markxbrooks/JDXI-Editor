@@ -25,7 +25,7 @@ from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 if TYPE_CHECKING:
-    from jdxi_editor.ui.editors.io.program import ProgramEditor
+    from jdxi_editor.ui.editors.program.editor import ProgramEditor
 
 from decologr import Decologr as log
 
@@ -38,8 +38,8 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
 )
-from jdxi_editor.ui.editors.program.mixer_widget import ProgramMixerWidget
-from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
+from jdxi_editor.ui.editors.program.mixer import ProgramMixer
+from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -47,12 +47,12 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
-class ProgramGroupWidget(QGroupBox):
+class ProgramGroup(QGroupBox):
     """Program Widget"""
 
     def __init__(self, title: str = None, parent: Optional["ProgramEditor"] = None):
         super().__init__("Load a program")
-        self.mixer_widget: Optional[ProgramMixerWidget] = None
+        self.mixer_widget: Optional[ProgramMixer] = None
         self.parent = parent
         self.preset: PresetWidget = PresetWidget(parent=self)
         self.program_name = ""

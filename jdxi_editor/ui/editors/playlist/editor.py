@@ -26,7 +26,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QListWidget,
     QMessageBox,
     QPushButton,
     QTableWidget,
@@ -47,7 +46,7 @@ from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
 
-class PlaylistEditorWidget(QWidget):
+class PlaylistEditor(QWidget):
     """Widget for editing playlist contents."""
 
     # Signal emitted when playlist programs change (for refreshing combo)
@@ -1154,7 +1153,7 @@ class PlaylistEditorWidget(QWidget):
                 # Found JDXiInstrument
                 try:
                     # Check if ProgramEditor is already open
-                    from jdxi_editor.ui.editors.io.program import ProgramEditor
+                    from jdxi_editor.ui.editors.program.editor import ProgramEditor
 
                     existing_editor = parent_instrument.get_existing_editor(
                         ProgramEditor

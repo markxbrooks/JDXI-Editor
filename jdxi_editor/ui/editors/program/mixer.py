@@ -28,7 +28,7 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 
 
-class ProgramMixerWidget(SynthBase):
+class ProgramMixer(SynthBase):
     """Widget for managing mixer level controls."""
 
     def __init__(

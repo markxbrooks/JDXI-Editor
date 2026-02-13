@@ -1,4 +1,6 @@
-"""MIDI playback state management."""
+"""
+MIDI playback state management.
+"""
 
 from collections import defaultdict
 from dataclasses import dataclass, field

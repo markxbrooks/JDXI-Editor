@@ -89,7 +89,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
 )
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
-from jdxi_editor.ui.editors.io.preset import PresetEditor
+from jdxi_editor.ui.editors.preset.editor import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
