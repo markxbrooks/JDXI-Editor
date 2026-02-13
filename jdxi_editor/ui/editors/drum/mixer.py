@@ -5,11 +5,15 @@ Provides 37 vertical sliders for controlling the master level and
 all 36 drum partial levels.
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Iterator
+from dataclasses import dataclass
+
+from docutils.nodes import title
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (QGroupBox, QWidget, QVBoxLayout,
+                               QHBoxLayout, QSizePolicy, QGridLayout, QLabel, QScrollArea, QSlider)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
@@ -26,6 +30,131 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.slider import Slider
 
 
+@dataclass(frozen=True)
+class DrumLane:
+    name: str
+    partials: list[str]
+    colspan: int = 1
+
+
+@dataclass(frozen=True)
+class DrumLaneRow:
+    title: str
+    lanes: list[DrumLane]
+
+    # iteration: for lane in row
+    def __iter__(self) -> Iterator["DrumLane"]:
+        return iter(self.lanes)
+
+    # len(row)
+    def __len__(self) -> int:
+        return len(self.lanes)
+
+    # row[index]
+    def __getitem__(self, index: int) -> "DrumLane":
+        return self.lanes[index]
+
+
+DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
+    DrumLaneRow(
+        title="Low End",
+        lanes=[
+            DrumLane("Kick", ["BD1", "BD2", "BD3"]),
+            DrumLane("Toms", ["TOM1", "TOM2", "TOM3"]),
+        ],
+    ),
+
+    DrumLaneRow(
+        title="Snares",
+        lanes=[
+            DrumLane("Snare", ["SD1", "SD2", "SD3", "SD4", "RIM", "CLAP"]),
+        ],
+    ),
+
+    DrumLaneRow(
+        title="Backbeat",
+        lanes=[
+            DrumLane("Hi-Hat", ["CHH", "PHH", "OHH"]),
+            DrumLane("Cymbals", ["CYM1", "CYM2", "CYM3"]),
+        ],
+    ),
+
+    DrumLaneRow(
+        title="Time",
+        lanes=[
+            DrumLane("Percussion", ["PRC1", "PRC2", "PRC3", "PRC4", "PRC5"]),
+            DrumLane("Other", ["HIT", "OTH1", "OTH2"]),
+        ],
+    ),
+
+    DrumLaneRow(
+        title="Notes",
+        lanes=[
+            DrumLane(
+                "Chromatic",
+                ["D4", "Eb4", "E4", "F4", "F#4", "G4", "G#4", "A4", "Bb4", "B4", "C5", "C#5"],
+                colspan=2,
+            ),
+        ],
+    ),
+]
+
+
+class DrumLevelStrip(QWidget):
+    STRIP_WIDTH = 46
+
+    def __init__(self, label, param_index):
+        super().__init__()
+
+        self.setFixedWidth(self.STRIP_WIDTH)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(2)
+        layout.setContentsMargins(2, 2, 2, 2)
+
+        self.name = QLabel(label)
+        self.name.setAlignment(Qt.AlignHCenter)
+
+        self.slider = QSlider(Qt.Vertical)
+        self.slider.setMinimumHeight(140)
+
+        self.value = QLabel("0")
+        self.value.setAlignment(Qt.AlignHCenter)
+
+        layout.addWidget(self.name)
+        layout.addWidget(self.slider, 1)
+        layout.addWidget(self.value)
+
+
+class MasterLevelStrip(DrumLevelStrip):
+    def __init__(self):
+        super().__init__("KIT", 0)
+        self.name.setText("MASTER")
+
+
+class MixerLane(QGroupBox):
+    def __init__(self, title: str, parent=None):
+        super().__init__(title, parent)
+
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+
+        outer_layout = QVBoxLayout(self)
+        outer_layout.setContentsMargins(6, 10, 6, 6)
+        outer_layout.setSpacing(4)
+
+        self._strip_container = QWidget(self)
+        self._strip_layout = QHBoxLayout(self._strip_container)
+
+        self._strip_layout.setContentsMargins(2, 2, 2, 2)
+        self._strip_layout.setSpacing(3)
+
+        outer_layout.addWidget(self._strip_container)
+
+    # public API only
+    def add_strip(self, widget: QWidget) -> None:
+        self._strip_layout.addWidget(widget)
+
+
 class DrumKitMixer(QWidget):
     """
     Drum Kit Mixer widget with 37 vertical sliders:
@@ -34,9 +163,9 @@ class DrumKitMixer(QWidget):
     """
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        parent: Optional[QWidget] = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            parent: Optional[QWidget] = None,
     ):
         """
         Initialize the Drum Kit Mixer.
@@ -81,40 +210,110 @@ class DrumKitMixer(QWidget):
 
         # Container widget for sliders
         sliders_widget = QWidget()
-        sliders_layout = QGridLayout(sliders_widget)
+
+        sliders_layout = QGridLayout()  # the actual mixer grid
+
+        sliders_hlayout = QHBoxLayout(sliders_widget)  # install on widget
+        sliders_hlayout.addStretch(1)
+        sliders_hlayout.addLayout(sliders_layout)
+        sliders_hlayout.addStretch(1)
+
         sliders_layout.setSpacing(15)
         sliders_layout.setContentsMargins(10, 10, 10, 10)
 
-        # Create master slider (Kit Level)
-        self._create_master_slider(sliders_layout, 0, 0)
+        col = 0
 
-        # Create 36 partial sliders
-        # Use DRUM_PARTIAL_NAMES[1:] to skip "COM" and get the 36 partials
-        partial_names = DRUM_PARTIAL_NAMES[1:]  # Skip COM, get 36 partials
+        # --- MASTER BUS ---
+        master_lane = self._create_lane_group("Master")
+        sliders_layout.addWidget(master_lane, 0, 0)
 
-        # Arrange sliders in a grid: 6 columns
-        # Master slider already added at row 0, col 0
-        # Then add 36 partials starting at row 0, col 1
-        row = 0
-        col = 1  # Start after master slider
+        master_strip = self._build_master_strip()
+        master_lane.add_strip(master_strip)
 
-        for idx, partial_name in enumerate(partial_names, start=1):
-            # Calculate grid position
-            if col >= 6:  # 6 columns
-                col = 0
-                row += 1
+        # --- DRUM GROUP MATRIX ---
+        for row, lane_row in enumerate(DRUM_MIXER_LANE_ROWS, start=1):
 
-            # Create slider for this partial
-            # Each slider takes 3 rows: label, slider (spanning 2 rows)
-            slider_row = row * 3
-            self._create_partial_slider(
-                sliders_layout, slider_row, col, partial_name, idx
-            )
+            grid_col = 0
 
-            col += 1
+            for lane in lane_row:
+                group = self._create_lane_group(lane.name)
+
+                sliders_layout.addWidget(group, row, grid_col, 1, lane.colspan)
+
+                for partial in lane.partials:
+                    idx = DRUM_PARTIAL_NAMES.index(partial)
+                    strip = self._build_partial_strip(partial, idx)
+                    if strip:
+                        group.add_strip(strip)
+
+                grid_col += lane.colspan
+
+        max_cols = max(len(r) for r in DRUM_MIXER_LANE_ROWS)
+        for c in range(max_cols):
+            sliders_layout.setColumnStretch(c, 1)
+
+        sliders_layout.setRowStretch(len(DRUM_MIXER_LANE_ROWS) + 1, 1)
 
         scroll_area.setWidget(sliders_widget)
         main_layout.addWidget(scroll_area)
+
+    def _build_partial_strip(self, partial_name: str, partial_index: int) -> DrumLevelStrip:
+
+        if not (1 <= partial_index <= 36):
+            log.warning(f"Invalid partial index: {partial_index}", scope=self.__class__.__name__)
+            return None
+
+        from jdxi_editor.midi.data.address.address import JDXiSysExOffsetDrumKitLMB
+
+        lmb_attr = f"DRUM_KIT_PART_{partial_index}"
+        if not hasattr(JDXiSysExOffsetDrumKitLMB, lmb_attr):
+            log.warning(f"No LMB found for partial {partial_index}")
+            return None
+
+        lmb_value = getattr(JDXiSysExOffsetDrumKitLMB, lmb_attr)
+
+        address = JDXiSysExAddress(
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB(lmb_value),
+            0x00,
+        )
+
+        self.partial_addresses[partial_index] = address
+
+        strip = DrumLevelStrip(partial_name, partial_index)
+
+        strip.slider.setRange(0, 127)
+
+        strip.slider.valueChanged.connect(
+            lambda v, addr=address, pidx=partial_index:
+            self._on_partial_level_changed(v, addr, pidx)
+        )
+
+        self.mixer_sliders[partial_name] = strip.slider
+
+        return strip
+
+    def _build_master_strip(self) -> MasterLevelStrip:
+        address = JDXiSysExAddress(
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB.COMMON,
+            0x00,
+        )
+
+        strip = MasterLevelStrip()
+        strip.slider.setRange(0, 127)
+
+        strip.slider.valueChanged.connect(
+            lambda v, addr=address: self._on_master_level_changed(v, addr)
+        )
+
+        self.mixer_sliders["Master"] = strip.slider
+        return strip
+
+    def _create_lane_group(self, title: str) -> MixerLane:
+        return MixerLane(title, self)
 
     def _create_master_slider(self, layout: QGridLayout, row: int, col: int) -> None:
         """Create the master (Kit Level) slider."""
@@ -158,12 +357,12 @@ class DrumKitMixer(QWidget):
         layout.addWidget(slider, row + 1, col, 2, 1)  # Span 2 rows for slider
 
     def _create_partial_slider(
-        self,
-        layout: QGridLayout,
-        row: int,
-        col: int,
-        partial_name: str,
-        partial_index: int,
+            self,
+            layout: QGridLayout,
+            row: int,
+            col: int,
+            partial_name: str,
+            partial_index: int,
     ) -> None:
         """
         Create a slider for a drum partial.
@@ -241,6 +440,91 @@ class DrumKitMixer(QWidget):
         layout.addWidget(label, row, col)
         layout.addWidget(slider, row + 1, col, 2, 1)  # Sliders span 2 rows
 
+    def _create_partial_slider_hlayout(
+            self,
+            layout: QHBoxLayout,
+            partial_name: str,
+            partial_index: int,
+    ) -> None:
+        """
+        Create a slider for a drum partial.
+
+        :param layout: Grid layout to add slider to
+        :param row: Row position in grid
+        :param col: Column position in grid
+        :param partial_name: Name of the partial (e.g., "BD1", "SD1")
+        :param partial_index: Index of the partial (1-36, corresponds to DRUM_ADDRESSES index)
+        """
+        # Get address for this partial from DRUM_ADDRESSES
+        # partial_index is 1-based (1-36), but DRUM_ADDRESSES[0] is common
+        # So we use DRUM_ADDRESSES[partial_index] where partial_index is 1-36
+        if partial_index < 1 or partial_index > 36:
+            log.warning(
+                f"Invalid partial index: {partial_index}", scope=self.__class__.__name__
+            )
+            return
+
+        # Get the LMB for this partial from AddressOffsetDrumKitLMB
+        from jdxi_editor.midi.data.address.address import JDXiSysExOffsetDrumKitLMB
+
+        # Map partial_index (1-36) to DRUM_KIT_PART_X
+        lmb_attr = f"DRUM_KIT_PART_{partial_index}"
+        if not hasattr(JDXiSysExOffsetDrumKitLMB, lmb_attr):
+            log.warning(f"No LMB found for partial {partial_index}")
+            return
+
+        lmb_value = getattr(JDXiSysExOffsetDrumKitLMB, lmb_attr)
+
+        # Create address for this partial
+        # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
+        address = JDXiSysExAddress(
+            JDXiSysExAddressStartMSB.TEMPORARY_TONE,
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
+            JDXiSysExOffsetProgramLMB(lmb_value),
+            0x00,
+        )
+
+        self.partial_addresses[partial_index] = address
+
+        # Create slider
+        slider = Slider(
+            partial_name,
+            min_value=0,
+            max_value=127,
+            midi_helper=self.midi_helper,
+            vertical=True,
+            show_value_label=True,
+            tooltip=f"Level for {partial_name}",
+        )
+
+        # Connect slider to send MIDI messages
+        slider.valueChanged.connect(
+            lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
+                v, addr, pidx
+            )
+        )
+
+        self.mixer_sliders[partial_name] = slider
+
+        # Add slider and label to layout
+        label = QLabel(partial_name)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setStyleSheet(
+            f"""
+            QLabel {{
+                font-size: 11px;
+                color: {JDXi.UI.Style.FOREGROUND};
+                padding: 2px;
+            }}
+        """
+        )
+        # row is already the label row (0, 3, 6, etc.)
+        layout.addWidget(label)
+        layout.addWidget(slider)  # Sliders span 2 rows
+
+    def _lane_layout(self, group: MixerLane):
+        return group._strip_layout
+
     def _on_master_level_changed(self, value: int, address: JDXiSysExAddress) -> None:
         """Handle master level change."""
         if not self.midi_helper:
@@ -261,7 +545,7 @@ class DrumKitMixer(QWidget):
             log.error(f"Error setting master level: {ex}")
 
     def _on_partial_level_changed(
-        self, value: int, address: JDXiSysExAddress, partial_index: int
+            self, value: int, address: JDXiSysExAddress, partial_index: int
     ) -> None:
         """Handle partial level change."""
         if not self.midi_helper:
