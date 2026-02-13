@@ -8,10 +8,10 @@ Classes:
     ProgramMixerWidget(SynthBase)
         A widget for displaying and controlling mixer levels.
 """
-
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.editors.program.track_entity import MixerTrackEntity, MixerTrack
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
@@ -54,11 +54,11 @@ class ProgramMixerWidget(SynthBase):
         self.analog_synth_current_label: Optional[QLabel] = None
 
         # Sliders
-        self.master_level_slider = None
-        self.digital1_level_slider = None
-        self.digital2_level_slider = None
-        self.drums_level_slider = None
-        self.analog_level_slider = None
+        self.master_level_slider: QWidget | None = None
+        self.digital1_level_slider: QWidget | None = None
+        self.digital2_level_slider: QWidget | None = None
+        self.drums_level_slider: QWidget | None = None
+        self.analog_level_slider: QWidget | None = None
 
         # Icons and titles
         self.master_level_icon: Optional[QLabel] = None
@@ -66,6 +66,20 @@ class ProgramMixerWidget(SynthBase):
         self.digital_synth_2_icon: Optional[QLabel] = None
         self.drum_kit_icon: Optional[QLabel] = None
         self.analog_synth_icon: Optional[QLabel] = None
+
+        # Tracks
+        self.tracks: list[MixerTrack] = [
+            MixerTrack(MixerTrackEntity.MASTER, self.master_level_slider, self.master_level_current_label,
+                       self.master_level_icon),
+            MixerTrack(MixerTrackEntity.DIGITAL1, self.digital1_level_slider, self.digital_synth_1_current_label,
+                       self.digital_synth_1_icon),
+            MixerTrack(MixerTrackEntity.DIGITAL2, self.digital2_level_slider, self.digital_synth_2_current_label,
+                       self.digital_synth_2_icon),
+            MixerTrack(MixerTrackEntity.DRUMS, self.drums_level_slider, self.drum_kit_current_label,
+                       self.drum_kit_icon),
+            MixerTrack(MixerTrackEntity.ANALOG, self.analog_level_slider, self.analog_synth_current_label,
+                       self.analog_synth_icon),
+        ]
 
     def create_mixer_widget(self) -> QGroupBox:
         """
@@ -207,49 +221,23 @@ class ProgramMixerWidget(SynthBase):
         self.address = synth_data.address
 
     def _populate_layout(self) -> None:
-        """Populate the mixer layout with widgets."""
         if not self.mixer_layout:
             return
 
-        # Set column stretches
+        # side margins
         self.mixer_layout.setColumnStretch(0, 1)
-        self.mixer_layout.setColumnStretch(6, 1)
+        self.mixer_layout.setColumnStretch(len(self.tracks) + 1, 1)
 
-        # Row 0: Sliders
-        if self.master_level_slider:
-            self.mixer_layout.addWidget(self.master_level_slider, 0, 1)
-        if self.digital1_level_slider:
-            self.mixer_layout.addWidget(self.digital1_level_slider, 0, 2)
-        if self.digital2_level_slider:
-            self.mixer_layout.addWidget(self.digital2_level_slider, 0, 3)
-        if self.drums_level_slider:
-            self.mixer_layout.addWidget(self.drums_level_slider, 0, 4)
-        if self.analog_level_slider:
-            self.mixer_layout.addWidget(self.analog_level_slider, 0, 5)
+        for col, track in enumerate(self.tracks, start=1):
 
-        # Row 1: Current labels
-        if self.master_level_current_label:
-            self.mixer_layout.addWidget(self.master_level_current_label, 1, 1)
-        if self.digital_synth_1_current_label:
-            self.mixer_layout.addWidget(self.digital_synth_1_current_label, 1, 2)
-        if self.digital_synth_2_current_label:
-            self.mixer_layout.addWidget(self.digital_synth_2_current_label, 1, 3)
-        if self.drum_kit_current_label:
-            self.mixer_layout.addWidget(self.drum_kit_current_label, 1, 4)
-        if self.analog_synth_current_label:
-            self.mixer_layout.addWidget(self.analog_synth_current_label, 1, 5)
+            if track.slider:
+                self.mixer_layout.addWidget(track.slider, 0, col)
 
-        # Row 2: Icons
-        if self.master_level_icon:
-            self.mixer_layout.addWidget(self.master_level_icon, 2, 1)
-        if self.digital_synth_1_icon:
-            self.mixer_layout.addWidget(self.digital_synth_1_icon, 2, 2)
-        if self.digital_synth_2_icon:
-            self.mixer_layout.addWidget(self.digital_synth_2_icon, 2, 3)
-        if self.drum_kit_icon:
-            self.mixer_layout.addWidget(self.drum_kit_icon, 2, 4)
-        if self.analog_synth_icon:
-            self.mixer_layout.addWidget(self.analog_synth_icon, 2, 5)
+            if track.value_label:
+                self.mixer_layout.addWidget(track.value_label, 1, col)
+
+            if track.icon:
+                self.mixer_layout.addWidget(track.icon, 2, col)
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """
@@ -271,10 +259,11 @@ class ProgramMixerWidget(SynthBase):
             try:
                 label.setText(tone_name)
             except Exception as ex:
-                log.message(f"Error {ex} setting text")
+                log.message(message=f"Error {ex} setting text", scope=self.__class__.__name__)
         else:
             log.warning(
-                f"synth type: {synth_type} not found in mapping. Cannot update tone name."
+                message=f"synth type: {synth_type} not found in mapping. Cannot update tone name.",
+                scope=self.__class__.__name__
             )
 
     def update_program_name(self, program_name: str) -> None:

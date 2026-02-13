@@ -38,7 +38,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
 )
-from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget
+from jdxi_editor.ui.editors.program.mixer_widget import ProgramMixerWidget
 from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,

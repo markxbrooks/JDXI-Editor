@@ -73,7 +73,7 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.io.data.preset.type import PresetTitle
 from jdxi_editor.ui.editors.io.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.io.mixer_widget import ProgramMixerWidget
+from jdxi_editor.ui.editors.program.mixer_widget import ProgramMixerWidget
 from jdxi_editor.ui.editors.io.playlist_editor_widget import PlaylistEditorWidget
 from jdxi_editor.ui.editors.io.playlist_widget import PlaylistWidget
 from jdxi_editor.ui.editors.io.preset_widget import PresetWidget
