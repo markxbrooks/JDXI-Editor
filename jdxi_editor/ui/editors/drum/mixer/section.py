@@ -5,13 +5,12 @@ Provides 37 vertical sliders for controlling the master level and
 all 36 drum partial levels.
 """
 
-from typing import Dict, Optional, Iterator
-from dataclasses import dataclass
+from typing import Dict, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QGroupBox, QWidget, QVBoxLayout,
-                               QHBoxLayout, QSizePolicy, QGridLayout, QLabel, QScrollArea, QSlider)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout,
+                               QHBoxLayout, QGridLayout, QLabel, QScrollArea)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
@@ -24,136 +23,14 @@ from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
+from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
+from jdxi_editor.ui.editors.drum.mixer.strip import DrumLevelStrip, MasterLevelStrip
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.slider import Slider
 
 
-@dataclass(frozen=True)
-class DrumLane:
-    name: str
-    partials: list[str]
-    colspan: int = 1
-
-
-@dataclass(frozen=True)
-class DrumLaneRow:
-    title: str
-    lanes: list[DrumLane]
-
-    # iteration: for lane in row
-    def __iter__(self) -> Iterator["DrumLane"]:
-        return iter(self.lanes)
-
-    # len(row)
-    def __len__(self) -> int:
-        return len(self.lanes)
-
-    # row[index]
-    def __getitem__(self, index: int) -> "DrumLane":
-        return self.lanes[index]
-
-
-DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
-    DrumLaneRow(
-        title="Low End",
-        lanes=[
-            DrumLane(name="Kick", partials=["BD1", "BD2", "BD3"]),
-            DrumLane(name="Toms", partials=["TOM1", "TOM2", "TOM3"]),
-        ],
-    ),
-
-    DrumLaneRow(
-        title="Snares",
-        lanes=[
-            DrumLane(name="Snare", partials=["SD1", "SD2", "SD3", "SD4", "RIM", "CLAP"], colspan=2),
-        ],
-    ),
-
-    DrumLaneRow(
-        title="Backbeat",
-        lanes=[
-            DrumLane(name="Hi-Hat", partials=["CHH", "PHH", "OHH"]),
-            DrumLane(name="Cymbals", partials=["CYM1", "CYM2", "CYM3"]),
-        ],
-    ),
-
-    DrumLaneRow(
-        title="Time",
-        lanes=[
-            DrumLane(name="Percussion", partials=["PRC1", "PRC2", "PRC3", "PRC4", "PRC5"]),
-            DrumLane(name="Other", partials=["HIT", "OTH1", "OTH2"]),
-        ],
-    ),
-
-    DrumLaneRow(
-        title="Notes",
-        lanes=[
-            DrumLane(
-                name="Chromatic",
-                partials=["D4", "Eb4", "E4", "F4", "F#4", "G4", "G#4", "A4", "Bb4", "B4", "C5", "C#5"],
-                colspan=2,
-            ),
-        ],
-    ),
-]
-
-
-class DrumLevelStrip(QWidget):
-    STRIP_WIDTH = 46
-
-    def __init__(self, label, param_index):
-        super().__init__()
-
-        self.setFixedWidth(self.STRIP_WIDTH)
-
-        layout = QVBoxLayout(self)
-        layout.setSpacing(2)
-        layout.setContentsMargins(2, 2, 2, 2)
-
-        self.name = QLabel(label)
-        self.name.setAlignment(Qt.AlignHCenter)
-
-        self.slider = QSlider(Qt.Vertical)
-        self.slider.setMinimumHeight(140)
-
-        self.value = QLabel("0")
-        self.value.setAlignment(Qt.AlignHCenter)
-
-        layout.addWidget(self.name)
-        layout.addWidget(self.slider, 1)
-        layout.addWidget(self.value)
-
-
-class MasterLevelStrip(DrumLevelStrip):
-    def __init__(self):
-        super().__init__("KIT", 0)
-        self.name.setText("MASTER")
-
-
-class MixerLane(QGroupBox):
-    def __init__(self, title: str, parent=None):
-        super().__init__(title, parent)
-
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
-
-        outer_layout = QVBoxLayout(self)
-        outer_layout.setContentsMargins(6, 10, 6, 6)
-        outer_layout.setSpacing(4)
-
-        self._strip_container = QWidget(self)
-        self._strip_layout = QHBoxLayout(self._strip_container)
-
-        self._strip_layout.setContentsMargins(2, 2, 2, 2)
-        self._strip_layout.setSpacing(3)
-
-        outer_layout.addWidget(self._strip_container)
-
-    # public API only
-    def add_strip(self, widget: QWidget) -> None:
-        self._strip_layout.addWidget(widget)
-
-
-class DrumKitMixer(QWidget):
+class DrumKitMixerSection(QWidget):
     """
     Drum Kit Mixer widget with 37 vertical sliders:
     - 1 Master slider (Kit Level)

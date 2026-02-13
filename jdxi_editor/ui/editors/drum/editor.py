@@ -57,7 +57,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 
 from decologr import Decologr as log
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -199,9 +199,9 @@ class DrumCommonEditor(SynthEditor):
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
         # Create and add the mixer tab
-        from jdxi_editor.ui.editors.drum.mixer import DrumKitMixer
+        from jdxi_editor.ui.editors.drum.mixer.section import DrumKitMixerSection
 
-        mixer_widget = DrumKitMixer(midi_helper=self.midi_helper, parent=self)
+        mixer_widget = DrumKitMixerSection(midi_helper=self.midi_helper, parent=self)
         mixer_icon = JDXi.UI.Icon.get_icon("ei.adjust-alt", color=JDXi.UI.Style.GREY)
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
