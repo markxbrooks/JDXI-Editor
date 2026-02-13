@@ -8,8 +8,6 @@ all 36 drum partial levels.
 from typing import Dict, Optional, Iterator
 from dataclasses import dataclass
 
-from docutils.nodes import title
-
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QGroupBox, QWidget, QVBoxLayout,
