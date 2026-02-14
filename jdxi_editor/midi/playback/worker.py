@@ -36,11 +36,11 @@ class MidiPlaybackWorker(QObject):
 
     def __str__(self) -> str:
         return (
-            f"[MidiPlaybackWorker] (position_tempo={self.position_tempo}, "
-            f"[MidiPlaybackWorker] should_stop={self.should_stop}, buffered_msgs={len(self.buffered_msgs)}, "
-            f"[MidiPlaybackWorker] midi_out_port={self.midi_out_port}, play_program_changes={self.play_program_changes}, "
-            f"[MidiPlaybackWorker] ticks_per_beat={self.ticks_per_beat}, index={self.index}, "
-            f"[MidiPlaybackWorker] start_time={self.start_time})"
+            f"[{self.__class__.__name__}] (position_tempo={self.position_tempo}, "
+            f"[{self.__class__.__name__}] should_stop={self.should_stop}, buffered_msgs={len(self.buffered_msgs)}, "
+            f"[{self.__class__.__name__}] midi_out_port={self.midi_out_port}, play_program_changes={self.play_program_changes}, "
+            f"[{self.__class__.__name__}] ticks_per_beat={self.ticks_per_beat}, index={self.index}, "
+            f"[{self.__class__.__name__}] start_time={self.start_time})"
         )
 
     def setup(
@@ -76,7 +76,7 @@ class MidiPlaybackWorker(QObject):
 
         # Debug logging
         print(
-            f"🎵 [MidiPlaybackWorker] Worker setup: received {len(buffered_msgs)} buffered messages"
+            f"🎵 [{self.__class__.__name__}] Worker setup: received {len(buffered_msgs)} buffered messages"
         )
         if len(buffered_msgs) > 0:
             print(f"🎵 First few buffered messages: {buffered_msgs[:3]}")
@@ -104,7 +104,7 @@ class MidiPlaybackWorker(QObject):
         if self.parent is not None:
             if hasattr(self.parent, "set_display_tempo_usecs"):
                 # Assuming parent has a method to update digital tempo
-                print(f"[MidiPlaybackWorker] Updating display tempo to {new_tempo}")
+                print(f"[{self.__class__.__name__}] Updating display tempo to {new_tempo}")
                 self.parent.set_display_tempo_usecs(new_tempo)
 
     @Slot()
@@ -122,9 +122,9 @@ class MidiPlaybackWorker(QObject):
 
         # Print format header on first run
         if not hasattr(self, "_header_printed"):
-            print("🎵 [MidiPlaybackWorker]Real-time Playback Tracking:")
+            print(f"🎵 [{self.__class__.__name__}]Real-time Playback Tracking:")
             print(
-                "[MidiPlaybackWorker] Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX"
+                f"[{self.__class__.__name__}] Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX"
             )
             print("=" * 100)
             self._header_printed = True
@@ -132,7 +132,7 @@ class MidiPlaybackWorker(QObject):
         # Debug logging
         if len(self.buffered_msgs) == 0:
             print(
-                f"⚠️ [MidiPlaybackWorker] No buffered messages available (elapsed: {elapsed:.3f}s)"
+                f"⚠️ [{self.__class__.__name__}] No buffered messages available (elapsed: {elapsed:.3f}s)"
             )
             return
 
@@ -152,9 +152,9 @@ class MidiPlaybackWorker(QObject):
                 current_bpm = 60000000 / self.position_tempo
                 time_diff = elapsed - msg_time_sec
                 print(
-                    f"[MidiPlaybackWorker] [{elapsed:6.1f}s] Bar {current_bar:5.1f} | BPM {current_bpm:6.1f} | "
-                    f"[MidiPlaybackWorker] Expected: {msg_time_sec:5.2f}s | Real: {elapsed:5.2f}s | "
-                    f"[MidiPlaybackWorker] Diff: {time_diff:+5.2f}s | Index: {self.index:4d}"
+                    f"[{self.__class__.__name__}] [{elapsed:6.1f}s] Bar {current_bar:5.1f} | BPM {current_bpm:6.1f} | "
+                    f"[{self.__class__.__name__}] Expected: {msg_time_sec:5.2f}s | Real: {elapsed:5.2f}s | "
+                    f"[{self.__class__.__name__}] Diff: {time_diff:+5.2f}s | Index: {self.index:4d}"
                 )
 
             # Process the message
@@ -167,7 +167,7 @@ class MidiPlaybackWorker(QObject):
                 current_bar = abs_ticks / (4 * self.ticks_per_beat)
                 new_bpm = 60000000 / msg_tempo
                 print(
-                    f"🎵[MidiPlaybackWorker] TEMPO CHANGE at Bar {current_bar:.1f} ({elapsed:.2f}s): {msg_tempo} ({new_bpm:.1f} BPM)"
+                    f"🎵[{self.__class__.__name__}] TEMPO CHANGE at Bar {current_bar:.1f} ({elapsed:.2f}s): {msg_tempo} ({new_bpm:.1f} BPM)"
                 )
                 self.update_tempo(msg_tempo)
             else:
