@@ -80,7 +80,7 @@ class DigitalFilterMode(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for filter mode"""
+        """Get digital name for filter mode"""
         names = {
             0: "BYPASS",
             1: "LPF",
@@ -102,6 +102,6 @@ class DigitalFilterSlope(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for filter slope"""
+        """Get digital name for filter slope"""
         names = {0: "-12dB", 1: "-24dB"}
         return names.get(self.value, "???")

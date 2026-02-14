@@ -1,15 +1,15 @@
 """
-create digital display container
+create digital digital container
 """
 
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
+from jdxi_editor.ui.widgets.digital.display import DigitalDisplay
 
 
 def add_digital_display(central_widget, parent):
-    """Add container with digital display on the JD-Xi image"""
+    """Add container with digital digital on the JD-Xi image"""
     central_widget.setLayout(QVBoxLayout())
 
     digital_display_container = QWidget(central_widget)

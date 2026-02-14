@@ -214,7 +214,7 @@ class TestMSZRoundTrip(unittest.TestCase):
                                 saved_value = saved_value[0]
                             saved_value = int(saved_value)
                             
-                            # Allow differences due to conversion (display value vs MIDI value)
+                            # Allow differences due to conversion (digital value vs MIDI value)
                             # The important thing is that the value is present and reasonable
                             self.assertIsNotNone(saved_value, f"Parameter {param_name} has None value")
                             # Check that value is within reasonable MIDI range
@@ -253,7 +253,7 @@ class TestMSZRoundTrip(unittest.TestCase):
                                 loaded_value = int(loaded_value)
                                 
                                 # Verify value is present and in valid range
-                                # (exact match may differ due to display/MIDI conversion)
+                                # (exact match may differ due to digital/MIDI conversion)
                                 self.assertIsNotNone(loaded_value, f"Parameter {param_name} is None after round-trip")
                                 self.assertGreaterEqual(loaded_value, 0, f"Parameter {param_name} < 0 after round-trip")
                                 self.assertLessEqual(loaded_value, 65535, f"Parameter {param_name} > 65535 after round-trip")
@@ -353,7 +353,7 @@ class TestMSZRoundTrip(unittest.TestCase):
                             saved_value = int(saved_value)
                             
                             # Verify value is present and in valid MIDI range
-                            # (exact match may differ due to display/MIDI conversion)
+                            # (exact match may differ due to digital/MIDI conversion)
                             self.assertIsNotNone(saved_value, f"Parameter {param_name} is None in {json_file}")
                             self.assertGreaterEqual(saved_value, 0, f"Parameter {param_name} < 0 in {json_file}")
                             self.assertLessEqual(saved_value, 65535, f"Parameter {param_name} > 65535 in {json_file}")

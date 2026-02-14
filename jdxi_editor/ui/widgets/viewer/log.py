@@ -15,7 +15,7 @@ Features:
 - Dark theme with a modern red-accented styling.
 - Automatically reads and displays the log file written by Decologr.
 - Refreshes periodically to show new log entries.
-- Provides a "Clear Log" button to reset the log display.
+- Provides a "Clear Log" button to reset the log digital.
 - Auto-scrolls to the bottom to show the latest entries.
 
 Usage Example:
@@ -160,7 +160,7 @@ class LogViewer(QMainWindow):
         self.refresh_timer.start()
 
     def clear_log(self):
-        """Clear the log display"""
+        """Clear the log digital"""
         self.log_text.clear()
         self.last_position = 0
 

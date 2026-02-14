@@ -641,7 +641,7 @@ class PatternSequenceEditor(SynthEditor):
         )  # Store bar index
         self.bars_list.addItem(item)
 
-        # Select the new bar and sync sequencer display
+        # Select the new bar and sync sequencer digital
         self.bars_list.setCurrentItem(item)
         self.current_bar_index = len(self.measures) - 1
 
@@ -753,7 +753,7 @@ class PatternSequenceEditor(SynthEditor):
                         button.NOTE_DURATION = button_data["duration"]
                         button.NOTE_VELOCITY = button_data["velocity"]
 
-        # Sync sequencer display
+        # Sync sequencer digital
         self._sync_sequencer_with_bar(self.current_bar_index)
         log.message(
             message=f"Pasted {num_steps} steps to bar {self.current_bar_index + 1} starting at step {start_step}",
@@ -765,7 +765,7 @@ class PatternSequenceEditor(SynthEditor):
         Sync the main sequencer buttons with the notes from the specified bar.
         This displays the bar's notes in the sequencer grid.
 
-        :param bar_index: int Index of the bar to display (0-indexed)
+        :param bar_index: int Index of the bar to digital (0-indexed)
         """
         if bar_index < 0 or bar_index >= len(self.measures):
             return
@@ -976,7 +976,7 @@ class PatternSequenceEditor(SynthEditor):
                         # Enable all 16 buttons
                         button.setEnabled(True)
 
-        # Sync sequencer display after updating button states
+        # Sync sequencer digital after updating button states
         if self.current_bar_index < len(self.measures):
             self._sync_sequencer_with_bar(self.current_bar_index)
 
@@ -1452,7 +1452,7 @@ class PatternSequenceEditor(SynthEditor):
                         measure.buttons[row][step].NOTE = None
                         measure.buttons[row][step].NOTE_DURATION = None
 
-            # Sync sequencer display
+            # Sync sequencer digital
             self._sync_sequencer_with_bar(self.current_bar_index)
 
     def _detect_bars_from_midi(self, midi_file: MidiFile) -> int:
@@ -1641,7 +1641,7 @@ class PatternSequenceEditor(SynthEditor):
                     self.tempo_spinbox.setValue(bpm)
                     break  # Use first tempo found
 
-            # Select first bar and sync sequencer display
+            # Select first bar and sync sequencer digital
             if self.bars_list.count() > 0:
                 self.current_bar_index = 0
                 self.bars_list.setCurrentRow(0)
@@ -2073,7 +2073,7 @@ class PatternSequenceEditor(SynthEditor):
                             # Set default duration for MIDI-learned notes
                             measure_button.NOTE_DURATION = self._get_duration_ms()
 
-                            # Also update sequencer display
+                            # Also update sequencer digital
                             if step_in_bar < len(self.buttons[row]):
                                 self.buttons[row][step_in_bar].setChecked(True)
                                 self.buttons[row][step_in_bar].NOTE = note

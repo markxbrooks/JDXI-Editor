@@ -316,7 +316,7 @@ class PresetWidget(QWidget):
             """Check if a preset matches a category."""
             if not category:
                 return True
-            # Extract preset ID from display string (format: "001 - Preset Name")
+            # Extract preset ID from digital string (format: "001 - Preset Name")
             preset_id_str = (
                 preset_display.split(" - ")[0] if " - " in preset_display else None
             )

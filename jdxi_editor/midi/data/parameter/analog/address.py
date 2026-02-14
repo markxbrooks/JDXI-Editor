@@ -516,7 +516,7 @@ class AnalogParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
@@ -550,10 +550,10 @@ class AnalogParam(AddressParameter):
     @staticmethod
     def get_display_range(param_name: str) -> Tuple[int, int]:
         """
-        Get the display value range (min, max) of address parameter by name.
+        Get the digital value range (min, max) of address parameter by name.
 
         :param param_name: str The parameter name
-        :return: Tuple[int, int] The display value range
+        :return: Tuple[int, int] The digital value range
         """
         param = AnalogParam.get_by_name(param_name)
         if param:
@@ -562,9 +562,9 @@ class AnalogParam(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display value range (min, max) for the parameter
+        Get the digital value range (min, max) for the parameter
 
-        :return: Tuple[int, int] The display value range
+        :return: Tuple[int, int] The digital value range
         """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
@@ -572,9 +572,9 @@ class AnalogParam(AddressParameter):
 
     def convert_to_midi(self, display_value: int) -> int:
         """
-        Convert from display value to MIDI value
+        Convert from digital value to MIDI value
 
-        :param display_value: int The display value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
@@ -595,10 +595,10 @@ class AnalogParam(AddressParameter):
 
     def convert_from_midi(self, midi_value: int) -> int:
         """
-        Convert from MIDI value to display value
+        Convert from MIDI value to digital value
 
         :param midi_value: int The MIDI value
-        :return: int The display value
+        :return: int The digital value
         """
         # Handle special bipolar cases first
         if self == AnalogParam.OSC_PITCH_FINE:
@@ -619,11 +619,11 @@ class AnalogParam(AddressParameter):
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
         """
-        Get the display value for address parameter by name and value.
+        Get the digital value for address parameter by name and value.
 
         :param param_name: str The parameter name
         :param value: int The value
-        :return: int The display value
+        :return: int The digital value
         """
         param = AnalogParam.get_by_name(param_name)
         if param:

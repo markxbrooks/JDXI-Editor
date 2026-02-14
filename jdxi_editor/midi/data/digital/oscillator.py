@@ -93,7 +93,7 @@ class DigitalWaveform(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for waveform"""
+        """Get digital name for waveform"""
         names = {
             DigitalWaveform.SAW: "SAW",
             DigitalWaveform.SQUARE: "SQR",

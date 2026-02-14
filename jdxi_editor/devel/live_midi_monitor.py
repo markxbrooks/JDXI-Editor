@@ -3,7 +3,7 @@
 Live MIDI Monitor for SINCO VMX8 Controller
 
 This script provides real-time monitoring of MIDI messages from your SINCO VMX8 controller.
-It will display incoming messages with timestamps and decode them for easy understanding.
+It will digital incoming messages with timestamps and decode them for easy understanding.
 """
 
 import sys

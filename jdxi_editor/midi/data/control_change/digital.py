@@ -106,7 +106,7 @@ class DigitalControlChange:
 
     @staticmethod
     def get_display_value(value: int, group: str, partial: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         param = DigitalControlChange.NRPN.get(group, {}).get(partial)
         if param in [3, 4, 5]:  # LFO Shape
             shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]

@@ -8,7 +8,7 @@ tuning, level, panning, and effects settings.
 
 Classes:
     DrumPartialParameter -- Represents a drum partial parameter with its address,
-                            value range, and optional display range.
+                            value range, and optional digital range.
 
 Attributes:
     DRUM_GROUP_MAP -- Mapping of drum groups.
@@ -345,7 +345,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT1 Wave Number R
@@ -355,7 +355,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT1 Wave Gain
@@ -517,7 +517,7 @@ class DrumPartialParam(AddressParameter):
         0,
         0,
         0,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # Only one preset_type
 
     # WMT2 Wave Group ID
@@ -527,7 +527,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Number L (Mono)
@@ -537,7 +537,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Number R
@@ -547,7 +547,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT2 Wave Gain
@@ -717,7 +717,7 @@ class DrumPartialParam(AddressParameter):
         0,
         0,
         0,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # Only one preset_type
 
     # WMT3 Wave Group ID
@@ -727,7 +727,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Number L (Mono)
@@ -737,7 +737,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Number R
@@ -747,7 +747,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT3 Wave Gain
@@ -917,7 +917,7 @@ class DrumPartialParam(AddressParameter):
         0,
         0,
         0,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # Only one preset_type
 
     # WMT4 Wave Group ID
@@ -927,7 +927,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Selects the Wave Group that contains the Wave to be used for the drum partial. The Wave Group ID is displayed at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Number L (Mono)
@@ -937,7 +937,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Number R
@@ -947,7 +947,7 @@ class DrumPartialParam(AddressParameter):
         16384,
         0,
         16384,
-        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the display.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
+        "Specifies the Waves comprising the drum partial. Along with the Wave number, the Wave name\nappears at the lower part of the digital.\nWhen in monaural mode, only the left side (L) is specified. When in stereo, the right side (R) is also\nNo.R specified.",
     )  # OFF, 1 - 16384
 
     # WMT4 Wave Gain
@@ -1595,7 +1595,7 @@ class DrumPartialParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
@@ -1641,8 +1641,8 @@ class DrumPartialParam(AddressParameter):
         return value
 
     def convert_from_display(self, display_value: int) -> int:
-        """Convert from display value to MIDI value (0-127)
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value (0-127)
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         if self.name in ["PITCH_ENV_DEPTH"]:
@@ -1650,8 +1650,8 @@ class DrumPartialParam(AddressParameter):
         return display_value
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display range for the parameter
-        :return: Tuple[int, int] The display range
+        """Get the digital range for the parameter
+        :return: Tuple[int, int] The digital range
         """
         return self.display_min, self.display_max
 
@@ -1696,9 +1696,9 @@ class DrumPartialParam(AddressParameter):
         return DrumPartialParam.__members__.get(param_name, None)
 
     def convert_from_midi(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value
+        """Convert from MIDI value to digital value
         :param midi_value: int The MIDI value
-        :return: int The display value
+        :return: int The digital value
         """
         return midi_value
 

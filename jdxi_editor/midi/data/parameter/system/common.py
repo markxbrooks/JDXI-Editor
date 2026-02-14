@@ -48,7 +48,7 @@ class SystemCommonParam(AddressParameter):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         if param == SystemCommonParam.MASTER_TUNE:  # Master Tune
             cents = ParameterSpec(value - 1024) / 10  # Convert 24-2024 to -100.0/+100.0
             return f"{cents:+.1f} cents"

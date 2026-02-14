@@ -188,7 +188,7 @@ class EfxType(Enum):
 
     @staticmethod
     def get_display_name(value: int, effect_type: str) -> str:
-        """Get display name for effect preset_type"""
+        """Get digital name for effect preset_type"""
         names = {
             "reverb": {
                 0: "Room 1",
@@ -260,7 +260,7 @@ class Effect1(Enum):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         if param == 0x00:  # Effect preset_type
             return ["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER"][value]
         elif param == 0x04:  # Output assign
@@ -330,7 +330,7 @@ class Effect2(Enum):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         if param == Midi.VALUE.ZERO:  # Effect preset_type
             if value == 0:
                 return "OFF"

@@ -8,7 +8,7 @@ level, pan, delay/reverb send levels, auto pitch settings, vocoder effects, and 
 
 The class provides methods to:
 
-- Initialize vocal FX parameters with a given address, range, and optional display range.
+- Initialize vocal FX parameters with a given address, range, and optional digital range.
 - Validate and convert parameter values to the MIDI range (0-127).
 - Define a variety of vocal effects parameters with specific ranges, including:
   - Level, pan, delay/reverb send levels, and output assignment
@@ -16,23 +16,23 @@ The class provides methods to:
   - Vocoder parameters such as switch, envelope type, level, mic sensitivity, and mix level
 
 The class also offers conversion utilities:
-- Convert between MIDI values and display values.
+- Convert between MIDI values and digital values.
 - Handle special bipolar cases (e.g., pan, auto pitch gender).
-- Retrieve the display value range or MIDI value range for parameters.
+- Retrieve the digital value range or MIDI value range for parameters.
 
 Parameters include:
 - Level, pan, delay and reverb send levels, output assignment, and auto pitch settings
 - Vocoder settings for on/off, envelope, level, mic sensitivity, synth level, and mic mix
 - Auto pitch gender, octave, balance, and key/note configurations
 
-The class also includes utility functions to get a parameter's address, range, display range,
-and to convert between MIDI values and display values.
+The class also includes utility functions to get a parameter's address, range, digital range,
+and to convert between MIDI values and digital values.
 
 Usage example:
     # Initialize a VocalFXParameter object for the LEVEL parameter
     param = VocalFXParameter(address=0x00, min_val=0, max_val=127)
 
-    # Access display range values
+    # Access digital range values
     print(param.display_min)  # Output: 0
     print(param.display_max)  # Output: 127
 
@@ -247,7 +247,7 @@ class VocalFXParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
@@ -289,10 +289,10 @@ class VocalFXParam(AddressParameter):
     @staticmethod
     def get_display_range(param_name: str) -> Tuple[int, int]:
         """
-        Get the display value range (min, max) of address parameter by name.
+        Get the digital value range (min, max) of address parameter by name.
 
         :param param_name: str The parameter name
-        :return: Tuple[int, int] The display value range
+        :return: Tuple[int, int] The digital value range
         """
         param = VocalFXParam.get_by_name(param_name)
         if param:
@@ -301,9 +301,9 @@ class VocalFXParam(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display value range (min, max) for the parameter
+        Get the digital value range (min, max) for the parameter
 
-        :return: Tuple[int, int] The display value range
+        :return: Tuple[int, int] The digital value range
         """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
@@ -311,9 +311,9 @@ class VocalFXParam(AddressParameter):
 
     def convert_from_display(self, display_value: int) -> int:
         """
-        Convert from display value to MIDI value (0-127)
+        Convert from digital value to MIDI value (0-127)
 
-        :param display_value: int The display value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle bipolar parameters
@@ -331,14 +331,14 @@ class VocalFXParam(AddressParameter):
         value: int, min_val: int, max_val: int, display_min: int, display_max: int
     ) -> int:
         """
-        Convert address value to address display value within address range.
+        Convert address value to address digital value within address range.
 
         :param value: int The address value
         :param min_val: int The address minimum value
         :param max_val: int The address maximum value
-        :param display_min: int The display minimum value
-        :param display_max: int The display maximum value
-        :return: int The display value
+        :param display_min: int The digital minimum value
+        :param display_max: int The digital maximum value
+        :return: int The digital value
         """
         return int(
             (value - min_val) * (display_max - display_min) / (max_val - min_val)
@@ -347,9 +347,9 @@ class VocalFXParam(AddressParameter):
 
     def convert_to_midi(self, display_value: int) -> int:
         """
-        Convert from display value to MIDI value
+        Convert from digital value to MIDI value
 
-        :param display_value: int The display value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
@@ -370,10 +370,10 @@ class VocalFXParam(AddressParameter):
 
     def convert_from_midi(self, midi_value: int) -> int:
         """
-        Convert from MIDI value to display value
+        Convert from MIDI value to digital value
 
         :param midi_value: int The MIDI value
-        :return: int The display value
+        :return: int The digital value
         """
         # Handle special bipolar cases first
         if self == VocalFXParam.PAN:
@@ -394,11 +394,11 @@ class VocalFXParam(AddressParameter):
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
         """
-        Get the display value for address parameter by name and value.
+        Get the digital value for address parameter by name and value.
 
         :param param_name: str The parameter name
         :param value: int The value
-        :return: int The display value
+        :return: int The digital value
         """
         param = VocalFXParam.get_by_name(param_name)
         if param:

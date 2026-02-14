@@ -288,7 +288,7 @@ class PatchManager(QMainWindow):
                                             midi_file_editor.detect_initial_tempo()
                                         )
 
-                                    # Set tempo display
+                                    # Set tempo digital
                                     if hasattr(
                                         midi_file_editor, "ui_display_set_tempo_usecs"
                                     ):

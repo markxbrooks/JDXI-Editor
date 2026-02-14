@@ -81,7 +81,7 @@ class AnalogFilterMode(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for filter mode"""
+        """Get digital name for filter mode"""
         names = {
             0: "BYPASS",
             1: "LPF",
@@ -110,7 +110,7 @@ class AnalogAmp(AmpSpec):
 
 
 class AnalogFilterModeType:
-    """String constants for analog filter plot / display (same pattern as DigitalFilterModeType)."""
+    """String constants for analog filter plot / digital (same pattern as DigitalFilterModeType)."""
 
     BYPASS: str = "bypass"
     LPF: str = "lpf"

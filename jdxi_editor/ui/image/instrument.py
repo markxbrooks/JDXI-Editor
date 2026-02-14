@@ -3,7 +3,7 @@ Module: JD-Xi Instrument Display Renderer
 =========================================
 
 This module provides functions to generate a visual representation of the Roland JD-Xi synthesizer
-interface using PySide6. It renders key UI elements, including the display, sequencer section,
+interface using PySide6. It renders key UI elements, including the digital, sequencer section,
 and keyboard.
 
 Functions
@@ -20,7 +20,7 @@ Dependencies
 
 Usage
 -----
-These functions generate and display a graphical representation of the JD-Xi’s controls,
+These functions generate and digital a graphical representation of the JD-Xi’s controls,
 which can be integrated into a larger PySide6-based UI.
 """
 

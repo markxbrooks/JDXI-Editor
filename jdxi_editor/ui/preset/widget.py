@@ -22,7 +22,7 @@ from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
     create_scroll_container,
@@ -285,7 +285,7 @@ class InstrumentPresetWidget(QWidget):
             """Check if a preset matches a category."""
             if not category:
                 return True
-            # Extract preset ID from display string (format: "001 - Preset Name")
+            # Extract preset ID from digital string (format: "001 - Preset Name")
             preset_id_str = (
                 preset_display.split(" - ")[0] if " - " in preset_display else None
             )
@@ -381,7 +381,7 @@ class InstrumentPresetWidget(QWidget):
             """Check if a preset matches a category."""
             if not category:
                 return True
-            # Extract preset ID from display string (format: "001 - Preset Name")
+            # Extract preset ID from digital string (format: "001 - Preset Name")
             preset_id_str = (
                 preset_display.split(" - ")[0] if " - " in preset_display else None
             )

@@ -68,7 +68,7 @@ class ComboBox(QWidget):
         Initialize the ComboBox widget.
 
         :param label: Label text
-        :param options: List of option strings to display
+        :param options: List of option strings to digital
         :param values: List of corresponding integer values
         :param parent: Parent widget
         :param show_label: Whether to show the label

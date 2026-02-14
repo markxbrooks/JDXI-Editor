@@ -7,7 +7,7 @@ parameters in the JD-Xi synthesizer.
 
 This class provides attributes and methods for handling program-wide settings,
 such as program name, level, tempo, and vocal effects. It also includes
-methods for retrieving display values, validating parameter values, and
+methods for retrieving digital values, validating parameter values, and
 handling partial-specific addressing.
 
 Example usage:
@@ -18,10 +18,10 @@ program_level = ProgramCommonParameter(*ProgramCommonParameter.PROGRAM_LEVEL)
 # Validate a value within range
 validated_value = program_level.validate_value(100)
 
-# Get the display name of a parameter
+# Get the digital name of a parameter
 display_name = program_level.display_name  # "Program Level"
 
-# Get display value range
+# Get digital value range
 display_range = program_level.get_display_value()  # (0, 127)
 
 # Retrieve a parameter by name
@@ -66,16 +66,16 @@ class ProgramZoneParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display value range (min, max) for the parameter
+        Get the digital value range (min, max) for the parameter
 
-        :return: Tuple[int, int] The display value range
+        :return: Tuple[int, int] The digital value range
         """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
@@ -105,10 +105,10 @@ class ProgramZoneParam(AddressParameter):
 
     def get_switch_text(self, value: int) -> str:
         """
-        Get display text for switch values
+        Get digital text for switch values
 
         :param value: int The value
-        :return: str The display text
+        :return: str The digital text
         """
         if self == self.ARPEGGIO_SWITCH:
             return ["OFF", "ON"][value]

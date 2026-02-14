@@ -29,7 +29,7 @@ class PatternDisplay(QWidget):
         self.update()  # Trigger repaint
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Paint the pattern display.
+        """Paint the pattern digital.
 
         :param event: QPaintEvent
         """

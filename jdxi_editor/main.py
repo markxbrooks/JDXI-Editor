@@ -46,7 +46,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXiUIDimensions
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_icon_label_with_pixmap,
     create_layout_with_widgets,
@@ -139,13 +139,13 @@ def main() -> None:
 def setup_splash_screen(
     app: QApplication,
 ) -> tuple[QSplashScreen, QProgressBar, DigitalTitle]:
-    """Setup and display a professional application splash screen with rotating status text.
+    """Setup and digital a professional application splash screen with rotating status text.
 
     Returns:
         tuple: (splash_screen, progress_bar, status_label) for updating progress
     """
     splash = QSplashScreen()
-    # Need to use the screen center to display the splash screen
+    # Need to use the screen center to digital the splash screen
     # In Qt 6, QApplication.desktop() was removed, use QScreen instead
     screen = app.primaryScreen()
     if screen:

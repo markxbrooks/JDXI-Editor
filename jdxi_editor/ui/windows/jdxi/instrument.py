@@ -17,7 +17,7 @@ This module defines the `JdxiInstrument` class, which extends from the `JdxiUi` 
 Key Features:
 - Handles MIDI connectivity and communication, including program change signals.
 - Manages different preset types (Digital, Analog, Drums) with the ability to select and load presets.
-- Provides MIDI indicators to display the status of MIDI input/output ports.
+- Provides MIDI indicators to digital the status of MIDI input/output ports.
 - Includes functionality for dragging the window and selecting different synth types.
 - Integrates with external MIDI devices for seamless performance control.
 - Includes a custom UI to manage and visualize the instrument's preset settings.
@@ -30,7 +30,7 @@ Methods:
     - _update_synth_button_styles: Updates button styles based on the selected synth type.
     - _get_presets_for_current_synth: Returns the list of presets based on the selected synth type.
     - _get_for_current_synth: Returns the appropriate preset handler based on the selected synth type.
-    - _previous_tone: Navigates to the previous tone in the preset list and updates the display.
+    - _previous_tone: Navigates to the previous tone in the preset list and updates the digital.
     - ...
 
 """
@@ -459,11 +459,11 @@ class JDXiInstrument(JDXiWindow):
         self._update_display()
 
     def _program_previous(self) -> None:
-        """Decrement the program index and update the display."""
+        """Decrement the program index and update the digital."""
         self._program_update(-1)
 
     def _program_next(self) -> None:
-        """Increment the program index and update the display."""
+        """Increment the program index and update the digital."""
         self._program_update(1)
 
     def _preset_update(self, index_change: int) -> None:
@@ -508,21 +508,21 @@ class JDXiInstrument(JDXiWindow):
 
     def _preset_previous(self) -> None:
         """
-        Decrement the tone index and update the display
+        Decrement the tone index and update the digital
 
         :return: None
         """
         self._preset_update(-1)
 
     def _preset_next(self) -> None:
-        """Increment the tone index and update the display."""
+        """Increment the tone index and update the digital."""
         self._preset_update(1)
 
     def update_display_callback(
         self, synth_type: JDXiSynth, preset_index: int, channel: int
     ) -> None:
         """
-        Update the display for the given synth preset_type and preset index
+        Update the digital for the given synth preset_type and preset index
 
         :param synth_type: JDXiSynth
         :param preset_index: int
@@ -991,7 +991,7 @@ class JDXiInstrument(JDXiWindow):
         self.midi_message_monitor.raise_()
 
     def _show_program_editor(self, _) -> None:
-        """Open the ProgramEditor when the digital display is clicked."""
+        """Open the ProgramEditor when the digital digital is clicked."""
         self.show_editor("program")
 
     def _show_about_help(self) -> None:
@@ -1087,7 +1087,7 @@ class JDXiInstrument(JDXiWindow):
             self.recent_files_menu.addAction(action)
         else:
             for file_path in recent_files:
-                # Create display name (just filename)
+                # Create digital name (just filename)
                 from pathlib import Path
 
                 display_name = Path(file_path).name
@@ -2054,7 +2054,7 @@ class JDXiInstrument(JDXiWindow):
                 self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
                 self.midi_helper.send_program_change(program, channel)
 
-                # Update display and channel
+                # Update digital and channel
                 preset_name = presets[preset_number - 1]  # Adjust index to be 0-based
                 self._update_display_preset(preset_number, preset_name, channel)
 
@@ -2135,7 +2135,7 @@ class JDXiInstrument(JDXiWindow):
                     synth_type, preset_num, preset_name, channel
                 )
 
-                # Update display to show the saved preset
+                # Update digital to show the saved preset
                 self._update_display_preset(
                     int(preset_num), str(preset_name), int(channel)
                 )

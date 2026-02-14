@@ -1,7 +1,7 @@
 """
 Utility functions for the JDXI editor UI.
 
-These functions are used to display messages, handle MIDI communication
+These functions are used to digital messages, handle MIDI communication
 and manage MIDI input/output ports.
 """
 
@@ -14,7 +14,7 @@ from jdxi_editor.ui.style import JDXiUIStyle
 def show_message_box(
     title: str, text: str, icon: object = QMessageBox.Critical
 ) -> None:
-    """Helper method to display a QMessageBox."""
+    """Helper method to digital a QMessageBox."""
     log.message(text)
     msg_box = QMessageBox()
     msg_box.setStyleSheet(JDXiUIStyle.WINDOW_DEBUGGER)

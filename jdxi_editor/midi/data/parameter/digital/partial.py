@@ -115,7 +115,7 @@ class DigitalPartialParam(AddressParameter):
         }
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display range for the parameter"""
+        """Get the digital range for the parameter"""
         return self.display_min, self.display_max
 
     # Oscillator parameters
@@ -566,7 +566,7 @@ class DigitalPartialParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return {self.OSC_WAVE_VARIATION: "Variation"}.get(
@@ -574,7 +574,7 @@ class DigitalPartialParam(AddressParameter):
         )
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """Get digital text for switch values"""
         if self == self.OSC_WAVE_VARIATION:
             return ["A", "B", "C"][value]
         elif self == self.FILTER_MODE_SWITCH:
@@ -662,19 +662,19 @@ class DigitalPartialParam(AddressParameter):
 
     def convert_to_midi(self, slider_value: int) -> int:
         """
-        Convert from display value to MIDI value
+        Convert from digital value to MIDI value
 
-        :param slider_value: int The display value
+        :param slider_value: int The digital value
         :return: int The MIDI value
         """
         return self.convert_value(slider_value)
 
     def convert_from_midi(self, midi_value: int) -> int:
         """
-        Convert from MIDI value to display value
+        Convert from MIDI value to digital value
 
         :param midi_value: int The MIDI value
-        :return: int The display value
+        :return: int The digital value
         """
         return self.convert_value(midi_value, reverse=True)
 

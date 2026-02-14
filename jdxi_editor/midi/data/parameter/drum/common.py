@@ -77,7 +77,7 @@ class DrumCommonParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         address_to_name = {
@@ -113,7 +113,7 @@ class DrumCommonParam(AddressParameter):
         ]
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """Get digital text for switch values"""
         if self == self.RING_SWITCH:
             return ["OFF", "---", "ON"][value]
         elif self == self.PORTAMENTO_MODE:

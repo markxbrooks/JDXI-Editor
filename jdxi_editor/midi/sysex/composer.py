@@ -60,7 +60,7 @@ class JDXiSysExComposer:
 
         :param address: RolandSysExAddress
         :param param: AddressParameter
-        :param value: Parameter display value
+        :param value: Parameter digital value
         :param size: Optional, number of bytes (1 or 4)
         :return: RolandSysEx object or None on failure
         """

@@ -543,7 +543,7 @@ class SynthBase(QWidget):
         address: JDXiSysExAddress = None,
     ) -> None:
         """
-        Handle parameter change event, convert display value to MIDI value,
+        Handle parameter change event, convert digital value to MIDI value,
 
         :param param: AddressParameter Parameter that was changed
         :param display_value: int Display value from the UI control
@@ -570,7 +570,7 @@ class SynthBase(QWidget):
         show_value_label: bool = True,
     ) -> Slider:
         """
-        Create a slider for an address parameter with proper display conversion.
+        Create a slider for an address parameter with proper digital conversion.
 
         :param param: AddressParameter Parameter to create slider for
         :param label: str label for the slider
@@ -627,7 +627,7 @@ class SynthBase(QWidget):
 
         :param param: AddressParameter
         :param label: str label for the combo box
-        :param options: list of options to display in the combo box
+        :param options: list of options to digital in the combo box
         :param values: list of values corresponding to the options (or options if options is None)
         :param show_label: bool whether to show the label
         :return: ComboBox
@@ -674,7 +674,7 @@ class SynthBase(QWidget):
         self, param: AddressParameter, label: str = None
     ) -> SpinBox:
         """
-        Create address spin box for address parameter with proper display conversion
+        Create address spin box for address parameter with proper digital conversion
 
         :param param: AddressParameter Parameter to create spin box for
         :param label: str label for the spin box

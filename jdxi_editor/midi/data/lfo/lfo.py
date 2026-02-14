@@ -29,7 +29,7 @@ class LFOSyncNote(Enum):
 
     @staticmethod
     def get_display_name(value: int) -> str:
-        """Get display name for sync note value"""
+        """Get digital name for sync note value"""
         names = {
             0: "16",
             1: "12",
@@ -56,12 +56,12 @@ class LFOSyncNote(Enum):
 
     @staticmethod
     def get_all_display_names() -> list:
-        """Get list of all display names in order"""
+        """Get list of all digital names in order"""
         return [LFOSyncNote.get_display_name(i) for i in range(20)]
 
     @staticmethod
     def display_name(value: int) -> str:
-        """Get display name for sync note value"""
+        """Get digital name for sync note value"""
         names = {
             0: "16",
             1: "12",
@@ -99,6 +99,6 @@ class LFOShape(Enum):
 
     @staticmethod
     def get_display_name(value: int) -> str:
-        """Get display name for LFO shape"""
+        """Get digital name for LFO shape"""
         names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         return names.get(value, "???")

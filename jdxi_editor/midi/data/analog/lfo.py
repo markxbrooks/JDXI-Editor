@@ -50,7 +50,7 @@ class AnalogLFOShape(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for LFO shape"""
+        """Get digital name for LFO shape"""
         names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         return names.get(self.value, "???")
 

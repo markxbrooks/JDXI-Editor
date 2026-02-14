@@ -80,7 +80,7 @@ class ArpeggioMotif(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for grid value"""
+        """Get digital name for grid value"""
         names = {
             0: "Up (L)",
             1: "Up (L&H)",
@@ -116,7 +116,7 @@ class ArpeggioGrid(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for grid value"""
+        """Get digital name for grid value"""
         names = {
             0: "1/4",
             1: "1/8",
@@ -150,7 +150,7 @@ class ArpeggioDuration(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for duration value"""
+        """Get digital name for duration value"""
         names = {
             0: "30%",
             1: "40%",
@@ -184,7 +184,7 @@ class ArpeggioOctaveRange(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for octave range"""
+        """Get digital name for octave range"""
         if self.value == 0:
             return "0"
         elif self.value > 0:
@@ -206,7 +206,7 @@ class ArpeggioSwitch(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for switch value"""
+        """Get digital name for switch value"""
         return "ON" if self.value else "OFF"
 
     @property

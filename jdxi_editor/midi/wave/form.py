@@ -46,7 +46,7 @@ class Waveform(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for waveform"""
+        """Get digital name for waveform"""
         return self.name.replace("_", " ").title()
 
     @property

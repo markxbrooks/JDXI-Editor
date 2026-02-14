@@ -307,7 +307,7 @@ class ArpeggioStyle(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for grid value"""
+        """Get digital name for grid value"""
         return self.name
 
     @property

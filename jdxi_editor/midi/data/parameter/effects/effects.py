@@ -4,20 +4,20 @@ EffectParameter Module
 
 This module defines the `EffectParameter` class, which manages effect-related parameters
 for JD-Xi patch data. It provides functionality to retrieve parameter addresses, convert
-values between display and MIDI formats, and categorize parameters based on effect types.
+values between digital and MIDI formats, and categorize parameters based on effect types.
 
 Classes
 --------
 
 .. class:: EffectParameter(address: int, min_val: int, max_val: int, display_min: Optional[int] = None, display_max: Optional[int] = None)
 
-   Represents an effect parameter with an address, value range, and optional display range.
+   Represents an effect parameter with an address, value range, and optional digital range.
 
    **Methods:**
 
    .. method:: get_display_value() -> Tuple[int, int]
 
-      Returns the display range for the parameter.
+      Returns the digital range for the parameter.
 
    .. method:: get_address_by_name(name: str) -> Optional[int]
 
@@ -33,11 +33,11 @@ Classes
 
    .. method:: convert_to_midi(display_value: int) -> int
 
-      Converts a display value to a corresponding MIDI value.
+      Converts a digital value to a corresponding MIDI value.
 
    .. method:: get_midi_value(param_name: str, value: int) -> Optional[int]
 
-      Returns the MIDI value for an effect parameter given its name and display value.
+      Returns the MIDI value for an effect parameter given its name and digital value.
 
    .. method:: get_common_param_by_name(name: str) -> Optional[EffectCommonParameter]
 
@@ -118,9 +118,9 @@ class Effect1Param(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display range for the parameter
+        Get the digital range for the parameter
 
-        :return: Tuple[int, int] The display range
+        :return: Tuple[int, int] The digital range
         """
         return self.display_min, self.display_max
 
@@ -371,8 +371,8 @@ class Effect1Param(AddressParameter):
         return cls.__members__.get(name, None)
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special cases first
@@ -456,9 +456,9 @@ class Effect2Param(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display range for the parameter
+        Get the digital range for the parameter
 
-        :return: Tuple[int, int] The display range
+        :return: Tuple[int, int] The digital range
         """
         return self.display_min, self.display_max
 
@@ -611,8 +611,8 @@ class Effect2Param(AddressParameter):
         return cls.__members__.get(name, None)
 
     def convert_to_midi_old(self, display_value: int) -> int:
-        """Convert from display value to MIDI value
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
@@ -626,8 +626,8 @@ class Effect2Param(AddressParameter):
             return display_value
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
@@ -709,15 +709,15 @@ class DelayParam(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display range for the parameter
+        Get the digital range for the parameter
 
-        :return: Tuple[int, int] The display range
+        :return: Tuple[int, int] The digital range
         """
         return self.display_min, self.display_max
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
@@ -788,8 +788,8 @@ class DelayParam(AddressParameter):
         return cls.__members__.get(name, None)
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first
@@ -871,15 +871,15 @@ class ReverbParam(AddressParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """
-        Get the display range for the parameter
+        Get the digital range for the parameter
 
-        :return: Tuple[int, int] The display range
+        :return: Tuple[int, int] The digital range
         """
         return self.display_min, self.display_max
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
@@ -942,8 +942,8 @@ class ReverbParam(AddressParameter):
         return cls.__members__.get(name, None)
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value
-        :param display_value: int The display value
+        """Convert from digital value to MIDI value
+        :param display_value: int The digital value
         :return: int The MIDI value
         """
         # Handle special bipolar cases first

@@ -77,7 +77,7 @@ class FavoriteButton(QPushButton):
         # self.settings.setValue('last_preset/preset_num', self.preset.preset_num)
         # self.settings.setValue('last_preset/channel', self.preset.channel)
         # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
-        # Update the display
+        # Update the digital
         log.message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
     def load_preset(self, preset_data: JDXiPresetData):

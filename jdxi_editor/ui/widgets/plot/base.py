@@ -242,7 +242,7 @@ class BasePlotWidget(QWidget):
         Prefer using draw_title_ctx with PlotContext for new code.
 
         :param painter: QPainter instance
-        :param title: Title text to display
+        :param title: Title text to digital
         :param left_pad: Left padding of the plot area
         :param plot_w: Width of the plot area
         :param top_pad: Top padding of the plot area
@@ -272,7 +272,7 @@ class BasePlotWidget(QWidget):
         Prefer using draw_x_axis_label_ctx with PlotContext for new code.
 
         :param painter: QPainter instance
-        :param label: Label text to display
+        :param label: Label text to digital
         :param left_pad: Left padding of the plot area
         :param plot_w: Width of the plot area
         :param plot_h: Height of the plot area
@@ -305,7 +305,7 @@ class BasePlotWidget(QWidget):
         Prefer using draw_y_axis_label_ctx with PlotContext for new code.
 
         :param painter: QPainter instance
-        :param label: Label text to display
+        :param label: Label text to digital
         :param left_pad: Left padding of the plot area
         :param plot_h: Height of the plot area
         :param top_pad: Top padding of the plot area
@@ -464,7 +464,7 @@ class BasePlotWidget(QWidget):
         Draw a centered title at the top of the plot using PlotContext.
 
         :param ctx: PlotContext containing plot state
-        :param title: Title text to display
+        :param title: Title text to digital
         :param config: Optional PlotConfig (uses get_plot_config() if not provided)
         """
         if config is None:
@@ -483,7 +483,7 @@ class BasePlotWidget(QWidget):
         Draw a centered X-axis label at the bottom of the plot using PlotContext.
 
         :param ctx: PlotContext containing plot state
-        :param label: Label text to display
+        :param label: Label text to digital
         :param config: Optional PlotConfig (uses get_plot_config() if not provided)
         """
         if config is None:
@@ -505,7 +505,7 @@ class BasePlotWidget(QWidget):
         Draw a rotated Y-axis label on the left side of the plot using PlotContext.
 
         :param ctx: PlotContext containing plot state
-        :param label: Label text to display
+        :param label: Label text to digital
         :param config: Optional PlotConfig (uses get_plot_config() if not provided)
         """
         if config is None:
@@ -1034,7 +1034,7 @@ class BasePlotWidget(QWidget):
         :param x: X coordinate in data coordinates
         :param y: Y coordinate in data coordinates
         :param x_max: Maximum X value for scaling
-        :param label: Optional label text to display
+        :param label: Optional label text to digital
         :param zero_at_bottom: Whether zero is at bottom of plot (default: False)
         :param config: Optional PlotConfig (uses get_plot_config() if not provided)
         :param point_size: Optional point size override (uses config.point_size if not provided)

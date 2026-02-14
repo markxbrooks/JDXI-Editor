@@ -116,6 +116,6 @@ class JDXiPresetManager:
         self._update_display()
 
     def _update_display(self):
-        """Update the display."""
-        # Implementation for updating the display
+        """Update the digital."""
+        # Implementation for updating the digital
         pass

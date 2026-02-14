@@ -63,7 +63,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
@@ -112,7 +112,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_total_ticks = None
         self.midi_port = self.midi_helper.midi_out
         self.midi_timer_init()
-        self.current_tempo_bpm = None  # Store current tempo BPM for display
+        self.current_tempo_bpm = None  # Store current tempo BPM for digital
         self.midi_preferred_channels = {
             MidiChannel.DIGITAL_SYNTH_1,
             MidiChannel.DIGITAL_SYNTH_2,
@@ -440,7 +440,7 @@ class MidiFilePlayer(SynthEditor):
 
             # Update the channel spinboxes for detected drum tracks
             # Channel 10 (1-based) = Channel 9 (0-based)
-            drum_channel_display = 10  # 1-based display channel
+            drum_channel_display = 10  # 1-based digital channel
             drum_channel_binary = 9  # 0-based binary channel
 
             updated_tracks = []
@@ -507,7 +507,7 @@ class MidiFilePlayer(SynthEditor):
                 min_score=30.0,
             )
 
-            # Channel assignments (1-based display channels)
+            # Channel assignments (1-based digital channels)
             channel_assignments = {
                 "bass": 1,  # Digital Synth 1
                 "keys_guitars": 2,  # Digital Synth 2
@@ -818,7 +818,7 @@ class MidiFilePlayer(SynthEditor):
 
         # Time in seconds from slider
         current_seconds = float(self.ui.midi_file_position_slider.value())
-        # Channel (display is 1-16, convert to 0-based)
+        # Channel (digital is 1-16, convert to 0-based)
         display_channel = int(self.ui.automation_channel_combo.currentData())
         channel = display_channel - 1
 
@@ -1448,7 +1448,7 @@ class MidiFilePlayer(SynthEditor):
             self.ui.midi_track_viewer.midi_file.save(file_path)
             file_name = f"Saved: {Path(file_path).name}"
             self.ui.digital_title_file_name.setText(file_name)
-            # Update display to show tempo only (no bar when not playing)
+            # Update digital to show tempo only (no bar when not playing)
             if self.current_tempo_bpm is not None:
                 self.ui.digital_title_file_name.set_upper_display_text(
                     f"Tempo: {round(self.current_tempo_bpm)} BPM"
@@ -1480,7 +1480,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_state.file.filename = file_path
         file_name = f"Loaded: {Path(file_path).name}"
         self.ui.digital_title_file_name.setText(file_name)
-        # Update display to show tempo only (no bar when not playing)
+        # Update digital to show tempo only (no bar when not playing)
         if self.current_tempo_bpm is not None:
             self.ui.digital_title_file_name.set_upper_display_text(
                 f"Tempo: {round(self.current_tempo_bpm)} BPM"
@@ -1668,7 +1668,7 @@ class MidiFilePlayer(SynthEditor):
         self, elapsed_time: Optional[float] = None
     ) -> None:
         """
-        Update the upper display with tempo and optionally bar number.
+        Update the upper digital with tempo and optionally bar number.
 
         :param elapsed_time: Optional elapsed time for bar calculation. If None, uses current playback state.
         """
@@ -2168,7 +2168,7 @@ class MidiFilePlayer(SynthEditor):
         self.stop_all_notes()
         self.prepare_for_playback()
 
-        # Update display with tempo and bar for scrubbed position
+        # Update digital with tempo and bar for scrubbed position
         self.update_upper_display_with_tempo_and_bar(target_time)
 
     def is_midi_ready(self) -> bool:
@@ -2301,7 +2301,7 @@ class MidiFilePlayer(SynthEditor):
         # Stop USB recording if active
         self.usb_recorder.stop_recording()
 
-        # Update display to show tempo only (no bar when stopped)
+        # Update digital to show tempo only (no bar when stopped)
         if self.current_tempo_bpm is not None:
             self.ui.digital_title_file_name.set_upper_display_text(
                 f"Tempo: {round(self.current_tempo_bpm)} BPM"
@@ -2429,7 +2429,7 @@ class MidiFilePlayer(SynthEditor):
             0, int(self.midi_state.file_duration_seconds)
         )
         self.ui_position_label_set_time()
-        # Update display to show tempo only (no bar when resetting)
+        # Update digital to show tempo only (no bar when resetting)
         if self.current_tempo_bpm is not None:
             self.ui.digital_title_file_name.set_upper_display_text(
                 f"Tempo: {round(self.current_tempo_bpm)} BPM"
@@ -2493,8 +2493,8 @@ class MidiFilePlayer(SynthEditor):
     def ui_position_label_set_time(self, elapsed_time: Optional[float] = None) -> None:
         """
         Update the position label with formatted elapsed time and total duration.
-        Caps elapsed_time to total duration to prevent overflow display.
-        Also updates the bar number in the DigitalTitle upper display.
+        Caps elapsed_time to total duration to prevent overflow digital.
+        Also updates the bar number in the DigitalTitle upper digital.
         """
         total = self.midi_state.file_duration_seconds
         if elapsed_time is None:
@@ -2509,9 +2509,9 @@ class MidiFilePlayer(SynthEditor):
             self.ui.position_label.setText(label_text)
             self._last_position_label = label_text
 
-        # Update upper display with tempo and bar number during active playback or when paused
+        # Update upper digital with tempo and bar number during active playback or when paused
         if elapsed_time is not None and self.midi_state.file and self.midi_state.timer:
-            # Update display with tempo and bar if timer was active (playing or paused)
+            # Update digital with tempo and bar if timer was active (playing or paused)
             if self.midi_state.timer.isActive() or self.midi_state.playback_paused:
                 self.update_upper_display_with_tempo_and_bar(elapsed_time)
 

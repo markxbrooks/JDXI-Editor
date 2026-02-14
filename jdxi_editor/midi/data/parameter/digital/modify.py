@@ -6,7 +6,7 @@ Digital/SuperNATURAL synth tones in the JD-Xi.
 
 This class provides attributes and methods to manage various modulation
 parameters shared across all partials of a digital synth tone. It also
-includes methods for retrieving display text representations of switch
+includes methods for retrieving digital text representations of switch
 values, parameter lookup by name, and value validation.
 
 Example usage:
@@ -17,7 +17,7 @@ attack_time_param = AddressParameterDigitalModify(*AddressParameterDigitalModify
 # Validate a value
 validated_value = attack_time_param.validate_value(100)
 
-# Get display text for a switch value
+# Get digital text for a switch value
 text = attack_time_param.get_switch_text(1)  # For ENVELOPE_LOOP_MODE, returns "FREE-RUN"
 
 # Retrieve parameter by name
@@ -121,13 +121,13 @@ class DigitalModifyParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """Get digital text for switch values"""
         if self == self.ENVELOPE_LOOP_MODE:
             return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif self == self.CHROMATIC_PORTAMENTO:

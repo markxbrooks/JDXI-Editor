@@ -7,7 +7,7 @@ It provides a real-time log view where MIDI messages can be logged with timestam
 allowing for easy debugging of MIDI communication.
 
 Attributes:
-    log_view (QTextEdit): A text edit widget used to display the MIDI message log.
+    log_view (QTextEdit): A text edit widget used to digital the MIDI message log.
 
 Methods:
     log.message(message, direction="→"): Logs a MIDI message with a timestamp.

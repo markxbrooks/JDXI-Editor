@@ -22,6 +22,7 @@ from picomidi.utils.conversion import (
     ms_to_midi_value,
 )
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -148,6 +149,11 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             control.envelope_changed.connect(self.on_control_changed)
         if analog:
             JDXi.UI.Theme.apply_adsr_style(self, analog=True)
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """When widget is shown, sync plot from current control values (e.g. after startup load)."""
+        super().showEvent(event)
+        self.refresh_plot_from_controls()
 
     def on_control_changed(self, change: dict) -> None:
         """

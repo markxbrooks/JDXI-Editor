@@ -12,6 +12,7 @@ from typing import Dict, Optional
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -281,7 +282,9 @@ class ProgramMixer(SynthBase):
 
         for col, track in enumerate(self.tracks, start=1):
             strip = track.build_strip()
-            self.mixer_layout.addWidget(strip, 0, col)
+            self.mixer_layout.addWidget(
+                strip, 0, col, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop
+            )
 
         self.mixer_layout.setRowStretch(0, 1)
 
@@ -289,7 +292,7 @@ class ProgramMixer(SynthBase):
         """
         Update the tone name for a specific synth.
 
-        :param tone_name: str tone name to display
+        :param tone_name: str tone name to digital
         :param synth_type: str synth type (JDXiSynth constant)
         """
         log.message(f"Update tone name triggered: tone_name {tone_name} {synth_type}")
@@ -316,7 +319,7 @@ class ProgramMixer(SynthBase):
         """
         Update the master level label with the current program name.
 
-        :param program_name: str program name to display
+        :param program_name: str program name to digital
         """
         if self.master_level_current_label:
             self.master_level_current_label.setText(program_name or "Current Program")

@@ -75,7 +75,7 @@ class SearchableFilterableComboBox(QWidget):
         Initialize the SearchableFilterableComboBox.
 
         :param label: Label text for the combo box
-        :param options: Full list of option strings to display
+        :param options: Full list of option strings to digital
         :param values: Full list of corresponding integer values (if None, uses indices)
         :param categories: List of category strings for filtering (optional)
         :param category_filter_func: Function to determine if an option matches a category.
@@ -295,7 +295,7 @@ class SearchableFilterableComboBox(QWidget):
 
     def setValue(self, value: int) -> None:
         """
-        Set the combo box to display the option with the given value.
+        Set the combo box to digital the option with the given value.
 
         This method finds the original index of the value, then finds
         its position in the filtered list (if any), and sets the combo box index.

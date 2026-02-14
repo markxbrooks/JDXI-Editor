@@ -18,7 +18,7 @@ class DrumKitCC:
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         return str(value)
 
     @staticmethod

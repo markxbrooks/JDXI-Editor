@@ -9,7 +9,7 @@ Key Features:
 - MIDI Integration: Sends and receives MIDI messages via `MIDIHelper`, supporting parameter changes, SysEx communication,
   and program change handling.
 - Preset Management: Loads, updates, and applies instrument presets with `PresetHandler` and `PresetLoader`.
-- Parameter Control: Dynamically creates UI controls for synthesizer parameters, supporting bipolar values and display conversion.
+- Parameter Control: Dynamically creates UI controls for synthesizer parameters, supporting bipolar values and digital conversion.
 - Shortcuts: Implements keyboard shortcuts for refreshing data and closing the window.
 
 Dependencies:

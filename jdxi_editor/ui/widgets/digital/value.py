@@ -44,7 +44,7 @@ class ValueDisplay(QWidget):
         layout.addWidget(self.value_label)
 
     def setValue(self, value: int) -> None:
-        """Set the value of the display.
+        """Set the value of the digital.
 
         :param value: int
         """
@@ -53,7 +53,7 @@ class ValueDisplay(QWidget):
         self.valueChanged.emit(clamped)
 
     def value(self) -> int:
-        """Get the value of the display.
+        """Get the value of the digital.
 
         :return: int
         """

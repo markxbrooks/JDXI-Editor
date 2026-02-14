@@ -43,7 +43,7 @@ from jdxi_editor.ui.editors.program.mixer import ProgramMixer
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 

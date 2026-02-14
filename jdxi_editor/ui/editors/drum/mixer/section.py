@@ -32,7 +32,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
 from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
 from jdxi_editor.ui.editors.drum.mixer.strip import DrumLevelStrip, MasterLevelStrip
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.slider import Slider
 
 

@@ -6,20 +6,20 @@ parameters, including grid, duration, switch state, style, motif, octave range, 
 and velocity. These parameters are used to configure and control the behavior of arpeggios in
 a music production environment.
 
-The class provides static methods to retrieve human-readable display values for each parameter
+The class provides static methods to retrieve human-readable digital values for each parameter
 based on raw numerical values. It also includes predefined constants for each arpeggio-related
 parameter, with specific value ranges and corresponding meanings.
 
 Parameters defined in the class include:
 - Arpeggio grid, duration, switch, style, motif, octave, accent, and velocity values
-- Methods for converting raw integer values to display-friendly strings
+- Methods for converting raw integer values to digital-friendly strings
 - Various grid types (e.g., 04_, 08_, 16_)
 - Duration values expressed as percentages (e.g., 30%, 50%, 100%)
 - Motif values representing arpeggio patterns and phrases (e.g., UP/L, dn/H, PHRASE)
 
 This module can be used in a synthesizer, sequencer, or other digital audio workstation
 to dynamically configure arpeggio settings and translate raw parameter values into readable
-formats for display and interaction with users.
+formats for digital and interaction with users.
 
 Classes:
 - ProgramController: Contains the logic for handling arpeggio parameters and converting
@@ -133,11 +133,11 @@ class ProgramControllerParam(AddressParameter):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """
-        Convert raw value to display value
+        Convert raw value to digital value
 
         :param param: int The parameter
         :param value: int The value
-        :return: str The display value
+        :return: str The digital value
         """
         if param == ProgramControllerParam.ARPEGGIO_GRID:  # Grid
             return ProgramControllerParam.get_grid_name(value)

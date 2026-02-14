@@ -11,7 +11,7 @@ class VocalFxSwitch(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for switch value"""
+        """Get digital name for switch value"""
         return "ON" if self.value else "OFF"
 
     @property
@@ -28,7 +28,7 @@ class VocalAutoNoteSwitch(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for switch value"""
+        """Get digital name for switch value"""
         return "ON" if self.value else "OFF"
 
     @property
@@ -47,7 +47,7 @@ class VocalAutoPitchType(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for pitch preset_type"""
+        """Get digital name for pitch preset_type"""
         names = {0: "SOFT", 1: "HARD", 2: "ELECTRIC1", 3: "ELECTRIC2"}
         return names.get(self.value, "???")
 
@@ -68,7 +68,7 @@ class VocalOutputAssign(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for output assignment"""
+        """Get digital name for output assignment"""
         return self.name
 
     @property
@@ -107,7 +107,7 @@ class VocalAutoPitchKey(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for key"""
+        """Get digital name for key"""
         names = {
             0: "C",
             1: "Db",
@@ -151,7 +151,7 @@ class VocalOctaveRange(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for octave"""
+        """Get digital name for octave"""
         names = {0: "-1", 1: "0", 2: "+1"}
         return names.get(self.value, "???")
 
@@ -179,7 +179,7 @@ class VocalAutoPitchNote(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for note"""
+        """Get digital name for note"""
         names = {
             0: "C",
             1: "C#",
@@ -211,7 +211,7 @@ class VocoderEnvelope(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for envelope preset_type"""
+        """Get digital name for envelope preset_type"""
         return self.name
 
     @property
@@ -240,7 +240,7 @@ class VocoderHPF(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for HPF frequency"""
+        """Get digital name for HPF frequency"""
         names = {
             0: "BYPASS",
             1: "1000 Hz",

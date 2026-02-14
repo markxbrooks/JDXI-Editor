@@ -24,7 +24,7 @@ class AnalogSubOscType(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for sub oscillator preset_type"""
+        """Get digital name for sub oscillator preset_type"""
         names = {0x00: "OFF", 0x01: "-1 OCT", 0x02: "-2 OCT"}
         return names.get(self.value, "???")
 

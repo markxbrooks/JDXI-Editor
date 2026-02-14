@@ -8,9 +8,9 @@ partial switches, and additional effects.
 
 The class provides methods to:
 
-- Retrieve a human-readable display name for each parameter.
+- Retrieve a human-readable digital name for each parameter.
 - Identify if a parameter is a switch (binary or enum).
-- Get appropriate display text for switch values.
+- Get appropriate digital text for switch values.
 - Validate and convert parameter values within their defined range.
 - Retrieve the partial number (1-3) for partial-specific parameters.
 - Get a parameter by its name.
@@ -26,7 +26,7 @@ Usage example:
     # Initialize a parameter object
     param = AddressParameterDigitalCommon(address=0x00, min_val=0, max_val=127)
 
-    # Get the display name for the parameter
+    # Get the digital name for the parameter
     print(param.display_name)
 
     # Validate and convert a value for the parameter
@@ -211,7 +211,7 @@ class DigitalCommonParam(AddressParameter):
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return {
@@ -244,7 +244,7 @@ class DigitalCommonParam(AddressParameter):
         ]
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """Get digital text for switch values"""
         if self == self.RING_SWITCH:
             return ["OFF", "---", "ON"][value]
         elif self == self.PORTAMENTO_MODE:

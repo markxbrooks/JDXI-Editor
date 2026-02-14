@@ -8,8 +8,8 @@ style, motif, octave range, accent rate, and velocity, as well as pattern, rhyth
 
 The class provides methods to:
 
-- Initialize arpeggio parameters with a given address, range, and optional display range.
-- Store the minimum and maximum values for display and parameter validation.
+- Initialize arpeggio parameters with a given address, range, and optional digital range.
+- Store the minimum and maximum values for digital and parameter validation.
 - Define a variety of arpeggio and pattern-related parameters with specific ranges, including:
   - Arpeggio grid (e.g., 4_, 8_, 16_)
   - Arpeggio duration (e.g., 30, 40, 50, 60)
@@ -29,7 +29,7 @@ Usage example:
     # Initialize an arpeggio parameter object
     param = ArpeggioParameter(address=0x01, min_val=0, max_val=8)
 
-    # Access display range values
+    # Access digital range values
     log.message(param.display_min)  # Output: 0
     log.message(param.display_max)  # Output: 8
 
@@ -173,7 +173,7 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
 
     @property
     def display_name(self) -> str:
-        """Get display name for the parameter (from ParameterSpec or fallback)."""
+        """Get digital name for the parameter (from ParameterSpec or fallback)."""
         if getattr(self, "_display_name", None) is not None:
             return self._display_name
         return self.name.replace("_", " ").title()

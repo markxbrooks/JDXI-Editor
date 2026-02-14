@@ -34,7 +34,6 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
-    QDialogButtonBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -42,10 +41,13 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
@@ -92,6 +94,35 @@ class MIDIConfigDialog(QDialog):
         self.activateWindow()
         self.setFocus()
 
+    def _add_round_button(self, icon_enum, text: str, slot, layout: QHBoxLayout):
+        """Add a round button + icon/label row (Transport style). Returns the button."""
+        btn = QPushButton()
+        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+        btn.setFixedSize(
+            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
+            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
+        )
+        if slot is not None:
+            btn.clicked.connect(slot)
+        layout.addWidget(btn)
+
+        label_row = QWidget()
+        label_layout = QHBoxLayout(label_row)
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.setSpacing(4)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        if pixmap and not pixmap.isNull():
+            icon_label = QLabel()
+            icon_label.setPixmap(pixmap)
+            label_layout.addWidget(icon_label)
+        text_label = QLabel(text)
+        text_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
+        label_layout.addWidget(text_label)
+        layout.addWidget(label_row)
+        return btn
+
     def _create_ui(self):
         """Create the dialog UI"""
         layout = QVBoxLayout(self)
@@ -99,6 +130,12 @@ class MIDIConfigDialog(QDialog):
         # Input port selection
         input_group = QGroupBox("MIDI Input")
         input_layout = QVBoxLayout(input_group)
+
+        self.input_display = DigitalTitle(
+            self.current_in or "No input",
+            show_upper_text=False,
+        )
+        # input_layout.addWidget(self.input_display) @@@
 
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
@@ -116,6 +153,7 @@ class MIDIConfigDialog(QDialog):
         self.input_combo.addItems(self.input_ports)
         if self.current_in and self.current_in in self.input_ports:
             self.input_combo.setCurrentText(self.current_in)
+        self.input_combo.currentIndexChanged.connect(self._on_input_combo_changed)
 
         input_layout.addWidget(self.input_combo)
         layout.addWidget(input_group)
@@ -123,6 +161,12 @@ class MIDIConfigDialog(QDialog):
         # Output port selection
         output_group = QGroupBox("MIDI Output")
         output_layout = QVBoxLayout(output_group)
+
+        self.output_display = DigitalTitle(
+            self.current_out or "No output",
+            show_upper_text=False,
+        )
+        # output_layout.addWidget(self.output_display) @@@
 
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
@@ -140,6 +184,7 @@ class MIDIConfigDialog(QDialog):
         self.output_combo.addItems(self.output_ports)
         if self.current_out and self.current_out in self.output_ports:
             self.output_combo.setCurrentText(self.current_out)
+        self.output_combo.currentIndexChanged.connect(self._on_output_combo_changed)
 
         output_layout.addWidget(self.output_combo)
         layout.addWidget(output_group)
@@ -149,6 +194,7 @@ class MIDIConfigDialog(QDialog):
         synth_layout = QVBoxLayout(synth_group)
 
         self.fluidsynth_enable = QCheckBox("Enable FluidSynth for local playback")
+        JDXi.UI.Theme.apply_partial_switch(self.fluidsynth_enable)
         self.fluidsynth_enable.toggled.connect(self._toggle_fluidsynth_controls)
         synth_layout.addWidget(self.fluidsynth_enable)
 
@@ -157,9 +203,11 @@ class MIDIConfigDialog(QDialog):
         self.sf2_edit = QLineEdit()
         self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2")  # default SoundFont
         sf_row.addWidget(self.sf2_edit)
-        browse_btn = QPushButton("Browse…")
-        browse_btn.clicked.connect(self._browse_sf2)
-        sf_row.addWidget(browse_btn)
+        browse_btn_layout = QHBoxLayout()
+        self._add_round_button(
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN, "Browse", self._browse_sf2, browse_btn_layout
+        )
+        sf_row.addLayout(browse_btn_layout)
         synth_layout.addLayout(sf_row)
 
         # Available SoundFonts selector
@@ -171,15 +219,15 @@ class MIDIConfigDialog(QDialog):
         synth_layout.addLayout(combo_row)
 
         btn_row = QHBoxLayout()
-        self.fs_start_btn = QPushButton("Start")
-        self.fs_start_btn.clicked.connect(self._start_fluidsynth)
-        self.fs_stop_btn = QPushButton("Stop")
-        self.fs_stop_btn.clicked.connect(self._stop_fluidsynth)
-        self.fs_test_btn = QPushButton("Test Note")
-        self.fs_test_btn.clicked.connect(self._test_fluidsynth)
-        btn_row.addWidget(self.fs_start_btn)
-        btn_row.addWidget(self.fs_stop_btn)
-        btn_row.addWidget(self.fs_test_btn)
+        self.fs_start_btn = self._add_round_button(
+            JDXi.UI.Icon.PLAY, "Start", self._start_fluidsynth, btn_row
+        )
+        self.fs_stop_btn = self._add_round_button(
+            JDXi.UI.Icon.STOP, "Stop", self._stop_fluidsynth, btn_row
+        )
+        self.fs_test_btn = self._add_round_button(
+            JDXi.UI.Icon.MUSIC_NOTE, "Test Note", self._test_fluidsynth, btn_row
+        )
         synth_layout.addLayout(btn_row)
 
         self.fs_status = QLabel("")
@@ -190,18 +238,32 @@ class MIDIConfigDialog(QDialog):
         # Initially disable subordinate controls
         self._toggle_fluidsynth_controls(False)
 
-        # Refresh button
-        refresh_button = QPushButton("Refresh Ports")
-        refresh_button.clicked.connect(self.refresh_ports)
-        layout.addWidget(refresh_button)
-
-        # Buttons
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal
+        # Refresh button (round + label)
+        refresh_row = QHBoxLayout()
+        refresh_row.addStretch()
+        self._add_round_button(
+            JDXi.UI.Icon.REFRESH, "Refresh Ports", self.refresh_ports, refresh_row
         )
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
+        refresh_row.addStretch()
+        layout.addLayout(refresh_row)
+
+        # Dialog buttons (round + labels, Transport style)
+        dialog_btn_row = QHBoxLayout()
+        dialog_btn_row.addStretch()
+        self._add_round_button(JDXi.UI.Icon.SAVE, "OK", self.accept, dialog_btn_row)
+        self._add_round_button(JDXi.UI.Icon.CANCEL, "Cancel", self.reject, dialog_btn_row)
+        dialog_btn_row.addStretch()
+        layout.addLayout(dialog_btn_row)
+
+    def _on_input_combo_changed(self) -> None:
+        """On input ComboBox changed, set the DigitalTitle text."""
+        if hasattr(self, "input_display") and hasattr(self, "input_combo"):
+            self.input_display.setText(self.input_combo.currentText() or "No input")
+
+    def _on_output_combo_changed(self) -> None:
+        """On output ComboBox changed, set the DigitalTitle text."""
+        if hasattr(self, "output_display") and hasattr(self, "output_combo"):
+            self.output_display.setText(self.output_combo.currentText() or "No output")
 
     def refresh_ports(self):
         """Refresh the list of MIDI ports"""
@@ -214,6 +276,10 @@ class MIDIConfigDialog(QDialog):
         self.input_combo.addItems(self.input_ports)
         self.output_combo.clear()
         self.output_combo.addItems(self.output_ports)
+
+        # Keep DigitalTitle in sync with current selection
+        self._on_input_combo_changed()
+        self._on_output_combo_changed()
 
     def _toggle_fluidsynth_controls(self, enabled: bool) -> None:
         controls_enabled = bool(self.fluidsynth_enable.isChecked())
@@ -314,7 +380,7 @@ class MIDIConfigDialog(QDialog):
                             found.append(full)
         except Exception:
             pass
-        # Add items (display basename, store full path)
+        # Add items (digital basename, store full path)
         for path in sorted(found):
             self.sf2_combo.addItem(os.path.basename(path), path)
         self.sf2_combo.blockSignals(False)

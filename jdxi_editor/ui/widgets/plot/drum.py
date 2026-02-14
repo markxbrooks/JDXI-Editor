@@ -7,7 +7,7 @@ This module defines plot widgets for drum envelope visualization:
 - DrumTVFEnvPlot: Visualizes drum TVF (Time Variant Filter) envelope
 - DrumTVAEnvPlot: Visualizes drum TVA (Time Variant Amplifier) envelope
 
-All plots display 5-level, 4-time-segment envelope curves with interactive visualization.
+All plots digital 5-level, 4-time-segment envelope curves with interactive visualization.
 """
 
 import numpy as np

@@ -1,10 +1,10 @@
 """
 Custom Slider Widget Module
 
-This module defines address custom slider widget (Slider) that combines address QSlider with address label and address value display.
+This module defines address custom slider widget (Slider) that combines address QSlider with address label and address value digital.
 It offers additional functionality including:
 
-- Customizable value display using address format function.
+- Customizable value digital using address format function.
 - Support for vertical or horizontal orientation.
 - Option to add address visual center mark for bipolar sliders.
 - Customizable tick mark positions and intervals.
@@ -37,7 +37,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class Slider(QWidget):
-    """Custom slider widget with label and value display"""
+    """Custom slider widget with label and value digital"""
 
     rpn_slider_changed = Signal(int)
 
@@ -121,7 +121,7 @@ class Slider(QWidget):
             layout.addWidget(self.slider)
             self.slider.setValue(initial_value)
 
-        # Create value display
+        # Create value digital
 
         self.value_label = QLabel(str(min_value))
         self.value_label.setMinimumWidth(20)
@@ -139,7 +139,7 @@ class Slider(QWidget):
             self.label.setText(text)
 
     def setValueDisplayFormat(self, format_func):
-        """Set custom format function for value display"""
+        """Set custom format function for value digital"""
         self.value_display_format = format_func
         self._update_value_label()
 

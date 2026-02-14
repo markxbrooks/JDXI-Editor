@@ -21,7 +21,7 @@ class AnalogControlChange(ControlChange):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """Convert raw value to digital value"""
         if param == 3:  # LFO Shape
             shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]

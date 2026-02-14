@@ -202,7 +202,7 @@ class AnalogEditorDimensions(EditorDimensions):
 
 
 class LEDDisplayDimensions(Dimensions):
-    """LED display area (enlarged for 2 rows)"""
+    """LED digital area (enlarged for 2 rows)"""
 
     WIDTH: int = 210
     HEIGHT: int = 70
@@ -229,7 +229,7 @@ class PWMWidgetDimensions(Dimensions):
 
 
 class TitleDimensions(Dimensions):
-    """Title above display (moved down)"""
+    """Title above digital (moved down)"""
 
     X = InstrumentDimensions.MARGIN + 20
     Y = InstrumentDimensions.MARGIN

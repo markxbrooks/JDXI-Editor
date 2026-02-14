@@ -439,7 +439,7 @@ class JDXiWindow(QMainWindow):
         return row
 
     def _update_display(self):
-        """Update the display with the current preset information"""
+        """Update the digital with the current preset information"""
         if not self.current_synth_type:
             log.warning("No Synth type, defaulting to DIGITAL_1.", scope="JDXiWindow")
             self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
@@ -525,10 +525,10 @@ class JDXiWindow(QMainWindow):
                 active_synth=synth_data.display_prefix,
             )
         except Exception as ex:
-            log.error(f"Error updating display: {ex}", scope="JDXiWindow")
+            log.error(f"Error updating digital: {ex}", scope="JDXiWindow")
 
     def _load_digital_font(self) -> None:
-        """Load the digital LCD font for the display"""
+        """Load the digital LCD font for the digital"""
 
         font_name = "JdLCD.ttf"
         font_path = resource_path(os.path.join("resources", "fonts", font_name))
@@ -569,7 +569,7 @@ class JDXiWindow(QMainWindow):
             log.message(f"File not found: {font_path}", scope="JDXiWindow")
 
     def update_preset_display(self, preset_number: int, preset_name: str):
-        """Update the current preset display"""
+        """Update the current preset digital"""
         self.preset_manager.current_preset_number = preset_number
         self.preset_manager.current_preset_name = preset_name
         self._update_display()
@@ -577,9 +577,9 @@ class JDXiWindow(QMainWindow):
     def _update_display_preset(
         self, preset_number: int, preset_name: str, channel: int
     ):
-        """Update the display with the new preset information."""
+        """Update the digital with the new preset information."""
         log.message(
-            f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}",
+            f"Updating digital preset: # {preset_number}, name: {preset_name}, channel: {channel}",
             scope="JDXiWindow",
         )
         self.current_preset_index = preset_number
@@ -601,12 +601,12 @@ class JDXiWindow(QMainWindow):
                 self.piano_keyboard.set_midi_channel(channel)
 
             log.message(
-                f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})",
+                f"Updated digital: {preset_number:03d}:{preset_name} (channel {channel})",
                 scope="JDXiWindow",
             )
 
         except Exception as ex:
-            log.error(f"Error updating display: {ex}", scope="JDXiWindow")
+            log.error(f"Error updating digital: {ex}", scope="JDXiWindow")
 
     def show_error(self, title: str, message: str):
         """Show error message dialog

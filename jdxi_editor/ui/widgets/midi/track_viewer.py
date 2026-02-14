@@ -476,7 +476,7 @@ class MidiTrackViewer(QWidget):
             spin.setToolTip(
                 "Select MIDI Channel for Track, then click 'Apply' to save changes"
             )
-            spin.setValue(first_channel)  # Offset for display
+            spin.setValue(first_channel)  # Offset for digital
             spin.setFixedWidth(JDXi.UI.Style.TRACK_SPINBOX_WIDTH)
             spin.setPrefix("Ch")
             line_label_row.addWidget(spin)

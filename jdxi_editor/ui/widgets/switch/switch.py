@@ -3,7 +3,7 @@ Module: switch_widget
 =====================
 
 This module provides a custom PySide6 QWidget implementation for a switch-style button with
-text display. The `Switch` class allows users to cycle through predefined values by clicking
+text digital. The `Switch` class allows users to cycle through predefined values by clicking
 a button, emitting a `valueChanged` signal when toggled.
 
 Classes:
@@ -24,7 +24,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class Switch(QWidget):
-    """Custom switch widget with text display"""
+    """Custom switch widget with text digital"""
 
     valueChanged = Signal(int)  # Emits new value when changed
 

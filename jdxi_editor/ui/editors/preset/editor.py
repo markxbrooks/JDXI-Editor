@@ -14,7 +14,7 @@ Key Features:
 - Graphical UI for selecting and managing MIDI programs.
 - Filtering options based on bank and genre.
 - MIDI integration for program selection and loading.
-- Image display for program categories.
+- Image digital for program categories.
 - Program list population based on predefined program data.
 
 Classes:
@@ -150,7 +150,7 @@ class PresetEditor(BasicEditor):
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
         main_vlayout.addLayout(title_layout)
-        # Image display
+        # Image digital
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter

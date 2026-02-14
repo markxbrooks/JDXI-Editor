@@ -15,7 +15,7 @@ def profiling_decorator(
     Decorator to profile a function and log its performance.
 
     :param sortby: str - Sorting criteria for profiling results ('cumtime' or 'tottime').
-    :param top_n: int - Number of top entries to display in the profiling results.
+    :param top_n: int - Number of top entries to digital in the profiling results.
     """
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:

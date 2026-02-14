@@ -4,7 +4,7 @@ UI components for MIDI file player.
 
 from PySide6.QtWidgets import QCheckBox, QComboBox, QLabel, QPushButton, QSlider
 
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 
 

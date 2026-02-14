@@ -14,7 +14,7 @@ Key Features:
 - Graphical UI for selecting and managing MIDI programs.
 - Filtering options based on bank and genre.
 - MIDI integration for program selection and loading.
-- Image display for program categories.
+- Image digital for program categories.
 - Program list population based on predefined program data.
 
 Classes:
@@ -589,7 +589,7 @@ class ProgramEditor(BasicEditor):
             """Check if a program matches a bank."""
             if not bank:
                 return True
-            # --- Extract bank from display string (format: "A01 - Program Name")
+            # --- Extract bank from digital string (format: "A01 - Program Name")
             if " - " in program_display:
                 program_id = program_display.split(" - ")[0]
             else:
@@ -606,7 +606,7 @@ class ProgramEditor(BasicEditor):
             if not genre:
                 return True
             # --- Find the program in the list and check its genre
-            # --- Extract program ID from display string
+            # --- Extract program ID from digital string
             if " - " in program_display:
                 program_id = program_display.split(" - ")[0]
             else:

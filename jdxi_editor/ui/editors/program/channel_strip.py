@@ -37,22 +37,23 @@ class ChannelStrip(QWidget):
         layout.setSpacing(4)
         layout.setContentsMargins(4, 4, 4, 4)
 
+        center = Qt.AlignmentFlag.AlignHCenter
+
         self.title = QLabel(title)
         self.title.setAlignment(Qt.AlignCenter)
-
-        layout.addWidget(self.title)
+        layout.addWidget(self.title, 0, center)
 
         if slider:
             slider.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-            layout.addWidget(slider, 1)
+            layout.addWidget(slider, 1, center)
 
         if value_label:
             value_label.setAlignment(Qt.AlignCenter)
-            layout.addWidget(value_label)
+            layout.addWidget(value_label, 0, center)
 
         if icon:
             icon.setAlignment(Qt.AlignCenter)
-            layout.addWidget(icon)
+            layout.addWidget(icon, 0, center)
 
         self.mute = QPushButton("M")
         self.mute.setCheckable(True)
@@ -63,7 +64,7 @@ class ChannelStrip(QWidget):
 
         self.mute.toggled.connect(self._on_mute_toggled)
 
-        layout.addWidget(self.mute)
+        layout.addWidget(self.mute, 0, center)
 
     def _update_mute_button_style(self, is_muted: bool) -> None:
         """Apply JD-Xi sequencer-style visual for mute toggle."""

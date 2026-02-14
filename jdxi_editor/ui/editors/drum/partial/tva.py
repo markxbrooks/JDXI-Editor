@@ -302,7 +302,7 @@ class DrumTVASection(DrumBaseSection):
         :param value: int Display value from slider
         :param param: AddressParameterDrumPartial Parameter object for conversion
         """
-        # Convert display value to MIDI value if parameter is provided
+        # Convert digital value to MIDI value if parameter is provided
         if param and hasattr(param, "convert_from_display"):
             midi_value = param.convert_from_display(value)
         else:

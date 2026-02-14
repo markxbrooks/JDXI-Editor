@@ -1,169 +1,28 @@
 """
-digital_display.py
-
-This module provides the DigitalDisplay class, a custom PySide6 QWidget designed
-to simulate an LCD-style digital display for MIDI controllers, synthesizers,
-or other music-related applications. The display shows preset and program
-information along with an octave indicator.
-
-Features:
-- Displays a program name, program number, preset name, and preset number.
-- Shows the current octave with a digital-style font.
-- Customizable font family for the digital display.
-- Resizable and styled for a retro LCD appearance.
-- Provides setter methods to update displayed values dynamically.
-
-Classes:
-- DigitalDisplay: A QWidget subclass that renders a digital-style display.
+Digital Display
 
 Usage Example:
-    display = DigitalDisplay()
-    display.setPresetText("Grand Piano")
-    display.setPresetNumber(12)
-    display.setProgramText("User Program 1")
-    display.setProgramNumber(5)
-    display.setOctave(1)
-
-Dependencies:
-- PySide6.QtWidgets (QWidget, QSizePolicy)
-- PySide6.QtGui (QPainter, QColor, QPen, QFont)
-
+==============
+>>> digital = DigitalDisplay()
+>>> digital.setPresetText("Grand Piano")
+>>> digital.setPresetNumber(12)
+>>> digital.setProgramText("User Program 1")
+>>> digital.setProgramNumber(5)
+>>> digital.setOctave(1)
 """
 
 import platform
 
+from PySide6.QtGui import QPaintEvent, QPainter, QLinearGradient, QColor, QPen, QFont
+from PySide6.QtWidgets import QWidget, QSizePolicy
+
 from decologr import Decologr as log
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
-from PySide6.QtWidgets import QSizePolicy, QWidget
-
-
-class DigitalDisplayBase(QWidget):
-    """Base class for JD-Xi style digital displays."""
-
-    def __init__(
-        self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None
-    ):
-        super().__init__(parent)
-        """Initialize the DigitalDisplayBase
-
-        :param digital_font_family: str
-        :param parent: QWidget
-        """
-        self.digital_font_family = digital_font_family
-        self.display_texts = []
-        self.setMinimumSize(210, 70)
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
-    def paintEvent(self, event: QPaintEvent) -> None:
-        """Handles rendering of the digital display."""
-        painter = QPainter(self)
-        if not painter.isActive():
-            return
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        self.draw_display(painter)
-
-    def draw_display(self, painter: QPainter):
-        """Draws the LCD-style display with a gradient glow effect."""
-        display_width, display_height = self.width(), self.height()
-
-        # Gradient background
-        gradient = QLinearGradient(0, 0, display_width, display_height)
-        gradient.setColorAt(0.0, QColor("#321212"))
-        gradient.setColorAt(0.3, QColor("#331111"))
-        gradient.setColorAt(0.5, QColor("#551100"))
-        gradient.setColorAt(0.7, QColor("#331111"))
-        gradient.setColorAt(1.0, QColor("#111111"))
-
-        painter.setBrush(gradient)
-        painter.setPen(QPen(QColor("#000000"), 2))
-        painter.drawRect(0, 0, display_width, display_height)
-
-        # Set font
-        if platform.system() == "Windows":
-            font_size = 13
-        else:
-            font_size = 19
-        display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
-        painter.setFont(display_font)
-
-        # Draw text
-        y_offset = 10
-        for text in self.display_texts:
-            painter.setPen(QPen(QColor("#FFAA33")))
-            # rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area
-            rect = QRect(
-                10, y_offset, self.width() - 20, 30
-            )  # Proper text bounding area
-            painter.drawText(rect, 1, str(text))
-            y_offset += 30  # Space out text lines
-
-    def update_display(self, texts: list) -> None:
-        """Update the display text and trigger repaint.
-
-        :param texts: list
-        """
-        self.display_texts = texts
-        self.update()
-
-    def set_upper_display_text(self, text: str) -> None:
-        """Update the display text and trigger repaint.
-
-        :param text: list
-        """
-        self.display_texts[0] = text
-        self.update()
-
-
-class DigitalTitle(DigitalDisplayBase):
-    """Simplified display showing only the current tone name."""
-
-    def __init__(
-        self,
-        tone_name: str = "Init Tone",
-        digital_font_family: str = "JD LCD Rounded",
-        show_upper_text: bool = True,
-        parent: QWidget = None,
-    ):
-        # Lazy import to avoid circular dependency
-        from jdxi_editor.core.jdxi import JDXi
-
-        super().__init__(digital_font_family, parent)
-        self.setMinimumSize(
-            JDXi.UI.Dimensions.DIGITAL_TITLE.WIDTH,
-            JDXi.UI.Dimensions.DIGITAL_TITLE.HEIGHT,
-        )
-        self.show_upper_text = show_upper_text
-        self.set_tone_name(tone_name)
-
-    def __del__(self):
-        print(f"{self.__class__.__name__} was deleted")
-
-    def set_tone_name(self, tone_name: str) -> None:
-        """Update the tone name display.
-
-        :param tone_name: str
-        """
-        if self.show_upper_text:
-            # self.update_display(["Currently Editing:", tone_name])
-            self.update_display(["", tone_name])
-        else:
-            self.update_display([tone_name])
-
-    @property
-    def text(self) -> str:
-        return self.display_texts[-1] if self.display_texts else ""
-
-    def setText(self, value: str) -> None:
-        """Alias for set_tone_name.
-
-        :param value: str
-        """
-        self.set_tone_name(value)
+from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase
+from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 
 class DigitalDisplay(DigitalDisplayBase):
-    """Digital LCD-style display widget."""
+    """Digital LCD-style digital widget."""
 
     def __init__(
         self,
@@ -187,18 +46,26 @@ class DigitalDisplay(DigitalDisplayBase):
         self.program_number = program_number
         self.program_bank_letter = program_bank_letter
         self.program_id = self.program_bank_letter + str(self.program_number)
-        self.margin = 10  # Default margin for display elements
+        self.margin = 10  # Default margin for digital elements
+        self._state: JDXiDisplayState = JDXiDisplayState(
+            synth="D1",
+            program_name="Init Program",
+            program_id="A1",
+            tone_name="Init Tone",
+            tone_number=1,
+            octave=0,
+        )
 
         # Lazy import to avoid circular dependency
         from jdxi_editor.core.jdxi import JDXi
 
         self.setMinimumSize(
             JDXi.UI.Dimensions.LED.WIDTH, JDXi.UI.Dimensions.LED.HEIGHT
-        )  # Set size matching display
+        )  # Set size matching digital
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Handles the rendering of the digital display.
+        """Handles the rendering of the digital digital.
 
         :param event: QPaintEvent
         """
@@ -209,7 +76,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.draw_display(painter)
 
     def draw_display(self, painter: QPainter):
-        """Draws the JD-Xi style digital display with a gradient glow effect."""
+        """Draws the JD-Xi style digital digital with a gradient glow effect."""
 
         display_x, display_y = 0, 0
         display_width, display_height = self.width(), self.height()
@@ -227,7 +94,7 @@ class DigitalDisplay(DigitalDisplayBase):
         painter.setPen(QPen(QColor("#000000"), 2))  # black border
         painter.drawRect(display_x, display_y, display_width, display_height)
 
-        # 2. Set font for digital display
+        # 2. Set font for digital digital
         if platform.system() == "Windows":
             font_size = 15
         else:
@@ -337,7 +204,7 @@ class DigitalDisplay(DigitalDisplayBase):
         program_number,
         program_bank_letter="A",  # Default bank
     ):
-        """Update the JD-Xi display image.
+        """Update the JD-Xi digital image.
 
         :param synth_type: str
         :param digital1_tone_name: str

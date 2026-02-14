@@ -216,8 +216,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     skipped_count += 1
                     continue
 
-                # Check if this is a raw MIDI value (> 127) that needs conversion to display value
-                # Parsed SysEx JSON contains raw MIDI values (0-255), but compose_message expects display values
+                # Check if this is a raw MIDI value (> 127) that needs conversion to digital value
+                # Parsed SysEx JSON contains raw MIDI values (0-255), but compose_message expects digital values
                 value = raw_value
 
                 # Get parameter max value (for 1-byte parameters, this should be <= 127)
@@ -229,7 +229,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
                 # If value is > 127, it's likely a raw MIDI byte that needs handling
                 if raw_value > 127:
-                    # Try to convert from MIDI to display value if the parameter supports it
+                    # Try to convert from MIDI to digital value if the parameter supports it
                     if hasattr(param, "convert_from_midi"):
                         try:
                             value = param.convert_from_midi(raw_value)
@@ -269,8 +269,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                         continue
                     # Use value as-is and let compose_message handle it
 
-                # Note: compose_message expects display values and will convert them to MIDI internally
-                # We've now ensured value is a display value (either it was already one, or we converted it)
+                # Note: compose_message expects digital values and will convert them to MIDI internally
+                # We've now ensured value is a digital value (either it was already one, or we converted it)
 
                 # Final validation: if value is still > 127 and param is 1-byte, skip it
                 # This catches cases where conversion didn't work or wasn't available
@@ -289,7 +289,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                     sysex_message = composer.compose_message(
                         address=address,
                         param=param,
-                        value=value,  # Pass display value as-is
+                        value=value,  # Pass digital value as-is
                     )
                     if sysex_message:
                         result = self.send_midi_message(sysex_message)

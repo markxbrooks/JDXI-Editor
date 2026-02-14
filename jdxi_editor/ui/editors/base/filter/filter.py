@@ -366,7 +366,7 @@ class BaseFilterSection(SectionBaseWidget):
             if hasattr(self.filter_widget.plot, "set_filter_mode"):
                 self.filter_widget.plot.set_filter_mode(filter_mode_str)
 
-            # --- Disable plot display when bypass is selected
+            # --- Disable plot digital when bypass is selected
             self.filter_widget.plot.enabled = enabled
             self.filter_widget.plot.update()  # Trigger redraw
 

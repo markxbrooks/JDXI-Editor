@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QSpinBox
 
 class MidiSpinBox(QSpinBox):
     """
-    Custom QSpinBox to display MIDI channels as 1-16,
+    Custom QSpinBox to digital MIDI channels as 1-16,
     """
 
     def __init__(self, parent: object | None = None) -> None:
