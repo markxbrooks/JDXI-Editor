@@ -1656,13 +1656,15 @@ class MidiFilePlayer(SynthEditor):
         """
         set_display_tempo_bpm
 
-        :param tempo_bpm: int tempo in microseconds
+        :param tempo_bpm: float tempo in BPM
         :return: None
-        Set the tempo in the UI and log it.
+        Set the tempo in the UI and log it. Also pushes tempo to Pattern Sequencer
+        so both editors stay in sync when using the same playback pipeline.
         """
         self.current_tempo_bpm = tempo_bpm
         self.update_upper_display_with_tempo_and_bar()
         log.parameter("tempo_bpm", tempo_bpm)
+        self._push_tempo_to_pattern_sequencer(tempo_bpm)
 
     def update_upper_display_with_tempo_and_bar(
         self, elapsed_time: Optional[float] = None
@@ -2651,38 +2653,45 @@ class MidiFilePlayer(SynthEditor):
         # Replace the buffer with the fixed messages
         self.midi_state.buffered_msgs = fixed_msgs
 
+    def _get_pattern_sequencer_editor(self):
+        """Return the Pattern Sequencer editor instance if available, else None."""
+        if not self.parent:
+            return None
+        if hasattr(self.parent, "get_existing_editor"):
+            try:
+                from jdxi_editor.ui.editors.pattern.pattern import (
+                    PatternSequenceEditor,
+                )
+                return self.parent.get_existing_editor(PatternSequenceEditor)
+            except Exception:
+                return None
+        if hasattr(self.parent, "patternsequenceeditor_instance"):
+            return self.parent.patternsequenceeditor_instance
+        return None
+
+    def _push_tempo_to_pattern_sequencer(self, tempo_bpm: float) -> None:
+        """Push current display tempo to Pattern Sequencer so it stays in sync with playback pipeline."""
+        try:
+            pattern_editor = self._get_pattern_sequencer_editor()
+            if not pattern_editor:
+                return
+            bpm_int = int(round(tempo_bpm))
+            if hasattr(pattern_editor, "tempo_spinbox") and pattern_editor.tempo_spinbox:
+                pattern_editor.tempo_spinbox.blockSignals(True)
+                pattern_editor.tempo_spinbox.setValue(bpm_int)
+                pattern_editor.tempo_spinbox.blockSignals(False)
+            if hasattr(pattern_editor, "set_tempo"):
+                pattern_editor.set_tempo(bpm_int)
+        except Exception as ex:
+            log.debug(f"Could not push tempo to Pattern Sequencer: {ex}")
+
     def _notify_pattern_sequencer_file_loaded(self) -> None:
         """Notify Pattern Sequencer that a MIDI file has been loaded."""
         try:
-            # Try to find Pattern Sequencer through parent
-            if not self.parent:
-                log.debug("No parent available to notify Pattern Sequencer")
-                return
-
-            # Look for PatternSequenceEditor in parent's attributes
-            pattern_editor = None
-            if hasattr(self.parent, "get_existing_editor"):
-                try:
-                    from jdxi_editor.ui.editors.pattern.pattern import (
-                        PatternSequenceEditor,
-                    )
-
-                    pattern_editor = self.parent.get_existing_editor(
-                        PatternSequenceEditor
-                    )
-                    log.debug(
-                        f"Found Pattern Sequencer via get_existing_editor: {pattern_editor is not None}"
-                    )
-                except Exception as ex:
-                    log.debug(
-                        f"Error getting Pattern Sequencer via get_existing_editor: {ex}"
-                    )
-            elif hasattr(self.parent, "patternsequenceeditor_instance"):
-                pattern_editor = self.parent.patternsequenceeditor_instance
-                log.debug(
-                    f"Found Pattern Sequencer via instance attribute: {pattern_editor is not None}"
-                )
-
+            pattern_editor = self._get_pattern_sequencer_editor()
+            log.debug(
+                f"Found Pattern Sequencer for file load: {pattern_editor is not None}"
+            )
             if pattern_editor:
                 if hasattr(pattern_editor, "_load_from_midi_file_editor"):
                     log.message("Notifying Pattern Sequencer of MIDI file load")

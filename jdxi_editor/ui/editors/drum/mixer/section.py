@@ -221,13 +221,17 @@ class DrumKitMixerSection(QWidget):
         JDXi.UI.Theme.apply_mixer_label(value_label)
 
         icon_label = QLabel()
-        pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            JDXi.UI.Icon.DRUM,
-            color=JDXi.UI.Style.FOREGROUND,
-            size=24,
-        )
-        if pixmap:
-            icon_label.setPixmap(pixmap)
+        if partial_name in ("CYM1", "CYM2", "CYM3", "CHH", "PHH", "OHH"):
+            icon_name = JDXi.UI.Icon.CYMBAL
+        elif partial_name in ("BD1", "BD2", "BD3"):
+            icon_name = JDXi.UI.Icon.KICK_DRUM_2
+        else:
+            icon_name = JDXi.UI.Icon.DRUM
+        icon = JDXi.UI.Icon.get_icon(icon_name, color=JDXi.UI.Style.FOREGROUND)
+        if icon and not icon.isNull():
+            pixmap = icon.pixmap(24, 24)
+            if pixmap and not pixmap.isNull():
+                icon_label.setPixmap(pixmap)
 
         strip = ChannelStrip(
             title=partial_name,

@@ -4,6 +4,7 @@ Icon registry for JD-Xi Editor.
 Provides centralized icon definitions and retrieval with fallback support.
 """
 
+import os
 from typing import Any, Literal
 
 import qtawesome as qta
@@ -12,6 +13,7 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from jdxi_editor.core.synth.type import JDXiSynth
+from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -88,6 +90,10 @@ class JDXiUIIconRegistry:
     # Instrument icons
     PIANO = "msc.piano"
     DRUM = "fa5s.drum"
+    DRUM_KIT = "drum_kit.png"  # Resource file: resources/drum_kit.png
+    KICK_DRUM = "kick_drum-icon.png"  # Resource file: resources/kick_drum-icon.png
+    KICK_DRUM_2 = "kick_drum2-icon.png"  # Resource file: resources/kick_drum2-icon.png (white on black)
+    CYMBAL = "cymbal-icon.png"  # Resource file: resources/cymbal-icon.png
     DISTORTION = "mdi6.signal-distance-variant"
 
     # Effect icons
@@ -163,6 +169,10 @@ class JDXiUIIconRegistry:
 
         except Exception as ex:
             log.debug(f"Failed to load icon {icon_name}: {ex}")
+            # Try loading from resources (e.g. cymbal-icon.png)
+            file_icon = JDXiUIIconRegistry.get_icon_from_resource(icon_name)
+            if file_icon is not None and not file_icon.isNull():
+                return file_icon
             if fallback:
                 try:
                     kwargs = {}
@@ -176,6 +186,30 @@ class JDXiUIIconRegistry:
                 except Exception as fallback_ex:
                     log.debug(f"Failed to load fallback icon {fallback}: {fallback_ex}")
             log.warning(f"Could not load icon {icon_name}")
+            return None
+
+    @staticmethod
+    def get_icon_from_resource(filename: str, size: int = None) -> QIcon | None:
+        """
+        Load an icon from the resources directory (e.g. cymbal-icon.png).
+
+        :param filename: Basename of the file in resources/ (e.g. "cymbal-icon.png")
+        :param size: Optional size to scale the pixmap (width and height)
+        :return: QIcon or None if file not found or load fails
+        """
+        if not filename or not (filename.endswith(".png") or filename.endswith(".ico")):
+            return None
+        try:
+            path = resource_path(os.path.join("resources", filename))
+            if not os.path.isfile(path):
+                log.debug(f"Resource icon not found: {path}")
+                return None
+            icon = QIcon(path)
+            if icon.isNull():
+                return None
+            return icon
+        except Exception as ex:
+            log.debug(f"Failed to load resource icon {filename}: {ex}")
             return None
 
     @staticmethod

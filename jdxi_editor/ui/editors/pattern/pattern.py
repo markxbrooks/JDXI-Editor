@@ -1346,17 +1346,20 @@ class PatternSequenceEditor(SynthEditor):
                                 button.NOTE_DURATION = self._get_duration_ms()
                                 notes_loaded += 1
 
-            # Update tempo - search all tracks for tempo events
-            tempo_found = False
+            # Update tempo from file: search all tracks for first set_tempo
+            tempo_bpm = None
             for track in midi_file.tracks:
                 for event in track:
                     if event.type == "set_tempo":
-                        bpm = int(tempo2bpm(event.tempo))
-                        self.tempo_spinbox.setValue(bpm)
-                        tempo_found = True
+                        tempo_bpm = int(tempo2bpm(event.tempo))
                         break
-                if tempo_found:
+                if tempo_bpm is not None:
                     break
+            if tempo_bpm is not None:
+                self.tempo_spinbox.blockSignals(True)
+                self.tempo_spinbox.setValue(tempo_bpm)
+                self.tempo_spinbox.blockSignals(False)
+                self.set_tempo(tempo_bpm)
 
             # Select first bar and sync
             if self.bars_list.count() > 0:
@@ -1644,12 +1647,20 @@ class PatternSequenceEditor(SynthEditor):
                 scope=self.__class__.__name__,
             )
 
-            # Update tempo (use first tempo found)
-            for event in midi_file.tracks[0]:
-                if event.type == "set_tempo":
-                    bpm = int(tempo2bpm(event.tempo))
-                    self.tempo_spinbox.setValue(bpm)
-                    break  # Use first tempo found
+            # Update tempo from file: search all tracks for first set_tempo (many files put it in track 0, some in another track)
+            tempo_bpm = None
+            for track in midi_file.tracks:
+                for event in track:
+                    if event.type == "set_tempo":
+                        tempo_bpm = int(tempo2bpm(event.tempo))
+                        break
+                if tempo_bpm is not None:
+                    break
+            if tempo_bpm is not None:
+                self.tempo_spinbox.blockSignals(True)
+                self.tempo_spinbox.setValue(tempo_bpm)
+                self.tempo_spinbox.blockSignals(False)
+                self.set_tempo(tempo_bpm)
 
             # Select first bar and sync sequencer digital
             if self.bars_list.count() > 0:

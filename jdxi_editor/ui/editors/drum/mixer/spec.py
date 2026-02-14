@@ -41,7 +41,7 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
             DrumLane(
                 name="Snare",
                 partials=["SD1", "SD2", "SD3", "SD4", "RIM", "CLAP"],
-                colspan=2,
+                colspan=2,  # Wide section: spans 2 columns on row 1
             ),
         ],
     ),
@@ -61,7 +61,9 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
             DrumLane(name="Other", partials=["HIT", "OTH1", "OTH2"]),
         ],
     ),
-    DrumLaneRow(
+
+]
+"""DrumLaneRow( These don't make any sound
         title="Notes",
         lanes=[
             DrumLane(
@@ -83,5 +85,4 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
                 colspan=2,
             ),
         ],
-    ),
-]
+    ),"""
