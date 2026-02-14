@@ -15,7 +15,8 @@ from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 
 @dataclass
 class AnalogOscillatorWidgets(OscillatorWidgets):
-    """Analog oscillator widgets extended from Common """
+    """Analog oscillator widgets extended from Common"""
+
     sub_oscillator_type_switch: QWidget | None = None
     osc_pitch_env_velocity_sensitivity_slider: QWidget | None = None
     pitch_env_widgets: list[QWidget] | None = field(default_factory=list)

@@ -33,6 +33,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 
 
+
 class SearchableFilterableComboBox(QWidget):
     """
     A reusable combo box widget with search, category, and bank filtering.

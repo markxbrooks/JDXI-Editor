@@ -134,7 +134,8 @@ class BaseOscillatorSection(SectionBaseWidget):
     def _get_button_specs(self):
         """Oscillator creates waveform buttons in its own build_widgets() / _create_core_widgets().
         Return [] so SectionBaseWidget.build_widgets() does not create a second set and overwrite
-        button_widgets with param-only keys (which breaks _on_button_selected lookup by (param, label))."""
+        button_widgets with param-only keys (which breaks _on_button_selected lookup by (param, label)).
+        """
         return []
 
     def _create_tabs(self):

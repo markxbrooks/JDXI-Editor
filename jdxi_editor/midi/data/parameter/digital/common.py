@@ -39,6 +39,7 @@ Usage example:
 
 from typing import Optional
 
+from jdxi_editor.midi.data.address.address_map import address
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
@@ -60,7 +61,7 @@ class DigitalCommonParam(AddressParameter):
         description: Optional[str] = None,
         display_name: Optional[str] = None,
         options: Optional[list] = None,
-        values: Optional[list] = None
+        values: Optional[list] = None,
     ):
         """
         Initialize the digital common parameter with address and value range.
@@ -77,6 +78,12 @@ class DigitalCommonParam(AddressParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self._display_name = display_name
+        self.options = options
+        self.values = values
+
+    def get_tooltip(self) -> str:
+        """Return tooltip string for UI. Base may return options list; we always return self.tooltip."""
+        return self.tooltip if isinstance(self.tooltip, str) else ""
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1
@@ -102,11 +109,15 @@ class DigitalCommonParam(AddressParameter):
         0x12,
         0,
         1,
+        0,
+        1,
         "Specifies whether the portamento effect will be applied (ON) or not applied (OFF)",
         "Portamento Switch",
     )  # Portamento Switch (OFF, ON)
     PORTAMENTO_TIME = ParameterSpec(
         0x13,
+        0,
+        127,
         0,
         127,
         "Specifies the time taken for the pitch to change when playing portamento. Higher values \nlengthen the time over which the pitch will change to the next note.",
@@ -116,14 +127,26 @@ class DigitalCommonParam(AddressParameter):
         0x14,
         0,
         1,
+        0,
+        1,
         "Specifies whether notes will sound polyphonically (POLY) or monophonically (MONO)",
         "Mono Switch",
     )  # Mono Switch (OFF, ON)
     OCTAVE_SHIFT = ParameterSpec(
-        0x15, 61, 67, "Specifies the octave of the tone", "Octave Shift"
+        0x15,
+        61,
+        67,
+        61,
+        67,
+        "Specifies the octave of the tone",
+        "Octave Shift",
+        ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
+        [61, 62, 63, 64, 65, 66, 67],
     )  # Octave Shift (-3 to +3)
     PITCH_BEND_UP = ParameterSpec(
         0x16,
+        0,
+        24,
         0,
         24,
         "Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is \nmoved all the way up.",
@@ -133,25 +156,52 @@ class DigitalCommonParam(AddressParameter):
         0x17,
         0,
         24,
+        0,
+        24,
         "Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is \nmoved all the way to the dowm.",
         "Pitch Bend Range Down",
     )  # Pitch Bend Range Down (semitones)
 
     # Partial switches
     PARTIAL1_SWITCH = ParameterSpec(
-        0x19, 0, 1, "Partial 1 turn on (OFF, ON)", "Partial 1 Switch"
+        0x19,
+        0,
+        1,
+        0,
+        24,
+        "Partial 1 turn on (OFF, ON)", "Partial 1 Switch"
     )  # Partial 1 Switch (OFF, ON)
     PARTIAL1_SELECT = ParameterSpec(
-        0x1A, 0, 1, "Partial 1 select and edit (OFF, ON)", "Partial 1 Select"
+        0x1A,
+        0,
+        1,
+        0,
+        1,
+        "Partial 1 select and edit (OFF, ON)", "Partial 1 Select"
     )  # Partial 1 Select (OFF, ON)
     PARTIAL2_SWITCH = ParameterSpec(
-        0x1B, 0, 1, "Partial 2 turn on (OFF, ON)", "Partial 2 Switch"
+        0x1B,
+        0,
+        1,
+        0,
+        24,
+        "Partial 2 turn on (OFF, ON)", "Partial 2 Switch"
     )  # Partial 2 Switch (OFF, ON)
     PARTIAL2_SELECT = ParameterSpec(
-        0x1C, 0, 1, "Partial 2 select and edit (OFF, ON)", "Partial 1 Select"
+        0x1C,
+        0,
+        1,
+        0,
+        1,
+        "Partial 2 select and edit (OFF, ON)", "Partial 1 Select"
     )  # Partial 2 Select (OFF, ON)
     PARTIAL3_SWITCH = ParameterSpec(
-        0x1D, 0, 1, "Partial 3 turn on (OFF, ON)", "Partial 3 Switch"
+        0x1D,
+        0,
+        1,
+        0,
+        1,
+        "Partial 3 turn on (OFF, ON)", "Partial 3 Switch"
     )  # Partial 3 Switch (OFF, ON)
     PARTIAL3_SELECT = ParameterSpec(
         0x1E, 0, 1, "Partial 3 select and edit (OFF, ON)", "Partial 3 Select"
@@ -162,6 +212,8 @@ class DigitalCommonParam(AddressParameter):
         0x1F,
         0,
         2,
+        0,
+        2,
         "Turns ring modulator on/off. \nBy multiplying partial 1’s OSC and partial 2’s OSC, this creates a complex, metallic-sounding waveform like that of a bell. \nIf Ring Switch is turned on, the OSC Pulse Width Mod Depth, OSC Pulse Width, and SUPER SAW\nDetune of partial 1 and partial 2 cannot be used.\nIn addition, if an asymmetrical square wave is selected as the OSC waveform, the OSC variation\nwill be ignored, and there will be a slight difference in sound compared to the originally selected\n waveform (OFF, ON)",
         "Ring Switch",
     )  # OFF(0), ---(1), ON(2)
@@ -169,11 +221,15 @@ class DigitalCommonParam(AddressParameter):
         0x2E,
         0,
         1,
+        0,
+        21,
         "This layers a single sound.\nIf the Unison Switch is on, the number of notes layered on one key will change according to the\nnumber of keys you play.",
         "Unison Switch",
     )  # OFF, ON
     PORTAMENTO_MODE = ParameterSpec(
         0x31,
+        0,
+        1,
         0,
         1,
         "NORMAL: Portamento will always be applied.\nLEGATO: Portamento will be applied only when you play legato (i.e., when you press the next\nkey before releasing the previous key).",
@@ -183,11 +239,15 @@ class DigitalCommonParam(AddressParameter):
         0x32,
         0,
         1,
+        0,
+        1,
         "Specifies the time taken for the pitch to change when playing portamento. Higher values\nlengthen the time over which the pitch will change to the next note.",
         "Legato Switch",
     )  # OFF, ON
     ANALOG_FEEL = ParameterSpec(
         0x34,
+        0,
+        127,
         0,
         127,
         "Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many\nnatural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by \nmany people.\nBy applying “1/f fluctuation” you can create the natural-sounding instability that is\ncharacteristic of an analog synthesizer.",
@@ -197,14 +257,23 @@ class DigitalCommonParam(AddressParameter):
         0x35,
         0,
         127,
+        0,
+        127,
         "Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.",
         "Wave Shape",
     )  # Wave Shape amount
     TONE_CATEGORY = ParameterSpec(
-        0x36, 0, 127, "Selects the tone’s category." "Tone Category"
+        0x36,
+        0,
+        127,
+        0,
+        127,
+        "Selects the tone’s category." "Tone Category"
     )  # Tone Category
     UNISON_SIZE = ParameterSpec(
         0x3C,
+        0,
+        3,
         0,
         3,
         "Number of notes assigned to each key when the Unison Switch is on.\nkeys | notes\n1   | 8\n2   |4 notes\n3–4  |2 each\n5-8  | 1 each ",

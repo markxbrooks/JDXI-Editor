@@ -8,6 +8,7 @@ Classes:
     ProgramMixerWidget(SynthBase)
         A widget for displaying and controlling mixer levels.
 """
+
 from typing import Dict, Optional
 
 from decologr import Decologr as log
@@ -283,7 +284,12 @@ class ProgramMixer(SynthBase):
         for col, track in enumerate(self.tracks, start=1):
             strip = track.build_strip()
             self.mixer_layout.addWidget(
-                strip, 0, col, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop
+                strip,
+                0,
+                col,
+                1,
+                1,
+                Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop,
             )
 
         self.mixer_layout.setRowStretch(0, 1)
@@ -308,11 +314,13 @@ class ProgramMixer(SynthBase):
             try:
                 label.setText(tone_name)
             except Exception as ex:
-                log.message(message=f"Error {ex} setting text", scope=self.__class__.__name__)
+                log.message(
+                    message=f"Error {ex} setting text", scope=self.__class__.__name__
+                )
         else:
             log.warning(
                 message=f"synth type: {synth_type} not found in mapping. Cannot update tone name.",
-                scope=self.__class__.__name__
+                scope=self.__class__.__name__,
             )
 
     def update_program_name(self, program_name: str) -> None:

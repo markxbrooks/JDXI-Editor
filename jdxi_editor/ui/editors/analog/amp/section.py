@@ -48,7 +48,7 @@ class AnalogAmpSection(BaseAmpSection):
             SliderSpec(
                 P.AMP_LEVEL,
                 P.AMP_LEVEL.display_name,
-                vertical=True,
+                vertical=P.AMP_LEVEL.vertical,
             ),
             SliderSpec(
                 P.AMP_LEVEL_KEYFOLLOW,
@@ -62,16 +62,9 @@ class AnalogAmpSection(BaseAmpSection):
             ),
         ]
         adsr: Dict[ADSRStage, ADSRSpec] = {
-            ADSRStage.ATTACK: ADSRSpec(
-                ADSRStage.ATTACK, P.AMP_ENV_ATTACK_TIME
-            ),
-            ADSRStage.DECAY: ADSRSpec(
-                ADSRStage.DECAY, P.AMP_ENV_DECAY_TIME),
-            ADSRStage.SUSTAIN: ADSRSpec(
-                ADSRStage.SUSTAIN, P.AMP_ENV_SUSTAIN_LEVEL
-            ),
-            ADSRStage.RELEASE: ADSRSpec(
-                ADSRStage.RELEASE, P.AMP_ENV_RELEASE_TIME
-            ),
+            ADSRStage.ATTACK: ADSRSpec(ADSRStage.ATTACK, P.AMP_ENV_ATTACK_TIME),
+            ADSRStage.DECAY: ADSRSpec(ADSRStage.DECAY, P.AMP_ENV_DECAY_TIME),
+            ADSRStage.SUSTAIN: ADSRSpec(ADSRStage.SUSTAIN, P.AMP_ENV_SUSTAIN_LEVEL),
+            ADSRStage.RELEASE: ADSRSpec(ADSRStage.RELEASE, P.AMP_ENV_RELEASE_TIME),
         }
         return AmpLayoutSpec(controls=controls, adsr=adsr)

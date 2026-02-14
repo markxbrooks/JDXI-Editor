@@ -216,4 +216,3 @@ class ModeButtonGroup(QWidget):
     def buttons(self) -> dict[Any, QPushButton]:
         """Read-only mapping of mode -> QPushButton."""
         return dict(self._buttons)
-

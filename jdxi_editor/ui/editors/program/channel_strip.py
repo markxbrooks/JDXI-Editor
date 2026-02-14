@@ -23,7 +23,9 @@ class ChannelStrip(QWidget):
         icon: QLabel | None,
         param: Optional[AddressParameter] = None,
         address: Optional[JDXiSysExAddress] = None,
-        send_midi_callback: Optional[Callable[[AddressParameter, int, JDXiSysExAddress], bool]] = None,
+        send_midi_callback: Optional[
+            Callable[[AddressParameter, int, JDXiSysExAddress], bool]
+        ] = None,
         parent: QWidget | None = None,
     ):
         super().__init__(parent)
@@ -81,7 +83,12 @@ class ChannelStrip(QWidget):
         self._update_mute_button_style(checked)
         self.muteToggled.emit(checked)
 
-        if not self._slider or not self._param or not self._address or not self._send_midi:
+        if (
+            not self._slider
+            or not self._param
+            or not self._address
+            or not self._send_midi
+        ):
             return
 
         try:
@@ -89,19 +96,21 @@ class ChannelStrip(QWidget):
                 # Store current slider value (only once when muting)
                 if self._previous_slider_value is None:
                     self._previous_slider_value = self._slider.value()
-                
+
                 # Send MIDI value 0 to mute the channel
                 self._send_midi(self._param, 0, self._address)
-                
+
                 # Disable slider to prevent user changes while muted
                 self._slider.setEnabled(False)
             else:
                 # Restore previous slider value and re-enable slider
                 if self._previous_slider_value is not None:
                     # Re-send the stored MIDI value to unmute
-                    self._send_midi(self._param, self._previous_slider_value, self._address)
+                    self._send_midi(
+                        self._param, self._previous_slider_value, self._address
+                    )
                     self._previous_slider_value = None
-                
+
                 self._slider.setEnabled(True)
         except Exception:
             # Fail silently if slider doesn't support value interface or MIDI send fails

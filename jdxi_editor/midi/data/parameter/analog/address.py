@@ -39,6 +39,8 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 from typing import Optional, Tuple
 
+from isort.wrap_modes import vertical
+
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
@@ -446,7 +448,8 @@ class AnalogParam(AddressParameter):
         tooltip: Optional[str] = None,
         display_name: Optional[str] = None,
         options: Optional[list] = None,
-        values: Optional[list] = None
+        values: Optional[list] = None,
+        vertical: bool = True,
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -455,6 +458,7 @@ class AnalogParam(AddressParameter):
         self._display_name = display_name
         self.options = options
         self.values = values
+        self.vertical = vertical
         self.switches = [
             "FILTER_SWITCH",
             "PORTAMENTO_SWITCH",

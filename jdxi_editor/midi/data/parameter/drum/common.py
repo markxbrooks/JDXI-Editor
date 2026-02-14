@@ -34,7 +34,7 @@ class DrumCommonParam(AddressParameter):
         description: Optional[str] = None,
         display_name: Optional[str] = None,
         options: Optional[list] = None,
-        values: Optional[list] = None
+        values: Optional[list] = None,
     ):
         """
         Initialize the drum common parameter with address and value range.

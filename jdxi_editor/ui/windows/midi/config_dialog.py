@@ -205,7 +205,10 @@ class MIDIConfigDialog(QDialog):
         sf_row.addWidget(self.sf2_edit)
         browse_btn_layout = QHBoxLayout()
         self._add_round_button(
-            JDXi.UI.Icon.FOLDER_NOTCH_OPEN, "Browse", self._browse_sf2, browse_btn_layout
+            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+            "Browse",
+            self._browse_sf2,
+            browse_btn_layout,
         )
         sf_row.addLayout(browse_btn_layout)
         synth_layout.addLayout(sf_row)
@@ -251,7 +254,9 @@ class MIDIConfigDialog(QDialog):
         dialog_btn_row = QHBoxLayout()
         dialog_btn_row.addStretch()
         self._add_round_button(JDXi.UI.Icon.SAVE, "OK", self.accept, dialog_btn_row)
-        self._add_round_button(JDXi.UI.Icon.CANCEL, "Cancel", self.reject, dialog_btn_row)
+        self._add_round_button(
+            JDXi.UI.Icon.CANCEL, "Cancel", self.reject, dialog_btn_row
+        )
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
 

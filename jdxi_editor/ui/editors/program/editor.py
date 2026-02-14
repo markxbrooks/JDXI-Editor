@@ -377,9 +377,7 @@ class ProgramEditor(BasicEditor):
         self.populate_programs()
 
         # Create mixer widget
-        self.mixer_widget = ProgramMixer(
-            midi_helper=self.midi_helper, parent=self
-        )
+        self.mixer_widget = ProgramMixer(midi_helper=self.midi_helper, parent=self)
         mixer_group = self.mixer_widget.create_mixer_widget()
 
         # Merge mixer widget's controls into ProgramEditor's controls dict
@@ -794,8 +792,12 @@ class ProgramEditor(BasicEditor):
             # Clear the programs table if the deleted playlist was selected
             if self.playlist_editor_widget.playlist_editor_combo:
                 # Use .value() for SearchableFilterableComboBox (0 means no playlist selected)
-                current_value = self.playlist_editor_widget.playlist_editor_combo.value()
-                playlist_id = self.playlist_editor_widget._playlist_value_to_id.get(current_value)
+                current_value = (
+                    self.playlist_editor_widget.playlist_editor_combo.value()
+                )
+                playlist_id = self.playlist_editor_widget._playlist_value_to_id.get(
+                    current_value
+                )
                 if (
                     playlist_id is None
                     and self.playlist_editor_widget.playlist_programs_table

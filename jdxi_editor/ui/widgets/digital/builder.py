@@ -19,7 +19,7 @@ _SYNTH_TO_PROGRAM_ATTR = {
 
 # Map SysEx address (from input_handler) to display synth key
 _SYSEX_ADDRESS_TO_SYNTH = {
-    "12180000": None,   # Program common: program name, not a tone
+    "12180000": None,  # Program common: program name, not a tone
     "12190100": "D1",
     "12192100": "D2",
     "12194200": "AN",

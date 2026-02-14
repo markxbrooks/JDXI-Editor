@@ -187,7 +187,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             SwitchSpec(
                 S.Param.SUB_OSCILLATOR_TYPE,
                 S.Param.SUB_OSCILLATOR_TYPE.display_name,
-                S.Display.Options.SUB_OSCILLATOR_TYPE,
+                options=S.Display.Options.SUB_OSCILLATOR_TYPE,
             ),
         ]
 

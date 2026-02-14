@@ -44,9 +44,9 @@ class DrumKitMixerSection(QWidget):
     """
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the Drum Kit Mixer.
@@ -138,10 +138,14 @@ class DrumKitMixerSection(QWidget):
         scroll_area.setWidget(sliders_widget)
         main_layout.addWidget(scroll_area)
 
-    def _build_partial_strip(self, partial_name: str, partial_index: int) -> DrumLevelStrip:
+    def _build_partial_strip(
+        self, partial_name: str, partial_index: int
+    ) -> DrumLevelStrip:
 
         if not (1 <= partial_index <= 36):
-            log.warning(f"Invalid partial index: {partial_index}", scope=self.__class__.__name__)
+            log.warning(
+                f"Invalid partial index: {partial_index}", scope=self.__class__.__name__
+            )
             return None
 
         from jdxi_editor.midi.data.address.address import JDXiSysExOffsetDrumKitLMB
@@ -167,8 +171,9 @@ class DrumKitMixerSection(QWidget):
         strip.slider.setRange(0, 127)
 
         strip.slider.valueChanged.connect(
-            lambda v, addr=address, pidx=partial_index:
-            self._on_partial_level_changed(v, addr, pidx)
+            lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
+                v, addr, pidx
+            )
         )
 
         self.mixer_sliders[partial_name] = strip.slider
@@ -238,12 +243,12 @@ class DrumKitMixerSection(QWidget):
         layout.addWidget(slider, row + 1, col, 2, 1)  # Span 2 rows for slider
 
     def _create_partial_slider(
-            self,
-            layout: QGridLayout,
-            row: int,
-            col: int,
-            partial_name: str,
-            partial_index: int,
+        self,
+        layout: QGridLayout,
+        row: int,
+        col: int,
+        partial_name: str,
+        partial_index: int,
     ) -> None:
         """
         Create a slider for a drum partial.
@@ -322,10 +327,10 @@ class DrumKitMixerSection(QWidget):
         layout.addWidget(slider, row + 1, col, 2, 1)  # Sliders span 2 rows
 
     def _create_partial_slider_hlayout(
-            self,
-            layout: QHBoxLayout,
-            partial_name: str,
-            partial_index: int,
+        self,
+        layout: QHBoxLayout,
+        partial_name: str,
+        partial_index: int,
     ) -> None:
         """
         Create a slider for a drum partial.
@@ -426,7 +431,7 @@ class DrumKitMixerSection(QWidget):
             log.error(f"Error setting master level: {ex}")
 
     def _on_partial_level_changed(
-            self, value: int, address: JDXiSysExAddress, partial_index: int
+        self, value: int, address: JDXiSysExAddress, partial_index: int
     ) -> None:
         """Handle partial level change."""
         if not self.midi_helper:

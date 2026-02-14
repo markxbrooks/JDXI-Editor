@@ -26,6 +26,7 @@ if param:
     print(param.name, param.min_val, param.max_val)
 
 """
+
 from typing import Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
@@ -49,7 +50,7 @@ class DigitalModifyParam(AddressParameter):
         description: str = None,
         display_name: str = None,
         options: Optional[list] = None,
-        values: Optional[list] = None
+        values: Optional[list] = None,
     ):
         """
         Initialize the digital modify parameter with address and value range.
@@ -68,7 +69,6 @@ class DigitalModifyParam(AddressParameter):
         self._display_name = display_name
         self.options = options
         self.values = values
-
 
     ATTACK_TIME_INTERVAL_SENS = ParameterSpec(
         0x01,

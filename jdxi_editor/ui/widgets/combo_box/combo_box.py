@@ -76,14 +76,29 @@ class ComboBox(QWidget):
         super().__init__(parent)
         self.options = options
         self.values = values
-        self.setToolTip(tooltip)
+        # QWidget.setToolTip requires str; param.get_tooltip() may return a list
+        if isinstance(tooltip, str):
+            tooltip_str = tooltip
+        elif isinstance(tooltip, (list, tuple)):
+            tooltip_str = "\n".join(str(x) for x in tooltip) if tooltip else ""
+        else:
+            tooltip_str = str(tooltip) if tooltip is not None else ""
+        self.setToolTip(tooltip_str)
+
+        # QLabel requires str; spec.label / display_name may be a list
+        if isinstance(label, str):
+            label_str = label
+        elif isinstance(label, (list, tuple)):
+            label_str = label[0] if label else ""
+        else:
+            label_str = str(label) if label is not None else ""
 
         # Main layout
         layout = QHBoxLayout()
         self.setLayout(layout)
 
         # Create label
-        self.label_widget = QLabel(label)
+        self.label_widget = QLabel(label_str)
 
         if show_label:
             layout.addWidget(self.label_widget)  # Properly add label when needed

@@ -15,6 +15,7 @@ from PySide6.QtWidgets import QWidget
 @dataclass
 class OscillatorWidgets:
     """Common oscillator widgets in one place to be extended (by Analog and Digital)."""
+
     waveform_buttons: dict[Any, QWidget] | None = None
     osc_pitch_coarse_slider: QWidget | None = None
     osc_pitch_fine_slider: QWidget | None = None

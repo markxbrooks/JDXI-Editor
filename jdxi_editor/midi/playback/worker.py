@@ -104,7 +104,9 @@ class MidiPlaybackWorker(QObject):
         if self.parent is not None:
             if hasattr(self.parent, "set_display_tempo_usecs"):
                 # Assuming parent has a method to update digital tempo
-                print(f"[{self.__class__.__name__}] Updating display tempo to {new_tempo}")
+                print(
+                    f"[{self.__class__.__name__}] Updating display tempo to {new_tempo}"
+                )
                 self.parent.set_display_tempo_usecs(new_tempo)
 
     @Slot()

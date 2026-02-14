@@ -30,8 +30,11 @@ class ParameterSpec(tuple):
         max_display: int = 127,
         description: str | None = None,
         display_name: str | None = None,
+        options: list | None = None,
+        values: list | None = None,
     ):
-        # Create tuple with all values - Enum will unpack this
+        # Tuple has only 7 elements so Enum unpacking passes 7 args to param __init__.
+        # options/values are stored only as attributes in __init__, not in the tuple.
         return super().__new__(
             cls,
             (
@@ -64,6 +67,9 @@ class ParameterSpec(tuple):
             self.min_display = args[3] if len(args) > 3 else 0
             self.max_display = args[4] if len(args) > 4 else 127
             self.description = args[5] if len(args) > 5 else None
+            self.display_name = args[6] if len(args) > 6 else None
+            self.options = args[7] if len(args) > 7 else None
+            self.values = args[8] if len(args) > 8 else None
         else:
             # This shouldn't happen, but handle gracefully
             self.address = 0
@@ -72,3 +78,6 @@ class ParameterSpec(tuple):
             self.min_display = 0
             self.max_display = 127
             self.description = None
+            self.display_name = None
+            self.options = None
+            self.values = None

@@ -44,6 +44,24 @@ from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
+def _tooltip_to_str(tooltip) -> str:
+    """Ensure tooltip is a str; param.get_tooltip() may return a list (e.g. options)."""
+    if isinstance(tooltip, str):
+        return tooltip
+    if isinstance(tooltip, (list, tuple)):
+        return "\n".join(str(x) for x in tooltip) if tooltip else ""
+    return str(tooltip) if tooltip is not None else ""
+
+
+def _label_to_str(label) -> str:
+    """Ensure label is a str; spec.label / display_name may be a list."""
+    if isinstance(label, str):
+        return label
+    if isinstance(label, (list, tuple)):
+        return str(label[0]) if label else ""
+    return str(label) if label is not None else ""
+
+
 class SynthBase(QWidget):
     """base class for all synth editors"""
 
@@ -590,6 +608,7 @@ class SynthBase(QWidget):
             tooltip = get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
+        tooltip = _tooltip_to_str(tooltip)
 
         slider = Slider(
             label,
@@ -659,8 +678,10 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
+        tooltip = _tooltip_to_str(tooltip)
+        label_str = _label_to_str(label)
         combo_box = ComboBox(
-            label=label,
+            label=label_str,
             options=options,
             values=values,
             show_label=show_label,
@@ -688,6 +709,7 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
+        tooltip = _tooltip_to_str(tooltip)
         spin_box = SpinBox(
             label=label, low=display_min, high=display_max, tooltip=tooltip
         )
@@ -716,6 +738,7 @@ class SynthBase(QWidget):
             tooltip = param.get_tooltip()
         else:
             tooltip = f"{param.name} ({display_min} to {display_max})"
+        tooltip = _tooltip_to_str(tooltip)
         switch = Switch(label=label, values=values, tooltip=tooltip)
         switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = switch

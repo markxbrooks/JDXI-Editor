@@ -46,7 +46,7 @@ class AnalogCommonSection(BaseCommonSection):
             SliderSpec(
                 S.Param.PITCH_BEND_UP,
                 S.Param.PITCH_BEND_UP.display_name,
-                vertical=True,
+                vertical=S.Param.PITCH_BEND_UP.vertical,
             ),
             SliderSpec(
                 S.Param.PITCH_BEND_DOWN,

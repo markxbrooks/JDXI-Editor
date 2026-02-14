@@ -1,5 +1,5 @@
 """
-Base Amp Section 
+Base Amp Section
 """
 
 from dataclasses import dataclass

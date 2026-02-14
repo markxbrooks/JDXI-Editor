@@ -13,6 +13,7 @@ from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
 
 class MixerTrackEntity(Enum):
     """Actual Mixer Tracks"""
+
     MASTER = "MASTER"
     DIGITAL1 = "DIGITAL1"
     DIGITAL2 = "DIGITAL2"
@@ -23,13 +24,16 @@ class MixerTrackEntity(Enum):
 @dataclass
 class MixerTrack:
     """Mixer Track"""
+
     entity: MixerTrackEntity
     slider: QWidget | None
     value_label: QLabel | None
     icon: QLabel | None
     param: Optional[AddressParameter] = None
     address: Optional[JDXiSysExAddress] = None
-    send_midi_callback: Optional[Callable[[AddressParameter, int, JDXiSysExAddress], bool]] = None
+    send_midi_callback: Optional[
+        Callable[[AddressParameter, int, JDXiSysExAddress], bool]
+    ] = None
 
     def build_strip(self) -> ChannelStrip:
         """Build Channel Strip"""
