@@ -60,6 +60,8 @@ class ProgramZoneParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.partial_number = partial_number
         self._display_name = display_name
+        self.options = options
+        self.values = values
 
     ARPEGGIO_SWITCH = ParameterSpec(
         0x03, 0, 1, 0, 1, "Master Arpeggiator", "Master Arpeggiator"

@@ -53,6 +53,8 @@ class DrumPartialParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip else ""
         self._display_name = display_name
+        self.options = options
+        self.values = values
         self.bipolar_parameters = [
             "PARTIAL_FINE_TUNE",
             "PITCH_ENV_DEPTH",

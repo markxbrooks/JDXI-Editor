@@ -51,6 +51,8 @@ class DrumCommonParam(AddressParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self._display_name = display_name
+        self.options = options
+        self.values = values
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = ParameterSpec(0x00, 32, 127)  # ASCII character 1

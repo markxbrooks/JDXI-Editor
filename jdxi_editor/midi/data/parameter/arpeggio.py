@@ -58,12 +58,16 @@ class ArpeggioParam(AddressParameter):
         display_max: Optional[int] = None,
         tooltip: Optional[str] = "",
         display_name: Optional[str] = None,
+        options: Optional[list] = None,
+        values: Optional[list] = None
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip
         self._display_name = display_name
+        self.options = options
+        self.values = values
 
     # Common parameters
     ARPEGGIO_GRID = ParameterSpec(

@@ -59,6 +59,8 @@ class SystemCommonParam(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.tooltip = tooltip if tooltip is not None else ""
         self._display_name = display_name
+        self.options = options
+        self.values = values
 
     MASTER_TUNE = ParameterSpec(
         0x00, 24, 2024, -100, 100, "Master Tune"
