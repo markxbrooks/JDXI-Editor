@@ -12,7 +12,7 @@ from jdxi_editor.midi.wave.form import (
     OSC_WAVE_SQUARE,
     OSC_WAVE_SUPER_SAW,
     OSC_WAVE_TRIANGLE,
-    Waveform,
+    Waveform, MidiWaveForm
 )
 from jdxi_editor.midi.wave.spec import WaveOscBehavior
 
