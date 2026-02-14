@@ -77,7 +77,7 @@ from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.program.section import ProgramMixer
+from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
