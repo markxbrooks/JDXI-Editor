@@ -59,6 +59,8 @@ class DigitalCommonParam(AddressParameter):
         display_max: Optional[int] = None,
         description: Optional[str] = None,
         display_name: Optional[str] = None,
+        options: Optional[list] = None,
+        values: Optional[list] = None
     ):
         """
         Initialize the digital common parameter with address and value range.
