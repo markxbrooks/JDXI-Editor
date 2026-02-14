@@ -77,7 +77,7 @@ from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.program.mixer import ProgramMixer
+from jdxi_editor.ui.editors.program.section import ProgramMixer
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -874,20 +874,11 @@ class ProgramEditor(BasicEditor):
             return
 
         try:
-            if self.mixer_widget.digital_synth_1_current_label:
-                self.mixer_widget.digital_synth_1_current_label.setText(
-                    program_details.digital_1
-                )
-            if self.mixer_widget.digital_synth_2_current_label:
-                self.mixer_widget.digital_synth_2_current_label.setText(
-                    program_details.digital_2
-                )
-            if self.mixer_widget.drum_kit_current_label:
-                self.mixer_widget.drum_kit_current_label.setText(program_details.drums)
-            if self.mixer_widget.analog_synth_current_label:
-                self.mixer_widget.analog_synth_current_label.setText(
-                    program_details.analog
-                )
+            labels = self.mixer_widget.label_widgets
+            labels.set_text(JDXiSynth.DIGITAL_SYNTH_1, program_details.digital_1 or "Unknown")
+            labels.set_text(JDXiSynth.DIGITAL_SYNTH_2, program_details.digital_2 or "Unknown")
+            labels.set_text(JDXiSynth.DRUM_KIT, program_details.drums or "Unknown")
+            labels.set_text(JDXiSynth.ANALOG_SYNTH, program_details.analog or "Unknown")
         except (AttributeError, KeyError) as e:
             log.message(
                 f"Error updating synth labels: {e}", scope=self.__class__.__name__
@@ -895,15 +886,12 @@ class ProgramEditor(BasicEditor):
             log.message(
                 f"Program details: {program_details}", scope=self.__class__.__name__
             )
-            # Set fallback values if labels exist
-            if self.mixer_widget.digital_synth_1_current_label:
-                self.mixer_widget.digital_synth_1_current_label.setText("Unknown")
-            if self.mixer_widget.digital_synth_2_current_label:
-                self.mixer_widget.digital_synth_2_current_label.setText("Unknown")
-            if self.mixer_widget.drum_kit_current_label:
-                self.mixer_widget.drum_kit_current_label.setText("Unknown")
-            if self.mixer_widget.analog_synth_current_label:
-                self.mixer_widget.analog_synth_current_label.setText("Unknown")
+            labels = getattr(self.mixer_widget, "label_widgets", None)
+            if labels:
+                labels.set_text(JDXiSynth.DIGITAL_SYNTH_1, "Unknown")
+                labels.set_text(JDXiSynth.DIGITAL_SYNTH_2, "Unknown")
+                labels.set_text(JDXiSynth.DRUM_KIT, "Unknown")
+                labels.set_text(JDXiSynth.ANALOG_SYNTH, "Unknown")
 
     def load_preset(self, program_number: int) -> None:
         """

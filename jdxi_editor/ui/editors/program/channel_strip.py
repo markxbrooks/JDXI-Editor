@@ -44,7 +44,7 @@ class ChannelStrip(QWidget):
 
         self.title = QLabel(title)
         self.title.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.title, 0, center)
+        # layout.addWidget(self.title, 0, center) Another title is superfluous
 
         if slider:
             slider.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
@@ -76,7 +76,7 @@ class ChannelStrip(QWidget):
 
     def _update_mute_button_style(self, is_muted: bool) -> None:
         """Apply JD-Xi sequencer-style visual for mute toggle."""
-        self.mute.setStyleSheet(generate_sequencer_button_style(is_muted))
+        self.mute.setStyleSheet(generate_sequencer_button_style(not is_muted))
 
     def _on_mute_toggled(self, checked: bool) -> None:
         """Handle mute toggling: send MIDI 0 when muted, restore stored value when unmuted."""

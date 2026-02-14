@@ -11,6 +11,7 @@ from decologr import Decologr as log
 from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.digital.oscillator import WaveForm
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -38,6 +39,7 @@ class WaveSpec:
 class JDXiUIIconRegistry:
     """Centralized icon definitions and retrieval"""
 
+    MIXER = "mdi.equalizer"
     WaveForm: WaveForm = WaveForm
     Wave: WaveSpec = WaveSpec
 
@@ -323,3 +325,19 @@ class JDXiUIIconRegistry:
             if pixmap and not pixmap.isNull():
                 icon = QIcon(pixmap)
         return icon
+
+    @classmethod
+    def icon_for_synth(cls, synth) -> QIcon:
+        mapping = {
+            JDXiSynth.DIGITAL_SYNTH_1: cls.PIANO,
+            JDXiSynth.DIGITAL_SYNTH_2: cls.PIANO,
+            JDXiSynth.DRUM_KIT: cls.DRUM,
+            JDXiSynth.ANALOG_SYNTH: cls.PIANO,
+            JDXiSynth.MASTER: cls.MIXER,
+        }
+
+        try:
+            return qta.icon(mapping[synth], color="#d0d0d0")
+        except KeyError:
+            raise ValueError(f"Unsupported synth type: {synth!r}")
+

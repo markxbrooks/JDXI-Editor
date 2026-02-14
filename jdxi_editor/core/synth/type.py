@@ -19,6 +19,7 @@ from jdxi_editor.midi.data.address.address import JDXiSysExOffsetTemporaryToneUM
 class JDXiSynth:
     """Synth types and their MIDI area codes"""
 
+    MASTER = "MASTER"
     PROGRAM = "PROGRAM"
     ANALOG_SYNTH = "ANALOG_SYNTH"
     DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"  # Main digital synth

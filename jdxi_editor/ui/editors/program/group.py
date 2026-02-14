@@ -39,7 +39,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
 )
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
-from jdxi_editor.ui.editors.program.mixer import ProgramMixer
+from jdxi_editor.ui.editors.program.section import ProgramMixer
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
