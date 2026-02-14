@@ -109,6 +109,8 @@ class Effect1Param(AddressParameter):
         display_max: Optional[int] = None,
         tooltip: Optional[str] = None,
         display_name: Optional[str] = None,
+        options: Optional[list] = None,
+        values: Optional[list] = None
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
