@@ -47,6 +47,8 @@ class DigitalModifyParam(AddressParameter):
         display_max: int = None,
         description: str = None,
         display_name: str = None,
+        options: Optional[list] = None,
+        values: Optional[list] = None
     ):
         """
         Initialize the digital modify parameter with address and value range.
