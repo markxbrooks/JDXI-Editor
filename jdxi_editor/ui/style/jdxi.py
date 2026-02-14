@@ -507,13 +507,15 @@ class JDXiUIStyle:
                 font-family: 'Consolas', 'Courier New', monospace;
                 background-color: #1E1E1E;
                 color: #FFCC00;
-                border: 1px solid {ACCENT};
-                border-radius: 4px;
+                border: none;
+                border-top: 2px solid {ACCENT};
+                border-radius: 0;
                 padding: 5px;
                 font-size: 11px;
             }}
             QTextEdit:focus {{
-                border: 2px solid {ACCENT};
+                border: none;
+                border-top: 2px solid {ACCENT};
                 background-color: #252525;
             }}
         """
@@ -636,11 +638,12 @@ class JDXiUIStyle:
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
              stop:0 #660000, stop:1 #ff1a1a);
         }}
-        /* Spin Box */
+        /* Spin Box - upper bar only (JD-Xi style) */
         QSpinBox, QDoubleSpinBox {{
             background-color: #222;
-            border: 1px solid #ff1a1a;
-            border-radius: 3px;
+            border: none;
+            border-top: 2px solid #ff1a1a;
+            border-radius: 0;
             padding: 1px;
             margin: -2px;
             color: #ff1a1a;
@@ -1066,11 +1069,12 @@ class JDXiUIStyle:
         QSlider::handle:vertical:hover {{
             border: 2px solid #3333ff;
         }}
-        /* Spin Box */
+        /* Spin Box - upper bar only (JD-Xi style) */
         QSpinBox, QDoubleSpinBox {{
             background-color: #222;
-            border: 1px solid #00A0E9;
-            border-radius: 3px;
+            border: none;
+            border-top: 2px solid #00A0E9;
+            border-radius: 0;
             padding: 1px;
             margin: -2px;
             width: 40px;
@@ -1165,11 +1169,12 @@ class JDXiUIStyle:
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
              stop:0 #660000, stop:1 #ff1a1a);
         }}
-        /* Spin Box */
+        /* Spin Box - upper bar only (JD-Xi style) */
         QSpinBox, QDoubleSpinBox {{
             background-color: #222;
-            border: 1px solid #ff1a1a;
-            border-radius: 3px;
+            border: none;
+            border-top: 2px solid #ff1a1a;
+            border-radius: 0;
             padding: 1px;
             margin: -2px;
             color: #ff1a1a;
@@ -1251,11 +1256,12 @@ class JDXiUIStyle:
             QSlider::handle:vertical:hover {{
                 border: 2px solid #ff1a1a;
             }}
-            /* Spin Box */
+            /* Spin Box - upper bar only (JD-Xi style) */
             QSpinBox, QDoubleSpinBox {{
                 background-color: #222;
-                border: 1px solid #ff1a1a;
-                border-radius: 3px;
+                border: none;
+                border-top: 2px solid #ff1a1a;
+                border-radius: 0;
                 padding: 1px;
                 margin: -2px;
                 color: #ff1a1a;
@@ -1276,8 +1282,9 @@ class JDXiUIStyle:
     QComboBox {{
         font-family: {FONT_FAMILY};
         background-color: {BACKGROUND};
-        border: 1px solid {ACCENT};
-        border-radius: 3px;
+        border: none;
+        border-top: 2px solid {ACCENT};
+        border-radius: 0;
         padding: 1px;
         color: {FOREGROUND};
     }}
@@ -1314,8 +1321,9 @@ class JDXiUIStyle:
         QComboBox {{
             font-family: {FONT_FAMILY};
             background-color: {BACKGROUND};
-            border: 1px solid {ACCENT_ANALOG};
-            border-radius: 3px;
+            border: none;
+            border-top: 2px solid {ACCENT_ANALOG};
+            border-radius: 0;
             padding: 1px;
             color: {FOREGROUND};
         }}
@@ -1379,6 +1387,9 @@ class JDXiUIStyle:
             font-size: 12px;
             color: #FFFFFF;
             background: #1a1a1a;
+            border: none;
+            border-top: 2px solid {ACCENT};
+            border-radius: 0;
         }}
     """
 

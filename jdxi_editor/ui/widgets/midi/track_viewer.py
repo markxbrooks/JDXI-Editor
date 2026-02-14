@@ -112,6 +112,7 @@ class MidiTrackViewer(QWidget):
         self.track_zoom_slider.setRange(1, 100)
         self.track_zoom_slider.setValue(50)
         self.track_zoom_slider.valueChanged.connect(self.update_track_zoom)
+        self.update_track_zoom(self.track_zoom_slider.value())
 
         # Add zoom slider to layout
         main_layout.addWidget(QLabel("Track Zoom"))
@@ -202,10 +203,13 @@ class MidiTrackViewer(QWidget):
         """
         update_track_zoom
 
-        :param width: int
+        :param width: int slider value (1–100) used to set content width
         :return: None
         """
-        self.scroll_content.setFixedWidth(width * 80)
+        min_content_width = self.get_track_controls_width() + 200
+        content_width = max(min_content_width, width * 80)
+        self.scroll_content.setFixedWidth(content_width)
+        self.scroll_content.updateGeometry()
 
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """
@@ -553,6 +557,7 @@ class MidiTrackViewer(QWidget):
         # self.channel_controls_vlayout.addLayout(apply_all_layout)
 
         self.channel_controls_vlayout.addStretch()
+        self.update_track_zoom(self.track_zoom_slider.value())
 
     def get_track_controls_width(self) -> int:
         """

@@ -374,11 +374,12 @@ def generate_editor_style(
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
              stop:0 #660000, stop:1 #ff1a1a);
         }}
-        /* Spin Box */
+        /* Spin Box - upper bar only (JD-Xi style) */
         QSpinBox, QDoubleSpinBox {{
             background-color: #222;
-            border: 1px solid #ff1a1a;
-            border-radius: 3px;
+            border: none;
+            border-top: 2px solid #ff1a1a;
+            border-radius: 0;
             padding: 1px;
             margin: -2px;
             color: #ff1a1a;
@@ -436,19 +437,26 @@ def generate_editor_style(
             color: {background};
         }}
 
-        QComboBox, QScrollBar {{
+        QComboBox {{
+            font-family: {font_family};
+            background-color: {background};
+            border: none;
+            border-top: 2px solid {accent};
+            border-radius: 0;
+            padding: 1px;
+            color: {foreground};
+            width: {box_width};
+        }}
+        QComboBox:disabled {{
+            color: #333333;
+        }}
+        QScrollBar {{
             font-family: {font_family};
             background-color: {background};
             border: 1px solid {accent};
             border-radius: 3px;
             padding: 1px;
             color: {foreground};
-        }}
-        QComboBox {{
-            width: {box_width};
-        }}
-        QComboBox:disabled {{
-            color: #333333;
         }}
 
         QScrollBar::handle {{

@@ -1,9 +1,10 @@
 from typing import Callable, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QPushButton
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.ui.style.dimensions import JDXiUIDimensions
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
@@ -55,7 +56,12 @@ class ChannelStrip(QWidget):
             icon.setAlignment(Qt.AlignCenter)
             layout.addWidget(icon, 0, center)
 
-        self.mute = QPushButton("M")
+        self.mute = QPushButton()
+        mute_icon = JDXi.UI.Icon.get_icon(
+            JDXi.UI.Icon.MUTE, color=JDXi.UI.Style.FOREGROUND
+        )
+        self.mute.setIcon(mute_icon)
+        self.mute.setIconSize(QSize(18, 18))
         self.mute.setCheckable(True)
         self.mute.setFixedWidth(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
         self.mute.setFixedHeight(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
