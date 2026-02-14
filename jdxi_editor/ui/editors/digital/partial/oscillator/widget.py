@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from PySide6.QtWidgets import QWidget
+
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 
 

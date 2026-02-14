@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSlider
+from PySide6.QtWidgets import QLabel, QSlider, QVBoxLayout, QWidget
 
 
 class DrumLevelStrip(QWidget):

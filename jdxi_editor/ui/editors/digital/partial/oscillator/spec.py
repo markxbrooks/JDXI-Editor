@@ -5,7 +5,12 @@ Oscillator Layout Spec
 from dataclasses import dataclass, field
 
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
-from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec, PWMSpec, PitchEnvelopeSpec
+from jdxi_editor.ui.widgets.spec import (
+    PitchEnvelopeSpec,
+    PWMSpec,
+    SliderSpec,
+    SwitchSpec,
+)
 
 
 @dataclass

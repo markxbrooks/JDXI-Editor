@@ -9,6 +9,7 @@ populate only what it uses.
 from dataclasses import dataclass, field
 
 from PySide6.QtWidgets import QWidget
+
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 
 

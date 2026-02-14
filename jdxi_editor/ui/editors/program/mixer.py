@@ -11,19 +11,20 @@ Classes:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.program.track import MixerTrackEntity, MixerTrack
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.program.track import MixerTrack, MixerTrackEntity
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 
@@ -60,6 +61,13 @@ class ProgramMixer(SynthBase):
         self.drums_level_slider: QWidget | None = None
         self.analog_level_slider: QWidget | None = None
 
+        # Track addresses (for mute functionality)
+        self.master_level_address: Optional[ProgramCommonAddress] = None
+        self.digital1_level_address: Optional[JDXiSysExAddress] = None
+        self.digital2_level_address: Optional[JDXiSysExAddress] = None
+        self.drums_level_address: Optional[JDXiSysExAddress] = None
+        self.analog_level_address: Optional[JDXiSysExAddress] = None
+
         # Icons and titles
         self.master_level_icon: Optional[QLabel] = None
         self.digital_synth_1_icon: Optional[QLabel] = None
@@ -67,18 +75,54 @@ class ProgramMixer(SynthBase):
         self.drum_kit_icon: Optional[QLabel] = None
         self.analog_synth_icon: Optional[QLabel] = None
 
-        # Tracks
+    def _build_tracks(self):
+        """Build Tracks"""
         self.tracks: list[MixerTrack] = [
-            MixerTrack(MixerTrackEntity.MASTER, self.master_level_slider, self.master_level_current_label,
-                       self.master_level_icon),
-            MixerTrack(MixerTrackEntity.DIGITAL1, self.digital1_level_slider, self.digital_synth_1_current_label,
-                       self.digital_synth_1_icon),
-            MixerTrack(MixerTrackEntity.DIGITAL2, self.digital2_level_slider, self.digital_synth_2_current_label,
-                       self.digital_synth_2_icon),
-            MixerTrack(MixerTrackEntity.DRUMS, self.drums_level_slider, self.drum_kit_current_label,
-                       self.drum_kit_icon),
-            MixerTrack(MixerTrackEntity.ANALOG, self.analog_level_slider, self.analog_synth_current_label,
-                       self.analog_synth_icon),
+            MixerTrack(
+                MixerTrackEntity.MASTER,
+                self.master_level_slider,
+                self.master_level_current_label,
+                self.master_level_icon,
+                param=ProgramCommonParam.PROGRAM_LEVEL,
+                address=self.master_level_address,
+                send_midi_callback=self.send_midi_parameter,
+            ),
+            MixerTrack(
+                MixerTrackEntity.DIGITAL1,
+                self.digital1_level_slider,
+                self.digital_synth_1_current_label,
+                self.digital_synth_1_icon,
+                param=DigitalCommonParam.TONE_LEVEL,
+                address=self.digital1_level_address,
+                send_midi_callback=self.send_midi_parameter,
+            ),
+            MixerTrack(
+                MixerTrackEntity.DIGITAL2,
+                self.digital2_level_slider,
+                self.digital_synth_2_current_label,
+                self.digital_synth_2_icon,
+                param=DigitalCommonParam.TONE_LEVEL,
+                address=self.digital2_level_address,
+                send_midi_callback=self.send_midi_parameter,
+            ),
+            MixerTrack(
+                MixerTrackEntity.DRUMS,
+                self.drums_level_slider,
+                self.drum_kit_current_label,
+                self.drum_kit_icon,
+                param=DrumCommonParam.KIT_LEVEL,
+                address=self.drums_level_address,
+                send_midi_callback=self.send_midi_parameter,
+            ),
+            MixerTrack(
+                MixerTrackEntity.ANALOG,
+                self.analog_level_slider,
+                self.analog_synth_current_label,
+                self.analog_synth_icon,
+                param=AnalogParam.AMP_LEVEL,
+                address=self.analog_level_address,
+                send_midi_callback=self.send_midi_parameter,
+            ),
         ]
 
     def create_mixer_widget(self) -> QGroupBox:
@@ -98,6 +142,9 @@ class ProgramMixer(SynthBase):
 
         # Create sliders
         self._create_sliders()
+
+        # Build Tracks
+        self._build_tracks()
 
         # Populate layout
         self._populate_layout()
@@ -164,6 +211,7 @@ class ProgramMixer(SynthBase):
         # Master Level (Program Common)
         program_common_address = ProgramCommonAddress()
         self.address = program_common_address
+        self.master_level_address = program_common_address
         self.master_level_slider = self._create_parameter_slider(
             param=ProgramCommonParam.PROGRAM_LEVEL,
             label="Master",
@@ -174,6 +222,7 @@ class ProgramMixer(SynthBase):
 
         # Digital Synth 1
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1)
+        self.digital1_level_address = self.address
         self.digital1_level_slider = self._create_parameter_slider(
             DigitalCommonParam.TONE_LEVEL, "Digital 1", vertical=True
         )
@@ -181,6 +230,7 @@ class ProgramMixer(SynthBase):
 
         # Digital Synth 2
         self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_2)
+        self.digital2_level_address = self.address
         self.digital2_level_slider = self._create_parameter_slider(
             DigitalCommonParam.TONE_LEVEL, "Digital 2", vertical=True
         )
@@ -191,6 +241,7 @@ class ProgramMixer(SynthBase):
 
         # Drum Kit
         self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT)
+        self.drums_level_address = self.address
         self.drums_level_slider = self._create_parameter_slider(
             DrumCommonParam.KIT_LEVEL, "Drums", vertical=True
         )
@@ -198,6 +249,7 @@ class ProgramMixer(SynthBase):
 
         # Analog Synth
         self._init_synth_data(synth_type=JDXiSynth.ANALOG_SYNTH)
+        self.analog_level_address = self.address
         self.analog_level_slider = self._create_parameter_slider(
             AnalogParam.AMP_LEVEL, "Analog", vertical=True
         )
@@ -224,20 +276,14 @@ class ProgramMixer(SynthBase):
         if not self.mixer_layout:
             return
 
-        # side margins
         self.mixer_layout.setColumnStretch(0, 1)
         self.mixer_layout.setColumnStretch(len(self.tracks) + 1, 1)
 
         for col, track in enumerate(self.tracks, start=1):
+            strip = track.build_strip()
+            self.mixer_layout.addWidget(strip, 0, col)
 
-            if track.slider:
-                self.mixer_layout.addWidget(track.slider, 0, col)
-
-            if track.value_label:
-                self.mixer_layout.addWidget(track.value_label, 1, col)
-
-            if track.icon:
-                self.mixer_layout.addWidget(track.icon, 2, col)
+        self.mixer_layout.setRowStretch(0, 1)
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """

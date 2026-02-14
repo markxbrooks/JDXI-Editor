@@ -11,10 +11,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.parameters import ADSRParameters
+from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 
 
 class BaseAmpSection(SectionBaseWidget):

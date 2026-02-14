@@ -88,10 +88,10 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_id_by_name,
 )
-from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
-from jdxi_editor.ui.editors.preset.editor import PresetEditor
 from jdxi_editor.ui.editors.main import MainEditor
+from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
+from jdxi_editor.ui.editors.preset.editor import PresetEditor
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset

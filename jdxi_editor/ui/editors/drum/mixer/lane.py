@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGroupBox, QSizePolicy, QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QSizePolicy, QVBoxLayout, QWidget
 
 
 class MixerLane(QGroupBox):

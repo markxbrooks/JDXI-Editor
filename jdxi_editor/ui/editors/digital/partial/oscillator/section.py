@@ -19,20 +19,25 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.editors.digital.partial.oscillator.widget import DigitalOscillatorWidgets
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
     OscillatorFeature,
     OscillatorLayoutSpec,
 )
+from jdxi_editor.ui.editors.digital.partial.oscillator.widget import (
+    DigitalOscillatorWidgets,
+)
+from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_from_definition,
     create_layout_with_widgets,
 )
-from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
-from jdxi_editor.ui.widgets.editor.mode_button_group import ModeButtonGroup, ModeButtonSpec
+from jdxi_editor.ui.widgets.editor.mode_button_group import (
+    ModeButtonGroup,
+    ModeButtonSpec,
+)
 from jdxi_editor.ui.widgets.pcm.wave import PCMWaveWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 

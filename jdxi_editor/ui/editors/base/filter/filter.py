@@ -33,7 +33,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
-from jdxi_editor.ui.widgets.spec import FilterWidgetSpec, SliderSpec, FilterSpec
+from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
 class FilterWidgetFactory:

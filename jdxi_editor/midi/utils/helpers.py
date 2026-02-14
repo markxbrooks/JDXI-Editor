@@ -6,8 +6,8 @@ import os.path
 
 from decologr import Decologr as log
 
-from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
+from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 
 
