@@ -729,13 +729,16 @@ class BaseSynthEditor(SynthEditor):
             failures.append(param_name)
             return
         handlers = {
-            "SUB_OSCILLATOR_TYPE": self._update_suboscillator,
-            "OSC_WAVEFORM": self._update_waveform_buttons,
-            "LFO_SHAPE": self._update_lfo_shape_buttons,
-            "LFO_TEMPO_SYNC_SWITCH": self._update_lfo_shape_buttons
+            "SUB_OSCILLATOR_TYPE": self._update_suboscillator_handler,
+            "OSC_WAVEFORM": self._update_waveform_buttons_handler,
+            "LFO_SHAPE": self._handle_lfo_shape,
+            "LFO_TEMPO_SYNC_SWITCH": self._update_lfo_tempo_sync_switch,
+            "LFO_TEMPO_SYNC_NOTE": self._update_lfo_tempo_sync_note,
         }
+        handler = handlers.get(param_name)
+        handler(param_name, param_value, successes, failures)
         # Common signature of single parameter
-        if (
+        """if (
             param_name == "SUB_OSCILLATOR_TYPE"
             and param_value in self.SUB_OSC_TYPE_MAP
             and self.oscillator_section is not None
@@ -747,14 +750,14 @@ class BaseSynthEditor(SynthEditor):
         elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
             self._update_lfo_shape_buttons(param_value)
         elif param == self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH:
-            self._handle_filter_mode_switch(param_value)
+            self._handle_filter_mode_switch(param_value)"""
 
         # Other signatures
-        elif param_name == "LFO_TEMPO_SYNC_SWITCH":
+        """if param_name == "LFO_TEMPO_SYNC_SWITCH":
             self._update_lfo_tempo_sync_switch(param_name, param_value, successes, failures)
         elif param_name == "LFO_TEMPO_SYNC_NOTE":
-            self._update_lfo_tempo_sync_note(param_name, param_value, successes, failures)
-        elif param in self._get_adsr_params():
+            self._update_lfo_tempo_sync_note(param_name, param_value, successes, failures)"""
+        if param in self._get_adsr_params():
             self.update_adsr_widget(param, param_value, successes, failures)
         elif param in self.pitch_env_mapping:
             self.update_pitch_env_widget(param, param_value, successes, failures)
@@ -781,6 +784,12 @@ class BaseSynthEditor(SynthEditor):
             successes.append(param_name)
         else:
             failures.append(param_name)
+
+    def _update_suboscillator_handler(self, param_name: str, param_value,
+                                      successes: list, failures: list):
+        if self._update_suboscillator(param_value=param_value):
+            return True
+        return None
 
     def _update_suboscillator(self, param_value):
         """
@@ -845,6 +854,12 @@ class BaseSynthEditor(SynthEditor):
         """Handle waveform; signature matches param_handlers (param, param_value, successes, failures)."""
         self._update_waveform_buttons(value=param_value)
         return True
+
+    def _update_waveform_buttons_handler(self, param_name: str, param_value,
+                                      successes: list, failures: list):
+        if self._update_waveform_buttons(value=param_value):
+            return True
+        return None
 
     def _update_waveform_buttons(self, value: int):
         """
