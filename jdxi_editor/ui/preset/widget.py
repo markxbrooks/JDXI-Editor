@@ -307,14 +307,20 @@ class InstrumentPresetWidget(QWidget):
             show_search=True,
             show_category=True,
             search_placeholder="Search presets...",
+            use_analog_style=(synth_type == "Analog"),
         )
 
         # Apply styling
         if synth_type == "Analog":
-            # Apply Analog styling to the combo box widget
+            # Apply Analog styling to the combo box and search line edit
             self.instrument_selection_combo.combo_box.setStyleSheet(
                 JDXi.UI.Style.COMBO_BOX_ANALOG
             )
+            search_box = getattr(
+                self.instrument_selection_combo, "search_box", None
+            )
+            if search_box is not None:
+                search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT_ANALOG)
         else:
             self.instrument_selection_combo.combo_box.setStyleSheet(
                 JDXi.UI.Style.COMBO_BOX

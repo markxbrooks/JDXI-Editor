@@ -62,7 +62,7 @@ def main() -> None:
         # --- Set up logging first
         settings = QSettings(__organization_name__, __program__)
         log_level = int(str(settings.value("log_level", logging.DEBUG)))
-        logger = setup_logging(use_rich=False, project_name="jdxi_editor")  # @@@
+        logger = setup_logging(use_rich=True, project_name="jdxi_editor")  # @@@
 
         # --- Create application
         app = QApplication(sys.argv)

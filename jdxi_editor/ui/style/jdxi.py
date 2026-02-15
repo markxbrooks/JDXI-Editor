@@ -1393,6 +1393,18 @@ class JDXiUIStyle:
         }}
     """
 
+    QLINEEDIT_ANALOG = f"""
+        QLineEdit {{
+            font-family: "{FONT_FAMILY}";
+            font-size: 12px;
+            color: #FFFFFF;
+            background: #1a1a1a;
+            border: none;
+            border-top: 2px solid {ACCENT_ANALOG};
+            border-radius: 0;
+        }}
+    """
+
     KEYBOARD_DRUM_LABELS = """
                 QLabel {
                     color: #808080;

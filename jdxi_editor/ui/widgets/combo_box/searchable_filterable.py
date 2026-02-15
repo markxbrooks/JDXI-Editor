@@ -33,7 +33,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 
 
-
 class SearchableFilterableComboBox(QWidget):
     """
     A reusable combo box widget with search, category, and bank filtering.
@@ -70,6 +69,7 @@ class SearchableFilterableComboBox(QWidget):
         category_label: str = "Category:",
         bank_label: str = "Bank:",
         search_label: str = "Search:",
+        use_analog_style: bool = False,
         parent: Optional[QWidget] = None,
     ):
         """
@@ -94,6 +94,7 @@ class SearchableFilterableComboBox(QWidget):
         :param category_label: Label text for category selector
         :param bank_label: Label text for bank selector
         :param search_label: Label text for search box
+        :param use_analog_style: If True, use blue (analog) accent for search QLineEdit
         :param parent: Parent widget
         """
         super().__init__(parent)
@@ -118,61 +119,60 @@ class SearchableFilterableComboBox(QWidget):
         self._current_category = ""
         self._current_bank = ""
 
+        # --- Search box (optional; set when show_search=True and search row exists)
+        self.search_box: Optional[QLineEdit] = None
+
         # --- Layout
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(4)
 
-        # --- Main label
+        # --- Top filter bar
+        top_bar = QHBoxLayout()
+        top_bar.setSpacing(4)
+
         self.label_widget = QLabel(label)
-        if show_label:
-            layout.addWidget(self.label_widget)
-        else:
-            self.label_widget.hide()
+        self.label_widget.setVisible(show_label)
+        top_bar.addWidget(self.label_widget)
 
-        # --- Search, category, and bank row
-        if show_search or show_category or show_bank:
-            filter_row = QHBoxLayout()
-            bank_row = QHBoxLayout()
-            category_row = QHBoxLayout()
+        self.category_combo = None
+        if show_category and self._categories:
+            top_bar.addWidget(QLabel(category_label))
+
+            self.category_combo = QComboBox()
+            self.category_combo.addItem("All Categories")
+            self.category_combo.addItems(sorted(set(self._categories)))
+            self.category_combo.currentTextChanged.connect(self._on_category_changed)
+
+            top_bar.addWidget(self.category_combo)
+
+        self.bank_combo = None
+        if show_bank and self._banks:
+            top_bar.addWidget(QLabel(bank_label))
+
+            self.bank_combo = QComboBox()
+            self.bank_combo.addItem("All Banks")
+            self.bank_combo.addItems(sorted(set(self._banks)))
+            self.bank_combo.currentTextChanged.connect(self._on_bank_changed)
+
+            top_bar.addWidget(self.bank_combo)
+
+        layout.addLayout(top_bar)
+
+        # --- Search row
+        if show_search:
             search_row = QHBoxLayout()
-
-            if show_bank and self._banks:
-                bank_row.addWidget(QLabel(bank_label))
-                self.bank_combo = QComboBox()
-                self.bank_combo.addItem("All Banks")
-                self.bank_combo.addItems(sorted(set(self._banks)))
-                self.bank_combo.currentTextChanged.connect(self._on_bank_changed)
-                bank_row.addWidget(self.bank_combo)
-            else:
-                self.bank_combo = None
-
-            if show_category and self._categories:
-                category_row.addWidget(QLabel(category_label))
-                self.category_combo = QComboBox()
-                self.category_combo.addItem("All Categories")
-                self.category_combo.addItems(sorted(set(self._categories)))
-                self.category_combo.currentTextChanged.connect(
-                    self._on_category_changed
-                )
-                category_row.addWidget(self.category_combo)
-            else:
-                self.category_combo = None
-
-            if show_search:
-                search_row.addWidget(QLabel(search_label))
-                self.search_box = QLineEdit()
-                self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
-                self.search_box.setPlaceholderText(search_placeholder)
-                self.search_box.textChanged.connect(self._on_search_changed)
-                search_row.addWidget(self.search_box)
-            else:
-                self.search_box = None
-
-            filter_row.addStretch()
-            layout.addLayout(filter_row)
-            layout.addLayout(category_row)
-            layout.addLayout(bank_row)
+            search_row.addWidget(QLabel(search_label))
+            self.search_box = QLineEdit()
+            line_edit_style = (
+                JDXi.UI.Style.QLINEEDIT_ANALOG
+                if use_analog_style
+                else JDXi.UI.Style.QLINEEDIT
+            )
+            self.search_box.setStyleSheet(line_edit_style)
+            self.search_box.setPlaceholderText(search_placeholder)
+            self.search_box.textChanged.connect(self._on_search_changed)
+            search_row.addWidget(self.search_box)
             layout.addLayout(search_row)
 
         # --- Main combo box
