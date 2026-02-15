@@ -1,3 +1,7 @@
+"""
+Make a PDF of a given Midi file
+"""
+
 from pathlib import Path
 from music21 import converter, environment
 import sys
@@ -15,6 +19,7 @@ env['lilypondPath'] = '/opt/lilypond-2.24.4/bin/lilypond'
 
 
 def main(midi_file: str):
+    """main entry point"""
     midi_file = Path(midi_file)
     setup_logging(project_name="scorely")
 

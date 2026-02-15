@@ -94,7 +94,7 @@ class DrumKitMixerSection(QWidget):
         # Container widget for sliders
         sliders_widget = QWidget()
 
-        sliders_layout = QGridLayout()  # the actual mixer grid
+        sliders_layout = QVBoxLayout()  # the actual mixer grid
 
         sliders_hlayout = QHBoxLayout(sliders_widget)  # install on widget
         sliders_hlayout.addStretch(1)
@@ -105,46 +105,39 @@ class DrumKitMixerSection(QWidget):
         sliders_layout.setContentsMargins(10, 10, 10, 10)
 
         # --- ROW 0: MASTER + KICK + TOMS (same row) ---
+        row0_layout = QHBoxLayout()
+        row0_layout.addStretch()
         master_lane = self._create_lane_group("Master")
-        sliders_layout.addWidget(master_lane, 0, 0)
+        row0_layout.addWidget(master_lane)
         master_strip = self._build_master_strip()
         master_lane.add_strip(master_strip)
+        sliders_layout.addLayout(row0_layout)
 
-        grid_col = 1
         first_row = DRUM_MIXER_LANE_ROWS[0]
         for lane in first_row:
             group = self._create_lane_group(lane.name)
-            sliders_layout.addWidget(group, 0, grid_col, 1, lane.colspan)
+            row0_layout.addWidget(group)
             for partial in lane.partials:
                 idx = DRUM_PARTIAL_NAMES.index(partial)
                 strip = self._build_partial_strip(partial, idx)
                 if strip:
                     group.add_strip(strip)
-            grid_col += lane.colspan
+            row0_layout.addStretch()
 
         # --- ROWS 1..n: remaining lane rows (Snares, Backbeat, Time, Notes) ---
         for row, lane_row in enumerate(DRUM_MIXER_LANE_ROWS[1:], start=1):
-            grid_col = 0
+            row_layout = QHBoxLayout()
+            row_layout.addStretch()
             for lane in lane_row:
                 group = self._create_lane_group(lane.name)
-                sliders_layout.addWidget(group, row, grid_col, 1, lane.colspan)
+                row_layout.addWidget(group)
                 for partial in lane.partials:
                     idx = DRUM_PARTIAL_NAMES.index(partial)
                     strip = self._build_partial_strip(partial, idx)
                     if strip:
                         group.add_strip(strip)
-                grid_col += lane.colspan
-
-        row0_cols = 1 + sum(lane.colspan for lane in DRUM_MIXER_LANE_ROWS[0])
-        other_cols = max(
-            sum(lane.colspan for lane in r) for r in DRUM_MIXER_LANE_ROWS[1:]
-        )
-        max_cols = max(row0_cols, other_cols)
-        for c in range(max_cols):
-            sliders_layout.setColumnStretch(c, 1)
-
-        sliders_layout.setRowStretch(len(DRUM_MIXER_LANE_ROWS), 1)
-
+            row_layout.addStretch()
+            sliders_layout.addLayout(row_layout)
         scroll_area.setWidget(sliders_widget)
         main_layout.addWidget(scroll_area)
 
