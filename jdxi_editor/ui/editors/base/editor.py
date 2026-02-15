@@ -731,14 +731,15 @@ class BaseSynthEditor(SynthEditor):
         handlers = {
             "SUB_OSCILLATOR_TYPE": self._update_suboscillator_handler,
             "OSC_WAVEFORM": self._update_waveform_buttons_handler,
+            "FILTER_MODE_SWITCH": self._handle_filter_mode_switch,
             "LFO_SHAPE": self._handle_lfo_shape,
             "LFO_TEMPO_SYNC_SWITCH": self._update_lfo_tempo_sync_switch,
             "LFO_TEMPO_SYNC_NOTE": self._update_lfo_tempo_sync_note,
         }
         handler = handlers.get(param_name)
         handler(param_name, param_value, successes, failures)
-        # Common signature of single parameter
-        """if (
+        """# Common signature of single parameter
+        if (
             param_name == "SUB_OSCILLATOR_TYPE"
             and param_value in self.SUB_OSC_TYPE_MAP
             and self.oscillator_section is not None
@@ -750,10 +751,8 @@ class BaseSynthEditor(SynthEditor):
         elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
             self._update_lfo_shape_buttons(param_value)
         elif param == self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH:
-            self._handle_filter_mode_switch(param_value)"""
-
-        # Other signatures
-        """if param_name == "LFO_TEMPO_SYNC_SWITCH":
+            self._handle_filter_mode_switch(param_value)
+        if param_name == "LFO_TEMPO_SYNC_SWITCH":
             self._update_lfo_tempo_sync_switch(param_name, param_value, successes, failures)
         elif param_name == "LFO_TEMPO_SYNC_NOTE":
             self._update_lfo_tempo_sync_note(param_name, param_value, successes, failures)"""
