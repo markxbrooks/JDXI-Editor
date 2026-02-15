@@ -231,6 +231,10 @@ class JDXiWindow(QMainWindow):
         save_midi_file_action.triggered.connect(self._midi_file_save)
         file_menu.addAction(save_midi_file_action)
 
+        open_midi_as_pdf_action = QAction("Open current MIDI as PDF", self)
+        open_midi_as_pdf_action.triggered.connect(self._open_current_midi_as_pdf)
+        file_menu.addAction(open_midi_as_pdf_action)
+
         file_menu.addSeparator()
 
         load_program_action = QAction(
@@ -692,6 +696,9 @@ class JDXiWindow(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def _midi_file_save(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _open_current_midi_as_pdf(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def _patch_load(self):

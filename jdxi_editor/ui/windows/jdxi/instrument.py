@@ -36,15 +36,24 @@ Methods:
 """
 
 import logging
+import os
 import platform
+import tempfile
 import threading
 from typing import Optional, Union
 
 import qtawesome as qta
 from decologr import Decologr as log
 from picomidi.constant import Midi
-from PySide6.QtCore import QSettings, Qt, QTimer
-from PySide6.QtGui import QAction, QCloseEvent, QKeySequence, QMouseEvent, QShortcut
+from PySide6.QtCore import QSettings, Qt, QTimer, QUrl
+from PySide6.QtGui import (
+    QAction,
+    QCloseEvent,
+    QDesktopServices,
+    QKeySequence,
+    QMouseEvent,
+    QShortcut,
+)
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.core.jdxi import JDXi
@@ -88,6 +97,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_id_by_name,
 )
+from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
@@ -1167,6 +1177,65 @@ class JDXiInstrument(JDXiWindow):
             self.show_editor("midi_player")
         self.midi_file_editor.midi_save_file()
         self.show_editor("midi_player")
+
+    def _open_current_midi_as_pdf(self) -> None:
+        """Export the current MIDI file to PDF and open it with the system default viewer."""
+        midi_editor = self.get_existing_editor(MidiFilePlayer)
+        if not midi_editor or not getattr(midi_editor, "midi_state", None):
+            QMessageBox.warning(
+                self,
+                "No MIDI file",
+                "Open the MIDI File player and load a MIDI file first.",
+            )
+            return
+        if not midi_editor.midi_state.file:
+            QMessageBox.warning(
+                self,
+                "No MIDI file",
+                "No MIDI file is loaded. Load a MIDI file from the File menu first.",
+            )
+            return
+        midi_file = midi_editor.midi_state.file
+        path = getattr(midi_file, "filename", None)
+        if not path:
+            fd, path = tempfile.mkstemp(suffix=".mid")
+            os.close(fd)
+            try:
+                midi_file.save(path)
+            except Exception as ex:
+                log.error(
+                    scope="JDXiInstrument",
+                    message="Failed to save current MIDI to temp file",
+                    exception=ex,
+                )
+                QMessageBox.warning(
+                    self,
+                    "Export failed",
+                    "Could not prepare the current MIDI file for export.",
+                )
+                return
+        try:
+            pdf_path = export_midi_to_pdf(path)
+        except Exception as ex:
+            log.error(
+                scope="JDXiInstrument",
+                message="PDF export failed",
+                exception=ex,
+            )
+            QMessageBox.warning(
+                self,
+                "Export failed",
+                "Could not create PDF. Is LilyPond installed? See Help or preferences.",
+            )
+            return
+        if not pdf_path:
+            QMessageBox.warning(
+                self,
+                "Export failed",
+                "Could not create PDF. Is LilyPond installed?",
+            )
+            return
+        QDesktopServices.openUrl(QUrl.fromLocalFile(pdf_path))
 
     def _patch_load(self) -> None:
         """Show load patch dialog"""
