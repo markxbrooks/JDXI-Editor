@@ -875,8 +875,12 @@ class ProgramEditor(BasicEditor):
 
         try:
             labels = self.mixer_widget.label_widgets
-            labels.set_text(JDXiSynth.DIGITAL_SYNTH_1, program_details.digital_1 or "Unknown")
-            labels.set_text(JDXiSynth.DIGITAL_SYNTH_2, program_details.digital_2 or "Unknown")
+            labels.set_text(
+                JDXiSynth.DIGITAL_SYNTH_1, program_details.digital_1 or "Unknown"
+            )
+            labels.set_text(
+                JDXiSynth.DIGITAL_SYNTH_2, program_details.digital_2 or "Unknown"
+            )
             labels.set_text(JDXiSynth.DRUM_KIT, program_details.drums or "Unknown")
             labels.set_text(JDXiSynth.ANALOG_SYNTH, program_details.analog or "Unknown")
         except (AttributeError, KeyError) as e:

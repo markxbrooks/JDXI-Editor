@@ -32,8 +32,10 @@ OSC_WAVE_NOISE = 0x04  # Noise
 OSC_WAVE_SUPER_SAW = 0x05  # Super saw
 OSC_WAVE_PCM = 0x06  # PCM waveform
 
+
 class MidiWaveForm:
     """Midi Values for Wave Forms"""
+
     OSC_WAVE_SAW = 0x00  # Sawtooth
     OSC_WAVE_SQUARE = 0x01  # Square
     OSC_WAVE_TRIANGLE = 0x02  # Triangle
@@ -41,6 +43,7 @@ class MidiWaveForm:
     OSC_WAVE_NOISE = 0x04  # Noise
     OSC_WAVE_SUPER_SAW = 0x05  # Super saw
     OSC_WAVE_PCM = 0x06  # PCM waveform
+
 
 class Waveform(Enum):
     """Waveform types available on the JD-Xi"""

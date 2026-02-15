@@ -8,14 +8,13 @@ Classes:
     ProgramMixerWidget(SynthBase)
         A widget for displaying and controlling mixer levels.
 """
+
 from typing import Dict, Optional
 
-from PySide6.QtGui import QIcon
-
 from decologr import Decologr as log
-from jdxi_editor.ui.editors.program.mixer.widgets import LabelWidgetRegistry
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -28,6 +27,7 @@ from jdxi_editor.midi.data.parameter.digital import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.program.mixer.widgets import LabelWidgetRegistry
 from jdxi_editor.ui.editors.program.track import MixerTrack, MixerTrackEntity
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
@@ -69,13 +69,13 @@ class ProgramMixer(SynthBase):
         self.analog_level_address: Optional[JDXiSysExAddress] = None
 
     def _make_track(
-            self,
-            entity: MixerTrackEntity,
-            param: AddressParameter,
-            synth_type: str | None,
-            label_text: str,
-            icon: QIcon,
-            address: JDXiSysExAddress | ProgramCommonAddress,
+        self,
+        entity: MixerTrackEntity,
+        param: AddressParameter,
+        synth_type: str | None,
+        label_text: str,
+        icon: QIcon,
+        address: JDXiSysExAddress | ProgramCommonAddress,
     ) -> MixerTrack:
 
         slider = self._create_parameter_slider(
@@ -112,7 +112,7 @@ class ProgramMixer(SynthBase):
             param=param,
             address=address,
             send_midi_callback=self.send_midi_parameter,
-            analog=analog
+            analog=analog,
         )
 
     def _build_tracks(self):
@@ -128,11 +128,18 @@ class ProgramMixer(SynthBase):
                 JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
                 pc_addr,
             ),
-
-            self._track_for_synth(JDXiSynth.DIGITAL_SYNTH_1, "Digital 1", DigitalCommonParam.TONE_LEVEL),
-            self._track_for_synth(JDXiSynth.DIGITAL_SYNTH_2, "Digital 2", DigitalCommonParam.TONE_LEVEL),
-            self._track_for_synth(JDXiSynth.DRUM_KIT, "Drums", DrumCommonParam.KIT_LEVEL),
-            self._track_for_synth(JDXiSynth.ANALOG_SYNTH, "Analog", AnalogParam.AMP_LEVEL),
+            self._track_for_synth(
+                JDXiSynth.DIGITAL_SYNTH_1, "Digital 1", DigitalCommonParam.TONE_LEVEL
+            ),
+            self._track_for_synth(
+                JDXiSynth.DIGITAL_SYNTH_2, "Digital 2", DigitalCommonParam.TONE_LEVEL
+            ),
+            self._track_for_synth(
+                JDXiSynth.DRUM_KIT, "Drums", DrumCommonParam.KIT_LEVEL
+            ),
+            self._track_for_synth(
+                JDXiSynth.ANALOG_SYNTH, "Analog", AnalogParam.AMP_LEVEL
+            ),
         ]
 
     def _track_for_synth(self, synth: str, name: str, param: AddressParameter):

@@ -1,8 +1,8 @@
 from typing import Callable, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtCore import Qt, QSize, Signal
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QPushButton
+from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtWidgets import QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress

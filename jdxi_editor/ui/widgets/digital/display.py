@@ -13,10 +13,10 @@ Usage Example:
 
 import platform
 
-from PySide6.QtGui import QPaintEvent, QPainter, QLinearGradient, QColor, QPen, QFont
-from PySide6.QtWidgets import QWidget, QSizePolicy
-
 from decologr import Decologr as log
+from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
+from PySide6.QtWidgets import QSizePolicy, QWidget
+
 from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 

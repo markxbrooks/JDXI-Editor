@@ -316,9 +316,7 @@ class InstrumentPresetWidget(QWidget):
             self.instrument_selection_combo.combo_box.setStyleSheet(
                 JDXi.UI.Style.COMBO_BOX_ANALOG
             )
-            search_box = getattr(
-                self.instrument_selection_combo, "search_box", None
-            )
+            search_box = getattr(self.instrument_selection_combo, "search_box", None)
             if search_box is not None:
                 search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT_ANALOG)
         else:

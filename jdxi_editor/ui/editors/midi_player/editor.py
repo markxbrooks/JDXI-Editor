@@ -2662,6 +2662,7 @@ class MidiFilePlayer(SynthEditor):
                 from jdxi_editor.ui.editors.pattern.pattern import (
                     PatternSequenceEditor,
                 )
+
                 return self.parent.get_existing_editor(PatternSequenceEditor)
             except Exception:
                 return None
@@ -2676,7 +2677,10 @@ class MidiFilePlayer(SynthEditor):
             if not pattern_editor:
                 return
             bpm_int = int(round(tempo_bpm))
-            if hasattr(pattern_editor, "tempo_spinbox") and pattern_editor.tempo_spinbox:
+            if (
+                hasattr(pattern_editor, "tempo_spinbox")
+                and pattern_editor.tempo_spinbox
+            ):
                 pattern_editor.tempo_spinbox.blockSignals(True)
                 pattern_editor.tempo_spinbox.setValue(bpm_int)
                 pattern_editor.tempo_spinbox.blockSignals(False)

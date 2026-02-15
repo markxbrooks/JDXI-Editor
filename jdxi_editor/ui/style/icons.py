@@ -13,8 +13,8 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
 from jdxi_editor.core.synth.type import JDXiSynth
-from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.digital.oscillator import WaveForm
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
@@ -374,4 +374,3 @@ class JDXiUIIconRegistry:
             return qta.icon(mapping[synth], color="#d0d0d0")
         except KeyError:
             raise ValueError(f"Unsupported synth type: {synth!r}")
-

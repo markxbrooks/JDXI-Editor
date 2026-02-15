@@ -61,7 +61,6 @@ DRUM_MIXER_LANE_ROWS: list[DrumLaneRow] = [
             DrumLane(name="Other", partials=["HIT", "OTH1", "OTH2"]),
         ],
     ),
-
 ]
 """DrumLaneRow( These don't make any sound
         title="Notes",

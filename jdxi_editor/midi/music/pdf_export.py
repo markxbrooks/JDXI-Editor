@@ -5,21 +5,23 @@ Uses the same logic as piano.py for consistent LilyPond behavior.
 
 import shutil
 from pathlib import Path
-from typing import Optional, Any
-
-from music21 import (
-    converter,
-    environment,
-    instrument as m21_instrument,
-    metadata,
-    stream,
-    Music21Object,
-    note,
-    chord,
-)
-from music21.stream import Score, Part, Opus, Stream, Measure
+from typing import Any, Optional
 
 from decologr import Decologr as log
+from music21 import (
+    Music21Object,
+    chord,
+    converter,
+    environment,
+)
+from music21 import instrument as m21_instrument
+from music21 import (
+    metadata,
+    note,
+    stream,
+)
+from music21.stream import Measure, Opus, Part, Score, Stream
+
 from jdxi_editor.midi.music.track import get_track_names
 
 
@@ -189,8 +191,9 @@ def remove_empty_parts(score: stream.Score):
     Returns a cleaned score.
     """
     for part in score.parts[:]:  # copy the list so we can remove safely
-        has_music = any(isinstance(e, (note.Note, note.Rest, chord.Chord))
-                        for e in part.recurse())
+        has_music = any(
+            isinstance(e, (note.Note, note.Rest, chord.Chord)) for e in part.recurse()
+        )
         if not has_music:
             log.message(f"Removing empty part: {part.partName}")
             score.remove(part)

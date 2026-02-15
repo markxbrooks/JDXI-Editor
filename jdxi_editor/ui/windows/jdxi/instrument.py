@@ -73,6 +73,7 @@ from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
+from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -97,7 +98,6 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_id_by_name,
 )
-from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor

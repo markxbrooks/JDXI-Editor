@@ -6,7 +6,7 @@ all 36 drum partial levels. Uses ChannelStrip (slider + label + icon + mute)
 for consistency with the program mixer.
 """
 
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
@@ -35,8 +35,8 @@ from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
 from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
 from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
-from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from jdxi_editor.ui.widgets.slider import Slider
 
 
 class DrumKitMixerSection(SectionBaseWidget):
@@ -50,7 +50,7 @@ class DrumKitMixerSection(SectionBaseWidget):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        create_parameter_slider: Callable,
+        create_parameter_slider: Callable = None,
         parent: Optional[QWidget] = None,
     ):
         """
@@ -158,9 +158,7 @@ class DrumKitMixerSection(SectionBaseWidget):
 
             composer = JDXiSysExComposer()
             if param == DrumPartialParam.PARTIAL_OUTPUT_LEVEL:
-                address = JDXiSysExAddress(
-                    address.msb, address.umb, address.lmb, 0x00
-                )
+                address = JDXiSysExAddress(address.msb, address.umb, address.lmb, 0x00)
             message = composer.compose_message(
                 address=address, param=param, value=value
             )
@@ -195,8 +193,7 @@ class DrumKitMixerSection(SectionBaseWidget):
             0x00,
         )
         self.partial_addresses[partial_index] = address
-        slider = self.-create_parameter_slider(lmb_value, partial_name)
-        """slider = Slider(
+        slider = Slider(
             partial_name,
             min_value=0,
             max_value=127,
@@ -204,8 +201,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             midi_helper=self.midi_helper,
             vertical=True,
             show_value_label=True,
-            tooltip=f"Level for {partial_name}",
-        )"""
+            tooltip=f"Level for {partial_name} (0 to 127)",
+        )
         slider.valueChanged.connect(
             lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
                 v, addr, pidx

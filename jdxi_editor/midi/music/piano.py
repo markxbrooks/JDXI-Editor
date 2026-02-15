@@ -2,20 +2,29 @@
 Make a PDF of a given Midi file
 """
 
-from pathlib import Path
-from music21 import converter, environment
-import sys
+import argparse
 import os
 import shutil
-import argparse
+import sys
+from pathlib import Path
+
+from music21 import converter, environment
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))
-from jdxi_editor.midi.music.pdf_export import cleanup_score, annotate_staffs, export_score, set_metadata, \
-    remove_empty_parts
+from decologr import Decologr as log
+from decologr import setup_logging
+
+from jdxi_editor.midi.music.pdf_export import (
+    annotate_staffs,
+    cleanup_score,
+    export_score,
+    remove_empty_parts,
+    set_metadata,
+)
 from jdxi_editor.midi.music.track import get_track_names
-from decologr import setup_logging, Decologr as log
 
 env = environment.UserSettings()
-env['lilypondPath'] = '/opt/lilypond-2.24.4/bin/lilypond'
+env["lilypondPath"] = "/opt/lilypond-2.24.4/bin/lilypond"
 
 
 def main(midi_file: str):
@@ -62,7 +71,7 @@ def main(midi_file: str):
     except ValueError as e:
         log.error(f"Export failed: {e}")
         raise
-    shutil.move(safe_output.with_suffix('.pdf'), final_file)
+    shutil.move(safe_output.with_suffix(".pdf"), final_file)
 
     log.message(f"Moved file to {final_file}")
 
