@@ -119,7 +119,6 @@ class Slider(QWidget):
             )
             layout.addWidget(self.label)  # Label is added before the slider
             layout.addWidget(self.slider)
-            self.slider.setValue(initial_value)
 
         # Create value digital
 
@@ -133,6 +132,10 @@ class Slider(QWidget):
         if is_bipolar:
             self.value_label.setText("0")
         self.slider.setInvertedAppearance(False)
+
+        # Apply initial value for both vertical and horizontal (was only set for horizontal)
+        self.slider.setValue(initial_value)
+        self._update_value_label()
 
     def setLabel(self, text: str):
         if hasattr(self, "label"):
