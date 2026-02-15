@@ -36,18 +36,21 @@ from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
 from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.slider import Slider
+from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
-class DrumKitMixerSection(QWidget):
+class DrumKitMixerSection(SectionBaseWidget):
     """
     Drum Kit Mixer widget with 37 vertical sliders:
     - 1 Master slider (Kit Level)
     - 36 Partial sliders (one for each drum partial)
+    address: JDXiSysExAddress,
     """
 
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
+        create_parameter_slider: Callable,
         parent: Optional[QWidget] = None,
     ):
         """
@@ -60,7 +63,7 @@ class DrumKitMixerSection(QWidget):
         self.midi_helper = midi_helper
         self.mixer_sliders: Dict[str, Slider] = {}
         self.partial_addresses: Dict[int, JDXiSysExAddress] = {}
-
+        self.create_parameter_slider = create_parameter_slider
         # Base address for drum kit common area
         # Base address for drum kit common area (stored for reference, not currently used)
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
