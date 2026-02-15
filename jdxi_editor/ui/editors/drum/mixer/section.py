@@ -63,7 +63,7 @@ class DrumKitMixerSection(SectionBaseWidget):
         self.midi_helper = midi_helper
         self.mixer_sliders: Dict[str, Slider] = {}
         self.partial_addresses: Dict[int, JDXiSysExAddress] = {}
-        self.create_parameter_slider = create_parameter_slider
+        self._create_parameter_slider = create_parameter_slider
         # Base address for drum kit common area
         # Base address for drum kit common area (stored for reference, not currently used)
         # Match the address used by the editor (TEMPORARY_TONE, not TEMPORARY_PROGRAM)
@@ -195,8 +195,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             0x00,
         )
         self.partial_addresses[partial_index] = address
-
-        slider = Slider(
+        slider = self.-create_parameter_slider(lmb_value, partial_name)
+        """slider = Slider(
             partial_name,
             min_value=0,
             max_value=127,
@@ -205,7 +205,7 @@ class DrumKitMixerSection(SectionBaseWidget):
             vertical=True,
             show_value_label=True,
             tooltip=f"Level for {partial_name}",
-        )
+        )"""
         slider.valueChanged.connect(
             lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
                 v, addr, pidx
