@@ -737,6 +737,7 @@ class BaseSynthEditor(SynthEditor):
             "LFO_TEMPO_SYNC_NOTE": self._update_lfo_tempo_sync_note,
         }
         handler = handlers.get(param_name)
+        log.message(f"calling handler {handler} for param (param)", scope=self.__class__.__name__)
         handler(param_name, param_value, successes, failures)
         """# Common signature of single parameter
         if (
