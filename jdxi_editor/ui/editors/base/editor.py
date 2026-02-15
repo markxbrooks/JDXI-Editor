@@ -684,6 +684,110 @@ class BaseSynthEditor(SynthEditor):
             else:
                 failures.append(param_name)
 
+  def _update_controls_new(self, partial_no: int, sysex_data: dict, successes: list, failures: list) -> None:
+      """
+      Update sliders and combo boxes based on parsed SysEx data.
+  
+      :param partial_no: int
+      :param sysex_data: dict with SysEx data
+      :param successes: A list to record successfully updated parameters
+      :param failures: A list to record parameters that failed to update
+      """
+      log.message(scope="BaseSynthEditor", message="[_update_controls]")
+  
+      # Log changes from the previous data and store the current state
+      self._log_and_store_sysex_data(sysex_data)
+  
+      for param_name, param_value in sysex_data.items():
+          self._process_param_update(param_name, param_value, successes, failures)
+  
+  def _log_and_store_sysex_data(self, sysex_data: dict) -> None:
+      """
+      Compare new and old SysEx data, log differences, and store the current data.
+      """
+      if self.previous_json_data:
+          log_changes(self.previous_json_data, sysex_data)
+      self.previous_json_data = sysex_data
+  
+  def _process_param_update(self, param_name: str, param_value, successes: list, failures: list) -> None:
+      """
+      Process updates for a single parameter.
+  
+      :param param_name: The name of the parameter
+      :param param_value: The value of the parameter
+      :param successes: The list of successes to append to
+      :param failures: The list of failures to append to
+      """
+      param = self.SYNTH_SPEC.Param.get_by_name(param_name)
+  
+      if not param:
+          failures.append(param_name)
+          return
+  
+      if self._handle_special_cases(param_name, param_value, successes, failures):
+          return
+  
+      # Handle general parameter updates
+      if param in self._get_adsr_params():
+          self.update_adsr_widget(param, param_value, successes, failures)
+      elif param in self.pitch_env_mapping:
+          self.update_pitch_env_widget(param, param_value, successes, failures)
+      else:
+          self.update_slider(param, param_value, successes, failures)
+  
+      successes.append(param_name)
+  
+  def _handle_special_cases(self, param_name: str, param_value, successes: list, failures: list) -> bool:
+      """
+      Handle special cases for parameter updates.
+  
+      :param param_name: The name of the parameter
+      :param param_value: The value of the parameter
+      :param successes: The list of successes to append to
+      :param failures: The list of failures to append to
+      :return: True if the special case was handled, False otherwise
+      """
+      # Example: Handle sub oscillator type
+      if param_name == "SUB_OSCILLATOR_TYPE":
+          if param_value in self.SUB_OSC_TYPE_MAP and self.oscillator_section:
+              self._update_sub_oscillator_type(param_value)
+              return True
+  
+      # Example: Handle oscillator waveform
+      if param_name == "OSC_WAVEFORM" and param_value in self.osc_waveform_map:
+          self._update_waveform_buttons(param_value)
+          return True
+  
+      # Example: Handle other special parameters
+      # ...
+  
+      return False
+  
+  def _update_sub_oscillator_type(self, param_value) -> None:
+      """
+      Update the sub oscillator type switch control.
+      """
+      self.oscillator_section.sub_oscillator_type_switch.blockSignals(True)
+      self.oscillator_section.sub_oscillator_type_switch.setValue(self.SUB_OSC_TYPE_MAP[param_value])
+      self.oscillator_section.sub_oscillator_type_switch.blockSignals(False)
+  
+  def _get_adsr_params(self) -> list:
+      """
+      Retrieve the list of ADSR-related parameters.
+  
+      :return: A list of ADSR parameters
+      """
+      return [
+          self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME,
+          self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME,
+          self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL,
+          self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME,
+          self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME,
+          self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME,
+          self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL,
+          self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME,
+      ]
+  
     def _update_waveform_buttons(self, value: int):
         """
         Update the waveform buttons based on the OSC_WAVE value with visual feedback.
