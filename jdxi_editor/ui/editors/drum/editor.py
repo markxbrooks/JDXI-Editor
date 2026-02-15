@@ -201,7 +201,7 @@ class DrumCommonEditor(SynthEditor):
         # Create and add the mixer tab
         from jdxi_editor.ui.editors.drum.mixer.section import DrumKitMixerSection
 
-        mixer_widget = DrumKitMixerSection(midi_helper=self.midi_helper, create_parameter_slider=self._create_parameter_sliderparent=self)
+        mixer_widget = DrumKitMixerSection(midi_helper=self.midi_helper, create_parameter_slider=self._create_parameter_slider, parent=self)
         mixer_icon = JDXi.UI.Icon.get_icon("ei.adjust-alt", color=JDXi.UI.Style.GREY)
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
