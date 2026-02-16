@@ -17,7 +17,7 @@ from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QHBoxLayout, QSlider, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
@@ -129,7 +129,7 @@ class FilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope = envelope
-        print(f"Envelope changed: {self.envelope}")
+        log.message(f"Envelope changed: {self.envelope}", scope=self.__class__.__name__)
         self.update()  # Trigger repaint if needed
 
     def on_cutoff_param_changed(self, val: int) -> None:
@@ -154,21 +154,6 @@ class FilterWidget(EnvelopeWidgetBase):
         self.envelope["slope_param"] = val  # keep as binary 1/0
         self.update()  # Trigger repaint if needed
 
-    def update_envelope_from_slider(self, slider: QSlider) -> None:
-        """Update envelope with value from a single slider"""
-        for param, ctrl in self.controls.items():
-            if not hasattr(param, "get_envelope_param_type"):
-                continue
-            if ctrl is slider:
-                envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
-                    self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
-                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
-                    )
-                else:
-                    pass
-                break
-
     def update_envelope_from_controls(self) -> None:
         """Update envelope values from slider controls"""
         try:
@@ -178,13 +163,13 @@ class FilterWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == EnvelopeParameter.FILTER_SLOPE:
-                    self.envelope[EnvelopeParameter.FILTER_SLOPE] = ctrl.STATUS()  # Keep as 1 or 0
+                    self.envelope[EnvelopeParameter.FILTER_SLOPE] = ctrl.value()  # Keep as 1 or 0
                 if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
                     self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
-                        ctrl.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                        ctrl.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.STATUS())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.value())
             log.message(f"{self.envelope}")
         except Exception as ex:
             log.error(f"Error updating envelope from controls: {ex}")

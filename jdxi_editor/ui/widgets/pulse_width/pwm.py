@@ -186,15 +186,15 @@ class PWMWidget(EnvelopeWidgetBase):
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == EnvelopeParameter.MOD_DEPTH:
                     self.envelope[EnvelopeParameter.MOD_DEPTH] = (
-                        slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 if envelope_param_type == EnvelopeParameter.PULSE_WIDTH:
                     self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
-                        slider.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.STATUS()
+                        slider.value()
                     )
             log.message(f"{self.envelope}")
         except Exception as ex:
