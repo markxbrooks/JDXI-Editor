@@ -121,12 +121,16 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
     # --- Centralized Methods ---
     def update_envelope_from_controls(self):
         for param, control in self.controls.items():
-            env_param = self.param_to_env[param]
+            env_param = self.param_to_env.get(param)
+            if env_param is None:
+                continue
             self.envelope[env_param] = control.value()
 
     def update_controls_from_envelope(self):
         for param, control in self.controls.items():
-            env_param = self.param_to_env[param]
+            env_param = self.param_to_env.get(param)
+            if env_param is None:
+                continue
             control.setValue(self.envelope[env_param])
 
     def refresh_plot_from_controls(self):

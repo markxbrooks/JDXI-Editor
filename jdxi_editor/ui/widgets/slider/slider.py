@@ -51,6 +51,7 @@ class Slider(QWidget):
         TicksRight = QSlider.TickPosition.TicksRight
 
     valueChanged = Signal(int)
+    value_changed = valueChanged # alias for pythonic IF
 
     def __init__(
         self,
@@ -136,6 +137,9 @@ class Slider(QWidget):
         # Apply initial value for both vertical and horizontal (was only set for horizontal)
         self.slider.setValue(initial_value)
         self._update_value_label()
+        self.slider.valueChanged.connect(self.value_changed.emit)
+        # self.spinbox.valueChanged.connect(self.value_changed.emit)
+
 
     def setLabel(self, text: str):
         if hasattr(self, "label"):

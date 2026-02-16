@@ -150,7 +150,9 @@ class PitchEnvWidget(EnvelopeWidgetBase):
 
     def update_envelope_from_controls(self):
         for param, control in self.controls.items():
-            env_param = self.param_to_env[param]
+            env_param = self.param_to_env.get(param)
+            if env_param is None:
+                continue
 
             if env_param == EnvelopeParameter.PEAK_LEVEL:
                 self.envelope[env_param] = control.value()
@@ -159,7 +161,9 @@ class PitchEnvWidget(EnvelopeWidgetBase):
 
     def update_controls_from_envelope(self):
         for param, control in self.controls.items():
-            env_param = self.param_to_env[param]
+            env_param = self.param_to_env.get(param)
+            if env_param is None:
+                continue
 
             if env_param == EnvelopeParameter.PEAK_LEVEL:
                 control.setValue(self.envelope[env_param])

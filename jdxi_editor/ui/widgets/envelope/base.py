@@ -136,9 +136,11 @@ class EnvelopeWidgetBase(QWidget):
 
         :return:
         """
+
         if self.controls is None:
             return
         try:
+            self._ui_editing = True
             for param, slider in self.controls.items():
                 if not hasattr(param, "get_envelope_param_type"):
                     continue
@@ -155,6 +157,7 @@ class EnvelopeWidgetBase(QWidget):
                         self.envelope[key] = midi_value_to_ms(val)
                 else:
                     self.envelope[key] = val
+                self._ui_editing = False
             self.envelope_changed.emit(self.envelope)
         except Exception as ex:
             log.error(f"Error updating envelope from controls: {ex}")
@@ -219,7 +222,11 @@ class EnvelopeWidgetBase(QWidget):
         Central state synchronizer.
         source: "controls" | "plot" | "sysex"
         """
-
+        log.message(f"applying envelope {envelope}", scope=self.__class__.__name__)
+        # Skip only when the same dict object is passed (avoid re-entry). Do not skip
+        # when a new dict with equal content is passed, or we never update/repaint.
+        if envelope is self.envelope:
+            return
         self.envelope.update(envelope)
 
         # 1) update controls (unless they caused it)

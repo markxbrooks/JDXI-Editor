@@ -49,7 +49,8 @@ class PWMSliderSpinbox(QWidget):
     """
     Pitch Env Slider and Spinbox widget for Roland JD-Xi
     """
-
+    value_changed = Signal(int)
+    valueChanged = value_changed  # alias for code that expects valueChanged (e.g. FilterWidget)
     envelope_changed = Signal(dict)
 
     def __init__(
@@ -79,14 +80,20 @@ class PWMSliderSpinbox(QWidget):
 
         self.param = param
         self.factor = Midi.VALUE.MAX.SEVEN_BIT
+        self._raw_range = max_value > 1  # e.g. filter cutoff 0-127
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
+        # When range is 0-127, value is already in that range; else value is 0-1
+        if value is not None and self._raw_range:
+            initial_value = int(value)
+        else:
+            initial_value = int(value * self.factor) if value is not None else 0
         self.slider = self.create_parameter_slider(
             param=param,
             label=label,
             vertical=True,
-            initial_value=int(value * self.factor) if value is not None else 0,
+            initial_value=initial_value,
         )
         self.spinbox = create_double_spinbox(
             min_value=min_value, max_value=max_value, step=0.01, value=value
@@ -164,9 +171,12 @@ class PWMSliderSpinbox(QWidget):
         self.spinbox.blockSignals(True)
         self.spinbox.setValue(self.convert_to_envelope(value))
         self.spinbox.blockSignals(False)
+        env_val = self.convert_to_envelope(value)
         self.envelope_changed.emit(
-            {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
+            {self.param.get_envelope_param_type(): env_val}
         )
+        log.message(f"slider value now {value}", scope=self.__class__.__name__)
+        self.value_changed.emit(value)
 
     def _spinbox_changed(self, value: float):
         """
@@ -179,16 +189,21 @@ class PWMSliderSpinbox(QWidget):
         self.slider.setValue(int(self.convert_from_envelope(int(value))))
         self.slider.blockSignals(False)
         self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
+        self.value_changed.emit(self.slider.value())
 
     def setValue(self, value: float):
         """
-        Set the value of the double spinbox and slider
-
-        :param value: float
-        :return: None
+        Set the value of the double spinbox and slider.
+        When used for filter (0-127 range), value is 0-127; else 0-1.
         """
-        self.slider.setValue(value * self.factor)
-        self.spinbox.setValue(value)
+        if self._raw_range:
+            # Value is already in 0..max (e.g. 0-127)
+            v = int(value)
+            self.slider.setValue(v)
+            self.spinbox.setValue(v)
+        else:
+            self.slider.setValue(value * self.factor)
+            self.spinbox.setValue(value)
         self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
 
     def value(self) -> float:

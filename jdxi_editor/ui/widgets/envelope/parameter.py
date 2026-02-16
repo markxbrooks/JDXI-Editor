@@ -5,20 +5,26 @@ Envelope Parameters
 
 class EnvelopeParameter:
     """Parameters for Envelope Widgets"""
-
+    # Generic
+    INITIAL_LEVEL: str = "initial_level"
     RANGE_LOWER = "range_lower"
     RANGE_UPPER = "range_upper"
+    DURATION = "duration"
+    # Filter
     FILTER_CUTOFF = "filter_cutoff"
+    FILTER_SLOPE: str = "slope_param"
     FILTER_RESONANCE = "filter_resonance"
     PEAK_LEVEL: str = "peak_level"
     MOD_DEPTH: str = "mod_depth"
+    # ADSR
     DEPTH: str = "depth"
     SUSTAIN_LEVEL: str = "sustain_level"
     ATTACK_TIME: str = "attack_time"
     DECAY_TIME: str = "decay_time"
     RELEASE_TIME: str = "release_time"
-    INITIAL_LEVEL: str = "initial_level"
+    # PWM
     PULSE_WIDTH: str = "pulse_width"
+    # WMT
     FADE_LOWER: str = "fade_lower"
     FADE_UPPER: str = "fade_upper"
     V_SENS: str = "v_sens"
@@ -34,5 +40,3 @@ class EnvelopeParameter:
     LEVEL_2: str = "level_2"
     LEVEL_3: str = "level_3"
     LEVEL_4: str = "level_4"
-    SLOPE_PARAM: str = "slope_param"
-    CUTOFF_PARAM: str = "cutoff_param"

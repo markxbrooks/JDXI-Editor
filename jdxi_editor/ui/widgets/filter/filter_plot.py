@@ -30,16 +30,13 @@ Customization:
 import numpy as np
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import (
-    QColor,
-    QFont,
-    QLinearGradient,
-    QPainter,
     QPainterPath,
-    QPen,
 )
 from PySide6.QtWidgets import QWidget
-
+from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.adsr.type import ADSRType
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
 
@@ -192,7 +189,7 @@ class FilterPlot(BasePlotWidget):
         self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
-        self.envelope = envelope
+        self.envelope = dict(envelope) if envelope else {}
         self.filter_mode = filter_mode  # Store filter mode
         self.set_dimensions(width=width, height=height)
         JDXi.UI.Theme.apply_adsr_plot(self)
@@ -204,12 +201,6 @@ class FilterPlot(BasePlotWidget):
         self.peak_level = 0.5
         self.release_x = 0.7
         self.dragging = None
-        if hasattr(self.parent, "envelope_changed"):
-            self.parent.envelope_changed.connect(self.set_values)
-        if hasattr(self.parent, "pulse_width_changed"):
-            self.parent.pulse_width_changed.connect(self.set_values)
-        if hasattr(self.parent, "mod_depth_changed"):
-            self.parent.mod_depth_changed.connect(self.set_values)
 
     def set_filter_mode(self, filter_mode: str) -> None:
         """
@@ -223,12 +214,22 @@ class FilterPlot(BasePlotWidget):
 
     def set_values(self, envelope: dict) -> None:
         """
-        Update envelope values and trigger address redraw
-
-        :param envelope: dict
-        :return: None
+        Update envelope values and trigger redraw.
+        Only use valid envelope keys (e.g. filter_cutoff, slope_param) so drawing does not fail.
         """
-        self.envelope = envelope
+        log.message(f"envelope now updated to {envelope}", scope=self.__class__.__name__)
+        if not envelope:
+            return
+        valid = {
+            k: v
+            for k, v in envelope.items()
+            if k is not None and k != ""
+        }
+        if not valid:
+            return
+        if self.envelope is None:
+            self.envelope = {}
+        self.envelope = dict(valid)
         self.update()
 
     def mousePressEvent(self, event):
@@ -250,13 +251,13 @@ class FilterPlot(BasePlotWidget):
     def mouseMoveEvent(self, event):
         if self.dragging:
             pos = event.position()
-            if self.dragging == "attack":
+            if self.dragging == ADSRType.ATTACK:
                 self.attack_x = max(0.01, min(pos.x() / self.width(), 1.0))
-            elif self.dragging == "decay":
+            elif self.dragging == ADSRType.DECAY:
                 self.decay_x = max(
                     self.attack_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )
-            elif self.dragging == "release":
+            elif self.dragging == ADSRType.RELEASE:
                 self.release_x = max(
                     self.decay_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )
@@ -315,11 +316,13 @@ class FilterPlot(BasePlotWidget):
 
     def envelope_parameters(self):
         """Generate filter frequency response based on filter mode"""
+        width = self.envelope.get(EnvelopeParameter.FILTER_CUTOFF, 0.5)
+        slope = self.envelope.get(EnvelopeParameter.FILTER_SLOPE, 0.0)
         envelope = generate_filter_plot(
-            width=self.envelope["cutoff_param"],
-            slope=self.envelope["slope_param"],
+            width=width,
+            slope=slope,
             sample_rate=self.sample_rate,
-            duration=self.envelope.get("duration", 1.0),
+            duration=self.envelope.get(EnvelopeParameter.DURATION, 1.0),
             filter_mode=self.filter_mode,
         )
         total_samples = len(envelope)

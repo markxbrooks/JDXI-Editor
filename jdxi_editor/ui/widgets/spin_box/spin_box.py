@@ -50,6 +50,7 @@ class SpinBox(QWidget):
     """Custom SpinBox widget with label and value mapping."""
 
     valueChanged = Signal(int)  # Define signal to emit selected value
+    value_changed = valueChanged
 
     def __init__(
         self,
