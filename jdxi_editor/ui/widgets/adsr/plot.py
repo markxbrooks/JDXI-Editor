@@ -76,8 +76,6 @@ class ADSRPlot(BasePlotWidget):
         self.dragging = None
         if hasattr(self.parent, "envelope_changed"):
             self.parent.envelope_changed.connect(self.set_values)
-        if hasattr(self.parent, "pitchenvelope_changed"):
-            self.parent.pitchenvelope_changed.connect(self.set_values)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         pos = event.position()

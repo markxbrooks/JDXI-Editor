@@ -36,7 +36,7 @@ from jdxi_editor.ui.widgets.editor.mode_button_group import (
     ModeButtonSpec,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
@@ -623,7 +623,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         )
         return pwm_widget
 
-    def _create_pitch_env_widget(self) -> PitchEnvelopeWidget:
+    def _create_pitch_env_widget(self) -> PitchEnvWidget:
         """Create Pitch Envelope widget from PITCH_ENV_SPEC or SYNTH_SPEC params."""
         spec = getattr(self, "PITCH_ENV_SPEC", None)
         if spec is not None:
@@ -634,7 +634,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             attack_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME
             decay_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME
             depth_param = self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH
-        pitch_env_widget = PitchEnvelopeWidget(
+        pitch_env_widget = PitchEnvWidget(
             attack_param=attack_param,
             decay_param=decay_param,
             depth_param=depth_param,

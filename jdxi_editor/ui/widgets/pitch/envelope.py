@@ -34,7 +34,7 @@ from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 
 
-class PitchEnvelopeWidget(EnvelopeWidgetBase):
+class PitchEnvWidget(EnvelopeWidgetBase):
     """
     Pitch Envelope Class
     """
@@ -79,7 +79,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             EnvelopeParameter.DECAY_TIME: 800,
             EnvelopeParameter.RELEASE_TIME: 500,
             EnvelopeParameter.INITIAL_LEVEL: 0.0,
-            EnvelopeParameter.PEAK_LEVEL: 0.0,
+            EnvelopeParameter.PEAK_LEVEL: 64,  # MIDI center = no modulation (-63..+63 display)
             EnvelopeParameter.SUSTAIN_LEVEL: 0.0,
         }
         self.attack_control = PitchEnvSliderSpinbox(
@@ -105,7 +105,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         self._create_parameter_slider = create_parameter_slider
         self.depth_control = PitchEnvSliderSpinbox(
             depth_param,
-            min_value=1,
+            min_value=0,
             max_value=Midi.VALUE.MAX.SEVEN_BIT,
             units="",
             label="Depth",
@@ -149,6 +149,33 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
             control.envelope_changed.connect(self.on_control_changed)
         if analog:
             JDXi.UI.Theme.apply_adsr_style(self, analog=True)
+        self.envelope_changed.emit(self.envelope)
+
+    def apply_envelope(self, envelope: dict, source: str):
+        """
+        Central state synchronizer.
+        source: "controls" | "plot" | "sysex"
+        """
+
+        self.envelope.update(envelope)
+
+        # 1) update controls (unless they caused it)
+        if source != "controls":
+            self.block_control_signals(True)
+            self.update_controls_from_envelope()
+            self.block_control_signals(False)
+
+        # 2) update plot (unless plot caused it)
+        if source != "plot":
+            self.plot.set_values(self.envelope)
+
+        # 3) emit + midi
+        self.envelope_changed.emit(self.envelope)
+
+    def block_control_signals(self, state: bool):
+        for ctrl in self._control_widgets:
+            ctrl.blockSignals(state)
+
 
     def showEvent(self, event: QShowEvent) -> None:
         """When widget is shown, sync plot from current control values (e.g. after startup load)."""
@@ -163,71 +190,26 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
         :return: None
         :emits: dict pitch envelope parameters
         """
-        self.envelope.update(change)
-        self.plot.set_values(self.envelope)
+        self.apply_envelope(change, source="controls")
+
+    def on_plot_envelope_changed(self, envelope: dict):
+        self.apply_envelope(envelope, source="plot")
 
     def update_envelope_from_spinboxes(self):
         """
         Update envelope values from spinboxes
         :emits: dict pitch envelope parameters
         """
-        self.envelope[EnvelopeParameter.ATTACK_TIME] = self.attack_control.value()
-        self.envelope[EnvelopeParameter.DECAY_TIME] = self.decay_control.value()
-        self.envelope[EnvelopeParameter.PEAK_LEVEL] = self.depth_control.value()
-        self.plot.set_values(self.envelope)
+        self.refresh_plot_from_controls()
         self.envelope_changed.emit(self.envelope)
 
-    def update_spinboxes_from_envelope(self):
-        """
-        Update spinboxes from envelope values
-        :emits: dict pitch envelope parameters
-        """
-        self.attack_control.setValue(self.envelope[EnvelopeParameter.ATTACK_TIME])
-        self.decay_control.setValue(self.envelope[EnvelopeParameter.DECAY_TIME])
-        self.depth_control.setValue(self.envelope[EnvelopeParameter.PEAK_LEVEL])
-        self.plot.set_values(self.envelope)
-        self.envelope_changed.emit(self.envelope)
-
-    def update_envelope_from_slider(self, slider: QSlider) -> None:
-        """Update envelope with value from a single slider"""
-        for param, ctrl in self.controls.items():
-            if ctrl is slider:
-                envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == EnvelopeParameter.SUSTAIN_LEVEL:
-                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = (
-                        slider.value() / 127
-                    )
-                elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
-                    self.envelope[EnvelopeParameter.PEAK_LEVEL] = slider.value() / 127
-                else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.value(), min_time=10, max_time=5000
-                    )
-                break
-
-    def update_envelope_from_controls(self) -> None:
-        """Update envelope values from slider controls"""
-        try:
-            for param, slider in self.controls.items():
-                envelope_param_type = param.get_envelope_param_type()
-                log.message(f"envelope_param_type = {envelope_param_type}")
-                if envelope_param_type == EnvelopeParameter.SUSTAIN_LEVEL:
-                    self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] = (
-                        slider.STATUS() / 127
-                    )
-                elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
-                    pass
-                    # self.envelope[EnvelopeParameter.PEAK_LEVEL] = (slider.value() / 127)
-                else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.STATUS()
-                    )
-            log.message(f"{self.envelope}")
-        except Exception as ex:
-            log.error(
-                f"[PitchEnvelopeWidget] [update_envelope_from_controls] Error updating envelope from controls: {ex}"
-            )
-        self.plot.set_values(self.envelope)
+    def refresh_plot_from_controls(self):
+        env = {
+            EnvelopeParameter.ATTACK_TIME: self.attack_control.value(),
+            EnvelopeParameter.DECAY_TIME: self.decay_control.value(),
+            EnvelopeParameter.PEAK_LEVEL: self.depth_control.value(),
+        }
+        self.apply_envelope(env, source="sysex")
 
     def update_controls_from_envelope(self) -> None:
         """Update slider controls from envelope values."""
@@ -239,8 +221,7 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                         int(self.envelope[EnvelopeParameter.SUSTAIN_LEVEL] * 127)
                     )
                 elif envelope_param_type == EnvelopeParameter.PEAK_LEVEL:
-                    pass
-                    # slider.setValue(int((self.envelope[EnvelopeParameter.PEAK_LEVEL] + 0.5) * 127))
+                    slider.setValue(self.envelope[EnvelopeParameter.PEAK_LEVEL])  # MIDI 0-127
                 else:
                     slider.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
@@ -250,17 +231,3 @@ class PitchEnvelopeWidget(EnvelopeWidgetBase):
                 f"[PitchEnvelopeWidget] [update_controls_from_envelope] Error updating controls from envelope: {ex}"
             )
         self.plot.set_values(self.envelope)
-
-    def refresh_plot_from_controls(self) -> None:
-        """
-        Sync envelope from current control values and redraw the plot without emitting.
-        Call after programmatically setting control values (e.g. from incoming SysEx)
-        when blockSignals(True) was used, so the plot reflects the new values.
-        """
-        try:
-            self.envelope[EnvelopeParameter.ATTACK_TIME] = self.attack_control.value()
-            self.envelope[EnvelopeParameter.DECAY_TIME] = self.decay_control.value()
-            self.envelope[EnvelopeParameter.PEAK_LEVEL] = self.depth_control.value()
-            self.plot.set_values(self.envelope)
-        except Exception as ex:
-            log.error(f"[PitchEnvelopeWidget] [refresh_plot_from_controls] Error: {ex}")

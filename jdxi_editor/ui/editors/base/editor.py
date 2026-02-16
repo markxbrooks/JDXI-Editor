@@ -856,7 +856,7 @@ class BaseSynthEditor(SynthEditor):
         )
         if not isinstance(mode_int, int):
             mode_int = 0
-        self._update_filter_mode_buttons(value=mode_int)
+        self._update_filter_mode_buttons(partial_number=0, value=mode_int)
         self.update_filter_controls_state(mode_int)
 
     def _handle_lfo_tempo_sync_switch(
