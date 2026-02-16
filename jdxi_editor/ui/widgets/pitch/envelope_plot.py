@@ -31,7 +31,7 @@ from typing import Any
 
 import numpy as np
 from numpy import dtype, floating, ndarray
-from PySide6.QtCore import QPointF
+from PySide6.QtCore import QPointF, Signal
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -41,6 +41,9 @@ from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotCon
 
 
 class PitchEnvPlot(BasePlotWidget):
+    """Pitch Env Plot """
+    point_moved = Signal(str, float)
+
     def __init__(
         self,
         width: int = JDXi.UI.Style.ADSR_PLOT_WIDTH,
@@ -49,7 +52,6 @@ class PitchEnvPlot(BasePlotWidget):
         parent: QWidget = None,
     ):
         super().__init__(parent)
-        self.point_moved = None
         self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
@@ -66,8 +68,6 @@ class PitchEnvPlot(BasePlotWidget):
         self.dragging = None
         if hasattr(self.parent, "envelope_changed"):
             self.parent.envelope_changed.connect(self.set_values)
-        if hasattr(self.parent, "pitchenvelope_changed"):
-            self.parent.pitchenvelope_changed.connect(self.set_values)
 
     def set_values(self, envelope: dict) -> None:
         """

@@ -2129,6 +2129,8 @@ class MidiFilePlayer(SynthEditor):
         UI update: Update slider and label to reflect playback progress.
         """
         try:
+            if self.midi_state.playback_start_time is None:
+                return
             now = time.time()
             elapsed_time = now - self.midi_state.playback_start_time
             self.ui_midi_file_position_slider_set_position(elapsed_time)
