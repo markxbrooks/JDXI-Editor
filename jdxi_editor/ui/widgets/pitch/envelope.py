@@ -176,7 +176,6 @@ class PitchEnvWidget(EnvelopeWidgetBase):
         for ctrl in self._control_widgets:
             ctrl.blockSignals(state)
 
-
     def showEvent(self, event: QShowEvent) -> None:
         """When widget is shown, sync plot from current control values (e.g. after startup load)."""
         super().showEvent(event)
