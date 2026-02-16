@@ -44,6 +44,10 @@ Example:
 import sys
 from pathlib import Path
 
+from jdxi_editor.midi.nrpn.parameter import NRPNParameter
+
+from jdxi_editor.midi.control_change.parameter import CCParameter
+
 # Allow running this file directly from project root: python jdxi_editor/ui/editors/analog/editor.py
 if __name__ == "__main__" and __package__ is None:
     _root = Path(__file__).resolve().parents[3]
@@ -222,19 +226,19 @@ class AnalogSynthEditor(BaseSynthEditor):
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
         self.cc_parameters = {
-            "Cutoff": self.SYNTH_SPEC.ControlChange.CUTOFF,
-            "Resonance": self.SYNTH_SPEC.ControlChange.RESONANCE,
-            "Level": self.SYNTH_SPEC.ControlChange.LEVEL,
-            "LFO Rate": self.SYNTH_SPEC.ControlChange.LFO_RATE,
+            CCParameter.CUTOFF: self.SYNTH_SPEC.ControlChange.CUTOFF,
+            CCParameter.RESONANCE: self.SYNTH_SPEC.ControlChange.RESONANCE,
+            CCParameter.LEVEL: self.SYNTH_SPEC.ControlChange.LEVEL,
+            CCParameter.LFO_RATE: self.SYNTH_SPEC.ControlChange.LFO_RATE,
         }
 
         self.nrpn_parameters = {
-            "Envelope": self.SYNTH_SPEC.RPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
-            "LFO Shape": self.SYNTH_SPEC.RPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
-            "LFO Pitch Depth": self.SYNTH_SPEC.RPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
-            "LFO Filter Depth": self.SYNTH_SPEC.RPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
-            "LFO Amp Depth": self.SYNTH_SPEC.RPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
-            "Pulse Width": self.SYNTH_SPEC.RPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
+            NRPNParameter.ENVELOPE: self.SYNTH_SPEC.RPN.ENVELOPE.value.msb_lsb,  # --- (0, 124),
+            NRPNParameter.LFO_SHAPE: self.SYNTH_SPEC.RPN.LFO_SHAPE.value.msb_lsb,  # --- (0, 3),
+            NRPNParameter.LFO_PITCH_DEPTH: self.SYNTH_SPEC.RPN.LFO_PITCH_DEPTH.value.msb_lsb,  # --- (0, 15),
+            NRPNParameter.LFO_FILTER_DEPTH: self.SYNTH_SPEC.RPN.LFO_FILTER_DEPTH.value.msb_lsb,  # --- (0, 18),
+            NRPNParameter.LFO_AMP_DEPTH: self.SYNTH_SPEC.RPN.LFO_AMP_DEPTH.value.msb_lsb,  # --- (0, 21),
+            NRPNParameter.PULSE_WIDTH: self.SYNTH_SPEC.RPN.PULSE_WIDTH.value.msb_lsb,  # --- (0, 37),
         }
 
         # --- Reverse lookup map
