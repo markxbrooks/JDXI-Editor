@@ -220,26 +220,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         if getattr(self, "wave_shapes", None):
             self._on_button_selected(self.wave_shapes[0])
 
-    def _build_plan(self) -> list[OscillatorComponent]:
-        plan = [OscillatorComponent.WAVE_SELECTOR, OscillatorComponent.TUNING]
-
-        if self.spec.supports(OscillatorFeature.PWM):
-            plan.append(OscillatorComponent.PWM)
-
-        if self.spec.supports(OscillatorFeature.PITCH_ENV):
-            plan.append(OscillatorComponent.PITCH_ENV)
-
-        if self.spec.supports(OscillatorFeature.PCM):
-            plan.append(OscillatorComponent.PCM)
-
-        if self.spec.supports(OscillatorFeature.SUB_OSC):
-            plan.append(OscillatorComponent.SUB_OSC)
-
-        if self.spec.supports(OscillatorFeature.ADSR):
-            plan.append(OscillatorComponent.ADSR)
-
-        return plan
-
     def _get_param_specs(self) -> list:
         """Return param specs for section_base._build_widgets. Oscillator layout specs (Analog) use .env/.tuning, not .controls."""
         if not hasattr(self.spec, "controls"):
