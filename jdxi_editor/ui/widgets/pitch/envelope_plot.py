@@ -35,6 +35,7 @@ from PySide6.QtCore import QPointF
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.pitch_env.type import PitchEnvType
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
 
@@ -81,11 +82,11 @@ class PitchEnvPlot(BasePlotWidget):
     def mousePressEvent(self, event):
         pos = event.position()
         points = {
-            "attack": QPointF(self.attack_x * self.width(), 0),
-            "decay": QPointF(
+            PitchEnvType.ATTACK: QPointF(self.attack_x * self.width(), 0),
+            PitchEnvType.DECAY: QPointF(
                 self.decay_x * self.width(), (1 - self.peak_level) * self.height()
             ),
-            "release": QPointF(
+            PitchEnvType.RELEASE: QPointF(
                 self.release_x * self.width(), (1 - self.peak_level) * self.height()
             ),
         }
@@ -97,13 +98,13 @@ class PitchEnvPlot(BasePlotWidget):
     def mouseMoveEvent(self, event):
         if self.dragging:
             pos = event.position()
-            if self.dragging == "attack":
+            if self.dragging == PitchEnvType.ATTACK:
                 self.attack_x = max(0.01, min(pos.x() / self.width(), 1.0))
-            elif self.dragging == "decay":
+            elif self.dragging == PitchEnvType.DECAY:
                 self.decay_x = max(
                     self.attack_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )
-            elif self.dragging == "release":
+            elif self.dragging == PitchEnvType.RELEASE:
                 self.release_x = max(
                     self.decay_x + 0.01, min(pos.x() / self.width(), 1.0)
                 )
