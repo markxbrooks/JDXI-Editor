@@ -21,7 +21,9 @@ from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
 
 
 class BaseLFOSection(SectionBaseWidget):
-    """Abstract base class for LFO sections."""
+    """Abstract base class for LFO sections. All LFOs (Analog, Digital, Mod) use _create_shape_row() for exclusive wave shape selection."""
+
+    SKIP_BASE_SETUP_UI = True  # We build layout in _setup_ui() via _create_shape_row(), not base's tab layout
 
     SYNTH_SPEC: Digital | Analog = None
 
@@ -57,11 +59,11 @@ class BaseLFOSection(SectionBaseWidget):
             analog=analog,
         )
         self.wave_shapes = self.generate_wave_shapes()
-        # Do not overwrite wave_shape_buttons: _setup_ui() (run during super()) already
-        # populated it in _create_shape_row(). Only ensure it exists for analog/other paths.
         self.lfo_shape_buttons: dict[int, QPushButton] = {}
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
+        # All LFOs (Digital, Mod, Analog) use this path so shape row comes from _create_shape_row() with QButtonGroup
+        self._setup_ui()
 
     def generate_wave_shapes(self) -> list:
         """generate_wave_shapes"""
@@ -98,6 +100,10 @@ class BaseLFOSection(SectionBaseWidget):
             self._build_digital_layout(layout)
 
         layout.addStretch()
+
+    def build_widgets(self):
+        """Build LFO widgets (switches, depth, rate). Shape row is created in _setup_ui() via _create_shape_row(), not _create_waveform_buttons()."""
+        self._build_widgets()
 
     def _build_widgets(self) -> LFOWidgets:
         spec = self._build_layout_spec()

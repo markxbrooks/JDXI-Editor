@@ -91,7 +91,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.shape_icon_map: dict | None = None
         self.sub_oscillator_type_switch: QWidget | None = None
         self.tuning_sliders: list | None = None
-        self.pwm_widget: QWidget | None = None
+        self.pwm_widget: PWMWidget | None = None
         self.wave_layout_widgets: list = []
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None

@@ -1,4 +1,4 @@
-from typing import Protocol
+"""from typing import Protocol
 
 
 class AmpAPI(Protocol):
@@ -12,4 +12,4 @@ class AmpAPI(Protocol):
                  sustain: int | None = None,
                  release: int | None = None) -> None
 
-    def get_state(self) -> dict: ...
+    def get_state(self) -> dict: ..."""

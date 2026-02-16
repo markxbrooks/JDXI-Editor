@@ -76,6 +76,10 @@ class DrumKitMixerSection(SectionBaseWidget):
 
         self.setup_ui()
 
+    def _setup_ui(self):
+        """So as to not provide a Tab widget"""
+        pass
+
     def setup_ui(self) -> None:
         """Setup the mixer UI with 37 vertical sliders."""
         # Main layout

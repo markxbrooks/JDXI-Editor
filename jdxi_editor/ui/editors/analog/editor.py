@@ -140,9 +140,9 @@ class AnalogSynthEditor(BaseSynthEditor):
             self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
         }
         self.pitch_env_mapping = {
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: self.oscillator_section.pitch_env_widget.attack_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.pitch_env_widget.attack_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.pitch_env_widget.decay_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.pitch_env_widget.depth_control,
         }
         self.pwm_mapping = {
             self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
@@ -192,6 +192,8 @@ class AnalogSynthEditor(BaseSynthEditor):
                 midi_helper=self.midi_helper,
                 send_midi_parameter=self.send_midi_parameter,
             )
+            # Use the section's shape buttons so _update_lfo_shape_buttons (preset load) finds them
+            self.lfo_shape_buttons = self.lfo_section.lfo_shape_buttons
             # Ensure editor.controls has all section widgets (sections may use same ref or their own)
             for section in (
                 self.oscillator_section,

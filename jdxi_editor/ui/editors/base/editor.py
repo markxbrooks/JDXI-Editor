@@ -42,7 +42,7 @@ Example:
 """
 
 import logging
-from typing import TYPE_CHECKING, Optional, Literal
+from typing import TYPE_CHECKING, Literal, Optional
 
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -53,6 +53,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from building.apple.venv.src.picomidi.picomidi.sysex.parameter.address import (
+    AddressParameter,
+)
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
@@ -153,24 +156,6 @@ class BaseSynthEditor(SynthEditor):
         widget.blockSignals(True)
         widget.setValue(int(value))
         widget.blockSignals(False)
-
-    def _build_pitch_env_mapping(self):
-        pe = self.pitch_env_section
-
-        self.pitch_env_mapping = {
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: ControlBinding(
-                lambda: pe.attack_knob, self._set_value
-            ),
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: ControlBinding(
-                lambda: pe.decay_knob, self._set_value
-            ),
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: ControlBinding(
-                lambda: pe.depth_slider, self._set_value
-            ),
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_VELOCITY_SENS: ControlBinding(
-                lambda: pe.velocity_knob, self._set_value
-            ),
-        }
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
@@ -324,14 +309,16 @@ class BaseSynthEditor(SynthEditor):
 
     def _update_filter_mode_buttons(self, value: int):
         """
-        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback
+        Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback.
 
-        :param value: int filter mode value (0 = BYPASS, 1 = LPF)
+        Uses Filter.Mode (not Filter.FilterType) so the lookup key matches the section's
+        button_widgets keys, which are keyed by the spec.param from generate_wave_shapes (Mode).
+        :param value: int filter mode value (0 = BYPASS, 1 = LPF for Analog)
         :return: None
         """
         filter_mode_map = {
-            0: self.SYNTH_SPEC.Filter.FilterType.BYPASS,
-            1: self.SYNTH_SPEC.Filter.FilterType.LPF,
+            0: self.SYNTH_SPEC.Filter.Mode.BYPASS,
+            1: self.SYNTH_SPEC.Filter.Mode.LPF,
         }
 
         selected_filter_mode = filter_mode_map.get(value)
@@ -460,9 +447,17 @@ class BaseSynthEditor(SynthEditor):
                 selected_btn.setChecked(True)
                 JDXi.UI.Theme.apply_button_analog_active(selected_btn)
 
+    def _handle_sliders(
+        self, param: AddressParameter, value: int, successes: list, failures: list
+    ):
+        """Handle sliders"""
+        self.update_slider(
+            param=param, midi_value=value, successes=successes, failures=failures
+        )
+
     def update_slider(
         self,
-        param: AnalogParam,
+        param: AddressParameter,
         midi_value: int,
         successes: list = None,
         failures: list = None,
@@ -570,7 +565,8 @@ class BaseSynthEditor(SynthEditor):
         )
 
         if parameter in self.pitch_env_mapping:
-            control = self.pitch_env_mapping[parameter]
+            control_getter = self.pitch_env_mapping[parameter]
+            control = control_getter()
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
@@ -646,72 +642,14 @@ class BaseSynthEditor(SynthEditor):
 
     def _build_param_handlers(self):
         """Build param handlers"""
-        P = self.SYNTH_SPEC.Param
-
         return {
-            P.SUB_OSCILLATOR_TYPE: self._handle_sub_osc_type,
-            P.OSC_WAVEFORM: self._handle_waveform,
-            P.LFO_SHAPE: self._handle_lfo_shape,
-            P.LFO_TEMPO_SYNC_SWITCH: self._handle_direct_control,
-            P.LFO_TEMPO_SYNC_NOTE: self._handle_direct_control,
-            P.FILTER_MODE_SWITCH: self._handle_filter_mode,
+            "SUB_OSCILLATOR_TYPE": self._handle_suboscillator,
+            "OSC_WAVEFORM": self._handle_waveform,
+            "FILTER_MODE_SWITCH": self._handle_filter_mode_switch,
+            "LFO_SHAPE": self._handle_lfo_shape,
+            "LFO_TEMPO_SYNC_SWITCH": self._handle_lfo_tempo_sync_switch,
+            "LFO_TEMPO_SYNC_NOTE": self._handle_lfo_tempo_sync_note,
         }
-
-    def _handle_sub_osc_type(self, param, value, *_):
-        if (
-            value in self.SUB_OSC_TYPE_MAP
-            and self.oscillator_section
-            and hasattr(self.oscillator_section, "sub_oscillator_type_switch")
-        ):
-            w = self.oscillator_section.sub_oscillator_type_switch
-            w.blockSignals(True)
-            w.setValue(self.SUB_OSC_TYPE_MAP[value])
-            w.blockSignals(False)
-            return True
-        return False
-
-    def _handle_direct_control(self, param, value, successes, failures):
-        control = self.controls.get(param)
-        if not control:
-            return False
-        control.setValue(value)
-        successes.append(param)
-        return True
-
-    def _handle_filter_mode(self, param, value, successes, failures):
-        mode = int(getattr(value, "value", value) or 0)
-        self._update_filter_mode_buttons(mode)
-        self.update_filter_controls_state(mode)
-        successes.append(param)
-        return True
-
-    def _process_param_update_new(self, param_value, param_name, failures, successes):
-        """Process Param Update"""
-        param = self.SYNTH_SPEC.Param.get_by_name(param_name)
-        if not param:
-            failures.append(param_name)
-            return
-
-        # 1) direct handler
-        handler = self.param_handlers.get(param)
-        if handler and handler(param, param_value, successes, failures):
-            successes.append(param_name)
-            return
-
-        # 2) grouped handlers
-        for group, handler in self.group_handlers:
-            if param in group:
-                if handler(param, param_value, successes, failures):
-                    successes.append(param_name)
-                else:
-                    failures.append(param_name)
-                return
-
-        # 3) fallback
-        if self.update_slider(param, param_value, successes, failures):
-            successes.append(param_name)
-        else:
-            failures.append(param_name)
 
     def _process_param_update(
         self, param_value, param_name, failures: list, successes: list
@@ -728,68 +666,29 @@ class BaseSynthEditor(SynthEditor):
         if not param:
             failures.append(param_name)
             return
-        handlers = {
-            "SUB_OSCILLATOR_TYPE": self._update_suboscillator_handler,
-            "OSC_WAVEFORM": self._update_waveform_buttons_handler,
-            "FILTER_MODE_SWITCH": self._handle_filter_mode_switch,
-            "LFO_SHAPE": self._handle_lfo_shape,
-            "LFO_TEMPO_SYNC_SWITCH": self._update_lfo_tempo_sync_switch,
-            "LFO_TEMPO_SYNC_NOTE": self._update_lfo_tempo_sync_note,
-        }
-        handler = handlers.get(param_name)
-        log.message(f"calling handler {handler} for param (param)", scope=self.__class__.__name__)
-        handler(param_name, param_value, successes, failures)
-        """# Common signature of single parameter
-        if (
-            param_name == "SUB_OSCILLATOR_TYPE"
-            and param_value in self.SUB_OSC_TYPE_MAP
-            and self.oscillator_section is not None
-            and hasattr(self.oscillator_section, "sub_oscillator_type_switch")
-        ):
-            self._update_suboscillator(param_value)
-        elif param_name == "OSC_WAVEFORM" and param_value in self.osc_waveform_map:
-            self._update_waveform_buttons(param_value)
-        elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
-            self._update_lfo_shape_buttons(param_value)
-        elif param == self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH:
-            self._handle_filter_mode_switch(param_value)
-        if param_name == "LFO_TEMPO_SYNC_SWITCH":
-            self._update_lfo_tempo_sync_switch(param_name, param_value, successes, failures)
-        elif param_name == "LFO_TEMPO_SYNC_NOTE":
-            self._update_lfo_tempo_sync_note(param_name, param_value, successes, failures)"""
-        if param in self._get_adsr_params():
-            self.update_adsr_widget(param, param_value, successes, failures)
-        elif param in self.pitch_env_mapping:
-            self.update_pitch_env_widget(param, param_value, successes, failures)
-        elif param == self.SYNTH_SPEC.Param.OSC_WAVEFORM:
-            self._update_waveform_buttons(param_value)
-        else:
-            self.update_slider(param, param_value, successes, failures)
+        # 1) direct handler
+        handler = self.param_handlers.get(param_name)
+        if handler and handler(param, param_value, successes, failures):
+            log.message(
+                f"calling handler {handler} for param {param}",
+                scope=self.__class__.__name__,
+            )
+            successes.append(param_name)
+            return
+        # 2) grouped handlers
+        for group, handler in self.group_handlers:
+            if param in group:
+                if handler(param, param_value, successes, failures):
+                    successes.append(param_name)
+                else:
+                    failures.append(param_name)
+                return
         successes.append(param_name)
-
-    def _update_lfo_tempo_sync_note(self, param_name: Literal["LFO_TEMPO_SYNC_NOTE"], param_value, successes: list,
-                                    failures: list):
-        control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE)
-        if control:
-            control.setValue(param_value)
+        # 3) fallback
+        if self.update_slider(param, param_value, successes, failures):
             successes.append(param_name)
         else:
             failures.append(param_name)
-
-    def _update_lfo_tempo_sync_switch(self, param_name: Literal["LFO_TEMPO_SYNC_SWITCH"], param_value,
-                                      successes: list, failures: list):
-        control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH)
-        if control:
-            control.setValue(param_value)
-            successes.append(param_name)
-        else:
-            failures.append(param_name)
-
-    def _update_suboscillator_handler(self, param_name: str, param_value,
-                                      successes: list, failures: list):
-        if self._update_suboscillator(param_value=param_value):
-            return True
-        return None
 
     def _update_suboscillator(self, param_value):
         """
@@ -800,18 +699,6 @@ class BaseSynthEditor(SynthEditor):
             self.SUB_OSC_TYPE_MAP[param_value]
         )
         self.oscillator_section.sub_oscillator_type_switch.blockSignals(False)
-
-    def _handle_filter_mode_switch(self, param_value):
-        """handle filter mode switch"""
-        mode_int = (
-            int(param_value)
-            if isinstance(param_value, (int, float))
-            else getattr(param_value, "value", 0)
-        )
-        if not isinstance(mode_int, int):
-            mode_int = 0
-        self._update_filter_mode_buttons(mode_int)
-        self.update_filter_controls_state(mode_int)
 
     def _log_and_store_sysex_data(self, sysex_data: dict) -> None:
         """
@@ -837,29 +724,6 @@ class BaseSynthEditor(SynthEditor):
             self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL,
             self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME,
         ]
-
-    def _handle_adsr(self, param, param_value, successes: list, failures: list) -> bool:
-        """Dispatch ADSR parameter updates to the ADSR widget."""
-        self.update_adsr_widget(param, param_value, successes, failures)
-        return param in self.adsr_mapping
-
-    def _handle_pitch_env(
-        self, param, param_value, successes: list, failures: list
-    ) -> bool:
-        """Dispatch pitch envelope parameter updates to the pitch env widget."""
-        self.update_pitch_env_widget(param, param_value, successes, failures)
-        return param in self.pitch_env_mapping
-
-    def _handle_waveform(self, param, param_value, successes, failures):
-        """Handle waveform; signature matches param_handlers (param, param_value, successes, failures)."""
-        self._update_waveform_buttons(value=param_value)
-        return True
-
-    def _update_waveform_buttons_handler(self, param_name: str, param_value,
-                                      successes: list, failures: list):
-        if self._update_waveform_buttons(value=param_value):
-            return True
-        return None
 
     def _update_waveform_buttons(self, value: int):
         """
@@ -895,11 +759,6 @@ class BaseSynthEditor(SynthEditor):
         if selected_btn:
             selected_btn.setChecked(True)
             JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-
-    def _handle_lfo_shape(self, param, param_value, successes, failures):
-        """Handler for LFO shape; signature matches param_handlers (param, param_value, successes, failures)."""
-        self._update_lfo_shape_buttons(value=param_value)
-        return True
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -959,3 +818,107 @@ class BaseSynthEditor(SynthEditor):
                         if pw_enabled
                         else "QSlider::groove:vertical { background: #000000; }"
                     )
+
+    def _handle_adsr(
+        self, param: AddressParameter, param_value: int, successes: list, failures: list
+    ) -> bool:
+        """Dispatch ADSR parameter updates to the ADSR widget."""
+        self.update_adsr_widget(param, param_value, successes, failures)
+        return param in self.adsr_mapping
+
+    def _handle_pitch_env(
+        self, param, param_value, successes: list, failures: list
+    ) -> bool:
+        """Dispatch pitch envelope parameter updates to the pitch env widget."""
+        self.update_pitch_env_widget(param, param_value, successes, failures)
+        return param in self.pitch_env_mapping
+
+    def _handle_waveform(self, param, param_value, successes, failures):
+        """Handle waveform; signature matches param_handlers (param, param_value, successes, failures)."""
+        self._update_waveform_buttons(value=param_value)
+        return True
+
+    def _handle_lfo_shape(self, param, param_value, successes, failures):
+        """Handler for LFO shape; signature matches param_handlers (param, param_value, successes, failures)."""
+        self._update_lfo_shape_buttons(value=param_value)
+        return True
+
+    def _handle_filter_mode_switch(
+        self, param: AddressParameter, param_value: int, successes: list, failures: list
+    ):
+        """handle filter mode switch"""
+        mode_int = (
+            int(param_value)
+            if isinstance(param_value, (int, float))
+            else getattr(param_value, "value", 0)
+        )
+        if not isinstance(mode_int, int):
+            mode_int = 0
+        self._update_filter_mode_buttons(mode_int)
+        self.update_filter_controls_state(mode_int)
+
+    def _handle_lfo_tempo_sync_switch(
+        self,
+        param_name: Literal["LFO_TEMPO_SYNC_SWITCH"],
+        param_value,
+        successes: list,
+        failures: list,
+    ):
+        """Handle LFO Tempo Sync Switch"""
+        control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_SWITCH)
+        if control:
+            control.setValue(param_value)
+            successes.append(param_name)
+        else:
+            failures.append(param_name)
+
+    def _handle_suboscillator(
+        self, param_name: str, param_value, successes: list, failures: list
+    ):
+        """Handle SubOscillator"""
+        if self._update_suboscillator(param_value=param_value):
+            return True
+        return None
+
+    def _handle_lfo_tempo_sync_note(
+        self,
+        param_name: Literal["LFO_TEMPO_SYNC_NOTE"],
+        param_value,
+        successes: list,
+        failures: list,
+    ):
+        """Handle LFO Tempo Sync Note"""
+        control = self.controls.get(self.SYNTH_SPEC.Param.LFO_TEMPO_SYNC_NOTE)
+        if control:
+            control.setValue(param_value)
+            successes.append(param_name)
+        else:
+            failures.append(param_name)
+
+    def _handle_sub_osc_type(self, param, value, *_):
+        if (
+            value in self.SUB_OSC_TYPE_MAP
+            and self.oscillator_section
+            and hasattr(self.oscillator_section, "sub_oscillator_type_switch")
+        ):
+            w = self.oscillator_section.sub_oscillator_type_switch
+            w.blockSignals(True)
+            w.setValue(self.SUB_OSC_TYPE_MAP[value])
+            w.blockSignals(False)
+            return True
+        return False
+
+    def _handle_direct_control(self, param, value, successes, failures):
+        control = self.controls.get(param)
+        if not control:
+            return False
+        control.setValue(value)
+        successes.append(param)
+        return True
+
+    def _handle_filter_mode(self, param, value, successes, failures):
+        mode = int(getattr(value, "value", value) or 0)
+        self._update_filter_mode_buttons(mode)
+        self.update_filter_controls_state(mode)
+        successes.append(param)
+        return True

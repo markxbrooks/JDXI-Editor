@@ -141,7 +141,8 @@ class SectionBaseWidget(SynthBase):
         self.button_widgets: dict[Any, QPushButton] = {}
         self.slider_widgets: dict[Any, QWidget] = {}
         self.build_widgets()
-        if not self.analog:
+        skip_base_setup = getattr(self.__class__, "SKIP_BASE_SETUP_UI", False)
+        if not self.analog and not skip_base_setup:
             self._setup_ui()
             if self._get_button_specs():
                 self._initialize_button_states()
@@ -420,6 +421,8 @@ class SectionBaseWidget(SynthBase):
         """Create mode/waveform/shape buttons from wave_shapes or BUTTON_SPECS."""
 
         specs = self._get_button_specs()
+        if not specs:
+            return
 
         for spec in specs:
             btn = self._build_wave_button(spec)
