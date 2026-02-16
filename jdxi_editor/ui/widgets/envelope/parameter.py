@@ -34,3 +34,5 @@ class EnvelopeParameter:
     LEVEL_2: str = "level_2"
     LEVEL_3: str = "level_3"
     LEVEL_4: str = "level_4"
+    SLOPE_PARAM: str = "slope_param"
+    CUTOFF_PARAM: str = "cutoff_param"

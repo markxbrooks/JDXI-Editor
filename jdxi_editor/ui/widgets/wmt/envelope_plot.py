@@ -29,8 +29,6 @@ Customization:
 
 import numpy as np
 from picomidi.constant import Midi
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
@@ -95,16 +93,32 @@ class WMTEnvPlot(BasePlotWidget):
         self.envelope = envelope
         self.update()
 
+    def _default_wmt_envelope(self) -> dict:
+        """Return envelope dict with all keys required by envelope_parameters (avoids KeyError)."""
+        return {
+            EnvelopeParameter.FADE_LOWER: 200,
+            EnvelopeParameter.RANGE_LOWER: 300,
+            EnvelopeParameter.DEPTH: 0.7,
+            EnvelopeParameter.RANGE_UPPER: 400,
+            EnvelopeParameter.FADE_UPPER: 300,
+        }
+
     def envelope_parameters(self):
         """Generate WMT envelope from parameters."""
-        fade_lower = max(
-            self.envelope[EnvelopeParameter.FADE_LOWER] / 1000.0, 1.0
-        )  # Fade lower in seconds
-        range_lower = max(self.envelope[EnvelopeParameter.RANGE_LOWER] / 1000.0, 1.0)
-        depth = self.envelope["depth"] / 2.0  # Depth in range [0.0, 0.5]
+        env = self.envelope or {}
+        defaults = self._default_wmt_envelope()
+        fade_lower_ms = env.get(EnvelopeParameter.FADE_LOWER, defaults[EnvelopeParameter.FADE_LOWER])
+        range_lower_ms = env.get(EnvelopeParameter.RANGE_LOWER, defaults[EnvelopeParameter.RANGE_LOWER])
+        depth_val = env.get(EnvelopeParameter.DEPTH, defaults[EnvelopeParameter.DEPTH])
+        range_upper_ms = env.get(EnvelopeParameter.RANGE_UPPER, defaults[EnvelopeParameter.RANGE_UPPER])
+        fade_upper_ms = env.get(EnvelopeParameter.FADE_UPPER, defaults[EnvelopeParameter.FADE_UPPER])
 
-        range_upper = max(self.envelope[EnvelopeParameter.RANGE_UPPER] / 2000.0, 0.1)
-        fade_upper = max(self.envelope[EnvelopeParameter.FADE_UPPER] / 2000.0, 0.5)
+        fade_lower = max(fade_lower_ms / 1000.0, 1.0)  # Fade lower in seconds
+        range_lower = max(range_lower_ms / 1000.0, 1.0)
+        depth = float(depth_val) / 2.0  # Depth in range [0.0, 0.5]
+
+        range_upper = max(range_upper_ms / 2000.0, 0.1)
+        fade_upper = max(fade_upper_ms / 2000.0, 0.5)
         sustain = 2.0  # Sustain in seconds
 
         fade_lower_period = range_lower - fade_lower

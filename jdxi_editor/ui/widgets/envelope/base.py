@@ -4,11 +4,16 @@ Base Envelope Widget
 
 from typing import Callable, Optional
 
+from PySide6.QtGui import QShowEvent
+
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.data_source import EnvelopeDataSource
+from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
+from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QGridLayout
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -66,6 +71,33 @@ class EnvelopeWidgetBase(QWidget):
         if hasattr(self, "plot") and self.plot:
             self.plot.update()
 
+    def _create_control_layout(self, slider_specs: list[EnvControlSpec]) -> QGridLayout:
+        """Create Control Layout"""
+        layout = QGridLayout()
+
+        self.param_to_env = {}
+        for idx, spec in enumerate(slider_specs):
+            control = PitchEnvSliderSpinbox(
+                spec.param,
+                min_value=spec.min_value,
+                max_value=spec.max_value,
+                units=spec.units,
+                label=spec.label,
+                value=spec.default_value,
+                create_parameter_slider=self._create_parameter_slider,
+                parent=self,
+            )
+            self.controls[spec.param] = control
+            self.param_to_env[spec.param] = spec.env_param
+            control.spinbox.setEnabled(spec.enabled)
+            control.envelope_changed.connect(
+                lambda ch, p=spec.param: self.apply_envelope(ch, EnvelopeDataSource.CONTROLS))
+
+            self._control_widgets.append(control)
+            self.controls[spec.param] = control
+            layout.addWidget(control, 0, idx)
+        return layout
+
     def set_values(self, envelope: dict) -> None:
         """
         Update envelope values and trigger address redraw
@@ -84,6 +116,19 @@ class EnvelopeWidgetBase(QWidget):
         """
         if hasattr(self, "plot") and self.plot:
             self.plot.set_values(self.envelope)
+
+    def on_control_changed(self, change: dict) -> None:
+        """
+        Control Change callback
+
+        :param change: dict envelope
+        :return: None
+        :emits: dict pitch envelope parameters
+        """
+        self.apply_envelope(change, source="controls")
+
+    def on_plot_envelope_changed(self, envelope: dict):
+        self.apply_envelope(envelope, source="plot")
 
     def update_envelope_from_controls(self) -> None:
         """
@@ -163,3 +208,36 @@ class EnvelopeWidgetBase(QWidget):
             )
         if hasattr(self, "plot") and self.plot:
             self.plot.set_values(self.envelope)
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """When widget is shown, sync plot from current control values (e.g. after startup load)."""
+        super().showEvent(event)
+        self.refresh_plot_from_controls()
+
+    def apply_envelope(self, envelope: dict, source: str):
+        """
+        Central state synchronizer.
+        source: "controls" | "plot" | "sysex"
+        """
+
+        self.envelope.update(envelope)
+
+        # 1) update controls (unless they caused it)
+        if source != "controls":
+            self.block_control_signals(True)
+            self.update_controls_from_envelope()
+            self.block_control_signals(False)
+
+        # 2) update plot (unless plot caused it)
+        if source != "plot":
+            self.plot.set_values(self.envelope)
+
+        # 3) emit + midi
+        self.envelope_changed.emit(self.envelope)
+
+    def block_control_signals(self, state: bool):
+        for ctrl in self._control_widgets:
+            ctrl.blockSignals(state)
+
+    def refresh_plot_from_controls(self):
+        raise NotImplementedError("To be implemented in subclass")

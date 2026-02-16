@@ -6,7 +6,7 @@ Base class for plot widgets that provides common functionality like shaded curve
 """
 
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
 import numpy as np
 from PySide6.QtCore import Qt
@@ -1228,3 +1228,9 @@ class BasePlotWidget(QWidget):
         :return: Y-axis label string
         """
         return ""
+
+    def envelope_parameters(
+        self,
+    ) -> tuple[np.ndarray[Any, np.dtype[np.floating[Any]]], int, int]:
+        """Envelope parameters"""
+        raise NotImplementedError("To be implemented by subclass")

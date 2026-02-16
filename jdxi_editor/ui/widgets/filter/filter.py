@@ -12,6 +12,7 @@ and can communicate with MIDI devices.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -46,7 +47,7 @@ class FilterWidget(EnvelopeWidgetBase):
         analog: bool = False,
     ):
         super().__init__(
-            envelope_keys=["cutoff_param", "slope_param"],
+            envelope_keys=[EnvelopeParameter.CUTOFF_PARAM, EnvelopeParameter.SLOPE_PARAM],
             create_parameter_slider=create_parameter_slider,
             parameters=[cutoff_param, slope_param],
             midi_helper=midi_helper,
@@ -67,7 +68,7 @@ class FilterWidget(EnvelopeWidgetBase):
             self.controls = controls
         else:
             self.controls = {}
-        self.envelope = {"cutoff_param": 0.5, "slope_param": 0.0}
+        self.envelope = {EnvelopeParameter.CUTOFF_PARAM: 0.5, EnvelopeParameter.SLOPE_PARAM: 0.0}
         self.cutoff_param_control = PWMSliderSpinbox(
             cutoff_param,
             min_value=0,
@@ -104,7 +105,7 @@ class FilterWidget(EnvelopeWidgetBase):
         )
 
         self.cutoff_param_control.setValue(
-            self.envelope["cutoff_param"] * Midi.VALUE.MAX.SEVEN_BIT
+            self.envelope[EnvelopeParameter.CUTOFF_PARAM] * Midi.VALUE.MAX.SEVEN_BIT
         )
         if self.slope_param:
             self.slope_param_control = self._create_parameter_switch(
@@ -116,7 +117,7 @@ class FilterWidget(EnvelopeWidgetBase):
             self.controls[slope_param] = self.slope_param_control
             self._control_widgets.append(self.slope_param_control)
             self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
-            self.slope_param_control.setValue(self.envelope["slope_param"])
+            self.slope_param_control.setValue(self.envelope[EnvelopeParameter.SLOPE_PARAM])
             JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
             JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
@@ -138,7 +139,7 @@ class FilterWidget(EnvelopeWidgetBase):
         :param val: int
         :return: None
         """
-        self.envelope["cutoff_param"] = (
+        self.envelope[EnvelopeParameter.CUTOFF_PARAM] = (
             val / Midi.VALUE.MAX.SEVEN_BIT
         )  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
@@ -160,8 +161,8 @@ class FilterWidget(EnvelopeWidgetBase):
                 continue
             if ctrl is slider:
                 envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "cutoff_param":
-                    self.envelope["cutoff_param"] = (
+                if envelope_param_type == EnvelopeParameter.CUTOFF_PARAM:
+                    self.envelope[EnvelopeParameter.CUTOFF_PARAM] = (
                         slider.value() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
@@ -176,10 +177,10 @@ class FilterWidget(EnvelopeWidgetBase):
                     continue
                 envelope_param_type = param.get_envelope_param_type()
                 log.message(f"envelope_param_type = {envelope_param_type}")
-                if envelope_param_type == "slope_param":
-                    self.envelope["slope_param"] = ctrl.STATUS()  # Keep as 1 or 0
-                if envelope_param_type == "cutoff_param":
-                    self.envelope["cutoff_param"] = (
+                if envelope_param_type == EnvelopeParameter.SLOPE_PARAM:
+                    self.envelope[EnvelopeParameter.SLOPE_PARAM] = ctrl.STATUS()  # Keep as 1 or 0
+                if envelope_param_type == EnvelopeParameter.CUTOFF_PARAM:
+                    self.envelope[EnvelopeParameter.CUTOFF_PARAM] = (
                         ctrl.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
                     )
                 else:
@@ -196,16 +197,26 @@ class FilterWidget(EnvelopeWidgetBase):
                 if not hasattr(param, "get_envelope_param_type"):
                     continue
                 envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "slope_param":
-                    ctrl.setValue(int(self.envelope["slope_param"]))
-                if envelope_param_type == "cutoff_param":
+                if envelope_param_type == EnvelopeParameter.SLOPE_PARAM:
+                    ctrl.setValue(int(self.envelope[EnvelopeParameter.SLOPE_PARAM]))
+                if envelope_param_type == EnvelopeParameter.CUTOFF_PARAM:
                     ctrl.setValue(
-                        int(self.envelope["cutoff_param"] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(self.envelope[EnvelopeParameter.CUTOFF_PARAM] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
                 else:
                     ctrl.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"[FilterWidget] Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}", scope=self.__class__.__name__)
+        self.plot.set_values(self.envelope)
+
+    def refresh_plot_from_controls(self) -> None:
+        """
+        Sync envelope from current control values and redraw the plot without emitting.
+        Call this after programmatically setting control values (e.g. from incoming SysEx)
+        when blockSignals(True) was used, so the plot reflects the new values.
+        """
+        self.envelope[EnvelopeParameter.CUTOFF_PARAM] = self.cutoff_param_control.value()
+        self.envelope[EnvelopeParameter.SLOPE_PARAM] = self.slope_param_control.value()
         self.plot.set_values(self.envelope)
