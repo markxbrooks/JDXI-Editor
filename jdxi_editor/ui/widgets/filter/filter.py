@@ -12,10 +12,7 @@ and can communicate with MIDI devices.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.combo_box import ComboBox
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
-from jdxi_editor.ui.widgets.slider import Slider
-from jdxi_editor.ui.widgets.switch.switch import Switch
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -42,7 +39,7 @@ class FilterWidget(EnvelopeWidgetBase):
         cutoff_param: AddressParameter,
         slope_param: AddressParameter = None,
         midi_helper: Optional[MidiIOHelper] = None,
-        controls: dict[AddressParameter, Slider | ComboBox | Switch] = None,
+        controls: dict[AddressParameter, QWidget] = None,
         address: Optional[JDXiSysExAddress] = None,
         create_parameter_slider: Callable = None,
         create_parameter_switch: Callable = None,
@@ -103,12 +100,9 @@ class FilterWidget(EnvelopeWidgetBase):
         self.horizontal_layout.addLayout(self.controls_vertical_layout)
         self.controls_vertical_layout.addWidget(self.cutoff_param_control)
         self.horizontal_layout.addWidget(self.plot)
-        for param in self._params:
-            if param is None:
-                continue
-            ctrl = self.controls.get(param)
-            if ctrl is not None and hasattr(ctrl, "value_changed"):
-                ctrl.value_changed.connect(self.update_envelope_from_controls)
+        self.cutoff_param_control.slider.valueChanged.connect(
+            self.on_cutoff_param_changed
+        )
 
         self.cutoff_param_control.setValue(
             self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.VALUE.MAX.SEVEN_BIT
@@ -122,8 +116,7 @@ class FilterWidget(EnvelopeWidgetBase):
             self.controls_vertical_layout.addWidget(self.slope_param_control)
             self.controls[slope_param] = self.slope_param_control
             self._control_widgets.append(self.slope_param_control)
-            if hasattr(self.slope_param_control, "valueChanged"):
-                self.slope_param_control.valueChanged.connect(self.update_envelope_from_controls)
+            self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
             self.slope_param_control.setValue(self.envelope[EnvelopeParameter.FILTER_SLOPE])
             JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
             JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
@@ -136,7 +129,66 @@ class FilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope = envelope
+        print(f"Envelope changed: {self.envelope}")
         self.update()  # Trigger repaint if needed
+
+    def on_cutoff_param_changed(self, val: int) -> None:
+        """
+        Handle pulse width changes from slider
+
+        :param val: int
+        :return: None
+        """
+        self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
+            val / Midi.VALUE.MAX.SEVEN_BIT
+        )  # Convert from 0–100 to 0.0–1.0
+        self.update()  # Trigger repaint if needed
+
+    def on_slope_param_changed(self, val: int) -> None:
+        """
+        Handle modulation depth changes from slider
+
+        :param val: int
+        :return: None
+        """
+        self.envelope["slope_param"] = val  # keep as binary 1/0
+        self.update()  # Trigger repaint if needed
+
+    def update_envelope_from_slider(self, slider: QSlider) -> None:
+        """Update envelope with value from a single slider"""
+        for param, ctrl in self.controls.items():
+            if not hasattr(param, "get_envelope_param_type"):
+                continue
+            if ctrl is slider:
+                envelope_param_type = param.get_envelope_param_type()
+                if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
+                    self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
+                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                    )
+                else:
+                    pass
+                break
+
+    def update_envelope_from_controls(self) -> None:
+        """Update envelope values from slider controls"""
+        try:
+            for param, ctrl in self.controls.items():
+                if not hasattr(param, "get_envelope_param_type"):
+                    continue
+                envelope_param_type = param.get_envelope_param_type()
+                log.message(f"envelope_param_type = {envelope_param_type}")
+                if envelope_param_type == EnvelopeParameter.FILTER_SLOPE:
+                    self.envelope[EnvelopeParameter.FILTER_SLOPE] = ctrl.STATUS()  # Keep as 1 or 0
+                if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
+                    self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
+                        ctrl.STATUS() / Midi.VALUE.MAX.SEVEN_BIT
+                    )
+                else:
+                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.STATUS())
+            log.message(f"{self.envelope}")
+        except Exception as ex:
+            log.error(f"Error updating envelope from controls: {ex}")
+        self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
         """Update slider controls from envelope values."""
@@ -146,55 +198,25 @@ class FilterWidget(EnvelopeWidgetBase):
                     continue
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.FILTER_SLOPE:
-                    ctrl.setValue(int(self.envelope.get(envelope_param_type, 0)))
-                elif envelope_param_type in (
-                    EnvelopeParameter.FILTER_CUTOFF,
-                ):
-                    raw = self.envelope.get(envelope_param_type, 0.5)
+                    ctrl.setValue(int(self.envelope[EnvelopeParameter.FILTER_SLOPE]))
+                if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
                     ctrl.setValue(
-                        int(float(raw) * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.VALUE.MAX.SEVEN_BIT)
                     )
                 else:
                     ctrl.setValue(
-                        int(ms_to_midi_value(self.envelope.get(envelope_param_type, 0)))
+                        int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
             log.error(f"Error updating controls from envelope: {ex}", scope=self.__class__.__name__)
         self.plot.set_values(self.envelope)
 
-    def _control_to_midi(self, param: AddressParameter, ctrl: QWidget) -> float:
-        return int(ctrl.value())  # binary
-
-    def _normalized_to_control(self, param: AddressParameter, value: float) -> int:
-        env = param.get_envelope_param_type()
-
-        if env == EnvelopeParameter.FILTER_SLOPE:
-            return int(value)
-
-        if env == EnvelopeParameter.FILTER_CUTOFF:
-            return int(value * Midi.VALUE.MAX.SEVEN_BIT)
-
-        return ms_to_midi_value(value)
-
-    def update_envelope_from_controls(self, _value=None) -> None:
-        """Read controls into envelope and apply. Accepts optional arg from value_changed/valueChanged signals."""
-        new_env = {}
-        for param in self._params:
-            if param is None:
-                continue
-            ctrl = self.controls.get(param)
-            if ctrl is None or not hasattr(param, "get_envelope_param_type"):
-                continue
-            env_type = param.get_envelope_param_type()
-            if env_type is None or env_type == "":
-                continue
-            new_env[env_type] = self._control_to_midi(param, ctrl)
-        self.apply_envelope(new_env, source="controls")
-
     def refresh_plot_from_controls(self) -> None:
-        self.update_envelope_from_controls()
-
-
-
-
-
+        """
+        Sync envelope from current control values and redraw the plot without emitting.
+        Call this after programmatically setting control values (e.g. from incoming SysEx)
+        when blockSignals(True) was used, so the plot reflects the new values.
+        """
+        self.envelope[EnvelopeParameter.FILTER_CUTOFF] = self.cutoff_param_control.value()
+        self.envelope[EnvelopeParameter.FILTER_SLOPE] = self.slope_param_control.value()
+        self.plot.set_values(self.envelope)
