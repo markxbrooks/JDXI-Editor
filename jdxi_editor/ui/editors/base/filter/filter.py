@@ -229,7 +229,9 @@ class BaseFilterSection(SectionBaseWidget):
             btn.setText(spec.name)
             btn.setToolTip(spec.description)
 
-            set_button_style_and_dimensions(btn, JDXi.UI.Dimensions.WaveformIcon)
+            set_button_style_and_dimensions(
+                btn, JDXi.UI.Dimensions.WaveformIcon, analog=self.analog
+            )
 
             btn.clicked.connect(lambda _, m=mode: self.set_filter_mode(m))
             self.filter_mode_buttons[mode] = btn
@@ -252,11 +254,11 @@ class BaseFilterSection(SectionBaseWidget):
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-        # --- Apply active style to the selected filter mode button
+        # --- Apply active style to the selected filter mode button (harmonised Theme API)
         selected_btn = self.filter_mode_buttons.get(filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
 
         # --- Send MIDI message via SysEx (analog synth uses SysEx, not control changes)
         if self.midi_helper and self.address:

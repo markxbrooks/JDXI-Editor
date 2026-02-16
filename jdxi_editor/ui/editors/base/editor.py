@@ -304,10 +304,10 @@ class BaseSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
-        self._update_filter_mode_buttons(value)
+        self._update_filter_mode_buttons(value=value)
         self.update_filter_controls_state(value)
 
-    def _update_filter_mode_buttons(self, value: int):
+    def _update_filter_mode_buttons(self, partial_number: int, value: int):
         """
         Update the filter mode buttons based on the FILTER_MODE_SWITCH value with visual feedback.
 
@@ -332,11 +332,11 @@ class BaseSynthEditor(SynthEditor):
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-        # --- Apply active style to the selected filter mode button
+        # --- Apply active style to the selected filter mode button (harmonised Theme API)
         selected_btn = self.filter_section.filter_mode_buttons.get(selected_filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
         else:
             log.warning(
                 "Filter mode button not found for: %s",
@@ -373,11 +373,11 @@ class BaseSynthEditor(SynthEditor):
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-        # --- Apply active style to the selected waveform button
+        # --- Apply active style to the selected waveform button (match Digital Filter section mode buttons)
         selected_btn = buttons_dict.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
         self._update_pw_controls_state(waveform)
 
     def get_controls_as_dict(self):
@@ -441,11 +441,11 @@ class BaseSynthEditor(SynthEditor):
                 btn.setChecked(False)
                 JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-            # --- Apply active style to the selected button ---
+            # --- Apply active style to the selected button (harmonised Theme API)
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+                JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
 
     def _handle_sliders(
         self, param: AddressParameter, value: int, successes: list, failures: list
@@ -754,11 +754,11 @@ class BaseSynthEditor(SynthEditor):
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-        # --- Apply active style to the selected waveform button
+        # --- Apply active style to the selected waveform button (match Digital Filter section mode buttons)
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -772,11 +772,11 @@ class BaseSynthEditor(SynthEditor):
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
-        # --- Apply active style to the selected button
+        # --- Apply active style to the selected button (harmonised Theme API)
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
         else:
             log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
@@ -854,7 +854,7 @@ class BaseSynthEditor(SynthEditor):
         )
         if not isinstance(mode_int, int):
             mode_int = 0
-        self._update_filter_mode_buttons(mode_int)
+        self._update_filter_mode_buttons(value=mode_int)
         self.update_filter_controls_state(mode_int)
 
     def _handle_lfo_tempo_sync_switch(
@@ -918,7 +918,7 @@ class BaseSynthEditor(SynthEditor):
 
     def _handle_filter_mode(self, param, value, successes, failures):
         mode = int(getattr(value, "value", value) or 0)
-        self._update_filter_mode_buttons(mode)
+        self._update_filter_mode_buttons(value=mode)
         self.update_filter_controls_state(mode)
         successes.append(param)
         return True

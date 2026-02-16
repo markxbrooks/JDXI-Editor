@@ -445,10 +445,12 @@ def create_group_with_widgets(
     return group
 
 
-def set_button_style_and_dimensions(btn: QPushButton, dimensions: Dimensions):
-    """set a button styling and dimensions"""
+def set_button_style_and_dimensions(
+    btn: QPushButton, dimensions: Dimensions, *, analog: bool = False
+):
+    """Set button styling (Theme API) and dimensions. Used by Filter mode buttons etc."""
     btn.setIconSize(QSize(dimensions.WIDTH, dimensions.HEIGHT))
-    JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
+    JDXi.UI.Theme.apply_button_rect(btn, analog=analog)
     btn.setFixedSize(
         dimensions.WIDTH,
         dimensions.HEIGHT,

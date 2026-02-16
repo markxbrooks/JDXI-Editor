@@ -172,6 +172,8 @@ class AnalogSynthEditor(BaseSynthEditor):
                 address=self.address,
                 send_midi_parameter=self.send_midi_parameter,
             )
+            # Use the section's waveform buttons so _update_waveform_buttons (preset load) finds them
+            self.wave_buttons = self.oscillator_section.waveform_buttons
             self.filter_section = AnalogFilterSection(
                 address=self.synth_data.address,
                 send_midi_parameter=self.send_midi_parameter,
@@ -266,7 +268,7 @@ class AnalogSynthEditor(BaseSynthEditor):
             scope=self.__class__.__name__,
             message=f"_on_filter_mode_changed: mode={mode}",
         )
-        self.update_filter_controls_state(mode)
+        self.update_filter_controls_state(mode=mode)
 
 
 if __name__ == "__main__":

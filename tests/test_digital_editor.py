@@ -244,7 +244,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor.partial_editors[1].filter_tab.filter_mode_buttons = mock_buttons
         
         # Update to LPF mode (value 1)
-        self.editor._update_filter_mode_buttons(1, 1)
+        self.editor._update_filter_mode_buttons(partial_number=1, value=1)
         
         # LPF button should be checked
         mock_buttons[DigitalFilterMode.LPF].setChecked.assert_called_with(True)

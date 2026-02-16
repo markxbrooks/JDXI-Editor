@@ -311,16 +311,9 @@ class SynthEditor(SynthBase):
         if current_synth != temporary_area:
             log.message(
                 scope=self.__class__.__name__,
-                message=f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update",
+                message=f"temporary_area: {temporary_area} is not current_synth: {current_synth}, Skipping update", silent=True
             )
             return
-
-        else:
-            log.message(
-                scope=self.__class__.__name__,
-                message=f"!!! temporary_area: {temporary_area} is current_synth: {current_synth} doing update",
-                silent=True,
-            )
 
         log.header_message(
             scope=self.__class__.__name__,

@@ -140,11 +140,8 @@ class ModeButtonGroup(QWidget):
             JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
         )
 
-        # Base style
-        if self._analog:
-            JDXi.UI.Theme.apply_button_rect_analog(btn)
-        else:
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+        # Base style (match Digital Filter section mode buttons)
+        JDXi.UI.Theme.apply_button_rect(btn, analog=self._analog)
 
         return btn
 
@@ -181,20 +178,14 @@ class ModeButtonGroup(QWidget):
         if btn is None:
             return
 
-        # Reset all first
+        # Reset all first (match Digital Filter section mode buttons)
         for b in self._buttons.values():
             b.setChecked(False)
-            if self._analog:
-                JDXi.UI.Theme.apply_button_rect_analog(b)
-            else:
-                b.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(b, analog=self._analog)
 
         # Apply active style to selected
         btn.setChecked(True)
-        if self._analog:
-            JDXi.UI.Theme.apply_button_analog_active(btn)
-        else:
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        JDXi.UI.Theme.apply_button_active(btn, analog=self._analog)
 
         # MIDI send
         if send_midi and self._send_midi_parameter and self._midi_param is not None:

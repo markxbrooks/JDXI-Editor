@@ -1218,16 +1218,16 @@ class DigitalSynthEditor(BaseSynthEditor):
             partial_number
         ].filter_tab.filter_mode_buttons
 
-        # Reset all buttons to default style
+        # Reset all buttons to default style (match Digital Filter section mode buttons)
         for btn in filter_mode_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=False)
 
         # Apply active style to the selected filter mode button
         selected_btn = filter_mode_buttons.get(selected_filter_mode)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=False)
         else:
             log.warning(
                 "Filter mode button not found for: %s",
@@ -1286,16 +1286,16 @@ class DigitalSynthEditor(BaseSynthEditor):
             partial_number
         ].lfo_tab.wave_shape_buttons
 
-        # Reset all buttons to default style
+        # Reset all buttons to default style (match Digital Filter section mode buttons)
         for btn in lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=False)
 
         # Apply active style to the selected LFO shape button
         selected_btn = lfo_shape_buttons.get(selected_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=False)
         else:
             log.warning(
                 "LFO shape button not found for: %s",
@@ -1354,16 +1354,16 @@ class DigitalSynthEditor(BaseSynthEditor):
             partial_number
         ].mod_lfo_tab.wave_shape_buttons
 
-        # Reset all buttons to default style
+        # Reset all buttons to default style (match Digital Filter section mode buttons)
         for btn in mod_lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=False)
 
         # Apply active style to the selected Mod LFO shape button
         selected_btn = mod_lfo_shape_buttons.get(selected_mod_lfo_shape)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=False)
         else:
             log.warning(
                 "Mod LFO shape button not found for: %s",

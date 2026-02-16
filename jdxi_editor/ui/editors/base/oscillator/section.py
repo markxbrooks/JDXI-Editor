@@ -31,6 +31,10 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
     create_widget_with_layout,
 )
+from jdxi_editor.ui.widgets.editor.mode_button_group import (
+    ModeButtonGroup,
+    ModeButtonSpec,
+)
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
@@ -286,12 +290,52 @@ class BaseOscillatorSection(SectionBaseWidget):
         return depths_widget
 
     def _create_waveform_buttons(self):
-        """Override to create waveform buttons with custom icon generation (uses wave_shapes)."""
+        """Create waveform buttons. Analog uses ModeButtonGroup (same as Digital); other subclasses use manual QButtonGroup."""
+        if self.analog:
+            return self._create_waveform_buttons_mode_group()
+        return self._create_waveform_buttons_manual()
+
+    def _create_waveform_buttons_mode_group(self):
+        """Analog path: use ModeButtonGroup for exclusive waveform row (harmonized with Digital oscillator)."""
+        specs = [
+            ModeButtonSpec(
+                mode=spec.param,
+                label=spec.label,
+                icon_name=spec.icon_name,
+            )
+            for spec in self.wave_shapes
+        ]
+
+        def _on_mode_changed(mode):
+            self._update_button_enabled_states(mode)
+            if hasattr(self, "_on_waveform_selected") and callable(
+                getattr(self, "_on_waveform_selected", None)
+            ):
+                self._on_waveform_selected(mode)
+
+        def _waveform_icon_factory(icon_name):
+            key = getattr(icon_name, "value", icon_name)
+            return generate_icon_from_waveform(key)
+
+        self.wave_mode_group = ModeButtonGroup(
+            specs,
+            analog=self.analog,
+            send_midi_parameter=self._send_param,
+            midi_param=self.SYNTH_SPEC.Param.OSC_WAVEFORM,
+            on_mode_changed=_on_mode_changed,
+            icon_factory=_waveform_icon_factory,
+            parent=None,
+        )
+        self.waveform_buttons = self.wave_mode_group.buttons
+        self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
+        self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = self.wave_mode_group
+        return self.waveform_buttons
+
+    def _create_waveform_buttons_manual(self):
+        """Manual QPushButton + QButtonGroup path (used when not analog and subclass does not override)."""
         waveform_buttons = {}
         self.wave_layout_widgets = []
 
-        # Lazily create a button group so Analog and Digital oscillator wave buttons
-        # are mutually exclusive at the Qt level.
         if self.wave_button_group is None:
             self.wave_button_group = QButtonGroup(self)
             self.wave_button_group.setExclusive(True)
@@ -329,11 +373,8 @@ class BaseOscillatorSection(SectionBaseWidget):
 
             btn.clicked.connect(_on_click)
 
-            # Base styling for each button
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            # Base style (match Digital Filter section mode buttons)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
             # Add to the exclusive button group
             self.wave_button_group.addButton(btn)
@@ -390,10 +431,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         # Reset all buttons (use wave_layout_widgets so every button is reset; button_widgets may have duplicate keys)
         for btn in self.wave_layout_widgets:
             btn.setChecked(False)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_rect_analog(btn)
-            else:
-                btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
+            JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
         selected_btn = self.button_widgets.get(btn_key)
         if selected_btn is None:
@@ -404,10 +442,7 @@ class BaseOscillatorSection(SectionBaseWidget):
                     break
         if selected_btn is not None:
             selected_btn.setChecked(True)
-            if self.analog:
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-            else:
-                selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+            JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
 
         # Update enabled states
         self._update_button_enabled_states(button_param)
@@ -465,11 +500,16 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_wave_layout(self) -> QHBoxLayout:
         """
-        Create the waveform buttons layout
-
-        :return: QHBoxLayout
+        Create the waveform buttons layout (ModeButtonGroup when analog, else manual button row).
         """
-        # --- Get buttons in order for layout (skip None so subclasses without sub_osc don't crash)
+        if getattr(self, "wave_mode_group", None) is not None:
+            row = QHBoxLayout()
+            row.addStretch()
+            row.addWidget(self.wave_mode_group)
+            if self.sub_oscillator_type_switch is not None:
+                row.addWidget(self.sub_oscillator_type_switch)
+            row.addStretch()
+            return row
         waveform_buttons_list = [
             w for w in self.waveform_buttons.values() if w is not None
         ]
@@ -539,7 +579,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             )
             self.midi_helper.send_midi_message(sysex_message)
 
-            # --- Reset all buttons to default style
+            # --- Reset all buttons to default style (match Digital Filter section mode buttons)
             for btn in self.waveform_buttons.values():
                 btn.setChecked(False)
                 JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
@@ -547,7 +587,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             selected_btn = self.waveform_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                JDXi.UI.Theme.apply_button_analog_active(selected_btn)
+                JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
             self._update_pw_controls_state(waveform)
 
     def _create_pwm_widget(self) -> PWMWidget:

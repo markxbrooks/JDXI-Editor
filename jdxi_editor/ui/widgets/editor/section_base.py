@@ -602,10 +602,7 @@ class SectionBaseWidget(SynthBase):
         if selected_btn is None:
             return
         selected_btn.setChecked(True)
-        if self.analog:
-            JDXi.UI.Theme.apply_button_analog_active(selected_btn)
-        else:
-            selected_btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT_ACTIVE)
+        JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
         self._update_button_enabled_states(button_param)
         if self._set_param:
             # --- Map filter mode enums to their corresponding parameter
@@ -683,10 +680,13 @@ class SectionBaseWidget(SynthBase):
         return create_layout_with_widgets(layout_widgets)
 
     def _apply_wave_shape_style(self, active_shape):
-        """apply wave shape style"""
+        """Apply wave shape style (match Digital Filter section mode buttons)."""
         for shape, btn in self.wave_shape_buttons.items():
+            btn.setChecked(shape == active_shape)
             if shape == active_shape:
                 JDXi.UI.Theme.apply_button_active(btn, analog=self.analog)
+            else:
+                JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
 
     def _on_shape_group_changed(self, shape_value: int, checked: bool) -> None:
         """on shape group changed"""
