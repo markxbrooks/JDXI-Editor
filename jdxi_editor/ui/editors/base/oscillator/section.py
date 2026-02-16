@@ -93,7 +93,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         *,
         send_midi_parameter: Callable = None,
         midi_helper=None,
-        controls: dict = None,
         address=None,
         icons_row_type: str = IconType.OSCILLATOR,
         analog: bool = False,

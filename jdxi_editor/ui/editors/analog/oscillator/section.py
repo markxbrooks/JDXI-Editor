@@ -31,17 +31,6 @@ from jdxi_editor.ui.widgets.spec import (
 class AnalogOscillatorSection(BaseOscillatorSection):
     """Analog Oscillator Section"""
 
-    """spec_pwm = PWMSpec(
-        pulse_width_param=Analog.Param.OSC_PULSE_WIDTH,
-        mod_depth_param=Analog.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
-    )"""
-
-    """spec_pitch_env = PitchEnvelopeSpec(
-        attack_param=Analog.Param.OSC_PITCH_ENV_ATTACK_TIME,
-        decay_param=Analog.Param.OSC_PITCH_ENV_DECAY_TIME,
-        depth_param=Analog.Param.OSC_PITCH_ENV_DEPTH,
-    )"""
-
     SYNTH_SPEC = Analog
 
     def __init__(
