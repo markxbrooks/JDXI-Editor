@@ -38,7 +38,7 @@ from jdxi_editor.ui.widgets.editor.mode_button_group import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
-from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec
+from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
 
 
 class OscillatorComponent(Enum):
@@ -70,6 +70,23 @@ class BaseOscillatorSection(SectionBaseWidget):
         OscillatorComponent.SUB_OSC: "_build_sub_osc",
         OscillatorComponent.ADSR: "_build_adsr",
     }
+
+    ANALOG_WAVES = [
+        ("SAW", "UPSAW", "UPSAW"),
+        ("TRI", "SQUARE", "SQUARE"),
+        ("SQUARE", "PWSQU", "PWSQU"),
+    ]
+
+    DIGITAL_WAVES = [
+        ("SAW", "UPSAW", "UPSAW"),
+        ("SQUARE", "SQUARE", "SQUARE"),
+        ("PW_SQUARE", "PWSQU", "PWSQU"),
+        ("TRI", "TRIANGLE", "TRIANGLE"),
+        ("SINE", "SINE", "SINE"),
+        ("NOISE", "NOISE", "NOISE"),
+        ("SUPER_SAW", "SPSAW", "SPSAW"),
+        ("PCM", "PCM", "PCM"),
+    ]
 
     def __init__(
         self,
@@ -173,6 +190,23 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         if self.spec_pwm:
             self.pwm_widget = self._create_pwm_widget()
+
+    def _build_wave_specs(self, spec_rows):
+        W = self.SYNTH_SPEC.Wave
+        return [
+            SliderSpec(
+                param=getattr(W.Osc, osc),
+                label=getattr(W.WaveType, label),
+                icon_name=getattr(W.WaveType, icon),
+            )
+            for osc, label, icon in spec_rows
+        ]
+
+    def generate_wave_shapes_analog(self):
+        return self._build_wave_specs(self.ANALOG_WAVES)
+
+    def generate_wave_shapes_digital(self):
+        return self._build_wave_specs(self.DIGITAL_WAVES)
 
     def _create_feature_widgets(self):
         """Subclass optional extension point"""

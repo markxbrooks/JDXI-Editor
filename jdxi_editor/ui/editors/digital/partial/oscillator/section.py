@@ -62,49 +62,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def generate_wave_shapes(self):
         """Generate waveform button specs (same pattern as Analog Oscillator / Analog Filter)."""
-        W = self.SYNTH_SPEC.Wave
-        return [
-            SliderSpec(
-                param=W.Osc.SAW,
-                label=W.WaveType.UPSAW,
-                icon_name=W.WaveType.UPSAW,
-            ),
-            SliderSpec(
-                param=W.Osc.SQUARE,
-                label=W.WaveType.SQUARE,
-                icon_name=W.WaveType.SQUARE,
-            ),
-            SliderSpec(
-                param=W.Osc.PW_SQUARE,
-                label=W.WaveType.PWSQU,
-                icon_name=W.WaveType.PWSQU,
-            ),
-            SliderSpec(
-                param=W.Osc.TRI,
-                label=W.WaveType.TRIANGLE,
-                icon_name=W.WaveType.TRIANGLE,
-            ),
-            SliderSpec(
-                param=W.Osc.SINE,
-                label=W.WaveType.SINE,
-                icon_name=W.WaveType.SINE,
-            ),
-            SliderSpec(
-                param=W.Osc.NOISE,
-                label=W.WaveType.NOISE,
-                icon_name=W.WaveType.NOISE,
-            ),
-            SliderSpec(
-                param=W.Osc.SUPER_SAW,
-                label=W.WaveType.SPSAW,
-                icon_name=W.WaveType.SPSAW,
-            ),
-            SliderSpec(
-                param=W.Osc.PCM,
-                label=W.WaveType.PCM,
-                icon_name=W.WaveType.PCM,
-            ),
-        ]
+        return self.generate_wave_shapes_digital()
 
     def __init__(
         self,

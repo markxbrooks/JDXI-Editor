@@ -130,24 +130,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
-        W = self.SYNTH_SPEC.Wave
-        return [
-            SliderSpec(
-                param=W.Osc.SAW,
-                label=W.WaveType.UPSAW,
-                icon_name=W.WaveType.UPSAW,
-            ),
-            SliderSpec(
-                param=W.Osc.TRI,
-                label=W.WaveType.SQUARE,
-                icon_name=W.WaveType.SQUARE,
-            ),
-            SliderSpec(
-                param=W.Osc.SQUARE,
-                label=W.WaveType.PWSQU,
-                icon_name=W.WaveType.PWSQU,
-            ),
-        ]
+        return self.generate_wave_shapes_analog()
 
     def _build_additional_analog_widgets(self):
         # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
