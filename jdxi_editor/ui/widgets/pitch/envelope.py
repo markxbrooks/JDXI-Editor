@@ -18,12 +18,11 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import (
-    midi_value_to_ms,
     ms_to_midi_value,
 )
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QGridLayout, QSlider, QWidget
+from PySide6.QtWidgets import QGridLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
@@ -194,14 +193,6 @@ class PitchEnvWidget(EnvelopeWidgetBase):
     def on_plot_envelope_changed(self, envelope: dict):
         self.apply_envelope(envelope, source="plot")
 
-    def update_envelope_from_spinboxes(self):
-        """
-        Update envelope values from spinboxes
-        :emits: dict pitch envelope parameters
-        """
-        self.refresh_plot_from_controls()
-        self.envelope_changed.emit(self.envelope)
-
     def refresh_plot_from_controls(self):
         env = {
             EnvelopeParameter.ATTACK_TIME: self.attack_control.value(),
@@ -227,6 +218,7 @@ class PitchEnvWidget(EnvelopeWidgetBase):
                     )
         except Exception as ex:
             log.error(
-                f"[PitchEnvelopeWidget] [update_controls_from_envelope] Error updating controls from envelope: {ex}"
+                f"[update_controls_from_envelope] Error updating controls from envelope: {ex}",
+                scope=self.__class__.__name__
             )
         self.plot.set_values(self.envelope)
