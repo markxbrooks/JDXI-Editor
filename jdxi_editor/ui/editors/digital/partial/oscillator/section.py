@@ -69,29 +69,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     ):
         self.widgets: DigitalOscillatorWidgets | None = None
         self.wave_shapes = self.generate_wave_shapes()
-        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
-        self.DIGITAL_OSC = OscillatorDefinition(
-            synth_spec=Digital,
-            layout_spec=self.spec,
-            features={
-                OscillatorFeature.WAVEFORM,
-                OscillatorFeature.TUNING,
-                OscillatorFeature.PWM,
-                OscillatorFeature.PITCH_ENV,
-                OscillatorFeature.PCM,
-                OscillatorFeature.SUPER_SAW,
-                OscillatorFeature.PW_SHIFT,
-            },
-        )
-        self.FEATURE_TABS = {
-            OscillatorFeature.TUNING: self._add_tuning_tab,
-            OscillatorFeature.PWM: self._add_pwm_tab,
-            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
-            OscillatorFeature.PCM: self._add_pcm_tab,
-        }
-
-        self.spec_pwm: PWMSpec = self.spec.pwm
-        self.spec_pitch_env: PitchEnvelopeSpec = self.spec.pitch_env
+        self._define_spec()
         self.wave_mode_group: ModeButtonGroup | None = None
         # Initialize controls before creating PCMWaveWidget so it can register controls
         # (ControlRegistry is a singleton, so this ensures self.controls exists)
@@ -121,14 +99,34 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def finalize(self):
         """Skip base _assemble_ui(); Digital builds UI via SectionBaseWidget._setup_ui and TAB_BUILDERS (no pitch_widget/tuning_group/pw_group)."""
-        self._define_spec()
         self._initialize_states()
         
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        # Aliases for back compatibility
         self.spec_pwm = self.spec.pwm
         self.spec_pitch_env = self.spec.pitch_env
         self.SWITCH_SPECS = self.spec.switches
+        # Feature definition 
+        self.DIGITAL_OSC = OscillatorDefinition(
+            synth_spec=Digital,
+            layout_spec=self.spec,
+            features={
+                OscillatorFeature.WAVEFORM,
+                OscillatorFeature.TUNING,
+                OscillatorFeature.PWM,
+                OscillatorFeature.PITCH_ENV,
+                OscillatorFeature.PCM,
+                OscillatorFeature.SUPER_SAW,
+                OscillatorFeature.PW_SHIFT,
+            },
+        )
+        self.FEATURE_TABS = {
+            OscillatorFeature.TUNING: self._add_tuning_tab,
+            OscillatorFeature.PWM: self._add_pwm_tab,
+            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
+            OscillatorFeature.PCM: self._add_pcm_tab,
+        }
 
     def _setup_ui(self):
         """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
