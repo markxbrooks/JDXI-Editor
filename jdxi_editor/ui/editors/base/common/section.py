@@ -73,7 +73,7 @@ class BaseCommonSection(SectionBaseWidget):
         (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
 
         (self.legato_switch, self.portamento_switch) = self._build_switches(
-            self.SWITCH_SPECS
+            self.spec.switches
         )
 
         if hasattr(self.spec, "controls"):
