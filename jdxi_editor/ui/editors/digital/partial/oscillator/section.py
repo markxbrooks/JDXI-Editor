@@ -6,10 +6,11 @@ from typing import Callable
 
 from PySide6.QtWidgets import (
     QHBoxLayout,
-    QTabWidget,
     QVBoxLayout,
-    QWidget,
+    QWidget, QTabWidget,
 )
+
+from decologr import Decologr as log
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
@@ -29,6 +30,7 @@ from jdxi_editor.ui.editors.digital.partial.oscillator.widget import (
     DigitalOscillatorWidgets,
 )
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
+from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -53,14 +55,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         Digital.Wave.Osc.SUPER_SAW: [DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE],
     }
 
-    TAB_BUILDERS = (
-        "_add_tuning_tab",
-        (OscillatorFeature.PWM, "_add_pwm_tab"),
-        (OscillatorFeature.PITCH_ENV, "_add_pitch_env_tab"),
-        (OscillatorFeature.PCM, "_add_pcm_wave_gain_tab"),
-        (OscillatorFeature.ADSR, "_add_adsr_tab"),
-    )
-
     def generate_wave_shapes(self):
         """Generate waveform button specs (same pattern as Analog Oscillator / Analog Filter)."""
         return self.generate_wave_shapes_digital()
@@ -76,6 +70,26 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.widgets: DigitalOscillatorWidgets | None = None
         self.wave_shapes = self.generate_wave_shapes()
         self.spec: OscillatorLayoutSpec = self._build_layout_spec()
+        self.DIGITAL_OSC = OscillatorDefinition(
+            synth_spec=Digital,
+            layout_spec=self.spec,
+            features={
+                OscillatorFeature.WAVEFORM,
+                OscillatorFeature.TUNING,
+                OscillatorFeature.PWM,
+                OscillatorFeature.PITCH_ENV,
+                OscillatorFeature.PCM,
+                OscillatorFeature.SUPER_SAW,
+                OscillatorFeature.PW_SHIFT,
+            },
+        )
+        self.FEATURE_TABS = {
+            OscillatorFeature.TUNING: self._add_tuning_tab,
+            OscillatorFeature.PWM: self._add_pwm_tab,
+            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
+            OscillatorFeature.PCM: self._add_pcm_tab,
+        }
+
         self.spec_pwm: PWMSpec = self.spec.pwm
         self.spec_pitch_env: PitchEnvelopeSpec = self.spec.pitch_env
         self.wave_mode_group: ModeButtonGroup | None = None
@@ -124,6 +138,20 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             layout.addLayout(row)
         self._create_tab_widget()
         layout.addWidget(self.tab_widget)
+
+    def _create_tab_widget(self):
+        """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
+
+        self.tab_widget = QTabWidget()
+        try:
+            for feature, builder in self.FEATURE_TABS.items():
+                if self._has(feature):
+                    log.message(f"feature {feature} found, running {builder}")
+                    builder()
+                else:
+                    log.message(f"feature {feature} not found!!!")
+        except Exception as ex:
+            log.exception(f"Error {ex} occurred creating tab widget", scope=self.__class__.__name__)
 
     # ------------------------------------------------------------------
     # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
@@ -273,20 +301,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _has_adsr(self) -> bool:
         return getattr(self, "adsr_widget", None) is not None
 
-    def _create_tab_widget(self):
-        """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
-
-        self.tab_widget = QTabWidget()
-
-        for entry in self.TAB_BUILDERS:
-            if isinstance(entry, str):
-                getattr(self, entry)()
-            else:
-                feature, builder = entry
-                if self._has(feature):
-                    getattr(self, builder)()
-
-    def _add_pcm_wave_gain_tab(self):
+    def _add_pcm_tab(self):
         """Add PCM Wave gain tab"""
         self._add_tab(key=DigitalOscillatorTab.PCM, widget=self.pcm_wave)
 
@@ -415,6 +430,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pwm=pwm,
             pitch_env=pitch_env,
             features={
+                OscillatorFeature.TUNING,
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,
                 OscillatorFeature.PCM,

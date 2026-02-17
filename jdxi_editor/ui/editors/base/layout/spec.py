@@ -8,6 +8,9 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 class OscillatorFeature(Enum):
     """Oscillator capability flags; defined here to avoid circular import (layout.spec must not import from digital)."""
 
+    PW_SHIFT = auto()
+    WAVEFORM = auto()
+    TUNING = auto()
     PWM = auto()
     PITCH_ENV = auto()
     PCM = auto()
