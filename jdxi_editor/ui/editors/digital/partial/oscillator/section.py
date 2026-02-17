@@ -123,6 +123,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Skip base _assemble_ui(); Digital builds UI via SectionBaseWidget._setup_ui and TAB_BUILDERS (no pitch_widget/tuning_group/pw_group)."""
         self._define_spec()
         self._initialize_states()
+        
+    def _define_spec(self):
+        self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        self.spec_pwm = self.spec.pwm
+        self.spec_pitch_env = self.spec.pitch_env
+        self.SWITCH_SPECS = self.spec.switches
 
     def _setup_ui(self):
         """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
