@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.digital.spec import (
     DigitalGroupBox,
     DigitalOscillatorTab,
@@ -47,9 +48,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     # --- Enable rules for dependent widgets (which tab/widgets to enable per waveform)
     BUTTON_ENABLE_RULES = {
-        Digital.Wave.Osc.PW_SQUARE: ["pwm_widget", "pw_shift_slider"],
-        Digital.Wave.Osc.PCM: ["pcm_wave_gain", "pcm_wave_number"],
-        Digital.Wave.Osc.SUPER_SAW: ["super_saw_detune"],
+        Digital.Wave.Osc.PW_SQUARE: [DigitalOscillatorWidgetTypes.PWM, DigitalOscillatorWidgetTypes.PW_SHIFT],
+        Digital.Wave.Osc.PCM: [DigitalOscillatorWidgetTypes.PCM_WAVE_GAIN, DigitalOscillatorWidgetTypes.PCM_WAVE_NUMBER],
+        Digital.Wave.Osc.SUPER_SAW: [DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE],
     }
 
     TAB_BUILDERS = (
@@ -205,10 +206,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             tuning=self.tuning_sliders,
             env=[],
             pcm_wave=getattr(self, "pcm_wave", None),
-            pw_shift_slider=getattr(self, "pw_shift_slider", None),
-            osc_pitch_coarse_slider=getattr(self, "osc_pitch_coarse_slider", None),
-            osc_pitch_fine_slider=getattr(self, "osc_pitch_fine_slider", None),
-            super_saw_detune=getattr(self, "super_saw_detune", None),
+            pw_shift_slider=getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None),
+            osc_pitch_coarse_slider=getattr(self, DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE, None),
+            osc_pitch_fine_slider=getattr(self, DigitalOscillatorWidgetTypes.OSC_PITCH_FINE, None),
+            super_saw_detune=getattr(self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None),
         )
 
     def _build_additional_digital_widgets(self):
@@ -253,19 +254,19 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         return self.pw_shift_slider
 
     def _has_pwm(self) -> bool:
-        return getattr(self, "pwm_widget", None) is not None
+        return getattr(self, DigitalOscillatorWidgetTypes.PWM, None) is not None
 
     def _has_pitch_env(self) -> bool:
-        return getattr(self, "pitch_env_widget", None) is not None
+        return getattr(self, DigitalOscillatorWidgetTypes.PITCH_ENV, None) is not None
 
     def _has_pcm(self) -> bool:
         """Check if PCM wave widget exists and has both gain and number controls."""
         if not hasattr(self, "pcm_wave") or self.pcm_wave is None:
             return False
         return (
-            hasattr(self.pcm_wave, "pcm_wave_gain")
+            hasattr(self.pcm_wave, DigitalOscillatorWidgetTypes.PCM_WAVE_GAIN)
             and self.pcm_wave.pcm_wave_gain is not None
-            and hasattr(self.pcm_wave, "pcm_wave_number")
+            and hasattr(self.pcm_wave, DigitalOscillatorWidgetTypes.PCM_WAVE_NUMBER)
             and self.pcm_wave.pcm_wave_number is not None
         )
 
@@ -311,7 +312,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pw_layout = QVBoxLayout()
         self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
-        if getattr(self, "pw_shift_slider", None) is not None:
+        if getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None) is not None:
             pw_layout.addWidget(self.pw_shift_slider)
         pw_layout.addStretch()
         pw_group = create_group_from_definition(

@@ -7,6 +7,7 @@ from typing import Callable
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
+from jdxi_editor.midi.data.analog.oscillator import AnalogOscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.oscillator.widget import AnalogOscillatorWidgets
@@ -17,7 +18,6 @@ from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
     OscillatorFeature,
-    OscillatorLayoutSpec,
 )
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import (
@@ -96,7 +96,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self._build_additional_analog_widgets()
         # All oscillator widgets in one container
         self.widgets = AnalogOscillatorWidgets(
-            waveform_buttons=getattr(self, "waveform_buttons", None),
+            waveform_buttons=getattr(self, AnalogOscillatorWidgetTypes.WAVEFORM_BUTTONS, None),
             pitch_env_widget=self.pitch_env_widget,
             pwm_widget=self.pwm_widget,
             switches=(
@@ -112,9 +112,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             ),
             sub_oscillator_type_switch=self.sub_oscillator_type_switch,
             osc_pitch_env_velocity_sensitivity_slider=self.osc_pitch_env_velocity_sensitivity_slider,
-            osc_pitch_coarse_slider=getattr(self, "osc_pitch_coarse_slider", None),
-            osc_pitch_fine_slider=getattr(self, "osc_pitch_fine_slider", None),
-            pitch_env_widgets=getattr(self, "pitch_env_widgets", []),
+            osc_pitch_coarse_slider=getattr(self, AnalogOscillatorWidgetTypes.OSC_PITCH_COARSE, None),
+            osc_pitch_fine_slider=getattr(self, AnalogOscillatorWidgetTypes.OSC_PITCH_FINE, None),
+            pitch_env_widgets=getattr(self, AnalogOscillatorWidgetTypes.PITCH_ENV_WIDGETS, []),
         )
 
     def generate_wave_shapes(self) -> list:

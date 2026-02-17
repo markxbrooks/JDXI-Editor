@@ -4,6 +4,7 @@ Analog Specs
 
 from enum import Enum
 
+from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.wave.spec import WaveOscBehavior
 
 
@@ -32,3 +33,8 @@ class AnalogSubOscType(Enum):
     def midi_value(self) -> int:
         """Get MIDI value for sub oscillator preset_type"""
         return self.value
+
+
+class AnalogOscillatorWidgetTypes(OscillatorWidgetTypes):
+    """Base class for Oscillator Widgets"""
+    SUB_OSC_TYPE_SWITCH: str = "sub_oscillator_type_switch"

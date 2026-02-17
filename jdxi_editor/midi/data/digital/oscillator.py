@@ -4,6 +4,7 @@ Digital Oscillator
 
 from enum import Enum, IntEnum
 
+from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.wave.form import (
     OSC_WAVE_NOISE,
     OSC_WAVE_PCM,
@@ -12,7 +13,6 @@ from jdxi_editor.midi.wave.form import (
     OSC_WAVE_SQUARE,
     OSC_WAVE_SUPER_SAW,
     OSC_WAVE_TRIANGLE,
-    MidiWaveForm,
     Waveform,
 )
 from jdxi_editor.midi.wave.spec import WaveOscBehavior
@@ -128,3 +128,11 @@ class DigitalWaveform(Enum):
             if waveform.midi_value == value:
                 return waveform
         raise ValueError(f"Invalid waveform value: {value}")
+
+
+class DigitalOscillatorWidgetTypes(OscillatorWidgetTypes):
+    """Base class for Oscillator Widgets"""
+    PCM_WAVE: str = "pcm_wave"
+    PCM_WAVE_GAIN: str = "pcm_wave_gain"
+    PCM_WAVE_NUMBER: str = "pcm_wave_number"
+    SUPER_SAW_DETUNE: str = "super_saw_detune"

@@ -32,6 +32,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscillatorWidgetTypes
 from jdxi_editor.midi.data.digital.tab import DigitalTabName
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
@@ -783,7 +784,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         pe = self.partial_editors.get(partial_no)
-        if not pe or not getattr(pe.oscillator_tab, "pitch_env_widget", None):
+        if not pe or not getattr(pe.oscillator_tab, DigitalOscillatorWidgetTypes.PITCH_ENV, None):
             failures.append(param.name)
             return
         pitch_env = pe.oscillator_tab.pitch_env_widget
@@ -839,7 +840,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             control = oscillator_section.controls[param]
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
         elif (
-            hasattr(oscillator_section, OscillatorWidgetTypes.PWM) and oscillator_section.pwm_widget
+                hasattr(oscillator_section, DigitalOscillatorWidgetTypes.PWM) and oscillator_section.pwm_widget
         ):
             if param == Digital.Param.OSC_PULSE_WIDTH:
                 control = oscillator_section.pwm_widget.pulse_width_control
@@ -853,7 +854,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             if (
                 pe
                 and getattr(pe, DigitalTabName.OSCILLATOR, None)
-                and getattr(pe.oscillator_tab, OscillatorWidgetTypes.PWM, None)
+                and getattr(pe.oscillator_tab, DigitalOscillatorWidgetTypes.PWM, None)
             ):
                 pe.oscillator_tab.pwm_widget.refresh_plot_from_controls()
             successes.append(param.name)

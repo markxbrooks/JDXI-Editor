@@ -5,17 +5,10 @@ Oscillator Widgets
 
 class OscillatorWidgetTypes:
     """Base class for Oscillator Widgets"""
+    WAVEFORM_BUTTONS: str = "waveform_buttons"
     PWM: str = "pwm_widget"
+    PITCH_ENV_WIDGETS: str = "pitch_env_widgets"
+    PW_SHIFT: str = "pw_shift_slider"
     PITCH_ENV: str = "pitch_env_widget"
-
-    """
-    for reference
-    waveform_buttons: dict[Any, QWidget] | None = None
-    osc_pitch_coarse_slider: QWidget | None = None
-    osc_pitch_fine_slider: QWidget | None = None
-    pitch_env_widget: PitchEnvWidget | None = None
-    pwm_widget: PWMWidget | None = None
-    switches: list[QWidget] | None = field(default_factory=list)
-    tuning: list[QWidget] | None = field(default_factory=list)
-    env: list[QWidget] | None = field(default_factory=list)
-    """
+    OSC_PITCH_FINE: str = "osc_pitch_fine_slider"
+    OSC_PITCH_COARSE: str = "osc_pitch_coarse_slider"

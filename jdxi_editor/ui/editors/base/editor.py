@@ -57,6 +57,7 @@ from building.apple.venv.src.picomidi.picomidi.sysex.parameter.address import (
     AddressParameter,
 )
 from jdxi_editor.midi.control_change.parameter import CCParameter
+from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.nrpn.parameter import NRPNParameter
@@ -364,7 +365,7 @@ class BaseSynthEditor(SynthEditor):
         # --- Use oscillator_section.waveform_buttons if available, fallback to wave_buttons
         buttons_dict = self.wave_buttons
         if self.oscillator_section and hasattr(
-            self.oscillator_section, "waveform_buttons"
+            self.oscillator_section, OscillatorWidgetTypes.WAVEFORM_BUTTONS
         ):
             buttons_dict = self.oscillator_section.waveform_buttons
             # --- Also sync to editor's wave_buttons for consistency
@@ -575,7 +576,7 @@ class BaseSynthEditor(SynthEditor):
             if (
                 hasattr(self, "oscillator_section")
                 and self.oscillator_section
-                and getattr(self.oscillator_section, "pitch_env_widget", None)
+                and getattr(self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None)
             ):
                 self.oscillator_section.pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
@@ -616,7 +617,7 @@ class BaseSynthEditor(SynthEditor):
             if (
                 hasattr(self, "oscillator_section")
                 and self.oscillator_section
-                and getattr(self.oscillator_section, "pwm_widget", None)
+                and getattr(self.oscillator_section, OscillatorWidgetTypes.PWM, None)
             ):
                 self.oscillator_section.pwm_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
