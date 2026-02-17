@@ -424,13 +424,10 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        if hasattr(self, "spec"):
-            if hasattr(self.spec, "switches"):
-                self.switch_row_widgets = self._build_switches(self.spec.switches)
-            else:
-                self.switch_row_widgets = []
-        else:
+        if  not hasattr(self, "spec") or not hasattr(self.spec, "switches")
             self.switch_row_widgets = []
+        else:
+            self.switch_row_widgets = self._build_switches(self.spec.switches)
 
     def _on_button_selected(self, spec_or_param):
         """Override to handle waveform button selection with correct MIDI parameter.
