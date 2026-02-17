@@ -4,20 +4,19 @@ Base Envelope Widget
 
 from typing import Callable, Optional
 
-from PySide6.QtGui import QShowEvent
-
 from decologr import Decologr as log
-from jdxi_editor.ui.widgets.envelope.data_source import EnvelopeDataSource
-from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
-from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QGridLayout
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QGridLayout, QWidget
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.envelope.data_source import EnvelopeDataSource
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
+from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
+from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.slider import Slider
 
 TOOLTIPS = {
@@ -91,7 +90,10 @@ class EnvelopeWidgetBase(QWidget):
             self.param_to_env[spec.param] = spec.env_param
             control.spinbox.setEnabled(spec.enabled)
             control.envelope_changed.connect(
-                lambda ch, p=spec.param: self.apply_envelope(ch, EnvelopeDataSource.CONTROLS))
+                lambda ch, p=spec.param: self.apply_envelope(
+                    ch, EnvelopeDataSource.CONTROLS
+                )
+            )
 
             self._control_widgets.append(control)
             self.controls[spec.param] = control

@@ -7,6 +7,7 @@ from enum import Enum
 
 class CCParameter(Enum):
     """Control Change Parameter"""
+
     CUTOFF = "Cutoff"
     RESONANCE = "Resonance"
     LEVEL = "Level"

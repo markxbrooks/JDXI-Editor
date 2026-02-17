@@ -56,10 +56,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
-    SWITCH_SPECS = []
     SYNTH_SPEC = Digital
-    spec_pwm: PWMSpec | None = None
-    spec_pitch_env: PitchEnvelopeSpec | None = None
 
     COMPONENT_BUILDERS = {
         OscillatorComponent.WAVE_SELECTOR: "_build_wave_selector",
@@ -184,10 +181,10 @@ class BaseOscillatorSection(SectionBaseWidget):
     def _create_core_widgets(self):
         self.waveform_buttons = self._create_waveform_buttons()
 
-        if self.spec_pitch_env:
+        if hasattr(self, "spec") and hasattr(self.spec, "pitch_env"):
             self.pitch_env_widget = self._create_pitch_env_widget()
 
-        if self.spec_pwm:
+        if hasattr(self, "spec") and hasattr(self.spec, "pwm"):
             self.pwm_widget = self._create_pwm_widget()
 
     def _build_wave_specs(self, spec_rows):
@@ -251,11 +248,20 @@ class BaseOscillatorSection(SectionBaseWidget):
         # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
         layout.addWidget(self.tab_widget)
-        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
-        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
-        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
+        self._add_pitch_env_tab()
+        self._add_tuning_tab()
+        self._add_pwm_tab()
 
         layout.addStretch()
+
+    def _add_pitch_env_tab(self):
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
+
+    def _add_pwm_tab(self):
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
+
+    def _add_tuning_tab(self):
+        self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
 
     def _has(self, feature: OscillatorFeature) -> bool:
         return self.spec.supports(feature)
@@ -424,7 +430,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        if  not hasattr(self, "spec") or not hasattr(self.spec, "switches")
+        if not hasattr(self, "spec") or not hasattr(self.spec, "switches"):
             self.switch_row_widgets = []
         else:
             self.switch_row_widgets = self._build_switches(self.spec.switches)
@@ -651,12 +657,6 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _build_additional_analog_widgets(self):
         raise NotImplementedError("Should be implemented in an Analog subclass")
-
-    def _add_pwm_tab(self):
-        raise NotImplementedError("Should be implemented in a subclass")
-
-    def _add_pitch_env_tab(self):
-        raise NotImplementedError("Should be implemented in a subclass")
 
     def _add_pcm_wave_gain_tab(self):
         raise NotImplementedError("Should be implemented in a subclass")

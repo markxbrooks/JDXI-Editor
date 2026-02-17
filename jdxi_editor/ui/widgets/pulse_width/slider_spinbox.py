@@ -49,8 +49,11 @@ class PWMSliderSpinbox(QWidget):
     """
     Pitch Env Slider and Spinbox widget for Roland JD-Xi
     """
+
     value_changed = Signal(int)
-    valueChanged = value_changed  # alias for code that expects valueChanged (e.g. FilterWidget)
+    valueChanged = (
+        value_changed  # alias for code that expects valueChanged (e.g. FilterWidget)
+    )
     envelope_changed = Signal(dict)
 
     def __init__(
@@ -172,9 +175,7 @@ class PWMSliderSpinbox(QWidget):
         self.spinbox.setValue(self.convert_to_envelope(value))
         self.spinbox.blockSignals(False)
         env_val = self.convert_to_envelope(value)
-        self.envelope_changed.emit(
-            {self.param.get_envelope_param_type(): env_val}
-        )
+        self.envelope_changed.emit({self.param.get_envelope_param_type(): env_val})
         log.message(f"slider value now {value}", scope=self.__class__.__name__)
         self.value_changed.emit(value)
 

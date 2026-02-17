@@ -37,4 +37,5 @@ class AnalogSubOscType(Enum):
 
 class AnalogOscillatorWidgetTypes(OscillatorWidgetTypes):
     """Base class for Oscillator Widgets"""
+
     SUB_OSC_TYPE_SWITCH: str = "sub_oscillator_type_switch"

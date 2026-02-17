@@ -44,9 +44,8 @@ Example:
 import sys
 from pathlib import Path
 
-from jdxi_editor.midi.nrpn.parameter import NRPNParameter
-
 from jdxi_editor.midi.control_change.parameter import CCParameter
+from jdxi_editor.midi.nrpn.parameter import NRPNParameter
 
 # Allow running this file directly from project root: python jdxi_editor/ui/editors/analog/editor.py
 if __name__ == "__main__" and __package__ is None:

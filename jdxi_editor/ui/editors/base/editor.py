@@ -576,7 +576,9 @@ class BaseSynthEditor(SynthEditor):
             if (
                 hasattr(self, "oscillator_section")
                 and self.oscillator_section
-                and getattr(self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None)
+                and getattr(
+                    self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None
+                )
             ):
                 self.oscillator_section.pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)

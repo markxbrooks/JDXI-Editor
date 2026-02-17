@@ -5,6 +5,7 @@ Oscillator Widgets
 
 class OscillatorWidgetTypes:
     """Base class for Oscillator Widgets"""
+
     WAVEFORM_BUTTONS: str = "waveform_buttons"
     PWM: str = "pwm_widget"
     PITCH_ENV_WIDGETS: str = "pitch_env_widgets"

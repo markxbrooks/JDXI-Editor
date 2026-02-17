@@ -54,6 +54,7 @@ class AdsrSliderSpinbox(QWidget):
     """
     ADSR Slider and Spinbox widget for Roland JD-Xi
     """
+
     valueChanged = Signal(int)
     envelope_changed = Signal(dict)
 

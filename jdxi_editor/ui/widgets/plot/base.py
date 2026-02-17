@@ -6,7 +6,7 @@ Base class for plot widgets that provides common functionality like shaded curve
 """
 
 from dataclasses import dataclass
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 import numpy as np
 from PySide6.QtCore import Qt

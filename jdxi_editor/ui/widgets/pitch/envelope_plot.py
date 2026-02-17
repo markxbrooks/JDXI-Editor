@@ -41,7 +41,8 @@ from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotCon
 
 
 class PitchEnvPlot(BasePlotWidget):
-    """Pitch Env Plot """
+    """Pitch Env Plot"""
+
     point_moved = Signal(str, float)
 
     def __init__(

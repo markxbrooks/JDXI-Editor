@@ -18,7 +18,6 @@ class BaseCommonSection(SectionBaseWidget):
     from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 
     SLIDER_GROUPS: LayoutSpec = None
-    SWITCH_SPECS = []
     COMBO_BOXES = []
 
     def __init__(

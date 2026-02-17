@@ -181,7 +181,9 @@ class PWMPlot(BasePlotWidget):
         """Generate pulse width envelope"""
         envelope = generate_square_wave(
             width=self.envelope[EnvelopeParameter.PULSE_WIDTH],
-            mod_depth=self.envelope[EnvelopeParameter.PULSE_WIDTH],
+            # Use MOD_DEPTH for amplitude so Width controls duty cycle
+            # and Depth controls modulation depth independently.
+            mod_depth=self.envelope[EnvelopeParameter.MOD_DEPTH],
             sample_rate=self.sample_rate,
             duration=self.envelope.get("duration", 1.0),
         )

@@ -11,6 +11,7 @@ envelope parameters. It includes:
 The widget supports both analog and digital synth parameters and provides visual feedback
 through an animated envelope curve.
 """
+
 from dataclasses import dataclass
 from typing import Callable, Optional
 
@@ -18,7 +19,8 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import (
-    ms_to_midi_value, midi_value_to_ms,
+    midi_value_to_ms,
+    ms_to_midi_value,
 )
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
@@ -89,16 +91,19 @@ class PitchEnvWidget(EnvelopeWidgetBase):
 
         specs = [
             EnvelopeControlSpec(
-                attack_param, EnvelopeParameter.ATTACK_TIME,
-                0, 5000, "Attack", " ms"
+                attack_param, EnvelopeParameter.ATTACK_TIME, 0, 5000, "Attack", " ms"
             ),
             EnvelopeControlSpec(
-                decay_param, EnvelopeParameter.DECAY_TIME,
-                0, 5000, "Decay", " ms"
+                decay_param, EnvelopeParameter.DECAY_TIME, 0, 5000, "Decay", " ms"
             ),
             EnvelopeControlSpec(
-                depth_param, EnvelopeParameter.PEAK_LEVEL,
-                0, Midi.VALUE.MAX.SEVEN_BIT, "Depth", "", enabled=False
+                depth_param,
+                EnvelopeParameter.PEAK_LEVEL,
+                0,
+                Midi.VALUE.MAX.SEVEN_BIT,
+                "Depth",
+                "",
+                enabled=False,
             ),
         ]
 
@@ -114,7 +119,7 @@ class PitchEnvWidget(EnvelopeWidgetBase):
             parent=self,
         )
 
-        self.layout.addWidget(self.plot, 0, len(specs)+1, 3, 1)
+        self.layout.addWidget(self.plot, 0, len(specs) + 1, 3, 1)
 
         if analog:
             JDXi.UI.Theme.apply_adsr_style(self, analog=True)
@@ -142,7 +147,9 @@ class PitchEnvWidget(EnvelopeWidgetBase):
             )
 
             control.spinbox.setEnabled(spec.enabled)
-            control.envelope_changed.connect(lambda ch, s=spec: self.apply_envelope(ch, "controls"))
+            control.envelope_changed.connect(
+                lambda ch, s=spec: self.apply_envelope(ch, "controls")
+            )
 
             self.controls[spec.param] = control
             self.param_to_env[spec.param] = spec.env_param

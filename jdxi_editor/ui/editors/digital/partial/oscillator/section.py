@@ -4,13 +4,13 @@ Digital Oscillator Section for the JDXI Editor
 
 from typing import Callable
 
+from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
+    QTabWidget,
     QVBoxLayout,
-    QWidget, QTabWidget,
+    QWidget,
 )
-
-from decologr import Decologr as log
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
@@ -30,7 +30,6 @@ from jdxi_editor.ui.editors.digital.partial.oscillator.widget import (
     DigitalOscillatorWidgets,
 )
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
-from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -50,8 +49,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     # --- Enable rules for dependent widgets (which tab/widgets to enable per waveform)
     BUTTON_ENABLE_RULES = {
-        Digital.Wave.Osc.PW_SQUARE: [DigitalOscillatorWidgetTypes.PWM, DigitalOscillatorWidgetTypes.PW_SHIFT],
-        Digital.Wave.Osc.PCM: [DigitalOscillatorWidgetTypes.PCM_WAVE_GAIN, DigitalOscillatorWidgetTypes.PCM_WAVE_NUMBER],
+        Digital.Wave.Osc.PW_SQUARE: [
+            DigitalOscillatorWidgetTypes.PWM,
+            DigitalOscillatorWidgetTypes.PW_SHIFT,
+        ],
+        Digital.Wave.Osc.PCM: [
+            DigitalOscillatorWidgetTypes.PCM_WAVE_GAIN,
+            DigitalOscillatorWidgetTypes.PCM_WAVE_NUMBER,
+        ],
         Digital.Wave.Osc.SUPER_SAW: [DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE],
     }
 
@@ -100,33 +105,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def finalize(self):
         """Skip base _assemble_ui(); Digital builds UI via SectionBaseWidget._setup_ui and TAB_BUILDERS (no pitch_widget/tuning_group/pw_group)."""
         self._initialize_states()
-        
+
     def _define_spec(self):
-        self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
-        # Aliases for back compatibility
-        self.spec_pwm = self.spec.pwm
-        self.spec_pitch_env = self.spec.pitch_env
-        self.SWITCH_SPECS = self.spec.switches
-        # Feature definition 
-        self.DIGITAL_OSC = OscillatorDefinition(
-            synth_spec=Digital,
-            layout_spec=self.spec,
-            features={
-                OscillatorFeature.WAVEFORM,
-                OscillatorFeature.TUNING,
-                OscillatorFeature.PWM,
-                OscillatorFeature.PITCH_ENV,
-                OscillatorFeature.PCM,
-                OscillatorFeature.SUPER_SAW,
-                OscillatorFeature.PW_SHIFT,
-            },
-        )
-        self.FEATURE_TABS = {
-            OscillatorFeature.TUNING: self._add_tuning_tab,
-            OscillatorFeature.PWM: self._add_pwm_tab,
-            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
-            OscillatorFeature.PCM: self._add_pcm_tab,
-        }
+        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
 
     def _setup_ui(self):
         """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
@@ -148,14 +129,17 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
         self.tab_widget = QTabWidget()
         try:
-            for feature, builder in self.FEATURE_TABS.items():
+            for feature, builder in self.spec.feature_tabs.items():
                 if self._has(feature):
                     log.message(f"feature {feature} found, running {builder}")
                     builder()
                 else:
                     log.message(f"feature {feature} not found!!!")
         except Exception as ex:
-            log.exception(f"Error {ex} occurred creating tab widget", scope=self.__class__.__name__)
+            log.exception(
+                f"Error {ex} occurred creating tab widget",
+                scope=self.__class__.__name__,
+            )
 
     # ------------------------------------------------------------------
     # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
@@ -194,9 +178,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.waveform_buttons = self.wave_mode_group.buttons
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
         return self.waveform_buttons
-
-    def _define_spec(self):
-        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
 
     def _create_feature_widgets(self):
         # pcm_wave is already created in __init__ before super().__init__()/finalize()
@@ -239,9 +220,15 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             env=[],
             pcm_wave=getattr(self, "pcm_wave", None),
             pw_shift_slider=getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None),
-            osc_pitch_coarse_slider=getattr(self, DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE, None),
-            osc_pitch_fine_slider=getattr(self, DigitalOscillatorWidgetTypes.OSC_PITCH_FINE, None),
-            super_saw_detune=getattr(self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None),
+            osc_pitch_coarse_slider=getattr(
+                self, DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE, None
+            ),
+            osc_pitch_fine_slider=getattr(
+                self, DigitalOscillatorWidgetTypes.OSC_PITCH_FINE, None
+            ),
+            super_saw_detune=getattr(
+                self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None
+            ),
         )
 
     def _build_additional_digital_widgets(self):
@@ -368,30 +355,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         to avoid duplicate tuning sliders and ensure super_saw_detune enable targets the visible widget.
         """
         layout = self.get_layout()
-        # layout.addLayout(self._create_shape_row())
-        # layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR.MARGINS)
         # --- Waveform buttons ---
         self.waveform_button_layout = self._create_wave_layout()
         layout.addLayout(self.waveform_button_layout)
-        """
-        # Only add button row and tab widget if not already added by SectionBaseWidget._setup_ui()
-        if self.tab_widget is None or self.tab_widget.parent() is None:
-            #if self.button_widgets:
-                # button_layout = self._create_button_row_layout()
-                # if button_layout is not None:
-                #    layout.addLayout(button_layout)
-            self._create_tab_widget()
-            if self.tab_widget:
-                layout.addWidget(self.tab_widget)"""
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
         layout.addWidget(self.tab_widget)
-        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
-        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
-        # self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
+
         layout.addStretch()
 
-        # Now that all widgets are created, initialize button states
-        # This will also enable/disable SuperSaw Detune based on selected waveform
         if self.wave_shapes:
             self._on_button_selected(self.wave_shapes[0])
 
@@ -434,10 +405,18 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pwm=pwm,
             pitch_env=pitch_env,
             features={
+                OscillatorFeature.WAVEFORM,
                 OscillatorFeature.TUNING,
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,
                 OscillatorFeature.PCM,
                 OscillatorFeature.SUPER_SAW,
+                OscillatorFeature.PW_SHIFT,
+            },
+            feature_tabs={
+                OscillatorFeature.TUNING: self._add_tuning_tab,
+                OscillatorFeature.PWM: self._add_pwm_tab,
+                OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
+                OscillatorFeature.PCM: self._add_pcm_tab,
             },
         )

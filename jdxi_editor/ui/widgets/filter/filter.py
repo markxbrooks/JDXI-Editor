@@ -12,8 +12,6 @@ and can communicate with MIDI devices.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.parameter.base.filter_mode import FilterModeType
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
@@ -22,9 +20,11 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
+from jdxi_editor.midi.data.parameter.base.filter_mode import FilterModeType
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
+from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.filter.filter_plot import FilterPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 
@@ -48,7 +48,10 @@ class FilterWidget(EnvelopeWidgetBase):
         analog: bool = False,
     ):
         super().__init__(
-            envelope_keys=[EnvelopeParameter.FILTER_CUTOFF, EnvelopeParameter.FILTER_SLOPE],
+            envelope_keys=[
+                EnvelopeParameter.FILTER_CUTOFF,
+                EnvelopeParameter.FILTER_SLOPE,
+            ],
             create_parameter_slider=create_parameter_slider,
             parameters=[cutoff_param, slope_param],
             midi_helper=midi_helper,
@@ -69,7 +72,10 @@ class FilterWidget(EnvelopeWidgetBase):
             self.controls = controls
         else:
             self.controls = {}
-        self.envelope = {EnvelopeParameter.FILTER_CUTOFF: 0.5, EnvelopeParameter.FILTER_SLOPE: 0.0}
+        self.envelope = {
+            EnvelopeParameter.FILTER_CUTOFF: 0.5,
+            EnvelopeParameter.FILTER_SLOPE: 0.0,
+        }
         self.cutoff_param_control = PWMSliderSpinbox(
             cutoff_param,
             min_value=0,
@@ -77,7 +83,8 @@ class FilterWidget(EnvelopeWidgetBase):
             units=" Hz/10",
             label="Cutoff (Hz /10)",
             value=int(
-                self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.VALUE.MAX.SEVEN_BIT
+                self.envelope[EnvelopeParameter.FILTER_CUTOFF]
+                * Midi.VALUE.MAX.SEVEN_BIT
             ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
@@ -118,7 +125,9 @@ class FilterWidget(EnvelopeWidgetBase):
             self.controls[slope_param] = self.slope_param_control
             self._control_widgets.append(self.slope_param_control)
             self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
-            self.slope_param_control.setValue(self.envelope[EnvelopeParameter.FILTER_SLOPE])
+            self.slope_param_control.setValue(
+                self.envelope[EnvelopeParameter.FILTER_SLOPE]
+            )
         JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
         JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
@@ -164,7 +173,9 @@ class FilterWidget(EnvelopeWidgetBase):
             try:
                 env_type = param.get_envelope_param_type()
             except NotImplementedError:
-                log.message(f"param {param} type{type(param)} has no get_envelope_param_type method implemented")
+                log.message(
+                    f"param {param} type{type(param)} has no get_envelope_param_type method implemented"
+                )
                 continue
             if env_type is None or env_type == "":
                 continue
@@ -174,7 +185,9 @@ class FilterWidget(EnvelopeWidgetBase):
             elif env_type == EnvelopeParameter.FILTER_CUTOFF:
                 new_env[env_type] = int(ctrl.value())  # Keep in MIDI integer
             else:
-                new_env[env_type] = ctrl.value()  # Or ms_to_midi_value(ctrl.value()) if needed
+                new_env[env_type] = (
+                    ctrl.value()
+                )  # Or ms_to_midi_value(ctrl.value()) if needed
 
         # Apply via central synchronizer
         self.apply_envelope(new_env, source="controls")
@@ -193,14 +206,20 @@ class FilterWidget(EnvelopeWidgetBase):
                     ctrl.setValue(int(self.envelope[EnvelopeParameter.FILTER_SLOPE]))
                 if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
                     ctrl.setValue(
-                        int(self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.VALUE.MAX.SEVEN_BIT)
+                        int(
+                            self.envelope[EnvelopeParameter.FILTER_CUTOFF]
+                            * Midi.VALUE.MAX.SEVEN_BIT
+                        )
                     )
                 else:
                     ctrl.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}", scope=self.__class__.__name__)
+            log.error(
+                f"Error updating controls from envelope: {ex}",
+                scope=self.__class__.__name__,
+            )
         self.plot.set_values(self.envelope)
 
     def refresh_plot_from_controls(self) -> None:

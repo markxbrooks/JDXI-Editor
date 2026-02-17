@@ -52,7 +52,9 @@ class PitchEnvSliderSpinbox(QWidget):
     """
 
     envelope_changed = Signal(dict)
-    valueChanged = Signal(object)  # Emitted when value changes (avoids AttributeError in shared controls)
+    valueChanged = Signal(
+        object
+    )  # Emitted when value changes (avoids AttributeError in shared controls)
 
     def __init__(
         self,

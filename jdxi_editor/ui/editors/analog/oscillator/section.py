@@ -14,12 +14,12 @@ from jdxi_editor.ui.editors.analog.oscillator.widget import AnalogOscillatorWidg
 from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
-from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
     OscillatorFeature,
 )
+from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import (
     PitchEnvelopeSpec,
@@ -74,27 +74,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
-        # Back compatibility aliases
-        self.spec_pwm = self.spec.pwm
-        self.spec_pitch_env = self.spec.pitch_env
-        self.SWITCH_SPECS = self.spec.switches
-        # Define Features here
-        self.ANALOG_OSC = OscillatorDefinition(
-            synth_spec=Analog,
-            layout_spec=self.spec,
-            features={
-                OscillatorFeature.WAVEFORM,
-                OscillatorFeature.TUNING,
-                OscillatorFeature.PWM,
-                OscillatorFeature.PITCH_ENV,
-                OscillatorFeature.PW_SHIFT,
-            },
-        )
-        self.FEATURE_TABS = {
-            OscillatorFeature.TUNING: self._add_tuning_tab,
-            OscillatorFeature.PWM: self._add_pwm_tab,
-            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
-        }
 
     def _create_feature_widgets(self):
         env_sliders = self._build_sliders(self.spec.env)
@@ -117,7 +96,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self._build_additional_analog_widgets()
         # All oscillator widgets in one container
         self.widgets = AnalogOscillatorWidgets(
-            waveform_buttons=getattr(self, AnalogOscillatorWidgetTypes.WAVEFORM_BUTTONS, None),
+            waveform_buttons=getattr(
+                self, AnalogOscillatorWidgetTypes.WAVEFORM_BUTTONS, None
+            ),
             pitch_env_widget=self.pitch_env_widget,
             pwm_widget=self.pwm_widget,
             switches=(
@@ -133,9 +114,15 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             ),
             sub_oscillator_type_switch=self.sub_oscillator_type_switch,
             osc_pitch_env_velocity_sensitivity_slider=self.osc_pitch_env_velocity_sensitivity_slider,
-            osc_pitch_coarse_slider=getattr(self, AnalogOscillatorWidgetTypes.OSC_PITCH_COARSE, None),
-            osc_pitch_fine_slider=getattr(self, AnalogOscillatorWidgetTypes.OSC_PITCH_FINE, None),
-            pitch_env_widgets=getattr(self, AnalogOscillatorWidgetTypes.PITCH_ENV_WIDGETS, []),
+            osc_pitch_coarse_slider=getattr(
+                self, AnalogOscillatorWidgetTypes.OSC_PITCH_COARSE, None
+            ),
+            osc_pitch_fine_slider=getattr(
+                self, AnalogOscillatorWidgetTypes.OSC_PITCH_FINE, None
+            ),
+            pitch_env_widgets=getattr(
+                self, AnalogOscillatorWidgetTypes.PITCH_ENV_WIDGETS, []
+            ),
         )
 
     def generate_wave_shapes(self) -> list:
@@ -149,7 +136,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             env_sliders[0] if len(env_sliders) == 1 else None
         )
         # --- Sub Oscillator Type switch; optional when SWITCH_SPECS is empty
-        switches = self._build_switches(self.SWITCH_SPECS)
+        if not hasattr(self, "spec") or not hasattr(self.spec, "switches"):
+            switches = []
+        else:
+            switches = self._build_switches(self.spec.switches)
         self.sub_oscillator_type_switch = switches[0] if len(switches) == 1 else None
         # --- Tuning Group sliders; optional for Digital
         tuning_slider_list = self._build_sliders(self.spec.tuning)
@@ -221,8 +211,15 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             pwm=pwm,
             pitch_env=pitch_env,
             features={
+                OscillatorFeature.WAVEFORM,
+                OscillatorFeature.TUNING,
                 OscillatorFeature.PWM,
                 OscillatorFeature.PITCH_ENV,
-                OscillatorFeature.SUB_OSC,
+                OscillatorFeature.PW_SHIFT,
+            },
+            feature_tabs={
+                OscillatorFeature.TUNING: self._add_tuning_tab,
+                OscillatorFeature.PWM: self._add_pwm_tab,
+                OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
             },
         )

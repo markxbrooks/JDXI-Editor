@@ -111,6 +111,7 @@ class AnalogAmp(AmpSpec):
 
 class AnalogFilterModeType(FilterModeType):
     """Analog FilterModeType has only bypass and lpf"""
+
     pass
 
 

@@ -132,6 +132,7 @@ class DigitalWaveform(Enum):
 
 class DigitalOscillatorWidgetTypes(OscillatorWidgetTypes):
     """Base class for Oscillator Widgets"""
+
     PCM_WAVE: str = "pcm_wave"
     PCM_WAVE_GAIN: str = "pcm_wave_gain"
     PCM_WAVE_NUMBER: str = "pcm_wave_number"

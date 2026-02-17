@@ -28,7 +28,6 @@ class AnalogCommonSection(BaseCommonSection):
         :param send_midi_parameter: Callable
         """
         self.spec: LayoutSpec = self._build_layout_spec()
-        self.SWITCH_SPECS = self.spec.switches
         self.COMBO_BOXES = self.spec.combos
         super().__init__(
             icons_row_type=IconType.GENERIC,

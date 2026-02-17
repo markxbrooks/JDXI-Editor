@@ -5,6 +5,7 @@ Envelope Parameters
 
 class EnvelopeParameter:
     """Parameters for Envelope Widgets"""
+
     # Generic
     INITIAL_LEVEL: str = "initial_level"
     RANGE_LOWER = "range_lower"

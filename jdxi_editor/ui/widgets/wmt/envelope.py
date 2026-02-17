@@ -11,8 +11,9 @@ envelope parameters. It includes:
 The widget supports both analog and digital synth parameters and provides visual feedback
 through an animated envelope curve.
 """
+
 from typing import Callable, Optional
-from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
+
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
@@ -23,6 +24,7 @@ from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
+from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.wmt.envelope_plot import WMTEnvPlot
 
@@ -81,25 +83,41 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
 
         # Define slider specs
         slider_specs = [
-            EnvControlSpec(fade_lower_param, EnvelopeParameter.FADE_LOWER,
-                           "Fade Lower", default_value=self.envelope[EnvelopeParameter.FADE_LOWER]),
-
-            EnvControlSpec(range_lower_param, EnvelopeParameter.RANGE_LOWER,
-                           "Range Lower", default_value=self.envelope[EnvelopeParameter.RANGE_LOWER]),
-
-            EnvControlSpec(depth_param, EnvelopeParameter.DEPTH,
-                           "Depth", default_value=self.envelope[EnvelopeParameter.DEPTH]),
-
-            EnvControlSpec(range_upper_param, EnvelopeParameter.RANGE_UPPER,
-                           "Range Upper", min_value=1,
-                           max_value=Midi.VALUE.MAX.SEVEN_BIT,
-                           default_value=self.envelope[EnvelopeParameter.RANGE_UPPER],
-                           enabled=False),
-
-            EnvControlSpec(fade_upper_param, EnvelopeParameter.FADE_UPPER,
-                           "Fade Upper", min_value=1,
-                           max_value=Midi.VALUE.MAX.SEVEN_BIT,
-                           default_value=self.envelope[EnvelopeParameter.FADE_UPPER]),
+            EnvControlSpec(
+                fade_lower_param,
+                EnvelopeParameter.FADE_LOWER,
+                "Fade Lower",
+                default_value=self.envelope[EnvelopeParameter.FADE_LOWER],
+            ),
+            EnvControlSpec(
+                range_lower_param,
+                EnvelopeParameter.RANGE_LOWER,
+                "Range Lower",
+                default_value=self.envelope[EnvelopeParameter.RANGE_LOWER],
+            ),
+            EnvControlSpec(
+                depth_param,
+                EnvelopeParameter.DEPTH,
+                "Depth",
+                default_value=self.envelope[EnvelopeParameter.DEPTH],
+            ),
+            EnvControlSpec(
+                range_upper_param,
+                EnvelopeParameter.RANGE_UPPER,
+                "Range Upper",
+                min_value=1,
+                max_value=Midi.VALUE.MAX.SEVEN_BIT,
+                default_value=self.envelope[EnvelopeParameter.RANGE_UPPER],
+                enabled=False,
+            ),
+            EnvControlSpec(
+                fade_upper_param,
+                EnvelopeParameter.FADE_UPPER,
+                "Fade Upper",
+                min_value=1,
+                max_value=Midi.VALUE.MAX.SEVEN_BIT,
+                default_value=self.envelope[EnvelopeParameter.FADE_UPPER],
+            ),
         ]
 
         self._control_widgets: list[PitchEnvSliderSpinbox] = []
@@ -116,7 +134,9 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
         self.layout.addWidget(self.plot, 0, len(slider_specs), 3, 1)
         self.plot.set_values(self.envelope)
         self.setLayout(self.layout)
-        self.envelope_spinbox_map = {ctrl.param: ctrl.spinbox for ctrl in self._control_widgets}
+        self.envelope_spinbox_map = {
+            ctrl.param: ctrl.spinbox for ctrl in self._control_widgets
+        }
 
     # --- Centralized Methods ---
     def update_envelope_from_controls(self):

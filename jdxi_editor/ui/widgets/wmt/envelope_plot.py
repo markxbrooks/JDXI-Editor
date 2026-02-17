@@ -107,11 +107,19 @@ class WMTEnvPlot(BasePlotWidget):
         """Generate WMT envelope from parameters."""
         env = self.envelope or {}
         defaults = self._default_wmt_envelope()
-        fade_lower_ms = env.get(EnvelopeParameter.FADE_LOWER, defaults[EnvelopeParameter.FADE_LOWER])
-        range_lower_ms = env.get(EnvelopeParameter.RANGE_LOWER, defaults[EnvelopeParameter.RANGE_LOWER])
+        fade_lower_ms = env.get(
+            EnvelopeParameter.FADE_LOWER, defaults[EnvelopeParameter.FADE_LOWER]
+        )
+        range_lower_ms = env.get(
+            EnvelopeParameter.RANGE_LOWER, defaults[EnvelopeParameter.RANGE_LOWER]
+        )
         depth_val = env.get(EnvelopeParameter.DEPTH, defaults[EnvelopeParameter.DEPTH])
-        range_upper_ms = env.get(EnvelopeParameter.RANGE_UPPER, defaults[EnvelopeParameter.RANGE_UPPER])
-        fade_upper_ms = env.get(EnvelopeParameter.FADE_UPPER, defaults[EnvelopeParameter.FADE_UPPER])
+        range_upper_ms = env.get(
+            EnvelopeParameter.RANGE_UPPER, defaults[EnvelopeParameter.RANGE_UPPER]
+        )
+        fade_upper_ms = env.get(
+            EnvelopeParameter.FADE_UPPER, defaults[EnvelopeParameter.FADE_UPPER]
+        )
 
         fade_lower = max(fade_lower_ms / 1000.0, 1.0)  # Fade lower in seconds
         range_lower = max(range_lower_ms / 1000.0, 1.0)

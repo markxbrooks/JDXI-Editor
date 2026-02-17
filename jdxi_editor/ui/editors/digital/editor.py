@@ -32,8 +32,6 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscillatorWidgetTypes
-from jdxi_editor.midi.data.digital.tab import DigitalTabName
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -58,6 +56,8 @@ from jdxi_editor.midi.conversion.pwm import PWM_BINDINGS
 from jdxi_editor.midi.conversion.value import convert_value
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital import DigitalPartial
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscillatorWidgetTypes
+from jdxi_editor.midi.data.digital.tab import DigitalTabName
 from jdxi_editor.midi.data.parameter.digital import (
     DigitalCommonParam,
     DigitalModifyParam,
@@ -784,7 +784,9 @@ class DigitalSynthEditor(BaseSynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         pe = self.partial_editors.get(partial_no)
-        if not pe or not getattr(pe.oscillator_tab, DigitalOscillatorWidgetTypes.PITCH_ENV, None):
+        if not pe or not getattr(
+            pe.oscillator_tab, DigitalOscillatorWidgetTypes.PITCH_ENV, None
+        ):
             failures.append(param.name)
             return
         pitch_env = pe.oscillator_tab.pitch_env_widget
@@ -840,7 +842,8 @@ class DigitalSynthEditor(BaseSynthEditor):
             control = oscillator_section.controls[param]
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
         elif (
-                hasattr(oscillator_section, DigitalOscillatorWidgetTypes.PWM) and oscillator_section.pwm_widget
+            hasattr(oscillator_section, DigitalOscillatorWidgetTypes.PWM)
+            and oscillator_section.pwm_widget
         ):
             if param == Digital.Param.OSC_PULSE_WIDTH:
                 control = oscillator_section.pwm_widget.pulse_width_control

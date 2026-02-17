@@ -22,7 +22,9 @@ class LFOShapeSlider(NRPNSlider):
     A slider for controlling LFO Pitch Depth for JD-Xi partials via NRPN.
     """
 
-    def __init__(self, midi_helper: MidiIOHelper, label: str = "LFO Pitch Depth") -> None:
+    def __init__(
+        self, midi_helper: MidiIOHelper, label: str = "LFO Pitch Depth"
+    ) -> None:
         nrpn_map = DigitalControlChange.get_nrpn_map("LFO_Shape")
         super().__init__(
             midi_helper=midi_helper,
