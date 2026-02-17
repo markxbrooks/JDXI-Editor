@@ -101,8 +101,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.osc_pitch_env_velocity_sensitivity_slider = (
             env_sliders[0] if env_sliders else None
         )
-
-        switches = self._build_switches(self.SWITCH_SPECS)
+        if not hasattr(self, "spec") or not hasattr(self.spec, "switches"):
+            switches = []
+        else:
+            switches = self._build_switches(self.spec.switches)
         self.sub_oscillator_type_switch = switches[0] if switches else None
 
         tuning = self._build_sliders(self.spec.tuning)
