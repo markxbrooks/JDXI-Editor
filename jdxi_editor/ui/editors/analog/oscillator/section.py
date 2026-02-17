@@ -78,6 +78,22 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.spec_pitch_env = self.spec.pitch_env
         self.SWITCH_SPECS = self.spec.switches
         # Define Features here
+        self.ANALOG_OSC = OscillatorDefinition(
+            synth_spec=Analog,
+            layout_spec=self.spec,
+            features={
+                OscillatorFeature.WAVEFORM,
+                OscillatorFeature.TUNING,
+                OscillatorFeature.PWM,
+                OscillatorFeature.PITCH_ENV,
+                OscillatorFeature.PW_SHIFT,
+            },
+        )
+        self.FEATURE_TABS = {
+            OscillatorFeature.TUNING: self._add_tuning_tab,
+            OscillatorFeature.PWM: self._add_pwm_tab,
+            OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
+        }
 
     def _create_feature_widgets(self):
         env_sliders = self._build_sliders(self.spec.env)
