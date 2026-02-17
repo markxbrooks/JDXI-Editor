@@ -15,11 +15,6 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 class BaseCommonSection(SectionBaseWidget):
     """Common section for analog synth parameters."""
 
-    from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
-
-    SLIDER_GROUPS: LayoutSpec = None
-    COMBO_BOXES = []
-
     def __init__(
         self,
         icons_row_type: str,
@@ -69,7 +64,9 @@ class BaseCommonSection(SectionBaseWidget):
     def build_widgets(self):
         """Create Sliders"""
         #  --- Octave Switch
-        (self.octave_shift_switch,) = self._build_combo_boxes(self.COMBO_BOXES)
+        # Ensure spec exists and has a combos attribute before building combo boxes
+        if hasattr(self, "spec") and hasattr(self.spec, "combos"):
+            (self.octave_shift_switch,) = self._build_combo_boxes(self.spec.combos)
 
         (self.legato_switch, self.portamento_switch) = self._build_switches(
             self.spec.switches
@@ -78,8 +75,4 @@ class BaseCommonSection(SectionBaseWidget):
         if hasattr(self.spec, "controls"):
             (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
                 self._build_sliders(self.spec.controls)
-            )
-        else:
-            (self.pitch_bend_up, self.pitch_bend_down, self.portamento_time) = (
-                self._build_sliders(self.spec["controls"])
             )

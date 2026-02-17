@@ -13,5 +13,5 @@ class CommonWidgetSpec:
 
     pitch: list[SliderSpec] = None
     portamento_switches: list[SwitchSpec] = None
-    octave_shift: list[ComboBoxSpec] = None
+    combos: list[ComboBoxSpec] = None
     other_switches: list[SwitchSpec] = None

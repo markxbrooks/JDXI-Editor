@@ -305,7 +305,6 @@ class DigitalSynthEditor(BaseSynthEditor):
                 self._add_tab(key=Digital.Tab.PARTIAL_3, widget=editor)
 
         self.common_section = DigitalCommonSection(
-            controls=self.controls,
             address=self.address,
             send_midi_parameter=self.send_midi_parameter,
             midi_helper=midi_helper,
@@ -313,7 +312,6 @@ class DigitalSynthEditor(BaseSynthEditor):
         self._add_tab(key=Digital.Tab.COMMON, widget=self.common_section)
 
         self.tone_modify_section = DigitalToneModifySection(
-            controls=self.controls,
             send_midi_parameter=self.send_midi_parameter,
             midi_helper=midi_helper,
         )

@@ -22,14 +22,14 @@ class DigitalToneModifySection(SectionBaseWidget):
 
     def __init__(
         self,
-        controls: dict,
         send_midi_parameter: Optional[Callable] = None,
         midi_helper: Optional[MidiIOHelper] = None,
     ):
         """
         Initialize the DigitalToneModifySection
 
-        :param controls: dict
+        :param send_midi_parameter: Callable
+        :param midi_helper: MidiIOHelper
         """
         self.spec: DigitalToneModifySpecs = self._build_layout_spec()
         super().__init__(
@@ -38,7 +38,6 @@ class DigitalToneModifySection(SectionBaseWidget):
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
         )
-        self.controls: Dict[Union[DigitalPartialParam], QWidget] = controls or {}
         self.widgets: DigitalToneModifyWidgets | None = None
         self.build_widgets()
         self.setup_ui()
