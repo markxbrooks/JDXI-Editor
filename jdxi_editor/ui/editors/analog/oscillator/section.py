@@ -14,6 +14,7 @@ from jdxi_editor.ui.editors.analog.oscillator.widget import AnalogOscillatorWidg
 from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
+from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
