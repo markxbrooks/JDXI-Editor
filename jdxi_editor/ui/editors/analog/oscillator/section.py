@@ -53,7 +53,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
         self.waveform_buttons: dict = wave_buttons or {}
-        self.midi_helper = midi_helper
+        # self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
         self._define_spec()
@@ -73,9 +73,11 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
+        # Back compatibility aliases
         self.spec_pwm = self.spec.pwm
         self.spec_pitch_env = self.spec.pitch_env
         self.SWITCH_SPECS = self.spec.switches
+        # Define Features here
 
     def _create_feature_widgets(self):
         env_sliders = self._build_sliders(self.spec.env)
