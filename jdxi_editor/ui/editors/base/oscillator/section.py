@@ -424,8 +424,11 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_switch_layout_widgets(self):
         """Create switch layout widgets"""
-        if hasattr(self, "SWITCH_SPECS"):
-            self.switch_row_widgets = self._build_switches(self.SWITCH_SPECS)
+        if hasattr(self, "spec"):
+            if hasattr(self.spec, "switches"):
+                self.switch_row_widgets = self._build_switches(self.spec.switches)
+            else:
+                self.switch_row_widgets = []
         else:
             self.switch_row_widgets = []
 
