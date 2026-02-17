@@ -6,7 +6,6 @@ from enum import Enum
 from typing import Any
 
 from jdxi_editor.midi.data.analog.filter import (
-    AnalogFilterMidiType,
     AnalogFilterType,
     AnalogFilterTypeString,
 )
@@ -18,6 +17,7 @@ from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.analog.name import AnalogDisplayName
 from jdxi_editor.midi.data.parameter.analog.option import AnalogDisplayOptions
 from jdxi_editor.midi.data.parameter.analog.values import AnalogDisplayValues
+from jdxi_editor.midi.data.parameter.base.filter_mode import FilterModeType
 from jdxi_editor.midi.data.parameter.base.spec import (
     AmpSpec,
     DisplaySpec,
@@ -109,11 +109,9 @@ class AnalogAmp(AmpSpec):
     Tab: AnalogAmpTab = AnalogAmpTab
 
 
-class AnalogFilterModeType:
-    """String constants for analog filter plot / digital (same pattern as DigitalFilterModeType)."""
-
-    BYPASS: str = "bypass"
-    LPF: str = "lpf"
+class AnalogFilterModeType(FilterModeType):
+    """Analog FilterModeType has only bypass and lpf"""
+    pass
 
 
 class AnalogFilter(FilterSpec):

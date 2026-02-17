@@ -32,6 +32,7 @@ Dependencies:
 from typing import Dict, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.digital.tab import DigitalTabName
 from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
@@ -781,29 +782,17 @@ class DigitalSynthEditor(BaseSynthEditor):
             if use_fraction
             else midi_value_to_ms(midi_value, 10, 5000)
         )
-        self.pitch_env_map = {
-            Digital.Param.OSC_PITCH_ENV_ATTACK_TIME: self.partial_editors[
-                partial_no
-            ].oscillator_tab.pitch_env_widget.attack_control,
-            Digital.Param.OSC_PITCH_ENV_DECAY_TIME: self.partial_editors[
-                partial_no
-            ].oscillator_tab.pitch_env_widget.decay_control,
-            Digital.Param.OSC_PITCH_ENV_DEPTH: self.partial_editors[
-                partial_no
-            ].oscillator_tab.pitch_env_widget.depth_control,
-        }
-        control = self.pitch_env_map.get(param)
+        pe = self.partial_editors.get(partial_no)
+        if not pe or not getattr(pe.oscillator_tab, "pitch_env_widget", None):
+            failures.append(param.name)
+            return
+        pitch_env = pe.oscillator_tab.pitch_env_widget
+        control = pitch_env.controls.get(param)
         if control:
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            pe = self.partial_editors.get(partial_no)
-            if (
-                pe
-                and getattr(pe, "oscillator_tab", None)
-                and getattr(pe.oscillator_tab, "pitch_env_widget", None)
-            ):
-                pe.oscillator_tab.pitch_env_widget.refresh_plot_from_controls()
+            pitch_env.refresh_plot_from_controls()
             successes.append(param.name)
         else:
             failures.append(param.name)
@@ -836,7 +825,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         pe = self.partial_editors.get(partial_no)
-        if not pe or not getattr(pe, "oscillator_tab", None):
+        if not pe or not getattr(pe, DigitalTabName.OSCILLATOR, None):
             failures.append(param.name)
             return
         oscillator_section = pe.oscillator_tab
@@ -850,7 +839,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             control = oscillator_section.controls[param]
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
         elif (
-            hasattr(oscillator_section, "pwm_widget") and oscillator_section.pwm_widget
+            hasattr(oscillator_section, OscillatorWidgetTypes.PWM) and oscillator_section.pwm_widget
         ):
             if param == Digital.Param.OSC_PULSE_WIDTH:
                 control = oscillator_section.pwm_widget.pulse_width_control
@@ -863,8 +852,8 @@ class DigitalSynthEditor(BaseSynthEditor):
             control.blockSignals(False)
             if (
                 pe
-                and getattr(pe, "oscillator_tab", None)
-                and getattr(pe.oscillator_tab, "pwm_widget", None)
+                and getattr(pe, DigitalTabName.OSCILLATOR, None)
+                and getattr(pe.oscillator_tab, OscillatorWidgetTypes.PWM, None)
             ):
                 pe.oscillator_tab.pwm_widget.refresh_plot_from_controls()
             successes.append(param.name)
@@ -940,11 +929,11 @@ class DigitalSynthEditor(BaseSynthEditor):
         if not controls_dict or len(controls_dict) == 0:
             merged = {}
             for tab_attr in (
-                "oscillator_tab",
-                "filter_tab",
-                "amp_tab",
-                "lfo_tab",
-                "mod_lfo_tab",
+                DigitalTabName.OSCILLATOR,
+                DigitalTabName.FILTER,
+                DigitalTabName.AMP,
+                DigitalTabName.LFO,
+                DigitalTabName.MOD_LFO,
             ):
                 tab = getattr(pe, tab_attr, None)
                 if tab and getattr(tab, "controls", None):
@@ -964,11 +953,11 @@ class DigitalSynthEditor(BaseSynthEditor):
         if not control:
             merged = {}
             for tab_attr in (
-                "oscillator_tab",
-                "filter_tab",
-                "amp_tab",
-                "lfo_tab",
-                "mod_lfo_tab",
+                DigitalTabName.OSCILLATOR,
+                DigitalTabName.FILTER,
+                DigitalTabName.AMP,
+                DigitalTabName.LFO,
+                DigitalTabName.MOD_LFO,
             ):
                 tab = getattr(pe, tab_attr, None)
                 if tab and getattr(tab, "controls", None):

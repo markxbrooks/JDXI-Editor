@@ -12,6 +12,7 @@ and can communicate with MIDI devices.
 from typing import Callable, Optional
 
 from decologr import Decologr as log
+from jdxi_editor.midi.data.parameter.base.filter_mode import FilterModeType
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
@@ -88,7 +89,7 @@ class FilterWidget(EnvelopeWidgetBase):
 
         self.horizontal_layout = QHBoxLayout()
         self.setLayout(self.horizontal_layout)
-        self.filter_mode = "lpf"  # Default filter mode
+        self.filter_mode = FilterModeType.LPF  # Default filter mode
         self.plot = FilterPlot(
             width=JDXi.UI.Dimensions.PWM_WIDGET.WIDTH - 20,
             height=JDXi.UI.Dimensions.PWM_WIDGET.HEIGHT - 20,
@@ -110,7 +111,7 @@ class FilterWidget(EnvelopeWidgetBase):
         if self.slope_param:
             self.slope_param_control = self._create_parameter_switch(
                 DigitalPartialParam.FILTER_SLOPE,
-                label="Slope",
+                label=DigitalPartialParam.FILTER_SLOPE.display_name,
                 values=["-12dB", "-24dB"],
             )
             self.controls_vertical_layout.addWidget(self.slope_param_control)
@@ -118,8 +119,8 @@ class FilterWidget(EnvelopeWidgetBase):
             self._control_widgets.append(self.slope_param_control)
             self.slope_param_control.valueChanged.connect(self.on_slope_param_changed)
             self.slope_param_control.setValue(self.envelope[EnvelopeParameter.FILTER_SLOPE])
-            JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
-            JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
+        JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """
@@ -155,25 +156,28 @@ class FilterWidget(EnvelopeWidgetBase):
         self.update()  # Trigger repaint if needed
 
     def update_envelope_from_controls(self) -> None:
-        """Update envelope values from slider controls"""
-        try:
-            for param, ctrl in self.controls.items():
-                if not hasattr(param, "get_envelope_param_type"):
-                    continue
-                envelope_param_type = param.get_envelope_param_type()
-                log.message(f"envelope_param_type = {envelope_param_type}")
-                if envelope_param_type == EnvelopeParameter.FILTER_SLOPE:
-                    self.envelope[EnvelopeParameter.FILTER_SLOPE] = ctrl.value()  # Keep as 1 or 0
-                if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
-                    self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
-                        ctrl.value() / Midi.VALUE.MAX.SEVEN_BIT
-                    )
-                else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(ctrl.value())
-            log.message(f"{self.envelope}")
-        except Exception as ex:
-            log.error(f"Error updating envelope from controls: {ex}")
-        self.plot.set_values(self.envelope)
+        """Read slider controls into envelope and apply centrally."""
+        new_env = {}
+        for param, ctrl in self.controls.items():
+            if not hasattr(param, "get_envelope_param_type"):
+                continue
+            try:
+                env_type = param.get_envelope_param_type()
+            except NotImplementedError:
+                log.message(f"param {param} type{type(param)} has no get_envelope_param_type method implemented")
+                continue
+            if env_type is None or env_type == "":
+                continue
+            # Convert controls to canonical MIDI-domain values
+            if env_type == EnvelopeParameter.FILTER_SLOPE:
+                new_env[env_type] = int(ctrl.value())
+            elif env_type == EnvelopeParameter.FILTER_CUTOFF:
+                new_env[env_type] = int(ctrl.value())  # Keep in MIDI integer
+            else:
+                new_env[env_type] = ctrl.value()  # Or ms_to_midi_value(ctrl.value()) if needed
+
+        # Apply via central synchronizer
+        self.apply_envelope(new_env, source="controls")
 
     def update_controls_from_envelope(self) -> None:
         """Update slider controls from envelope values."""
@@ -181,7 +185,10 @@ class FilterWidget(EnvelopeWidgetBase):
             for param, ctrl in self.controls.items():
                 if not hasattr(param, "get_envelope_param_type"):
                     continue
-                envelope_param_type = param.get_envelope_param_type()
+                try:
+                    envelope_param_type = param.get_envelope_param_type()
+                except NotImplementedError:
+                    continue
                 if envelope_param_type == EnvelopeParameter.FILTER_SLOPE:
                     ctrl.setValue(int(self.envelope[EnvelopeParameter.FILTER_SLOPE]))
                 if envelope_param_type == EnvelopeParameter.FILTER_CUTOFF:
@@ -202,6 +209,5 @@ class FilterWidget(EnvelopeWidgetBase):
         Call this after programmatically setting control values (e.g. from incoming SysEx)
         when blockSignals(True) was used, so the plot reflects the new values.
         """
-        self.envelope[EnvelopeParameter.FILTER_CUTOFF] = self.cutoff_param_control.value()
-        self.envelope[EnvelopeParameter.FILTER_SLOPE] = self.slope_param_control.value()
+        self.update_envelope_from_controls()
         self.plot.set_values(self.envelope)

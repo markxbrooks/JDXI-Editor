@@ -134,7 +134,7 @@ class PWMWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope = envelope
-        print(f"Envelope changed: {self.envelope}")
+        log.message(f"Envelope changed: {self.envelope}")
         self.update()  # Trigger repaint if needed
 
     def on_pulse_width_changed(self, val: int) -> None:
