@@ -166,4 +166,6 @@ class AnalogFilterSection(BaseFilterSection):
             FilterFeature.FILTER_CUTOFF: self._add_filter_tab,
             FilterFeature.ADSR: self._add_adsr_tab,
         }
-        return FilterLayoutSpec(controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs)
+        return FilterLayoutSpec(
+            controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs
+        )

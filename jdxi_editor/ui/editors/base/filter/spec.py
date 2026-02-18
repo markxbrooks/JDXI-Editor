@@ -3,7 +3,7 @@ FilterFeature and Filter Spec classes
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any, Optional
 
 from jdxi_editor.ui.editors.base.layout.spec import FilterFeature
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec

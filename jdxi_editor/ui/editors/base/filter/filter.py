@@ -2,72 +2,32 @@
 Analog Filter Section
 """
 
-from enum import IntEnum, Enum, auto
+from enum import IntEnum
 from typing import Callable, Dict
 
 from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
     QTabWidget,
     QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.analog.filter import AnalogFilterType
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
+from jdxi_editor.ui.editors.base.filter.factory import FilterWidgetFactory
 from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
 from jdxi_editor.ui.editors.base.layout.spec import FilterFeature
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
-    create_icon_from_name,
     create_layout_with_widgets,
-    set_button_style_and_dimensions,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
-from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
-
-
-class FilterComponent(Enum):
-    """Filter Components"""
-    MODE_BUTTONS = auto()
-    FILTER_CUTOFF = auto()
-    FILTER_RESONANCE = auto()
-    FILTER_DEPTH = auto()
-    FILTER_CUTOFF_KEYFOLLOW = auto()
-    FILTER_DEPTH_VELOCITY_SENS = auto()
-    ADSR = auto()
-    ADSR_DEPTH = auto()
-
-
-class FilterWidgetFactory:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def create(
-        spec, midi_helper, create_slider, create_switch, controls, address, analog
-    ) -> QWidget:
-        # spec is FilterWidgetSpec (cutoff_param, slope_param)
-        return FilterWidget(
-            cutoff_param=spec.cutoff_param,
-            slope_param=spec.slope_param,
-            midi_helper=midi_helper,
-            create_parameter_slider=create_slider,
-            create_parameter_switch=create_switch,
-            controls=controls,
-            address=address,
-            analog=analog,
-        )
 
 
 class BaseFilterSection(SectionBaseWidget):
@@ -393,4 +353,6 @@ class BaseFilterSection(SectionBaseWidget):
             FilterFeature.FILTER_CUTOFF: self._add_filter_tab,
             FilterFeature.ADSR: self._add_adsr_tab,
         }
-        return FilterLayoutSpec(controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs)
+        return FilterLayoutSpec(
+            controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs
+        )

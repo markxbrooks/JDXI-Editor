@@ -183,6 +183,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 message=f"Error creating oscillator_section: {ex}",
             )
             import traceback
+
             log.message(traceback.format_exc())
             self.oscillator_section = None
 
@@ -203,6 +204,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 message=f"Error creating filter_section: {ex}",
             )
             import traceback
+
             log.message(traceback.format_exc())
             self.filter_section = None
 
@@ -221,6 +223,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 message=f"Error creating amp_section: {ex}",
             )
             import traceback
+
             log.message(traceback.format_exc())
             self.amp_section = None
 
@@ -235,6 +238,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 message=f"Error creating common_section: {ex}",
             )
             import traceback
+
             log.message(traceback.format_exc())
             self.common_section = None
 
@@ -250,6 +254,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 message=f"Error creating lfo_section: {ex}",
             )
             import traceback
+
             log.message(traceback.format_exc())
             self.lfo_section = None
             self.lfo_shape_buttons = {}
@@ -261,7 +266,11 @@ class AnalogSynthEditor(BaseSynthEditor):
             self.common_section,
             self.lfo_section,
         ):
-            if section is not None and hasattr(section, "controls") and section.controls:
+            if (
+                section is not None
+                and hasattr(section, "controls")
+                and section.controls
+            ):
                 self.controls.update(section.controls)
 
         self.add_tabs()
