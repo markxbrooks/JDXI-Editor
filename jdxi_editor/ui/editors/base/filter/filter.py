@@ -88,12 +88,12 @@ class BaseFilterSection(SectionBaseWidget):
             self._create_waveform_buttons()
             if self.analog:
                 self.filter_mode_buttons = self.button_widgets
-        self.controls_group = self._create_controls_group()
+        self.filter_group = self._create_controls_group()
         self._create_adsr_group()
         self._create_tab_widget()
         self.widgets = FilterWidgets(
             filter_widget=self.filter_widget,
-            controls_group=self.controls_group,
+            controls_group=self.filter_group,
             adsr_widget=getattr(self, "adsr_widget", None),
             filter_mode_buttons=self.filter_mode_buttons,
             tab_widget=self.tab_widget,
@@ -146,7 +146,7 @@ class BaseFilterSection(SectionBaseWidget):
     def _apply_mode_state(self, mode: IntEnum):
         enabled = mode != self.defn.bypass_mode
 
-        self.controls_group.setEnabled(enabled)
+        self.filter_group.setEnabled(enabled)
 
         if self.adsr_widget:
             self.adsr_widget.setEnabled(enabled)
@@ -207,7 +207,7 @@ class BaseFilterSection(SectionBaseWidget):
     def _add_filter_tab(self):
         """Filter Controls"""
         self._add_tab(
-            key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group
+            key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.filter_group
         )
 
     def update_controls_state(self, value: int) -> None:
@@ -251,11 +251,13 @@ class BaseFilterSection(SectionBaseWidget):
             # --- Enable/disable controls based on filter mode
             is_bypass = selected_filter_mode == self.SYNTH_SPEC.Filter.Mode.BYPASS
             enabled = not is_bypass
-            self.controls_group.setEnabled(enabled)
+            self.filter_group.setEnabled(enabled)
             log.message(
                 scope=self.__class__.__name__,
                 message=f"Set controls_group.setEnabled({enabled})",
             )
+            if self.adsr_group:
+                self.adsr_group.setEnabled(enabled)
             if self.adsr_widget:
                 self.adsr_widget.setEnabled(enabled)
                 log.message(
