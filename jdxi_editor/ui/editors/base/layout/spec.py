@@ -19,6 +19,19 @@ class OscillatorFeature(Enum):
     ADSR = auto()
 
 
+class FilterFeature(Enum):
+    """Oscillator capability flags; defined here to avoid circular import (layout.spec must not import from digital)."""
+
+    MODE_BUTTONS = auto()
+    FILTER_CUTOFF = auto()
+    FILTER_RESONANCE = auto()
+    FILTER_DEPTH = auto()
+    FILTER_CUTOFF_KEYFOLLOW = auto()
+    FILTER_DEPTH_VELOCITY_SENS = auto()
+    ADSR = auto()
+    ADSR_DEPTH = auto()
+
+
 @dataclass
 class LayoutSpec:
     """Layout of Widgets"""
@@ -30,6 +43,7 @@ class LayoutSpec:
     switches: Optional[list[SwitchSpec | None]] = None
     misc: Optional[list[SwitchSpec | SliderSpec | ComboBoxSpec]] = None
     features: set[OscillatorFeature] = field(default_factory=set)
+    feature_tabs: set[OscillatorFeature] = field(default_factory=set)
 
     def get(self, item, fallback=None):
         """Dict-like access: return the attribute named `item`, else `fallback`."""

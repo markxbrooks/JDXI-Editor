@@ -23,7 +23,7 @@ from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorFeature
+from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -38,7 +38,7 @@ from jdxi_editor.ui.widgets.editor.mode_button_group import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvWidget
 from jdxi_editor.ui.widgets.pulse_width.pwm import PWMWidget
-from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
+from jdxi_editor.ui.widgets.spec import SliderSpec
 
 
 class OscillatorComponent(Enum):

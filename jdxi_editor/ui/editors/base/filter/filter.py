@@ -2,7 +2,7 @@
 Analog Filter Section
 """
 
-from enum import IntEnum
+from enum import IntEnum, Enum, auto
 from typing import Callable, Dict
 
 from decologr import Decologr as log
@@ -25,6 +25,7 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
 from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
+from jdxi_editor.ui.editors.base.layout.spec import FilterFeature
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
     create_icon_from_name,
@@ -34,6 +35,18 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.filter.filter import FilterWidget
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
+
+
+class FilterComponent(Enum):
+    """Filter Components"""
+    MODE_BUTTONS = auto()
+    FILTER_CUTOFF = auto()
+    FILTER_RESONANCE = auto()
+    FILTER_DEPTH = auto()
+    FILTER_CUTOFF_KEYFOLLOW = auto()
+    FILTER_DEPTH_VELOCITY_SENS = auto()
+    ADSR = auto()
+    ADSR_DEPTH = auto()
 
 
 class FilterWidgetFactory:
@@ -99,6 +112,11 @@ class BaseFilterSection(SectionBaseWidget):
             analog=analog,
         )
         self.address = address
+        # When analog=True, SectionBaseWidget skips _setup_ui(); build layout here so the tab widget is shown
+        if getattr(self, "analog", False):
+            self.setup_ui()
+            if self._get_button_specs():
+                self._initialize_button_states()
 
     def _build_filter_spec(self) -> dict[str, FilterSpec]:
         """build filter spec"""
@@ -209,14 +227,27 @@ class BaseFilterSection(SectionBaseWidget):
         if self.tab_widget is not None and self.tab_widget.count() > 0:
             return
         self.tab_widget = QTabWidget()
-        # --- Filter Controls ---
+        self._create_tabs()
+        JDXi.UI.Theme.apply_tabs_style(widget=self.tab_widget, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog)
+
+    def _create_tabs(self):
+        """_create_tabs"""
+        if FilterFeature.FILTER_CUTOFF in self.spec.features:
+            self._add_filter_tab()
+
+        if FilterFeature.ADSR in self.spec.features:
+            self._add_adsr_tab()
+
+    def _add_adsr_tab(self):
+        """Filter ADSR"""
+        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
+
+    def _add_filter_tab(self):
+        """Filter Controls"""
         self._add_tab(
             key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.controls_group
         )
-        # --- Filter ADSR ---
-        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
-        JDXi.UI.Theme.apply_tabs_style(widget=self.tab_widget, analog=self.analog)
-        JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog)
 
     def _create_filter_controls_row(self) -> QHBoxLayout:
         self.filter_mode_buttons = {}
@@ -418,4 +449,10 @@ class BaseFilterSection(SectionBaseWidget):
             ),
             ADSRStage.DEPTH: ADSRSpec(ADSRStage.DEPTH, S.Param.FILTER_ENV_DEPTH),
         }
-        return FilterLayoutSpec(controls=controls, adsr=adsr)
+        # Include default features so _create_tabs() adds Controls and ADSR tabs (Digital uses this; Analog overrides)
+        features = {FilterFeature.FILTER_CUTOFF, FilterFeature.ADSR}
+        feature_tabs = {
+            FilterFeature.FILTER_CUTOFF: self._add_filter_tab,
+            FilterFeature.ADSR: self._add_adsr_tab,
+        }
+        return FilterLayoutSpec(controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs)

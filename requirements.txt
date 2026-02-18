@@ -1,9 +1,6 @@
 alabaster==1.0.0
 astroid==4.0.1
 babel==2.17.0
-biopandas==0.5.1
-biopython==1.85
-biotite==1.2.0
 biotraj==1.2.2
 certifi==2025.8.3
 charset-normalizer==3.4.3
@@ -11,7 +8,7 @@ click==8.2.1
 contourpy==1.3.2
 cycler==0.12.1
 darkdetect==0.7.1
--e git+https://github.com/markxbrooks/decologr.git@aeb039d6a937e166e5474f86b99bbec733c7f2fd#egg=decologr
+decologr==0.3.3
 dill==0.4.0
 docutils==0.21.2
 exceptiongroup==1.3.0

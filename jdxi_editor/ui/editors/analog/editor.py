@@ -162,11 +162,12 @@ class AnalogSynthEditor(BaseSynthEditor):
         super().setup_ui()
 
     def _create_sections(self):
-        """Create the sections for the Analog Synth Editor."""
+        """Create the sections for the Analog Synth Editor. Each section in its own try/except so one failure does not prevent others from showing."""
         log.message(
             scope=self.__class__.__name__,
             message=f"[_create_sections] start [self.controls:] {self.controls}",
         )
+
         try:
             self.oscillator_section = AnalogOscillatorSection(
                 waveform_selected_callback=self._on_waveform_selected,
@@ -175,47 +176,94 @@ class AnalogSynthEditor(BaseSynthEditor):
                 address=self.address,
                 send_midi_parameter=self.send_midi_parameter,
             )
-            # Use the section's waveform buttons so _update_waveform_buttons (preset load) finds them
             self.wave_buttons = self.oscillator_section.waveform_buttons
-            self.filter_section = AnalogFilterSection(
-                address=self.synth_data.address,
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
-                on_filter_mode_changed=self._on_filter_mode_changed,
-                analog=True,
+        except Exception as ex:
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"Error creating oscillator_section: {ex}",
             )
-            self.amp_section = AnalogAmpSection(
-                address=self.synth_data.address,
-                send_midi_parameter=self.send_midi_parameter,
-                midi_helper=self.midi_helper,
+            import traceback
+            log.message(traceback.format_exc())
+            self.oscillator_section = None
+
+        try:
+            if self.synth_data and getattr(self.synth_data, "address", None):
+                self.filter_section = AnalogFilterSection(
+                    address=self.synth_data.address,
+                    send_midi_parameter=self.send_midi_parameter,
+                    midi_helper=self.midi_helper,
+                    on_filter_mode_changed=self._on_filter_mode_changed,
+                    analog=True,
+                )
+            else:
+                self.filter_section = None
+        except Exception as ex:
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"Error creating filter_section: {ex}",
             )
+            import traceback
+            log.message(traceback.format_exc())
+            self.filter_section = None
+
+        try:
+            if self.synth_data and getattr(self.synth_data, "address", None):
+                self.amp_section = AnalogAmpSection(
+                    address=self.synth_data.address,
+                    send_midi_parameter=self.send_midi_parameter,
+                    midi_helper=self.midi_helper,
+                )
+            else:
+                self.amp_section = None
+        except Exception as ex:
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"Error creating amp_section: {ex}",
+            )
+            import traceback
+            log.message(traceback.format_exc())
+            self.amp_section = None
+
+        try:
             self.common_section = AnalogCommonSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
             )
+        except Exception as ex:
+            log.message(
+                scope=self.__class__.__name__,
+                message=f"Error creating common_section: {ex}",
+            )
+            import traceback
+            log.message(traceback.format_exc())
+            self.common_section = None
+
+        try:
             self.lfo_section = AnalogLFOSection(
                 midi_helper=self.midi_helper,
                 send_midi_parameter=self.send_midi_parameter,
             )
-            # Use the section's shape buttons so _update_lfo_shape_buttons (preset load) finds them
             self.lfo_shape_buttons = self.lfo_section.lfo_shape_buttons
-            # Ensure editor.controls has all section widgets (sections may use same ref or their own)
-            for section in (
-                self.oscillator_section,
-                self.filter_section,
-                self.amp_section,
-                self.common_section,
-                self.lfo_section,
-            ):
-                if hasattr(section, "controls") and section.controls:
-                    self.controls.update(section.controls)
         except Exception as ex:
             log.message(
-                f"Error {ex} occurred in [AnalogSynthEditor] [_create_sections]"
+                scope=self.__class__.__name__,
+                message=f"Error creating lfo_section: {ex}",
             )
             import traceback
-
             log.message(traceback.format_exc())
+            self.lfo_section = None
+            self.lfo_shape_buttons = {}
+
+        for section in (
+            self.oscillator_section,
+            self.filter_section,
+            self.amp_section,
+            self.common_section,
+            self.lfo_section,
+        ):
+            if section is not None and hasattr(section, "controls") and section.controls:
+                self.controls.update(section.controls)
+
         self.add_tabs()
         log.message(
             scope=self.__class__.__name__,

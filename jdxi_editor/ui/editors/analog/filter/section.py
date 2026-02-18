@@ -13,6 +13,7 @@ from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.filter import BaseFilterSection
 from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec
+from jdxi_editor.ui.editors.base.layout.spec import FilterFeature
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
 
 
@@ -81,9 +82,7 @@ class AnalogFilterSection(BaseFilterSection):
             on_filter_mode_changed=on_filter_mode_changed,
             analog=analog,
         )
-
-        self.build_widgets()
-        self.setup_ui()
+        # Layout and button state are built in BaseFilterSection.__init__ when analog=True
 
     def generate_wave_shapes(self):
         """Generate filter mode button specs (same pattern as Analog LFO generate_wave_shapes)."""
@@ -153,4 +152,18 @@ class AnalogFilterSection(BaseFilterSection):
             ),
             ADSRStage.DEPTH: ADSRSpec(ADSRStage.DEPTH, Analog.Param.FILTER_ENV_DEPTH),
         }
-        return FilterLayoutSpec(controls=controls, adsr=adsr)
+        features = {
+            FilterFeature.MODE_BUTTONS,
+            FilterFeature.FILTER_CUTOFF,
+            FilterFeature.FILTER_DEPTH,
+            FilterFeature.FILTER_RESONANCE,
+            FilterFeature.FILTER_CUTOFF_KEYFOLLOW,
+            FilterFeature.FILTER_DEPTH_VELOCITY_SENS,
+            FilterFeature.ADSR_DEPTH,
+            FilterFeature.ADSR,
+        }
+        feature_tabs = {
+            FilterFeature.FILTER_CUTOFF: self._add_filter_tab,
+            FilterFeature.ADSR: self._add_adsr_tab,
+        }
+        return FilterLayoutSpec(controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs)
