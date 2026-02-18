@@ -155,7 +155,7 @@ class BaseFilterSection(SectionBaseWidget):
             self._initialize_button_states()
 
     def set_filter_mode(self, mode: IntEnum):
-        # --- UI state
+        """Set UI state"""
         for m, btn in self.filter_mode_buttons.items():
             btn.setChecked(m == mode)
 
@@ -199,6 +199,7 @@ class BaseFilterSection(SectionBaseWidget):
                 self.filter_widget.plot.update()
 
     def _create_controls_group(self) -> QGroupBox:
+        """Create controls group"""
         widget_spec = self.defn.widget_spec
 
         self.filter_widget = FilterWidgetFactory.create(
