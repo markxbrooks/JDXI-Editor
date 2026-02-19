@@ -14,12 +14,9 @@ from jdxi_editor.ui.editors.analog.oscillator.widget import AnalogOscillatorWidg
 from jdxi_editor.ui.editors.analog.oscillator.widget_spec import (
     AnalogOscillatorLayoutSpec,
 )
+from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
-    OscillatorFeature,
-)
-from jdxi_editor.ui.oscillator.oscillator import OscillatorDefinition
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.spec import (
     PitchEnvelopeSpec,
@@ -54,7 +51,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
         self.waveform_buttons: dict = wave_buttons or {}
-        # self.midi_helper = midi_helper
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
         self._define_spec()

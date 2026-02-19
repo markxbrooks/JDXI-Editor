@@ -168,7 +168,6 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def finalize(self):
         """finalize"""
-        self._define_spec()
         self._create_core_widgets()
         self._create_feature_widgets()
         self._assemble_ui()

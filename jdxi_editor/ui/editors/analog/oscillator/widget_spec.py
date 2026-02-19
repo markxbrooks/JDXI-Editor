@@ -4,7 +4,7 @@ Oscillator Spec
 
 from dataclasses import dataclass, field
 
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec
+from jdxi_editor.ui.editors.base.oscillator.layout_spec import OscillatorLayoutSpec
 from jdxi_editor.ui.widgets.spec import SwitchSpec
 
 

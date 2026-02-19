@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
-from jdxi_editor.ui.editors.digital.partial.oscillator.spec import OscillatorLayoutSpec
+from jdxi_editor.ui.editors.base.oscillator.layout_spec import OscillatorLayoutSpec
 
 
 @dataclass(frozen=True)

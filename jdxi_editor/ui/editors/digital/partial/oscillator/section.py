@@ -21,10 +21,10 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
-    OscillatorFeature,
-    OscillatorLayoutSpec,
+    DigitalOscillatorLayoutSpec,
 )
 from jdxi_editor.ui.editors.digital.partial.oscillator.widget import (
     DigitalOscillatorWidgets,
@@ -107,7 +107,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self._initialize_states()
 
     def _define_spec(self):
-        self.spec: OscillatorLayoutSpec = self._build_layout_spec()
+        self.spec: DigitalOscillatorLayoutSpec = self._build_layout_spec()
 
     def _setup_ui(self):
         """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
@@ -366,7 +366,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         if self.wave_shapes:
             self._on_button_selected(self.wave_shapes[0])
 
-    def _build_layout_spec(self) -> OscillatorLayoutSpec:
+    def _build_layout_spec(self) -> DigitalOscillatorLayoutSpec:
         """build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         tuning = [
@@ -399,7 +399,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             decay_param=S.Param.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=S.Param.OSC_PITCH_ENV_DEPTH,
         )
-        return OscillatorLayoutSpec(
+        return DigitalOscillatorLayoutSpec(
             tuning=tuning,
             pw_controls=pw_controls,
             pwm=pwm,
