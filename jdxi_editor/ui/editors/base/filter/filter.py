@@ -206,14 +206,6 @@ class BaseFilterSection(SectionBaseWidget):
 
             builder()
 
-    def _create_tab_old(self):
-        """_create_tabs"""
-        if FilterFeature.FILTER_CUTOFF in self.spec.features:
-            self._add_filter_tab()
-
-        if FilterFeature.ADSR in self.spec.features:
-            self._add_adsr_tab()
-
     def _add_adsr_tab(self):
         """Filter ADSR"""
         self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.ADSR, widget=self.adsr_group)
