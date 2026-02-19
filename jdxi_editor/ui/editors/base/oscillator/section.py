@@ -58,16 +58,6 @@ class BaseOscillatorSection(SectionBaseWidget):
     adsr_tab_label: str = "ADSR"
     SYNTH_SPEC = Digital
 
-    COMPONENT_BUILDERS = {
-        OscillatorComponent.WAVE_SELECTOR: "_build_wave_selector",
-        OscillatorComponent.TUNING: "_build_tuning",
-        OscillatorComponent.PWM: "_build_pwm",
-        OscillatorComponent.PITCH_ENV: "_build_pitch_env",
-        OscillatorComponent.PCM: "_build_pcm",
-        OscillatorComponent.SUB_OSC: "_build_sub_osc",
-        OscillatorComponent.ADSR: "_build_adsr",
-    }
-
     ANALOG_WAVES = [
         ("SAW", "UPSAW", "UPSAW"),
         ("TRI", "SQUARE", "SQUARE"),
@@ -244,9 +234,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
         layout.addWidget(self.tab_widget)
-        self._add_pitch_env_tab()
-        self._add_tuning_tab()
-        self._add_pwm_tab()
+        self._create_tabs()
 
         layout.addStretch()
 
