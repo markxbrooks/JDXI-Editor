@@ -213,7 +213,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        self.waveform_buttons = self._create_waveform_buttons()
+        # self.waveform_buttons = self._create_waveform_buttons()
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
         self.pitch_env_widget = self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)

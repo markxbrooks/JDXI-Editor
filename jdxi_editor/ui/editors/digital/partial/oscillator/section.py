@@ -194,30 +194,15 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        self.waveform_buttons = self._create_waveform_buttons()
-        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self.pitch_env_widget = self._create_pitch_env_widget()
-        self.pitch_env_widgets = [self.pitch_env_widget]
-
-        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
-        self.pwm_widget = self._create_pwm_widget()
-        # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
-        super().build_widgets()
-        self._build_additional_widgets()
-
-        self.tuning_sliders = [
-            self.osc_pitch_coarse_slider,
-            self.osc_pitch_fine_slider,
-        ]
-
         # All oscillator widgets in one container (same shape as Analog)
+        super().build_widgets()
         self.widgets = DigitalOscillatorWidgets(
-            waveform_buttons=self.waveform_buttons,
-            pitch_env_widget=self.pitch_env_widget,
-            pwm_widget=self.pwm_widget,
+            waveform_buttons=self._create_waveform_buttons(),
+            pitch_env_widget=self._create_pitch_env_widget(),
+            pwm_widget=self._create_pwm_widget(),
             tuning=self.tuning_sliders,
             env=[],
-            pcm_wave=getattr(self, "pcm_wave", None),
+            pcm_wave=getattr(self, DigitalOscillatorWidgetTypes.PCM_WAVE, None),
             pw_shift_slider=getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None),
             osc_pitch_coarse_slider=getattr(
                 self, DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE, None
@@ -229,6 +214,21 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None
             ),
         )
+        # Aliases to old widgets for back compatibility
+        self.waveform_buttons = self.widgets.waveform_buttons
+        # self.waveform_buttons = self._create_waveform_buttons()
+        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
+        self.pitch_env_widget = self.widgets.pitch_env_widget
+        # self.pitch_env_widget = self._create_pitch_env_widget()
+        self.pitch_env_widgets = [self.pitch_env_widget]
+        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
+        self.pwm_widget = self.widgets.pwm_widget
+        # super().build_widgets()
+        self._build_additional_widgets()
+        self.tuning_sliders = [
+            self.osc_pitch_coarse_slider,
+            self.osc_pitch_fine_slider,
+        ]
 
     def _build_additional_widgets(self):
         self._build_additional_digital_widgets()
