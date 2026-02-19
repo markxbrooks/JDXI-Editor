@@ -223,8 +223,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.pitch_env_widgets = [self.pitch_env_widget]
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
         self.pwm_widget = self.widgets.pwm_widget
-        # super().build_widgets()
-        self._build_additional_widgets()
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
             self.osc_pitch_fine_slider,

@@ -126,7 +126,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.pitch_env_widgets = [self.pitch_env_widget]
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
         self.pwm_widget = self.widgets.pwm_widget
-        self._build_additional_widgets()
 
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
