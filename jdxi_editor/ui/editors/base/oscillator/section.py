@@ -230,10 +230,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
-        if not self.analog:
-            self._build_additional_digital_widgets()
-        else:
-            self._build_additional_analog_widgets()
+        self._build_additional_widgets()
 
     def setup_ui(self) -> None:
         """
@@ -650,6 +647,9 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=self.analog,
         )
         return pitch_env_widget
+
+    def _build_additional_widgets(self):
+        raise NotImplementedError("Should be implemented in a subclass")
 
     def _build_additional_digital_widgets(self):
         raise NotImplementedError("Should be implemented in a Digital subclass")

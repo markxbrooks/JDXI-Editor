@@ -89,7 +89,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
         super().build_widgets()
         # Base does not call _build_additional_analog_widgets; we must call it so env/tuning/switch sliders exist
-        self._build_additional_analog_widgets()
+        self._build_additional_widgets()
         # All oscillator widgets in one container
         self.widgets = AnalogOscillatorWidgets(
             waveform_buttons=getattr(
@@ -124,6 +124,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
         return self.generate_wave_shapes_analog()
+
+    def _build_additional_widgets(self):
+        self._build_additional_analog_widgets()
 
     def _build_additional_analog_widgets(self):
         # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital

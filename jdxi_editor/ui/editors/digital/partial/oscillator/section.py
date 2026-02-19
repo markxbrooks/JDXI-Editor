@@ -181,7 +181,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def _create_feature_widgets(self):
         # pcm_wave is already created in __init__ before super().__init__()/finalize()
-        self._build_additional_digital_widgets()
+        self._build_additional_widgets()
 
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -203,8 +203,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
-        if not self.analog:
-            self._build_additional_digital_widgets()
+        self._build_additional_widgets()
 
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -230,6 +229,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None
             ),
         )
+
+    def _build_additional_widgets(self):
+        self._build_additional_digital_widgets()
 
     def _build_additional_digital_widgets(self):
         """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
