@@ -193,6 +193,20 @@ class BaseFilterSection(SectionBaseWidget):
         JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog)
 
     def _create_tabs(self):
+        for feature, builder_name in self.spec.feature_tabs.items():
+            if feature not in self.spec.features:
+                continue
+
+            builder = getattr(self, builder_name, None)
+            if builder is None:
+                raise RuntimeError(
+                    f"{self.__class__.__name__} missing tab builder '{builder_name}' "
+                    f"for feature {feature}"
+                )
+
+            builder()
+
+    def _create_tab_old(self):
         """_create_tabs"""
         if FilterFeature.FILTER_CUTOFF in self.spec.features:
             self._add_filter_tab()
@@ -352,8 +366,8 @@ class BaseFilterSection(SectionBaseWidget):
         # Include default features so _create_tabs() adds Controls and ADSR tabs (Digital uses this; Analog overrides)
         features = {FilterFeature.FILTER_CUTOFF, FilterFeature.ADSR}
         feature_tabs = {
-            FilterFeature.FILTER_CUTOFF: self._add_filter_tab,
-            FilterFeature.ADSR: self._add_adsr_tab,
+            FilterFeature.FILTER_CUTOFF: "_add_filter_tab",
+            FilterFeature.ADSR: "_add_adsr_tab",
         }
         return FilterLayoutSpec(
             controls=controls, adsr=adsr, features=features, feature_tabs=feature_tabs
