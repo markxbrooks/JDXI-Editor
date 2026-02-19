@@ -147,13 +147,13 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_tabs(self):
         """_create_tabs"""
-        if OscillatorFeature.PWM in self.spec.features:
+        if OscillatorFeature.TUNING in self.spec.feature_tabs:
+            self._add_tuning_tab()
+        if OscillatorFeature.PWM in self.spec.feature_tabs:
             self._add_pwm_tab()
-
-        if OscillatorFeature.PITCH_ENV in self.spec.features:
+        if OscillatorFeature.PITCH_ENV in self.spec.feature_tabs:
             self._add_pitch_env_tab()
-
-        if OscillatorFeature.PCM in self.spec.features:
+        if OscillatorFeature.PCM in self.spec.feature_tabs:
             self._add_pcm_wave_gain_tab()
 
     def finalize(self):
@@ -213,7 +213,6 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        # self.waveform_buttons = self._create_waveform_buttons()
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
         self.pitch_env_widget = self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
