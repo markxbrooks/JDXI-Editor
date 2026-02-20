@@ -110,10 +110,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _define_spec(self):
         self.spec: DigitalOscillatorLayoutSpec = self._build_layout_spec()
 
-    def _create_tab_widget(self):
-        """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
-        self.tab_widget = QTabWidget()
-
     # ------------------------------------------------------------------
     # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
     # ------------------------------------------------------------------

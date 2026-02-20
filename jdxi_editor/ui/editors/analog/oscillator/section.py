@@ -133,10 +133,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
         return self.generate_wave_shapes_analog()
 
-    def _create_tab_widget(self):
-        """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
-        self.tab_widget = QTabWidget()
-
     def _build_additional_widgets(self):
         self._build_additional_analog_widgets()
 

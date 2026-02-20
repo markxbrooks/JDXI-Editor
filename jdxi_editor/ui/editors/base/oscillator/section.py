@@ -144,6 +144,10 @@ class BaseOscillatorSection(SectionBaseWidget):
             analog=analog,
         )
 
+    def _create_tab_widget(self):
+        """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
+        self.tab_widget = QTabWidget()
+
     def _get_button_specs(self):
         """Oscillator creates waveform buttons in its own build_widgets() / _create_core_widgets().
         Return [] so SectionBaseWidget.build_widgets() does not create a second set and overwrite
