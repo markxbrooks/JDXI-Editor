@@ -6,11 +6,11 @@ from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digi
 PWM_BINDINGS = {
     Digital.Param.OSC_PULSE_WIDTH: ParamBinding(
         ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.pulse_width_control,
+        lambda s, p: s.partial_editors[p].oscillator_tab.widgets.pwm_widget.pulse_width_control,
     ),
     Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH: ParamBinding(
         ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.pwm_widget.mod_depth_control,
+        lambda s, p: s.partial_editors[p].oscillator_tab.widgets.pwm_widget.mod_depth_control,
     ),
 }
 
@@ -21,6 +21,6 @@ def resolve_pwm(s, p, param):
         return osc.tuning[param]
     if hasattr(osc, DigitalOscillatorWidgetTypes.PWM):
         if param == Digital.Param.OSC_PULSE_WIDTH:
-            return osc.pwm_widget.pulse_width_control
+            return osc.widgets.pwm_widget.pulse_width_control
         if param == Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
-            return osc.pwm_widget.mod_depth_control
+            return osc.widgets.pwm_widget.mod_depth_control

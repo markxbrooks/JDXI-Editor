@@ -24,6 +24,8 @@ from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
+from jdxi_editor.ui.editors.base.oscillator.layout_spec import OscillatorLayoutSpec
+from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -56,6 +58,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
+    spec: OscillatorLayoutSpec | None = None
     SYNTH_SPEC = Digital
 
     ANALOG_WAVES = [
@@ -94,11 +97,11 @@ class BaseOscillatorSection(SectionBaseWidget):
         :param analog: bool
         """
 
+        self.widgets = OscillatorWidgets
         self.pitch_env_widgets = None
         self.shape_icon_map: dict | None = None
         self.sub_oscillator_type_switch: QWidget | None = None
         self.tuning_sliders: list | None = None
-        self.pwm_widget: PWMWidget | None = None
         self.wave_layout_widgets: list = []
         self.wave_shape_param: list | None = None
         self.switch_row_widgets: list | None = None
@@ -158,7 +161,6 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def finalize(self):
         """finalize"""
-        self._create_core_widgets()
         self._create_feature_widgets()
         self._assemble_ui()
         self._initialize_states()
@@ -166,15 +168,6 @@ class BaseOscillatorSection(SectionBaseWidget):
     def _define_spec(self):
         """Subclass must populate self.spec"""
         raise NotImplementedError
-
-    def _create_core_widgets(self):
-        self.widgets_waveform_buttons = self._create_waveform_buttons()
-
-        if hasattr(self, "spec") and hasattr(self.spec, "pitch_env"):
-            self.widgets_pitch_env_widget = self._create_pitch_env_widget()
-
-        if hasattr(self, "spec") and hasattr(self.spec, "pwm"):
-            self.pwm_widget = self._create_pwm_widget()
 
     def _build_wave_specs(self, spec_rows):
         W = self.SYNTH_SPEC.Wave
@@ -213,12 +206,8 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self.widgets_pitch_env_widget = self._create_pitch_env_widget()
-        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
-        self.pwm_widget = self._create_pwm_widget()
-        # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
         super().build_widgets()
+        self._create_tuning_sliders()
         self._build_additional_widgets()
 
     def setup_ui(self) -> None:
@@ -538,9 +527,9 @@ class BaseOscillatorSection(SectionBaseWidget):
         :return: QGroupBox
         """
         pw_group = create_group_with_widgets(
-            label="Pulse Width", widgets=[self.pwm_widget]
+            label="Pulse Width", widgets=[self.widgets.pwm_widget]
         )
-        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+        # @@@ self.widgets.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         return pw_group
 
     def _create_pitch_env_group(self) -> QGroupBox:
@@ -563,7 +552,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         :return: None
         """
         pw_enabled = waveform == self.SYNTH_SPEC.Wave.Osc.SQUARE
-        self.pwm_widget.setEnabled(pw_enabled)
+        # @@@ self.widgets.pwm_widget.setEnabled(pw_enabled)
 
     def _on_waveform_selected_local(self, waveform: AnalogWaveOsc | DigitalWaveOsc):
         """
@@ -646,3 +635,41 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _add_pcm_wave_gain_tab(self):
         raise NotImplementedError("Should be implemented in a subclass")
+
+    def _create_tuning_sliders(self):
+        """create tuning sliders"""
+        # Reset
+        self.osc_pitch_coarse_slider = None
+        self.osc_pitch_fine_slider = None
+        self.super_saw_detune = None
+        self.tuning_sliders = []
+
+        # Remove previous tuning controls cleanly
+        for spec in self.spec.tuning:
+            param = spec.param
+            if param in self.controls:
+                w = self.controls.pop(param)
+                if w in self.amp_control_widgets:
+                    self.amp_control_widgets.remove(w)
+
+        sliders = self._build_sliders(self.spec.tuning)
+
+        for spec, widget in zip(self.spec.tuning, sliders):
+            self.controls[spec.param] = widget
+            self.amp_control_widgets.append(widget)
+
+            param_name = spec.param.name  # enum name string
+
+            if param_name == "OSC_PITCH_COARSE":
+                self.osc_pitch_coarse_slider = widget
+                self.tuning_sliders.append(widget)
+
+            elif param_name == "OSC_PITCH_FINE":
+                self.osc_pitch_fine_slider = widget
+                self.tuning_sliders.append(widget)
+
+            elif param_name == "SUPER_SAW_DETUNE":
+                self.super_saw_detune = widget
+
+        if self.super_saw_detune:
+            self.super_saw_detune.setEnabled(False)

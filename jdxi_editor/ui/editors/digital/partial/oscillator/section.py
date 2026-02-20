@@ -217,8 +217,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # Aliases to old widgets for back compatibility
         self.widgets_waveform_buttons = self.widgets.waveform_buttons
         self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
-        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
-        self.pwm_widget = self.widgets.pwm_widget
+        self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
             self.osc_pitch_fine_slider,
@@ -231,31 +230,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
         Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3.
         """
-        for param in (
-            self.SYNTH_SPEC.Param.OSC_PITCH_COARSE,
-            self.SYNTH_SPEC.Param.OSC_PITCH_FINE,
-            self.SYNTH_SPEC.Param.SUPER_SAW_DETUNE,
-        ):
-            if param in self.controls:
-                w = self.controls.pop(param)
-                if w in self.amp_control_widgets:
-                    self.amp_control_widgets.remove(w)
-        control_sliders = self._build_sliders(self.spec.tuning)
-        if len(control_sliders) >= 3:
-            (
-                self.osc_pitch_coarse_slider,
-                self.osc_pitch_fine_slider,
-                self.super_saw_detune,
-            ) = (
-                control_sliders[0],
-                control_sliders[1],
-                control_sliders[2],
-            )
-            for spec, widget in zip(self.spec.tuning, control_sliders):
-                self.controls[spec.param] = widget
-                self.amp_control_widgets.append(widget)
-            # Initially disable SuperSaw Detune (enabled when SuperSaw waveform is selected)
-            self.super_saw_detune.setEnabled(False)
         self._create_pulse_width_shift_slider()
 
     def _create_pulse_width_shift_slider(self):
@@ -312,8 +286,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _add_pwm_tab(self):
         """Add PWM tab with optional pulse width shift slider and PWM widget."""
         pw_layout = QVBoxLayout()
-        self.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
-        pw_layout.addWidget(self.pwm_widget)
+        self.widgets.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+        pw_layout.addWidget(self.widgets.pwm_widget)
         if getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None) is not None:
             pw_layout.addWidget(self.pw_shift_slider)
         pw_layout.addStretch()

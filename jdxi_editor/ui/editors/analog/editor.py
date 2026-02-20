@@ -132,29 +132,7 @@ class AnalogSynthEditor(BaseSynthEditor):
             2: self.SYNTH_SPEC.Wave.Osc.SQUARE,
         }
         self._create_sections()
-        self.adsr_mapping = {
-            self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
-            self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
-            self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
-            self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
-            self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
-            self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
-            self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
-            self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
-        }
-        self.pitch_env_mapping = {
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets_pitch_env_widget.attack_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets_pitch_env_widget.decay_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets_pitch_env_widget.depth_control,
-        }
-        self.pwm_mapping = {
-            self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
-                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH
-            ],
-            self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH: self.oscillator_section.pwm_widget.controls[
-                self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
-            ],
-        }
+        self._build_parameter_mappings()
         # Note: data_request() is called in showEvent() when editor is displayed
 
     def setup_ui(self):
@@ -169,6 +147,11 @@ class AnalogSynthEditor(BaseSynthEditor):
         )
 
         try:
+            log.info(
+                scope=self.__class__.__name__,
+                message="Creating Analog Oscillator section (address=%s, has midi_helper=%s)"
+                % (getattr(self, "address", None), self.midi_helper is not None),
+            )
             self.oscillator_section = AnalogOscillatorSection(
                 waveform_selected_callback=self._on_waveform_selected,
                 wave_buttons=self.wave_buttons,
@@ -177,6 +160,11 @@ class AnalogSynthEditor(BaseSynthEditor):
                 send_midi_parameter=self.send_midi_parameter,
             )
             self.wave_buttons = self.oscillator_section.widgets.waveform_buttons
+            log.info(
+                scope=self.__class__.__name__,
+                message="Analog Oscillator section created successfully (widgets=%s)"
+                % (getattr(self.oscillator_section, "widgets", None) is not None,),
+            )
         except Exception as ex:
             log.message(
                 scope=self.__class__.__name__,
@@ -278,6 +266,39 @@ class AnalogSynthEditor(BaseSynthEditor):
             scope=self.__class__.__name__,
             message=f"[_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}",
         )
+
+    def _build_parameter_mappings(self):
+        """Populate adsr_mapping, pitch_env_mapping, pwm_mapping only when the corresponding sections exist."""
+        if self.amp_section is not None and getattr(self.amp_section, "adsr_widget", None) is not None:
+            self.adsr_mapping.update({
+                self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
+                self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
+                self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
+                self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
+            })
+        if self.filter_section is not None and getattr(self.filter_section, "adsr_widget", None) is not None:
+            self.adsr_mapping.update({
+                self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
+                self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
+                self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
+                self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
+            })
+        if self.oscillator_section is not None and getattr(self.oscillator_section, "widgets", None) is not None:
+            w = self.oscillator_section.widgets
+            if getattr(w, "pitch_env_widget", None) is not None:
+                self.pitch_env_mapping.update({
+                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.attack_control,
+                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.decay_control,
+                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets.pitch_env_widget.depth_control,
+                })
+            if getattr(w, "pwm_widget", None) is not None and getattr(w.pwm_widget, "controls", None):
+                ctrls = w.pwm_widget.controls
+                ctrl_pw = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH)
+                ctrl_mod = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH)
+                if ctrl_pw is not None:
+                    self.pwm_mapping[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH] = ctrl_pw
+                if ctrl_mod is not None:
+                    self.pwm_mapping[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH] = ctrl_mod
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""

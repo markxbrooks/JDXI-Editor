@@ -141,6 +141,14 @@ class ProgramMixer(SynthBase):
                 JDXiSynth.ANALOG_SYNTH, "Analog", AnalogParam.AMP_LEVEL
             ),
         ]
+        # Assign level sliders so the program editor can pass them to _update_slider for
+        # incoming MIDI (self.controls has only one TONE_LEVEL key, so Digital 1 would
+        # otherwise get Digital 2’s slider when using controls.get(param))
+        self.master_level_slider = self.tracks[0].slider
+        self.digital1_level_slider = self.tracks[1].slider
+        self.digital2_level_slider = self.tracks[2].slider
+        self.drums_level_slider = self.tracks[3].slider
+        self.analog_level_slider = self.tracks[4].slider
 
     def _track_for_synth(self, synth: str, name: str, param: AddressParameter):
         """track for synth"""

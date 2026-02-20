@@ -621,7 +621,7 @@ class BaseSynthEditor(SynthEditor):
                 and self.oscillator_section
                 and getattr(self.oscillator_section, OscillatorWidgetTypes.PWM, None)
             ):
-                self.oscillator_section.pwm_widget.refresh_plot_from_controls()
+                self.oscillator_section.widgets.pwm_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -795,8 +795,8 @@ class BaseSynthEditor(SynthEditor):
         pw_enabled = waveform == AnalogWaveOsc.SQUARE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         # --- Access PWM controls from oscillator_section.pwm_widget.controls
-        if self.oscillator_section and self.oscillator_section.pwm_widget:
-            pwm_controls = self.oscillator_section.pwm_widget.controls
+        if self.oscillator_section and self.oscillator_section.widgets.pwm_widget:
+            pwm_controls = self.oscillator_section.widgets.pwm_widget.controls
             if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:
                 pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH].setEnabled(
                     pw_enabled

@@ -2,6 +2,7 @@
 Analog Oscillator Section
 """
 
+from types import SimpleNamespace
 from typing import Callable
 
 from decologr import Decologr as log
@@ -48,12 +49,19 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         :param address: RolandSysExAddress
         :param send_midi_parameter: Callable to send MIDI parameter updates
         """
+        log.info(
+            scope=self.__class__.__name__,
+            message="AnalogOscillatorSection __init__ start (address=%s)"
+            % (getattr(address, "__repr__", lambda: address)(),),
+        )
         self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
         self.widgets_waveform_buttons: dict = wave_buttons or {}
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
+        log.info(scope=self.__class__.__name__, message="_define_spec ...")
         self._define_spec()
+        log.info(scope=self.__class__.__name__, message="calling super().__init__ ...")
         super().__init__(
             icons_row_type=IconType.OSCILLATOR,
             analog=True,
@@ -63,15 +71,19 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         log.info(
             scope=self.__class__.__name__,
-            message=f"after super init self.controls: {self.controls}",
+            message="after super().__init__ (controls keys: %s)"
+            % (list(self.controls.keys()) if getattr(self, "controls", None) else [],),
         )
         self.address = address
+        log.info(scope=self.__class__.__name__, message="calling finalize() ...")
         self.finalize()
+        log.info(scope=self.__class__.__name__, message="AnalogOscillatorSection __init__ done.")
 
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
 
     def _create_feature_widgets(self):
+        log.info(scope=self.__class__.__name__, message="_create_feature_widgets ...")
         env_sliders = self._build_sliders(self.spec.env)
         self.osc_pitch_env_velocity_sensitivity_slider = (
             env_sliders[0] if env_sliders else None
@@ -84,16 +96,28 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
         tuning = self._build_sliders(self.spec.tuning)
         self.tuning_sliders = tuning
+        log.info(
+            scope=self.__class__.__name__,
+            message="_create_feature_widgets done (tuning_sliders=%s)"
+            % (len(self.tuning_sliders) if self.tuning_sliders else 0,),
+        )
 
     def build_widgets(self):
         """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
+        log.info(scope=self.__class__.__name__, message="build_widgets start")
         super().build_widgets()
+        log.info(scope=self.__class__.__name__, message="build_widgets after super()")
         # Base does not call _build_additional_analog_widgets; we must call it so env/tuning/switch sliders exist
+        # Reuse pitch_env_widget and pwm_widget if already created by _build_additional_analog_widgets
+        pitch_env = getattr(self, "pitch_env_widget", None) or self._create_pitch_env_widget()
+        pwm = getattr(self, "pwm_widget", None) or self._create_pwm_widget()
+        self.pitch_env_widget = pitch_env
+        self.pwm_widget = pwm
         # All oscillator widgets in one container
         self.widgets = AnalogOscillatorWidgets(
             waveform_buttons=self._create_waveform_buttons(),
-            pitch_env_widget=self._create_pitch_env_widget(),
-            pwm_widget=self._create_pwm_widget(),
+            pitch_env_widget=pitch_env,
+            pwm_widget=pwm,
             switches=(
                 [self.sub_oscillator_type_switch]
                 if self.sub_oscillator_type_switch
@@ -119,9 +143,11 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         # Aliases to old widgets for back compatibility
         self.widgets_waveform_buttons = self.widgets.waveform_buttons
-        self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
-        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
-        self.pwm_widget = self.widgets.pwm_widget
+        self.widgets.pitch_env_widget = self.widgets.pitch_env_widget
+        self.pitch_env_widgets = [self.widgets.pitch_env_widget]
+        log.info(scope=self.__class__.__name__, message="build_widgets calling _build_additional_widgets()")
+        self._build_additional_widgets()
+        log.info(scope=self.__class__.__name__, message="build_widgets done")
 
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
@@ -131,42 +157,51 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self._build_additional_analog_widgets()
 
     def _build_additional_analog_widgets(self):
-        # --- Env sliders (e.g. pitch env velocity sensitivity); optional for Digital
-        env_sliders = self._build_sliders(self.spec.env)
-        self.osc_pitch_env_velocity_sensitivity_slider = (
-            env_sliders[0] if len(env_sliders) == 1 else None
-        )
-        # --- Sub Oscillator Type switch; optional when SWITCH_SPECS is empty
+        """build additional analog widgets"""
+        # log.info(scope=self.__class__.__name__, message="_build_additional_analog_widgets start")
+        self._create_env_slider()
+        self._create_suboscillator_switches()
+        self._ensure_widgets()  # needed for now
+
+    def _create_suboscillator_switches(self):
+        """Sub Oscillator Type switch; optional when SWITCH_SPECS is empty"""
         if not hasattr(self, "spec") or not hasattr(self.spec, "switches"):
             switches = []
         else:
             switches = self._build_switches(self.spec.switches)
         self.sub_oscillator_type_switch = switches[0] if len(switches) == 1 else None
-        # --- Tuning Group sliders; optional for Digital
-        tuning_slider_list = self._build_sliders(self.spec.tuning)
-        if len(tuning_slider_list) == 2:
-            self.osc_pitch_coarse_slider, self.osc_pitch_fine_slider = (
-                tuning_slider_list
+
+    def _ensure_widgets(self):
+        # --- Ensure pitch_env_widget and pwm_widget exist before _create_tab_widget (base uses
+        # self.pitch_env_widgets and self.widgets.pwm_widget; at this point we're still inside
+        # super().build_widgets() so self.widgets is not yet the AnalogOscillatorWidgets instance)
+        if getattr(self, "pitch_env_widget", None) is None:
+            self.pitch_env_widget = self._create_pitch_env_widget()
+        if getattr(self, "pwm_widget", None) is None:
+            self.pwm_widget = self._create_pwm_widget()
+        self.pitch_env_widgets = [w for w in [self.pitch_env_widget] + (
+            [self.osc_pitch_env_velocity_sensitivity_slider]
+            if self.osc_pitch_env_velocity_sensitivity_slider is not None
+            else []
+        ) if w is not None]
+        # --- Base _create_pw_group and _create_pitch_env_group need self.widgets.pwm_widget and
+        # self.pitch_env_widgets; provide a minimal namespace so _create_tab_widget() can run
+        if not isinstance(getattr(self, "widgets", None), AnalogOscillatorWidgets):
+            self.widgets = SimpleNamespace(
+                pitch_env_widget=self.pitch_env_widget,
+                pwm_widget=self.pwm_widget,
             )
-            self.tuning_sliders = [
-                self.osc_pitch_coarse_slider,
-                self.osc_pitch_fine_slider,
-            ]
-        else:
-            self.osc_pitch_coarse_slider = None
-            self.osc_pitch_fine_slider = None
-            self.tuning_sliders = []
-        # --- Create pitch_env_widgets list after pitch_env_widget is created
-        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
-        if self.osc_pitch_env_velocity_sensitivity_slider is not None:
-            self.pitch_env_widgets.append(
-                self.osc_pitch_env_velocity_sensitivity_slider
-            )
-        # --- Finally create Tab widget with all of the above widgets
-        self._create_tab_widget()
+
+    def _create_env_slider(self):
+        """Create env sliders"""
+        # Only one slider BTW, despite the plural name
+        env_sliders = self._build_sliders(self.spec.env)
+        self.osc_pitch_env_velocity_sensitivity_slider = (
+            env_sliders[0] if len(env_sliders) == 1 else None
+        )
 
     def _build_layout_spec(self) -> AnalogOscillatorLayoutSpec:
-        """build Analog Oscillator Layout Spec"""
+        """Build Analog Oscillator Layout Spec"""
         S = self.SYNTH_SPEC
         switches = [
             SwitchSpec(

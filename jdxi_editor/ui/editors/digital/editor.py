@@ -841,12 +841,12 @@ class DigitalSynthEditor(BaseSynthEditor):
         # Fallback: try to access pwm_widget (old system, for backward compatibility)
         elif (
             hasattr(oscillator_section, DigitalOscillatorWidgetTypes.PWM)
-            and oscillator_section.pwm_widget
+            and oscillator_section.widgets.pwm_widget
         ):
             if param == Digital.Param.OSC_PULSE_WIDTH:
-                control = oscillator_section.pwm_widget.pulse_width_control
+                control = oscillator_section.widgets.pwm_widget.pulse_width_control
             elif param == Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
-                control = oscillator_section.pwm_widget.mod_depth_control
+                control = oscillator_section.widgets.pwm_widget.mod_depth_control
 
         if control:
             control.blockSignals(True)
@@ -857,7 +857,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                 and getattr(pe, DigitalTabName.OSCILLATOR, None)
                 and getattr(pe.oscillator_tab, DigitalOscillatorWidgetTypes.PWM, None)
             ):
-                pe.oscillator_tab.pwm_widget.refresh_plot_from_controls()
+                pe.oscillator_tab.widgets.pwm_widget.refresh_plot_from_controls()
             successes.append(param.name)
         else:
             failures.append(param.name)

@@ -142,7 +142,7 @@ class SectionBaseWidget(SynthBase):
         self.slider_widgets: dict[Any, QWidget] = {}
         self.build_widgets()
         skip_base_setup = getattr(self.__class__, "SKIP_BASE_SETUP_UI", False)
-        if not self.analog and not skip_base_setup:
+        if not skip_base_setup:
             self._setup_ui()
             if self._get_button_specs():
                 self._initialize_button_states()
