@@ -129,26 +129,13 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         # base build_widgets() already ran _build_additional_widgets() and _create_tab_widget(); no second call
 
-    def _create_tab_widget_new(self):
-        """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
-
-        self.tab_widget = QTabWidget()
-        try:
-            for feature, builder in self.spec.feature_tabs.items():
-                if self._has(feature):
-                    log.message(f"feature {feature} found, running {builder}")
-                    builder()
-                else:
-                    log.message(f"feature {feature} not found!!!")
-        except Exception as ex:
-            log.exception(
-                f"Error {ex} occurred creating tab widget",
-                scope=self.__class__.__name__,
-            )
-
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
         return self.generate_wave_shapes_analog()
+
+    def _create_tab_widget(self):
+        """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
+        self.tab_widget = QTabWidget()
 
     def _build_additional_widgets(self):
         self._build_additional_analog_widgets()
@@ -188,16 +175,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 pitch_env_widget=self.pitch_env_widget,
                 pwm_widget=self.pwm_widget,
             )
-
-    def _create_tab_widget(self):
-        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
-        self.tab_widget = QTabWidget()
-        # --- Tuning tab (standardized name matching Digital) ---
-        self.tuning_group = self._create_tuning_group()
-        # --- Pitch tab (standardized name matching Digital) ---
-        self.pitch_widget = self._create_tuning_pitch_widget()
-        # --- Pulse Width tab ---
-        self.pw_group = self._create_pw_group()
 
     def _create_env_slider(self):
         """Create env sliders"""

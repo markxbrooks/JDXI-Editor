@@ -110,37 +110,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _define_spec(self):
         self.spec: DigitalOscillatorLayoutSpec = self._build_layout_spec()
 
-    def _setup_ui(self):
-        """Assemble section UI with centered waveform button row (same pattern as Digital Filter mode buttons)."""
-        layout = self.create_layout()
-        # Centered waveform button row
-        if self.wave_mode_group is not None:
-            if self.wave_mode_group.parent() is None:
-                self.wave_mode_group.setParent(self)
-            row = QHBoxLayout()
-            row.addStretch()
-            row.addWidget(self.wave_mode_group)
-            row.addStretch()
-            layout.addLayout(row)
-        self._create_tab_widget()
-        layout.addWidget(self.tab_widget)
-
     def _create_tab_widget(self):
-        """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
-
+        """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
         self.tab_widget = QTabWidget()
-        try:
-            for feature, builder in self.spec.feature_tabs.items():
-                if self._has(feature):
-                    log.message(f"feature {feature} found, running {builder}")
-                    builder()
-                else:
-                    log.message(f"feature {feature} not found!!!")
-        except Exception as ex:
-            log.exception(
-                f"Error {ex} occurred creating tab widget",
-                scope=self.__class__.__name__,
-            )
 
     # ------------------------------------------------------------------
     # Waveform buttons via ModeButtonGroup (shared pattern with filter modes)
@@ -268,8 +240,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _has_adsr(self) -> bool:
         return getattr(self, "adsr_widget", None) is not None
 
-    def _add_pcm_tab(self):
-        """Add PCM Wave gain tab"""
+    def _add_pcm_wave_gain_tab(self):
+        """Add PCM Wave gain tab (matches base interface name)"""
         self._add_tab(key=DigitalOscillatorTab.PCM, widget=self.pcm_wave)
 
     def _add_pitch_env_tab(self):
@@ -326,21 +298,17 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pass
 
     def setup_ui(self):
-        """Override to create UI with button row layout and initialize button states.
-        Skip creating tab widget / button row if already done by base _setup_ui() in __init__,
-        to avoid duplicate tuning sliders and ensure super_saw_detune enable targets the visible widget.
-        """
-        layout = self.get_layout()
+        """Override to create UI with button row layout. Tabs are added via base _create_tabs() flow (harmonized with Analog)."""
+        layout = self.get_layout(margins=JDXi.UI.Dimensions.EDITOR.MARGINS)
         # --- Waveform buttons ---
         self.waveform_button_layout = self._create_wave_layout()
         layout.addLayout(self.waveform_button_layout)
+        # --- Tab widget (same as self.tab_widget so _add_tab adds tabs to the widget in the layout) ---
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
         layout.addWidget(self.tab_widget)
+        self._create_tabs()
 
         layout.addStretch()
-
-        if self.wave_shapes:
-            self._on_button_selected(self.wave_shapes[0])
 
     def _build_layout_spec(self) -> DigitalOscillatorLayoutSpec:
         """build Analog Oscillator Layout Spec"""
@@ -393,6 +361,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.TUNING: self._add_tuning_tab,
                 OscillatorFeature.PWM: self._add_pwm_tab,
                 OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
-                OscillatorFeature.PCM: self._add_pcm_tab,
+                OscillatorFeature.PCM: self._add_pcm_wave_gain_tab,
             },
         )
