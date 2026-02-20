@@ -54,7 +54,10 @@ class OscillatorComponent(Enum):
 
 
 class BaseOscillatorSection(SectionBaseWidget):
-    """Abstract base class for LFO sections."""
+    """Abstract base class for Oscillator sections (Analog and Digital)."""
+
+    # Skip SectionBaseWidget._setup_ui() so layout/tabs are built once in finalize() -> setup_ui().
+    SKIP_BASE_SETUP_UI = True
 
     controls_tab_label: str = "Controls"
     adsr_tab_label: str = "ADSR"
@@ -160,9 +163,9 @@ class BaseOscillatorSection(SectionBaseWidget):
             self._add_pcm_wave_gain_tab()
 
     def finalize(self):
-        """finalize"""
+        """Unified flow: feature widgets (if any), then setup_ui (layout + tabs), then init state. build_widgets runs once from __init__."""
         self._create_feature_widgets()
-        self._assemble_ui()
+        self.setup_ui()
         self._initialize_states()
 
     def _define_spec(self):
@@ -190,10 +193,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         """Subclass optional extension point"""
         pass
 
-    def _assemble_ui(self):
-        self.build_widgets()
-        self.setup_ui()
-
     def _initialize_states(self):
         if getattr(self, "wave_shapes", None):
             self._on_button_selected(self.wave_shapes[0])
@@ -205,10 +204,12 @@ class BaseOscillatorSection(SectionBaseWidget):
         return getattr(self.spec, "controls", [])
 
     def build_widgets(self):
-        """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
+        """Unified flow: feature widgets (e.g. tuning_sliders for Analog), base widgets, tuning sliders, additional (Analog/Digital), then tab widget."""
+        self._create_feature_widgets()
         super().build_widgets()
         self._create_tuning_sliders()
         self._build_additional_widgets()
+        self._create_tab_widget()
 
     def setup_ui(self) -> None:
         """
@@ -227,18 +228,21 @@ class BaseOscillatorSection(SectionBaseWidget):
         layout.addStretch()
 
     def _add_pitch_env_tab(self):
+        self.pitch_widget = self._create_tuning_pitch_widget()
         self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PITCH, widget=self.pitch_widget)
 
     def _add_pwm_tab(self):
+        self.pw_group = self._create_pw_group()
         self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.PULSE_WIDTH, widget=self.pw_group)
 
     def _add_tuning_tab(self):
+        self.tuning_group = self._create_tuning_group()
         self._add_tab(key=self.SYNTH_SPEC.Wave.Tab.TUNING, widget=self.tuning_group)
 
     def _has(self, feature: OscillatorFeature) -> bool:
         return self.spec.supports(feature)
 
-    def _create_tab_widget(self):
+    def _create_tab_widget_old(self):
         """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
         self.tab_widget = QTabWidget()
         # --- Tuning tab (standardized name matching Digital) ---
@@ -247,38 +251,6 @@ class BaseOscillatorSection(SectionBaseWidget):
         self.pitch_widget = self._create_tuning_pitch_widget()
         # --- Pulse Width tab ---
         self.pw_group = self._create_pw_group()
-
-    def _create_rate_widget(self):
-        """Rate and Rate Ctrl Controls Tab"""
-        rate_layout = create_layout_with_widgets(self.rate_layout_widgets)
-        rate_widget = QWidget()
-        rate_widget.setLayout(rate_layout)
-        rate_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return rate_widget
-
-    def _create_depths_widget(self):
-        """Depths Tab"""
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
-        depths_widget = QWidget()
-        depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return depths_widget
-
-    def _create_rate_fade_controls(self) -> QWidget:
-        """Rate and Fade Controls Tab"""
-        rate_fade_widget = QWidget()
-        rate_fade_layout = create_layout_with_widgets(self.rate_layout_widgets)
-        rate_fade_widget.setLayout(rate_fade_layout)
-        rate_fade_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return rate_fade_widget
-
-    def _create_depths_controls(self) -> QWidget:
-        """Depths Tab"""
-        depths_widget = QWidget()
-        depths_layout = create_layout_with_widgets(self.depths_layout_widgets)
-        depths_widget.setLayout(depths_layout)
-        depths_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
-        return depths_widget
 
     def _create_waveform_buttons(self):
         """Create waveform buttons. Analog uses ModeButtonGroup (same as Digital); other subclasses use manual QButtonGroup."""

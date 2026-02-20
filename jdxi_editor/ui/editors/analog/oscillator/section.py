@@ -5,6 +5,8 @@ Analog Oscillator Section
 from types import SimpleNamespace
 from typing import Callable
 
+from PySide6.QtWidgets import QTabWidget
+
 from decologr import Decologr as log
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
@@ -82,26 +84,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
 
-    def _create_feature_widgets_old(self):
-        log.info(scope=self.__class__.__name__, message="_create_feature_widgets ...")
-        env_sliders = self._build_sliders(self.spec.env)
-        self.osc_pitch_env_velocity_sensitivity_slider = (
-            env_sliders[0] if env_sliders else None
-        )
-        if not hasattr(self, "spec") or not hasattr(self.spec, "switches"):
-            switches = []
-        else:
-            switches = self._build_switches(self.spec.switches)
-        self.sub_oscillator_type_switch = switches[0] if switches else None
-
-        tuning = self._build_sliders(self.spec.tuning)
-        self.tuning_sliders = tuning
-        log.info(
-            scope=self.__class__.__name__,
-            message="_create_feature_widgets done (tuning_sliders=%s)"
-            % (len(self.tuning_sliders) if self.tuning_sliders else 0,),
-        )
-
     def build_widgets(self):
         """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
         log.info(scope=self.__class__.__name__, message="build_widgets start")
@@ -145,9 +127,24 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.widgets_waveform_buttons = self.widgets.waveform_buttons
         self.widgets.pitch_env_widget = self.widgets.pitch_env_widget
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
-        log.info(scope=self.__class__.__name__, message="build_widgets calling _build_additional_widgets()")
-        self._build_additional_widgets()
-        log.info(scope=self.__class__.__name__, message="build_widgets done")
+        # base build_widgets() already ran _build_additional_widgets() and _create_tab_widget(); no second call
+
+    def _create_tab_widget_new(self):
+        """Override to add PitchEnvelopeWidget and PWMWidget as tabs"""
+
+        self.tab_widget = QTabWidget()
+        try:
+            for feature, builder in self.spec.feature_tabs.items():
+                if self._has(feature):
+                    log.message(f"feature {feature} found, running {builder}")
+                    builder()
+                else:
+                    log.message(f"feature {feature} not found!!!")
+        except Exception as ex:
+            log.exception(
+                f"Error {ex} occurred creating tab widget",
+                scope=self.__class__.__name__,
+            )
 
     def generate_wave_shapes(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
@@ -191,6 +188,16 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 pitch_env_widget=self.pitch_env_widget,
                 pwm_widget=self.pwm_widget,
             )
+
+    def _create_tab_widget(self):
+        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
+        self.tab_widget = QTabWidget()
+        # --- Tuning tab (standardized name matching Digital) ---
+        self.tuning_group = self._create_tuning_group()
+        # --- Pitch tab (standardized name matching Digital) ---
+        self.pitch_widget = self._create_tuning_pitch_widget()
+        # --- Pulse Width tab ---
+        self.pw_group = self._create_pw_group()
 
     def _create_env_slider(self):
         """Create env sliders"""

@@ -2,6 +2,7 @@
 Digital Oscillator Section for the JDXI Editor
 """
 
+from types import SimpleNamespace
 from typing import Callable
 
 from decologr import Decologr as log
@@ -103,8 +104,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.finalize()
 
     def finalize(self):
-        """Skip base _assemble_ui(); Digital builds UI via SectionBaseWidget._setup_ui and TAB_BUILDERS (no pitch_widget/tuning_group/pw_group)."""
-        self._initialize_states()
+        """Unified flow: call base finalize so setup_ui() runs (layout + waveform row + tab widget)."""
+        super().finalize()
 
     def _define_spec(self):
         self.spec: DigitalOscillatorLayoutSpec = self._build_layout_spec()
@@ -179,15 +180,6 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
         return self.widgets_waveform_buttons
 
-    def _create_feature_widgets_old(self):
-        # pcm_wave is already created in __init__ before super().__init__()/finalize()
-        self._build_additional_widgets()
-
-        self.tuning_sliders = [
-            self.osc_pitch_coarse_slider,
-            self.osc_pitch_fine_slider,
-        ]
-
     def _get_param_specs(self):
         """Return [] so section_base does not build control sliders; we build them in _build_additional_digital_widgets() to avoid duplicate tuning sliders."""
         return []
@@ -196,10 +188,15 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
         # All oscillator widgets in one container (same shape as Analog)
         super().build_widgets()
+        # Reuse pitch_env_widget and pwm_widget created in _build_additional_digital_widgets for tab builders
+        pitch_env = getattr(self, "pitch_env_widget", None) or self._create_pitch_env_widget()
+        pwm = getattr(self, "pwm_widget", None) or self._create_pwm_widget()
+        self.pitch_env_widget = pitch_env
+        self.pwm_widget = pwm
         self.widgets = DigitalOscillatorWidgets(
             waveform_buttons=self._create_waveform_buttons(),
-            pitch_env_widget=self._create_pitch_env_widget(),
-            pwm_widget=self._create_pwm_widget(),
+            pitch_env_widget=pitch_env,
+            pwm_widget=pwm,
             tuning=self.tuning_sliders,
             env=[],
             pcm_wave=getattr(self, DigitalOscillatorWidgetTypes.PCM_WAVE, None),
@@ -227,9 +224,18 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self._build_additional_digital_widgets()
 
     def _build_additional_digital_widgets(self):
-        """Build control sliders from SLIDER_GROUPS (same pattern as Analog Oscillator), then PCM controls.
-        Remove any control sliders already in tuning_control_widgets (from section_base) so we end up with exactly 3.
-        """
+        """Build pitch_env, pwm, and pw_shift so they exist before base calls _create_tab_widget(); then tab builders can run."""
+        # Create pitch_env and pwm so _create_tab_widget() (called right after by base build_widgets) can add PWM/Pitch tabs
+        if getattr(self, "pitch_env_widget", None) is None:
+            self.pitch_env_widget = self._create_pitch_env_widget()
+        if getattr(self, "pwm_widget", None) is None:
+            self.pwm_widget = self._create_pwm_widget()
+        self.widgets_pitch_env_widget = self.pitch_env_widget
+        if not isinstance(getattr(self, "widgets", None), DigitalOscillatorWidgets):
+            self.widgets = SimpleNamespace(
+                pitch_env_widget=self.pitch_env_widget,
+                pwm_widget=self.pwm_widget,
+            )
         self._create_pulse_width_shift_slider()
 
     def _create_pulse_width_shift_slider(self):

@@ -14,7 +14,7 @@ from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 
 class AnalogCommonSection(BaseCommonSection):
     """Common section for analog synth parameters."""
-
+    SKIP_BASE_SETUP_UI = True
     SYNTH_SPEC = Analog
 
     def __init__(
