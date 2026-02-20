@@ -168,10 +168,10 @@ class BaseOscillatorSection(SectionBaseWidget):
         raise NotImplementedError
 
     def _create_core_widgets(self):
-        self.waveform_buttons = self._create_waveform_buttons()
+        self.widgets_waveform_buttons = self._create_waveform_buttons()
 
         if hasattr(self, "spec") and hasattr(self.spec, "pitch_env"):
-            self.pitch_env_widget = self._create_pitch_env_widget()
+            self.widgets_pitch_env_widget = self._create_pitch_env_widget()
 
         if hasattr(self, "spec") and hasattr(self.spec, "pwm"):
             self.pwm_widget = self._create_pwm_widget()
@@ -214,7 +214,7 @@ class BaseOscillatorSection(SectionBaseWidget):
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
         # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self.pitch_env_widget = self._create_pitch_env_widget()
+        self.widgets_pitch_env_widget = self._create_pitch_env_widget()
         # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
         self.pwm_widget = self._create_pwm_widget()
         # Call parent to create other widgets (section_base uses SLIDER_GROUPS)
@@ -328,10 +328,10 @@ class BaseOscillatorSection(SectionBaseWidget):
             icon_factory=_waveform_icon_factory,
             parent=None,
         )
-        self.waveform_buttons = self.wave_mode_group.buttons
+        self.widgets_waveform_buttons = self.wave_mode_group.buttons
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
         self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = self.wave_mode_group
-        return self.waveform_buttons
+        return self.widgets_waveform_buttons
 
     def _create_waveform_buttons_manual(self):
         """Manual QPushButton + QButtonGroup path (used when not analog and subclass does not override)."""
@@ -513,7 +513,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             row.addStretch()
             return row
         waveform_buttons_list = [
-            w for w in self.waveform_buttons.values() if w is not None
+            w for w in self.widgets_waveform_buttons.values() if w is not None
         ]
         if self.sub_oscillator_type_switch is not None:
             waveform_buttons_list.append(self.sub_oscillator_type_switch)
@@ -582,11 +582,11 @@ class BaseOscillatorSection(SectionBaseWidget):
             self.midi_helper.send_midi_message(sysex_message)
 
             # --- Reset all buttons to default style (match Digital Filter section mode buttons)
-            for btn in self.waveform_buttons.values():
+            for btn in self.widgets_waveform_buttons.values():
                 btn.setChecked(False)
                 JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
             # --- Apply active style to the selected waveform button
-            selected_btn = self.waveform_buttons.get(waveform)
+            selected_btn = self.widgets_waveform_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
                 JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)

@@ -175,9 +175,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         )
 
         # Expose legacy mapping API used elsewhere
-        self.waveform_buttons = self.wave_mode_group.buttons
+        self.widgets_waveform_buttons = self.wave_mode_group.buttons
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
-        return self.waveform_buttons
+        return self.widgets_waveform_buttons
 
     def _create_feature_widgets(self):
         # pcm_wave is already created in __init__ before super().__init__()/finalize()
@@ -215,13 +215,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             ),
         )
         # Aliases to old widgets for back compatibility
-        self.waveform_buttons = self.widgets.waveform_buttons
-        # self.waveform_buttons = self._create_waveform_buttons()
-        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self.pitch_env_widget = self.widgets.pitch_env_widget
-        # self.pitch_env_widget = self._create_pitch_env_widget()
-        self.pitch_env_widgets = [self.pitch_env_widget]
-        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
+        self.widgets_waveform_buttons = self.widgets.waveform_buttons
+        self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
+        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
         self.pwm_widget = self.widgets.pwm_widget
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -301,7 +297,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         centered_layout = QHBoxLayout()
         centered_layout.addStretch()
         pitch_env_layout = create_layout_with_widgets(
-            widgets=[self.pitch_env_widget], vertical=False
+            widgets=[self.widgets_pitch_env_widget], vertical=False
         )
         pitch_env_group = create_group_from_definition(
             key=Digital.GroupBox.PITCH_ENVELOPE,

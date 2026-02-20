@@ -213,7 +213,7 @@ class TestDigitalSynthEditor(unittest.TestCase):
             mock_btn.setStyleSheet = Mock()
             mock_buttons[wave] = mock_btn
         
-        self.editor.partial_editors[1].oscillator_tab.waveform_buttons = mock_buttons
+        self.editor.partial_editors[1].oscillator_tab.widgets.waveform_buttons = mock_buttons
         
         # Update to PW_SQUARE waveform (value 2) - based on actual waveform_map
         self.editor._update_waveform_buttons(1, 2)

@@ -787,7 +787,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         ):
             failures.append(param.name)
             return
-        pitch_env = pe.oscillator_tab.pitch_env_widget
+        pitch_env = pe.oscillator_tab.widgets_pitch_env_widget
         control = pitch_env.controls.get(param)
         if control:
             control.blockSignals(True)

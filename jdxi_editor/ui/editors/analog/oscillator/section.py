@@ -50,7 +50,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         """
         self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
-        self.waveform_buttons: dict = wave_buttons or {}
+        self.widgets_waveform_buttons: dict = wave_buttons or {}
         self.analog: bool = True
         self.wave_shapes = self.generate_wave_shapes()
         self._define_spec()
@@ -118,13 +118,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             ),
         )
         # Aliases to old widgets for back compatibility
-        self.waveform_buttons = self.widgets.waveform_buttons
-        # self.waveform_buttons = self._create_waveform_buttons()
-        # Create Pitch Envelope widget from PITCH_ENV_SPEC (stores controls into self.controls)
-        self.pitch_env_widget = self.widgets.pitch_env_widget
-        # self.pitch_env_widget = self._create_pitch_env_widget()
-        self.pitch_env_widgets = [self.pitch_env_widget]
-        # Create PWMWidget from PWM_SPEC (base stores controls into self.controls)
+        self.widgets_waveform_buttons = self.widgets.waveform_buttons
+        self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
+        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
         self.pwm_widget = self.widgets.pwm_widget
 
     def generate_wave_shapes(self) -> list:
@@ -161,7 +157,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             self.osc_pitch_fine_slider = None
             self.tuning_sliders = []
         # --- Create pitch_env_widgets list after pitch_env_widget is created
-        self.pitch_env_widgets = [self.pitch_env_widget]
+        self.pitch_env_widgets = [self.widgets_pitch_env_widget]
         if self.osc_pitch_env_velocity_sensitivity_slider is not None:
             self.pitch_env_widgets.append(
                 self.osc_pitch_env_velocity_sensitivity_slider

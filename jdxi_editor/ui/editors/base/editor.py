@@ -367,7 +367,7 @@ class BaseSynthEditor(SynthEditor):
         if self.oscillator_section and hasattr(
             self.oscillator_section, OscillatorWidgetTypes.WAVEFORM_BUTTONS
         ):
-            buttons_dict = self.oscillator_section.waveform_buttons
+            buttons_dict = self.oscillator_section.widgets.waveform_buttons
             # --- Also sync to editor's wave_buttons for consistency
             self.wave_buttons.update(buttons_dict)
 
@@ -580,7 +580,7 @@ class BaseSynthEditor(SynthEditor):
                     self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None
                 )
             ):
-                self.oscillator_section.pitch_env_widget.refresh_plot_from_controls()
+                self.oscillator_section.widgets_pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)

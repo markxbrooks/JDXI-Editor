@@ -182,11 +182,11 @@ class BasePartialPanel(PartialPanel):
 
     def _on_waveform_selected(self, waveform: DigitalWaveOsc) -> None:
         """on waveform selected (harmonised Theme API)"""
-        for btn in self.oscillator_tab.waveform_buttons.values():
+        for btn in self.oscillator_tab.widgets.waveform_buttons.values():
             btn.setChecked(False)
             JDXi.UI.Theme.apply_button_rect(btn, analog=False)
 
-        selected = self.oscillator_tab.waveform_buttons.get(waveform)
+        selected = self.oscillator_tab.widgets.waveform_buttons.get(waveform)
         if selected:
             selected.setChecked(True)
             JDXi.UI.Theme.apply_button_active(selected, analog=False)

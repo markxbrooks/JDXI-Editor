@@ -143,9 +143,9 @@ class AnalogSynthEditor(BaseSynthEditor):
             self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
         }
         self.pitch_env_mapping = {
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.pitch_env_widget.attack_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.pitch_env_widget.decay_control,
-            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.pitch_env_widget.depth_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets_pitch_env_widget.attack_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets_pitch_env_widget.decay_control,
+            self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets_pitch_env_widget.depth_control,
         }
         self.pwm_mapping = {
             self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH: self.oscillator_section.pwm_widget.controls[
@@ -176,7 +176,7 @@ class AnalogSynthEditor(BaseSynthEditor):
                 address=self.address,
                 send_midi_parameter=self.send_midi_parameter,
             )
-            self.wave_buttons = self.oscillator_section.waveform_buttons
+            self.wave_buttons = self.oscillator_section.widgets.waveform_buttons
         except Exception as ex:
             log.message(
                 scope=self.__class__.__name__,
