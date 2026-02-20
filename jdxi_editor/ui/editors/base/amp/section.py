@@ -20,6 +20,10 @@ from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 class BaseAmpSection(SectionBaseWidget):
     """Base Amp Section"""
 
+    # Skip SectionBaseWidget._setup_ui() so we don't add Controls/ADSR tabs twice:
+    # base _setup_ui() calls _create_tab_widget() which adds them, then our setup_ui() adds them again.
+    SKIP_BASE_SETUP_UI = True
+
     def __init__(
         self,
         analog: bool = False,
@@ -44,46 +48,55 @@ class BaseAmpSection(SectionBaseWidget):
         )
 
     # ------------------------------------------------------------------
-    # Build Widgets
+    # Build Widgets (unified flow: both Analog and Digital)
     # ------------------------------------------------------------------
     def build_widgets(self):
-        """Build all amp widgets from SLIDER_GROUPS['controls'] when present; Digital builds in _create_parameter_widgets override."""
+        """Create tab widget, build control widgets (subclass hook), create ADSR. Subclasses override _build_control_widgets for their controls."""
         self.tab_widget = QTabWidget()
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget, analog=self.analog)
-        control_specs = self.spec.get("controls", []) if self.spec else []
+        self._build_control_widgets()
+        self._create_adsr_group()
+
+    def _build_control_widgets(self):
+        """Build control sliders from spec.controls into amp_sliders and self.controls. Digital overrides to populate amp_control_widgets (and pan) instead."""
+        control_specs = (
+            getattr(self.spec, "controls", None) or []
+            if self.spec
+            else []
+        )
         if control_specs:
             sliders = self._build_sliders(control_specs)
             for entry, slider in zip(control_specs, sliders):
                 self.amp_sliders[entry.param] = slider
                 self.controls[entry.param] = slider
-        self._create_adsr_group()
 
     # ------------------------------------------------------------------
-    # Setup UI
+    # Setup UI (unified flow: both Analog and Digital)
     # ------------------------------------------------------------------
     def setup_ui(self):
-        """Setup the UI for the analog amp section"""
+        """Create layout, add Controls and ADSR tabs, add tab widget to layout, build widgets container. Subclasses override _create_controls_widget and _build_amp_widgets as needed."""
         self.layout = self.create_layout()
-
-        # --- Level Controls Tab
-        self.controls_layout = create_layout_with_widgets(
-            list(self.amp_sliders.values())
-        )
-        self.level_controls_widget = QWidget()
-        self.level_controls_widget.setLayout(self.controls_layout)
-
+        self.level_controls_widget = self._create_controls_widget()
         self._add_tab(
             key=self.SYNTH_SPEC.Amp.Tab.CONTROLS, widget=self.level_controls_widget
         )
-
-        # --- ADSR Tab
         self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=self.adsr_group)
-
-        # --- Add tab widget to main layout
         self.layout.addWidget(self.tab_widget)
         self.layout.addStretch()
+        self.widgets = self._build_amp_widgets()
 
-        self.widgets = AmpWidgets(
+    def _create_controls_widget(self) -> QWidget:
+        """Build the Controls tab content. Base: vertical sliders from amp_sliders. Digital overrides to add amp_control_widgets + pan."""
+        self.controls_layout = create_layout_with_widgets(
+            list(self.amp_sliders.values())
+        )
+        level_controls_widget = QWidget()
+        level_controls_widget.setLayout(self.controls_layout)
+        return level_controls_widget
+
+    def _build_amp_widgets(self) -> AmpWidgets:
+        """Build the AmpWidgets container. Digital overrides to return DigitalAmpWidgets with pan."""
+        return AmpWidgets(
             tab_widget=self.tab_widget,
             level_controls_widget=self.level_controls_widget,
             controls=list(self.amp_sliders.values()),

@@ -82,7 +82,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
 
-    def _create_feature_widgets(self):
+    def _create_feature_widgets_old(self):
         log.info(scope=self.__class__.__name__, message="_create_feature_widgets ...")
         env_sliders = self._build_sliders(self.spec.env)
         self.osc_pitch_env_velocity_sensitivity_slider = (

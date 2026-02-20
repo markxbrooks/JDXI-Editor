@@ -179,7 +179,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
         return self.widgets_waveform_buttons
 
-    def _create_feature_widgets(self):
+    def _create_feature_widgets_old(self):
         # pcm_wave is already created in __init__ before super().__init__()/finalize()
         self._build_additional_widgets()
 
