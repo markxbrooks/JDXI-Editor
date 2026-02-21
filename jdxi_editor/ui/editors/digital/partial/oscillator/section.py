@@ -2,13 +2,10 @@
 Digital Oscillator Section for the JDXI Editor
 """
 
-from types import SimpleNamespace
 from typing import Callable
 
-from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QHBoxLayout,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -35,7 +32,7 @@ from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_from_definition,
-    create_layout_with_widgets,
+    create_layout_with_widgets, create_centered_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.editor.mode_button_group import (
     ModeButtonGroup,
@@ -154,17 +151,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
 
     def build_widgets(self):
         """Override to create PitchEnvelopeWidget and PWMWidget from specs"""
-        # All oscillator widgets in one container (same shape as Analog)
         super().build_widgets()
-        # Reuse pitch_env_widget and pwm_widget created in _build_additional_digital_widgets for tab builders
-        pitch_env = getattr(self, "pitch_env_widget", None) or self._create_pitch_env_widget()
-        pwm = getattr(self, "pwm_widget", None) or self._create_pwm_widget()
-        self.pitch_env_widget = pitch_env
-        self.pwm_widget = pwm
+        # All oscillator widgets in one container (same shape as Analog)
         self.widgets = DigitalOscillatorWidgets(
             waveform_buttons=self._create_waveform_buttons(),
-            pitch_env_widget=pitch_env,
-            pwm_widget=pwm,
+            pitch_env_widget=self._create_pitch_env_widget(),
+            pwm_widget=self._create_pwm_widget(),
             tuning=self.tuning_sliders,
             env=[],
             pcm_wave=getattr(self, DigitalOscillatorWidgetTypes.PCM_WAVE, None),
@@ -182,6 +174,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         # Aliases to old widgets for back compatibility
         self.widgets_waveform_buttons = self.widgets.waveform_buttons
         self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
+        self.pitch_env_widget = self.widgets.pitch_env_widget
+        self.pwm_widget = self.widgets.pwm_widget
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -189,21 +183,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         ]
 
     def _build_additional_widgets(self):
-        self._build_additional_digital_widgets()
-
-    def _build_additional_digital_widgets(self):
-        """Build pitch_env, pwm, and pw_shift so they exist before base calls _create_tab_widget(); then tab builders can run."""
-        # Create pitch_env and pwm so _create_tab_widget() (called right after by base build_widgets) can add PWM/Pitch tabs
-        if getattr(self, "pitch_env_widget", None) is None:
-            self.pitch_env_widget = self._create_pitch_env_widget()
-        if getattr(self, "pwm_widget", None) is None:
-            self.pwm_widget = self._create_pwm_widget()
-        self.widgets_pitch_env_widget = self.pitch_env_widget
-        if not isinstance(getattr(self, "widgets", None), DigitalOscillatorWidgets):
-            self.widgets = SimpleNamespace(
-                pitch_env_widget=self.pitch_env_widget,
-                pwm_widget=self.pwm_widget,
-            )
+        """Build additional Analog Widgets"""
         self._create_pulse_width_shift_slider()
 
     def _create_pulse_width_shift_slider(self):
@@ -262,8 +242,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pw_layout = QVBoxLayout()
         self.widgets.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.widgets.pwm_widget)
+
         if getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None) is not None:
-            pw_layout.addWidget(self.pw_shift_slider)
+            centered_pwshift_layout = create_centered_layout_with_widgets([self.pw_shift_slider])
+            pw_layout.addLayout(centered_pwshift_layout)
         pw_layout.addStretch()
         pw_group = create_group_from_definition(
             key=Digital.GroupBox.PULSE_WIDTH,

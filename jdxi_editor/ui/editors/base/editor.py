@@ -580,7 +580,7 @@ class BaseSynthEditor(SynthEditor):
                     self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None
                 )
             ):
-                self.oscillator_section.widgets_pitch_env_widget.refresh_plot_from_controls()
+                self.oscillator_section.widgets.pitch_env_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)

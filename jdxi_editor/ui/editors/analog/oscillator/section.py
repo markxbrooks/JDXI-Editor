@@ -122,11 +122,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         return self._build_wave_specs(self.ANALOG_WAVES)
 
     def _build_additional_widgets(self):
-        self._build_additional_analog_widgets()
-
-    def _build_additional_analog_widgets(self):
-        """build additional analog widgets"""
-        # log.info(scope=self.__class__.__name__, message="_build_additional_analog_widgets start")
+        """Build additional Analog Widgets"""
         self._create_env_slider()
         self._create_suboscillator_switches()
 

@@ -483,6 +483,7 @@ def add_widgets_to_layout(
 def create_centered_layout() -> QHBoxLayout:
     """Hlayout to squish the slides of the widget together"""
     layout = QHBoxLayout()
+    layout.addStretch()
     return layout
 
 

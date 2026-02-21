@@ -7,10 +7,10 @@ PITCH_ENV_BINDINGS = {
         ValueTransform.PITCH_ENV_TIME,
         lambda s, p: s.partial_editors[
             p
-        ].oscillator_tab.widgets_pitch_env_widget.attack_control,
+        ].oscillator_tab.widgets.pitch_env_widget.attack_control,
     ),
     Digital.Param.OSC_PITCH_ENV_DEPTH: ParamBinding(
         ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.widgets_pitch_env_widget.depth_control,
+        lambda s, p: s.partial_editors[p].oscillator_tab.widgets.pitch_env_widget.depth_control,
     ),
 }
