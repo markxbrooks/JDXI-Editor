@@ -15,7 +15,7 @@ T = TypeVar("T")
 
 
 @dataclass
-class WaveShapeSpec(Generic[T]):
+class ModeButtonSpec(Generic[T]):
     """LFO wave shape spec. Exposes .param as an alias for .shape so section_base can treat it like SliderSpec (oscillator/filter)."""
 
     shape: T

@@ -14,7 +14,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
 from jdxi_editor.ui.editors.base.lfo.widgets import LFOWidgets
-from jdxi_editor.ui.editors.base.wave.spec import WaveShapeSpec
+from jdxi_editor.ui.editors.base.wave.spec import ModeButtonSpec
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import SliderSpec, SwitchSpec
@@ -66,16 +66,16 @@ class BaseLFOSection(SectionBaseWidget):
         self._setup_ui()
 
     def generate_mode_button_specs(self) -> list:
-        """generate_wave_shapes"""
+        """generate_mode_button_specs, was generate_wave_shapes"""
         W: DigitalWave | AnalogWave = self.SYNTH_SPEC.Wave
         I = JDXi.UI.Icon
         wave_shapes = [
-            WaveShapeSpec(shape=W.LFO.TRI, icon=I.Wave.Icon.TRIANGLE),
-            WaveShapeSpec(shape=W.LFO.SINE, icon=I.Wave.Icon.SINE),
-            WaveShapeSpec(shape=W.LFO.SAW, icon=I.Wave.Icon.SAW),
-            WaveShapeSpec(shape=W.LFO.SQUARE, icon=I.Wave.Icon.SQUARE),
-            WaveShapeSpec(shape=W.LFO.SAMPLE_HOLD, icon=I.Wave.Icon.WAVEFORM),
-            WaveShapeSpec(shape=W.LFO.RANDOM, icon=I.Wave.Icon.RANDOM),
+            ModeButtonSpec(shape=W.LFO.TRI, icon=I.Wave.Icon.TRIANGLE),
+            ModeButtonSpec(shape=W.LFO.SINE, icon=I.Wave.Icon.SINE),
+            ModeButtonSpec(shape=W.LFO.SAW, icon=I.Wave.Icon.SAW),
+            ModeButtonSpec(shape=W.LFO.SQUARE, icon=I.Wave.Icon.SQUARE),
+            ModeButtonSpec(shape=W.LFO.SAMPLE_HOLD, icon=I.Wave.Icon.WAVEFORM),
+            ModeButtonSpec(shape=W.LFO.RANDOM, icon=I.Wave.Icon.RANDOM),
         ]
         return wave_shapes
 

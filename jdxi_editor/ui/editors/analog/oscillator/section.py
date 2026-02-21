@@ -1,11 +1,7 @@
 """
 Analog Oscillator Section
 """
-
-from types import SimpleNamespace
 from typing import Callable
-
-from PySide6.QtWidgets import QTabWidget
 
 from decologr import Decologr as log
 
@@ -86,20 +82,12 @@ class AnalogOscillatorSection(BaseOscillatorSection):
 
     def build_widgets(self):
         """Build widgets: run base to create waveform buttons, pitch env, PWM, then analog-specific (sub-osc switch, tuning)."""
-        log.info(scope=self.__class__.__name__, message="build_widgets start")
         super().build_widgets()
-        log.info(scope=self.__class__.__name__, message="build_widgets after super()")
-        # Base does not call _build_additional_analog_widgets; we must call it so env/tuning/switch sliders exist
-        # Reuse pitch_env_widget and pwm_widget if already created by _build_additional_analog_widgets
-        pitch_env = getattr(self, "pitch_env_widget", None) or self._create_pitch_env_widget()
-        pwm = getattr(self, "pwm_widget", None) or self._create_pwm_widget()
-        self.pitch_env_widget = pitch_env
-        self.pwm_widget = pwm
         # All oscillator widgets in one container
         self.widgets = AnalogOscillatorWidgets(
             waveform_buttons=self._create_waveform_buttons(),
-            pitch_env_widget=pitch_env,
-            pwm_widget=pwm,
+            pitch_env_widget=self._create_pitch_env_widget(),
+            pwm_widget=self._create_pwm_widget(),
             switches=(
                 [self.sub_oscillator_type_switch]
                 if self.sub_oscillator_type_switch
@@ -125,9 +113,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         # Aliases to old widgets for back compatibility
         self.widgets_waveform_buttons = self.widgets.waveform_buttons
-        self.widgets.pitch_env_widget = self.widgets.pitch_env_widget
+        self.pitch_env_widget = self.widgets.pitch_env_widget
+        self.pwm_widget = self.widgets.pwm_widget
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
-        # base build_widgets() already ran _build_additional_widgets() and _create_tab_widget(); no second call
 
     def generate_mode_button_specs(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
@@ -141,7 +129,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         # log.info(scope=self.__class__.__name__, message="_build_additional_analog_widgets start")
         self._create_env_slider()
         self._create_suboscillator_switches()
-        self._ensure_widgets()  # needed for now
 
     def _create_suboscillator_switches(self):
         """Sub Oscillator Type switch; optional when SWITCH_SPECS is empty"""
@@ -150,27 +137,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         else:
             switches = self._build_switches(self.spec.switches)
         self.sub_oscillator_type_switch = switches[0] if len(switches) == 1 else None
-
-    def _ensure_widgets(self):
-        # --- Ensure pitch_env_widget and pwm_widget exist before _create_tab_widget (base uses
-        # self.pitch_env_widgets and self.widgets.pwm_widget; at this point we're still inside
-        # super().build_widgets() so self.widgets is not yet the AnalogOscillatorWidgets instance)
-        if getattr(self, "pitch_env_widget", None) is None:
-            self.pitch_env_widget = self._create_pitch_env_widget()
-        if getattr(self, "pwm_widget", None) is None:
-            self.pwm_widget = self._create_pwm_widget()
-        self.pitch_env_widgets = [w for w in [self.pitch_env_widget] + (
-            [self.osc_pitch_env_velocity_sensitivity_slider]
-            if self.osc_pitch_env_velocity_sensitivity_slider is not None
-            else []
-        ) if w is not None]
-        # --- Base _create_pw_group and _create_pitch_env_group need self.widgets.pwm_widget and
-        # self.pitch_env_widgets; provide a minimal namespace so _create_tab_widget() can run
-        if not isinstance(getattr(self, "widgets", None), AnalogOscillatorWidgets):
-            self.widgets = SimpleNamespace(
-                pitch_env_widget=self.pitch_env_widget,
-                pwm_widget=self.pwm_widget,
-            )
 
     def _create_env_slider(self):
         """Create env sliders"""
