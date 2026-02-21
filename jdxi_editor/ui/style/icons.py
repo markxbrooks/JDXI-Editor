@@ -74,6 +74,12 @@ class JDXiUIIconRegistry:
     FILE_MOLECULE = "mdi.molecule"
     FLOPPY_DISK = "ph.floppy-disk-fill"
 
+    # Ports etc
+    USB = "ri.usb-line"
+
+    # Misc
+    MAGIC = "mdi6.auto-fix"
+
     # MIDI icons
     MIDI_PORT = "mdi.midi-port"
     MUSIC = "mdi.file-music-outline"

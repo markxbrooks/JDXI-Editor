@@ -3,9 +3,10 @@ LFO section of the digital partial editor.
 """
 
 from enum import Enum, auto
-from typing import Callable
+from typing import Any, Callable
 
 from decologr import Decologr as log
+from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -20,6 +21,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
+from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
@@ -104,8 +106,10 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         self.widgets = OscillatorWidgets
         self.pitch_env_widgets = None
+        # Param/key -> widget; use _register_widget() for dual-write during migration from named attrs
+        self._widgets: dict[AddressParameter, QWidget] = {}
         self.shape_icon_map: dict | None = None
-        self.sub_oscillator_type_switch: QWidget | None = None
+        self.sub_oscillator_type_switch: QPushButton | None = None
         self.tuning_sliders: list | None = None
         self.wave_layout_widgets: list = []
         self.wave_shape_param: list | None = None
@@ -145,6 +149,10 @@ class BaseOscillatorSection(SectionBaseWidget):
             icons_row_type=icons_row_type,
             analog=analog,
         )
+
+    def widget_for(self, key: Any) -> QWidget | None:
+        """Return the widget stored under key (e.g. OscillatorWidgetTypes.PITCH_ENV)."""
+        return self._widgets.get(key)
 
     def _create_tab_widget(self):
         """Create tab widget only. Tabs are added once in setup_ui() via base _create_tabs(); do not add tabs here or they appear twice."""
@@ -245,15 +253,20 @@ class BaseOscillatorSection(SectionBaseWidget):
     def _has(self, feature: OscillatorFeature) -> bool:
         return self.spec.supports(feature)
 
-    def _create_tab_widget_old(self):
-        """Tab widget with tuning group and pitch widget. Use self.tab_widget so base _add_tab() adds tabs to it."""
-        self.tab_widget = QTabWidget()
-        # --- Tuning tab (standardized name matching Digital) ---
-        self.tuning_group = self._create_tuning_group()
-        # --- Pitch tab (standardized name matching Digital) ---
-        self.pitch_widget = self._create_tuning_pitch_widget()
-        # --- Pulse Width tab ---
-        self.pw_group = self._create_pw_group()
+    def _register_widget(
+        self,
+        key: Any,
+        widget: QWidget,
+        *,
+        legacy_attr: str | None = None,
+    ) -> None:
+        """
+        Store widget by key. During migration also set legacy named attr so existing
+        code keeps working; later remove legacy_attr and delete the named params.
+        """
+        self._widgets[key] = widget
+        if legacy_attr is not None:
+            setattr(self, legacy_attr, widget)
 
     def _create_waveform_buttons(self):
         """Create waveform buttons. Analog uses ModeButtonGroup (same as Digital); other subclasses use manual QButtonGroup."""
@@ -292,10 +305,9 @@ class BaseOscillatorSection(SectionBaseWidget):
             icon_factory=_waveform_icon_factory,
             parent=None,
         )
-        self.widgets_waveform_buttons = self.wave_mode_group.buttons
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
         self.controls[self.SYNTH_SPEC.Param.OSC_WAVEFORM] = self.wave_mode_group
-        return self.widgets_waveform_buttons
+        return self.wave_mode_group.buttons
 
     def _create_waveform_buttons_manual(self):
         """Manual QPushButton + QButtonGroup path (used when not analog and subclass does not override)."""
@@ -418,6 +430,13 @@ class BaseOscillatorSection(SectionBaseWidget):
         if self._send_param and not getattr(self, "_suppress_waveform_midi", False):
             self._send_param(self.SYNTH_SPEC.Param.OSC_WAVEFORM, button_param.value)
 
+    def _resolve_rule_widget(self, key):
+        """Resolve a BUTTON_ENABLE_RULES key to a widget. Prefer _widgets, then attribute."""
+        w = self.widget_for(key)
+        if w is not None:
+            return w
+        return getattr(self, key, None)
+
     def _update_button_enabled_states(self, button_param):
         """Override to enable/disable widgets based on selected waveform.
 
@@ -426,13 +445,13 @@ class BaseOscillatorSection(SectionBaseWidget):
         """
         # --- Disable all first
         for attrs in self.BUTTON_ENABLE_RULES.values():
-            for attr in attrs:
-                widget = getattr(self, attr, None)
+            for key in attrs:
+                widget = self._resolve_rule_widget(key)
                 if widget is not None:
                     widget.setEnabled(False)
         # --- Enable per selected button
-        for attr in self.BUTTON_ENABLE_RULES.get(button_param, []):
-            widget = getattr(self, attr, None)
+        for key in self.BUTTON_ENABLE_RULES.get(button_param, []):
+            widget = self._resolve_rule_widget(key)
             if widget is not None:
                 widget.setEnabled(True)
 
@@ -477,7 +496,7 @@ class BaseOscillatorSection(SectionBaseWidget):
             row.addStretch()
             return row
         waveform_buttons_list = [
-            w for w in self.widgets_waveform_buttons.values() if w is not None
+            w for w in self.wave_mode_group.buttons.values() if w is not None
         ]
         if self.sub_oscillator_type_switch is not None:
             waveform_buttons_list.append(self.sub_oscillator_type_switch)
@@ -501,10 +520,12 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        pw_group = create_group_with_widgets(
-            label="Pulse Width", widgets=[self.widgets.pwm_widget]
+        pwm_widget = self.widget_for(OscillatorWidgetTypes.PWM) or getattr(
+            self.widgets, "pwm_widget", None
         )
-        # @@@ self.widgets.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+        pw_group = create_group_with_widgets(
+            label="Pulse Width", widgets=[pwm_widget] if pwm_widget else []
+        )
         return pw_group
 
     def _create_pitch_env_group(self) -> QGroupBox:
@@ -513,21 +534,12 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         :return: QGroupBox
         """
-        # --- Pitch Envelope Group
+        pitch_env = self.widget_for(OscillatorWidgetTypes.PITCH_ENV)
+        widgets = [pitch_env] if pitch_env else (self.pitch_env_widgets or [])
         pitch_env_group = create_group_with_widgets(
-            label="Pitch Envelope", widgets=self.pitch_env_widgets
+            label="Pitch Envelope", widgets=widgets
         )
         return pitch_env_group
-
-    def _update_pw_controls_state(self, waveform: AnalogWaveOsc):
-        """
-        Update pulse width controls enabled state based on waveform
-
-        :param waveform: AnalogOscWave value
-        :return: None
-        """
-        pw_enabled = waveform == self.SYNTH_SPEC.Wave.Osc.SQUARE
-        # @@@ self.widgets.pwm_widget.setEnabled(pw_enabled)
 
     def _on_waveform_selected_local(self, waveform: AnalogWaveOsc | DigitalWaveOsc):
         """
@@ -546,15 +558,14 @@ class BaseOscillatorSection(SectionBaseWidget):
             self.midi_helper.send_midi_message(sysex_message)
 
             # --- Reset all buttons to default style (match Digital Filter section mode buttons)
-            for btn in self.widgets_waveform_buttons.values():
+            for btn in self.wave_mode_group.buttons.values():
                 btn.setChecked(False)
                 JDXi.UI.Theme.apply_button_rect(btn, analog=self.analog)
             # --- Apply active style to the selected waveform button
-            selected_btn = self.widgets_waveform_buttons.get(waveform)
+            selected_btn = self.wave_mode_group.buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
                 JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
-            self._update_pw_controls_state(waveform)
 
     def _create_pwm_widget(self) -> PWMWidget:
         """Create PWM widget from PWM_SPEC or SYNTH_SPEC params."""

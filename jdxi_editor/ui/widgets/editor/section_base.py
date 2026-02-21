@@ -275,13 +275,23 @@ class SectionBaseWidget(SynthBase):
 
     def _update_button_enabled_states(self, button_param):
         """Enable/disable controls based on BUTTON_ENABLE_RULES"""
+
+        def _widget_for_key(key):
+            if hasattr(self, "_resolve_rule_widget"):
+                return self._resolve_rule_widget(key)
+            return getattr(self, key, None)
+
         # --- Disable all first
         for attrs in self.BUTTON_ENABLE_RULES.values():
-            for attr in attrs:
-                getattr(self, attr, None).setEnabled(False)
+            for key in attrs:
+                widget = _widget_for_key(key)
+                if widget is not None:
+                    widget.setEnabled(False)
         # --- Enable per selected button
-        for attr in self.BUTTON_ENABLE_RULES.get(button_param, []):
-            getattr(self, attr, None).setEnabled(True)
+        for key in self.BUTTON_ENABLE_RULES.get(button_param, []):
+            widget = _widget_for_key(key)
+            if widget is not None:
+                widget.setEnabled(True)
 
     def _initialize_button_states(self):
         """Set initial button state (first in wave_shapes / BUTTON_SPECS). Uses spec.param (SliderSpec and WaveShapeSpec both expose .param)."""

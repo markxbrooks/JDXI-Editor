@@ -142,9 +142,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         )
 
         # Expose legacy mapping API used elsewhere
-        self.widgets_waveform_buttons = self.wave_mode_group.buttons
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
-        return self.widgets_waveform_buttons
+        return self.wave_mode_group.buttons
 
     def _get_param_specs(self):
         """Return [] so section_base does not build control sliders; we build them in _build_additional_digital_widgets() to avoid duplicate tuning sliders."""
@@ -160,23 +159,30 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pwm_widget=self._create_pwm_widget(),
             tuning=self.tuning_sliders,
             env=[],
-            pcm_wave=getattr(self, DigitalOscillatorWidgetTypes.PCM_WAVE, None),
-            pw_shift_slider=getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None),
-            osc_pitch_coarse_slider=getattr(
-                self, DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE, None
+            pcm_wave=self._resolve_rule_widget(DigitalOscillatorWidgetTypes.PCM_WAVE),
+            pw_shift_slider=self._resolve_rule_widget(
+                DigitalOscillatorWidgetTypes.PW_SHIFT
             ),
-            osc_pitch_fine_slider=getattr(
-                self, DigitalOscillatorWidgetTypes.OSC_PITCH_FINE, None
+            osc_pitch_coarse_slider=self._resolve_rule_widget(
+                DigitalOscillatorWidgetTypes.OSC_PITCH_COARSE
             ),
-            super_saw_detune=getattr(
-                self, DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE, None
+            osc_pitch_fine_slider=self._resolve_rule_widget(
+                DigitalOscillatorWidgetTypes.OSC_PITCH_FINE
+            ),
+            super_saw_detune=self._resolve_rule_widget(
+                DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE
             ),
         )
         # Aliases to old widgets for back compatibility
-        self.widgets_waveform_buttons = self.widgets.waveform_buttons
-        self.widgets_pitch_env_widget = self.widgets.pitch_env_widget
-        self.pitch_env_widget = self.widgets.pitch_env_widget
-        self.pwm_widget = self.widgets.pwm_widget
+        # Dual-write: _widgets[key] and legacy names; migrate reads to _widgets then drop legacy_attr
+        self._register_widget(
+            DigitalOscillatorWidgetTypes.PITCH_ENV,
+            self.widgets.pitch_env_widget,
+        )
+        self._register_widget(
+            DigitalOscillatorWidgetTypes.PWM,
+            self.widgets.pwm_widget,
+        )
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -198,10 +204,10 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         return self.pw_shift_slider
 
     def _has_pwm(self) -> bool:
-        return getattr(self, DigitalOscillatorWidgetTypes.PWM, None) is not None
+        return self.widget_for(DigitalOscillatorWidgetTypes.PWM) is not None
 
     def _has_pitch_env(self) -> bool:
-        return getattr(self, DigitalOscillatorWidgetTypes.PITCH_ENV, None) is not None
+        return self.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV) is not None
 
     def _has_pcm(self) -> bool:
         """Check if PCM wave widget exists and has both gain and number controls."""
@@ -215,7 +221,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         )
 
     def _has_adsr(self) -> bool:
-        return getattr(self, "adsr_widget", None) is not None
+        return hasattr(self, "adsr_widget") and self.adsr_widget is not None
 
     def _add_pcm_wave_gain_tab(self):
         """Add PCM Wave gain tab (matches base interface name)"""
@@ -225,8 +231,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         """Add pitch env tab"""
         centered_layout = QHBoxLayout()
         centered_layout.addStretch()
+        pitch_env_widget = self.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV)
         pitch_env_layout = create_layout_with_widgets(
-            widgets=[self.widgets_pitch_env_widget], vertical=False
+            widgets=[pitch_env_widget] if pitch_env_widget else [], vertical=False
         )
         pitch_env_group = create_group_from_definition(
             key=Digital.GroupBox.PITCH_ENVELOPE,
@@ -241,10 +248,12 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     def _add_pwm_tab(self):
         """Add PWM tab with optional pulse width shift slider and PWM widget."""
         pw_layout = QVBoxLayout()
-        self.widgets.pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
-        pw_layout.addWidget(self.widgets.pwm_widget)
+        pwm_widget = self.widget_for(DigitalOscillatorWidgetTypes.PWM)
+        if pwm_widget:
+            pwm_widget.setMaximumHeight(JDXi.UI.Style.PWM_WIDGET_HEIGHT)
+            pw_layout.addWidget(pwm_widget)
 
-        if getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None) is not None:
+        if self._resolve_rule_widget(DigitalOscillatorWidgetTypes.PW_SHIFT) is not None:
             centered_pwshift_layout = create_centered_layout_with_widgets(
                 [self.pw_shift_slider]
             )

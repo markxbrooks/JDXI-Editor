@@ -90,7 +90,7 @@ class BaseLFOSection(SectionBaseWidget):
             self.wave_shape_buttons = {}
 
         # 1) build widgets
-        self.widgets: LFOWidgets = self._build_widgets()
+        # self.build_widgets() # should be built in base section
 
         # 2) root layout
         layout = self.create_layout()
@@ -105,7 +105,7 @@ class BaseLFOSection(SectionBaseWidget):
 
     def build_widgets(self):
         """Build LFO widgets (switches, depth, rate). Shape row is created in _setup_ui() via _create_shape_row(), not _create_waveform_buttons()."""
-        self._build_widgets()
+        self.widgets: LFOWidgets = self._build_widgets()
 
     def _build_widgets(self) -> LFOWidgets:
         spec = self._build_layout_spec()

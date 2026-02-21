@@ -60,6 +60,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 
@@ -293,23 +294,25 @@ class AnalogSynthEditor(BaseSynthEditor):
                     self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
                 }
             )
-        if (
-            self.oscillator_section is not None
-            and getattr(self.oscillator_section, "widgets", None) is not None
-        ):
-            w = self.oscillator_section.widgets
-            if getattr(w, "pitch_env_widget", None) is not None:
+        if self.oscillator_section is not None:
+            pitch_env = self.oscillator_section.widget_for(
+                OscillatorWidgetTypes.PITCH_ENV
+            )
+            if pitch_env is not None:
                 self.pitch_env_mapping.update(
                     {
-                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.attack_control,
-                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.decay_control,
-                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets.pitch_env_widget.depth_control,
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: pitch_env.attack_control,
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: pitch_env.decay_control,
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: pitch_env.depth_control,
                     }
                 )
-            if getattr(w, "pwm_widget", None) is not None and getattr(
-                w.pwm_widget, "controls", None
+            pwm_widget = self.oscillator_section.widget_for(OscillatorWidgetTypes.PWM)
+            if (
+                pwm_widget is not None
+                and hasattr(pwm_widget, "controls")
+                and pwm_widget.controls
             ):
-                ctrls = w.pwm_widget.controls
+                ctrls = pwm_widget.controls
                 ctrl_pw = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH)
                 ctrl_mod = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH)
                 if ctrl_pw is not None:

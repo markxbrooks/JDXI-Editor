@@ -18,6 +18,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
@@ -108,32 +109,17 @@ class InstrumentPresetWidget(QWidget):
         checkable: bool = False,
     ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
-        btn = QPushButton()
+        btn = create_jdxi_button("")
         btn.setCheckable(checkable)
-        btn.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
-        btn.setFixedSize(
-            JDXiUIDimensions.BUTTON_ROUND.WIDTH,
-            JDXiUIDimensions.BUTTON_ROUND.HEIGHT,
-        )
         if slot is not None:
             btn.clicked.connect(slot)
         if name:
             setattr(self, f"{name}_button", btn)
         layout.addWidget(btn)
-        label_row = QWidget()
-        label_layout = QHBoxLayout(label_row)
-        label_layout.setContentsMargins(0, 0, 0, 0)
-        label_layout.setSpacing(4)
         pixmap = JDXi.UI.Icon.get_icon_pixmap(
             icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
         )
-        if pixmap and not pixmap.isNull():
-            icon_label = QLabel()
-            icon_label.setPixmap(pixmap)
-            label_layout.addWidget(icon_label)
-        text_label = QLabel(text)
-        text_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
-        label_layout.addWidget(text_label)
+        label_row, _ = create_jdxi_row(text, icon_pixmap=pixmap)
         layout.addWidget(label_row)
         return btn
 

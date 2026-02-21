@@ -974,8 +974,9 @@ class ProgramEditor(BasicEditor):
                     master_slider,
                 )
             },
+            # Use (param_constant, slider) like Master/Drums so Analog is as reliable
             JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                "AMP_LEVEL": (AnalogParam.get_by_name, analog_slider)
+                "AMP_LEVEL": (AnalogParam.AMP_LEVEL, analog_slider),
             },
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
                 "KIT_LEVEL": (DrumCommonParam.KIT_LEVEL, drums_slider)

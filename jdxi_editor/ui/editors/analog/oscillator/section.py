@@ -55,7 +55,6 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         )
         self.widgets: OscillatorWidgets | None = None
         self._on_waveform_selected = waveform_selected_callback
-        self.widgets_waveform_buttons: dict = wave_buttons or {}
         self.analog: bool = True
         self.wave_shapes = self.generate_mode_button_specs()
         log.info(scope=self.__class__.__name__, message="_define_spec ...")
@@ -105,20 +104,25 @@ class AnalogOscillatorSection(BaseOscillatorSection):
             ),
             sub_oscillator_type_switch=self.sub_oscillator_type_switch,
             osc_pitch_env_velocity_sensitivity_slider=self.osc_pitch_env_velocity_sensitivity_slider,
-            osc_pitch_coarse_slider=getattr(
-                self, AnalogOscillatorWidgetTypes.OSC_PITCH_COARSE, None
+            osc_pitch_coarse_slider=self._resolve_rule_widget(
+                AnalogOscillatorWidgetTypes.OSC_PITCH_COARSE
             ),
-            osc_pitch_fine_slider=getattr(
-                self, AnalogOscillatorWidgetTypes.OSC_PITCH_FINE, None
+            osc_pitch_fine_slider=self._resolve_rule_widget(
+                AnalogOscillatorWidgetTypes.OSC_PITCH_FINE
             ),
             pitch_env_widgets=getattr(
                 self, AnalogOscillatorWidgetTypes.PITCH_ENV_WIDGETS, []
             ),
         )
         # Aliases to old widgets for back compatibility
-        self.widgets_waveform_buttons = self.widgets.waveform_buttons
-        self.pitch_env_widget = self.widgets.pitch_env_widget
-        self.pwm_widget = self.widgets.pwm_widget
+        self._register_widget(
+            AnalogOscillatorWidgetTypes.PITCH_ENV,
+            self.widgets.pitch_env_widget,
+        )
+        self._register_widget(
+            AnalogOscillatorWidgetTypes.PWM,
+            self.widgets.pwm_widget,
+        )
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
 
     def generate_mode_button_specs(self) -> list:

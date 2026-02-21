@@ -573,14 +573,12 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if (
-                hasattr(self, "oscillator_section")
-                and self.oscillator_section
-                and getattr(
-                    self.oscillator_section, OscillatorWidgetTypes.PITCH_ENV, None
+            if hasattr(self, "oscillator_section") and self.oscillator_section:
+                pitch_env = self.oscillator_section.widget_for(
+                    OscillatorWidgetTypes.PITCH_ENV
                 )
-            ):
-                self.oscillator_section.widgets.pitch_env_widget.refresh_plot_from_controls()
+                if pitch_env is not None:
+                    pitch_env.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -616,12 +614,12 @@ class BaseSynthEditor(SynthEditor):
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if (
-                hasattr(self, "oscillator_section")
-                and self.oscillator_section
-                and getattr(self.oscillator_section, OscillatorWidgetTypes.PWM, None)
-            ):
-                self.oscillator_section.widgets.pwm_widget.refresh_plot_from_controls()
+            if hasattr(self, "oscillator_section") and self.oscillator_section:
+                pwm_widget = self.oscillator_section.widget_for(
+                    OscillatorWidgetTypes.PWM
+                )
+                if pwm_widget is not None:
+                    pwm_widget.refresh_plot_from_controls()
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)
@@ -794,9 +792,14 @@ class BaseSynthEditor(SynthEditor):
         """
         pw_enabled = waveform == AnalogWaveOsc.SQUARE
         log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
-        # --- Access PWM controls from oscillator_section.pwm_widget.controls
-        if self.oscillator_section and self.oscillator_section.widgets.pwm_widget:
-            pwm_controls = self.oscillator_section.widgets.pwm_widget.controls
+        # --- Access PWM controls from oscillator_section via widget_for
+        pwm_widget = (
+            self.oscillator_section.widget_for(OscillatorWidgetTypes.PWM)
+            if self.oscillator_section
+            else None
+        )
+        if self.oscillator_section and pwm_widget:
+            pwm_controls = pwm_widget.controls
             if self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH in pwm_controls:
                 pwm_controls[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH].setEnabled(
                     pw_enabled

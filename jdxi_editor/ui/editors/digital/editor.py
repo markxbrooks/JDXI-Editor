@@ -782,12 +782,14 @@ class DigitalSynthEditor(BaseSynthEditor):
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         pe = self.partial_editors.get(partial_no)
-        if not pe or not getattr(
-            pe.oscillator_tab, DigitalOscillatorWidgetTypes.PITCH_ENV, None
-        ):
+        pitch_env = (
+            pe.oscillator_tab.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV)
+            if pe
+            else None
+        )
+        if not pe or not pitch_env:
             failures.append(param.name)
             return
-        pitch_env = pe.oscillator_tab.widgets_pitch_env_widget
         control = pitch_env.controls.get(param)
         if control:
             control.blockSignals(True)
@@ -838,26 +840,24 @@ class DigitalSynthEditor(BaseSynthEditor):
             and param in oscillator_section.controls
         ):
             control = oscillator_section.controls[param]
-        # Fallback: try to access pwm_widget (old system, for backward compatibility)
-        elif (
-            hasattr(oscillator_section, DigitalOscillatorWidgetTypes.PWM)
-            and oscillator_section.widgets.pwm_widget
-        ):
-            if param == Digital.Param.OSC_PULSE_WIDTH:
-                control = oscillator_section.widgets.pwm_widget.pulse_width_control
-            elif param == Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
-                control = oscillator_section.widgets.pwm_widget.mod_depth_control
+        else:
+            pwm_widget = oscillator_section.widget_for(DigitalOscillatorWidgetTypes.PWM)
+            if pwm_widget:
+                if param == Digital.Param.OSC_PULSE_WIDTH:
+                    control = pwm_widget.pulse_width_control
+                elif param == Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH:
+                    control = pwm_widget.mod_depth_control
 
         if control:
             control.blockSignals(True)
             control.setValue(new_value)
             control.blockSignals(False)
-            if (
-                pe
-                and getattr(pe, DigitalTabName.OSCILLATOR, None)
-                and getattr(pe.oscillator_tab, DigitalOscillatorWidgetTypes.PWM, None)
-            ):
-                pe.oscillator_tab.widgets.pwm_widget.refresh_plot_from_controls()
+            if pe and getattr(pe, DigitalTabName.OSCILLATOR, None):
+                pwm_widget = pe.oscillator_tab.widget_for(
+                    DigitalOscillatorWidgetTypes.PWM
+                )
+                if pwm_widget is not None:
+                    pwm_widget.refresh_plot_from_controls()
             successes.append(param.name)
         else:
             failures.append(param.name)

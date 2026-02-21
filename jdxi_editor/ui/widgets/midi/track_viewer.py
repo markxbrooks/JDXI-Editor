@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
@@ -90,7 +91,7 @@ class MidiTrackViewer(QWidget):
                 lambda checked, c=ch: self.toggle_channel_mute(c, checked)
             )
             btn.setStyleSheet(
-                "QPushButton:checked { background-color: #cc0000; color: white; }"
+                generate_sequencer_button_style(True, checked_means_inactive=True)
             )
             self.mute_buttons[ch] = btn
             mute_layout.addWidget(btn)
@@ -223,6 +224,14 @@ class MidiTrackViewer(QWidget):
             self.muted_channels.add(channel)
         else:
             self.muted_channels.discard(channel)
+
+        # Update this channel's button style (unmuted = red border, muted = grey)
+        if channel in self.mute_buttons:
+            self.mute_buttons[channel].setStyleSheet(
+                generate_sequencer_button_style(
+                    not is_muted, checked_means_inactive=True
+                )
+            )
 
         # Notify all track widgets
         for widget in self.midi_track_widgets.values():

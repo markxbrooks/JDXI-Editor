@@ -117,6 +117,23 @@ def create_widget_with_layout(inner_layout: QHBoxLayout) -> QWidget:
     return widget
 
 
+def create_icon_and_label(
+    label: str = "", icon: str = ""
+) -> tuple[QHBoxLayout, QLabel]:
+    """create icon and label"""
+    layout = QHBoxLayout()
+    label = QLabel(label)
+    icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+        icon, color=JDXi.UI.Style.FOREGROUND, size=20
+    )
+    if icon_pixmap and not icon_pixmap.isNull():
+        icon_label = QLabel()
+        icon_label.setPixmap(icon_pixmap)
+        layout.addWidget(icon_label)
+    layout.addWidget(label)
+    return layout, label
+
+
 def create_layout_with_widgets(
     widgets: list,
     vertical: bool = False,

@@ -148,7 +148,9 @@ class ProgramMixer(SynthBase):
         self.digital1_level_slider = self.tracks[1].slider
         self.digital2_level_slider = self.tracks[2].slider
         self.drums_level_slider = self.tracks[3].slider
-        self.analog_level_slider = self.tracks[4].slider
+        self.analog_level_slider = self.tracks[
+            4
+        ].slider  # index 4 = Analog; same pattern as others
 
     def _track_for_synth(self, synth: str, name: str, param: AddressParameter):
         """track for synth"""
