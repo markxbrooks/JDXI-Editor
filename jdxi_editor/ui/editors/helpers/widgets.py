@@ -37,6 +37,14 @@ def set_widget_value_safely(widget: QWidget, value: int) -> None:
     widget.blockSignals(False)
 
 
+def get_icon_pixmap(icon_name) -> QPixmap | None:
+    """get icon pixmap for given name"""
+    icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+        icon_name, color=JDXi.UI.Style.FOREGROUND, size=20
+    )
+    return icon_pixmap
+
+
 def create_jdxi_button_from_spec(
     spec: ButtonSpec, button_group: QButtonGroup = None, checkable: bool = True
 ) -> QPushButton:

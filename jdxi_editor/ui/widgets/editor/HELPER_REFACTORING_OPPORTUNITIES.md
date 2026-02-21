@@ -37,12 +37,12 @@ from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout, creat
 # Option 1: Create group with form layout
 partial_misc_group, form_layout = create_group_with_layout(
     label="Misc",
-    child_layout=create_form_layout_with_widgets([widget1, widget2])
+    layout=create_form_layout_with_widgets([widget1, widget2])
 )
 
 # Option 2: Even simpler - create form layout with widgets first
 form_layout = create_form_layout_with_widgets([widget1, widget2])
-partial_misc_group, _ = create_group_with_layout("Misc", child_layout=form_layout)
+partial_misc_group, _ = create_group_with_layout("Misc", layout=form_layout)
 ```
 
 **Files Affected:**

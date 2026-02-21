@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QVBoxLayout,
-    QWidget,
+    QWidget, QFormLayout,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -123,7 +123,7 @@ class SearchableFilterableComboBox(QWidget):
         self.search_box: Optional[QLineEdit] = None
 
         # --- Layout
-        layout = QVBoxLayout(self)
+        layout = QFormLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(4)
 

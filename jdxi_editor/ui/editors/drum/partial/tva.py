@@ -183,7 +183,7 @@ class DrumTVASection(DrumBaseSection):
         envelope_slider_layout = QGridLayout()
         tva_group, _ = create_group_with_layout(
             label="TVA",
-            child_layout=envelope_slider_layout,
+            layout=envelope_slider_layout,
             style_sheet=JDXi.UI.Style.ADSR,
         )
 

@@ -15,6 +15,8 @@ from enum import Enum
 
 import mido
 import pyaudio
+from PySide6.QtGui import QPixmap
+
 from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
 from picomidi.constant import Midi
@@ -60,7 +62,7 @@ from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
-    create_jdxi_row,
+    create_jdxi_row, get_icon_pixmap,
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
@@ -72,13 +74,13 @@ from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_icon_and_label,
-    create_layout_with_widgets, create_centered_layout, create_vertical_layout
+    create_icon_and_label, create_checkbox_from_spec,
+    create_layout_with_widgets, create_vertical_layout, create_group_with_layout
 )
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
-from jdxi_editor.ui.windows.jdxi.utils import show_message_box, show_message_box_from_spec
-from picoui.specs.widgets import ButtonSpec, MessageBoxSpec
+from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from picoui.specs.widgets import ButtonSpec, MessageBoxSpec, CheckBoxSpec
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -223,65 +225,23 @@ class MidiFilePlayer(SynthEditor):
         """
         Initialize the UI for the MidiPlayer.
         """
+
+        left_panel_widget = QWidget()
+        left_panel_layout = self._build_left_panel()
+        left_panel_widget.setLayout(left_panel_layout)
+
+        right_panel_widget = QWidget()
+        right_panel_layout = self._build_right_panel()
+        right_panel_widget.setLayout(right_panel_layout)
+
         # --- Top horizontal layout: file title and right-hand controls
         header_layout = QHBoxLayout()
-
-        # Drum detection button
-        self.ui.detect_drums_button = create_jdxi_button_from_spec(
-            self.specs["detect_drums"], checkable=False
-        )
-        detect_drums_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        detect_drums_label_row, self.ui.detect_drums_label = create_jdxi_row(
-            label=self.specs["detect_drums"].label, icon_pixmap=detect_drums_icon_pixmap
-        )
-        self.ui.classify_tracks_button = create_jdxi_button_from_spec(
-            self.specs["classify_tracks"], checkable=False
-        )
-        classify_tracks_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        classify_tracks_label_row, self.ui.classify_tracks_label = create_jdxi_row(
-            self.specs["classify_tracks"].label, icon_pixmap=classify_tracks_icon_pixmap
-        )
-
-        # Add classification buttons in a horizontal layout
-        widgets = [self.ui.detect_drums_button,
-                   detect_drums_label_row,
-                   self.ui.classify_tracks_button,
-                   classify_tracks_label_row,
-                   ]
-        classification_hlayout = create_layout_with_widgets(widgets=widgets, spacing=5)
-
-        # Create vertical layout for title and drum detection button
-        title_vlayout = create_vertical_layout()
-        self.ui.digital_title_file_name = DigitalTitle(
-            "No file loaded", show_upper_text=True
-        )
-        title_vlayout.addWidget(self.ui.digital_title_file_name)
-        title_vlayout.addLayout(classification_hlayout)
-        apply_all_label_row = self.create_apply_all_button_and_label()
-        title_vlayout.addWidget(apply_all_label_row)
-
-        # Add title layout to header
-        title_widget = QWidget()
-        title_widget.setLayout(title_vlayout)
-        header_layout.addWidget(title_widget)
-
-        right_panel_layout = QVBoxLayout()
-        header_layout.addLayout(right_panel_layout)
-
-        # --- Modular control sections
-        # right_panel_layout.addLayout(self.init_midi_file_controls())
-        right_panel_layout.addLayout(self.init_automation_usb_grid())
-        right_panel_layout.addLayout(self.init_mute_controls())
+        header_layout.addWidget(left_panel_widget)
+        header_layout.addWidget(right_panel_widget)
 
         # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
-        container_layout = self.base_widget.get_container_layout()
-
         # Create content widget
         content_widget = QWidget()
         main_layout = QVBoxLayout(content_widget)
@@ -297,13 +257,62 @@ class MidiFilePlayer(SynthEditor):
         )
         main_layout.addLayout(centered_layout)
         # Add content to base widget
+        container_layout = self.base_widget.get_container_layout()
         container_layout.addWidget(content_widget)
+        self._add_base_widget_to_editor()
 
-        # Add base widget to editor's layout
+    def _add_base_widget_to_editor(self):
+        """Add base widget to editor's layout"""
         if not hasattr(self, "main_layout") or self.main_layout is None:
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
+
+    def _build_left_panel(self) -> QVBoxLayout:
+        # Create vertical layout for title and drum detection button
+        widgets = self._build_left_side_widgets()
+        classification_hlayout = create_layout_with_widgets(widgets=widgets, spacing=5)
+        layout = create_vertical_layout()
+        self.ui.digital_title_file_name = DigitalTitle(
+            "No file loaded", show_upper_text=True
+        )
+        layout.addWidget(self.ui.digital_title_file_name)
+        layout.addLayout(classification_hlayout)
+        apply_all_label_row = self.create_apply_all_button_and_label()
+        layout.addWidget(apply_all_label_row)
+        return layout
+
+    def _build_right_panel(self):
+        """Build right panel"""
+        right_panel_layout = QVBoxLayout()
+        right_panel_layout.addLayout(self.init_automation_usb_grid())
+        right_panel_layout.addLayout(self.init_mute_controls())
+        return right_panel_layout
+
+    def _build_left_side_widgets(self) -> list[QPushButton | QWidget]:
+        """build left side widgets"""
+        # ---- Drum detection button
+        self.ui.detect_drums_button = create_jdxi_button_from_spec(
+            self.specs["detect_drums"], checkable=False
+        )
+        detect_drums_icon_pixmap = get_icon_pixmap(icon_name=JDXi.UI.Icon.DRUM)
+        detect_drums_label_row, self.ui.detect_drums_label = create_jdxi_row(
+            label=self.specs["detect_drums"].label, icon_pixmap=detect_drums_icon_pixmap
+        )
+        self.ui.classify_tracks_button = create_jdxi_button_from_spec(
+            self.specs["classify_tracks"], checkable=False
+        )
+        classify_tracks_icon_pixmap = get_icon_pixmap(icon_name=JDXi.UI.Icon.MUSIC_NOTES)
+
+        classify_tracks_label_row, self.ui.classify_tracks_label = create_jdxi_row(
+            self.specs["classify_tracks"].label, icon_pixmap=classify_tracks_icon_pixmap
+        )
+        widgets = [self.ui.detect_drums_button,
+                   detect_drums_label_row,
+                   self.ui.classify_tracks_button,
+                   classify_tracks_label_row,
+                   ]
+        return widgets
 
     def _build_button_specs(self) -> dict[str, Any]:
         return {
@@ -367,15 +376,17 @@ class MidiFilePlayer(SynthEditor):
         self.ui.position_label.setFixedWidth(
             self.ui.midi_track_viewer.get_track_controls_width()
         )
-        ruler_layout.addWidget(self.ui.position_label)
-
         self.ui.midi_file_position_slider = QSlider(Qt.Horizontal)
         self.ui.midi_file_position_slider.setEnabled(False)
         self.ui.midi_file_position_slider.sliderReleased.connect(
             self.midi_scrub_position
         )
-        ruler_layout.addWidget(self.ui.midi_file_position_slider, stretch=1)
-
+        widgets = [
+            self.ui.position_label,
+            self.ui.midi_file_position_slider
+        ]
+        for widget in widgets:
+            ruler_layout.addWidget(widget)
         return ruler_container
 
     def init_event_suppression_controls(self) -> QGroupBox:
@@ -384,38 +395,31 @@ class MidiFilePlayer(SynthEditor):
 
         :return: QHBoxLayout
         """
-        group = QGroupBox("MIDI Event Suppression")
-        layout = QHBoxLayout()
-        group.setLayout(layout)
-        layout.addStretch()
 
-        layout.addWidget(QLabel("Suppress MIDI Events:"))
+        midi_suppress_pc_spec = CheckBoxSpec(label="Program Changes",
+                                             checked_state=self.midi_state.suppress_program_changes,
+                                             slot=self.on_suppress_program_changes_toggled,
+                                             style=JDXiUIStyle.PARTIAL_SWITCH)
 
-        self.ui.midi_suppress_program_changes_checkbox = QCheckBox("Program Changes")
+        midi_suppress_cc_spec = CheckBoxSpec(label="Control Changes",
+                                             checked_state=self.midi_state.suppress_control_changes,
+                                             slot=self.on_suppress_control_changes_toggled,
+                                             style=JDXiUIStyle.PARTIAL_SWITCH)
 
-        JDXi.UI.Theme.apply_partial_switch(
-            self.ui.midi_suppress_program_changes_checkbox
-        )
-        self.ui.midi_suppress_program_changes_checkbox.setChecked(
-            self.midi_state.suppress_program_changes
-        )
-        self.ui.midi_suppress_program_changes_checkbox.stateChanged.connect(
-            self.on_suppress_program_changes_toggled
-        )
-        layout.addWidget(self.ui.midi_suppress_program_changes_checkbox)
+        create_checkbox_from_spec(spec=midi_suppress_pc_spec)
+        create_checkbox_from_spec(spec=midi_suppress_cc_spec)
 
-        self.ui.midi_suppress_control_changes_checkbox = QCheckBox("Control Changes")
-        JDXi.UI.Theme.apply_partial_switch(
-            self.ui.midi_suppress_control_changes_checkbox
-        )
-        self.ui.midi_suppress_control_changes_checkbox.setChecked(
-            self.midi_state.suppress_control_changes
-        )
-        self.ui.midi_suppress_control_changes_checkbox.stateChanged.connect(
-            self.on_suppress_control_changes_toggled
-        )
-        layout.addWidget(self.ui.midi_suppress_control_changes_checkbox)
-        layout.addStretch()
+        pc_label = QLabel("Program Change")
+        cc_label = QLabel("Control Change")
+        widgets = [pc_label,
+                   self.ui.midi_suppress_program_changes_checkbox,
+                   cc_label,
+                   self.ui.midi_suppress_control_changes_checkbox
+                   ]
+        JDXi.UI.Theme.apply_partial_switch(self.ui.midi_suppress_program_changes_checkbox)
+        JDXi.UI.Theme.apply_partial_switch(self.ui.midi_suppress_control_changes_checkbox)
+        layout = create_layout_with_widgets(widgets=widgets, vertical=False)
+        group, _ = create_group_with_layout(label="MIDI Event Suppression", layout=layout)
         return group
 
     def init_midi_file_controls(self) -> QGroupBox:
@@ -878,6 +882,7 @@ class MidiFilePlayer(SynthEditor):
             else:
                 # Already a list (Drum format)
                 return preset_dict
+
         preset_list_sources = {
             PresetSource.DIGITAL: JDXi.UI.Preset.Digital.PROGRAM_CHANGE,
             PresetSource.ANALOG: JDXi.UI.Preset.Analog.PROGRAM_CHANGE,
@@ -1076,9 +1081,9 @@ class MidiFilePlayer(SynthEditor):
             spec.label, icon_pixmap=apply_all_icon_pixmap
         )
         apply_all_label_layout = create_layout_with_widgets(widgets=[
-                                                                     self.ui.apply_all_track_changes_button,
-                                                                     row_widget],
-                                                            spacing=4)
+            self.ui.apply_all_track_changes_button,
+            row_widget],
+            spacing=4)
         apply_all_label_row.setLayout(apply_all_label_layout)
         return apply_all_label_row
 
