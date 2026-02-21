@@ -59,11 +59,7 @@ class BaseAmpSection(SectionBaseWidget):
 
     def _build_control_widgets(self):
         """Build control sliders from spec.controls into amp_sliders and self.controls. Digital overrides to populate amp_control_widgets (and pan) instead."""
-        control_specs = (
-            getattr(self.spec, "controls", None) or []
-            if self.spec
-            else []
-        )
+        control_specs = getattr(self.spec, "controls", None) or [] if self.spec else []
         if control_specs:
             sliders = self._build_sliders(control_specs)
             for entry, slider in zip(control_specs, sliders):

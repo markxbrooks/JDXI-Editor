@@ -11,6 +11,8 @@ PITCH_ENV_BINDINGS = {
     ),
     Digital.Param.OSC_PITCH_ENV_DEPTH: ParamBinding(
         ValueTransform.FRACTION,
-        lambda s, p: s.partial_editors[p].oscillator_tab.widgets.pitch_env_widget.depth_control,
+        lambda s, p: s.partial_editors[
+            p
+        ].oscillator_tab.widgets.pitch_env_widget.depth_control,
     ),
 }

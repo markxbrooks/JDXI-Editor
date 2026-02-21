@@ -31,8 +31,9 @@ from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
+    create_centered_layout_with_widgets,
     create_group_from_definition,
-    create_layout_with_widgets, create_centered_layout_with_widgets,
+    create_layout_with_widgets,
 )
 from jdxi_editor.ui.widgets.editor.mode_button_group import (
     ModeButtonGroup,
@@ -244,7 +245,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pw_layout.addWidget(self.widgets.pwm_widget)
 
         if getattr(self, DigitalOscillatorWidgetTypes.PW_SHIFT, None) is not None:
-            centered_pwshift_layout = create_centered_layout_with_widgets([self.pw_shift_slider])
+            centered_pwshift_layout = create_centered_layout_with_widgets(
+                [self.pw_shift_slider]
+            )
             pw_layout.addLayout(centered_pwshift_layout)
         pw_layout.addStretch()
         pw_group = create_group_from_definition(
@@ -340,5 +343,5 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.PWM: "_add_pwm_tab",
                 OscillatorFeature.PITCH_ENV: "_add_pitch_env_tab",
                 OscillatorFeature.PCM: "_add_pcm_wave_gain_tab",
-            }
+            },
         )

@@ -269,36 +269,55 @@ class AnalogSynthEditor(BaseSynthEditor):
 
     def _build_parameter_mappings(self):
         """Populate adsr_mapping, pitch_env_mapping, pwm_mapping only when the corresponding sections exist."""
-        if self.amp_section is not None and getattr(self.amp_section, "adsr_widget", None) is not None:
-            self.adsr_mapping.update({
-                self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
-                self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
-                self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
-                self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
-            })
-        if self.filter_section is not None and getattr(self.filter_section, "adsr_widget", None) is not None:
-            self.adsr_mapping.update({
-                self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
-                self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
-                self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
-                self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
-            })
-        if self.oscillator_section is not None and getattr(self.oscillator_section, "widgets", None) is not None:
+        if (
+            self.amp_section is not None
+            and getattr(self.amp_section, "adsr_widget", None) is not None
+        ):
+            self.adsr_mapping.update(
+                {
+                    self.SYNTH_SPEC.Param.AMP_ENV_ATTACK_TIME: self.amp_section.adsr_widget.attack_control,
+                    self.SYNTH_SPEC.Param.AMP_ENV_DECAY_TIME: self.amp_section.adsr_widget.decay_control,
+                    self.SYNTH_SPEC.Param.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.adsr_widget.sustain_control,
+                    self.SYNTH_SPEC.Param.AMP_ENV_RELEASE_TIME: self.amp_section.adsr_widget.release_control,
+                }
+            )
+        if (
+            self.filter_section is not None
+            and getattr(self.filter_section, "adsr_widget", None) is not None
+        ):
+            self.adsr_mapping.update(
+                {
+                    self.SYNTH_SPEC.Param.FILTER_ENV_ATTACK_TIME: self.filter_section.adsr_widget.attack_control,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_DECAY_TIME: self.filter_section.adsr_widget.decay_control,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.adsr_widget.sustain_control,
+                    self.SYNTH_SPEC.Param.FILTER_ENV_RELEASE_TIME: self.filter_section.adsr_widget.release_control,
+                }
+            )
+        if (
+            self.oscillator_section is not None
+            and getattr(self.oscillator_section, "widgets", None) is not None
+        ):
             w = self.oscillator_section.widgets
             if getattr(w, "pitch_env_widget", None) is not None:
-                self.pitch_env_mapping.update({
-                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.attack_control,
-                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.decay_control,
-                    self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets.pitch_env_widget.depth_control,
-                })
-            if getattr(w, "pwm_widget", None) is not None and getattr(w.pwm_widget, "controls", None):
+                self.pitch_env_mapping.update(
+                    {
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_ATTACK_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.attack_control,
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DECAY_TIME: lambda: self.oscillator_section.widgets.pitch_env_widget.decay_control,
+                        self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH: lambda: self.oscillator_section.widgets.pitch_env_widget.depth_control,
+                    }
+                )
+            if getattr(w, "pwm_widget", None) is not None and getattr(
+                w.pwm_widget, "controls", None
+            ):
                 ctrls = w.pwm_widget.controls
                 ctrl_pw = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH)
                 ctrl_mod = ctrls.get(self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH)
                 if ctrl_pw is not None:
                     self.pwm_mapping[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH] = ctrl_pw
                 if ctrl_mod is not None:
-                    self.pwm_mapping[self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH] = ctrl_mod
+                    self.pwm_mapping[
+                        self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH
+                    ] = ctrl_mod
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""

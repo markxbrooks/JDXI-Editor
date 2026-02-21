@@ -3,7 +3,7 @@ Wave Shape Spec
 """
 
 from dataclasses import dataclass
-from typing import Optional, TypeVar, Generic
+from typing import Generic, Optional, TypeVar
 
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc

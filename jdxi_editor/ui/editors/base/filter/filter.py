@@ -212,9 +212,7 @@ class BaseFilterSection(SectionBaseWidget):
 
     def _add_filter_tab(self):
         """Filter Controls"""
-        self._add_tab(
-            key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.filter_group
-        )
+        self._add_tab(key=self.SYNTH_SPEC.Filter.Tab.CONTROLS, widget=self.filter_group)
 
     def update_controls_state(self, value: int) -> None:
         """

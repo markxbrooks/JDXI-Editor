@@ -808,3 +808,7 @@ class SectionBaseWidget(SynthBase):
             self._create_parameter_switch(spec.param, spec.label, spec.options)
             for spec in specs
         ]
+
+    def _build_layout_spec(self):
+        """Build layout spec"""
+        raise NotImplementedError("Should be implemented in subclass")

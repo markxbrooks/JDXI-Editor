@@ -1,6 +1,7 @@
 """
 Analog Oscillator Section
 """
+
 from typing import Callable
 
 from decologr import Decologr as log
@@ -75,7 +76,10 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.address = address
         log.info(scope=self.__class__.__name__, message="calling finalize() ...")
         self.finalize()
-        log.info(scope=self.__class__.__name__, message="AnalogOscillatorSection __init__ done.")
+        log.info(
+            scope=self.__class__.__name__,
+            message="AnalogOscillatorSection __init__ done.",
+        )
 
     def _define_spec(self):
         self.spec: AnalogOscillatorLayoutSpec = self._build_layout_spec()
@@ -199,5 +203,5 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.TUNING: "_add_tuning_tab",
                 OscillatorFeature.PWM: "_add_pwm_tab",
                 OscillatorFeature.PITCH_ENV: "_add_pitch_env_tab",
-            }
+            },
         )

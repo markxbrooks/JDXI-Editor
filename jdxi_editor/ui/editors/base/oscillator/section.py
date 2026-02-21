@@ -45,6 +45,7 @@ from jdxi_editor.ui.widgets.spec import SliderSpec
 
 class OscillatorComponent(Enum):
     """Oscillator Components"""
+
     WAVE_SELECTOR = auto()
     TUNING = auto()
     PWM = auto()

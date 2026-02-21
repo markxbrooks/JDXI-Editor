@@ -8,8 +8,10 @@ from PySide6.QtWidgets import QPushButton, QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog, AnalogWave
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital, DigitalWave
+from jdxi_editor.midi.data.parameter.analog.spec import AnalogWave
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
+from jdxi_editor.midi.data.parameter.digital.spec import DigitalWave
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
