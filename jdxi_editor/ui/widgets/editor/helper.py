@@ -5,7 +5,7 @@ Helpers to create HBox and VBoxes
 from typing import Any
 
 import qtawesome as qta
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QMargins
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -134,11 +134,21 @@ def create_icon_and_label(
     return layout, label
 
 
+def create_vertical_layout(spacing: int = None, margins: QMargins = QMargins(0, 0, 0, 0)) -> QVBoxLayout:
+    vlayout = QVBoxLayout()
+    vlayout.setContentsMargins(margins)
+    if spacing is not None:
+        vlayout.setSpacing(spacing)
+    return vlayout
+
+
 def create_layout_with_widgets(
     widgets: list,
     vertical: bool = False,
     top_stretch: bool = True,
     bottom_stretch: bool = True,
+    spacing: int = None,
+    margins: QMargins = None
 ) -> QHBoxLayout:
     """create a row from a list of widgets (centered with stretches)"""
     layout = create_layout(vertical=vertical)
@@ -148,6 +158,10 @@ def create_layout_with_widgets(
         layout.addWidget(widget)
     if bottom_stretch:
         layout.addStretch()
+    if spacing is not None:
+        layout.setSpacing(spacing)
+    if margins is not None:
+        layout.setContentsMargins(margins)
     return layout
 
 
@@ -497,10 +511,12 @@ def add_widgets_to_layout(
         layout.addWidget(widget)
 
 
-def create_centered_layout() -> QHBoxLayout:
+def create_centered_layout(spacing: int = None) -> QHBoxLayout:
     """Hlayout to squish the slides of the widget together"""
     layout = QHBoxLayout()
     layout.addStretch()
+    if spacing is not None:
+        layout.setSpacing(spacing)
     return layout
 
 

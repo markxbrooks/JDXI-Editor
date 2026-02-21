@@ -8,7 +8,8 @@ from decologr import Decologr as log
 
 from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
-from jdxi_editor.ui.windows.jdxi.utils import show_message_box
+from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from picoui.specs.widgets import MessageBoxSpec
 
 
 def on_usb_recording_finished(output_file: str):
@@ -98,7 +99,11 @@ def start_recording(
         )
     except Exception as ex:
         log.error(f"[start_recording] Error {ex} occurred starting USB recording")
-        show_message_box(
-            "Error Starting Recording", f"Error {ex} occurred starting USB recording"
+        show_message_box_from_spec(
+            MessageBoxSpec(
+                title="Error Starting Recording",
+                message=f"Error {ex} occurred starting USB recording",
+                type_attr="Critical",
+            )
         )
         return None

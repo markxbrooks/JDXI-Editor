@@ -5,11 +5,10 @@ Transport Spec
 from dataclasses import dataclass
 from typing import Callable
 
+from picoui.specs.widgets import ButtonSpec
+
 
 @dataclass(slots=True)
-class TransportSpec:
-    name: str
-    icon: str
-    text: str
-    slot: Callable
-    grouped: bool = True
+class TransportSpec(ButtonSpec):
+    name: str = ""
+    text: str = ""

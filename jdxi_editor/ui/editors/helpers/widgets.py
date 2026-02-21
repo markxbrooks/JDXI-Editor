@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
+from picoui.specs.widgets import ButtonSpec
 
 
 def set_widget_value_safely(widget: QWidget, value: int) -> None:
@@ -37,7 +38,7 @@ def set_widget_value_safely(widget: QWidget, value: int) -> None:
 
 
 def create_jdxi_button_from_spec(
-    spec, button_group: QButtonGroup = None, checkable: bool = True
+    spec: ButtonSpec, button_group: QButtonGroup = None, checkable: bool = True
 ) -> QPushButton:
     """Create a round JD-Xi styled button with optional tooltip."""
     button = QPushButton()
@@ -46,8 +47,9 @@ def create_jdxi_button_from_spec(
     button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
     button.setToolTip(getattr(spec, "tooltip", "") or "")
     button.setCheckable(checkable)
-    button.clicked.connect(spec.slot)
-    if spec.grouped and button_group is not None:
+    if getattr(spec, "slot", None) is not None:
+        button.clicked.connect(spec.slot)
+    if getattr(spec, "grouped", False) and button_group is not None:
         button_group.addButton(button)
     return button
 

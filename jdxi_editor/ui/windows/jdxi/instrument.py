@@ -111,8 +111,9 @@ from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
-from jdxi_editor.ui.windows.jdxi.utils import show_message_box
+from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
+from picoui.specs.widgets import MessageBoxSpec
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
@@ -459,7 +460,13 @@ class JDXiInstrument(JDXiWindow):
         """
         new_program_number = self.current_program_number + index_change
         if new_program_number < 1:
-            show_message_box("First program", "Already at the first program.")
+            show_message_box_from_spec(
+                MessageBoxSpec(
+                    title="First program",
+                    message="Already at the first program.",
+                    type_attr="Information",
+                )
+            )
             return
         self.current_program_number = new_program_number
         if index_change > 0:
@@ -488,7 +495,13 @@ class JDXiInstrument(JDXiWindow):
         )
 
         if not presets:
-            show_message_box("No presets", "No presets available for this synth type.")
+            show_message_box_from_spec(
+                MessageBoxSpec(
+                    title="No presets",
+                    message="No presets available for this synth type.",
+                    type_attr="Information",
+                )
+            )
             return
         log.parameter(
             scope="JDXiInstrument",
@@ -499,10 +512,22 @@ class JDXiInstrument(JDXiWindow):
         new_preset_index = self.current_preset_index + index_change
 
         if new_preset_index < 0:
-            show_message_box("First preset", "Already at the first preset.")
+            show_message_box_from_spec(
+                MessageBoxSpec(
+                    title="First preset",
+                    message="Already at the first preset.",
+                    type_attr="Information",
+                )
+            )
             return
         if new_preset_index > max_index:
-            show_message_box("Last preset", "Already at the last preset.")
+            show_message_box_from_spec(
+                MessageBoxSpec(
+                    title="Last preset",
+                    message="Already at the last preset.",
+                    type_attr="Information",
+                )
+            )
             return
 
         self.current_preset_index = new_preset_index
