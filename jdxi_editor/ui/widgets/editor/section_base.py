@@ -232,9 +232,10 @@ class SectionBaseWidget(SynthBase):
             )
             self._add_tab(key=self.SYNTH_SPEC.Amp.Tab.ADSR, widget=adsr_group)
 
-    def generate_wave_shapes(self):
+    def generate_mode_button_specs(self):
+        """formerly generate_wave_shapes before generalization"""
         raise NotImplementedError(
-            "generate_wave_shapes must be implemented by subclass"
+            "generate_mode_button_specs must be implemented by subclass"
         )
 
     def _create_controls_widget(self) -> QWidget:

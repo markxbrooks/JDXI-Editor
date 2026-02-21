@@ -60,7 +60,7 @@ class AnalogFilterSection(BaseFilterSection):
         :param address: RolandSysExAddress
         :param on_filter_mode_changed: Optional callback for filter mode changes
         """
-        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shapes = self.generate_mode_button_specs()
         self.spec: FilterLayoutSpec = self._build_layout_spec()
         self.spec_filter: Dict[AnalogFilterType, FilterSpec] = self._build_filter_spec()
         self.DEFINITION = FilterDefinition(
@@ -84,8 +84,8 @@ class AnalogFilterSection(BaseFilterSection):
         )
         # Layout and button state are built in BaseFilterSection.__init__ when analog=True
 
-    def generate_wave_shapes(self):
-        """Generate filter mode button specs (same pattern as Analog LFO generate_wave_shapes)."""
+    def generate_mode_button_specs(self):
+        """Generate filter mode button specs (using generic pattern as in Oscillators, LFO)."""
         return [
             SliderSpec(
                 Analog.Filter.Mode.BYPASS,

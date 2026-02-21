@@ -3,7 +3,7 @@ Wave Shape Spec
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TypeVar, Generic
 
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
@@ -11,12 +11,14 @@ from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 
 WaveShape = AnalogWaveOsc | DigitalLFOShape | AnalogLFOShape
 
+T = TypeVar("T")
+
 
 @dataclass
-class WaveShapeSpec:
+class WaveShapeSpec(Generic[T]):
     """LFO wave shape spec. Exposes .param as an alias for .shape so section_base can treat it like SliderSpec (oscillator/filter)."""
 
-    shape: Optional[WaveShape]
+    shape: T
     icon: str
 
     @property

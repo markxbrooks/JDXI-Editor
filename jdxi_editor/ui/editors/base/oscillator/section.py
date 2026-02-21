@@ -190,12 +190,6 @@ class BaseOscillatorSection(SectionBaseWidget):
             for osc, label, icon in spec_rows
         ]
 
-    def generate_wave_shapes_analog(self):
-        return self._build_wave_specs(self.ANALOG_WAVES)
-
-    def generate_wave_shapes_digital(self):
-        return self._build_wave_specs(self.DIGITAL_WAVES)
-
     def _create_feature_widgets(self):
         """Subclass optional extension point"""
         pass

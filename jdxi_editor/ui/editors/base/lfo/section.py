@@ -8,8 +8,8 @@ from PySide6.QtWidgets import QPushButton, QTabWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog, AnalogWave
+from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital, DigitalWave
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.base.lfo.group import LFOGroup
 from jdxi_editor.ui.editors.base.lfo.layout import LFOLayoutSpec
@@ -58,16 +58,16 @@ class BaseLFOSection(SectionBaseWidget):
             icons_row_type=icons_row_type,
             analog=analog,
         )
-        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shapes = self.generate_mode_button_specs()
         self.lfo_shape_buttons: dict[int, QPushButton] = {}
         if not hasattr(self, "controls") or self.controls is None:
             self.controls = {}
         # All LFOs (Digital, Mod, Analog) use this path so shape row comes from _create_shape_row() with QButtonGroup
         self._setup_ui()
 
-    def generate_wave_shapes(self) -> list:
+    def generate_mode_button_specs(self) -> list:
         """generate_wave_shapes"""
-        W = self.SYNTH_SPEC.Wave
+        W: DigitalWave | AnalogWave = self.SYNTH_SPEC.Wave
         I = JDXi.UI.Icon
         wave_shapes = [
             WaveShapeSpec(shape=W.LFO.TRI, icon=I.Wave.Icon.TRIANGLE),
@@ -83,7 +83,7 @@ class BaseLFOSection(SectionBaseWidget):
         """Main construction pipeline"""
         # --- Restore wave_shapes/icon_map if SectionBaseWidget.__init__() overwrote them
         if self.wave_shapes is None:
-            self.wave_shapes = self.generate_wave_shapes()
+            self.wave_shapes = self.generate_mode_button_specs()
         if self.wave_shape_buttons is None:
             self.wave_shape_buttons = {}
 

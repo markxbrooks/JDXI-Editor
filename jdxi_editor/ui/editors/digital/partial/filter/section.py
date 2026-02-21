@@ -62,7 +62,7 @@ class DigitalFilterSection(BaseFilterSection):
         Digital.Param.FILTER_ENV_DEPTH,
     ]
 
-    def generate_wave_shapes(self):
+    def generate_mode_button_specs(self):
         """Generate filter mode button specs (same pattern as Analog Filter / Digital Oscillator)."""
         F = self.SYNTH_SPEC.Filter
         I = JDXi.UI.Icon.WaveForm
@@ -133,7 +133,7 @@ class DigitalFilterSection(BaseFilterSection):
 
     def __init__(self, *, icons_row_type: str = IconType.ADSR, **kwargs):
         """Initialize DigitalFilterSection with ADSR icon type"""
-        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shapes = self.generate_mode_button_specs()
         self.spec: FilterLayoutSpec = self._build_layout_spec()
         self.spec_filter: dict[str, FilterSpec] = self._build_filter_spec()
         self.DEFINITION = FilterDefinition(

@@ -61,9 +61,9 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         Digital.Wave.Osc.SUPER_SAW: [DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE],
     }
 
-    def generate_wave_shapes(self):
+    def generate_mode_button_specs(self):
         """Generate waveform button specs (same pattern as Analog Oscillator / Analog Filter)."""
-        return self.generate_wave_shapes_digital()
+        return self._build_wave_specs(self.DIGITAL_WAVES)
 
     def __init__(
         self,
@@ -74,7 +74,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         address: JDXiSysExAddress = None,
     ):
         self.widgets: DigitalOscillatorWidgets | None = None
-        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shapes = self.generate_mode_button_specs()
         self._define_spec()
         self.wave_mode_group: ModeButtonGroup | None = None
         # Initialize controls before creating PCMWaveWidget so it can register controls

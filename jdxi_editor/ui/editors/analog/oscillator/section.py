@@ -60,7 +60,7 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self._on_waveform_selected = waveform_selected_callback
         self.widgets_waveform_buttons: dict = wave_buttons or {}
         self.analog: bool = True
-        self.wave_shapes = self.generate_wave_shapes()
+        self.wave_shapes = self.generate_mode_button_specs()
         log.info(scope=self.__class__.__name__, message="_define_spec ...")
         self._define_spec()
         log.info(scope=self.__class__.__name__, message="calling super().__init__ ...")
@@ -129,9 +129,9 @@ class AnalogOscillatorSection(BaseOscillatorSection):
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         # base build_widgets() already ran _build_additional_widgets() and _create_tab_widget(); no second call
 
-    def generate_wave_shapes(self) -> list:
+    def generate_mode_button_specs(self) -> list:
         """Generate waveform button specs (same pattern as Analog LFO / Analog Filter)."""
-        return self.generate_wave_shapes_analog()
+        return self._build_wave_specs(self.ANALOG_WAVES)
 
     def _build_additional_widgets(self):
         self._build_additional_analog_widgets()
