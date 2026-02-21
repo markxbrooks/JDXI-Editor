@@ -156,15 +156,18 @@ class BaseOscillatorSection(SectionBaseWidget):
         return []
 
     def _create_tabs(self):
-        """_create_tabs"""
-        if OscillatorFeature.TUNING in self.spec.feature_tabs:
-            self._add_tuning_tab()
-        if OscillatorFeature.PWM in self.spec.feature_tabs:
-            self._add_pwm_tab()
-        if OscillatorFeature.PITCH_ENV in self.spec.feature_tabs:
-            self._add_pitch_env_tab()
-        if OscillatorFeature.PCM in self.spec.feature_tabs:
-            self._add_pcm_wave_gain_tab()
+        for feature, builder_name in self.spec.feature_tabs.items():
+            if feature not in self.spec.features:
+                continue
+
+            builder = getattr(self, builder_name, None)
+            if builder is None:
+                raise RuntimeError(
+                    f"{self.__class__.__name__} missing tab builder '{builder_name}' "
+                    f"for feature {feature}"
+                )
+
+            builder()
 
     def finalize(self):
         """Unified flow: feature widgets (if any), then setup_ui (layout + tabs), then init state. build_widgets runs once from __init__."""

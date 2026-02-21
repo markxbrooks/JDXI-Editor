@@ -234,8 +234,8 @@ class AnalogOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.PW_SHIFT,
             },
             feature_tabs={
-                OscillatorFeature.TUNING: self._add_tuning_tab,
-                OscillatorFeature.PWM: self._add_pwm_tab,
-                OscillatorFeature.PITCH_ENV: self._add_pitch_env_tab,
-            },
+                OscillatorFeature.TUNING: "_add_tuning_tab",
+                OscillatorFeature.PWM: "_add_pwm_tab",
+                OscillatorFeature.PITCH_ENV: "_add_pitch_env_tab",
+            }
         )

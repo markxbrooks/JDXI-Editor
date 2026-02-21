@@ -19,7 +19,7 @@ class OscillatorLayoutSpec:
     pwm: PWMSpec = None
     pitch_env: PitchEnvelopeSpec = None
     features: set[OscillatorFeature] = field(default_factory=set)
-    feature_tabs: dict[OscillatorFeature, TabBuilder] = field(default_factory=dict)
+    feature_tabs: dict[OscillatorFeature, str] = field(default_factory=dict)
 
     # capability flags
     @property
