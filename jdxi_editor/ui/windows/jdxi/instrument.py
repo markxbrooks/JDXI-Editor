@@ -113,11 +113,11 @@ from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
-from picoui.specs.widgets import MessageBoxSpec
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
+from picoui.specs.widgets import MessageBoxSpec
 
 
 class JDXiInstrument(JDXiWindow):

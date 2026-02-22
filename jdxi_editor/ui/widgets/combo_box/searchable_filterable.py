@@ -17,18 +17,26 @@ Classes:
 """
 
 import re
-from typing import Callable, List, Optional, Any
+from typing import Any, Callable, List, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QLabel,
     QLineEdit,
-    QWidget, QHBoxLayout, QSizePolicy, )
+    QSizePolicy,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
-from picoui.widget.helper import create_combo_row, create_row_with_widgets, create_line_edit, create_header_row, \
-    create_form_layout
+from picoui.widget.helper import (
+    create_combo_row,
+    create_form_layout,
+    create_header_row,
+    create_line_edit,
+    create_row_with_widgets,
+)
 
 
 class SearchableFilterableComboBox(QWidget):
@@ -51,24 +59,24 @@ class SearchableFilterableComboBox(QWidget):
     )  # --- Emitted when selected value changes (original value, not filtered index)
 
     def __init__(
-            self,
-            label: str,
-            options: List[str],
-            values: Optional[List[int]] = None,
-            categories: Optional[List[str]] = None,
-            category_filter_func: Optional[Callable[[str, str], bool]] = None,
-            banks: Optional[List[str]] = None,
-            bank_filter_func: Optional[Callable[[str, str], bool]] = None,
-            show_label: bool = True,
-            show_search: bool = True,
-            show_category: bool = True,
-            show_bank: bool = False,
-            search_placeholder: str = "Search...",
-            category_label: str = "Category:",
-            bank_label: str = "Bank:",
-            search_label: str = "Search:",
-            use_analog_style: bool = False,
-            parent: Optional[QWidget] = None,
+        self,
+        label: str,
+        options: List[str],
+        values: Optional[List[int]] = None,
+        categories: Optional[List[str]] = None,
+        category_filter_func: Optional[Callable[[str, str], bool]] = None,
+        banks: Optional[List[str]] = None,
+        bank_filter_func: Optional[Callable[[str, str], bool]] = None,
+        show_label: bool = True,
+        show_search: bool = True,
+        show_category: bool = True,
+        show_bank: bool = False,
+        search_placeholder: str = "Search...",
+        category_label: str = "Category:",
+        bank_label: str = "Bank:",
+        search_label: str = "Search:",
+        use_analog_style: bool = False,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the SearchableFilterableComboBox.
@@ -104,7 +112,7 @@ class SearchableFilterableComboBox(QWidget):
         )
         self._categories = categories or []
         self._category_filter_func = (
-                category_filter_func or self._default_category_filter
+            category_filter_func or self._default_category_filter
         )
         self._banks = banks or []
         self._bank_filter_func = bank_filter_func or self._default_bank_filter
@@ -133,37 +141,48 @@ class SearchableFilterableComboBox(QWidget):
             bank_bar = self.add_banks(bank_label)
             layout.addRow(bank_bar)
         if show_search:
-            search_row = self.add_search(search_label, search_placeholder, use_analog_style)
+            search_row = self.add_search(
+                search_label, search_placeholder, use_analog_style
+            )
             layout.addRow(search_row)
 
         # --- Main combo box
-        main_bar, self.combo_box = create_combo_row(label=label,
-                                                    slot=self._on_combo_index_changed)
+        main_bar, self.combo_box = create_combo_row(
+            label=label, slot=self._on_combo_index_changed
+        )
         self.set_combo_dimensions(self.combo_box)
         layout.addRow(main_bar)
 
         # --- Initial population
         self._populate_combo()
 
-    def add_search(self, search_label: str, search_placeholder: str, use_analog_style: bool) -> Any:
+    def add_search(
+        self, search_label: str, search_placeholder: str, use_analog_style: bool
+    ) -> Any:
         """add search"""
-        search_row = self._create_search_row(search_label, search_placeholder, use_analog_style)
+        search_row = self._create_search_row(
+            search_label, search_placeholder, use_analog_style
+        )
         return search_row
 
     def add_categories(self, category_label: str):
         """add categories"""
-        category_bar, self.category_combo = create_combo_row(label=category_label,
-                                                             all_items_label="All Categories",
-                                                             items=self._categories,
-                                                             slot=self._on_category_changed)
+        category_bar, self.category_combo = create_combo_row(
+            label=category_label,
+            all_items_label="All Categories",
+            items=self._categories,
+            slot=self._on_category_changed,
+        )
         self.set_combo_dimensions(self.category_combo)
         return category_bar
 
     def add_banks(self, bank_label: str) -> QHBoxLayout:
-        bank_bar, self.bank_combo = create_combo_row(label=bank_label,
-                                                     all_items_label="All Banks",
-                                                     items=self._banks,
-                                                     slot=self._on_bank_changed)
+        bank_bar, self.bank_combo = create_combo_row(
+            label=bank_label,
+            all_items_label="All Banks",
+            items=self._banks,
+            slot=self._on_bank_changed,
+        )
         self.set_combo_dimensions(self.bank_combo)
         return bank_bar
 
@@ -173,20 +192,21 @@ class SearchableFilterableComboBox(QWidget):
         widget.setMaximumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
         widget.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
 
-    def _create_search_row(self, search_label: str, search_placeholder: str, use_analog_style: bool) -> QHBoxLayout:
+    def _create_search_row(
+        self, search_label: str, search_placeholder: str, use_analog_style: bool
+    ) -> QHBoxLayout:
         line_edit_style = (
             JDXi.UI.Style.QLINEEDIT_ANALOG
             if use_analog_style
             else JDXi.UI.Style.QLINEEDIT
         )
-        self.search_box = create_line_edit(style_sheet=line_edit_style,
-                                           placeholder=search_placeholder,
-                                           slot=self._on_search_changed)
+        self.search_box = create_line_edit(
+            style_sheet=line_edit_style,
+            placeholder=search_placeholder,
+            slot=self._on_search_changed,
+        )
         search_label_widget = QLabel(search_label)
-        widgets = [
-            search_label_widget,
-            self.search_box
-        ]
+        widgets = [search_label_widget, self.search_box]
         search_row = create_row_with_widgets(widgets)
         return search_row
 

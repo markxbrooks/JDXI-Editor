@@ -41,8 +41,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from picoui.specs.widgets import FileSelectionSpec
-from picoui.widget.helper import get_file_path_from_spec
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
@@ -60,6 +58,8 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from picoui.specs.widgets import FileSelectionSpec
+from picoui.widget.helper import get_file_path_from_spec
 
 
 class PatternSequenceEditor(SynthEditor):

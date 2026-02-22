@@ -115,9 +115,7 @@ class DrumOutputSection(DrumBaseSection):
         slider_layout = create_layout_with_widgets(widgets=widgets)
         row_layout.addLayout(output_layout)
         row_layout.addLayout(slider_layout)
-        group, layout = create_group_with_layout(
-            label="Output", layout=row_layout
-        )
+        group, layout = create_group_with_layout(label="Output", layout=row_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
