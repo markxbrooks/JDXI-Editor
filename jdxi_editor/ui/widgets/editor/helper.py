@@ -25,7 +25,6 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiUIStyle, JDXiUIThemeManager
 from jdxi_editor.ui.style.dimensions import Dimensions
 from picoui.specs.widgets import CheckBoxSpec
 

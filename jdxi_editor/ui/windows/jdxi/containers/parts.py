@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QButtonGroup, QLabel, QVBoxLayout, QWidget
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
+from picoui.specs.widgets import ButtonSpec
 
 
 def create_parts_container(
@@ -31,11 +32,21 @@ def create_parts_container(
     parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     parts_layout.addWidget(parts_label)
 
-    digital1_row, digital1_button = create_button_row("Digital Synth 1", on_open_d1)
-    digital2_row, digital2_button = create_button_row("Digital Synth 2", on_open_d2)
-    drums_row, drums_button = create_button_row("Drums", on_open_drums)
-    analog_row, analog_button = create_button_row("Analog Synth", on_open_analog)
-    arp_row, arp_button = create_button_row("Arpeggiator", on_open_arp)
+    digital1_row, digital1_button = create_button_row(
+        ButtonSpec(label="Digital Synth 1", slot=on_open_d1)
+    )
+    digital2_row, digital2_button = create_button_row(
+        ButtonSpec(label="Digital Synth 2", slot=on_open_d2)
+    )
+    drums_row, drums_button = create_button_row(
+        ButtonSpec(label="Drums", slot=on_open_drums)
+    )
+    analog_row, analog_button = create_button_row(
+        ButtonSpec(label="Analog Synth", slot=on_open_analog)
+    )
+    arp_row, arp_button = create_button_row(
+        ButtonSpec(label="Arpeggiator", slot=on_open_arp)
+    )
 
     # Connect buttons to synth selector
     analog_button.clicked.connect(lambda: on_select_synth(JDXiSynth.ANALOG_SYNTH))

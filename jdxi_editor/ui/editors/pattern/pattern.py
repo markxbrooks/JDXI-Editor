@@ -28,7 +28,6 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QComboBox,
-    QFileDialog,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -42,6 +41,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from picoui.specs.widgets import FileSelectionSpec
+from picoui.widget.helper import get_file_path_from_spec
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
@@ -1041,9 +1042,13 @@ class PatternSequenceEditor(SynthEditor):
 
     def _save_pattern_dialog(self):
         """Open save file dialog and save pattern"""
-        filename, _ = QFileDialog.getSaveFileName(
-            self, "Save Pattern", "", "MIDI Files (*.mid);;All Files (*.*)"
+        spec = FileSelectionSpec(
+            mode="save",
+            caption="Save Pattern",
+            default_name="",
+            filter="MIDI Files (*.mid);;All Files (*.*)",
         )
+        filename = get_file_path_from_spec(self, spec)
 
         if filename:
             if not filename.lower().endswith(".mid"):
@@ -1064,10 +1069,12 @@ class PatternSequenceEditor(SynthEditor):
 
     def _load_pattern_dialog(self):
         """Open load file dialog and load pattern"""
-
-        filename, _ = QFileDialog.getOpenFileName(
-            self, "Load Pattern", "", "MIDI Files (*.mid);;All Files (*.*)"
+        spec = FileSelectionSpec(
+            mode="open",
+            caption="Load Pattern",
+            filter="MIDI Files (*.mid);;All Files (*.*)",
         )
+        filename = get_file_path_from_spec(self, spec)
 
         if filename:
             try:
