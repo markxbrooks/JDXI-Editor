@@ -52,10 +52,12 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_widgets,
 )
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
+from jdxi_editor.utils.profiling_decorator import profiling_decorator
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
 
+@profiling_decorator()  # Profile is logged and printed when main() returns (after you close the app)
 def main() -> None:
     """Main entry point for the JD-Xi Editor application."""
     try:

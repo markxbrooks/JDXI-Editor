@@ -7,7 +7,6 @@ import threading
 import time
 
 from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
 from PySide6.QtCore import QObject, Signal, Slot
 
 
@@ -28,6 +27,7 @@ class MidiPlaybackWorker(QObject):
         self.should_stop = False
         self.buffered_msgs = []
         self.midi_out_port = None
+        self.playback_engine = None
         self.play_program_changes = True
         self.ticks_per_beat = 480
         self.lock = threading.Lock()
@@ -51,40 +51,31 @@ class MidiPlaybackWorker(QObject):
         play_program_changes: bool = True,
         start_time: float | None = None,  # pylint: disable=unsupported-binary-operation
         initial_tempo: int = Midi.TEMPO.BPM_120_USEC,
+        playback_engine=None,
     ) -> None:
-        """Setup the playback worker with buffered messages and configuration."""
+        """Setup the playback worker; do_work drives playback_engine.process_until_now()."""
+        self.playback_engine = playback_engine
         self.buffered_msgs = buffered_msgs
         self.midi_out_port = midi_out_port
         self.ticks_per_beat = ticks_per_beat
         self.play_program_changes = play_program_changes
         self.initial_tempo = initial_tempo
         self.index = 0
-        # Clear time cache so message times are recalculated for this buffer
-        if hasattr(self, "_cached_times"):
-            self._cached_times.clear()
         if start_time is None:
             self.start_time = time.time()
         else:
             self.start_time = start_time
         self.should_stop = False
 
-        # Set initial tempo (use provided value or default)
         if initial_tempo is not None:
             self.initial_tempo = initial_tempo
             self.position_tempo = initial_tempo
         else:
-            # Use default tempo if none provided
             self.initial_tempo = Midi.TEMPO.BPM_120_USEC
             self.position_tempo = Midi.TEMPO.BPM_120_USEC
 
-        # Debug logging
-        print(
-            f"🎵 [{self.__class__.__name__}] Worker setup: received {len(buffered_msgs)} buffered messages"
-        )
-        if len(buffered_msgs) > 0:
-            print(f"🎵 First few buffered messages: {buffered_msgs[:3]}")
-
-        # existing setup...
+        if self.playback_engine is not None:
+            print(f"🎵 [{self.__class__.__name__}] Worker setup: playback_engine")
 
     def stop(self) -> None:
         """Stop the playback worker."""
@@ -114,116 +105,11 @@ class MidiPlaybackWorker(QObject):
 
     @Slot()
     def do_work(self) -> None:
-        """Process MIDI messages for playback."""
+        """Drive PlaybackEngine; engine calls on_event (send) and handles tempo/mute."""
         if self.should_stop:
             return
-
-        now = time.time()
-        elapsed = now - self.start_time
-
-        # Add small delay to prevent immediate processing of events at tick 0
-        if elapsed < 0.1:  # Wait 100ms before processing any events
+        if self.playback_engine is None:
             return
-
-        # Print format header on first run
-        if not hasattr(self, "_header_printed"):
-            print(f"🎵 [{self.__class__.__name__}]Real-time Playback Tracking:")
-            print(
-                f"[{self.__class__.__name__}] Format: [Elapsed] Bar X.X | BPM XXX.X | Expected: X.XXs | Real: X.XXs | Diff: ±X.XXs | Index: XXXX"
-            )
-            print("=" * 100)
-            self._header_printed = True
-
-        # Debug logging
-        if len(self.buffered_msgs) == 0:
-            print(
-                f"⚠️ [{self.__class__.__name__}] No buffered messages available (elapsed: {elapsed:.3f}s)"
-            )
-            return
-
-        while self.index < len(self.buffered_msgs):
-            abs_ticks, raw_bytes, msg_tempo = self.buffered_msgs[self.index]
-
-            # Calculate the time this message should be sent using incremental tempo calculation
-            # This correctly handles tempo changes by calculating time segment by segment
-            msg_time_sec = self._calculate_message_time(abs_ticks)
-
-            if msg_time_sec > elapsed:
-                break
-
-            # Add detailed position tracking logging (temporary)
-            if self.index % 100 == 0:  # Log every 100 messages to avoid spam
-                current_bar = abs_ticks / (4 * self.ticks_per_beat)
-                current_bpm = 60000000 / self.position_tempo
-                time_diff = elapsed - msg_time_sec
-                print(
-                    f"[{self.__class__.__name__}] [{elapsed:6.1f}s] Bar {current_bar:5.1f} | BPM {current_bpm:6.1f} | "
-                    f"[{self.__class__.__name__}] Expected: {msg_time_sec:5.2f}s | Real: {elapsed:5.2f}s | "
-                    f"[{self.__class__.__name__}] Diff: {time_diff:+5.2f}s | Index: {self.index:4d}"
-                )
-
-            # Process the message
-            if raw_bytes is None:
-                # This is a tempo change message - process it
-                # Skip an initial tempo-only message at tick 0 (already set during setup)
-                if abs_ticks == 0:
-                    self.index += 1
-                    continue
-                current_bar = abs_ticks / (4 * self.ticks_per_beat)
-                new_bpm = 60000000 / msg_tempo
-                print(
-                    f"🎵[{self.__class__.__name__}] TEMPO CHANGE at Bar {current_bar:.1f} ({elapsed:.2f}s): {msg_tempo} ({new_bpm:.1f} BPM)"
-                )
-                self.update_tempo(msg_tempo)
-            else:
-                # Send the MIDI message
-                status_byte = raw_bytes[0]
-                message_type = status_byte & BitMask.HIGH_4_BITS
-
-                if message_type == Midi.PC.STATUS and not self.play_program_changes:
-                    # 0xC0 = program_change
-                    pass  # Skip
-                else:
-                    self.midi_out_port.send_message(raw_bytes)
-
-            self.index += 1
-
-        if self.index >= len(self.buffered_msgs):
+        self.playback_engine.process_until_now()
+        if not self.playback_engine._is_playing:
             self.finished.emit()
-
-    def _calculate_message_time(self, target_ticks: int) -> float:
-        """
-        Calculate the time for a message at target_ticks using incremental tempo calculation.
-        This correctly handles tempo changes by processing events in chronological order.
-        """
-        if not hasattr(self, "_cached_times"):
-            self._cached_times = {}
-
-        # Return cached time if available
-        if target_ticks in self._cached_times:
-            return self._cached_times[target_ticks]
-
-        # Calculate time incrementally like get_total_duration_in_seconds does
-        current_tempo = self.initial_tempo
-        time_seconds = 0.0
-        last_tick = 0
-
-        # Process all messages up to target_ticks in chronological order
-        for abs_ticks, raw_bytes, msg_tempo in self.buffered_msgs:
-            if abs_ticks > target_ticks:
-                break
-
-            # Calculate time for this segment using the tempo that was active
-            delta_ticks = abs_ticks - last_tick
-            time_seconds += (current_tempo / 1_000_000.0) * (
-                delta_ticks / self.ticks_per_beat
-            )
-            last_tick = abs_ticks
-
-            # Update tempo if this is a tempo change message
-            if raw_bytes is None:  # This is a tempo change message
-                current_tempo = msg_tempo
-
-        # Cache the result
-        self._cached_times[target_ticks] = time_seconds
-        return time_seconds

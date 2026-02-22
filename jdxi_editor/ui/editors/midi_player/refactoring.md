@@ -178,6 +178,14 @@ Extract PlaybackEngine
 Extract TransportController
 Extract USBRecorder
 Extract Worker layer last
+
+Step 9 — Playback switchover (dual path then remove legacy)
+Introduce PlaybackEngine and a feature flag or parallel path so the worker can run in either mode:
+Legacy buffer mode: current behavior — editor refills buffered_msgs, worker walks buffer and computes message times (unchanged until switchover).
+Engine mode: editor calls engine.load_file(midi_file); worker calls engine.process_until_now() on a timer and sends messages via engine.on_event; transport calls engine.start / stop / scrub_to_tick (see playback/PLAYBACK_CONTRACT.md).
+Implementation: add a flag (e.g. USE_PLAYBACK_ENGINE or config) and in the worker (or editor) branch: if engine mode, use engine; else use existing buffer path. Wire engine.on_event to the same send path the worker uses today.
+When engine mode is correct (playback, tempo, mute, suppress, scrub, pause/stop), remove the legacy path: delete midi_message_buffer_refill, process_tracks, process_track_messages, buffered_msgs walking in the worker, and any buffer-only tempo/mute logic. Editor and worker then follow PLAYBACK_CONTRACT.md only.
+
 Architectural Insight
 Your MIDI player has evolved into a small DAW subsystem.
 It needs:

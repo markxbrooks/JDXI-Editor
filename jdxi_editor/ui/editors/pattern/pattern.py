@@ -51,6 +51,7 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
     create_jdxi_row,
 )
+from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -106,6 +107,7 @@ class PatternSequenceEditor(SynthEditor):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self.clipboard = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
         self._pattern_paused = False
+        self.playback_engine = PlaybackEngine()
         self._setup_ui()
         self._init_midi_file()
         self._initialize_default_bar()
@@ -1813,22 +1815,94 @@ class PatternSequenceEditor(SynthEditor):
         self._sync_sequencer_with_bar(idx)
         self.play_pattern()
 
+    def _build_midi_file_for_playback(self) -> MidiFile:
+        """Build a MidiFile from the current pattern for PlaybackEngine."""
+        ticks_per_beat = 480
+        ticks_per_step = ticks_per_beat // 4  # 16th note
+        tempo_us = int(60000000 / self.bpm)
+        events = []  # (tick, msg)
+
+        for bar_index, measure in enumerate(self.measures):
+            for step in range(min(self.beats_per_bar, 16)):
+                if step >= len(measure.buttons[0]):
+                    continue
+                tick = (bar_index * self.beats_per_bar + step) * ticks_per_step
+                for row in range(4):
+                    if step >= len(measure.buttons[row]):
+                        continue
+                    channel = row if row < 3 else 9
+                    if channel in self.muted_channels:
+                        continue
+                    btn = measure.buttons[row][step]
+                    if not btn.isChecked() or getattr(btn, "NOTE", None) is None:
+                        continue
+                    raw_vel = getattr(btn, "NOTE_VELOCITY", None)
+                    velocity = (
+                        raw_vel if raw_vel is not None
+                        else (self.velocity_spinbox.value() if hasattr(self, "velocity_spinbox") else 100)
+                    )
+                    velocity = max(0, min(127, int(round(velocity))))
+                    note = btn.NOTE
+                    duration_ms = getattr(btn, "NOTE_DURATION", None)
+                    if duration_ms is not None:
+                        # ms -> ticks: 1 beat = 60000/bpm ms = 480 ticks => 1 ms = 480*bpm/60000
+                        duration_ticks = int(duration_ms * self.bpm * 480 / 60000)
+                    else:
+                        duration_ticks = ticks_per_step
+                    duration_ticks = max(1, duration_ticks)
+                    events.append(
+                        (tick, Message(MidoMessageType.NOTE_ON, note=note, velocity=velocity, channel=channel, time=0))
+                    )
+                    events.append(
+                        (tick + duration_ticks, Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, channel=channel, time=0))
+                    )
+
+        if not events:
+            mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
+            track = MidiTrack()
+            track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=tempo_us, time=0))
+            mid.tracks.append(track)
+            return mid
+
+        events.sort(key=lambda x: x[0])
+        mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
+        track = MidiTrack()
+        mid.tracks.append(track)
+        track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=tempo_us, time=0))
+        prev_tick = 0
+        for tick, msg in events:
+            delta = tick - prev_tick
+            track.append(Message(msg.type, note=msg.note, velocity=msg.velocity, channel=msg.channel, time=delta))
+            prev_tick = tick
+        return mid
+
     def play_pattern(self):
-        """Start playing the pattern"""
+        """Start playing the pattern via PlaybackEngine."""
         if hasattr(self, "timer") and self.timer and self.timer.isActive():
             return  # Already playing
+        if not self.measures:
+            return
 
-        self.current_step = 0
+        mid = self._build_midi_file_for_playback()
+        # Engine needs at least one note event to be useful
+        if len(mid.tracks[0]) <= 1:
+            log.message(message="Pattern has no notes to play", scope=self.__class__.__name__)
+            return
 
-        # Calculate interval based on tempo (ms per 16th note)
+        self.playback_engine.load_file(mid)
+        for ch in range(16):
+            self.playback_engine.mute_channel(ch, ch in self.muted_channels)
+        if self.midi_helper:
+            self.playback_engine.on_event = lambda msg: self.midi_helper.send_raw_message(msg.bytes())
+        self.playback_engine.start(0)
+        self._playback_last_bar_index = -1
+        self._playback_last_step_in_bar = -1
+
         ms_per_step = (60000 / self.bpm) / 4
-
-        # Create and start timer
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self._play_step)
+        self.timer.timeout.connect(self._on_playback_tick)
         self.timer.start(int(ms_per_step))
 
-        # Update button states (match transport group selection to playback state)
         if hasattr(self, "play_button") and self.play_button:
             self.play_button.blockSignals(True)
             self.play_button.setChecked(True)
@@ -1840,8 +1914,75 @@ class PatternSequenceEditor(SynthEditor):
 
         log.message(message="Pattern playback started", scope=self.__class__.__name__)
 
+    def _on_playback_tick(self):
+        """Drive PlaybackEngine and sync UI to current position."""
+        self.playback_engine.process_until_now()
+        # Sync bar/step highlight from engine position
+        if self.playback_engine._events:
+            idx = self.playback_engine._event_index
+            if idx > 0 and idx <= len(self.playback_engine._events):
+                tick = self.playback_engine._events[idx - 1].absolute_tick
+            else:
+                tick = self.playback_engine._start_tick
+        else:
+            tick = 0
+        ticks_per_step = 480 // 4
+        total_steps = len(self.measures) * self.beats_per_bar if self.measures else 0
+        global_step = (tick // ticks_per_step) % total_steps if total_steps > 0 else 0
+        self.current_step = global_step
+        bar_index = global_step // self.beats_per_bar
+        step_in_bar = global_step % self.beats_per_bar
+        last_bar = getattr(self, "_playback_last_bar_index", -1)
+        last_step = getattr(self, "_playback_last_step_in_bar", -1)
+
+        if bar_index < len(self.measures):
+            self.current_bar_index = bar_index
+            # Only sync sequencer and bar list when the displayed bar changes
+            if bar_index != last_bar:
+                self._sync_sequencer_with_bar(bar_index)
+                self._playback_last_bar_index = bar_index
+                if self.bars_list and bar_index < self.bars_list.count():
+                    self.bars_list.setCurrentRow(bar_index)
+                    item = self.bars_list.item(bar_index)
+                    if item:
+                        self.bars_list.scrollToItem(item)
+            # Only update step highlight when the current step changes (at most 2 columns)
+            if step_in_bar != last_step:
+                n_cols = len(self.buttons[0]) if self.buttons else 0
+                for row in range(4):
+                    if last_step >= 0 and last_step < len(self.buttons[row]):
+                        btn = self.buttons[row][last_step]
+                        btn.setStyleSheet(
+                            JDXi.UI.Style.generate_sequencer_button_style(
+                                btn.isChecked(), False, is_selected_bar=True
+                            )
+                        )
+                    if step_in_bar < len(self.buttons[row]):
+                        btn = self.buttons[row][step_in_bar]
+                        btn.setStyleSheet(
+                            JDXi.UI.Style.generate_sequencer_button_style(
+                                btn.isChecked(), True, is_selected_bar=True
+                            )
+                        )
+                self._playback_last_step_in_bar = step_in_bar
+
+        if not self.playback_engine._is_playing:
+            self.timer.stop()
+            self.timer = None
+            self._pattern_paused = False
+            if hasattr(self, "play_button") and self.play_button:
+                self.play_button.setEnabled(True)
+                self.play_button.blockSignals(True)
+                self.play_button.setChecked(False)
+                self.play_button.blockSignals(False)
+            if hasattr(self, "stop_button") and self.stop_button:
+                self.stop_button.setChecked(True)
+                self.stop_button.setEnabled(False)
+            log.message(message="Pattern playback finished", scope=self.__class__.__name__)
+
     def stop_pattern(self):
         """Stop playing the pattern"""
+        self.playback_engine.stop()
         if hasattr(self, "timer") and self.timer:
             self.timer.stop()
             self.timer = None

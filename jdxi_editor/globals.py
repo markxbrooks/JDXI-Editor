@@ -10,7 +10,7 @@ from jdxi_editor.project import __organization_name__, __package_name__, __progr
 settings = QSettings(__organization_name__, __program__)
 
 LOGGING = bool(settings.value("logging", True, type=bool))
-PROFILING = False
+PROFILING = True
 logger = logging.getLogger(__package_name__)
 
 LOG_PADDING_WIDTH = 55

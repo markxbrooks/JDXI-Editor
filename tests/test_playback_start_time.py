@@ -82,16 +82,16 @@ def test_playback_start_time_fix():
             print(f"❌ FAIL: calculate_start_tick returned {start_tick}, expected positive value")
             return False
         
-        # Test 4: midi_message_buffer_refill with None playback_start_time
-        print("\n📋 Test 4: midi_message_buffer_refill with None playback_start_time")
+        # Test 4: setup_playback_worker with None playback_start_time (engine path)
+        print("\n📋 Test 4: setup_playback_worker with None playback_start_time")
         player.midi_state.playback_start_time = None
         player.midi_state.tempo_at_position = 500000  # 120 BPM
-        
+
         try:
-            player.midi_message_buffer_refill()
-            print("✅ PASS: midi_message_buffer_refill completed without error")
+            player.setup_playback_worker()
+            print("✅ PASS: setup_playback_worker completed without error")
         except Exception as ex:
-            print(f"❌ FAIL: midi_message_buffer_refill failed: {ex}")
+            print(f"❌ FAIL: setup_playback_worker failed: {ex}")
             return False
         
         print("\n🎉 All playback_start_time tests passed!")
