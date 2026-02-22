@@ -85,7 +85,7 @@ class AnalogDimensions(Dimensions):
 class ComboBoxDimensions(Dimensions):
     """Combo Box Dimensions"""
 
-    WIDTH: int = 325
+    WIDTH: int = 425
     HEIGHT: int = 25
 
 
