@@ -501,6 +501,16 @@ class PatternSequenceEditor(SynthEditor):
             button_row_layout.addWidget(button)
         return button_row_layout
 
+    def reset_all_measures(self):
+        for measure in self.measures:
+            initialize_measure(measure)
+
+    def add_and_reset_new_measure(self):
+        measure = PatternMeasure()
+        initialize_measure(measure)
+        self.measures.append(measure)
+        return measure
+
     def on_learn_pattern_button_clicked(self):
         """Connect the MIDI input to the learn pattern function."""
         self.midi_helper.midi_message_incoming.connect(self._learn_pattern)
