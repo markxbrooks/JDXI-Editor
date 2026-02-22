@@ -177,6 +177,7 @@ class SearchableFilterableComboBox(QWidget):
         return category_bar
 
     def add_banks(self, bank_label: str) -> QHBoxLayout:
+        """add banks"""
         bank_bar, self.bank_combo = create_combo_row(
             label=bank_label,
             all_items_label="All Banks",
@@ -195,6 +196,7 @@ class SearchableFilterableComboBox(QWidget):
     def _create_search_row(
         self, search_label: str, search_placeholder: str, use_analog_style: bool
     ) -> QHBoxLayout:
+        """create search row"""
         line_edit_style = (
             JDXi.UI.Style.QLINEEDIT_ANALOG
             if use_analog_style
@@ -290,12 +292,7 @@ class SearchableFilterableComboBox(QWidget):
         # --- Log for debugging
         if filtered_options:
             pass  # logging here is way too noisy
-            """log.debug(
-                f"Populated combo box with {len(filtered_options)} items "
-                f"(filtered from {len(self._full_options)} total)"
-            )"""
 
-    @Slot(int)
     def _on_combo_index_changed(self, filtered_index: int) -> None:
         """
         Handle combo box index change.

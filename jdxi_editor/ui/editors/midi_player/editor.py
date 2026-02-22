@@ -59,7 +59,6 @@ from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.helpers.widgets import (
-    create_jdxi_button,
     create_jdxi_button_from_spec,
     create_jdxi_row,
     get_icon_pixmap,
@@ -611,6 +610,7 @@ class MidiFilePlayer(SynthEditor):
         }
 
     def classify_and_assign_tracks(self) -> None:
+        """classify and assign tracks """
         if not self._validate_midi_loaded():
             return
 
@@ -633,6 +633,7 @@ class MidiFilePlayer(SynthEditor):
             self._handle_classification_error(ex)
 
     def _validate_midi_loaded(self) -> bool:
+        """validate that a MIDI file is loaded"""
         if not self.midi_state.file:
             self._show_warning(
                 "No MIDI File Loaded",
@@ -642,10 +643,12 @@ class MidiFilePlayer(SynthEditor):
         return True
 
     def _detect_drum_tracks(self) -> list[int]:
+        """detect drum tracks"""
         drum_tracks = detect_drum_tracks(self.midi_state.file, min_score=70.0)
         return [idx for idx, _ in drum_tracks]
 
     def _classify_tracks(self, drum_indices: list[int]):
+        """classify tracks"""
         return classify_tracks(
             self.midi_state.file,
             exclude_drum_tracks=drum_indices,
@@ -653,6 +656,7 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def _apply_channel_assignments(self, classifications) -> dict[str, list[str]]:
+        """apply channel assignments"""
         updated: dict[str, list[str]] = {
             TrackCategory.BASS: [],
             TrackCategory.KEYS_GUITARS: [],
@@ -686,10 +690,15 @@ class MidiFilePlayer(SynthEditor):
                     f"Track {track_index + 1} ({track_name}) - Score: {score:.1f}"
                 )
 
-        # Handle unclassified
+        self._handle_unclassified_tracks(classifications, updated)
+
+        return updated
+
+    def _handle_unclassified_tracks(self, classifications, updated: dict[str, list[str]]):
+        """Handle unclassified"""
         for track_index, analysis in classifications.get("unclassified", []):
             track_name = (
-                getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                    getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
             )
             scores = analysis.scores
 
@@ -698,8 +707,6 @@ class MidiFilePlayer(SynthEditor):
             updated[TrackCategory.UNCLASSIFIED].append(
                 f"Track {track_index + 1} ({track_name}) - Best: {max_category} ({max_score:.1f})"
             )
-
-        return updated
 
     def _has_classified_tracks(self, updated_tracks: dict) -> bool:
         """Return True if at least one track was classified (excluding unclassified)."""
@@ -720,7 +727,7 @@ class MidiFilePlayer(SynthEditor):
         self,
         updated: dict[str, list[str]],
     ) -> str:
-
+        """build classification message"""
         total_classified = sum(
             len(v) for k, v in updated.items() if k != TrackCategory.UNCLASSIFIED
         )
@@ -754,6 +761,7 @@ class MidiFilePlayer(SynthEditor):
         return "\n".join(parts)
 
     def _show_info_message(self, title: str, message: str) -> None:
+        """show info dialog"""
         show_message_box_from_spec(
             self.specs["message_box"]["info"],
             title=title,
@@ -761,6 +769,7 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def _show_warning(self, title: str, message: str) -> None:
+        """show warning"""
         show_message_box_from_spec(
             self.specs["message_box"]["warning"],
             title=title,
@@ -768,6 +777,7 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def _handle_classification_error(self, ex: Exception) -> None:
+        """handle classification error"""
         log.error(f"❌ Error classifying tracks: {ex}")
         import traceback
 
@@ -805,20 +815,8 @@ class MidiFilePlayer(SynthEditor):
         self.ui.automation_insert_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
-        insert_cell = QWidget()
-        insert_cell_layout = QHBoxLayout(insert_cell)
-        insert_cell_layout.addStretch()
-        insert_cell_layout.setContentsMargins(0, 0, 0, 0)
-        insert_cell_layout.setSpacing(4)
-        insert_cell_layout.addWidget(self.ui.automation_insert_button)
-        insert_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        row_widget, self.ui.automation_insert_label = create_jdxi_row(
-            spec.label, icon_pixmap=insert_icon_pixmap
-        )
-        insert_cell_layout.addWidget(row_widget)
-        insert_cell_layout.addStretch()
+        insert_cell, self.ui.automation_insert_label = self.create_widget_cell_with_button_spec(spec,
+                                                                                                self.ui.automation_insert_button)
         grid.addWidget(insert_cell, row, 4)
         row += 1
 
@@ -834,18 +832,8 @@ class MidiFilePlayer(SynthEditor):
         self.ui.usb_port_refresh_devices_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
-        refresh_usb_cell = QWidget()
-        refresh_usb_cell_layout = QHBoxLayout(refresh_usb_cell)
-        refresh_usb_cell_layout.setContentsMargins(0, 0, 0, 0)
-        refresh_usb_cell_layout.setSpacing(4)
-        refresh_usb_cell_layout.addWidget(self.ui.usb_port_refresh_devices_button)
-        refresh_usb_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        refresh_row_widget, self.ui.usb_port_refresh_devices_label = create_jdxi_row(
-            spec.label, icon_pixmap=refresh_usb_icon_pixmap
-        )
-        refresh_usb_cell_layout.addWidget(refresh_row_widget)
+        refresh_usb_cell, self.ui.usb_port_refresh_devices_label = self.create_widget_cell_with_button_spec(spec,
+                                                                                                            self.ui.usb_port_refresh_devices_button)
         grid.addWidget(refresh_usb_cell, row, 3)
         row += 1
 
@@ -884,6 +872,22 @@ class MidiFilePlayer(SynthEditor):
 
         self.populate_automation_programs(PresetSource.DIGITAL)
         return grid
+
+    def create_widget_cell_with_button_spec(self, spec: ButtonSpec, button) -> tuple[QWidget, QLabel]:
+        """Create Widget With Button Spec"""
+        widget = QWidget()
+        layout = QHBoxLayout(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+        layout.addWidget(button)
+        icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        row_widget, label = create_jdxi_row(
+            spec.label, icon_pixmap=icon_pixmap
+        )
+        layout.addWidget(row_widget)
+        return widget, label
 
     def populate_automation_programs(self, source: PresetSource) -> None:
         """
