@@ -20,48 +20,48 @@ from PySide6.QtWidgets import (
 
 def create_layout(
     vertical: bool = True,
-    parent_widget: Optional[QWidget] = None,
+    parent: Optional[QWidget] = None,
 ) -> Union[QVBoxLayout, QHBoxLayout]:
     """
     Create a QVBoxLayout or QHBoxLayout, optionally attached to a parent.
 
     :param vertical: If True, create QVBoxLayout; else QHBoxLayout.
-    :param parent_widget: Optional widget to set as the layout's parent.
+    :param parent: Optional widget to set as the layout's parent.
     :return: The created layout.
     """
     layout_cls = QVBoxLayout if vertical else QHBoxLayout
-    if parent_widget is not None:
-        return layout_cls(parent_widget)
+    if parent is not None:
+        return layout_cls(parent)
     return layout_cls()
 
 
 def create_layout_with_widgets(
     widgets: List[QWidget],
     vertical: bool = False,
-    top_stretch: bool = True,
-    bottom_stretch: bool = True,
+    start_stretch: bool = True,
+    end_stretch: bool = True,
     spacing: Optional[int] = None,
     margins: Optional[QMargins] = None,
-    parent_widget: Optional[QWidget] = None,
+    parent: Optional[QWidget] = None,
 ) -> Union[QHBoxLayout, QVBoxLayout]:
     """
     Create a row (or column) from a list of widgets, with optional stretches.
 
     :param widgets: List of widgets to add.
     :param vertical: If True, use QVBoxLayout; else QHBoxLayout.
-    :param top_stretch: Add stretch before widgets.
-    :param bottom_stretch: Add stretch after widgets.
+    :param start_stretch: Add stretch before widgets.
+    :param end_stretch: Add stretch after widgets.
     :param spacing: Optional spacing between items.
     :param margins: Optional layout margins.
-    :param parent_widget: Optional parent widget for the layout.
+    :param parent: Optional parent widget for the layout.
     :return: The created layout (HBox or VBox).
     """
-    layout = create_layout(vertical=vertical, parent_widget=parent_widget)
-    if top_stretch:
+    layout = create_layout(vertical=vertical, parent=parent)
+    if start_stretch:
         layout.addStretch()
     for widget in widgets:
         layout.addWidget(widget)
-    if bottom_stretch:
+    if end_stretch:
         layout.addStretch()
     if spacing is not None:
         layout.setSpacing(spacing)
@@ -131,13 +131,22 @@ def create_form_layout(parent: Optional[QWidget] = None) -> QFormLayout:
     return layout
 
 
+def create_widget_with_layout(layout: QVBoxLayout) -> QWidget:
+    """create a simple widget with a given layout"""
+    widget = QWidget()
+    widget.setLayout(layout)
+    return widget
+
+
 def create_layout_with_inner_layouts(
     inner_layouts: List[QLayout],
     vertical: bool = True,
+    stretch: bool = True
 ) -> QVBoxLayout:
     """
     Create a layout that contains a list of inner layouts, plus a bottom stretch.
 
+    :param stretch: bool whether to add stretch
     :param inner_layouts: Layouts to add.
     :param vertical: If True, use QVBoxLayout; else QHBoxLayout.
     :return: The outer layout.
@@ -145,7 +154,8 @@ def create_layout_with_inner_layouts(
     layout = create_layout(vertical=vertical)
     for inner in inner_layouts:
         layout.addLayout(inner)
-    layout.addStretch()
+    if stretch:
+        layout.addStretch()
     return layout
 
 

@@ -45,6 +45,20 @@ def get_icon_pixmap(icon_name) -> QPixmap | None:
     return icon_pixmap
 
 
+def create_jdxi_button_with_label_from_spec(spec: ButtonSpec) -> tuple[QWidget, QPushButton]:
+    button = create_jdxi_button_from_spec(
+        spec, checkable=False
+    )
+    classify_tracks_icon_pixmap = get_icon_pixmap(
+        icon_name=spec.icon
+    )
+    row, _ = create_jdxi_row(
+        spec.label,
+        icon_pixmap=classify_tracks_icon_pixmap,
+    )
+    return row, button
+
+
 def create_jdxi_button_from_spec(
     spec: ButtonSpec, button_group: QButtonGroup = None, checkable: bool = True
 ) -> QPushButton:

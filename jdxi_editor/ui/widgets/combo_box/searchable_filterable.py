@@ -147,9 +147,7 @@ class SearchableFilterableComboBox(QWidget):
             layout.addRow(search_row)
 
         # --- Main combo box (slot=None: we connect currentIndexChanged below, not currentTextChanged)
-        main_bar, self.combo_box = create_combo_row(
-            label=label, slot=None
-        )
+        main_bar, self.combo_box = create_combo_row(label=label, slot=None)
         self.combo_box.currentIndexChanged.connect(self._on_combo_index_changed)
         self.set_combo_dimensions(self.combo_box)
         layout.addRow(main_bar)

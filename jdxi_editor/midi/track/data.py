@@ -9,7 +9,7 @@ BASS_KEYWORDS = ["bass", "bassist", "bassline", "low", "sub"]
 KEYS_KEYWORDS = ["piano", "keyboard", "keys", "pianist", "organ", "synth"]
 GUITAR_KEYWORDS = ["guitar", "guitarist", "acoustic", "electric", "strum"]
 STRINGS_KEYWORDS = [
-    "string",   # matches "String", "Strings", "string section", etc.
+    "string",  # matches "String", "Strings", "string section", etc.
     "strings",
     "violin",
     "viola",

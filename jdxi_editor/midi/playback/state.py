@@ -29,7 +29,9 @@ class MidiPlaybackState:
     file_duration_seconds: float = 0.0
     # New attributes for playback state
     suppress_control_changes: bool = field(default=True)
-    suppress_program_changes: bool = field(default=False)  # False = send PCs so inserted PCs are heard
+    suppress_program_changes: bool = field(
+        default=False
+    )  # False = send PCs so inserted PCs are heard
     custom_tempo_force: bool = field(default=False)
     custom_tempo: int = field(
         default=Midi.TEMPO.BPM_162_USEC

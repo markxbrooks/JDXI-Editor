@@ -7,18 +7,25 @@ import io
 import pstats
 import re
 import time
-from dataclasses import dataclass
+from collections.abc import Callable
 from datetime import datetime
-from enum import Enum
 from pathlib import Path
+from turtledemo.penrose import start
 from typing import Any, Optional
 
 import mido
 import pyaudio
 from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
+
+from jdxi_editor.ui.editors.midi_player.track.category import (
+    TrackCategory,
+    STR_TO_TRACK_CATEGORY,
+    CATEGORY_META,
+)
+from jdxi_editor.ui.preset.source import PresetSource
 from picomidi.constant import Midi
-from PySide6.QtCore import Qt, QThread, QTimer
+from PySide6.QtCore import Qt, QThread, QTimer, QMargins
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -59,8 +66,8 @@ from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
+    create_jdxi_button_with_label_from_spec,
     create_jdxi_row,
-    get_icon_pixmap,
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
@@ -81,6 +88,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
 from picoui.specs.widgets import ButtonSpec, CheckBoxSpec, MessageBoxSpec
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
@@ -91,59 +99,6 @@ Signal = None
 Slot = None
 
 
-class TrackCategory:
-    BASS = "bass"
-    KEYS_GUITARS = "keys_guitars"
-    STRINGS = "strings"
-    # DRUMS = "drums"
-    UNCLASSIFIED = "unclassified"
-
-
-# Map classification dict keys (strings) to TrackCategory
-STR_TO_TRACK_CATEGORY: dict[str, str] = {
-    TrackCategory.BASS: TrackCategory.BASS,
-    TrackCategory.KEYS_GUITARS: TrackCategory.KEYS_GUITARS,
-    TrackCategory.STRINGS: TrackCategory.STRINGS,
-    # TrackCategory.DRUMS: TrackCategory.DRUMS,
-    TrackCategory.UNCLASSIFIED: TrackCategory.UNCLASSIFIED,
-}
-
-CHANNEL_BY_CATEGORY: dict[str, int] = {
-    TrackCategory.BASS: 1,
-    TrackCategory.KEYS_GUITARS: 2,
-    TrackCategory.STRINGS: 3,
-}
-
-
-@dataclass(frozen=True)
-class CategoryMeta:
-    """Category Meta Information"""
-
-    emoji: str
-    label: str
-    channel: int
-    engine: str
-
-
-CATEGORY_META: dict[str, CategoryMeta] = {
-    TrackCategory.BASS: CategoryMeta(
-        emoji="🎸", label="Bass", channel=1, engine="Digital Synth 1"
-    ),
-    TrackCategory.KEYS_GUITARS: CategoryMeta(
-        emoji="🎹", label="Keys/Guitars", channel=2, engine="Digital Synth 2"
-    ),
-    TrackCategory.STRINGS: CategoryMeta(
-        emoji="🎻", label="Strings", channel=3, engine="Analog Synth"
-    ),
-    # TrackCategory.DRUMS: CategoryMeta(emoji="🥁", label="Drums", channel=10, engine="Drums")
-}
-
-
-class PresetSource(Enum):
-    DIGITAL = "Digital"
-    ANALOG = "Analog"
-    DRUMS = "Drums"
-
 
 class MidiFilePlayer(SynthEditor):
     """
@@ -153,10 +108,10 @@ class MidiFilePlayer(SynthEditor):
     BUFFER_WINDOW_SECONDS = 30.0
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        parent: QWidget = None,
-        preset_helper: JDXiPresetHelper = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            parent: QWidget = None,
+            preset_helper: JDXiPresetHelper = None,
     ):
         """
         Initialize the MidiPlayer
@@ -189,8 +144,7 @@ class MidiFilePlayer(SynthEditor):
         self.usb_recorder = USBRecorder(channels=1)
         # Initialize UI attributes
         self.ui = MidiPlayerWidgets()
-        self.specs["buttons"] = self._build_button_specs()
-        self.specs["message_box"] = self._build_message_box_specs()
+        self.specs = self._build_specs()
         self.ui_init()
 
     def midi_timer_init(self):
@@ -234,18 +188,13 @@ class MidiFilePlayer(SynthEditor):
         Initialize the UI for the MidiPlayer.
         """
 
-        left_panel_widget = QWidget()
-        left_panel_layout = self._build_left_panel()
-        left_panel_widget.setLayout(left_panel_layout)
-
-        right_panel_widget = QWidget()
-        right_panel_layout = self._build_right_panel()
-        right_panel_widget.setLayout(right_panel_layout)
+        panel_widgets = [self.build_panel(self._build_left_panel),
+                         self.build_panel(self._build_right_panel)]
 
         # --- Top horizontal layout: file title and right-hand controls
-        header_layout = QHBoxLayout()
-        header_layout.addWidget(left_panel_widget)
-        header_layout.addWidget(right_panel_widget)
+        header_layout = create_layout_with_widgets(widgets=panel_widgets,
+                                                   start_stretch=False,
+                                                   end_stretch=False)
 
         # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -269,6 +218,12 @@ class MidiFilePlayer(SynthEditor):
         container_layout.addWidget(content_widget)
         self._add_base_widget_to_editor()
 
+    def build_panel(self, builder: Callable) -> QWidget:
+        """build the appropriate panel"""
+        panel_layout = builder()
+        panel_widget = create_widget_with_layout(panel_layout)
+        return panel_widget
+
     def _add_base_widget_to_editor(self):
         """Add base widget to editor's layout"""
         if not hasattr(self, "main_layout") or self.main_layout is None:
@@ -277,46 +232,53 @@ class MidiFilePlayer(SynthEditor):
         self.main_layout.addWidget(self.base_widget)
 
     def _build_left_panel(self) -> QVBoxLayout:
+        """Build left panel"""
         # Create vertical layout for title and drum detection button
-        widgets = self._build_left_side_widgets()
-        classification_hlayout = create_layout_with_widgets(widgets=widgets, spacing=5)
-        layout = create_vertical_layout()
         self.ui.digital_title_file_name = DigitalTitle(
-            "No file loaded", show_upper_text=True
+            tone_name="No file loaded", show_upper_text=True
         )
-        layout.addWidget(self.ui.digital_title_file_name)
-        layout.addLayout(classification_hlayout)
-        apply_all_label_row = self.create_apply_all_button_and_label()
-        layout.addWidget(apply_all_label_row)
+        classification_widget = self._create_classify_tracks_widget()
+        layout = create_layout_with_widgets(
+            widgets=[
+                self.ui.digital_title_file_name,
+                classification_widget
+            ],
+            vertical=False
+        )
         return layout
+
+    def _create_classify_tracks_widget(self) -> QWidget:
+        """create classify tracks widget"""
+        classify_tracks_widgets = self._build_classify_tracks_widgets()
+        classification_hlayout = create_layout_with_widgets(widgets=classify_tracks_widgets, spacing=5)
+        classification_widget = QWidget()
+        classification_vlayout = create_layout_with_inner_layouts(inner_layouts=[classification_hlayout],
+                                                                  vertical=True,
+                                                                  stretch=False)
+        classification_widget.setLayout(classification_vlayout)
+        apply_all_label_row = self.create_apply_all_button_and_label()
+        classification_vlayout.addWidget(apply_all_label_row)
+        return classification_widget
 
     def _build_right_panel(self):
         """Build right panel"""
-        right_panel_layout = QVBoxLayout()
-        right_panel_layout.addLayout(self.init_automation_usb_grid())
-        right_panel_layout.addLayout(self.init_mute_controls())
+        right_panel_layout = create_layout_with_inner_layouts(
+            inner_layouts=[
+                self.init_automation_usb_grid(),
+                self.init_mute_controls()
+            ],
+            vertical=True, stretch=False
+        )
         return right_panel_layout
 
-    def _build_left_side_widgets(self) -> list[QPushButton | QWidget]:
-        """build left side widgets"""
+    def _build_classify_tracks_widgets(self) -> list[QPushButton | QWidget]:
+        """build classify tracks widgets"""
         # ---- Drum detection button
-        self.ui.detect_drums_button = create_jdxi_button_from_spec(
-            self.specs["buttons"]["detect_drums"], checkable=False
-        )
-        detect_drums_icon_pixmap = get_icon_pixmap(icon_name=JDXi.UI.Icon.DRUM)
-        detect_drums_label_row, self.ui.detect_drums_label = create_jdxi_row(
-            label=self.specs["buttons"]["detect_drums"].label, icon_pixmap=detect_drums_icon_pixmap
-        )
-        self.ui.classify_tracks_button = create_jdxi_button_from_spec(
-            self.specs["buttons"]["classify_tracks"], checkable=False
-        )
-        classify_tracks_icon_pixmap = get_icon_pixmap(
-            icon_name=JDXi.UI.Icon.MUSIC_NOTES
-        )
-
-        classify_tracks_label_row, self.ui.classify_tracks_label = create_jdxi_row(
-            self.specs["buttons"]["classify_tracks"].label, icon_pixmap=classify_tracks_icon_pixmap
-        )
+        detect_drums_label_row, self.ui.detect_drums_button = create_jdxi_button_with_label_from_spec(
+            self.specs["buttons"]["detect_drums"])
+        # --- Classify Tracks Button
+        classify_tracks_label_row, self.ui.classify_tracks_button = create_jdxi_button_with_label_from_spec(
+            self.specs["buttons"]["classify_tracks"])
         widgets = [
             self.ui.detect_drums_button,
             detect_drums_label_row,
@@ -325,77 +287,38 @@ class MidiFilePlayer(SynthEditor):
         ]
         return widgets
 
-    def _build_button_specs(self) -> dict[str, Any]:
-        return {
-            "apply_all_track_changes": ButtonSpec(
-                label="Apply All Track Changes",
-                tooltip="Apply all Track Name and MIDI Channel changes",
-                icon=JDXi.UI.Icon.SAVE,
-                slot=self._apply_all_track_changes,
-            ),
-            "automation_insert": ButtonSpec(
-                label="Insert Program Change Here",
-                tooltip="Insert Program Change at current position",
-                icon=JDXi.UI.Icon.ADD,
-                slot=self.insert_program_change_current_position,
-            ),
-            "classify_tracks": ButtonSpec(
-                label="Classify Tracks",
-                tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
-                icon=JDXi.UI.Icon.MUSIC_NOTES,
-                slot=self.classify_and_assign_tracks,
-            ),
-            "detect_drums": ButtonSpec(
-                label="Detect Drums",
-                tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
-                icon=JDXi.UI.Icon.DRUM,
-                slot=self.detect_and_assign_drum_tracks,
-            ),
-            "load_midi_file": ButtonSpec(
-                label="Load MIDI File",
-                tooltip="Load MIDI File",
-                icon=JDXi.UI.Icon.FOLDER_OPENED,
-                slot=self.midi_load_file,
-            ),
-            "save_midi_file": ButtonSpec(
-                label="Save MIDI File",
-                tooltip="Save MIDI file",
-                icon=JDXi.UI.Icon.FLOPPY_DISK,
-                slot=self.midi_save_file,
-            ),
-            "usb_port_refresh": ButtonSpec(
-                label="Refresh USB Device List",
-                tooltip="Refresh USB devices",
-                icon=JDXi.UI.Icon.REFRESH,
-                slot=self.usb_populate_devices,
-            ),
-        }
-
     def init_ruler(self) -> QWidget:
         """
         init_ruler
 
         :return: QWidget
         """
-        ruler_container = QWidget()
-        ruler_layout = QHBoxLayout(ruler_container)
-        ruler_layout.setContentsMargins(0, 0, 0, 0)
-        ruler_layout.setSpacing(0)
+        self.init_midi_file_position_label()
+        self.init_midi_file_position_slider()
+        widgets = [self.ui.position_label, self.ui.midi_file_position_slider]
+        ruler_layout = create_layout_with_widgets(widgets=widgets,
+                                                  margins=QMargins(0, 0, 0, 0),
+                                                  spacing=0,
+                                                  start_stretch=False,
+                                                  end_stretch=False)
+        ruler_container = create_widget_with_layout(layout=ruler_layout)
+        return ruler_container
 
+    def init_midi_file_position_label(self):
+        """Midi File position label"""
         self.ui.position_label = QLabel("Playback Position: 0:00 / 0:00")
         self.ui.midi_track_viewer = MidiTrackViewer()
         self.ui.position_label.setFixedWidth(
             self.ui.midi_track_viewer.get_track_controls_width()
         )
+
+    def init_midi_file_position_slider(self):
+        """Midi File position slider"""
         self.ui.midi_file_position_slider = QSlider(Qt.Horizontal)
         self.ui.midi_file_position_slider.setEnabled(False)
         self.ui.midi_file_position_slider.sliderReleased.connect(
             self.midi_scrub_position
         )
-        widgets = [self.ui.position_label, self.ui.midi_file_position_slider]
-        for widget in widgets:
-            ruler_layout.addWidget(widget)
-        return ruler_container
 
     def init_event_suppression_controls(self) -> QGroupBox:
         """
@@ -452,26 +375,16 @@ class MidiFilePlayer(SynthEditor):
 
         :return: QHBoxLayout
         """
-        group = QGroupBox("MIDI File")
-        layout = QHBoxLayout()
-        group.setLayout(layout)
-        layout.addStretch()
-
         spec = self.specs["buttons"]["load_midi_file"]
         self.ui.load_button = create_jdxi_button_from_spec(spec, checkable=False)
-        layout.addWidget(self.ui.load_button)
-
         load_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
             spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
         )
         load_label_row, self.ui.load_label = create_jdxi_row(
             label=spec.label, icon_pixmap=load_icon_pixmap
         )
-        layout.addWidget(load_label_row)
-
         spec = self.specs["buttons"]["save_midi_file"]
         self.ui.save_button = create_jdxi_button_from_spec(spec, checkable=False)
-        layout.addWidget(self.ui.save_button)
 
         save_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
             spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
@@ -479,8 +392,19 @@ class MidiFilePlayer(SynthEditor):
         save_label_row, self.ui.save_label = create_jdxi_row(
             spec.label, icon_pixmap=save_icon_pixmap
         )
-        layout.addWidget(save_label_row)
-        layout.addStretch()
+
+        layout = create_layout_with_widgets(
+            widgets=[
+                self.ui.load_button,
+                load_label_row,
+                self.ui.save_button,
+                save_label_row
+            ],
+            vertical=False
+        )
+
+        group = QGroupBox("MIDI File")
+        group.setLayout(layout)
         return group
 
     def detect_and_assign_drum_tracks(self) -> None:
@@ -514,7 +438,7 @@ class MidiFilePlayer(SynthEditor):
                     spin = self.ui.midi_track_viewer._track_channel_spins[track_index]
                     spin.setValue(drum_channel_display)
                     track_name = (
-                        analysis.get("track_name") or f"Track {track_index + 1}"
+                            analysis.get("track_name") or f"Track {track_index + 1}"
                     )
                     updated_tracks.append(
                         f"Track {track_index + 1} ({track_name}) - Score: {analysis['score']:.1f}"
@@ -540,81 +464,8 @@ class MidiFilePlayer(SynthEditor):
                 message=f"An error occurred while detecting drum tracks:\n\n{ex}",
             )
 
-    def _build_message_box_specs(self) -> dict[str, MessageBoxSpec]:
-        """Assemble all static message box specs for the MIDI player."""
-        return {
-            "no_midi_file": MessageBoxSpec(
-                title="No MIDI File Loaded",
-                message="Please load a MIDI file first before detecting drum tracks.",
-                type_attr="Warning",
-            ),
-            "no_midi_file_classify": MessageBoxSpec(
-                title="No MIDI File Loaded",
-                message="Please load a MIDI file first before classifying tracks.",
-                type_attr="Warning",
-            ),
-            "no_drum_tracks_found": MessageBoxSpec(
-                title="No Drum Tracks Found",
-                message=(
-                    "No tracks were identified as drum tracks with high confidence (score >= 70).\n\n"
-                    "Try lowering the threshold or manually assign channels."
-                ),
-                type_attr="Information",
-            ),
-            "no_tracks_classified": MessageBoxSpec(
-                title="No Tracks Classified",
-                message=(
-                    "No tracks were classified with sufficient confidence (score >= 30).\n\n"
-                    "Tracks may need manual assignment."
-                ),
-                type_attr="Information",
-            ),
-            "no_output_file": MessageBoxSpec(
-                title="No Output File",
-                message="Please select a WAV output file or enable auto-generate filename.",
-                type_attr="Warning",
-            ),
-            # Dynamic message (pass message= at call site):
-            "drum_tracks_detected": MessageBoxSpec(
-                title="Drum Tracks Detected",
-                message="",
-                type_attr="Information",
-            ),
-            "error_detect_drums": MessageBoxSpec(
-                title="Error",
-                message="",
-                type_attr="Critical",
-            ),
-            "error_classify_tracks": MessageBoxSpec(
-                title="Error",
-                message="",
-                type_attr="Critical",
-            ),
-            "tracks_classified": MessageBoxSpec(
-                title="Tracks Classified",
-                message="",
-                type_attr="Information",
-            ),
-            "error_saving_file": MessageBoxSpec(
-                title="Error Saving File",
-                message="",
-                type_attr="Critical",
-            ),
-            # Generic templates (pass title= and message= at call site):
-            "info": MessageBoxSpec(
-                title="",
-                message="",
-                type_attr="Information",
-            ),
-            "warning": MessageBoxSpec(
-                title="",
-                message="",
-                type_attr="Warning",
-            ),
-        }
-
     def classify_and_assign_tracks(self) -> None:
-        """classify and assign tracks """
+        """classify and assign tracks"""
         if not self._validate_midi_loaded():
             return
 
@@ -686,7 +537,7 @@ class MidiFilePlayer(SynthEditor):
                 spin.setValue(meta.channel)
 
                 track_name = (
-                    getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                        getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
                 )
                 score = analysis.scores[category]
 
@@ -698,7 +549,9 @@ class MidiFilePlayer(SynthEditor):
 
         return updated
 
-    def _handle_unclassified_tracks(self, classifications, updated: dict[str, list[str]]):
+    def _handle_unclassified_tracks(
+            self, classifications, updated: dict[str, list[str]]
+    ):
         """Handle unclassified"""
         for track_index, analysis in classifications.get("unclassified", []):
             track_name = (
@@ -715,12 +568,12 @@ class MidiFilePlayer(SynthEditor):
     def _has_classified_tracks(self, updated_tracks: dict) -> bool:
         """Return True if at least one track was classified (excluding unclassified)."""
         return (
-            sum(
-                len(v)
-                for k, v in updated_tracks.items()
-                if k != TrackCategory.UNCLASSIFIED
-            )
-            > 0
+                sum(
+                    len(v)
+                    for k, v in updated_tracks.items()
+                    if k != TrackCategory.UNCLASSIFIED
+                )
+                > 0
         )
 
     def _show_no_tracks_message(self) -> None:
@@ -728,8 +581,8 @@ class MidiFilePlayer(SynthEditor):
         show_message_box_from_spec(self.specs["message_box"]["no_tracks_classified"])
 
     def _build_classification_message(
-        self,
-        updated: dict[str, list[str]],
+            self,
+            updated: dict[str, list[str]],
     ) -> str:
         """build classification message"""
         total_classified = sum(
@@ -819,8 +672,11 @@ class MidiFilePlayer(SynthEditor):
         self.ui.automation_insert_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
-        insert_cell, self.ui.automation_insert_label = self.create_widget_cell_with_button_spec(spec,
-                                                                                                self.ui.automation_insert_button)
+        insert_cell, self.ui.automation_insert_label = (
+            self.create_widget_cell_with_button_spec(
+                spec, self.ui.automation_insert_button
+            )
+        )
         grid.addWidget(insert_cell, row, 4)
         row += 1
 
@@ -836,8 +692,11 @@ class MidiFilePlayer(SynthEditor):
         self.ui.usb_port_refresh_devices_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
-        refresh_usb_cell, self.ui.usb_port_refresh_devices_label = self.create_widget_cell_with_button_spec(spec,
-                                                                                                            self.ui.usb_port_refresh_devices_button)
+        refresh_usb_cell, self.ui.usb_port_refresh_devices_label = (
+            self.create_widget_cell_with_button_spec(
+                spec, self.ui.usb_port_refresh_devices_button
+            )
+        )
         grid.addWidget(refresh_usb_cell, row, 3)
         row += 1
 
@@ -877,7 +736,9 @@ class MidiFilePlayer(SynthEditor):
         self.populate_automation_programs(PresetSource.DIGITAL)
         return grid
 
-    def create_widget_cell_with_button_spec(self, spec: ButtonSpec, button) -> tuple[QWidget, QLabel]:
+    def create_widget_cell_with_button_spec(
+            self, spec: ButtonSpec, button
+    ) -> tuple[QWidget, QLabel]:
         """Create Widget With Button Spec"""
         widget = QWidget()
         layout = QHBoxLayout(widget)
@@ -887,9 +748,7 @@ class MidiFilePlayer(SynthEditor):
         icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
             spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
         )
-        row_widget, label = create_jdxi_row(
-            spec.label, icon_pixmap=icon_pixmap
-        )
+        row_widget, label = create_jdxi_row(spec.label, icon_pixmap=icon_pixmap)
         layout.addWidget(row_widget)
         return widget, label
 
@@ -1022,7 +881,7 @@ class MidiFilePlayer(SynthEditor):
         return 0
 
     def _insert_messages_at_abs_tick(
-        self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]
+            self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]
     ) -> None:
         """
         Insert a list of messages at a given absolute tick, preserving delta times.
@@ -1177,9 +1036,9 @@ class MidiFilePlayer(SynthEditor):
         :return: Generated filename path or None if no MIDI file is loaded
         """
         if (
-            not self.midi_state.file
-            or not hasattr(self.midi_state.file, "filename")
-            or not self.midi_state.file.filename
+                not self.midi_state.file
+                or not hasattr(self.midi_state.file, "filename")
+                or not self.midi_state.file.filename
         ):
             return None
 
@@ -1248,10 +1107,10 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def _create_transport_control(
-        self,
-        spec: TransportSpec,
-        layout: QHBoxLayout,
-        button_group: QButtonGroup | None,
+            self,
+            spec: TransportSpec,
+            layout: QHBoxLayout,
+            button_group: QButtonGroup | None,
     ) -> None:
         """Create a transport button + label row"""
 
@@ -1604,16 +1463,16 @@ class MidiFilePlayer(SynthEditor):
 
         # Add to recent files if parent has recent_files_manager
         if (
-            hasattr(self.parent, "recent_files_manager")
-            and self.parent.recent_files_manager
+                hasattr(self.parent, "recent_files_manager")
+                and self.parent.recent_files_manager
         ):
             try:
                 self.parent.recent_files_manager.add_file(file_path)
                 if hasattr(self.parent, "_update_recent_files_menu"):
                     # Check if menu still exists before updating
                     if (
-                        hasattr(self.parent, "recent_files_menu")
-                        and self.parent.recent_files_menu is not None
+                            hasattr(self.parent, "recent_files_menu")
+                            and self.parent.recent_files_menu is not None
                     ):
                         try:
                             self.parent._update_recent_files_menu()
@@ -1640,9 +1499,9 @@ class MidiFilePlayer(SynthEditor):
             else:
                 self.ticks_per_beat = 480
         self.tick_duration = (
-            self.midi_state.tempo_at_position
-            / Midi.TEMPO.CONVERT_SEC_TO_USEC
-            / self.ticks_per_beat
+                self.midi_state.tempo_at_position
+                / Midi.TEMPO.CONVERT_SEC_TO_USEC
+                / self.ticks_per_beat
         )
 
     def calculate_duration(self) -> None:
@@ -1673,8 +1532,8 @@ class MidiFilePlayer(SynthEditor):
         for track in self.midi_state.file.tracks:
             for msg in track:
                 if (
-                    hasattr(msg, "channel")
-                    and msg.channel in self.midi_preferred_channels
+                        hasattr(msg, "channel")
+                        and msg.channel in self.midi_preferred_channels
                 ):
                     selected_channel = msg.channel
                     break
@@ -1755,7 +1614,7 @@ class MidiFilePlayer(SynthEditor):
         self._push_tempo_to_pattern_sequencer(tempo_bpm)
 
     def update_upper_display_with_tempo_and_bar(
-        self, elapsed_time: Optional[float] = None
+            self, elapsed_time: Optional[float] = None
     ) -> None:
         """
         Update the upper digital with tempo and optionally bar number.
@@ -1769,8 +1628,8 @@ class MidiFilePlayer(SynthEditor):
 
         # Append bar number if playing or paused
         if elapsed_time is not None or (
-            self.midi_state.timer
-            and (self.midi_state.timer.isActive() or self.midi_state.playback_paused)
+                self.midi_state.timer
+                and (self.midi_state.timer.isActive() or self.midi_state.playback_paused)
         ):
             if elapsed_time is None and self.midi_state.playback_start_time:
                 elapsed_time = time.time() - self.midi_state.playback_start_time
@@ -2029,8 +1888,8 @@ class MidiFilePlayer(SynthEditor):
         Check if the channel is muted.
         """
         return (
-            channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
-            in self.midi_state.muted_channels
+                channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
+                in self.midi_state.muted_channels
         )
 
     def handle_set_tempo(self, msg: mido.Message, absolute_time_ticks: int) -> None:
@@ -2065,7 +1924,7 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def buffer_message_with_tempo(
-        self, absolute_time_ticks: int, msg: mido.Message, tempo: int
+            self, absolute_time_ticks: int, msg: mido.Message, tempo: int
     ) -> None:
         """
         Add a MIDI message to the buffer with a specific tempo.
@@ -2141,10 +2000,10 @@ class MidiFilePlayer(SynthEditor):
         return False
 
     def process_track_messages(
-        self,
-        start_tick: int,
-        track: mido.MidiTrack,
-        only_program_and_bank_select: bool = False,
+            self,
+            start_tick: int,
+            track: mido.MidiTrack,
+            only_program_and_bank_select: bool = False,
     ) -> None:
         """
         process_track_messages
@@ -2323,7 +2182,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_state.event_index = 0  # Default to the start if no match
 
     def update_playback_start_time(
-        self, target_time: float
+            self, target_time: float
     ) -> None:  # pylint: disable=unused-argument
         """
         Adjusts the playback start time based on the scrub position.
@@ -2520,8 +2379,8 @@ class MidiFilePlayer(SynthEditor):
         """
         try:
             if (
-                hasattr(self, "midi_playback_worker")
-                and self.midi_playback_worker is not None
+                    hasattr(self, "midi_playback_worker")
+                    and self.midi_playback_worker is not None
             ):
                 self.midi_state.timer.timeout.disconnect(
                     self.midi_playback_worker.do_work
@@ -2552,7 +2411,7 @@ class MidiFilePlayer(SynthEditor):
             )
 
     def ui_position_label_update_time(
-        self, time_seconds: Optional[float] = None
+            self, time_seconds: Optional[float] = None
     ) -> None:
         """
         ui_position_label_update_time
@@ -2566,7 +2425,7 @@ class MidiFilePlayer(SynthEditor):
             )
 
     def calculate_current_bar(
-        self, elapsed_time: Optional[float] = None
+            self, elapsed_time: Optional[float] = None
     ) -> Optional[float]:
         """
         Calculate the current bar number based on elapsed playback time.
@@ -2576,9 +2435,9 @@ class MidiFilePlayer(SynthEditor):
         """
         try:
             if (
-                not self.midi_state.file
-                or not hasattr(self, "ticks_per_beat")
-                or self.ticks_per_beat is None
+                    not self.midi_state.file
+                    or not hasattr(self, "ticks_per_beat")
+                    or self.ticks_per_beat is None
             ):
                 return None
 
@@ -2650,8 +2509,8 @@ class MidiFilePlayer(SynthEditor):
         else:
             # Resuming playback
             if (
-                self.midi_state.playback_paused_time
-                and self.midi_state.playback_start_time
+                    self.midi_state.playback_paused_time
+                    and self.midi_state.playback_start_time
             ):
                 pause_duration = time.time() - self.midi_state.playback_paused_time
                 self.midi_state.playback_start_time += (
@@ -2792,8 +2651,8 @@ class MidiFilePlayer(SynthEditor):
                 return
             bpm_int = int(round(tempo_bpm))
             if (
-                hasattr(pattern_editor, "tempo_spinbox")
-                and pattern_editor.tempo_spinbox
+                    hasattr(pattern_editor, "tempo_spinbox")
+                    and pattern_editor.tempo_spinbox
             ):
                 pattern_editor.tempo_spinbox.blockSignals(True)
                 pattern_editor.tempo_spinbox.setValue(bpm_int)
@@ -2832,3 +2691,125 @@ class MidiFilePlayer(SynthEditor):
             import traceback
 
             log.debug(traceback.format_exc())
+
+    def _build_specs(self) -> dict[str, Any]:
+        return {
+            "buttons": {
+                "apply_all_track_changes": ButtonSpec(
+                    label="Apply All Track Changes",
+                    tooltip="Apply all Track Name and MIDI Channel changes",
+                    icon=JDXi.UI.Icon.SAVE,
+                    slot=self._apply_all_track_changes,
+                ),
+                "automation_insert": ButtonSpec(
+                    label="Insert Program Change Here",
+                    tooltip="Insert Program Change at current position",
+                    icon=JDXi.UI.Icon.ADD,
+                    slot=self.insert_program_change_current_position,
+                ),
+                "classify_tracks": ButtonSpec(
+                    label="Classify Tracks",
+                    tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
+                    icon=JDXi.UI.Icon.MUSIC_NOTES,
+                    slot=self.classify_and_assign_tracks,
+                ),
+                "detect_drums": ButtonSpec(
+                    label="Detect Drums",
+                    tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
+                    icon=JDXi.UI.Icon.DRUM,
+                    slot=self.detect_and_assign_drum_tracks,
+                ),
+                "load_midi_file": ButtonSpec(
+                    label="Load MIDI File",
+                    tooltip="Load MIDI File",
+                    icon=JDXi.UI.Icon.FOLDER_OPENED,
+                    slot=self.midi_load_file,
+                ),
+                "save_midi_file": ButtonSpec(
+                    label="Save MIDI File",
+                    tooltip="Save MIDI file",
+                    icon=JDXi.UI.Icon.FLOPPY_DISK,
+                    slot=self.midi_save_file,
+                ),
+                "usb_port_refresh": ButtonSpec(
+                    label="Refresh USB Device List",
+                    tooltip="Refresh USB devices",
+                    icon=JDXi.UI.Icon.REFRESH,
+                    slot=self.usb_populate_devices,
+                ),
+            },
+            "message_box": self._build_message_box_specs()
+        }
+
+    def _build_message_box_specs(self) -> dict[str, MessageBoxSpec]:
+        """Assemble all static message box specs for the MIDI player."""
+        return {
+            "no_midi_file": MessageBoxSpec(
+                title="No MIDI File Loaded",
+                message="Please load a MIDI file first before detecting drum tracks.",
+                type_attr="Warning",
+            ),
+            "no_midi_file_classify": MessageBoxSpec(
+                title="No MIDI File Loaded",
+                message="Please load a MIDI file first before classifying tracks.",
+                type_attr="Warning",
+            ),
+            "no_drum_tracks_found": MessageBoxSpec(
+                title="No Drum Tracks Found",
+                message=(
+                    "No tracks were identified as drum tracks with high confidence (score >= 70).\n\n"
+                    "Try lowering the threshold or manually assign channels."
+                ),
+                type_attr="Information",
+            ),
+            "no_tracks_classified": MessageBoxSpec(
+                title="No Tracks Classified",
+                message=(
+                    "No tracks were classified with sufficient confidence (score >= 30).\n\n"
+                    "Tracks may need manual assignment."
+                ),
+                type_attr="Information",
+            ),
+            "no_output_file": MessageBoxSpec(
+                title="No Output File",
+                message="Please select a WAV output file or enable auto-generate filename.",
+                type_attr="Warning",
+            ),
+            # Dynamic message (pass message= at call site):
+            "drum_tracks_detected": MessageBoxSpec(
+                title="Drum Tracks Detected",
+                message="",
+                type_attr="Information",
+            ),
+            "error_detect_drums": MessageBoxSpec(
+                title="Error",
+                message="",
+                type_attr="Critical",
+            ),
+            "error_classify_tracks": MessageBoxSpec(
+                title="Error",
+                message="",
+                type_attr="Critical",
+            ),
+            "tracks_classified": MessageBoxSpec(
+                title="Tracks Classified",
+                message="",
+                type_attr="Information",
+            ),
+            "error_saving_file": MessageBoxSpec(
+                title="Error Saving File",
+                message="",
+                type_attr="Critical",
+            ),
+            # Generic templates (pass title= and message= at call site):
+            "info": MessageBoxSpec(
+                title="",
+                message="",
+                type_attr="Information",
+            ),
+            "warning": MessageBoxSpec(
+                title="",
+                message="",
+                type_attr="Warning",
+            ),
+        }

@@ -63,7 +63,7 @@ class TestCreateLayout(unittest.TestCase):
 
     def test_vertical_with_parent(self):
         parent = QWidget()
-        layout = create_layout(vertical=True, parent_widget=parent)
+        layout = create_layout(vertical=True, parent=parent)
         self.assertIsInstance(layout, QVBoxLayout)
         self.assertIs(layout.parent(), parent)
         self.assertIs(parent.layout(), layout)
@@ -82,7 +82,7 @@ class TestCreateLayoutWithWidgets(unittest.TestCase):
 
     def test_empty_list_no_stretches(self):
         layout = create_layout_with_widgets(
-            [], top_stretch=False, bottom_stretch=False
+            [], start_stretch=False, end_stretch=False
         )
         self.assertEqual(layout.count(), 0)
 
@@ -98,8 +98,8 @@ class TestCreateLayoutWithWidgets(unittest.TestCase):
             [w],
             spacing=10,
             margins=QMargins(1, 2, 3, 4),
-            top_stretch=False,
-            bottom_stretch=False,
+            start_stretch=False,
+            end_stretch=False,
         )
         self.assertEqual(layout.spacing(), 10)
         left, top, right, bottom = layout.getContentsMargins()
@@ -108,7 +108,7 @@ class TestCreateLayoutWithWidgets(unittest.TestCase):
     def test_vertical_layout(self):
         w1, w2 = QLabel("1"), QLabel("2")
         layout = create_layout_with_widgets(
-            [w1, w2], vertical=True, top_stretch=False, bottom_stretch=False
+            [w1, w2], vertical=True, start_stretch=False, end_stretch=False
         )
         self.assertIsInstance(layout, QVBoxLayout)
         self.assertEqual(layout.indexOf(w1), 0)

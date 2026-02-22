@@ -137,6 +137,7 @@ KEYS_RULES = [
     ScoreRule("balanced_mid_notes", 10, mid_percentage_between(30, 70)),
 ]
 
+
 # --- Strong name indicator for strings (e.g. "String", "Strings" in track name)
 def name_contains_string(stats: TrackStats) -> bool:
     """True when track name contains 'string' or 'strings' (case-insensitive)."""
@@ -149,7 +150,9 @@ def name_contains_string(stats: TrackStats) -> bool:
 # --- Strings: from _calculate_strings_score / _uprate_*
 STRINGS_RULES = [
     ScoreRule("name", 30, name_contains(STRINGS_KEYWORDS)),
-    ScoreRule("name_string_indicator", 80, name_contains_string),  # "String"/"Strings" in name → Channel 3 (beats bass/keys)
+    ScoreRule(
+        "name_string_indicator", 80, name_contains_string
+    ),  # "String"/"Strings" in name → Channel 3 (beats bass/keys)
     ScoreRule("high_legato", 25, legato_score_gt(0.5)),
     ScoreRule("medium_legato", 15, lambda s: 0.3 < s.legato_score <= 0.5),
     ScoreRule("long_notes", 20, avg_duration_gt(800)),
