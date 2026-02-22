@@ -185,61 +185,41 @@ def setup_splash_screen(
     root.setContentsMargins(28, 28, 28, 28)
     root.setSpacing(16)
 
-    # --- Card container ---
-    card = QFrame()
-    card.setObjectName("Card")
-    card_layout = QVBoxLayout(card)
-    card_layout.setContentsMargins(32, 32, 32, 32)
-    card_layout.setSpacing(18)
+    # --- Content container (so we can overlay the title on top)
+    content = QFrame()
+    content.setObjectName("Card")
+    content_layout = QVBoxLayout(content)
+    content_layout.setContentsMargins(0, 0, 0, 0)
+    content_layout.setSpacing(16)
 
-    # --- Title and Image row (side by side)
-    title_image_row = QHBoxLayout()
-    title_image_row.setSpacing(20)
-
-    # --- Title (left side)
-    title = DigitalTitle(
-        __program__,
-        digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE,
-        show_upper_text=False,
-    )
-    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
-    title_image_row.addWidget(title)
-    title_image_row.addStretch()  # Push image to the right
-
-    # --- Image (right side)
-    image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
-    pixmap = QPixmap(image_path).scaled(
-        JDXiUIDimensions.SPLASH.IMAGE_WIDTH,
-        JDXiUIDimensions.SPLASH.IMAGE_HEIGHT,
-        Qt.KeepAspectRatio,
-        Qt.SmoothTransformation,
-    )
+    # --- Splash image (full size)
+    image_path = resource_path(os.path.join("resources", "splash_screen_540_850v5.png"))
+    pixmap = QPixmap(image_path)
+    if not pixmap.isNull():
+        pixmap = pixmap.scaled(
+            JDXiUIDimensions.SPLASH.IMAGE_WIDTH,
+            JDXiUIDimensions.SPLASH.IMAGE_HEIGHT,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation,
+        )
     logo = create_icon_label_with_pixmap(pixmap)
-    title_image_row.addWidget(logo)
-
-    card_layout.addLayout(title_image_row)
-
-    # --- Subtitle
-    subtitle = QLabel("An editor & toolkit for the Roland JD-Xi instrument")
-    card_layout.addWidget(subtitle)
-    subtitle.setStyleSheet(JDXi.UI.Style.INSTRUMENT_SUBTITLE_LABEL)
+    content_layout.addWidget(logo)
 
     # --- Progress bar
     progress_bar = QProgressBar()
     progress_bar.setRange(0, 100)
     progress_bar.setValue(0)
-    progress_bar.setFixedWidth(420)
+    progress_bar.setFixedWidth(JDXiUIDimensions.SPLASH.WIDTH - 56)
     progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
     progress_row = create_layout_with_widgets([progress_bar])
-    card_layout.addLayout(progress_row)
+    content_layout.addLayout(progress_row)
 
-    # --- Rotating status label (enlarged)
+    # --- Rotating status label
     status_label = DigitalTitle(
         "Starting...", digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE
     )
     status_label.setObjectName("StatusLabel")
-    # Style is applied via ObjectName in the stylesheet (font-size: 18px)
-    card_layout.addWidget(status_label)
+    content_layout.addWidget(status_label)
 
     # --- Footer credits
     credits = QLabel(
@@ -248,9 +228,21 @@ def setup_splash_screen(
     )
     credits.setObjectName("CreditLabel")
     credits.setAlignment(Qt.AlignCenter)
+    content_layout.addWidget(credits)
 
-    root.addWidget(card)
-    root.addWidget(credits)
+    root.addWidget(content)
+
+    # --- Digital Title overlay at top left (on top of content)
+    title = DigitalTitle(
+        __program__,
+        digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE,
+        show_upper_text=False,
+    )
+    title.setObjectName("TitleLabel")
+    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
+    title.setParent(splash)
+    title.setGeometry(48, 48, 400, 44)
+    title.raise_()
 
     splash.show()
     splash.raise_()

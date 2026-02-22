@@ -59,6 +59,9 @@ class MidiPlaybackWorker(QObject):
         self.play_program_changes = play_program_changes
         self.initial_tempo = initial_tempo
         self.index = 0
+        # Clear time cache so message times are recalculated for this buffer
+        if hasattr(self, "_cached_times"):
+            self._cached_times.clear()
         if start_time is None:
             self.start_time = time.time()
         else:

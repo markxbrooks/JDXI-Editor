@@ -150,12 +150,12 @@ class LfoIconDimensions(Dimensions):
 
 
 class SplashScreenDimensions(Dimensions):
-    """Splash screen dimensions"""
+    """Splash screen dimensions (matches splash_screen_540_850.png)"""
 
-    HEIGHT: int = 540
     WIDTH: int = 850
-    IMAGE_WIDTH: int = 360
-    IMAGE_HEIGHT: int = 220
+    HEIGHT: int = 540
+    IMAGE_WIDTH: int = 850
+    IMAGE_HEIGHT: int = 540
 
 
 class ChartMetrics:

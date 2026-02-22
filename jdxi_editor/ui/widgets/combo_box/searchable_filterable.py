@@ -146,10 +146,11 @@ class SearchableFilterableComboBox(QWidget):
             )
             layout.addRow(search_row)
 
-        # --- Main combo box
+        # --- Main combo box (slot=None: we connect currentIndexChanged below, not currentTextChanged)
         main_bar, self.combo_box = create_combo_row(
-            label=label, slot=self._on_combo_index_changed
+            label=label, slot=None
         )
+        self.combo_box.currentIndexChanged.connect(self._on_combo_index_changed)
         self.set_combo_dimensions(self.combo_box)
         layout.addRow(main_bar)
 
@@ -300,19 +301,23 @@ class SearchableFilterableComboBox(QWidget):
         Emits the original value (not the filtered index) to ensure
         MIDI commands use the correct value.
 
-        :param filtered_index: Index in the filtered combo box
+        :param filtered_index: Index in the filtered combo box (may be int or str from Qt)
         """
-        if 0 <= filtered_index < len(self._filtered_to_original):
-            original_index = self._filtered_to_original[filtered_index]
+        try:
+            idx = int(filtered_index)
+        except (TypeError, ValueError):
+            return
+        if 0 <= idx < len(self._filtered_to_original):
+            original_index = self._filtered_to_original[idx]
             original_value = self._full_values[original_index]
             self.valueChanged.emit(original_value)
             log.debug(
-                f"Combo box changed: filtered_index={filtered_index}, "
+                f"Combo box changed: filtered_index={idx}, "
                 f"original_index={original_index}, value={original_value}"
             )
         else:
             log.warning(
-                f"Invalid filtered index {filtered_index} "
+                f"Invalid filtered index {idx} "
                 f"(max: {len(self._filtered_to_original) - 1})"
             )
 

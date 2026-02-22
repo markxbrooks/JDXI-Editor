@@ -419,8 +419,13 @@ class MidiFilePlayer(SynthEditor):
             style=JDXiUIStyle.PARTIAL_SWITCH,
         )
 
-        create_checkbox_from_spec(spec=midi_suppress_pc_spec)
-        create_checkbox_from_spec(spec=midi_suppress_cc_spec)
+        # Use the spec-created checkboxes (they have callbacks); replace UI refs so layout and theme use them
+        self.ui.midi_suppress_program_changes_checkbox = create_checkbox_from_spec(
+            spec=midi_suppress_pc_spec
+        )
+        self.ui.midi_suppress_control_changes_checkbox = create_checkbox_from_spec(
+            spec=midi_suppress_cc_spec
+        )
 
         pc_label = QLabel("Program Change")
         cc_label = QLabel("Control Change")
@@ -2118,18 +2123,36 @@ class MidiFilePlayer(SynthEditor):
         for i, track in enumerate(self.midi_state.file.tracks):
             if self.is_track_muted(i):
                 log.message(
-                    f"🚫 Skipping muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name})"
+                    f"🚫 Muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name}): "
+                    "buffering only program change and bank select so instrument still receives them"
+                )
+                self.process_track_messages(
+                    start_tick, track, only_program_and_bank_select=True
                 )
                 continue
             log.message(f"🎵 Processing track {i} with {len(track)} messages")
             self.process_track_messages(start_tick, track)
 
-    def process_track_messages(self, start_tick: int, track: mido.MidiTrack) -> None:
+    def _is_program_or_bank_select(self, msg: mido.Message) -> bool:
+        """True if message is program change or bank select (CC#0, CC#32)."""
+        if msg.type == "program_change":
+            return True
+        if msg.type == "control_change" and msg.control in (0, 32):
+            return True
+        return False
+
+    def process_track_messages(
+        self,
+        start_tick: int,
+        track: mido.MidiTrack,
+        only_program_and_bank_select: bool = False,
+    ) -> None:
         """
         process_track_messages
 
         :param start_tick: int The starting tick from which to begin processing.
         :param track: mido.MidiTrack The MIDI track to process.
+        :param only_program_and_bank_select: If True, only buffer program_change and CC#0/CC#32 (used for muted tracks).
         :return: None
 
         Process messages in a MIDI track from a given starting tick.
@@ -2153,8 +2176,14 @@ class MidiFilePlayer(SynthEditor):
                 )  # Update current tempo
                 messages_buffered += 1
             elif not msg.is_meta:
-                if hasattr(msg, "channel") and self.is_channel_muted(msg.channel):
-                    continue
+                if only_program_and_bank_select:
+                    if not self._is_program_or_bank_select(msg):
+                        continue
+                    # Buffer PC and bank select from muted tracks so instrument receives them
+                elif hasattr(msg, "channel") and self.is_channel_muted(msg.channel):
+                    # Always buffer program change and bank select so instrument receives them even when channel is muted
+                    if not self._is_program_or_bank_select(msg):
+                        continue
                 self.buffer_message_with_tempo(absolute_time_ticks, msg, current_tempo)
                 messages_buffered += 1
 
