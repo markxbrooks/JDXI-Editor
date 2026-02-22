@@ -16,6 +16,11 @@ from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import (QCheckBox, QDialogButtonBox, QHBoxLayout,
                                QLabel, QPushButton)
 
+from picoui.helpers import (
+    create_form_layout,
+    create_header_row,
+    create_row_with_widgets,
+)
 from picoui.icons import IconRegistry
 from picoui.specs.widgets import (
     ButtonSpec,
@@ -125,15 +130,6 @@ def create_combo_box(
     return combo
 
 
-def create_row_with_widgets(widgets: list[QWidget]):
-    """create row with widgets"""
-    row = QHBoxLayout()
-    row.setSpacing(4)
-    for widget in widgets:
-        row.addWidget(widget)
-    return row
-
-
 def create_combo_row(label: str = None, all_items_label: str = None, items: list = None, slot=None) -> tuple[
     QHBoxLayout, QComboBox]:
     """create combo row"""
@@ -154,24 +150,6 @@ def create_line_edit(style_sheet: str, placeholder: str, slot: Callable) -> QLin
     line_edit.setPlaceholderText(placeholder)
     line_edit.textChanged.connect(slot)
     return line_edit
-
-
-def create_header_row(label: str, show_label: bool, spacing: int = 4) -> tuple[QHBoxLayout, Any]:
-    """create a header row"""
-    row = QHBoxLayout()
-    row.setSpacing(spacing)
-    label_widget = QLabel(label)
-    label_widget.setVisible(show_label)
-    row.addWidget(label_widget)
-    return row, label_widget
-
-
-def create_form_layout(parent) -> QFormLayout:
-    """Create form layout"""
-    layout = QFormLayout(parent)
-    layout.setContentsMargins(0, 0, 0, 0)
-    layout.setSpacing(4)
-    return layout
 
 
 def get_file_path_from_spec(

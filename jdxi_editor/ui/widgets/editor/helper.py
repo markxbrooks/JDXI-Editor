@@ -1,5 +1,9 @@
 """
-Helpers to create HBox and VBoxes
+Helpers to create HBox and VBoxes.
+
+Layout and group helpers are provided by picoui.helpers; this module
+adds JD-Xi-specific helpers (filter buttons, icons, ADSR styling, etc.)
+and re-exports picoui helpers under the names used by the rest of the app.
 """
 
 from typing import Any
@@ -27,7 +31,23 @@ from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.dimensions import Dimensions
+from picoui.helpers import (
+    build_group,
+    create_form_layout,
+    create_layout,
+    create_layout_with_inner_layouts,
+    create_layout_with_widgets,
+    create_left_aligned_row,
+    create_vertical_layout,
+    group_from_definition,
+    group_with_layout,
+)
 from picoui.specs.widgets import CheckBoxSpec
+
+# Backward-compatible names (used across jdxi_editor)
+create_group = build_group
+create_group_with_layout = group_with_layout
+create_group_from_definition = group_from_definition
 
 
 def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton:
@@ -42,47 +62,6 @@ def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton
         JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
     )
     return btn
-
-
-def create_group(title: str, layout_or_widget: list | QWidget | None) -> QGroupBox:
-    """Helper for QGroupBox creation with a layout or single widget."""
-
-    group = QGroupBox(title)
-    if isinstance(layout_or_widget, list):
-        group.setLayout(create_layout_with_widgets(layout_or_widget))
-    elif isinstance(layout_or_widget, QLayout):
-        # --- If it's already a layout, use it directly
-        group.setLayout(layout_or_widget)
-    else:
-        # --- If it's a widget, wrap it in a layout
-        layout = create_layout_with_widgets([layout_or_widget])
-        group.setLayout(layout)
-    return group
-
-
-def create_group_from_definition(
-    key: "GroupBoxDefinitionMixin",
-    layout_or_widget,
-    set_attr: object = None,
-    attr_name: str = None,
-) -> QGroupBox:
-    """
-    Create a QGroupBox using GroupBoxDefinitionMixin pattern.
-
-    :param key: GroupBoxDefinitionMixin enum value (e.g., Digital.GroupBox.PULSE_WIDTH)
-    :param layout_or_widget: Layout, widget, or list of widgets to add to the group
-    :param set_attr: Optional object to set attribute on (e.g., self)
-    :param attr_name: Optional custom attribute name (defaults to key.attr_name)
-    :return: Created QGroupBox
-    """
-    group = create_group(key.label, layout_or_widget)
-
-    # Set attribute if provided
-    if set_attr is not None:
-        attr = attr_name if attr_name else key.attr_name
-        setattr(set_attr, attr, group)
-
-    return group
 
 
 def create_icon_from_qta(icon_name: str) -> QIcon:
@@ -136,101 +115,12 @@ def create_icon_and_label(
     return layout, label
 
 
-def create_vertical_layout(
-    spacing: int = None, margins: QMargins = QMargins(0, 0, 0, 0)
-) -> QVBoxLayout:
-    vlayout = QVBoxLayout()
-    vlayout.setContentsMargins(margins)
-    if spacing is not None:
-        vlayout.setSpacing(spacing)
-    return vlayout
-
-
 def create_checkbox_from_spec(spec: CheckBoxSpec) -> QCheckBox:
     """create checkbox from spec"""
     checkbox = QCheckBox(spec.label)
     checkbox.setChecked(spec.checked_state)
     checkbox.stateChanged.connect(spec.slot)
     return checkbox
-
-
-def create_layout_with_widgets(
-    widgets: list,
-    vertical: bool = False,
-    top_stretch: bool = True,
-    bottom_stretch: bool = True,
-    spacing: int = None,
-    margins: QMargins = None,
-    parent_widget: QWidget = None,
-) -> QHBoxLayout:
-    """create a row from a list of widgets (centered with stretches)"""
-    layout = create_layout(vertical=vertical, parent_widget=parent_widget)
-    if top_stretch:
-        layout.addStretch()
-    for widget in widgets:
-        layout.addWidget(widget)
-    if bottom_stretch:
-        layout.addStretch()
-    if spacing is not None:
-        layout.setSpacing(spacing)
-    if margins is not None:
-        layout.setContentsMargins(margins)
-    return layout
-
-
-def create_left_aligned_row(widget_list: list) -> QHBoxLayout:
-    """
-    Create a left-aligned horizontal layout (stretch only on the right).
-
-    Useful for rows where widgets should be left-aligned rather than centered.
-
-    :param widget_list: List of widgets to add to the layout
-    :return: QHBoxLayout with widgets left-aligned
-    """
-    row = QHBoxLayout()
-    for widget in widget_list:
-        row.addWidget(widget)
-    row.addStretch()  # Only add stretch on the right for left alignment
-    return row
-
-
-def create_layout_with_inner_layouts(
-    inner_layouts: list, vertical: bool = True
-) -> QVBoxLayout:
-    """create layout with a list of inner layouts"""
-    layout = create_layout(vertical=vertical)
-    for inner_layout in inner_layouts:
-        layout.addLayout(inner_layout)
-    layout.addStretch()
-    return layout
-
-
-def create_layout(
-    vertical: bool = True, parent_widget: QWidget = None
-) -> QVBoxLayout | QHBoxLayout:
-    """create Group and a layout"""
-    layout_cls = QVBoxLayout if vertical else QHBoxLayout
-    if parent_widget is not None:
-        layout = layout_cls(parent_widget)
-    else:
-        layout = layout_cls()
-    return layout
-
-
-def create_group_with_layout(
-    label: str = None,
-    layout: QHBoxLayout | QVBoxLayout | QGridLayout | QFormLayout = None,
-    vertical: bool = True,
-    style_sheet: str = None,
-) -> tuple[QGroupBox, QHBoxLayout | QVBoxLayout]:
-    """create Group and a layout"""
-    group = QGroupBox(label) if label is not None else QGroupBox()
-    if layout is None:
-        layout = create_layout(vertical=vertical)
-    group.setLayout(layout)
-    if style_sheet is not None:
-        group.setStyleSheet(style_sheet)
-    return group, layout
 
 
 def create_layout_with_inner_layout_and_widgets(
