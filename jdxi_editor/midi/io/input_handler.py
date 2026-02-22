@@ -272,7 +272,9 @@ class MidiInHandler(MidiIOController):
         :param message: Any The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
-        log.message(f"MIDI message note change: {message.type} as {message}")
+        from jdxi_editor.globals import silence_midi_note_logging
+        if not silence_midi_note_logging():
+            log.message(f"MIDI message note change: {message.type} as {message}")
 
     def _handle_clock(self, message: mido.Message, preset_data: dict) -> None:
         """

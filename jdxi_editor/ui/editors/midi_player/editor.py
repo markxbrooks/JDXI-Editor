@@ -2,9 +2,6 @@
 MIDI Player for JDXI Editor
 """
 
-import cProfile
-import io
-import pstats
 import re
 import time
 from collections.abc import Callable
@@ -42,7 +39,6 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.globals import PROFILING
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
@@ -125,7 +121,6 @@ class MidiFilePlayer(SynthEditor):
         self._last_position_label: QLabel | None = None
         self.parent: QWidget = parent
         self.preset_helper: JDXiPresetHelper = preset_helper
-        self.profiler = None
         # Midi-related
         self.midi_state: MidiPlaybackState = MidiPlaybackState()
         self.playback_engine: PlaybackEngine = PlaybackEngine()
@@ -1729,10 +1724,6 @@ class MidiFilePlayer(SynthEditor):
         # if not self.midi_state.playback_paused:
         #    self.turn_off_effects()
 
-        if PROFILING:
-            self.profiler = cProfile.Profile()
-            self.profiler.enable()
-
         if not self.midi_state.file or not self.midi_state.events:
             return
 
@@ -2208,19 +2199,8 @@ class MidiFilePlayer(SynthEditor):
             log.message(f"Queued @ {t:.3f}s: {msg}")
 
     def perform_profiling(self) -> None:
-        """
-        perform_profiling
-
-        :return: None
-        Performs profiling and logs the results.
-        """
-        if PROFILING:
-            self.profiler.disable()
-            s = io.StringIO()
-            sortby = "cumtime"  # or 'tottime'
-            ps = pstats.Stats(self.profiler, stream=s).sort_stats(sortby)
-            ps.print_stats(50)  # Top 50 entries
-            log.message(s.getvalue())
+        """No-op: per-playback profiling was removed to avoid skewing app-wide profiles."""
+        pass
 
     def midi_play_next_event_disconnect(self) -> None:
         """

@@ -106,6 +106,23 @@ class UiPreferencesDialog(QDialog):
         self.logging_layout.addWidget(self.logging_label)
         self.logging_layout.addWidget(self.logging_checkbox)
 
+        # Silence MIDI note logging (note on/off only) to reduce log volume
+        from jdxi_editor.globals import SILENCE_MIDI_NOTE_LOGGING_KEY
+        self.silence_midi_notes_layout = QHBoxLayout(self)
+        self.silence_midi_notes_icon = QLabel()
+        self.silence_midi_notes_checkbox = QCheckBox("Silence MIDI note logging (note on/off)")
+        self.silence_midi_notes_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        _val = self.settings.value(SILENCE_MIDI_NOTE_LOGGING_KEY, True)
+        _checked = _val if isinstance(_val, bool) else (str(_val).lower() in ("true", "1", "yes"))
+        self.silence_midi_notes_checkbox.setChecked(_checked)
+        self.silence_midi_notes_icon.setPixmap(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.REPORT).pixmap(self.icon_size)
+        )
+        self.silence_midi_notes_label = QLabel("Reduce log volume from MIDI notes:")
+        self.silence_midi_notes_layout.addWidget(self.silence_midi_notes_icon)
+        self.silence_midi_notes_layout.addWidget(self.silence_midi_notes_label)
+        self.silence_midi_notes_layout.addWidget(self.silence_midi_notes_checkbox)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -124,6 +141,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout = QVBoxLayout()
         main_content_layout.addLayout(self.log_level_layout)
         main_content_layout.addLayout(self.logging_layout)
+        main_content_layout.addLayout(self.silence_midi_notes_layout)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -188,9 +206,14 @@ class UiPreferencesDialog(QDialog):
         on_save_settings
         :return: None
         """
+        from jdxi_editor.globals import SILENCE_MIDI_NOTE_LOGGING_KEY
         settings = self.settings
         try:
             settings.setValue("logging", bool(self.logging_checkbox.isChecked()))
+            settings.setValue(
+                SILENCE_MIDI_NOTE_LOGGING_KEY,
+                bool(self.silence_midi_notes_checkbox.isChecked()),
+            )
             settings.sync()
             log_settings()
         except Exception as ex:

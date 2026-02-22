@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.helpers.widgets import (
@@ -540,10 +541,11 @@ class PatternSequenceEditor(SynthEditor):
         if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
             channel = message.channel
-            log.message(
-                message=f"message note: {note} channel: {channel}",
-                scope=self.__class__.__name__,
-            )
+            if not silence_midi_note_logging():
+                log.message(
+                    message=f"message note: {note} channel: {channel}",
+                    scope=self.__class__.__name__,
+                )
 
             # Calculate combo box index (notes start at MIDI note 36 = C2)
             combo_index = note - 36
@@ -1898,10 +1900,13 @@ class PatternSequenceEditor(SynthEditor):
         self._playback_last_bar_index = -1
         self._playback_last_step_in_bar = -1
 
-        ms_per_step = (60000 / self.bpm) / 4
+        # Use a short, precise interval so process_until_now() runs often; the engine
+        # sends events by wall-clock time, so this reduces stutter from timer jitter.
+        playback_interval_ms = 20
         self.timer = QTimer(self)
+        self.timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.timer.timeout.connect(self._on_playback_tick)
-        self.timer.start(int(ms_per_step))
+        self.timer.start(playback_interval_ms)
 
         if hasattr(self, "play_button") and self.play_button:
             self.play_button.blockSignals(True)

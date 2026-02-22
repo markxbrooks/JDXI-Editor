@@ -57,6 +57,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -2086,10 +2087,11 @@ class JDXiInstrument(JDXiWindow):
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
             msg = [Midi.NOTE.ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
-            log.message(
-                scope="JDXiInstrument",
-                message=f" Sent Note On: {note_num} on channel {self.channel + 1}",
-            )
+            if not silence_midi_note_logging():
+                log.message(
+                    scope="JDXiInstrument",
+                    message=f" Sent Note On: {note_num} on channel {self.channel + 1}",
+                )
 
     def handle_piano_note_off(self, note_num: int) -> None:
         """
@@ -2105,10 +2107,11 @@ class JDXiInstrument(JDXiWindow):
                 status = Midi.NOTE.OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
-                log.message(
-                    scope="JDXiInstrument",
-                    message=f" Sent Note Off: {note_num} on channel {self.channel + 1}",
-                )
+                if not silence_midi_note_logging():
+                    log.message(
+                        scope="JDXiInstrument",
+                        message=f" Sent Note Off: {note_num} on channel {self.channel + 1}",
+                    )
 
     def _load_last_preset(self):
         """Load the last used preset from settings."""

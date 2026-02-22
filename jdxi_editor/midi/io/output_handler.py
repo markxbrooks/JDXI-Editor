@@ -28,6 +28,7 @@ from picomidi.utils.formatting import (
 )
 from PySide6.QtCore import Signal
 
+from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.message import (
@@ -135,13 +136,17 @@ class MidiOutHandler(MidiIOController):
                         filtered_data = {}
                 # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
-                # Log safely
-                log.message(
-                    scope="MidiOutHandler",
-                    message=f"[MIDI QC passed] [ Sending message: {formatted_message} ] {filtered_data}",
-                    level=logging.INFO,
-                    silent=False,
+                # Log safely (skip logging for note on/off if user prefers to silence them)
+                skip_note_log = silence_midi_note_logging() and message_list and (
+                    (message_list[0] & 0xF0) in (0x80, 0x90)  # note off, note on
                 )
+                if not skip_note_log:
+                    log.message(
+                        scope="MidiOutHandler",
+                        message=f"[MIDI QC passed] [ Sending message: {formatted_message} ] {filtered_data}",
+                        level=logging.INFO,
+                        silent=False,
+                    )
                 # Send the message
                 self.midi_out.send_message(message)
                 self.midi_message_outgoing.emit(message)
