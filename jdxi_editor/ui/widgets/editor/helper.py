@@ -9,7 +9,7 @@ and re-exports picoui helpers under the names used by the rest of the app.
 from typing import Any
 
 import qtawesome as qta
-from PySide6.QtCore import QMargins, QSize, Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QCheckBox,

@@ -18,8 +18,7 @@ import pyaudio
 from decologr import Decologr as log
 from mido import MidiFile, bpm2tempo
 from picomidi.constant import Midi
-from PySide6.QtCore import QMargins, Qt, QThread, QTimer
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -167,15 +166,16 @@ class MidiFilePlayer(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
-        self._last_position_label = None
-        self.parent = parent
-        self.preset_helper = preset_helper
+        self.specs: dict | None = None
+        self._last_position_label: QLabel | None = None
+        self.parent: QWidget = parent
+        self.preset_helper: JDXiPresetHelper = preset_helper
         self.profiler = None
         # Midi-related
-        self.midi_state = MidiPlaybackState()
-        self.midi_playback_worker = MidiPlaybackWorker(parent=self)
+        self.midi_state: MidiPlaybackState = MidiPlaybackState()
+        self.midi_playback_worker: MidiPlaybackWorker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
-        self.midi_total_ticks = None
+        self.midi_total_ticks: int | None = None
         self.midi_port = self.midi_helper.midi_out
         self.midi_timer_init()
         self.current_tempo_bpm = None  # Store current tempo BPM for digital
@@ -188,9 +188,8 @@ class MidiFilePlayer(SynthEditor):
         # self.usb_recording_thread = None
         self.usb_recorder = USBRecorder(channels=1)
         # Initialize UI attributes
-        # Initialize UI attribute
         self.ui = MidiPlayerWidgets()
-        self.specs = self._build_button_specs()
+        self.specs["buttons"] = self._build_button_specs()
         self.specs["message_box"] = self._build_message_box_specs()
         self.ui_init()
 
@@ -302,21 +301,21 @@ class MidiFilePlayer(SynthEditor):
         """build left side widgets"""
         # ---- Drum detection button
         self.ui.detect_drums_button = create_jdxi_button_from_spec(
-            self.specs["detect_drums"], checkable=False
+            self.specs["buttons"]["detect_drums"], checkable=False
         )
         detect_drums_icon_pixmap = get_icon_pixmap(icon_name=JDXi.UI.Icon.DRUM)
         detect_drums_label_row, self.ui.detect_drums_label = create_jdxi_row(
-            label=self.specs["detect_drums"].label, icon_pixmap=detect_drums_icon_pixmap
+            label=self.specs["buttons"]["detect_drums"].label, icon_pixmap=detect_drums_icon_pixmap
         )
         self.ui.classify_tracks_button = create_jdxi_button_from_spec(
-            self.specs["classify_tracks"], checkable=False
+            self.specs["buttons"]["classify_tracks"], checkable=False
         )
         classify_tracks_icon_pixmap = get_icon_pixmap(
             icon_name=JDXi.UI.Icon.MUSIC_NOTES
         )
 
         classify_tracks_label_row, self.ui.classify_tracks_label = create_jdxi_row(
-            self.specs["classify_tracks"].label, icon_pixmap=classify_tracks_icon_pixmap
+            self.specs["buttons"]["classify_tracks"].label, icon_pixmap=classify_tracks_icon_pixmap
         )
         widgets = [
             self.ui.detect_drums_button,
@@ -458,7 +457,7 @@ class MidiFilePlayer(SynthEditor):
         group.setLayout(layout)
         layout.addStretch()
 
-        spec = self.specs["load_midi_file"]
+        spec = self.specs["buttons"]["load_midi_file"]
         self.ui.load_button = create_jdxi_button_from_spec(spec, checkable=False)
         layout.addWidget(self.ui.load_button)
 
@@ -470,7 +469,7 @@ class MidiFilePlayer(SynthEditor):
         )
         layout.addWidget(load_label_row)
 
-        spec = self.specs["save_midi_file"]
+        spec = self.specs["buttons"]["save_midi_file"]
         self.ui.save_button = create_jdxi_button_from_spec(spec, checkable=False)
         layout.addWidget(self.ui.save_button)
 
@@ -816,7 +815,7 @@ class MidiFilePlayer(SynthEditor):
         grid.addWidget(self.ui.automation_type_combo, row, 2)
         self.ui.automation_program_combo = QComboBox()
         grid.addWidget(self.ui.automation_program_combo, row, 3)
-        spec = self.specs["automation_insert"]
+        spec = self.specs["buttons"]["automation_insert"]
         self.ui.automation_insert_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
@@ -833,7 +832,7 @@ class MidiFilePlayer(SynthEditor):
         self.ui.usb_port_select_combo = QComboBox()
         self.usb_populate_devices()
         grid.addWidget(self.ui.usb_port_select_combo, row, 1, 1, 2)
-        spec = self.specs["usb_port_refresh"]
+        spec = self.specs["buttons"]["usb_port_refresh"]
         self.ui.usb_port_refresh_devices_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
@@ -1108,7 +1107,7 @@ class MidiFilePlayer(SynthEditor):
 
     def create_apply_all_button_and_label(self) -> QWidget:
         """Add "Apply All Track Changes" button"""
-        spec = self.specs["apply_all_track_changes"]
+        spec = self.specs["buttons"]["apply_all_track_changes"]
         self.ui.apply_all_track_changes_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
