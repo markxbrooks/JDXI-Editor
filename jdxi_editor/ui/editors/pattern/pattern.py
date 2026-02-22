@@ -65,6 +65,21 @@ from picoui.specs.widgets import FileSelectionSpec
 from picoui.widget.helper import get_file_path_from_spec
 
 
+def reset_button(button):
+    button.row = button.row  # or keep as is if you really want to preserve
+    # If you want to reset the local column as well, assign explicitly
+    # button.column = button.column
+    button.NOTE = None
+    button.NOTE_DURATION = None
+    button.NOTE_VELOCITY = None
+    button.setChecked(False)
+
+def reset_measure(measure: PatternMeasure):
+    for r in range(4):
+        for btn in measure.buttons[r]:
+            reset_button(btn)
+
+
 class PatternSequenceEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
