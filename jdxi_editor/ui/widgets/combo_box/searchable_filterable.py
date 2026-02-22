@@ -17,20 +17,18 @@ Classes:
 """
 
 import re
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Any
 
 from decologr import Decologr as log
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import (
-    QComboBox,
-    QHBoxLayout,
     QLabel,
     QLineEdit,
-    QWidget, QFormLayout,
-)
+    QWidget, QHBoxLayout, QSizePolicy, )
 
 from jdxi_editor.core.jdxi import JDXi
-from picoui.widget.factory import create_combo_row, create_row_with_widgets, create_line_edit
+from picoui.widget.helper import create_combo_row, create_row_with_widgets, create_line_edit, create_header_row, \
+    create_form_layout
 
 
 class SearchableFilterableComboBox(QWidget):
@@ -119,70 +117,78 @@ class SearchableFilterableComboBox(QWidget):
         self._current_category = ""
         self._current_bank = ""
 
+        self.category_combo = None
+        self.bank_combo = None
+
         # --- Search box (optional; set when show_search=True and search row exists)
         self.search_box: Optional[QLineEdit] = None
 
-        # --- Layout
-        layout = QFormLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(4)
-        row = 0
-        top_bar = self._create_header_row(label, show_label)
+        layout = create_form_layout(parent=self)
+        top_bar, self.label_widget = create_header_row(label, show_label, spacing=4)
         layout.addRow(top_bar)
-        self.category_combo = None
         if show_category and self._categories:
-            row += 1
-            category_bar, self.category_combo = create_combo_row(label=category_label,
-                                                                 all_items_label="All Categories",
-                                                                 items=self._categories,
-                                                                 slot=self._on_category_changed)
+            category_bar = self.add_categories(category_label)
             layout.addRow(category_bar)
-        self.bank_combo = None
         if show_bank and self._banks:
-            row += 1
-            bank_bar, self.bank_combo = create_combo_row(label=bank_label,
-                                                         all_items_label="All Banks",
-                                                         items=self._banks,
-                                                         slot=self._on_bank_changed)
+            bank_bar = self.add_banks(bank_label)
             layout.addRow(bank_bar)
         if show_search:
-            row += 1
-            line_edit_style = (
-                JDXi.UI.Style.QLINEEDIT_ANALOG
-                if use_analog_style
-                else JDXi.UI.Style.QLINEEDIT
-            )
-            self.search_box = create_line_edit(style_sheet=line_edit_style,
-                                               placeholder=search_placeholder,
-                                               slot=self._on_search_changed)
-            search_label_widget = QLabel(search_label)
-            widgets = [
-                search_label_widget,
-                self.search_box
-            ]
-            search_row = create_row_with_widgets(widgets)
+            search_row = self.add_search(search_label, search_placeholder, use_analog_style)
             layout.addRow(search_row)
 
         # --- Main combo box
         main_bar, self.combo_box = create_combo_row(label=label,
                                                     slot=self._on_combo_index_changed)
-        # self.combo_box = QComboBox()
-        self.combo_box.setMaximumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
-        self.combo_box.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
-        # self.combo_box.currentIndexChanged.connect(self._on_combo_index_changed)
+        self.set_combo_dimensions(self.combo_box)
         layout.addRow(main_bar)
 
         # --- Initial population
         self._populate_combo()
 
-    def _create_header_row(self, label: str, show_label: bool) -> QHBoxLayout:
-        # --- Top filter bar
-        top_bar = QHBoxLayout()
-        top_bar.setSpacing(4)
-        self.label_widget = QLabel(label)
-        self.label_widget.setVisible(show_label)
-        top_bar.addWidget(self.label_widget)
-        return top_bar
+    def add_search(self, search_label: str, search_placeholder: str, use_analog_style: bool) -> Any:
+        """add search"""
+        search_row = self._create_search_row(search_label, search_placeholder, use_analog_style)
+        return search_row
+
+    def add_categories(self, category_label: str):
+        """add categories"""
+        category_bar, self.category_combo = create_combo_row(label=category_label,
+                                                             all_items_label="All Categories",
+                                                             items=self._categories,
+                                                             slot=self._on_category_changed)
+        self.set_combo_dimensions(self.category_combo)
+        return category_bar
+
+    def add_banks(self, bank_label: str) -> QHBoxLayout:
+        bank_bar, self.bank_combo = create_combo_row(label=bank_label,
+                                                     all_items_label="All Banks",
+                                                     items=self._banks,
+                                                     slot=self._on_bank_changed)
+        self.set_combo_dimensions(self.bank_combo)
+        return bank_bar
+
+    def set_combo_dimensions(self, widget: QWidget):
+        """set combo box dimensions"""
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        widget.setMaximumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
+        widget.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
+
+    def _create_search_row(self, search_label: str, search_placeholder: str, use_analog_style: bool) -> QHBoxLayout:
+        line_edit_style = (
+            JDXi.UI.Style.QLINEEDIT_ANALOG
+            if use_analog_style
+            else JDXi.UI.Style.QLINEEDIT
+        )
+        self.search_box = create_line_edit(style_sheet=line_edit_style,
+                                           placeholder=search_placeholder,
+                                           slot=self._on_search_changed)
+        search_label_widget = QLabel(search_label)
+        widgets = [
+            search_label_widget,
+            self.search_box
+        ]
+        search_row = create_row_with_widgets(widgets)
+        return search_row
 
     def _default_category_filter(self, option: str, category: str) -> bool:
         """
