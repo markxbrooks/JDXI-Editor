@@ -5,7 +5,7 @@ PCM Wave Widget
 from typing import Callable
 
 from PySide6.QtWidgets import QWidget
-
+from decologr import Decologr as log
 from jdxi_editor.midi.data.parameter.digital.spec import DigitalGroupBox
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED

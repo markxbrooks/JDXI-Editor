@@ -11,6 +11,8 @@ from typing import List, Tuple
 import mido
 from mido import MidiFile, MidiTrack
 
+from picomidi.message.type import MidoMessageType
+
 # Standard General MIDI drum note range (35-81)
 DRUM_NOTE_MIN = 35
 DRUM_NOTE_MAX = 81
@@ -75,7 +77,7 @@ def analyze_track_for_drums(track: MidiTrack, track_index: int) -> dict:
         if hasattr(msg, "channel"):
             analysis["channels"].add(msg.channel)
 
-        if msg.type == "note_on" and msg.velocity > 0:
+        if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
             analysis["note_count"] += 1
             analysis["note_ons"].append((absolute_time, msg.note, msg.channel))
 
@@ -89,16 +91,16 @@ def analyze_track_for_drums(track: MidiTrack, track_index: int) -> dict:
                 analysis["max_simultaneous"], active_notes[absolute_time]
             )
 
-        elif msg.type == "note_off" or (msg.type == "note_on" and msg.velocity == 0):
+        elif msg.type == MidoMessageType.NOTE_OFF or (msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0):
             analysis["note_offs"].append((absolute_time, msg.note))
 
-        elif msg.type == "pitchwheel":
+        elif msg.type == MidoMessageType.PITCH_WHEEL:
             analysis["has_pitch_bend"] = True
 
-        elif msg.type == "control_change":
+        elif msg.type == MidoMessageType.CONTROL_CHANGE:
             analysis["has_control_change"] = True
 
-        elif msg.type == "program_change":
+        elif msg.type == MidoMessageType.PROGRAM_CHANGE:
             analysis["program_changes"].append(msg.program)
 
     # Calculate average note duration (simplified)

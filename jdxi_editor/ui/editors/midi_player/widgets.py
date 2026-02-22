@@ -12,6 +12,7 @@ class MidiPlayerWidgets:
     """UI class for MIDI file player interface."""
 
     def __init__(self):
+        self.pause_label = None
         self.automation_channel_combo = None
         self.automation_type_combo = None
         self.automation_program_combo = None

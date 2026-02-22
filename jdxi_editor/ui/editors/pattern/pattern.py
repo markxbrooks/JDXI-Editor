@@ -58,6 +58,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from picomidi.message.type import MidoMessageType
 from picoui.specs.widgets import FileSelectionSpec
 from picoui.widget.helper import get_file_path_from_spec
 
@@ -516,9 +517,9 @@ class PatternSequenceEditor(SynthEditor):
                 if (status_byte & 0xF0) in (0x90, 0x80):  # Note On or Note Off
                     channel = status_byte & 0x0F
                     msg_type = (
-                        "note_on"
+                        MidoMessageType.NOTE_ON
                         if (status_byte & 0xF0) == 0x90 and velocity > 0
-                        else "note_off"
+                        else MidoMessageType.NOTE_OFF
                     )
 
                     # Create mido Message
@@ -534,7 +535,7 @@ class PatternSequenceEditor(SynthEditor):
 
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
-        if message.type == "note_on" and message.velocity > 0:
+        if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
             channel = message.channel
             log.message(
@@ -1103,7 +1104,7 @@ class PatternSequenceEditor(SynthEditor):
         microseconds_per_beat = int(60000000 / bpm)
 
         # Create a set_tempo MetaMessage
-        tempo_message = MetaMessage("set_tempo", tempo=microseconds_per_beat)
+        tempo_message = MetaMessage(MidoMessageType.SET_TEMPO, tempo=microseconds_per_beat)
 
         # Add the tempo message to the first track
         if self.midi_file.tracks:
@@ -1129,7 +1130,7 @@ class PatternSequenceEditor(SynthEditor):
         track = MidiTrack()
         self.midi_file.tracks.append(track)
 
-        track.append(MetaMessage("set_tempo", tempo=bpm2tempo(self.bpm)))
+        track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm)))
         track.append(MetaMessage("time_signature", numerator=4, denominator=4))
 
         for row in range(4):
@@ -1150,7 +1151,7 @@ class PatternSequenceEditor(SynthEditor):
                         )
                         track.append(
                             Message(
-                                "note_on",
+                                MidoMessageType.NOTE_ON,
                                 note=button.NOTE,
                                 velocity=velocity,
                                 time=time,
@@ -1159,7 +1160,7 @@ class PatternSequenceEditor(SynthEditor):
                         )
                         track.append(
                             Message(
-                                "note_off",
+                                MidoMessageType.NOTE_OFF,
                                 note=button.NOTE,
                                 velocity=velocity,
                                 time=time + 120,
@@ -1312,7 +1313,7 @@ class PatternSequenceEditor(SynthEditor):
                 for msg in track:
                     absolute_time += msg.time
                     # Check if message is a note_on with velocity > 0 and has a channel attribute
-                    if msg.type == "note_on" and msg.velocity > 0:
+                    if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                         # Get channel - note messages always have channel attribute
                         if not hasattr(msg, "channel"):
                             continue
@@ -1362,7 +1363,7 @@ class PatternSequenceEditor(SynthEditor):
             tempo_bpm = None
             for track in midi_file.tracks:
                 for event in track:
-                    if event.type == "set_tempo":
+                    if event.type == MidoMessageType.SET_TEMPO:
                         tempo_bpm = int(tempo2bpm(event.tempo))
                         break
                 if tempo_bpm is not None:
@@ -1406,7 +1407,7 @@ class PatternSequenceEditor(SynthEditor):
             midi_file.tracks.append(track)
 
             # Add track name and program change
-            track.append(Message("program_change", program=0, time=0))
+            track.append(Message(MidoMessageType.PROGRAM_CHANGE, program=0, time=0))
 
             # Add notes from all bars to the track
             for bar_index, measure in enumerate(self.measures):
@@ -1429,7 +1430,7 @@ class PatternSequenceEditor(SynthEditor):
                             )
                             track.append(
                                 Message(
-                                    "note_on",
+                                    MidoMessageType.NOTE_ON,
                                     note=measure_button.NOTE,
                                     velocity=velocity,
                                     time=time,
@@ -1438,7 +1439,7 @@ class PatternSequenceEditor(SynthEditor):
                             # Add a note_off event after a short duration
                             track.append(
                                 Message(
-                                    "note_off",
+                                    MidoMessageType.NOTE_OFF,
                                     note=measure_button.NOTE,
                                     velocity=0,
                                     time=time + 120,
@@ -1563,12 +1564,12 @@ class PatternSequenceEditor(SynthEditor):
                     absolute_time += msg.time
 
                     # Track tempo changes
-                    if msg.type == "set_tempo":
+                    if msg.type == MidoMessageType.SET_TEMPO:
                         current_tempo = msg.tempo
 
                     # Collect note_on and note_off events
                     if hasattr(msg, "channel") and (
-                        msg.type == "note_on" or msg.type == "note_off"
+                        msg.type == MidoMessageType.NOTE_ON or msg.type == MidoMessageType.NOTE_OFF
                     ):
                         note_events.append(
                             (absolute_time, msg, msg.channel, current_tempo)
@@ -1582,11 +1583,11 @@ class PatternSequenceEditor(SynthEditor):
             for abs_time, msg, channel, tempo in note_events:
                 note_key = (channel, msg.note)
 
-                if msg.type == "note_on" and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                     # Store note_on event
                     active_notes[note_key] = (abs_time, tempo)
-                elif msg.type == "note_off" or (
-                    msg.type == "note_on" and msg.velocity == 0
+                elif msg.type == MidoMessageType.NOTE_OFF or (
+                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
                     # Find matching note_on
                     if note_key in active_notes:
@@ -1603,7 +1604,7 @@ class PatternSequenceEditor(SynthEditor):
 
             # Third pass: assign notes and durations to buttons
             for abs_time, msg, channel, tempo in note_events:
-                if msg.type == "note_on" and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                     # Map channel to row (skip channels we don't support)
                     if channel not in channel_to_row:
                         continue
@@ -1663,7 +1664,7 @@ class PatternSequenceEditor(SynthEditor):
             tempo_bpm = None
             for track in midi_file.tracks:
                 for event in track:
-                    if event.type == "set_tempo":
+                    if event.type == MidoMessageType.SET_TEMPO:
                         tempo_bpm = int(tempo2bpm(event.tempo))
                         break
                 if tempo_bpm is not None:
@@ -2056,7 +2057,7 @@ class PatternSequenceEditor(SynthEditor):
 
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
-        if message.type == "note_on" and message.velocity > 0:
+        if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
 
             # Determine the correct row for the note
@@ -2088,11 +2089,11 @@ class PatternSequenceEditor(SynthEditor):
 
                     # Add the note_on message to the MIDI track
                     self.midi_track.append(
-                        Message("note_on", note=note, velocity=message.velocity, time=0)
+                        Message(MidoMessageType.NOTE_ON, note=note, velocity=message.velocity, time=0)
                     )
                     break  # Stop checking once the note is assigned
 
-        elif message.type == "note_off":
+        elif message.type == MidoMessageType.NOTE_OFF:
             note = message.note  # mido uses lowercase 'note'
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
@@ -2104,7 +2105,7 @@ class PatternSequenceEditor(SynthEditor):
 
                 # Add the note_off message to the MIDI track
                 self.midi_track.append(
-                    Message("note_off", note=note, velocity=0, time=0)
+                    Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, time=0)
                 )
                 # Advance step within current bar (0 to beats_per_bar-1)
                 self.current_step = (self.current_step + 1) % self.beats_per_bar

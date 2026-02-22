@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
 from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
+from picomidi.message.type import MidoMessageType
 
 
 class MidiTrackWidget(QWidget):
@@ -85,12 +86,12 @@ class MidiTrackWidget(QWidget):
             abs_time += msg.time
             if hasattr(msg, "channel"):
                 channels.add(msg.channel)
-            if msg.type == "note_on" and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                 note_count += 1
                 norm_time = abs_time / total_length if total_length else 0
                 # Use first_channel for all notes
                 rects.append((norm_time, first_channel))
-            if msg.type == "program_change":
+            if msg.type == MidoMessageType.PROGRAM_CHANGE:
                 program_changes.append(msg.program)
 
         label = (
@@ -285,13 +286,13 @@ class MidiTrackWidget(QWidget):
         track = self.midi_file.tracks[track_index]
         for msg in track:
             if msg.type in [
-                "note_on",
-                "note_off",
-                "control_change",
-                "program_change",
-                "pitchwheel",
-                "aftertouch",
-                "polytouch",
+                MidoMessageType.NOTE_ON,
+                MidoMessageType.NOTE_OFF,
+                MidoMessageType.CONTROL_CHANGE,
+                MidoMessageType.PROGRAM_CHANGE,
+                MidoMessageType.PITCH_WHEEL,
+                MidoMessageType.AFTERTOUCH,
+                MidoMessageType.POLYTOUCH,
             ]:
                 msg.channel = new_channel
 

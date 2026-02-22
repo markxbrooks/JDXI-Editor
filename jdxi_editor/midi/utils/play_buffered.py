@@ -9,6 +9,7 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
+from picomidi.message.type import MidoMessageType
 
 # Constants
 default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)
@@ -41,7 +42,7 @@ def buffer_midi_tracks(
         for msg in track:
             absolute_time_ticks += msg.time
 
-            if msg.type == "set_tempo":
+            if msg.type == MidoMessageType.SET_TEMPO:
                 current_tempo = msg.tempo
                 buffered_messages_list.append(
                     (absolute_time_ticks, None, current_tempo)
@@ -93,7 +94,7 @@ def play_buffered(
 
         # Send message based on type and program change flag
         if not msg.is_meta:
-            if msg.type == "program_change":
+            if msg.type == MidoMessageType.PROGRAM_CHANGE:
                 if suppress_program_changes:
                     midi_out_port.send_message(msg.bytes())
                 else:

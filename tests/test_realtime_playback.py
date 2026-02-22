@@ -39,7 +39,7 @@ def test_realtime_playback():
         for msg in track:
             absolute_time += msg.time
             
-            if msg.type == "set_tempo":
+            if msg.type == MidoMessageType.SET_TEMPO:
                 # Store tempo change message
                 buffered_msgs.append((absolute_time, None, msg.tempo))
             elif not msg.is_meta:

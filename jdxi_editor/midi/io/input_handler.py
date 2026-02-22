@@ -43,6 +43,7 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.incoming_data import IncomingPresetData
 from jdxi_editor.ui.programs import JDXiUIProgramList
+from picomidi.message.type import MidoMessageType
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:
@@ -249,10 +250,10 @@ class MidiInHandler(MidiIOController):
             preset_data = JDXiPresetButtonData()
             message_handlers = {
                 "sysex": self._handle_sysex_message,
-                "control_change": self._handle_control_change,
-                "program_change": self._handle_program_change,
-                "note_on": self._handle_note_change,
-                "note_off": self._handle_note_change,
+                MidoMessageType.CONTROL_CHANGE: self._handle_control_change,
+                MidoMessageType.PROGRAM_CHANGE: self._handle_program_change,
+                MidoMessageType.NOTE_ON: self._handle_note_change,
+                MidoMessageType.NOTE_OFF: self._handle_note_change,
                 "clock": self._handle_clock,
             }
             handler = message_handlers.get(message.type)

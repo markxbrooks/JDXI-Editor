@@ -4,6 +4,7 @@ Editor IO Utils
 
 from mido import MidiFile
 from picomidi.constant import Midi
+from picomidi.message.type import MidoMessageType
 
 
 def format_time(seconds: float) -> str:
@@ -38,6 +39,6 @@ def get_last_tempo(midi_file: MidiFile) -> int:
     tempo = Midi.TEMPO.BPM_120_USEC  # 500_000 default
     for track in midi_file.tracks:
         for msg in track:
-            if msg.type == "set_tempo":
+            if msg.type == MidoMessageType.SET_TEMPO:
                 tempo = msg.tempo
     return tempo

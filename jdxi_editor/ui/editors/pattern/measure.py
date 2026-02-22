@@ -20,6 +20,8 @@ from typing import List
 
 from mido import Message, MidiFile
 
+from picomidi.message.type import MidoMessageType
+
 
 def extract_measure(midi_file_path: str, measure_number: int) -> List[Message]:
     """
@@ -41,7 +43,7 @@ def extract_measure(midi_file_path: str, measure_number: int) -> List[Message]:
             current_time_ticks += msg.time
 
             # Check if the message is a note event within the target measure's time range
-            if not msg.is_meta and (msg.type == "note_on" or msg.type == "note_off"):
+            if not msg.is_meta and (msg.type == MidoMessageType.NOTE_ON or msg.type == MidoMessageType.NOTE_OFF):
                 # Calculate the start and end time of the target measure
                 measure_start_time = (measure_number - 1) * measure_duration_ticks
                 measure_end_time = measure_number * measure_duration_ticks

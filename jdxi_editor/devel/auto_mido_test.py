@@ -3,6 +3,8 @@ import time
 import mido
 import rtmidi
 
+from picomidi.message.type import MidoMessageType
+
 print("rtmidi:", rtmidi)
 print("rtmidi type:", type(rtmidi))
 print("rtmidi file:", getattr(rtmidi, "__file__", "NO __file__ ATTR"))
@@ -31,7 +33,7 @@ def listen_to_controller(port_name, duration=10):
                     message_count += 1
                     elapsed = time.time() - start_time
 
-                    if msg.type == "control_change":
+                    if msg.type == MidoMessageType.CONTROL_CHANGE:
                         print(
                             f"[{elapsed:.3f}s] CC#{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Controller: {msg.control} | Value: {msg.STATUS}"
@@ -42,17 +44,17 @@ def listen_to_controller(port_name, duration=10):
                             print(f"    → PAN FINE detected! Value: {msg.STATUS}")
                         elif msg.control == 41:
                             print(f"    → CC41 detected! Value: {msg.STATUS}")
-                    elif msg.type == "note_on":
+                    elif msg.type == MidoMessageType.NOTE_ON:
                         print(
                             f"[{elapsed:.3f}s] Note On #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Note: {msg.NOTE} | Velocity: {msg.velocity}"
                         )
-                    elif msg.type == "note_off":
+                    elif msg.type == MidoMessageType.NOTE_OFF:
                         print(
                             f"[{elapsed:.3f}s] Note Off #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Note: {msg.NOTE} | Velocity: {msg.velocity}"
                         )
-                    elif msg.type == "program_change":
+                    elif msg.type == MidoMessageType.PROGRAM_CHANGE:
                         print(
                             f"[{elapsed:.3f}s] Program Change #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Program: {msg.program}"

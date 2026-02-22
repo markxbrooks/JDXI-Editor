@@ -1,6 +1,8 @@
 import mido
 import rtmidi
 
+from picomidi.message.type import MidoMessageType
+
 print("rtmidi:", rtmidi)
 print("rtmidi type:", type(rtmidi))
 print("rtmidi file:", getattr(rtmidi, "__file__", "NO __file__ ATTR"))
@@ -22,7 +24,7 @@ def listen_to_controller(port_name):
         )
         try:
             for msg in inport:
-                if msg.type == "control_change":
+                if msg.type == MidoMessageType.CONTROL_CHANGE:
                     print(
                         f"Time: {msg.time:.3f} | Channel: {msg.channel+1} | "
                         f"Controller: {msg.control} | Value: {msg.STATUS}"

@@ -10,6 +10,8 @@ import time
 
 import mido
 
+from picomidi.message.type import MidoMessageType
+
 
 def test_with_mido():
     """Test SINCO VMX8 controller using Mido"""
@@ -57,7 +59,7 @@ def test_with_mido():
                     timestamp_str = f"{elapsed:.3f}"
 
                     # Decode the message
-                    if message.type == "control_change":
+                    if message.type == MidoMessageType.CONTROL_CHANGE:
                         channel = message.channel + 1
                         controller = message.control
                         value = message.STATUS
@@ -75,21 +77,21 @@ def test_with_mido():
                             print(
                                 f"{timestamp_str:>8}\tFrom {port_name}\tControl\t{channel}\tController {controller}\t{value}"
                             )
-                    elif message.type == "note_on":
+                    elif message.type == MidoMessageType.NOTE_ON:
                         channel = message.channel + 1
                         note = message.NOTE
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote On\t{channel}\tNote {note}\t{velocity}"
                         )
-                    elif message.type == "note_off":
+                    elif message.type == MidoMessageType.NOTE_OFF:
                         channel = message.channel + 1
                         note = message.NOTE
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote Off\t{channel}\tNote {note}\t{velocity}"
                         )
-                    elif message.type == "program_change":
+                    elif message.type == MidoMessageType.PROGRAM_CHANGE:
                         channel = message.channel + 1
                         program = message.program
                         print(

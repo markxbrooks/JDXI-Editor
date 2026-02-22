@@ -15,6 +15,7 @@ from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+from picomidi.message.type import MidoMessageType
 
 
 class BaseAmpSection(SectionBaseWidget):

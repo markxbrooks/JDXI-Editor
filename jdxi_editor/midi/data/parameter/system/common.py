@@ -1,3 +1,5 @@
+from typing import Optional
+
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.parameter.spec import ParameterSpec

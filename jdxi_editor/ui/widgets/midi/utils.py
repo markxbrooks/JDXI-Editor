@@ -6,6 +6,8 @@ import mido
 from mido import MidiFile
 from PySide6.QtGui import QColor
 
+from picomidi.message.type import MidoMessageType
+
 
 def ticks_to_seconds(ticks: int, tempo: int, ticks_per_beat: int) -> float:
     """
@@ -46,7 +48,7 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
         time_seconds += (current_tempo / 1_000_000) * (delta_ticks / ticks_per_beat)
         last_tick = abs_tick
 
-        if msg.type == "set_tempo":
+        if msg.type == MidoMessageType.SET_TEMPO:
             current_tempo = msg.tempo
 
     return time_seconds
@@ -67,7 +69,7 @@ def extract_notes_with_absolute_time(
     current_time = 0
     for msg in track:
         current_time += msg.time
-        if msg.type == "note_on":
+        if msg.type == MidoMessageType.NOTE_ON:
             abs_time = mido.tick2second(current_time, ticks_per_beat, tempo)
             notes.append((abs_time, msg))
     return notes
@@ -95,10 +97,10 @@ def get_first_channel(track: mido.MidiTrack) -> int | None:
     """
     for msg in track:
         if msg.type in {
-            "note_on",
-            "note_off",
-            "control_change",
-            "program_change",
+            MidoMessageType.NOTE_ON,
+            MidoMessageType.NOTE_OFF,
+            MidoMessageType.CONTROL_CHANGE,
+            MidoMessageType.PROGRAM_CHANGE,
         } and hasattr(msg, "channel"):
             return msg.channel
     return 0  # default fallback

@@ -8,6 +8,7 @@ import mido
 from mido import MidiFile
 
 from jdxi_editor.midi.synth_select import list_and_select_instrument
+from picomidi.message.type import MidoMessageType
 
 # Configuration
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
@@ -66,15 +67,15 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
         for msg in in_port:
             if use_sw:
                 # Translate to FluidSynth
-                if msg.type == "note_on" and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                     fs.noteon(0, msg.NOTE, msg.velocity)
-                elif (msg.type == "note_off") or (
-                    msg.type == "note_on" and msg.velocity == 0
+                elif (msg.type == MidoMessageType.NOTE_OFF) or (
+                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
                     fs.noteoff(0, msg.NOTE)
-                elif msg.type == "control_change":
+                elif msg.type == MidoMessageType.CONTROL_CHANGE:
                     fs.CC(0, msg.control, msg.STATUS)
-                elif msg.type == "program_change":
+                elif msg.type == MidoMessageType.PROGRAM_CHANGE:
                     fs.program_change(0, msg.program)
                 # You can extend with aftertouch, pitchwheel, etc.
             else:
@@ -122,7 +123,7 @@ def get_total_duration_in_seconds(midi_file):
         time_seconds += (current_tempo / 1_000_000) * (delta_ticks / ticks_per_beat)
         last_tick = abs_tick
 
-        if msg.type == "set_tempo":
+        if msg.type == MidoMessageType.SET_TEMPO:
             current_tempo = msg.tempo
 
     return time_seconds
@@ -143,7 +144,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
             events.append((abs_tick, msg, current_tempo))
 
             # Update tempo when we encounter a tempo change
-            if msg.type == "set_tempo":
+            if msg.type == MidoMessageType.SET_TEMPO:
                 current_tempo = msg.tempo
 
     # Sort events by tick
@@ -164,22 +165,22 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
         # Handle different message types
         if use_sw and fs:
-            if msg.type == "set_tempo":
+            if msg.type == MidoMessageType.SET_TEMPO:
                 bpm = mido.tempo2bpm(msg.tempo)
                 print(f"[INFO] Tempo change to {bpm:.1f} BPM at {msg_time_sec:.2f}s")
 
-            elif msg.type == "note_on" and msg.velocity > 0:
+            elif msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                 fs.noteon(0, msg.NOTE, msg.velocity)
 
-            elif (msg.type == "note_off") or (
-                msg.type == "note_on" and msg.velocity == 0
+            elif (msg.type == MidoMessageType.NOTE_OFF) or (
+                msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
             ):
                 fs.noteoff(0, msg.NOTE)
 
-            elif msg.type == "control_change":
+            elif msg.type == MidoMessageType.CONTROL_CHANGE:
                 fs.CC(0, msg.control, msg.STATUS)
 
-            elif msg.type == "program_change":
+            elif msg.type == MidoMessageType.PROGRAM_CHANGE:
                 fs.program_change(0, msg.program)
 
             elif msg.type == "time_signature":
