@@ -589,11 +589,11 @@ class PatternSequenceEditor(SynthEditor):
 
                 # Extract channel from status byte
                 # Note On: 0x90-0x9F, Note Off: 0x80-0x8F
-                if (status_byte & 0xF0) in (NOTE_ON, NOTE_OFF):  # Note On or Note Off
+                if (status_byte & MidiMessage.MIDI_STATUS_MASK) in (NOTE_ON, NOTE_OFF):  # Note On or Note Off
                     channel = status_byte & 0x0F
                     msg_type = (
                         MidoMessageType.NOTE_ON
-                        if (status_byte & 0xF0) == NOTE_ON and velocity > 0
+                        if (status_byte & MidiMessage.MIDI_STATUS_MASK) == NOTE_ON and velocity > 0
                         else MidoMessageType.NOTE_OFF
                     )
 
