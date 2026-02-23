@@ -17,6 +17,7 @@ class ScheduledEvent:
 
 
 class TransportState(Enum):
+    """Transport State"""
     STOPPED = auto()
     PLAYING = auto()
     PAUSED = auto()
@@ -44,6 +45,7 @@ class PlaybackEngine:
     """
 
     def __init__(self):
+        """constructor"""
         self.midi_file: Optional[mido.MidiFile] = None
         self.ticks_per_beat: int = 480
 
@@ -71,9 +73,11 @@ class PlaybackEngine:
 
     @property
     def state(self) -> TransportState:
+        """state property"""
         return self._state
 
     def _set_state(self, new_state: TransportState) -> None:
+        """set state"""
         if self._state == new_state:
             return
         self._state = new_state
@@ -85,15 +89,19 @@ class PlaybackEngine:
             self._enter_paused()
 
     def _enter_playing(self) -> None:
+        """enter playing"""
         self._is_playing = True
 
     def _enter_stopped(self) -> None:
+        """enter stopped"""
         self._is_playing = False
 
     def _enter_paused(self) -> None:
+        """enter paused state"""
         self._is_playing = False
 
     def load_file(self, midi_file: mido.MidiFile) -> None:
+        """Load File"""
         self.midi_file = midi_file
         self.ticks_per_beat = midi_file.ticks_per_beat
 
@@ -205,12 +213,14 @@ class PlaybackEngine:
         return seg_time + delta_ticks * (tempo / 1_000_000) / self.ticks_per_beat
 
     def _get_tempo_at_tick(self, tick: int) -> int:
+        """get tempo at tick"""
         applicable = [t for t in self._tempo_map if t <= tick]
         if not applicable:
             return 500000
         return self._tempo_map[max(applicable)]
 
     def process_until_now(self) -> None:
+        """process until now"""
         if not self._is_playing:
             return
 
@@ -237,6 +247,7 @@ class PlaybackEngine:
             self._set_state(TransportState.STOPPED)
 
     def _should_send(self, event: ScheduledEvent) -> bool:
+        """should send"""
         msg = event.message
 
         if event.track_index in self._muted_tracks:
@@ -255,19 +266,21 @@ class PlaybackEngine:
         return True
 
     def mute_channel(self, channel: int, muted: bool) -> None:
+        """Mute channel"""
         if muted:
             self._muted_channels.add(channel)
         else:
             self._muted_channels.discard(channel)
 
     def mute_track(self, track_index: int, muted: bool) -> None:
+        """mute track"""
         if muted:
             self._muted_tracks.add(track_index)
         else:
             self._muted_tracks.discard(track_index)
 
     def scrub_to_tick(self, tick: int) -> None:
+        """scrub to track"""
         self._event_index = self._find_start_index(tick)
         self._start_tick = tick
         self._start_time = time.time()
-

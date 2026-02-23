@@ -2,9 +2,9 @@
 Pattern Measure
 """
 
-from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
-from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
+from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 
 class PatternMeasure(QWidget):
@@ -27,13 +27,7 @@ class PatternMeasure(QWidget):
         for row in range(4):
             row_layout = QHBoxLayout()
             for i in range(16):
-                button = QPushButton()
-                button.setCheckable(True)
-                button.setFixedSize(40, 40)
-                button.row = row
-                button.column = i
-                button.note = None
-                button.note_spec = NoteButtonSpec()
+                button = SequencerButton(row=row, column=i)
                 self.buttons[row].append(button)
                 row_layout.addWidget(button)
             button_layout.addLayout(row_layout)

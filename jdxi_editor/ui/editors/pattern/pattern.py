@@ -17,7 +17,6 @@ Features:
 """
 
 import datetime
-import logging
 import random
 from dataclasses import dataclass
 from typing import Any, Optional, Callable
@@ -64,11 +63,12 @@ from jdxi_editor.ui.editors.midi_player.transport.spec import (
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi.message.type import MidoMessageType
-from picoui.helpers import create_layout_with_widgets
+from picoui.helpers import create_layout_with_widgets, group_with_layout
 from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, FileSelectionSpec
 from picoui.widget.helper import create_combo_box, get_file_path_from_spec
 
@@ -79,6 +79,7 @@ class NoteButtonAttrs:
     NOTE = "NOTE"
     NOTE_DURATION = "NOTE_DURATION"
     NOTE_VELOCITY = "NOTE_VELOCITY"
+
 
 def reset_button(button):
     button.row = button.row  # or keep as is if you really want to preserve
@@ -122,11 +123,14 @@ def _sync_button_note_spec(button) -> None:
     )
 
 
-def update_button_state(button: QPushButton, checked_state: bool):
+def update_button_state(button: QPushButton, checked_state: bool = None, enabled_state: bool = None):
     """update button state"""
     button.setEnabled(True)
     button.blockSignals(True)
-    button.setChecked(checked_state)
+    if enabled_state is not None:
+        button.setChecked(enabled_state)
+    if checked_state is not None:
+        button.setChecked(checked_state)
     button.blockSignals(False)
 
 
@@ -158,6 +162,12 @@ class PatternSequenceEditor(SynthEditor):
             midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
+        self._state = None
+        self.stop_button = None
+        self.play_button = None
+        self.analog_selector = None
+        self.digital2_selector = None
+        self.digital1_selector = None
         self.paste_button = None
         """
         Initialize the PatternSequencer
@@ -451,8 +461,7 @@ class PatternSequenceEditor(SynthEditor):
             label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(label)
-
-            # Add appropriate selector combo box for each row
+            # Add appropriate selector combo box for each row (channel_map is built after this loop)
             if row_idx == 0:  # Digital Synth 1
                 self.digital1_selector = create_combo_box(
                     spec=self.specs["combos"]["digital1"]
@@ -524,18 +533,11 @@ class PatternSequenceEditor(SynthEditor):
         self.main_layout.addWidget(self.base_widget)
 
     def ui_generate_button_row(self, row_index: int, visible: bool = False):
-        """generate sequencer button row"""
+        """Generate sequencer button row using SequencerButton."""
         button_row_layout = QHBoxLayout()
         for i in range(16):
-            button = QPushButton()
-            button.setCheckable(True)
-            button.setFixedSize(40, 40)
+            button = SequencerButton(row=row_index, column=i)
             button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
-            # Store the row and column indices in the button
-            button.row = row_index
-            button.column = i
-            button.note = None
-            button.note_spec = NoteButtonSpec()
             button.clicked.connect(
                 lambda checked, btn=button: self._on_button_clicked(btn, checked)
             )
@@ -545,10 +547,12 @@ class PatternSequenceEditor(SynthEditor):
         return button_row_layout
 
     def reset_all_measures(self):
+        """reset all measures"""
         for measure in self.measures:
             reset_measure(measure)
 
     def add_and_reset_new_measure(self):
+        """add and reset new measure"""
         measure = PatternMeasure()
         reset_measure(measure)
         self.measures.append(measure)
@@ -962,27 +966,34 @@ class PatternSequenceEditor(SynthEditor):
 
         # Store the note in the currently selected bar's measure
         if len(self.measures) > 0 and self.current_measure_index < len(self.measures):
-            measure = self.measures[self.current_measure_index]
-            step_in_bar = button.column  # button.column is 0-15 for sequencer buttons
+            self._store_note_in_measures(button, checked)
 
-            if button.row < len(measure.buttons) and step_in_bar < len(
-                    measure.buttons[button.row]
-            ):
-                measure_button = measure.buttons[button.row][step_in_bar]
-                update_button_state(measure_button, checked)
-                if checked:
-                    measure_button.NOTE = button.NOTE
-                    # Copy duration if available
-                    if hasattr(button, "NOTE_DURATION"):
-                        measure_button.NOTE_DURATION = button.NOTE_DURATION
-                    # Copy velocity if available
-                    if hasattr(button, "NOTE_VELOCITY"):
-                        measure_button.NOTE_VELOCITY = button.NOTE_VELOCITY
-                    _sync_button_note_spec(measure_button)
-                else:
-                    reset_button(measure_button)
+        self._update_button_style(button, checked)
 
-        # Update button style
+    def _store_note_in_measures(self, button: SequencerButton, checked: bool):
+        """sore notes in measures"""
+        measure = self.measures[self.current_measure_index]
+        step_in_bar = button.column  # button.column is 0-15 for sequencer buttons
+
+        if button.row < len(measure.buttons) and step_in_bar < len(
+                measure.buttons[button.row]
+        ):
+            measure_button = measure.buttons[button.row][step_in_bar]
+            update_button_state(measure_button, checked)
+            if checked:
+                measure_button.NOTE = button.NOTE
+                # Copy duration if available
+                if hasattr(button, "NOTE_DURATION"):
+                    measure_button.NOTE_DURATION = button.NOTE_DURATION
+                # Copy velocity if available
+                if hasattr(button, "NOTE_VELOCITY"):
+                    measure_button.NOTE_VELOCITY = button.NOTE_VELOCITY
+                _sync_button_note_spec(measure_button)
+            else:
+                reset_button(measure_button)
+
+    def _update_button_style(self, button: SequencerButton, checked: bool):
+        """Update button style"""
         is_current = (self.current_step % self.total_steps) == button.column
         is_selected_bar = (
                 len(self.measures) > 0 and (button.column // 16) == self.current_measure_index
@@ -1325,12 +1336,12 @@ class PatternSequenceEditor(SynthEditor):
             self.measures.clear()
 
             # Create new bars
-            for bar_num in range(num_bars):
+            for measure_num in range(num_bars):
                 measure = PatternMeasure()
                 reset_measure(measure)
                 self.measures.append(measure)
-                item = QListWidgetItem(f"Bar {bar_num + 1}")
-                item.setData(Qt.ItemDataRole.UserRole, bar_num)
+                item = QListWidgetItem(f"measure {measure_num + 1}")
+                item.setData(Qt.ItemDataRole.UserRole, measure_num)
                 self.measures_list.addItem(item)
 
             self.total_measures = len(self.measures)
@@ -1760,12 +1771,11 @@ class PatternSequenceEditor(SynthEditor):
 
     def _init_transport_controls(self) -> QGroupBox:
         """Build Transport group with Play, Stop, Pause, Shuffle Play (same style as Midi File Player)."""
-        group = QGroupBox("Transport")
-        centered_layout = QHBoxLayout(group)
+        group, layout = group_with_layout(label="Transport")
         transport_layout = QHBoxLayout()
-        centered_layout.addStretch()
-        centered_layout.addLayout(transport_layout)
-        centered_layout.addStretch()
+        layout.addStretch()
+        layout.addLayout(transport_layout)
+        layout.addStretch()
 
         transport_button_group = QButtonGroup(self)
         transport_button_group.setExclusive(True)
@@ -1902,13 +1912,9 @@ class PatternSequenceEditor(SynthEditor):
         self.timer.start(playback_interval_ms)
 
         if hasattr(self, "play_button") and self.play_button:
-            self.play_button.blockSignals(True)
-            self.play_button.setChecked(True)
-            self.play_button.setEnabled(False)
-            self.play_button.blockSignals(False)
+            update_button_state(self.play_button, checked_state=True, enabled_state=False)
         if hasattr(self, "stop_button") and self.stop_button:
-            self.stop_button.setChecked(False)
-            self.stop_button.setEnabled(True)
+            update_button_state(self.stop_button, checked_state=False, enabled_state=True)
 
         log.message(message="Pattern playback started", scope=self.__class__.__name__)
 
@@ -1977,20 +1983,15 @@ class PatternSequenceEditor(SynthEditor):
         if hasattr(self, "play_button") and self.play_button:
             update_button_state(self.play_button, checked_state=False)
         if hasattr(self, "stop_button") and self.stop_button:
-            self.stop_button.setChecked(True)
-            self.stop_button.setEnabled(False)
+            update_button_state(self.stop_button, checked_state=True, enabled_state=False)
 
     def _update_transport_ui(self):
+        """update ui regarding playing state"""
         is_playing = self._state == TransportState.PLAYING
         is_stopped = self._state == TransportState.STOPPED
-
-        self.play_button.blockSignals(True)
-        self.play_button.setChecked(is_playing)
-        self.play_button.blockSignals(False)
-
-        self.play_button.setEnabled(not is_playing)
-        self.stop_button.setChecked(is_stopped)
-        self.stop_button.setEnabled(not is_stopped)
+        if hasattr(self, "play_button"):
+            update_button_state(self.play_button, checked_state=is_playing, enabled_state=not is_playing)
+        update_button_state(self.stop_button, checked_state=is_stopped, enabled_state=not is_stopped)
 
     def stop_pattern(self):
         """Stop playing the pattern"""
