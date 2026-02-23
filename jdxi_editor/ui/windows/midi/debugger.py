@@ -261,7 +261,7 @@ class MIDIDebugger(QMainWindow):
         """Decode a 15-byte Roland address SysEx message."""
         if len(message) != 15:
             return "Invalid SysEx message (must be 15 bytes)"
-        if message[0] != 0xF0 or message[1] != 0x41:
+        if message[0] != MidiMessage.MIDI_STATUS_MASK or message[1] != 0x41:
             return "Not a Roland address SysEx message"
 
         def fmt_row(byte, desc, val, notes=""):
