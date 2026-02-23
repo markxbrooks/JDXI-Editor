@@ -4,9 +4,8 @@ Midi Widget Utils
 
 import mido
 from mido import MidiFile
-from PySide6.QtGui import QColor
-
 from picomidi.message.type import MidoMessageType
+from PySide6.QtGui import QColor
 
 
 def ticks_to_seconds(ticks: int, tempo: int, ticks_per_beat: int) -> float:

@@ -10,7 +10,6 @@ from typing import List, Tuple
 
 import mido
 from mido import MidiFile, MidiTrack
-
 from picomidi.message.type import MidoMessageType
 
 # Standard General MIDI drum note range (35-81)

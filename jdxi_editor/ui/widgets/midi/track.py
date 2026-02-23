@@ -4,6 +4,7 @@ Midi Track Widget
 
 import mido
 from decologr import Decologr as log
+from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPixmap
 from PySide6.QtWidgets import (
@@ -13,7 +14,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
 from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
-from picomidi.message.type import MidoMessageType
 
 
 class MidiTrackWidget(QWidget):

@@ -57,8 +57,8 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.core.synth.type import JDXiSynth
+from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,

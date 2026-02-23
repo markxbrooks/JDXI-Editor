@@ -7,9 +7,9 @@ import mido
 import rtmidi
 from decologr import Decologr as log
 from picomidi.constant import Midi
+from picomidi.message.type import MidoMessageType
 
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
-from picomidi.message.type import MidoMessageType
 
 # Constants
 default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)

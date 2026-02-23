@@ -13,7 +13,7 @@ from typing import List, Optional
 
 import rtmidi
 
-from jdxi_editor.midi.data.address.sysex import NOTE_ON, NOTE_OFF
+from jdxi_editor.midi.data.address.sysex import NOTE_OFF, NOTE_ON
 from jdxi_editor.midi.message import MidiMessage
 
 

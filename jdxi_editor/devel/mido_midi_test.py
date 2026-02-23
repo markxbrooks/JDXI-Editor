@@ -9,7 +9,6 @@ import sys
 import time
 
 import mido
-
 from picomidi.message.type import MidoMessageType
 
 

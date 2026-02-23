@@ -13,16 +13,10 @@ from typing import Any, Optional
 import mido
 import pyaudio
 from decologr import Decologr as log
-from mido import MidiFile, bpm2tempo, Message
-
-from jdxi_editor.ui.editors.midi_player.track.category import (
-    TrackCategory,
-    STR_TO_TRACK_CATEGORY,
-    CATEGORY_META,
-)
-from jdxi_editor.ui.preset.source import PresetSource
+from mido import Message, MidiFile, bpm2tempo
 from picomidi.constant import Midi
-from PySide6.QtCore import Qt, QThread, QTimer, QMargins
+from picomidi.message.type import MidoMessageType
+from PySide6.QtCore import QMargins, Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -65,11 +59,17 @@ from jdxi_editor.ui.editors.helpers.widgets import (
 )
 from jdxi_editor.ui.editors.midi_player.midi_analyzer import MidiAnalyzer
 from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+from jdxi_editor.ui.editors.midi_player.track.category import (
+    CATEGORY_META,
+    STR_TO_TRACK_CATEGORY,
+    TrackCategory,
+)
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.preset.source import PresetSource
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
@@ -84,7 +84,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
-from picomidi.message.type import MidoMessageType
 from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
 from picoui.specs.widgets import ButtonSpec, CheckBoxSpec, MessageBoxSpec
 

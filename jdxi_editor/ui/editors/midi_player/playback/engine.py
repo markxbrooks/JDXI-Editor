@@ -2,7 +2,7 @@ import bisect
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, Callable, List
+from typing import Callable, List, Optional
 
 import mido
 

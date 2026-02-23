@@ -27,6 +27,7 @@ from typing import Any, Callable, Dict, List, Optional
 import mido
 from decologr import Decologr as log
 from picomidi.constant import Midi
+from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Signal
 
 from jdxi_editor.core.jdxi import JDXi
@@ -43,7 +44,6 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
 from jdxi_editor.ui.preset.incoming_data import IncomingPresetData
 from jdxi_editor.ui.programs import JDXiUIProgramList
-from picomidi.message.type import MidoMessageType
 
 
 def add_or_replace_program_and_save(new_program: JDXiProgram) -> bool:

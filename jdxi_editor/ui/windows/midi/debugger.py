@@ -43,7 +43,6 @@ import re
 from typing import Optional, Protocol, Tuple, Type, TypeVar, runtime_checkable
 
 from decologr import Decologr as log
-from jdxi_editor.midi.message import MidiMessage
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -61,6 +60,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import CommandID, SysExOffsetByte
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.message import MidiMessage
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.sections import SysExSection

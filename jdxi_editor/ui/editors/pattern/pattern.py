@@ -19,14 +19,17 @@ Features:
 import datetime
 import random
 from dataclasses import dataclass
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
+from picomidi import MidiTempo
+from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
+    QComboBox,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -39,9 +42,8 @@ from PySide6.QtWidgets import (
     QSplitter,
     QVBoxLayout,
     QWidget,
-    QComboBox,
 )
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON, NOTE_OFF
+from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_OFF, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import silence_midi_note_logging
@@ -68,9 +70,8 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from picomidi import MidiTempo, Channel
-from picomidi.message.type import MidoMessageType
 from picoui.helpers import create_layout_with_widgets, group_with_layout
+from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import (
     ButtonSpec,
     ComboBoxSpec,
@@ -190,35 +191,6 @@ class SequencerRowSpec:
     label: str
     icon: str
     accent_color: str
-
-
-def create_spinbox_with_label(
-    label: str,
-    min_val: int = 1,
-    max_val: int = 127,
-    value: int = None,
-    tooltip: str = "",
-):
-    """create spinbox with label"""
-    label = QLabel(label)
-    spinbox = QSpinBox()
-    spinbox.setRange(min_val, max_val)
-    if value is not None:
-        spinbox.setValue(value)
-    spinbox.setToolTip(tooltip)
-    return label, spinbox
-
-
-def create_spinbox_with_label_from_spec(spec: SpinBoxSpec):
-    """create spinbox with label from spec"""
-    label, spinbox = create_spinbox_with_label(
-        label=spec.label,
-        min_val=spec.min_val,
-        max_val=spec.max_val,
-        value=spec.value,
-        tooltip=spec.tooltip,
-    )
-    return label, spinbox
 
 
 class PatternSequenceEditor(SynthEditor):
@@ -578,8 +550,8 @@ class PatternSequenceEditor(SynthEditor):
         velocity_group = QGroupBox("Velocity")
         velocity_layout = QHBoxLayout()
 
-        self.velocity_label, self.velocity_spinbox = (
-            create_spinbox_with_label_from_spec(self.specs["spinboxes"]["velocity"])
+        self.velocity_label, self.velocity_spinbox = spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["velocity"]
         )
 
         velocity_layout.addWidget(self.velocity_label)
@@ -609,7 +581,7 @@ class PatternSequenceEditor(SynthEditor):
         tempo_group = QGroupBox("Tempo")
         tempo_layout = QHBoxLayout()
 
-        self.tempo_label, self.tempo_spinbox = create_spinbox_with_label_from_spec(
+        self.tempo_label, self.tempo_spinbox = spinbox_with_label_from_spec(
             self.specs["spinboxes"]["tempo"]
         )
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
@@ -715,10 +687,10 @@ class PatternSequenceEditor(SynthEditor):
         step_range_layout = QHBoxLayout()
         step_range_layout.addWidget(QLabel(self.tr("Steps:")))
 
-        start_label, self.start_step_spinbox = create_spinbox_with_label_from_spec(
+        start_label, self.start_step_spinbox = spinbox_with_label_from_spec(
             self.specs["spinboxes"]["start"]
         )
-        end_label, self.end_step_spinbox = create_spinbox_with_label_from_spec(
+        end_label, self.end_step_spinbox = spinbox_with_label_from_spec(
             self.specs["spinboxes"]["end"]
         )
 

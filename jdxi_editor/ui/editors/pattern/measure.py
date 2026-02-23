@@ -19,7 +19,6 @@ Example usage
 from typing import List
 
 from mido import Message, MidiFile
-
 from picomidi.message.type import MidoMessageType
 
 

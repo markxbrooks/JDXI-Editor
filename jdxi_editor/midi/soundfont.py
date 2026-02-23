@@ -6,9 +6,9 @@ import time
 import fluidsynth
 import mido
 from mido import MidiFile
+from picomidi.message.type import MidoMessageType
 
 from jdxi_editor.midi.synth_select import list_and_select_instrument
-from picomidi.message.type import MidoMessageType
 
 # Configuration
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs

@@ -19,6 +19,7 @@ from decologr import Decologr as log
 from picomidi import SysExByte
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
+from picomidi.message.type import MidoMessageType
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandID
@@ -34,7 +35,6 @@ from jdxi_editor.midi.message.sysex.offset import (
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
-from picomidi.message.type import MidoMessageType
 
 
 class JDXiSysExParser:
