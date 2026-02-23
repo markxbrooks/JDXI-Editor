@@ -24,7 +24,6 @@ class SequencerButton(QPushButton):
         super().__init__(parent)
         self.row: int = row
         self.column: int = column
-        self.note: Optional[int] = None  # legacy alias; prefer NOTE
         self.note: Optional[int] = None
         self.note_duration: Optional[float] = None
         self.note_velocity: Optional[int] = None
