@@ -545,6 +545,13 @@ class PatternSequenceEditor(SynthEditor):
             button.setVisible(visible)  # Initially hide all drum buttons
             button_row_layout.addWidget(button)
         return button_row_layout
+        
+    def _log_and_return(self, ok: bool, msg: str) -> bool:
+        """log and return"""
+        if not ok:
+            log.debug(msg, scope=self.__class__.__name__)
+        return ok
+
 
     def reset_all_measures(self):
         """reset all measures"""
