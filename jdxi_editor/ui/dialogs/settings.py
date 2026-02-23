@@ -108,12 +108,19 @@ class UiPreferencesDialog(QDialog):
 
         # Silence MIDI note logging (note on/off only) to reduce log volume
         from jdxi_editor.globals import SILENCE_MIDI_NOTE_LOGGING_KEY
+
         self.silence_midi_notes_layout = QHBoxLayout(self)
         self.silence_midi_notes_icon = QLabel()
-        self.silence_midi_notes_checkbox = QCheckBox("Silence MIDI note logging (note on/off)")
+        self.silence_midi_notes_checkbox = QCheckBox(
+            "Silence MIDI note logging (note on/off)"
+        )
         self.silence_midi_notes_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
         _val = self.settings.value(SILENCE_MIDI_NOTE_LOGGING_KEY, True)
-        _checked = _val if isinstance(_val, bool) else (str(_val).lower() in ("true", "1", "yes"))
+        _checked = (
+            _val
+            if isinstance(_val, bool)
+            else (str(_val).lower() in ("true", "1", "yes"))
+        )
         self.silence_midi_notes_checkbox.setChecked(_checked)
         self.silence_midi_notes_icon.setPixmap(
             JDXi.UI.Icon.get_icon(JDXi.UI.Icon.REPORT).pixmap(self.icon_size)
@@ -207,6 +214,7 @@ class UiPreferencesDialog(QDialog):
         :return: None
         """
         from jdxi_editor.globals import SILENCE_MIDI_NOTE_LOGGING_KEY
+
         settings = self.settings
         try:
             settings.setValue("logging", bool(self.logging_checkbox.isChecked()))

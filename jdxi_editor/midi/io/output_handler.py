@@ -1,4 +1,3 @@
-0xFO
 """
 MIDI Output Handler
 ===================
@@ -138,8 +137,13 @@ class MidiOutHandler(MidiIOController):
                 # For non-SysEx messages, filtered_data remains empty (no warning needed)
 
                 # Log safely (skip logging for note on/off if user prefers to silence them)
-                skip_note_log = silence_midi_note_logging() and message_list and (
-                    (message_list[0] & MidiMessage.MIDI_STATUS_MASK) in (0x80, 0x90)  # note off, note on
+                skip_note_log = (
+                    silence_midi_note_logging()
+                    and message_list
+                    and (
+                        (message_list[0] & MidiMessage.MIDI_STATUS_MASK)
+                        in (0x80, 0x90)  # note off, note on
+                    )
                 )
                 if not skip_note_log:
                     log.message(

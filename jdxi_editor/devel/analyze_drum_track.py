@@ -102,7 +102,9 @@ def analyze_track_for_drums(track: mido.MidiTrack, track_index: int) -> dict:
                 analysis["max_simultaneous"], active_notes[absolute_time]
             )
 
-        elif msg.type == MidoMessageType.NOTE_OFF or (msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0):
+        elif msg.type == MidoMessageType.NOTE_OFF or (
+            msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+        ):
             analysis["note_offs"].append((absolute_time, msg.note))
 
         elif msg.type == MidoMessageType.PITCH_WHEEL:

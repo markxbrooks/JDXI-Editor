@@ -68,11 +68,11 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
             if use_sw:
                 # Translate to FluidSynth
                 if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                    fs.noteon(0, msg.NOTE, msg.velocity)
+                    fs.noteon(0, msg.note, msg.velocity)
                 elif (msg.type == MidoMessageType.NOTE_OFF) or (
                     msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
-                    fs.noteoff(0, msg.NOTE)
+                    fs.noteoff(0, msg.note)
                 elif msg.type == MidoMessageType.CONTROL_CHANGE:
                     fs.CC(0, msg.control, msg.STATUS)
                 elif msg.type == MidoMessageType.PROGRAM_CHANGE:
@@ -170,12 +170,12 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
                 print(f"[INFO] Tempo change to {bpm:.1f} BPM at {msg_time_sec:.2f}s")
 
             elif msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                fs.noteon(0, msg.NOTE, msg.velocity)
+                fs.noteon(0, msg.note, msg.velocity)
 
             elif (msg.type == MidoMessageType.NOTE_OFF) or (
                 msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
             ):
-                fs.noteoff(0, msg.NOTE)
+                fs.noteoff(0, msg.note)
 
             elif msg.type == MidoMessageType.CONTROL_CHANGE:
                 fs.CC(0, msg.control, msg.STATUS)

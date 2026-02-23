@@ -104,10 +104,10 @@ class MidiFilePlayer(SynthEditor):
     BUFFER_WINDOW_SECONDS = 30.0
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            parent: QWidget = None,
-            preset_helper: JDXiPresetHelper = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent: QWidget = None,
+        preset_helper: JDXiPresetHelper = None,
     ):
         """
         Initialize the MidiPlayer
@@ -219,7 +219,9 @@ class MidiFilePlayer(SynthEditor):
         main_layout = create_vertical_layout(margins=QMargins(0, 0, 0, 0), spacing=0)
         main_layout.addWidget(header_widget)
         main_layout.addWidget(self.init_ruler())
-        main_layout.addWidget(self.ui.midi_track_viewer, 1)  # stretch so track viewer gets remaining space
+        main_layout.addWidget(
+            self.ui.midi_track_viewer, 1
+        )  # stretch so track viewer gets remaining space
         main_layout.addWidget(centered_widget)
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
@@ -446,7 +448,7 @@ class MidiFilePlayer(SynthEditor):
                     spin = self.ui.midi_track_viewer._track_channel_spins[track_index]
                     spin.setValue(drum_channel_display)
                     track_name = (
-                            analysis.get("track_name") or f"Track {track_index + 1}"
+                        analysis.get("track_name") or f"Track {track_index + 1}"
                     )
                     updated_tracks.append(
                         f"Track {track_index + 1} ({track_name}) - Score: {analysis['score']:.1f}"
@@ -547,7 +549,7 @@ class MidiFilePlayer(SynthEditor):
                 spin.setValue(meta.channel)
 
                 track_name = (
-                        getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                    getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
                 )
                 score = analysis.scores[category]
 
@@ -560,12 +562,12 @@ class MidiFilePlayer(SynthEditor):
         return updated
 
     def _handle_unclassified_tracks(
-            self, classifications, updated: dict[str, list[str]]
+        self, classifications, updated: dict[str, list[str]]
     ):
         """Handle unclassified"""
         for track_index, analysis in classifications.get("unclassified", []):
             track_name = (
-                    getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
+                getattr(analysis, "track_name", None) or f"Track {track_index + 1}"
             )
             scores = analysis.scores
 
@@ -578,12 +580,12 @@ class MidiFilePlayer(SynthEditor):
     def _has_classified_tracks(self, updated_tracks: dict) -> bool:
         """Return True if at least one track was classified (excluding unclassified)."""
         return (
-                sum(
-                    len(v)
-                    for k, v in updated_tracks.items()
-                    if k != TrackCategory.UNCLASSIFIED
-                )
-                > 0
+            sum(
+                len(v)
+                for k, v in updated_tracks.items()
+                if k != TrackCategory.UNCLASSIFIED
+            )
+            > 0
         )
 
     def _show_no_tracks_message(self) -> None:
@@ -591,8 +593,8 @@ class MidiFilePlayer(SynthEditor):
         show_message_box_from_spec(self.specs["message_box"]["no_tracks_classified"])
 
     def _build_classification_message(
-            self,
-            updated: dict[str, list[str]],
+        self,
+        updated: dict[str, list[str]],
     ) -> str:
         """build classification message"""
         total_classified = sum(
@@ -747,7 +749,7 @@ class MidiFilePlayer(SynthEditor):
         return grid
 
     def create_widget_cell_with_button_spec(
-            self, spec: ButtonSpec, button
+        self, spec: ButtonSpec, button
     ) -> tuple[QWidget, QLabel]:
         """Create Widget With Button Spec"""
         widget = QWidget()
@@ -849,9 +851,21 @@ class MidiFilePlayer(SynthEditor):
 
         # Build messages: CC#0, CC#32, Program Change (PC is 0-based in MIDI spec)
         msgs = [
-            self._build_message(message_type=MidoMessageType.CONTROL_CHANGE, channel=channel, value=int(msb)),
-            self._build_message(message_type=MidoMessageType.CONTROL_CHANGE, channel=channel, value=int(lsb)),
-            self._build_message(message_type=MidoMessageType.PROGRAM_CHANGE, channel=channel, program=max(0, int(pc) - 1))
+            self._build_message(
+                message_type=MidoMessageType.CONTROL_CHANGE,
+                channel=channel,
+                value=int(msb),
+            ),
+            self._build_message(
+                message_type=MidoMessageType.CONTROL_CHANGE,
+                channel=channel,
+                value=int(lsb),
+            ),
+            self._build_message(
+                message_type=MidoMessageType.PROGRAM_CHANGE,
+                channel=channel,
+                program=max(0, int(pc) - 1),
+            ),
         ]
 
         self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
@@ -877,7 +891,9 @@ class MidiFilePlayer(SynthEditor):
             # Fail-safe: add without label
             self.ui.midi_track_viewer.ruler.add_marker(current_seconds)
 
-    def _build_message(self, message_type: str, channel: int, value: int = None, program: int = None) -> Message:
+    def _build_message(
+        self, message_type: str, channel: int, value: int = None, program: int = None
+    ) -> Message:
         """Build message"""
         if program is None:
             message = mido.Message(
@@ -897,7 +913,7 @@ class MidiFilePlayer(SynthEditor):
         return 0
 
     def _insert_messages_at_abs_tick(
-            self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]
+        self, track: mido.MidiTrack, abs_tick_target: int, new_msgs: list[mido.Message]
     ) -> None:
         """
         Insert a list of messages at a given absolute tick, preserving delta times.
@@ -916,7 +932,12 @@ class MidiFilePlayer(SynthEditor):
                 # First, push any time before insertion
                 if insert_delta > 0:
                     rebuilt.append(
-                        mido.Message(MidoMessageType.NOTE_ON, note=0, velocity=0, time=insert_delta)
+                        mido.Message(
+                            MidoMessageType.NOTE_ON,
+                            note=0,
+                            velocity=0,
+                            time=insert_delta,
+                        )
                     )
                     # Replace the placeholder with zero-time; we will discard it below
                     rebuilt.pop()
@@ -1058,9 +1079,9 @@ class MidiFilePlayer(SynthEditor):
         :return: Generated filename path or None if no MIDI file is loaded
         """
         if (
-                not self.midi_state.file
-                or not hasattr(self.midi_state.file, "filename")
-                or not self.midi_state.file.filename
+            not self.midi_state.file
+            or not hasattr(self.midi_state.file, "filename")
+            or not self.midi_state.file.filename
         ):
             return None
 
@@ -1129,10 +1150,10 @@ class MidiFilePlayer(SynthEditor):
         )
 
     def _create_transport_control(
-            self,
-            spec: TransportSpec,
-            layout: QHBoxLayout,
-            button_group: QButtonGroup | None,
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: QButtonGroup | None,
     ) -> None:
         """Create a transport button + label row"""
 
@@ -1480,16 +1501,16 @@ class MidiFilePlayer(SynthEditor):
 
         # Add to recent files if parent has recent_files_manager
         if (
-                hasattr(self.parent, "recent_files_manager")
-                and self.parent.recent_files_manager
+            hasattr(self.parent, "recent_files_manager")
+            and self.parent.recent_files_manager
         ):
             try:
                 self.parent.recent_files_manager.add_file(file_path)
                 if hasattr(self.parent, "_update_recent_files_menu"):
                     # Check if menu still exists before updating
                     if (
-                            hasattr(self.parent, "recent_files_menu")
-                            and self.parent.recent_files_menu is not None
+                        hasattr(self.parent, "recent_files_menu")
+                        and self.parent.recent_files_menu is not None
                     ):
                         try:
                             self.parent._update_recent_files_menu()
@@ -1516,9 +1537,9 @@ class MidiFilePlayer(SynthEditor):
             else:
                 self.ticks_per_beat = 480
         self.tick_duration = (
-                self.midi_state.tempo_at_position
-                / Midi.TEMPO.CONVERT_SEC_TO_USEC
-                / self.ticks_per_beat
+            self.midi_state.tempo_at_position
+            / Midi.TEMPO.CONVERT_SEC_TO_USEC
+            / self.ticks_per_beat
         )
 
     def calculate_duration(self) -> None:
@@ -1611,7 +1632,7 @@ class MidiFilePlayer(SynthEditor):
         self._push_tempo_to_pattern_sequencer(tempo_bpm)
 
     def update_upper_display_with_tempo_and_bar(
-            self, elapsed_time: Optional[float] = None
+        self, elapsed_time: Optional[float] = None
     ) -> None:
         """
         Update the upper digital with tempo and optionally bar number.
@@ -1625,8 +1646,8 @@ class MidiFilePlayer(SynthEditor):
 
         # Append bar number if playing or paused
         if elapsed_time is not None or (
-                self.midi_state.timer
-                and (self.midi_state.timer.isActive() or self.midi_state.playback_paused)
+            self.midi_state.timer
+            and (self.midi_state.timer.isActive() or self.midi_state.playback_paused)
         ):
             if elapsed_time is None and self.midi_state.playback_start_time:
                 elapsed_time = time.time() - self.midi_state.playback_start_time
@@ -1811,9 +1832,15 @@ class MidiFilePlayer(SynthEditor):
             self.playback_engine.mute_track(i, i in self.midi_state.muted_tracks)
         for ch in range(16):
             display_ch = ch + Midi.CHANNEL.BINARY_TO_DISPLAY
-            self.playback_engine.mute_channel(ch, display_ch in self.midi_state.muted_channels)
-        self.playback_engine.suppress_program_changes = self.midi_state.suppress_program_changes
-        self.playback_engine.suppress_control_changes = self.midi_state.suppress_control_changes
+            self.playback_engine.mute_channel(
+                ch, display_ch in self.midi_state.muted_channels
+            )
+        self.playback_engine.suppress_program_changes = (
+            self.midi_state.suppress_program_changes
+        )
+        self.playback_engine.suppress_control_changes = (
+            self.midi_state.suppress_control_changes
+        )
         midi_out = self.midi_helper.midi_out
         self.playback_engine.on_event = lambda msg: midi_out.send_message(msg.bytes())
         self.midi_playback_worker.setup(
@@ -1900,8 +1927,8 @@ class MidiFilePlayer(SynthEditor):
         Check if the channel is muted.
         """
         return (
-                channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
-                in self.midi_state.muted_channels
+            channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
+            in self.midi_state.muted_channels
         )
 
     def get_muted_tracks(self):
@@ -1995,7 +2022,9 @@ class MidiFilePlayer(SynthEditor):
         target_time = self.get_target_time()
         self.update_event_index(target_time)
         self.update_playback_start_time(target_time)
-        if self.midi_state.events and 0 <= self.midi_state.event_index < len(self.midi_state.events):
+        if self.midi_state.events and 0 <= self.midi_state.event_index < len(
+            self.midi_state.events
+        ):
             scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
             self.playback_engine.scrub_to_tick(scrub_tick)
         self.stop_all_notes()
@@ -2040,7 +2069,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_state.event_index = 0  # Default to the start if no match
 
     def update_playback_start_time(
-            self, target_time: float
+        self, target_time: float
     ) -> None:  # pylint: disable=unused-argument
         """
         Adjusts the playback start time based on the scrub position.
@@ -2059,13 +2088,17 @@ class MidiFilePlayer(SynthEditor):
         for ch in range(16):
             # CC 123 = All Notes Off
             self.midi_helper.midi_out.send_message(
-                mido.Message(MidoMessageType.CONTROL_CHANGE, control=123, value=0, channel=ch).bytes()
+                mido.Message(
+                    MidoMessageType.CONTROL_CHANGE, control=123, value=0, channel=ch
+                ).bytes()
             )
 
             # Extra safety in case the synth ignores CC123
             for note in range(128):
                 self.midi_helper.midi_out.send_message(
-                    mido.Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, channel=ch).bytes()
+                    mido.Message(
+                        MidoMessageType.NOTE_OFF, note=note, velocity=0, channel=ch
+                    ).bytes()
                 )
 
     def prepare_for_playback(self) -> None:
@@ -2075,7 +2108,9 @@ class MidiFilePlayer(SynthEditor):
         self.midi_state.event_buffer.clear()
         self.setup_playback_worker()
 
-        if self.midi_state.events and 0 <= self.midi_state.event_index < len(self.midi_state.events):
+        if self.midi_state.events and 0 <= self.midi_state.event_index < len(
+            self.midi_state.events
+        ):
             scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
             self.playback_engine.start(scrub_tick)
 
@@ -2235,8 +2270,8 @@ class MidiFilePlayer(SynthEditor):
         """
         try:
             if (
-                    hasattr(self, "midi_playback_worker")
-                    and self.midi_playback_worker is not None
+                hasattr(self, "midi_playback_worker")
+                and self.midi_playback_worker is not None
             ):
                 self.midi_state.timer.timeout.disconnect(
                     self.midi_playback_worker.do_work
@@ -2267,7 +2302,7 @@ class MidiFilePlayer(SynthEditor):
             )
 
     def ui_position_label_update_time(
-            self, time_seconds: Optional[float] = None
+        self, time_seconds: Optional[float] = None
     ) -> None:
         """
         ui_position_label_update_time
@@ -2281,7 +2316,7 @@ class MidiFilePlayer(SynthEditor):
             )
 
     def calculate_current_bar(
-            self, elapsed_time: Optional[float] = None
+        self, elapsed_time: Optional[float] = None
     ) -> Optional[float]:
         """
         Calculate the current bar number based on elapsed playback time.
@@ -2291,9 +2326,9 @@ class MidiFilePlayer(SynthEditor):
         """
         try:
             if (
-                    not self.midi_state.file
-                    or not hasattr(self, "ticks_per_beat")
-                    or self.ticks_per_beat is None
+                not self.midi_state.file
+                or not hasattr(self, "ticks_per_beat")
+                or self.ticks_per_beat is None
             ):
                 return None
 
@@ -2363,14 +2398,9 @@ class MidiFilePlayer(SynthEditor):
 
     def _resume_playback(self):
         """Resuming playback"""
-        if (
-                self.midi_state.playback_paused_time
-                and self.midi_state.playback_start_time
-        ):
+        if self.midi_state.playback_paused_time and self.midi_state.playback_start_time:
             pause_duration = time.time() - self.midi_state.playback_paused_time
-            self.midi_state.playback_start_time += (
-                pause_duration  # Adjust start time
-            )
+            self.midi_state.playback_start_time += pause_duration  # Adjust start time
         self.midi_state.timer.start()
         self.midi_state.playback_paused = False
         self.ui.pause_label.setText("Pause")
@@ -2415,8 +2445,8 @@ class MidiFilePlayer(SynthEditor):
                 return
             bpm_int = int(round(tempo_bpm))
             if (
-                    hasattr(pattern_editor, "tempo_spinbox")
-                    and pattern_editor.tempo_spinbox
+                hasattr(pattern_editor, "tempo_spinbox")
+                and pattern_editor.tempo_spinbox
             ):
                 pattern_editor.tempo_spinbox.blockSignals(True)
                 pattern_editor.tempo_spinbox.setValue(bpm_int)
@@ -2461,7 +2491,7 @@ class MidiFilePlayer(SynthEditor):
         return {
             "buttons": self._build_button_specs(),
             "message_box": self._build_message_box_specs(),
-            "check_box": self._build_checkbox_specs()
+            "check_box": self._build_checkbox_specs(),
         }
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:

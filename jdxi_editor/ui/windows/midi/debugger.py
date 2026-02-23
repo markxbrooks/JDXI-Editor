@@ -43,6 +43,7 @@ import re
 from typing import Optional, Protocol, Tuple, Type, TypeVar, runtime_checkable
 
 from decologr import Decologr as log
+from jdxi_editor.midi.message import MidiMessage
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (

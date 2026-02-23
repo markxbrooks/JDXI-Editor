@@ -25,9 +25,9 @@ class SequencerButton(QPushButton):
         self.row: int = row
         self.column: int = column
         self.note: Optional[int] = None  # legacy alias; prefer NOTE
-        self.NOTE: Optional[int] = None
-        self.NOTE_DURATION: Optional[float] = None
-        self.NOTE_VELOCITY: Optional[int] = None
+        self.note: Optional[int] = None
+        self.note_duration: Optional[float] = None
+        self.note_velocity: Optional[int] = None
         self.note_spec: NoteButtonSpec = NoteButtonSpec()
         self.setCheckable(True)
         self.setFixedSize(40, 40)

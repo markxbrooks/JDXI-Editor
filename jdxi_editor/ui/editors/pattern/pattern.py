@@ -38,14 +38,16 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QSplitter,
     QVBoxLayout,
-    QWidget, QComboBox,
+    QWidget,
+    QComboBox,
 )
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
+from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON, NOTE_OFF
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.message import MidiMessage
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
@@ -69,25 +71,31 @@ from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi import MidiTempo, Channel
 from picomidi.message.type import MidoMessageType
 from picoui.helpers import create_layout_with_widgets, group_with_layout
-from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, FileSelectionSpec, SpinBoxSpec
+from picoui.specs.widgets import (
+    ButtonSpec,
+    ComboBoxSpec,
+    FileSelectionSpec,
+    SpinBoxSpec,
+)
 from picoui.widget.helper import create_combo_box, get_file_path_from_spec
 
 
 @dataclass
 class NoteButtonAttrs:
     """Note Button Attributes"""
-    NOTE = "NOTE"
-    NOTE_DURATION = "NOTE_DURATION"
-    NOTE_VELOCITY = "NOTE_VELOCITY"
+
+    NOTE = "note"
+    NOTE_DURATION = "note_duration"
+    NOTE_VELOCITY = "note_velocity"
 
 
 def reset_button(button):
     button.row = button.row  # or keep as is if you really want to preserve
     # If you want to reset the local column as well, assign explicitly
     # button.column = button.column
-    button.NOTE = None
-    button.NOTE_DURATION = None
-    button.NOTE_VELOCITY = None
+    button.note = None
+    button.note_duration = None
+    button.note_velocity = None
     button.note_spec = NoteButtonSpec()
     update_button_state(button, False)
 
@@ -105,9 +113,7 @@ def _get_button_note_spec(button) -> NoteButtonSpec:
         return spec
     return NoteButtonSpec(
         note=getattr(button, NoteButtonAttrs.NOTE, None),
-        duration_ms=int(
-            getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120
-        ),
+        duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
         velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, 100) or 100,
     )
 
@@ -116,14 +122,14 @@ def _sync_button_note_spec(button) -> None:
     """Update button.note_spec from NOTE, NOTE_DURATION, NOTE_VELOCITY."""
     button.note_spec = NoteButtonSpec(
         note=getattr(button, NoteButtonAttrs.NOTE, None),
-        duration_ms=int(
-            getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120
-        ),
+        duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
         velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, 100) or 100,
     )
 
 
-def update_button_state(button: QPushButton, checked_state: bool = None, enabled_state: bool = None):
+def update_button_state(
+    button: QPushButton, checked_state: bool = None, enabled_state: bool = None
+):
     """update button state"""
     button.setEnabled(True)
     button.blockSignals(True)
@@ -137,6 +143,7 @@ def update_button_state(button: QPushButton, checked_state: bool = None, enabled
 @dataclass
 class ButtonAttrs:
     """Button Attrs"""
+
     DURATION = "duration"
     CHECKED = "checked"
     NOTE = "note"
@@ -157,6 +164,7 @@ from dataclasses import dataclass
 @dataclass
 class SequencerEvent:
     """Sequencer Event"""
+
     tick: int
     note: int
     velocity: int
@@ -184,11 +192,13 @@ class SequencerRowSpec:
     accent_color: str
 
 
-def create_spinbox_with_label(label: str,
-                              min_val: int = 1,
-                              max_val: int = 127,
-                              value: int = None,
-                              tooltip: str = ""):
+def create_spinbox_with_label(
+    label: str,
+    min_val: int = 1,
+    max_val: int = 127,
+    value: int = None,
+    tooltip: str = "",
+):
     """create spinbox with label"""
     label = QLabel(label)
     spinbox = QSpinBox()
@@ -201,11 +211,13 @@ def create_spinbox_with_label(label: str,
 
 def create_spinbox_with_label_from_spec(spec: SpinBoxSpec):
     """create spinbox with label from spec"""
-    label, spinbox = create_spinbox_with_label(label=spec.label,
-                                               min_val=spec.min_val,
-                                               max_val=spec.max_val,
-                                               value=spec.value,
-                                               tooltip=spec.tooltip)
+    label, spinbox = create_spinbox_with_label(
+        label=spec.label,
+        min_val=spec.min_val,
+        max_val=spec.max_val,
+        value=spec.value,
+        tooltip=spec.tooltip,
+    )
     return label, spinbox
 
 
@@ -213,11 +225,11 @@ class PatternSequenceEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper],
-            preset_helper: Optional[JDXiPresetHelper],
-            parent: Optional[QWidget] = None,
-            midi_file_editor: Optional[Any] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper],
+        preset_helper: Optional[JDXiPresetHelper],
+        parent: Optional[QWidget] = None,
+        midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
@@ -264,9 +276,15 @@ class PatternSequenceEditor(SynthEditor):
         self._pattern_paused = False
         self.playback_engine = PlaybackEngine()
         self.row_specs = [
-            SequencerRowSpec("Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT),
-            SequencerRowSpec("Digital Synth 2", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT),
-            SequencerRowSpec("Analog Synth", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT_ANALOG),
+            SequencerRowSpec(
+                "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
+            ),
+            SequencerRowSpec(
+                "Digital Synth 2", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
+            ),
+            SequencerRowSpec(
+                "Analog Synth", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT_ANALOG
+            ),
             SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
         ]
         self._setup_ui()
@@ -287,7 +305,12 @@ class PatternSequenceEditor(SynthEditor):
         # Create content widget with main layout
         content_widget = QWidget()
         self.layout = QVBoxLayout(content_widget)
-        self.row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
+        self.row_labels = [
+            "Digital Synth 1",
+            "Digital Synth 2",
+            "Analog Synth",
+            "Drums",
+        ]
         self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
 
@@ -333,10 +356,12 @@ class PatternSequenceEditor(SynthEditor):
         self.channel_map = self._build_channel_map()
 
         # Transport at bottom, centered (stretch on both sides)
-        transport_bottom_layout = create_layout_with_widgets([
-            self._init_transport_controls(),
-            file_group,
-        ])
+        transport_bottom_layout = create_layout_with_widgets(
+            [
+                self._init_transport_controls(),
+                file_group,
+            ]
+        )
         self.layout.addLayout(transport_bottom_layout)
 
         # Add content to scrollable area so the widget tree is retained
@@ -375,18 +400,17 @@ class PatternSequenceEditor(SynthEditor):
         return widget
 
     def _create_row_header(self, row_idx: int, label_text: str) -> QHBoxLayout:
-        layout = QHBoxLayout()
+        """create row header"""
 
         icon_label = QLabel()
-        icon_label.setPixmap(self._get_row_icon(label_text).pixmap(40, 40))
+        icon_label.setPixmap(self._get_row_icon(row_idx).pixmap(40, 40))
         icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         label = QLabel(label_text)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setStyleSheet(self._get_row_label_style(row_idx))
 
-        layout.addWidget(icon_label)
-        layout.addWidget(label)
+        layout = create_layout_with_widgets([icon_label, label])
 
         selector = self._create_selector_for_row(row_idx)
         if selector:
@@ -414,9 +438,7 @@ class PatternSequenceEditor(SynthEditor):
         return SequencerStyle.row_label(spec.accent_color)
 
     def _connect_midi_signals(self):
-        self.midi_helper.midi_message_incoming.connect(
-            self._update_combo_boxes
-        )
+        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
         self.midi_helper.midi_message_outgoing.connect(
             self._update_combo_boxes_from_outgoing
         )
@@ -424,10 +446,14 @@ class PatternSequenceEditor(SynthEditor):
     def _create_selector_for_row(self, row_idx: int):
         """Create and return the combo selector for this row; assign to self for channel_map / _update_combo_boxes."""
         if row_idx == 0:
-            self.digital1_selector = create_combo_box(spec=self.specs["combos"]["digital1"])
+            self.digital1_selector = create_combo_box(
+                spec=self.specs["combos"]["digital1"]
+            )
             return self.digital1_selector
         if row_idx == 1:
-            self.digital2_selector = create_combo_box(spec=self.specs["combos"]["digital2"])
+            self.digital2_selector = create_combo_box(
+                spec=self.specs["combos"]["digital2"]
+            )
             return self.digital2_selector
         if row_idx == 2:
             self.analog_selector = create_combo_box(spec=self.specs["combos"]["analog"])
@@ -437,10 +463,32 @@ class PatternSequenceEditor(SynthEditor):
         return None
 
     def _create_row_buttons(self, row_idx: int) -> QHBoxLayout:
-        """Create the step buttons layout for one sequencer row; stores layout in button_layouts."""
-        layout = self.ui_generate_button_row(row_idx, visible=True)
-        self.button_layouts.append(layout)
-        return layout
+        """Create the mute button + step buttons layout for one sequencer row."""
+        row_buttons_layout = QHBoxLayout()
+
+        # Mute button (round button + icon label) for this row
+        mute_btn_layout = QHBoxLayout()
+        mute_btn_layout.addStretch()
+        mute_btn = self._add_round_action_button(
+            JDXi.UI.Icon.MUTE,
+            self.tr("Mute"),
+            None,
+            mute_btn_layout,
+            checkable=True,
+            append_to=self.mute_buttons,
+        )
+        mute_btn.toggled.connect(
+            lambda checked, row=row_idx: self._toggle_mute(row, checked)
+        )
+        mute_btn_layout.addStretch()
+        row_buttons_layout.addLayout(mute_btn_layout)
+
+        # Step buttons for this row
+        step_buttons_layout = self.ui_generate_button_row(row_idx, visible=True)
+        self.button_layouts.append(step_buttons_layout)
+        row_buttons_layout.addLayout(step_buttons_layout)
+
+        return row_buttons_layout
 
     def _create_sequencer_row(self, row_idx: int, label_text: str) -> QVBoxLayout:
         row_layout = QVBoxLayout()
@@ -466,11 +514,11 @@ class PatternSequenceEditor(SynthEditor):
         duration_group = self._create_duration_group()
 
         for group in (
-                measure_group,
-                tempo_group,
-                beats_group,
-                velocity_group,
-                duration_group,
+            measure_group,
+            tempo_group,
+            beats_group,
+            velocity_group,
+            duration_group,
         ):
             control_panel.addWidget(group)
 
@@ -530,13 +578,9 @@ class PatternSequenceEditor(SynthEditor):
         velocity_group = QGroupBox("Velocity")
         velocity_layout = QHBoxLayout()
 
-        spec = SpinBoxSpec(label="Vel:",
-                           min_val=1,
-                           max_val=127,
-                           value=100,
-                           tooltip="Default velocity for new notes (1-127)")
-
-        self.velocity_label, self.velocity_spinbox = create_spinbox_with_label_from_spec(spec)
+        self.velocity_label, self.velocity_spinbox = (
+            create_spinbox_with_label_from_spec(self.specs["spinboxes"]["velocity"])
+        )
 
         velocity_layout.addWidget(self.velocity_label)
         velocity_layout.addWidget(self.velocity_spinbox)
@@ -565,10 +609,9 @@ class PatternSequenceEditor(SynthEditor):
         tempo_group = QGroupBox("Tempo")
         tempo_layout = QHBoxLayout()
 
-        self.tempo_label = QLabel("BPM:")
-        self.tempo_spinbox = QSpinBox()
-        self.tempo_spinbox.setRange(20, 300)
-        self.tempo_spinbox.setValue(120)
+        self.tempo_label, self.tempo_spinbox = create_spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["tempo"]
+        )
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
         tempo_layout.addWidget(self.tempo_label)
@@ -580,6 +623,39 @@ class PatternSequenceEditor(SynthEditor):
         )
         tempo_group.setLayout(tempo_layout)
         return tempo_group
+
+    def _create_spinbox_specs(self) -> dict[str, SpinBoxSpec]:
+        """create spin box specs"""
+        return {
+            "velocity": SpinBoxSpec(
+                label="Vel:",
+                min_val=1,
+                max_val=127,
+                value=100,
+                tooltip="Default velocity for new notes (1-127)",
+            ),
+            "tempo": SpinBoxSpec(
+                label="BPM:",
+                min_val=20,
+                max_val=300,
+                value=120,
+                tooltip=self.tr("Tempo in beats per minute (20–300)"),
+            ),
+            "start": SpinBoxSpec(
+                label=self.tr("Start"),
+                min_val=0,
+                max_val=15,
+                value=0,
+                tooltip=self.tr("Start step (0–15)"),
+            ),
+            "end": SpinBoxSpec(
+                label=self.tr("End"),
+                min_val=0,
+                max_val=15,
+                value=15,
+                tooltip=self.tr("End step (0–15)"),
+            ),
+        }
 
     def _create_learn_group(self) -> QGroupBox:
         """create learn group"""
@@ -635,22 +711,21 @@ class PatternSequenceEditor(SynthEditor):
         )
         self.paste_button.setEnabled(False)  # Disabled until something is copied
 
-        # Step range selection
+        # Step range selection (use SpinBoxSpec for both start and end)
         step_range_layout = QHBoxLayout()
-        step_range_layout.addWidget(QLabel("Steps:"))
-        self.start_step_spinbox = QSpinBox()
-        self.start_step_spinbox.setRange(0, 15)
-        self.start_step_spinbox.setValue(0)
-        self.start_step_spinbox.setToolTip("Start step (0-15)")
+        step_range_layout.addWidget(QLabel(self.tr("Steps:")))
 
-        step_range_layout.addWidget(QLabel("to"))
-        self.end_step_spinbox = QSpinBox()
-        self.end_step_spinbox.setRange(0, 15)
-        self.end_step_spinbox.setValue(15)
-        self.end_step_spinbox.setToolTip("End step (0-15)")
+        start_label, self.start_step_spinbox = create_spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["start"]
+        )
+        end_label, self.end_step_spinbox = create_spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["end"]
+        )
 
+        step_range_layout.addWidget(start_label)
         step_range_layout.addWidget(self.start_step_spinbox)
-        step_range_layout.addWidget(QLabel("-"))
+        step_range_layout.addWidget(QLabel(self.tr("to")))
+        step_range_layout.addWidget(end_label)
         step_range_layout.addWidget(self.end_step_spinbox)
 
         bar_layout.addLayout(copy_paste_layout)
@@ -697,7 +772,7 @@ class PatternSequenceEditor(SynthEditor):
             button.setVisible(visible)  # Initially hide all drum buttons
             button_row_layout.addWidget(button)
         return button_row_layout
-        
+
     def _log_and_return(self, ok: bool, msg: str) -> bool:
         """log and return"""
         if not ok:
@@ -747,11 +822,15 @@ class PatternSequenceEditor(SynthEditor):
 
                 # Extract channel from status byte
                 # Note On: 0x90-0x9F, Note Off: 0x80-0x8F
-                if (status_byte & MidiMessage.MIDI_STATUS_MASK) in (NOTE_ON, NOTE_OFF):  # Note On or Note Off
-                    channel = status_byte & 0x0F
+                if (status_byte & MidiMessage.MIDI_STATUS_MASK) in (
+                    NOTE_ON,
+                    NOTE_OFF,
+                ):  # Note On or Note Off
+                    channel = status_byte & MidiMessage.MIDI_STATUS_MASK
                     msg_type = (
                         MidoMessageType.NOTE_ON
-                        if (status_byte & MidiMessage.MIDI_STATUS_MASK) == NOTE_ON and velocity > 0
+                        if (status_byte & MidiMessage.MIDI_STATUS_MASK) == NOTE_ON
+                        and velocity > 0
                         else MidoMessageType.NOTE_OFF
                     )
 
@@ -838,7 +917,7 @@ class PatternSequenceEditor(SynthEditor):
             for row in range(4):
                 for step in range(16):
                     if step < len(previous_measure.buttons[row]) and step < len(
-                            measure.buttons[row]
+                        measure.buttons[row]
                     ):
                         previous_button = previous_measure.buttons[row][step]
                         new_button = measure.buttons[row][step]
@@ -847,17 +926,17 @@ class PatternSequenceEditor(SynthEditor):
                         new_button.row = row
                         new_button.column = step
                         update_button_state(new_button, previous_button.isChecked())
-                        new_button.NOTE = previous_button.NOTE
+                        new_button.note = previous_button.note
                         # Copy duration if available
                         if hasattr(previous_button, NoteButtonAttrs.NOTE_DURATION):
-                            new_button.NOTE_DURATION = previous_button.NOTE_DURATION
+                            new_button.note_duration = previous_button.note_duration
                         else:
-                            new_button.NOTE_DURATION = None
+                            new_button.note_duration = None
                         # Copy velocity if available
                         if hasattr(previous_button, NoteButtonAttrs.NOTE_VELOCITY):
-                            new_button.NOTE_VELOCITY = previous_button.NOTE_VELOCITY
+                            new_button.note_velocity = previous_button.note_velocity
                         else:
-                            new_button.NOTE_VELOCITY = None
+                            new_button.note_velocity = None
             self.measures.append(measure)
         else:
             measure = self.add_and_reset_new_measure()
@@ -893,7 +972,8 @@ class PatternSequenceEditor(SynthEditor):
             # Sync sequencer buttons with the selected bar's notes
             self._sync_sequencer_with_measure(measure_index)
             log.message(
-                message=f"Selected bar {measure_index + 1}", scope=self.__class__.__name__
+                message=f"Selected bar {measure_index + 1}",
+                scope=self.__class__.__name__,
             )
 
     def _copy_section(self):
@@ -922,7 +1002,9 @@ class PatternSequenceEditor(SynthEditor):
                     notes_data[row][step] = {
                         ButtonAttrs.CHECKED: button.isChecked(),
                         ButtonAttrs.NOTE: spec.note,
-                        ButtonAttrs.DURATION: spec.duration_ms if spec.is_active else None,
+                        ButtonAttrs.DURATION: (
+                            spec.duration_ms if spec.is_active else None
+                        ),
                         ButtonAttrs.VELOCITY: spec.velocity if spec.is_active else None,
                     }
 
@@ -971,9 +1053,9 @@ class PatternSequenceEditor(SynthEditor):
                     if dest_step < len(measure.buttons[row]):
                         button = measure.buttons[row][dest_step]
                         update_button_state(button, button_data[ButtonAttrs.CHECKED])
-                        button.NOTE = button_data[ButtonAttrs.NOTE]
-                        button.NOTE_DURATION = button_data[ButtonAttrs.DURATION]
-                        button.NOTE_VELOCITY = button_data[ButtonAttrs.VELOCITY]
+                        button.note = button_data[ButtonAttrs.NOTE]
+                        button.note_duration = button_data[ButtonAttrs.DURATION]
+                        button.note_velocity = button_data[ButtonAttrs.VELOCITY]
                         _sync_button_note_spec(button)
 
         # Sync sequencer digital
@@ -1004,27 +1086,27 @@ class PatternSequenceEditor(SynthEditor):
 
                     # Sync checked state and note
                     update_button_state(sequencer_button, measure_button.isChecked())
-                    sequencer_button.NOTE = measure_button.NOTE
+                    sequencer_button.note = measure_button.note
                     # Copy duration if available
                     if hasattr(measure_button, NoteButtonAttrs.NOTE_DURATION):
-                        sequencer_button.NOTE_DURATION = measure_button.NOTE_DURATION
+                        sequencer_button.note_duration = measure_button.note_duration
                     else:
-                        sequencer_button.NOTE_DURATION = None
+                        sequencer_button.note_duration = None
                     # Copy velocity if available
                     if hasattr(measure_button, NoteButtonAttrs.NOTE_VELOCITY):
-                        sequencer_button.NOTE_VELOCITY = measure_button.NOTE_VELOCITY
+                        sequencer_button.note_velocity = measure_button.note_velocity
                     else:
-                        sequencer_button.NOTE_VELOCITY = None
+                        sequencer_button.note_velocity = None
                     _sync_button_note_spec(sequencer_button)
 
                     # Update tooltip
-                    if sequencer_button.NOTE is not None:
+                    if sequencer_button.note is not None:
                         if row == 3:  # Drums
                             note_name = self._midi_to_note_name(
-                                sequencer_button.NOTE, drums=True
+                                sequencer_button.note, drums=True
                             )
                         else:
-                            note_name = self._midi_to_note_name(sequencer_button.NOTE)
+                            note_name = self._midi_to_note_name(sequencer_button.note)
                         sequencer_button.setToolTip(f"Note: {note_name}")
                     else:
                         sequencer_button.setToolTip("")
@@ -1107,17 +1189,23 @@ class PatternSequenceEditor(SynthEditor):
             if selector is not None:
                 note_name = selector.currentText()
                 midi_note = self._note_name_to_midi(note_name)
-                button.NOTE = midi_note
+                button.note = midi_note
             # Set default duration for manually created notes
-            if not hasattr(button, NoteButtonAttrs.NOTE_DURATION) or button.NOTE_DURATION is None:
-                button.NOTE_DURATION = self._get_duration_ms()
+            if (
+                not hasattr(button, NoteButtonAttrs.NOTE_DURATION)
+                or button.note_duration is None
+            ):
+                button.note_duration = self._get_duration_ms()
             # Set default velocity for manually created notes
-            if not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY) or button.NOTE_VELOCITY is None:
-                button.NOTE_VELOCITY = self.velocity_spinbox.value()
+            if (
+                not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY)
+                or button.note_velocity is None
+            ):
+                button.note_velocity = self.velocity_spinbox.value()
             _sync_button_note_spec(button)
-            note_name = self._midi_to_note_name(button.NOTE)
+            note_name = self._midi_to_note_name(button.note)
             if button.row == 3:
-                drums_note_name = self._midi_to_note_name(button.NOTE, drums=True)
+                drums_note_name = self._midi_to_note_name(button.note, drums=True)
                 button.setToolTip(f"Note: {drums_note_name}")
             else:
                 button.setToolTip(f"Note: {note_name}")
@@ -1134,18 +1222,18 @@ class PatternSequenceEditor(SynthEditor):
         step_in_bar = button.column  # button.column is 0-15 for sequencer buttons
 
         if button.row < len(measure.buttons) and step_in_bar < len(
-                measure.buttons[button.row]
+            measure.buttons[button.row]
         ):
             measure_button = measure.buttons[button.row][step_in_bar]
             update_button_state(measure_button, checked)
             if checked:
-                measure_button.NOTE = button.NOTE
+                measure_button.note = button.note
                 # Copy duration if available
-                if hasattr(button, "NOTE_DURATION"):
-                    measure_button.NOTE_DURATION = button.NOTE_DURATION
+                if hasattr(button, NoteButtonAttrs.NOTE_DURATION):
+                    measure_button.note_duration = button.note_duration
                 # Copy velocity if available
-                if hasattr(button, "NOTE_VELOCITY"):
-                    measure_button.NOTE_VELOCITY = button.NOTE_VELOCITY
+                if hasattr(button, NoteButtonAttrs.NOTE_VELOCITY):
+                    measure_button.note_velocity = button.note_velocity
                 _sync_button_note_spec(measure_button)
             else:
                 reset_button(measure_button)
@@ -1154,7 +1242,8 @@ class PatternSequenceEditor(SynthEditor):
         """Update button style"""
         is_current = (self.current_step % self.total_steps) == button.column
         is_selected_bar = (
-                len(self.measures) > 0 and (button.column // 16) == self.current_measure_index
+            len(self.measures) > 0
+            and (button.column // 16) == self.current_measure_index
         )
         button.setStyleSheet(
             JDXi.UI.Style.generate_sequencer_button_style(
@@ -1325,7 +1414,9 @@ class PatternSequenceEditor(SynthEditor):
         microseconds_per_beat = int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
 
         # Create a set_tempo MetaMessage
-        tempo_message = MetaMessage(MidoMessageType.SET_TEMPO, tempo=microseconds_per_beat)
+        tempo_message = MetaMessage(
+            MidoMessageType.SET_TEMPO, tempo=microseconds_per_beat
+        )
 
         # Add the tempo message to the first track
         if self.midi_file.tracks:
@@ -1403,7 +1494,7 @@ class PatternSequenceEditor(SynthEditor):
                 self.load_from_midi_file_editor()
 
     def load_from_midi_file_editor(
-            self, midi_file_editor: Optional[Any] = None
+        self, midi_file_editor: Optional[Any] = None
     ) -> None:
         """
         Load pattern from the MidiFileEditor's current MIDI file.
@@ -1449,7 +1540,7 @@ class PatternSequenceEditor(SynthEditor):
             if hasattr(midi_file, "filename"):
                 filename = midi_file.filename
             elif hasattr(editor.midi_state, "file") and hasattr(
-                    editor.midi_state.file, "filename"
+                editor.midi_state.file, "filename"
             ):
                 filename = editor.midi_state.file.filename
 
@@ -1538,7 +1629,9 @@ class PatternSequenceEditor(SynthEditor):
                             measure = PatternMeasure()
                             reset_measure(measure)
                             self.measures.append(measure)
-                            item = QListWidgetItem(f"{self.measure_name} {len(self.measures)}")
+                            item = QListWidgetItem(
+                                f"{self.measure_name} {len(self.measures)}"
+                            )
                             item.setData(
                                 Qt.ItemDataRole.UserRole, len(self.measures) - 1
                             )
@@ -1549,15 +1642,15 @@ class PatternSequenceEditor(SynthEditor):
                             if step_in_bar < len(measure.buttons[row]):
                                 button = measure.buttons[row][step_in_bar]
                                 update_button_state(button, True)
-                                button.NOTE = msg.note
+                                button.note = msg.note
                                 # Store velocity from MIDI file editor
-                                button.NOTE_VELOCITY = (
+                                button.note_velocity = (
                                     msg.velocity
                                     if hasattr(msg, "velocity")
                                     else self.velocity_spinbox.value()
                                 )
                                 # Set default duration for MIDI file editor loaded notes
-                                button.NOTE_DURATION = self._get_duration_ms()
+                                button.note_duration = self._get_duration_ms()
                                 _sync_button_note_spec(button)
                                 notes_loaded += 1
 
@@ -1748,7 +1841,8 @@ class PatternSequenceEditor(SynthEditor):
 
                     # Collect note_on and note_off events
                     if hasattr(msg, "channel") and (
-                            msg.type == MidoMessageType.NOTE_ON or msg.type == MidoMessageType.NOTE_OFF
+                        msg.type == MidoMessageType.NOTE_ON
+                        or msg.type == MidoMessageType.NOTE_OFF
                     ):
                         note_events.append(
                             (absolute_time, msg, msg.channel, current_tempo)
@@ -1766,7 +1860,7 @@ class PatternSequenceEditor(SynthEditor):
                     # Store note_on event
                     active_notes[note_key] = (abs_time, tempo)
                 elif msg.type == MidoMessageType.NOTE_OFF or (
-                        msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
                     # Find matching note_on
                     if note_key in active_notes:
@@ -1799,7 +1893,9 @@ class PatternSequenceEditor(SynthEditor):
                         measure = PatternMeasure()
                         reset_measure(measure)
                         self.measures.append(measure)
-                        item = QListWidgetItem(f"[{self.measure_name} {len(self.measures)}")
+                        item = QListWidgetItem(
+                            f"[{self.measure_name} {len(self.measures)}"
+                        )
                         item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
                         self.measures_list.addItem(item)
 
@@ -1808,22 +1904,22 @@ class PatternSequenceEditor(SynthEditor):
                         if step_in_bar < len(measure.buttons[row]):
                             button = measure.buttons[row][step_in_bar]
                             update_button_state(button, True)
-                            button.NOTE = msg.note  # mido uses lowercase 'note'
+                            button.note = msg.note  # mido uses lowercase 'note'
 
                             # Store note velocity from MIDI file
-                            button.NOTE_VELOCITY = msg.velocity
+                            button.note_velocity = msg.velocity
 
                             # Store note duration if available
                             duration_key = (channel, msg.note, abs_time)
                             if duration_key in note_durations:
-                                button.NOTE_DURATION = note_durations[duration_key]
+                                button.note_duration = note_durations[duration_key]
                             else:
                                 # Default to step duration if no note_off found
                                 # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
                                 step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
-                                        tempo / 1000.0
+                                    tempo / 1000.0
                                 )
-                                button.NOTE_DURATION = step_duration_ms
+                                button.note_duration = step_duration_ms
 
                             _sync_button_note_spec(button)
                             notes_loaded += 1
@@ -1869,11 +1965,11 @@ class PatternSequenceEditor(SynthEditor):
         spinbox.blockSignals(False)
 
     def _add_button_with_label_from_spec(
-            self,
-            name: str,
-            spec: ButtonSpec,
-            layout: QHBoxLayout,
-            slot: Optional[Callable[[], None]] = None,
+        self,
+        name: str,
+        spec: ButtonSpec,
+        layout: QHBoxLayout,
+        slot: Optional[Callable[[], None]] = None,
     ) -> QPushButton:
         """Create a round button + label row from a ButtonSpec and add to layout."""
         label_row, btn = create_jdxi_button_with_label_from_spec(spec, checkable=False)
@@ -1885,15 +1981,15 @@ class PatternSequenceEditor(SynthEditor):
         return btn
 
     def _add_round_action_button(
-            self,
-            icon_enum: Any,
-            text: str,
-            slot: Any,
-            layout: QHBoxLayout,
-            *,
-            name: Optional[str] = None,
-            checkable: bool = False,
-            append_to: Optional[list] = None,
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+        append_to: Optional[list] = None,
     ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
@@ -1913,10 +2009,10 @@ class PatternSequenceEditor(SynthEditor):
         return btn
 
     def _create_transport_control(
-            self,
-            spec: TransportSpec,
-            layout: QHBoxLayout,
-            button_group: Optional[QButtonGroup],
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: Optional[QButtonGroup],
     ) -> None:
         """Create a transport button + label row (same pattern as Midi File Player)."""
         btn = create_jdxi_button_from_spec(spec, button_group)
@@ -2022,8 +2118,8 @@ class PatternSequenceEditor(SynthEditor):
                     channel = row if row < 3 else 9
                     velocity = max(0, min(127, spec.velocity))
                     duration_ticks = (
-                            self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
-                            or ticks_per_step
+                        self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
+                        or ticks_per_step
                     )
 
                     events.append(
@@ -2065,24 +2161,28 @@ class PatternSequenceEditor(SynthEditor):
 
         for e in seq_events:
             midi_events.append(
-                (e.tick,
-                 Message(
-                     MidoMessageType.NOTE_ON,
-                     note=e.note,
-                     velocity=e.velocity,
-                     channel=e.channel,
-                     time=0,
-                 ))
+                (
+                    e.tick,
+                    Message(
+                        MidoMessageType.NOTE_ON,
+                        note=e.note,
+                        velocity=e.velocity,
+                        channel=e.channel,
+                        time=0,
+                    ),
+                )
             )
             midi_events.append(
-                (e.tick + e.duration_ticks,
-                 Message(
-                     MidoMessageType.NOTE_OFF,
-                     note=e.note,
-                     velocity=0,
-                     channel=e.channel,
-                     time=0,
-                 ))
+                (
+                    e.tick + e.duration_ticks,
+                    Message(
+                        MidoMessageType.NOTE_OFF,
+                        note=e.note,
+                        velocity=0,
+                        channel=e.channel,
+                        time=0,
+                    ),
+                )
             )
 
         midi_events.sort(key=lambda x: x[0])
@@ -2113,14 +2213,18 @@ class PatternSequenceEditor(SynthEditor):
         mid = self._build_midi_file_for_playback()
         # Engine needs at least one note event to be useful
         if len(mid.tracks[0]) <= 1:
-            log.message(message="Pattern has no notes to play", scope=self.__class__.__name__)
+            log.message(
+                message="Pattern has no notes to play", scope=self.__class__.__name__
+            )
             return
 
         self.playback_engine.load_file(mid)
         for ch in range(16):
             self.playback_engine.mute_channel(ch, ch in self.muted_channels)
         if self.midi_helper:
-            self.playback_engine.on_event = lambda msg: self.midi_helper.send_raw_message(msg.bytes())
+            self.playback_engine.on_event = (
+                lambda msg: self.midi_helper.send_raw_message(msg.bytes())
+            )
         self.playback_engine.start(0)
         self._playback_last_bar_index = -1
         self._playback_last_step_in_bar = -1
@@ -2134,9 +2238,13 @@ class PatternSequenceEditor(SynthEditor):
         self.timer.start(playback_interval_ms)
 
         if hasattr(self, "play_button") and self.play_button:
-            update_button_state(self.play_button, checked_state=True, enabled_state=False)
+            update_button_state(
+                self.play_button, checked_state=True, enabled_state=False
+            )
         if hasattr(self, "stop_button") and self.stop_button:
-            update_button_state(self.stop_button, checked_state=False, enabled_state=True)
+            update_button_state(
+                self.stop_button, checked_state=False, enabled_state=True
+            )
 
         log.message(message="Pattern playback started", scope=self.__class__.__name__)
 
@@ -2194,7 +2302,9 @@ class PatternSequenceEditor(SynthEditor):
 
         if self.playback_engine.state == TransportState.STOPPED:
             self._sync_ui_to_stopped()
-            log.message(message="Pattern playback finished", scope=self.__class__.__name__)
+            log.message(
+                message="Pattern playback finished", scope=self.__class__.__name__
+            )
 
     def _sync_ui_to_stopped(self) -> None:
         """Sync UI to engine STOPPED state: stop timer, update play/stop buttons."""
@@ -2205,15 +2315,21 @@ class PatternSequenceEditor(SynthEditor):
         if hasattr(self, "play_button") and self.play_button:
             update_button_state(self.play_button, checked_state=False)
         if hasattr(self, "stop_button") and self.stop_button:
-            update_button_state(self.stop_button, checked_state=True, enabled_state=False)
+            update_button_state(
+                self.stop_button, checked_state=True, enabled_state=False
+            )
 
     def _update_transport_ui(self):
         """update ui regarding playing state"""
         is_playing = self._state == TransportState.PLAYING
         is_stopped = self._state == TransportState.STOPPED
         if hasattr(self, "play_button"):
-            update_button_state(self.play_button, checked_state=is_playing, enabled_state=not is_playing)
-        update_button_state(self.stop_button, checked_state=is_stopped, enabled_state=not is_stopped)
+            update_button_state(
+                self.play_button, checked_state=is_playing, enabled_state=not is_playing
+            )
+        update_button_state(
+            self.stop_button, checked_state=is_stopped, enabled_state=not is_stopped
+        )
 
     def stop_pattern(self):
         """Stop playing the pattern"""
@@ -2316,8 +2432,8 @@ class PatternSequenceEditor(SynthEditor):
 
         log.message(
             message=f"Playing step {step_in_bar} in bar {bar_index + 1} "
-                    f"(global step {global_step}"
-                    f" {self.measure_beats} beats per bar)",
+            f"(global step {global_step}"
+            f" {self.measure_beats} beats per bar)",
             scope=self.__class__.__name__,
         )
 
@@ -2363,7 +2479,7 @@ class PatternSequenceEditor(SynthEditor):
 
                                 # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
                                 note_duration_ms = play_spec.duration_ms or (
-                                        (60000.0 / self.bpm) / 4.0
+                                    (60000.0 / self.bpm) / 4.0
                                 )
 
                                 QTimer.singleShot(
@@ -2394,7 +2510,7 @@ class PatternSequenceEditor(SynthEditor):
                     button = self.buttons[row][col]
                     is_checked = button.isChecked()
                     is_current = (
-                            step_in_bar == col
+                        step_in_bar == col
                     )  # Current step within the displayed bar
                     button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(
@@ -2419,20 +2535,20 @@ class PatternSequenceEditor(SynthEditor):
                         if step_in_bar < len(measure.buttons[row]):
                             measure_button = measure.buttons[row][step_in_bar]
                             update_button_state(measure_button, True)
-                            measure_button.NOTE = note
+                            measure_button.note = note
                             # Store velocity from MIDI input
-                            measure_button.NOTE_VELOCITY = message.velocity
+                            measure_button.note_velocity = message.velocity
                             # Set default duration for MIDI-learned notes
-                            measure_button.NOTE_DURATION = self._get_duration_ms()
+                            measure_button.note_duration = self._get_duration_ms()
                             _sync_button_note_spec(measure_button)
 
                             # Also update sequencer digital
                             if step_in_bar < len(self.buttons[row]):
                                 seq_btn = self.buttons[row][step_in_bar]
                                 update_button_state(seq_btn, True)
-                                seq_btn.NOTE = note
-                                seq_btn.NOTE_VELOCITY = message.velocity
-                                seq_btn.NOTE_DURATION = self._get_duration_ms()
+                                seq_btn.note = note
+                                seq_btn.note_velocity = message.velocity
+                                seq_btn.note_duration = self._get_duration_ms()
                                 _sync_button_note_spec(seq_btn)
 
                     # Record the note in the learned pattern (for compatibility)
@@ -2441,7 +2557,12 @@ class PatternSequenceEditor(SynthEditor):
 
                     # Add the note_on message to the MIDI track
                     self.midi_track.append(
-                        Message(MidoMessageType.NOTE_ON, note=note, velocity=message.velocity, time=0)
+                        Message(
+                            MidoMessageType.NOTE_ON,
+                            note=note,
+                            velocity=message.velocity,
+                            time=0,
+                        )
                     )
                     break  # Stop checking once the note is assigned
 
@@ -2478,22 +2599,22 @@ class PatternSequenceEditor(SynthEditor):
                 if note is not None and 0 <= time < len(self.buttons[row]):
                     button = self.buttons[row][time]
                     update_button_state(button, True)
-                    button.NOTE = note
+                    button.note = note
                     # Set default duration for learned pattern notes
-                    button.NOTE_DURATION = self._get_duration_ms()
+                    button.note_duration = self._get_duration_ms()
                     # Set default velocity for learned pattern notes
-                    button.NOTE_VELOCITY = self.velocity_spinbox.value()
+                    button.note_velocity = self.velocity_spinbox.value()
                     _sync_button_note_spec(button)
                     button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(True)
                     )
                     if row == 3:
                         drums_note_name = self._midi_to_note_name(
-                            button.NOTE, drums=True
+                            button.note, drums=True
                         )
                         button.setToolTip(f"Note: {drums_note_name}")
                     else:
-                        note_name = self._midi_to_note_name(button.NOTE)
+                        note_name = self._midi_to_note_name(button.note)
                         button.setToolTip(f"Note: {note_name}")
 
     def _get_note_range_for_row(self, row):
@@ -2665,6 +2786,7 @@ class PatternSequenceEditor(SynthEditor):
                     slot=None,
                 ),
             },
+            "spinboxes": self._create_spinbox_specs(),
             "transport": [
                 TransportSpec(
                     name="play",

@@ -273,6 +273,7 @@ class MidiInHandler(MidiIOController):
         :param preset_data: Dictionary for preset data modifications.
         """
         from jdxi_editor.globals import silence_midi_note_logging
+
         if not silence_midi_note_logging():
             log.message(f"MIDI message note change: {message.type} as {message}")
 

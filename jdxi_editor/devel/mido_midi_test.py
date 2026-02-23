@@ -79,14 +79,14 @@ def test_with_mido():
                             )
                     elif message.type == MidoMessageType.NOTE_ON:
                         channel = message.channel + 1
-                        note = message.NOTE
+                        note = message.note
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote On\t{channel}\tNote {note}\t{velocity}"
                         )
                     elif message.type == MidoMessageType.NOTE_OFF:
                         channel = message.channel + 1
-                        note = message.NOTE
+                        note = message.note
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote Off\t{channel}\tNote {note}\t{velocity}"

@@ -59,11 +59,11 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
             if use_sw:
                 # Translate to FluidSynth
                 if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                    fs.noteon(0, msg.NOTE, msg.velocity)
+                    fs.noteon(0, msg.note, msg.velocity)
                 elif (msg.type == MidoMessageType.NOTE_OFF) or (
                     msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
-                    fs.noteoff(0, msg.NOTE)
+                    fs.noteoff(0, msg.note)
                 elif msg.type == MidoMessageType.CONTROL_CHANGE:
                     fs.CC(0, msg.control, msg.STATUS)
                 elif msg.type == MidoMessageType.PROGRAM_CHANGE:
@@ -102,11 +102,11 @@ def main():
         for msg in mid.play():
             if use_sw:
                 if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                    fs.noteon(0, msg.NOTE, msg.velocity)
+                    fs.noteon(0, msg.note, msg.velocity)
                 elif (msg.type == MidoMessageType.NOTE_OFF) or (
                     msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
-                    fs.noteoff(0, msg.NOTE)
+                    fs.noteoff(0, msg.note)
                 elif msg.type == MidoMessageType.CONTROL_CHANGE:
                     fs.cc(0, msg.control, msg.STATUS)
                 elif msg.type == MidoMessageType.PROGRAM_CHANGE:

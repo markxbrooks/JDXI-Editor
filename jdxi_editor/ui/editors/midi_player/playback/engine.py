@@ -18,10 +18,11 @@ class ScheduledEvent:
 
 class TransportState(Enum):
     """Transport State"""
+
     STOPPED = auto()
     PLAYING = auto()
     PAUSED = auto()
-    
+
 
 class PlaybackEngine:
     """
@@ -51,7 +52,9 @@ class PlaybackEngine:
 
         self.tempo_us: int = 500000  # default 120 BPM
         self._tempo_map: dict[int, int] = {}
-        self._tick_to_time: List[tuple[int, float]] = []  # (tick, cumulative seconds from 0)
+        self._tick_to_time: List[tuple[int, float]] = (
+            []
+        )  # (tick, cumulative seconds from 0)
 
         self._events: List[ScheduledEvent] = []
         self._event_index: int = 0
@@ -230,9 +233,7 @@ class PlaybackEngine:
         while self._event_index < len(self._events):
             event = self._events[self._event_index]
 
-            event_time = self._tick_to_seconds(
-                event.absolute_tick - self._start_tick
-            )
+            event_time = self._tick_to_seconds(event.absolute_tick - self._start_tick)
 
             if event_time > elapsed:
                 break

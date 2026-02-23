@@ -618,7 +618,9 @@ class JDXiSysExParser:
         status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
         channel = status_byte & BitMask.LOW_4_BITS
         program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
-        return mido.Message(MidoMessageType.PROGRAM_CHANGE, channel=channel, program=program)
+        return mido.Message(
+            MidoMessageType.PROGRAM_CHANGE, channel=channel, program=program
+        )
 
     def _parse_control_change_to_mido(self, message_content: List[int]) -> mido.Message:
         """
@@ -632,7 +634,10 @@ class JDXiSysExParser:
         control = message_content[JDXIControlChangeOffset.CONTROL]
         value = message_content[JDXIControlChangeOffset.VALUE]
         return mido.Message(
-            MidoMessageType.CONTROL_CHANGE, channel=channel, control=control, value=value
+            MidoMessageType.CONTROL_CHANGE,
+            channel=channel,
+            control=control,
+            value=value,
         )
 
     def _mido_message_data_to_byte_list(self, message: mido.Message) -> bytes:

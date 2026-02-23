@@ -47,12 +47,12 @@ def listen_to_controller(port_name, duration=10):
                     elif msg.type == MidoMessageType.NOTE_ON:
                         print(
                             f"[{elapsed:.3f}s] Note On #{message_count:03d} | Channel: {msg.channel+1} | "
-                            f"Note: {msg.NOTE} | Velocity: {msg.velocity}"
+                            f"Note: {msg.note} | Velocity: {msg.velocity}"
                         )
                     elif msg.type == MidoMessageType.NOTE_OFF:
                         print(
                             f"[{elapsed:.3f}s] Note Off #{message_count:03d} | Channel: {msg.channel+1} | "
-                            f"Note: {msg.NOTE} | Velocity: {msg.velocity}"
+                            f"Note: {msg.note} | Velocity: {msg.velocity}"
                         )
                     elif msg.type == MidoMessageType.PROGRAM_CHANGE:
                         print(
