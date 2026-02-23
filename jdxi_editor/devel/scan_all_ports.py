@@ -59,13 +59,13 @@ class AllPortScanner:
         channel = (status & 0x0F) + 1
         message_type = status & MidiMessage.MIDI_STATUS_MASK
 
-        if message_type == 0x90:  # Note On
+        if message_type == NOTE_ON:  # Note On
             note = data[1]
             velocity = data[2] if len(data) > 2 else 0
             note_name = self.get_note_name(note)
             return f"Note On  Ch{channel:2d} {note_name} (vel={velocity})"
 
-        elif message_type == 0x80:  # Note Off
+        elif message_type == NOTE_OFF:  # Note Off
             note = data[1]
             velocity = data[2] if len(data) > 2 else 0
             note_name = self.get_note_name(note)
@@ -90,7 +90,7 @@ class AllPortScanner:
             bend_value = ((msb << 7) | lsb) - 8192
             return f"Pitch Bend Ch{channel:2d} Value={bend_value:+5d}"
 
-        elif status == MidiMessage.MIDI_STATUS_MASKMIDI_STATUS_MASK:  # SysEx
+        elif status == MidiMessage.MIDI_STATUS_MASK:  # SysEx
             return f"SysEx ({len(data)} bytes): {' '.join(f'{b:02X}' for b in data)}"
 
         else:
