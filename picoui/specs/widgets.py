@@ -41,7 +41,7 @@ class ComboBoxSpec:
     """Button Spec"""
     items: list = field(default_factory=list)
     tooltip: str = ""
-    slot: Callable = None
+    slot: Callable | None = None
 
 
 @dataclass

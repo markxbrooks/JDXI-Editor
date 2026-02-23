@@ -63,10 +63,35 @@ class PlaybackEngine:
         self.suppress_program_changes = False
         self.suppress_control_changes = False
 
-        self._is_playing = False
+        self._state = TransportState.STOPPED
+        self._is_playing = False  # True only when _state == PLAYING
 
         # callback hook (UI/worker attaches to this)
         self.on_event: Optional[Callable[[mido.Message], None]] = None
+
+    @property
+    def state(self) -> TransportState:
+        return self._state
+
+    def _set_state(self, new_state: TransportState) -> None:
+        if self._state == new_state:
+            return
+        self._state = new_state
+        if new_state == TransportState.PLAYING:
+            self._enter_playing()
+        elif new_state == TransportState.STOPPED:
+            self._enter_stopped()
+        elif new_state == TransportState.PAUSED:
+            self._enter_paused()
+
+    def _enter_playing(self) -> None:
+        self._is_playing = True
+
+    def _enter_stopped(self) -> None:
+        self._is_playing = False
+
+    def _enter_paused(self) -> None:
+        self._is_playing = False
 
     def load_file(self, midi_file: mido.MidiFile) -> None:
         self.midi_file = midi_file
@@ -82,7 +107,7 @@ class PlaybackEngine:
         self._event_index = 0
         self._start_tick = 0
         self._start_time = 0.0
-        self._is_playing = False
+        self._set_state(TransportState.STOPPED)
 
     def _build_tempo_map(self) -> None:
         """Build a single global tempo map from all tracks (Type 0/1: merge set_tempo by tick)."""
@@ -130,13 +155,17 @@ class PlaybackEngine:
         self._start_tick = start_tick
         self._event_index = self._find_start_index(start_tick)
         self._start_time = time.time()
-        self._is_playing = True
+        self._set_state(TransportState.PLAYING)
 
     def _find_start_index(self, start_tick: int) -> int:
         return bisect.bisect_left(self._event_ticks, start_tick)
 
     def stop(self) -> None:
-        self._is_playing = False
+        self._set_state(TransportState.STOPPED)
+
+    def pause(self) -> None:
+        """Pause playback; position is preserved."""
+        self._set_state(TransportState.PAUSED)
 
     def _build_time_map(self) -> None:
         """Build cumulative time (seconds) at each tempo change for segment-wise tick→time."""
@@ -205,7 +234,7 @@ class PlaybackEngine:
             self._event_index += 1
 
         if self._event_index >= len(self._events):
-            self.stop()
+            self._set_state(TransportState.STOPPED)
 
     def _should_send(self, event: ScheduledEvent) -> bool:
         msg = event.message

@@ -4,6 +4,8 @@ Pattern Measure
 
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
+from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
+
 
 class PatternMeasure(QWidget):
     """Widget representing a single measure of the pattern"""
@@ -31,6 +33,7 @@ class PatternMeasure(QWidget):
                 button.row = row
                 button.column = i
                 button.note = None
+                button.note_spec = NoteButtonSpec()
                 self.buttons[row].append(button)
                 row_layout.addWidget(button)
             button_layout.addLayout(row_layout)
