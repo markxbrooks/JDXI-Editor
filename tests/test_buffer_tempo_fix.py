@@ -40,7 +40,7 @@ def test_buffer_tempo_fix():
                 # Store tempo change message
                 buffered_msgs.append((absolute_time, None, msg.tempo))
                 current_tempo = msg.tempo  # Update current tempo
-                print(f"Tempo change at tick {absolute_time}: {msg.tempo} ({60000000/msg.tempo:.1f} BPM)")
+                print(f"Tempo change at tick {absolute_time}: {msg.tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/msg.tempo:.1f} BPM)")
             elif not msg.is_meta:
                 # Store regular MIDI message with the current tempo
                 raw_bytes = msg.bytes()
@@ -73,10 +73,10 @@ def test_buffer_tempo_fix():
     print(f"\nFirst 10 buffered messages:")
     for i, (tick, raw_bytes, tempo) in enumerate(buffered_msgs[:10]):
         if raw_bytes is None:
-            bpm = 60000000 / tempo
+            bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  {i+1}: Tick {tick}, Tempo change to {tempo} ({bpm:.1f} BPM)")
         else:
-            bpm = 60000000 / tempo
+            bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  {i+1}: Tick {tick}, MIDI {raw_bytes}, Tempo {tempo} ({bpm:.1f} BPM)")
     
     # Check that initial messages have the correct tempo
@@ -85,8 +85,8 @@ def test_buffer_tempo_fix():
         first_tempo = initial_messages[0][2]
         expected_tempo = 967745  # 62 BPM
         
-        print(f"\nFirst MIDI message tempo: {first_tempo} ({60000000/first_tempo:.1f} BPM)")
-        print(f"Expected tempo: {expected_tempo} ({60000000/expected_tempo:.1f} BPM)")
+        print(f"\nFirst MIDI message tempo: {first_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/first_tempo:.1f} BPM)")
+        print(f"Expected tempo: {expected_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/expected_tempo:.1f} BPM)")
         
         if first_tempo == expected_tempo:
             print("✅ Initial messages have correct tempo!")

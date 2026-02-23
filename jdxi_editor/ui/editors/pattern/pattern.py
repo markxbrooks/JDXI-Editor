@@ -64,12 +64,12 @@ from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
+from picomidi import MidiTempo, Channel
 from picomidi.message.type import MidoMessageType
 from picoui.helpers import create_layout_with_widgets, group_with_layout
-from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, FileSelectionSpec
+from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, FileSelectionSpec, SpinBoxSpec
 from picoui.widget.helper import create_combo_box, get_file_path_from_spec
 
 
@@ -151,6 +151,64 @@ class ClipboardData:
     NOTES_DATA: str = "notes_data"
 
 
+from dataclasses import dataclass
+
+
+@dataclass
+class SequencerEvent:
+    """Sequencer Event"""
+    tick: int
+    note: int
+    velocity: int
+    channel: int
+    duration_ticks: int
+
+
+class SequencerStyle:
+    ROW_FONT_SIZE = 20
+    ROW_FONT_WEIGHT = "bold"
+
+    @staticmethod
+    def row_label(color: str) -> str:
+        return (
+            f"font-size: {SequencerStyle.ROW_FONT_SIZE}px;"
+            f"font-weight: {SequencerStyle.ROW_FONT_WEIGHT};"
+            f"color: {color};"
+        )
+
+
+@dataclass
+class SequencerRowSpec:
+    label: str
+    icon: str
+    accent_color: str
+
+
+def create_spinbox_with_label(label: str,
+                              min_val: int = 1,
+                              max_val: int = 127,
+                              value: int = None,
+                              tooltip: str = ""):
+    """create spinbox with label"""
+    label = QLabel(label)
+    spinbox = QSpinBox()
+    spinbox.setRange(min_val, max_val)
+    if value is not None:
+        spinbox.setValue(value)
+    spinbox.setToolTip(tooltip)
+    return label, spinbox
+
+
+def create_spinbox_with_label_from_spec(spec: SpinBoxSpec):
+    """create spinbox with label from spec"""
+    label, spinbox = create_spinbox_with_label(label=spec.label,
+                                               min_val=spec.min_val,
+                                               max_val=spec.max_val,
+                                               value=spec.value,
+                                               tooltip=spec.tooltip)
+    return label, spinbox
+
+
 class PatternSequenceEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
@@ -162,6 +220,9 @@ class PatternSequenceEditor(SynthEditor):
             midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
+        # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
+        self.measure_name = self.tr("Measure")
+        self.measure_name_plural = self.tr("Measures")
         self._state = None
         self.stop_button = None
         self.play_button = None
@@ -190,7 +251,7 @@ class PatternSequenceEditor(SynthEditor):
         self.current_step = 0
         self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
         self.beats_per_pattern = 4
-        self.beats_per_bar = 16  # Number of beats per bar (16 or 12)
+        self.measure_beats = 16  # Number of beats per bar (16 or 12)
         self.bpm = 120
         self.last_tap_time = None
         self.tap_times = []
@@ -202,6 +263,12 @@ class PatternSequenceEditor(SynthEditor):
         self.clipboard = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
         self._pattern_paused = False
         self.playback_engine = PlaybackEngine()
+        self.row_specs = [
+            SequencerRowSpec("Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT),
+            SequencerRowSpec("Digital Synth 2", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT),
+            SequencerRowSpec("Analog Synth", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT_ANALOG),
+            SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
+        ]
         self._setup_ui()
         self._init_midi_file()
         self._initialize_default_bar()
@@ -214,15 +281,13 @@ class PatternSequenceEditor(SynthEditor):
                 self.load_from_midi_file_editor()
 
     def _setup_ui(self):
-        # Use EditorBaseWidget for consistent scrollable layout structure
-        self.base_widget = EditorBaseWidget(parent=self, analog=False)
-        self.base_widget.setup_scrollable_content()
-        container_layout = self.base_widget.get_container_layout()
+        """Use EditorBaseWidget for consistent scrollable layout structure"""
+        self._init_base_widget()
 
         # Create content widget with main layout
         content_widget = QWidget()
         self.layout = QVBoxLayout(content_widget)
-        row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
+        self.row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
         self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
 
@@ -240,33 +305,303 @@ class PatternSequenceEditor(SynthEditor):
         # Add transport and file controls at the top
         control_panel = QHBoxLayout()
 
-        # File operations area (round buttons + icon labels, same style as Transport)
-        file_group = QGroupBox("Pattern")
-        file_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "load",
-            self.specs["buttons"]["load"],
-            file_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "save",
-            self.specs["buttons"]["save"],
-            file_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "clear_learn",
-            self.specs["buttons"]["clear_learn"],
-            file_layout,
+        file_group = self._create_file_group()
+
+        measure_group = self._create_measure_group()
+        control_panel.addWidget(measure_group)
+
+        learn_group = self._create_learn_group()
+        # not adding this for now
+
+        tempo_group = self._create_tempo_group()
+        control_panel.addWidget(tempo_group)
+
+        beats_group = self._create_beats_group()
+        control_panel.addWidget(beats_group)
+
+        velocity_group = self._create_velocity_group()
+        control_panel.addWidget(velocity_group)
+
+        duration_group = self._create_duration_group()
+        control_panel.addWidget(duration_group)
+
+        self.layout.addLayout(control_panel)
+
+        # Create splitter for bars list and sequencer (builds measures group + sequencer widget)
+        self._build_splitter_section()
+
+        self.channel_map = self._build_channel_map()
+
+        # Transport at bottom, centered (stretch on both sides)
+        transport_bottom_layout = create_layout_with_widgets([
+            self._init_transport_controls(),
+            file_group,
+        ])
+        self.layout.addLayout(transport_bottom_layout)
+
+        # Add content to scrollable area so the widget tree is retained
+        self._container_layout.addWidget(content_widget)
+
+    def _build_splitter_section(self):
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        splitter.addWidget(self._create_measures_group())
+        splitter.addWidget(self._create_sequencer_widget())
+
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding,
         )
 
-        self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
-        self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
+        self.layout.addWidget(splitter)
 
-        file_group.setLayout(file_layout)
-        # control_panel.addWidget(file_group)
+    def _create_sequencer_widget(self) -> QWidget:
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
 
-        # Bar management area (separate row for Add Measure button and checkbox)
-        bar_group = QGroupBox("Measures")
+        widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding,
+        )
+
+        self._connect_midi_signals()
+
+        for row_idx, label in enumerate(self.row_labels):
+            layout.addLayout(self._create_sequencer_row(row_idx, label))
+
+        layout.addStretch()
+        return widget
+
+    def _create_row_header(self, row_idx: int, label_text: str) -> QHBoxLayout:
+        layout = QHBoxLayout()
+
+        icon_label = QLabel()
+        icon_label.setPixmap(self._get_row_icon(label_text).pixmap(40, 40))
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        label = QLabel(label_text)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setStyleSheet(self._get_row_label_style(row_idx))
+
+        layout.addWidget(icon_label)
+        layout.addWidget(label)
+
+        selector = self._create_selector_for_row(row_idx)
+        if selector:
+            layout.addWidget(selector)
+
+        return layout
+
+    def _get_row_icon(self, row_idx: int):
+        icon_map = {
+            0: JDXi.UI.Icon.PIANO,
+            1: JDXi.UI.Icon.PIANO,
+            2: JDXi.UI.Icon.PIANO,
+            3: JDXi.UI.Icon.DRUM,
+        }
+
+        icon_key = icon_map.get(row_idx, JDXi.UI.Icon.PIANO)
+
+        return JDXi.UI.Icon.get_icon(
+            icon_key,
+            color=JDXi.UI.Style.FOREGROUND,
+        )
+
+    def _get_row_label_style(self, row_idx: int) -> str:
+        spec = self.row_specs[row_idx]
+        return SequencerStyle.row_label(spec.accent_color)
+
+    def _connect_midi_signals(self):
+        self.midi_helper.midi_message_incoming.connect(
+            self._update_combo_boxes
+        )
+        self.midi_helper.midi_message_outgoing.connect(
+            self._update_combo_boxes_from_outgoing
+        )
+
+    def _create_selector_for_row(self, row_idx: int):
+        """Create and return the combo selector for this row; assign to self for channel_map / _update_combo_boxes."""
+        if row_idx == 0:
+            self.digital1_selector = create_combo_box(spec=self.specs["combos"]["digital1"])
+            return self.digital1_selector
+        if row_idx == 1:
+            self.digital2_selector = create_combo_box(spec=self.specs["combos"]["digital2"])
+            return self.digital2_selector
+        if row_idx == 2:
+            self.analog_selector = create_combo_box(spec=self.specs["combos"]["analog"])
+            return self.analog_selector
+        if row_idx == 3:
+            return self.drum_selector
+        return None
+
+    def _create_row_buttons(self, row_idx: int) -> QHBoxLayout:
+        """Create the step buttons layout for one sequencer row; stores layout in button_layouts."""
+        layout = self.ui_generate_button_row(row_idx, visible=True)
+        self.button_layouts.append(layout)
+        return layout
+
+    def _create_sequencer_row(self, row_idx: int, label_text: str) -> QVBoxLayout:
+        row_layout = QVBoxLayout()
+
+        header = self._create_row_header(row_idx, label_text)
+        buttons = self._create_row_buttons(row_idx)
+
+        row_layout.addLayout(header)
+        row_layout.addLayout(buttons)
+
+        return row_layout
+
+    def _build_top_controls(self):
+        self.content_widget = QWidget()
+        self.layout = QVBoxLayout(self.content_widget)
+
+        control_panel = QHBoxLayout()
+
+        measure_group = self._create_measure_group()
+        tempo_group = self._create_tempo_group()
+        beats_group = self._create_beats_group()
+        velocity_group = self._create_velocity_group()
+        duration_group = self._create_duration_group()
+
+        for group in (
+                measure_group,
+                tempo_group,
+                beats_group,
+                velocity_group,
+                duration_group,
+        ):
+            control_panel.addWidget(group)
+
+        self.layout.addLayout(control_panel)
+
+    def _init_model_structures(self):
+        self.row_labels = [
+            "Digital Synth 1",
+            "Digital Synth 2",
+            "Analog Synth",
+            "Drums",
+        ]
+        self.buttons = [[] for _ in range(4)]
+        self.mute_buttons = []
+        self.specs = self._build_specs()
+
+    def _init_base_widget(self):
+        """init base widget"""
+        self.base_widget = EditorBaseWidget(parent=self, analog=False)
+        self.base_widget.setup_scrollable_content()
+        self._container_layout = self.base_widget.get_container_layout()
+
+        if not hasattr(self, "main_layout") or self.main_layout is None:
+            self.main_layout = QVBoxLayout(self)
+            self.setLayout(self.main_layout)
+
+        self.main_layout.addWidget(self.base_widget)
+
+    def _create_measures_group(self) -> QGroupBox:
+        """Bars list widget"""
+        bars_group = QGroupBox(f"{self.measure_name}")
+        bars_layout = QVBoxLayout()
+        self.measures_list = QListWidget()
+        self.measures_list.setMaximumWidth(150)
+        self.measures_list.itemClicked.connect(self._on_measure_selected)
+        bars_layout.addWidget(self.measures_list)
+        bars_group.setLayout(bars_layout)
+        return bars_group
+
+    def _create_duration_group(self) -> QGroupBox:
+        """Duration control area"""
+        duration_group = QGroupBox("Duration")
+        duration_layout = QHBoxLayout()
+
+        self.duration_label = QLabel("Dur:")
+        self.duration_combo = create_combo_box(spec=self.specs["combos"]["duration"])
+        self.duration_combo.setCurrentIndex(0)  # Default to 16th note
+        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
+
+        duration_layout.addWidget(self.duration_label)
+        duration_layout.addWidget(self.duration_combo)
+        duration_group.setLayout(duration_layout)
+        return duration_group
+
+    def _create_velocity_group(self) -> QGroupBox:
+        """Velocity control area"""
+        velocity_group = QGroupBox("Velocity")
+        velocity_layout = QHBoxLayout()
+
+        spec = SpinBoxSpec(label="Vel:",
+                           min_val=1,
+                           max_val=127,
+                           value=100,
+                           tooltip="Default velocity for new notes (1-127)")
+
+        self.velocity_label, self.velocity_spinbox = create_spinbox_with_label_from_spec(spec)
+
+        velocity_layout.addWidget(self.velocity_label)
+        velocity_layout.addWidget(self.velocity_spinbox)
+        velocity_group.setLayout(velocity_layout)
+        return velocity_group
+
+    def _create_beats_group(self) -> QGroupBox:
+        """Beats per bar control area"""
+        beats_group = QGroupBox("Beats per Bar")
+        beats_layout = QHBoxLayout()
+
+        self.beats_per_bar_combo = create_combo_box(
+            spec=self.specs["combos"]["beats_per_bar"]
+        )
+        self.beats_per_bar_combo.setCurrentIndex(0)  # Default to 16 beats
+        self.beats_per_bar_combo.currentIndexChanged.connect(
+            self._on_beats_per_bar_changed
+        )
+
+        beats_layout.addWidget(self.beats_per_bar_combo)
+        beats_group.setLayout(beats_layout)
+        return beats_group
+
+    def _create_tempo_group(self) -> QGroupBox:
+        """Tempo control area"""
+        tempo_group = QGroupBox("Tempo")
+        tempo_layout = QHBoxLayout()
+
+        self.tempo_label = QLabel("BPM:")
+        self.tempo_spinbox = QSpinBox()
+        self.tempo_spinbox.setRange(20, 300)
+        self.tempo_spinbox.setValue(120)
+        self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
+
+        tempo_layout.addWidget(self.tempo_label)
+        tempo_layout.addWidget(self.tempo_spinbox)
+        self._add_button_with_label_from_spec(
+            "tap_tempo",
+            self.specs["buttons"]["tap_tempo"],
+            tempo_layout,
+        )
+        tempo_group.setLayout(tempo_layout)
+        return tempo_group
+
+    def _create_learn_group(self) -> QGroupBox:
+        """create learn group"""
+        learn_group = QGroupBox("Learn Pattern")
+        learn_layout = QHBoxLayout()
+
+        self._add_button_with_label_from_spec(
+            "learn",
+            self.specs["buttons"]["learn"],
+            learn_layout,
+        )
+        self._add_button_with_label_from_spec(
+            "stop_learn",
+            self.specs["buttons"]["stop_learn"],
+            learn_layout,
+        )
+        learn_group.setLayout(learn_layout)
+        return learn_group
+
+    def _create_measure_group(self) -> QGroupBox:
+        """Bar management area (separate row for Add Measure button and checkbox)"""
+        bar_group = QGroupBox(self.measure_name_plural)
         bar_layout = QVBoxLayout()
 
         # First row: Add Measure button and Copy checkbox
@@ -276,7 +611,9 @@ class PatternSequenceEditor(SynthEditor):
             self.specs["buttons"]["add_measure"],
             bar_controls_layout,
         )
-        self.copy_previous_measure_checkbox = QCheckBox("Copy previous bar")
+        self.copy_previous_measure_checkbox = QCheckBox(
+            f"Copy previous {self.measure_name.lower()}"
+        )
         self.copy_previous_measure_checkbox.setChecked(False)
 
         bar_controls_layout.addWidget(self.copy_previous_measure_checkbox)
@@ -319,223 +656,38 @@ class PatternSequenceEditor(SynthEditor):
         bar_layout.addLayout(copy_paste_layout)
         bar_layout.addLayout(step_range_layout)
         bar_group.setLayout(bar_layout)
-        control_panel.addWidget(bar_group)
+        return bar_group
 
-        learn_group = QGroupBox("Learn Pattern")
-        learn_layout = QHBoxLayout()
-
+    def _create_file_group(self) -> QGroupBox:
+        """File operations area (round buttons + icon labels, same style as Transport)"""
+        file_group = QGroupBox("Pattern")
+        file_layout = QHBoxLayout()
         self._add_button_with_label_from_spec(
-            "learn",
-            self.specs["buttons"]["learn"],
-            learn_layout,
+            "load",
+            self.specs["buttons"]["load"],
+            file_layout,
         )
         self._add_button_with_label_from_spec(
-            "stop_learn",
-            self.specs["buttons"]["stop_learn"],
-            learn_layout,
+            "save",
+            self.specs["buttons"]["save"],
+            file_layout,
         )
-        learn_group.setLayout(learn_layout)
-        # control_panel.addWidget(learn_group)
-
-        # Tempo control area
-        tempo_group = QGroupBox("Tempo")
-        tempo_layout = QHBoxLayout()
-
-        self.tempo_label = QLabel("BPM:")
-        self.tempo_spinbox = QSpinBox()
-        self.tempo_spinbox.setRange(20, 300)
-        self.tempo_spinbox.setValue(120)
-        self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
-
-        tempo_layout.addWidget(self.tempo_label)
-        tempo_layout.addWidget(self.tempo_spinbox)
         self._add_button_with_label_from_spec(
-            "tap_tempo",
-            self.specs["buttons"]["tap_tempo"],
-            tempo_layout,
-        )
-        tempo_group.setLayout(tempo_layout)
-        control_panel.addWidget(tempo_group)
-
-        # Beats per bar control area
-        beats_group = QGroupBox("Beats per Bar")
-        beats_layout = QHBoxLayout()
-
-        self.beats_per_bar_combo = create_combo_box(
-            spec=self.specs["combos"]["beats_per_bar"]
-        )
-        self.beats_per_bar_combo.setCurrentIndex(0)  # Default to 16 beats
-        self.beats_per_bar_combo.currentIndexChanged.connect(
-            self._on_beats_per_bar_changed
+            "clear_learn",
+            self.specs["buttons"]["clear_learn"],
+            file_layout,
         )
 
-        beats_layout.addWidget(self.beats_per_bar_combo)
-        beats_group.setLayout(beats_layout)
-        control_panel.addWidget(beats_group)
+        self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
+        self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
 
-        # Velocity control area
-        velocity_group = QGroupBox("Velocity")
-        velocity_layout = QHBoxLayout()
-
-        self.velocity_label = QLabel("Vel:")
-        self.velocity_spinbox = QSpinBox()
-        self.velocity_spinbox.setRange(1, 127)
-        self.velocity_spinbox.setValue(100)
-        self.velocity_spinbox.setToolTip("Default velocity for new notes (1-127)")
-
-        velocity_layout.addWidget(self.velocity_label)
-        velocity_layout.addWidget(self.velocity_spinbox)
-        velocity_group.setLayout(velocity_layout)
-        control_panel.addWidget(velocity_group)
-
-        # Duration control area
-        duration_group = QGroupBox("Duration")
-        duration_layout = QHBoxLayout()
-
-        self.duration_label = QLabel("Dur:")
-        self.duration_combo = create_combo_box(spec=self.specs["combos"]["duration"])
-        self.duration_combo.setCurrentIndex(0)  # Default to 16th note
-        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
-
-        duration_layout.addWidget(self.duration_label)
-        duration_layout.addWidget(self.duration_combo)
-        duration_group.setLayout(duration_layout)
-        control_panel.addWidget(duration_group)
-
-        self.layout.addLayout(control_panel)
-
-        # Create splitter for bars list and sequencer (play_button/stop_button set in _init_transport_controls)
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-
-        # Bars list widget
-        bars_group = QGroupBox("Measures")
-        bars_layout = QVBoxLayout()
-        self.measures_list = QListWidget()
-        self.measures_list.setMaximumWidth(150)
-        self.measures_list.itemClicked.connect(self._on_measure_selected)
-        bars_layout.addWidget(self.measures_list)
-        bars_group.setLayout(bars_layout)
-        splitter.addWidget(bars_group)
-
-        # Sequencer area
-        sequencer_widget = QWidget()
-        sequencer_layout = QVBoxLayout()
-        sequencer_widget.setLayout(sequencer_layout)
-        # Allow sequencer widget to expand vertically in full screen
-        sequencer_widget.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-
-        # Connect to incoming MIDI messages (from hardware keyboard)
-        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
-
-        # Connect to outgoing MIDI messages (from virtual instrument)
-        self.midi_helper.midi_message_outgoing.connect(
-            self._update_combo_boxes_from_outgoing
-        )
-
-        for row_idx, label_text in enumerate(row_labels):
-            row_layout = QVBoxLayout()
-            header_layout = QHBoxLayout()
-
-            if label_text == "Drums":
-                icon = JDXi.UI.Icon.get_icon(
-                    JDXi.UI.Icon.DRUM, color=JDXi.UI.Style.FOREGROUND
-                )
-            else:
-                icon = JDXi.UI.Icon.get_icon(
-                    JDXi.UI.Icon.PIANO, color=JDXi.UI.Style.FOREGROUND
-                )
-            # Create and add label
-            icon_label = QLabel()
-            icon_label.setPixmap(icon.pixmap(40, 40))
-
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            header_layout.addWidget(icon_label)
-            label = QLabel(label_text)
-            if label_text == "Analog Synth":
-                color = JDXi.UI.Style.ACCENT_ANALOG
-            else:
-                color = JDXi.UI.Style.ACCENT
-            icon_label.setStyleSheet(f"color: {color}")
-            label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
-            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            header_layout.addWidget(label)
-            # Add appropriate selector combo box for each row (channel_map is built after this loop)
-            if row_idx == 0:  # Digital Synth 1
-                self.digital1_selector = create_combo_box(
-                    spec=self.specs["combos"]["digital1"]
-                )
-                header_layout.addWidget(self.digital1_selector)
-            elif row_idx == 1:  # Digital Synth 2
-                self.digital2_selector = create_combo_box(
-                    spec=self.specs["combos"]["digital2"]
-                )
-                header_layout.addWidget(self.digital2_selector)
-            elif row_idx == 2:  # Analog Synth
-                self.analog_selector = create_combo_box(
-                    spec=self.specs["combos"]["analog"]
-                )
-                header_layout.addWidget(self.analog_selector)
-            elif row_idx == 3:  # Drums
-                header_layout.addWidget(self.drum_selector)
-
-            row_layout.addLayout(header_layout)
-            button_row_layout = QHBoxLayout()
-            mute_btn_layout = QHBoxLayout()
-            mute_btn_layout.addStretch()
-            # Add mute button (round style + icon + label)
-            mute_btn = self._add_round_action_button(
-                JDXi.UI.Icon.MUTE,
-                "Mute",
-                None,
-                mute_btn_layout,
-                checkable=True,
-                append_to=self.mute_buttons,
-            )
-            mute_btn.toggled.connect(
-                lambda checked, row=row_idx: self._toggle_mute(row, checked)
-            )
-            button_row_layout.addLayout(mute_btn_layout)
-            mute_btn_layout.addStretch()
-            step_buttons_layout = self.ui_generate_button_row(row_idx, True)
-            button_row_layout.addLayout(step_buttons_layout)
-            self.button_layouts.append(step_buttons_layout)  # Store layout reference
-            row_layout.addLayout(button_row_layout)
-            sequencer_layout.addLayout(row_layout)
-
-        self.channel_map = self._build_channel_map()
-
-        # Add stretch to push content to top, but allow expansion
-        sequencer_layout.addStretch()
-        # Set size policy on splitter to allow expansion
-        splitter.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
-        splitter.addWidget(sequencer_widget)
-        splitter.setStretchFactor(0, 0)  # Bars list doesn't stretch
-        splitter.setStretchFactor(1, 1)  # Sequencer stretches
-
-        self.layout.addWidget(splitter)
-
-        # Transport at bottom, centered (stretch on both sides)
-        transport_bottom_layout = create_layout_with_widgets([self._init_transport_controls(),
-                                                              file_group])
-        self.layout.addLayout(transport_bottom_layout)
-
-        # Add content widget to base widget
-        container_layout.addWidget(content_widget)
-
-        # Add base widget to editor's layout
-        if not hasattr(self, "main_layout") or self.main_layout is None:
-            self.main_layout = QVBoxLayout(self)
-            self.setLayout(self.main_layout)
-        self.main_layout.addWidget(self.base_widget)
+        file_group.setLayout(file_layout)
+        return file_group
 
     def ui_generate_button_row(self, row_index: int, visible: bool = False):
         """Generate sequencer button row using SequencerButton."""
         button_row_layout = QHBoxLayout()
-        for i in range(16):
+        for i in range(self.measure_beats):
             button = SequencerButton(row=row_index, column=i)
             button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
             button.clicked.connect(
@@ -711,7 +863,7 @@ class PatternSequenceEditor(SynthEditor):
             measure = self.add_and_reset_new_measure()
 
         # Add to bars list
-        item = QListWidgetItem(f"measure {measure_number}")
+        item = QListWidgetItem(f"{self.measure_name} {measure_number}")
         item.setData(
             Qt.ItemDataRole.UserRole, len(self.measures) - 1
         )  # Store bar index
@@ -1022,13 +1174,13 @@ class PatternSequenceEditor(SynthEditor):
     def _on_beats_per_bar_changed(self, index: int):
         """Handle beats per bar changes from the combobox"""
         if index == 0:
-            self.beats_per_bar = 16
+            self.measure_beats = 16
         else:
-            self.beats_per_bar = 12
+            self.measure_beats = 12
 
         # Update button states based on beats per bar
         self._update_button_states_for_beats_per_bar()
-        log.message(f"Beats per bar changed to {self.beats_per_bar}")
+        log.message(f"Beats per bar changed to {self.measure_beats}")
 
     def _update_button_states_for_beats_per_bar(self):
         """Enable/disable sequencer buttons based on beats per bar setting"""
@@ -1037,7 +1189,7 @@ class PatternSequenceEditor(SynthEditor):
             for step in range(16):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
-                    if self.beats_per_bar == 12:
+                    if self.measure_beats == 12:
                         # Disable last 4 buttons (steps 12-15)
                         button.setEnabled(step < 12)
                         if step >= 12:
@@ -1170,7 +1322,7 @@ class PatternSequenceEditor(SynthEditor):
         """Set the pattern tempo in BPM using mido."""
         self.bpm = bpm
         # Calculate microseconds per beat
-        microseconds_per_beat = int(60000000 / bpm)
+        microseconds_per_beat = int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
 
         # Create a set_tempo MetaMessage
         tempo_message = MetaMessage(MidoMessageType.SET_TEMPO, tempo=microseconds_per_beat)
@@ -1386,7 +1538,7 @@ class PatternSequenceEditor(SynthEditor):
                             measure = PatternMeasure()
                             reset_measure(measure)
                             self.measures.append(measure)
-                            item = QListWidgetItem(f"Bar {len(self.measures)}")
+                            item = QListWidgetItem(f"{self.measure_name} {len(self.measures)}")
                             item.setData(
                                 Qt.ItemDataRole.UserRole, len(self.measures) - 1
                             )
@@ -1419,9 +1571,7 @@ class PatternSequenceEditor(SynthEditor):
                 if tempo_bpm is not None:
                     break
             if tempo_bpm is not None:
-                self.tempo_spinbox.blockSignals(True)
-                self.tempo_spinbox.setValue(tempo_bpm)
-                self.tempo_spinbox.blockSignals(False)
+                self.set_spinbox_value(self.tempo_spinbox, tempo_bpm)
                 self.set_tempo(tempo_bpm)
 
             # Select first bar and sync
@@ -1564,7 +1714,7 @@ class PatternSequenceEditor(SynthEditor):
                 self.measures.append(measure)
 
                 # Add to bars list
-                item = QListWidgetItem(f"Bar {bar_num + 1}")
+                item = QListWidgetItem(f"{self.measure_name} {bar_num + 1}")
                 item.setData(Qt.ItemDataRole.UserRole, bar_num)  # Store bar index
                 self.measures_list.addItem(item)
 
@@ -1649,7 +1799,7 @@ class PatternSequenceEditor(SynthEditor):
                         measure = PatternMeasure()
                         reset_measure(measure)
                         self.measures.append(measure)
-                        item = QListWidgetItem(f"Bar {len(self.measures)}")
+                        item = QListWidgetItem(f"[{self.measure_name} {len(self.measures)}")
                         item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
                         self.measures_list.addItem(item)
 
@@ -1693,9 +1843,7 @@ class PatternSequenceEditor(SynthEditor):
                 if tempo_bpm is not None:
                     break
             if tempo_bpm is not None:
-                self.tempo_spinbox.blockSignals(True)
-                self.tempo_spinbox.setValue(tempo_bpm)
-                self.tempo_spinbox.blockSignals(False)
+                self.set_spinbox_value(self.tempo_spinbox, tempo_bpm)
                 self.set_tempo(tempo_bpm)
 
             # Select first bar and sync sequencer digital
@@ -1713,6 +1861,12 @@ class PatternSequenceEditor(SynthEditor):
                 message=f"Error loading pattern: {ex}", scope=self.__class__.__name__
             )
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
+
+    def set_spinbox_value(self, spinbox: QSpinBox, value: int):
+        """set spinbox value safely"""
+        spinbox.blockSignals(True)
+        spinbox.setValue(value)
+        spinbox.blockSignals(False)
 
     def _add_button_with_label_from_spec(
             self,
@@ -1829,62 +1983,124 @@ class PatternSequenceEditor(SynthEditor):
         self._sync_sequencer_with_measure(idx)
         self.play_pattern()
 
-    def _build_midi_file_for_playback(self) -> MidiFile:
-        """Build a MidiFile from the current pattern for PlaybackEngine."""
-        ticks_per_beat = 480
-        ticks_per_step = ticks_per_beat // 4  # 16th note
-        tempo_us = int(60000000 / self.bpm)
-        events = []  # (tick, msg)
+    def _ms_to_ticks(self, duration_ms: int, ticks_per_beat: int) -> int:
+        """
+        Convert milliseconds to MIDI ticks.
+        1 beat = 60000 / bpm ms = ticks_per_beat ticks
+        """
+        if duration_ms <= 0:
+            return 0
+
+        ticks = duration_ms * self.bpm * ticks_per_beat / 60000
+        return max(1, int(ticks))
+
+    def _collect_sequencer_events(self, ticks_per_beat: int) -> list[SequencerEvent]:
+        """collect sequencer events"""
+        ticks_per_step = ticks_per_beat // 4  # 16th
+        events: list[SequencerEvent] = []
 
         for bar_index, measure in enumerate(self.measures):
-            for step in range(min(self.beats_per_bar, 16)):
-                if step >= len(measure.buttons[0]):
-                    continue
-                tick = (bar_index * self.beats_per_bar + step) * ticks_per_step
+            for step in range(min(self.measure_beats, 16)):
+
+                tick = (bar_index * self.measure_beats + step) * ticks_per_step
+
                 for row in range(4):
                     if step >= len(measure.buttons[row]):
                         continue
-                    channel = row if row < 3 else 9
-                    if channel in self.muted_channels:
+
+                    if row in self.muted_channels:
                         continue
+
                     btn = measure.buttons[row][step]
-                    btn_spec = _get_button_note_spec(btn)
-                    if not btn.isChecked() or not btn_spec.is_active:
+                    if not btn.isChecked():
                         continue
-                    velocity = max(0, min(127, btn_spec.velocity))
-                    note = btn_spec.note
-                    duration_ms = btn_spec.duration_ms
-                    if duration_ms and duration_ms > 0:
-                        # ms -> ticks: 1 beat = 60000/bpm ms = 480 ticks => 1 ms = 480*bpm/60000
-                        duration_ticks = int(duration_ms * self.bpm * 480 / 60000)
-                    else:
-                        duration_ticks = ticks_per_step
-                    duration_ticks = max(1, duration_ticks)
-                    events.append(
-                        (tick, Message(MidoMessageType.NOTE_ON, note=note, velocity=velocity, channel=channel, time=0))
-                    )
-                    events.append(
-                        (tick + duration_ticks,
-                         Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, channel=channel, time=0))
+                    spec = _get_button_note_spec(btn)
+
+                    if not spec.is_active:
+                        continue
+
+                    channel = row if row < 3 else 9
+                    velocity = max(0, min(127, spec.velocity))
+                    duration_ticks = (
+                            self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
+                            or ticks_per_step
                     )
 
-        if not events:
-            mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
-            track = MidiTrack()
-            track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=tempo_us, time=0))
-            mid.tracks.append(track)
-            return mid
+                    events.append(
+                        SequencerEvent(
+                            tick=tick,
+                            note=spec.note,
+                            velocity=velocity,
+                            channel=channel,
+                            duration_ticks=duration_ticks,
+                        )
+                    )
 
-        events.sort(key=lambda x: x[0])
+        return events
+
+    def _build_midi_file_for_playback(self) -> MidiFile:
+        """Build a MidiFile from the current pattern for PlaybackEngine."""
+        ticks_per_beat = 480
+        tempo_us = int(MidiTempo.MICROSECONDS_PER_MINUTE / self.bpm)
+
+        seq_events = self._collect_sequencer_events(ticks_per_beat)
+
         mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
         track = MidiTrack()
         mid.tracks.append(track)
-        track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=tempo_us, time=0))
+
+        track.append(
+            MetaMessage(
+                MidoMessageType.SET_TEMPO,
+                tempo=tempo_us,
+                time=0,
+            )
+        )
+
+        if not seq_events:
+            return mid
+
+        # Expand note_on / note_off
+        midi_events = []
+
+        for e in seq_events:
+            midi_events.append(
+                (e.tick,
+                 Message(
+                     MidoMessageType.NOTE_ON,
+                     note=e.note,
+                     velocity=e.velocity,
+                     channel=e.channel,
+                     time=0,
+                 ))
+            )
+            midi_events.append(
+                (e.tick + e.duration_ticks,
+                 Message(
+                     MidoMessageType.NOTE_OFF,
+                     note=e.note,
+                     velocity=0,
+                     channel=e.channel,
+                     time=0,
+                 ))
+            )
+
+        midi_events.sort(key=lambda x: x[0])
+
         prev_tick = 0
-        for tick, msg in events:
+        for tick, msg in midi_events:
             delta = tick - prev_tick
-            track.append(Message(msg.type, note=msg.note, velocity=msg.velocity, channel=msg.channel, time=delta))
+            track.append(
+                Message(
+                    msg.type,
+                    note=msg.note,
+                    velocity=msg.velocity,
+                    channel=msg.channel,
+                    time=delta,
+                )
+            )
             prev_tick = tick
+
         return mid
 
     def play_pattern(self):
@@ -1937,11 +2153,11 @@ class PatternSequenceEditor(SynthEditor):
         else:
             tick = 0
         ticks_per_step = 480 // 4
-        total_steps = len(self.measures) * self.beats_per_bar if self.measures else 0
+        total_steps = len(self.measures) * self.measure_beats if self.measures else 0
         global_step = (tick // ticks_per_step) % total_steps if total_steps > 0 else 0
         self.current_step = global_step
-        bar_index = global_step // self.beats_per_bar
-        step_in_bar = global_step % self.beats_per_bar
+        bar_index = global_step // self.measure_beats
+        step_in_bar = global_step % self.measure_beats
         last_bar = getattr(self, "_playback_last_bar_index", -1)
         last_step = getattr(self, "_playback_last_step_in_bar", -1)
 
@@ -2090,7 +2306,7 @@ class PatternSequenceEditor(SynthEditor):
         """Plays the current step and advances to the next one."""
         # Calculate which bar and step within that bar
         # Use beats_per_bar to determine steps per bar
-        steps_per_bar = self.beats_per_bar
+        steps_per_bar = self.measure_beats
         total_pattern_steps = len(self.measures) * steps_per_bar
         global_step = (
             self.current_step % total_pattern_steps if total_pattern_steps > 0 else 0
@@ -2101,7 +2317,7 @@ class PatternSequenceEditor(SynthEditor):
         log.message(
             message=f"Playing step {step_in_bar} in bar {bar_index + 1} "
                     f"(global step {global_step}"
-                    f" {self.beats_per_bar} beats per bar)",
+                    f" {self.measure_beats} beats per bar)",
             scope=self.__class__.__name__,
         )
 
@@ -2163,7 +2379,7 @@ class PatternSequenceEditor(SynthEditor):
                             )
 
         # Advance to next step (across all bars)
-        steps_per_bar = self.beats_per_bar
+        steps_per_bar = self.measure_beats
         total_pattern_steps = len(self.measures) * steps_per_bar
         self.current_step = (
             (self.current_step + 1) % total_pattern_steps
@@ -2195,7 +2411,7 @@ class PatternSequenceEditor(SynthEditor):
             for row in range(4):
                 if note in self._get_note_range_for_row(row):
                     # Calculate step within current bar (0 to beats_per_bar-1)
-                    step_in_bar = self.current_step % self.beats_per_bar
+                    step_in_bar = self.current_step % self.measure_beats
 
                     # Store note in the current bar's measure
                     if self.current_measure_index < len(self.measures):
@@ -2244,7 +2460,7 @@ class PatternSequenceEditor(SynthEditor):
                     Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, time=0)
                 )
                 # Advance step within current bar (0 to beats_per_bar-1)
-                self.current_step = (self.current_step + 1) % self.beats_per_bar
+                self.current_step = (self.current_step + 1) % self.measure_beats
 
     def _apply_learned_pattern(self):
         """Apply the learned pattern to the sequencer UI."""

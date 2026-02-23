@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 from decologr import setup_logging
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QLocale, QSettings, QTranslator
 from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
     QApplication,
@@ -57,6 +57,26 @@ from jdxi_editor.utils.profiling_decorator import profiling_decorator
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
 
+def load_translations(app: QApplication) -> bool:
+    """Load Qt .qm translation files for the current locale (e.g. en_GB for 'Bar' instead of 'Measure').
+    Place .qm files in jdxi_editor/i18n/ or in resources/translations/. Returns True if a translator was installed.
+    """
+    locale_name = QLocale().name()  # e.g. "en_GB", "en_US", "de_DE"
+    base_name = f"jdxi_editor_{locale_name}"
+    for search_dir in (
+        Path(__file__).parent / "i18n",
+        Path(__file__).parent / "resources" / "translations",
+        Path(__file__).parent.parent / "i18n",
+    ):
+        qm_path = search_dir / f"{base_name}.qm"
+        if qm_path.exists():
+            translator = QTranslator(app)
+            if translator.load(str(qm_path)):
+                app.installTranslator(translator)
+                return True
+    return False
+
+
 @profiling_decorator()  # Profile is logged and printed when main() returns (after you close the app)
 def main() -> None:
     """Main entry point for the JD-Xi Editor application."""
@@ -68,6 +88,9 @@ def main() -> None:
 
         # --- Create application
         app = QApplication(sys.argv)
+
+        # --- Load translations for current locale (e.g. en_GB -> "Bar" / "Bars")
+        load_translations(app)
 
         # --- Set application metadata
         app.setApplicationName(__program__)

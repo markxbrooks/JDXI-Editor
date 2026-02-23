@@ -35,7 +35,7 @@ def test_tempo_change_processing():
     
     print(f"Found {len(tempo_changes)} tempo changes in MIDI file:")
     for i, (tick, _, tempo) in enumerate(tempo_changes):
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         time_sec = mido.tick2second(tick, midi_file.ticks_per_beat, tempo)
         print(f"  {i+1}: Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     
@@ -57,7 +57,7 @@ def test_tempo_change_processing():
     )
     
     print(f"\nWorker initialized with {len(worker.buffered_msgs)} tempo changes")
-    print(f"Worker initial tempo: {worker.initial_tempo} ({60000000/worker.initial_tempo:.1f} BPM)")
+    print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
     
     # Track tempo changes during simulation
     processed_tempo_changes = []
@@ -92,7 +92,7 @@ def test_tempo_change_processing():
     print("\nTempo changes processed:")
     for i, (change_time, tempo) in enumerate(processed_tempo_changes):
         elapsed = change_time - start_time
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         print(f"  {i+1}: {elapsed:.2f}s, {tempo} ({bpm:.1f} BPM)")
     
     # Expected tempo changes based on the MIDI file analysis:

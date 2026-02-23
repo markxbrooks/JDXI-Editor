@@ -88,3 +88,13 @@ class WindowSpec:
     icon: IconSpec = field(default_factory=IconSpec)
     width: int = 750
     height: int = 400
+
+
+@dataclass
+class SpinBoxSpec:
+    """SpinBox Spec"""
+    label: str = ""
+    min_val: int = 1
+    max_val: int = 127
+    value: int = None
+    tooltip: str = ""

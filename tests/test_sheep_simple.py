@@ -41,7 +41,7 @@ def test_sheep_midi_analysis():
     
     print(f"\nFound {len(tempo_changes)} tempo changes:")
     for i, (track, tick, tempo) in enumerate(tempo_changes):
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         time_sec = mido.tick2second(tick, midi_file.ticks_per_beat, tempo)
         print(f"  {i+1}: Track {track}, Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     
@@ -53,7 +53,7 @@ def test_sheep_midi_analysis():
     bar_27_tempo_changes = [tc for tc in tempo_changes if abs(tc[1] - bar_27_ticks) < 1000]
     if bar_27_tempo_changes:
         track, tick, tempo = bar_27_tempo_changes[0]
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         time_sec = mido.tick2second(tick, midi_file.ticks_per_beat, tempo)
         print(f"Tempo change near Bar 27: Track {track}, Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     else:
@@ -101,7 +101,7 @@ def test_buffer_processing():
     print("\nFirst 10 buffered messages:")
     for i, (tick, raw_bytes, tempo) in enumerate(buffered_msgs[:10]):
         if raw_bytes is None:
-            bpm = 60000000 / tempo
+            bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  {i+1}: Tick {tick}, Tempo change to {tempo} ({bpm:.1f} BPM)")
         else:
             print(f"  {i+1}: Tick {tick}, MIDI {raw_bytes}")
@@ -134,7 +134,7 @@ def test_worker_timing_calculation():
     )
     
     print(f"Worker initialized with {len(worker.buffered_msgs)} messages")
-    print(f"Worker initial tempo: {worker.initial_tempo} ({60000000/worker.initial_tempo:.1f} BPM)")
+    print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
     
     # Test timing calculation for first few messages
     print("\nTiming calculation for first 10 messages:")
@@ -143,7 +143,7 @@ def test_worker_timing_calculation():
         time_sec = mido.tick2second(tick, worker.ticks_per_beat, tempo)
         
         if raw_bytes is None:
-            bpm = 60000000 / tempo
+            bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  {i+1}: Tick {tick}, Tempo change to {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
         else:
             print(f"  {i+1}: Tick {tick}, MIDI {raw_bytes}, Time {time_sec:.2f}s")
@@ -188,7 +188,7 @@ def test_playback_simulation():
     # Show tempo change timing
     for i, (change_time, tempo) in enumerate(tempo_changes):
         elapsed = change_time - start_time
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         print(f"Tempo change {i+1}: {elapsed:.2f}s, {tempo} ({bpm:.1f} BPM)")
 
 

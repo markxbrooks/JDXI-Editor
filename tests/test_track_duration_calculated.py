@@ -64,7 +64,7 @@ def calculate_track_duration():
     
     print(f"\nLast MIDI event:")
     print(f"  Tick: {last_event_tick}")
-    print(f"  Tempo: {last_event_tempo} ({60000000/last_event_tempo:.1f} BPM)")
+    print(f"  Tempo: {last_event_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/last_event_tempo:.1f} BPM)")
     
     # Calculate duration using the tempo that was active at the last event
     total_duration = mido.tick2second(last_event_tick, midi_file.ticks_per_beat, last_event_tempo)
@@ -85,7 +85,7 @@ def calculate_track_duration():
         segment_duration = mido.tick2second(tick - current_tick, midi_file.ticks_per_beat, current_tempo)
         total_duration_by_segments += segment_duration
         
-        print(f"  Segment {i+1}: Ticks {current_tick}-{tick} at {60000000/current_tempo:.1f} BPM = {segment_duration:.2f}s")
+        print(f"  Segment {i+1}: Ticks {current_tick}-{tick} at {MidiTempo.MICROSECONDS_PER_MINUTE/current_tempo:.1f} BPM = {segment_duration:.2f}s")
         
         current_tick = tick
         current_tempo = tempo
@@ -94,7 +94,7 @@ def calculate_track_duration():
     if last_event_tick > current_tick:
         final_segment_duration = mido.tick2second(last_event_tick - current_tick, midi_file.ticks_per_beat, current_tempo)
         total_duration_by_segments += final_segment_duration
-        print(f"  Final segment: Ticks {current_tick}-{last_event_tick} at {60000000/current_tempo:.1f} BPM = {final_segment_duration:.2f}s")
+        print(f"  Final segment: Ticks {current_tick}-{last_event_tick} at {MidiTempo.MICROSECONDS_PER_MINUTE/current_tempo:.1f} BPM = {final_segment_duration:.2f}s")
     
     print(f"\nTotal duration by segments: {total_duration_by_segments:.2f}s ({total_duration_by_segments/60:.2f} minutes)")
     

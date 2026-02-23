@@ -78,7 +78,7 @@ def test_segment_statistics():
         
         bar_start = current_tick / (4 * ticks_per_beat)
         bar_end = tick / (4 * ticks_per_beat)
-        bpm = 60000000 / current_tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / current_tempo
         
         print(f"  Segment {i+1}: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {segment_duration:.2f}s")
         
@@ -92,7 +92,7 @@ def test_segment_statistics():
         
         bar_start = current_tick / (4 * ticks_per_beat)
         bar_end = last_event_tick / (4 * ticks_per_beat)
-        bpm = 60000000 / current_tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / current_tempo
         
         print(f"  Final segment: Bars {bar_start:.1f}-{bar_end:.1f} at {bpm:.1f} BPM = {final_segment_duration:.2f}s")
     
@@ -101,7 +101,7 @@ def test_segment_statistics():
     # Also print tempo changes summary
     print(f"Found {len(tempo_changes)} tempo changes:")
     for i, (tick, tempo) in enumerate(tempo_changes):
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         time_sec = mido.tick2second(tick, ticks_per_beat, tempo)
         bar = tick / (4 * ticks_per_beat)
         print(f"  {i+1}: Tick {tick}, Bar {bar:.1f}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")

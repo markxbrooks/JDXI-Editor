@@ -131,7 +131,7 @@ class TestSheepIntegration(unittest.TestCase):
         # Use engine's segment-wise time
         for tick, tempo in sorted(engine._tempo_map.items())[:5]:
             time_sec = engine._tick_to_seconds(tick)
-            bpm = 60000000 / tempo
+            bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     
     def test_worker_initialization_with_real_buffer(self):
@@ -144,7 +144,7 @@ class TestSheepIntegration(unittest.TestCase):
         self.assertEqual(worker.initial_tempo, self.player.midi_state.tempo_at_position)
 
         print(f"Worker has playback_engine with {len(worker.playback_engine._events)} events")
-        print(f"Worker initial tempo: {worker.initial_tempo} ({60000000/worker.initial_tempo:.1f} BPM)")
+        print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
     
     def test_playback_simulation_with_real_timing(self):
         """Test simulated playback using engine and worker."""

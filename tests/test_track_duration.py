@@ -90,7 +90,7 @@ def test_track_duration():
     )
     
     print(f"Worker initialized with {len(worker.buffered_msgs)} messages")
-    print(f"Worker initial tempo: {worker.initial_tempo} ({60000000/worker.initial_tempo:.1f} BPM)")
+    print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
     
     # Track tempo changes during playback
     tempo_changes_processed = []
@@ -142,7 +142,7 @@ def test_track_duration():
     print(f"\nTempo changes during playback:")
     for i, (change_time, tempo) in enumerate(tempo_changes_processed):
         elapsed = change_time - start_time
-        bpm = 60000000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         print(f"  {i+1}: {elapsed:.2f}s, {tempo} ({bpm:.1f} BPM)")
     
     # Calculate theoretical duration based on last message
