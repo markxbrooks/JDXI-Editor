@@ -552,7 +552,6 @@ class PatternSequenceEditor(SynthEditor):
             log.debug(msg, scope=self.__class__.__name__)
         return ok
 
-
     def reset_all_measures(self):
         """reset all measures"""
         for measure in self.measures:
