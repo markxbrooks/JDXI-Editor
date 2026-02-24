@@ -78,7 +78,7 @@ class PatternUI(SynthEditor):
             midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
-        # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
+        # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
         self.measure_name = self.tr("Measure")
         self.measure_name_plural = self.tr("Measures")
         self._state = None
@@ -89,17 +89,17 @@ class PatternUI(SynthEditor):
         self.digital1_selector = None
         self.paste_button = None
         self.muted_channels = []
-        self.total_measures = 1  # Start with 1 bar by default
+        self.total_measures = 1  # Start with 1 measure by default
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_file_editor = midi_file_editor  # Reference to MidiFileEditor
-        self.buttons = []  # Main sequencer buttons (always 16 steps, one bar)
+        self.buttons = []  # Main sequencer buttons (always 16 steps, one measure)
         self.button_layouts = []  # Store references to button layouts for each row
         self.measures = []  # Each measure stores its own notes
-        self.current_measure_index = 0  # Currently selected bar (0-indexed)
+        self.current_measure_index = 0  # Currently selected measure (0-indexed)
         self.timer = None
         self.current_step = 0
-        self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
+        self.total_steps = 16  # Always 16 steps per measure (don't multiply by measures)
         self.beats_per_pattern = 4
         self.measure_beats = 16  # Number of beats per measure (16 or 12)
         self.bpm = 120
@@ -107,7 +107,7 @@ class PatternUI(SynthEditor):
         self.tap_times = []
         self.midi_file = None  # Set in _setup_ui from MidiFileController
         self.midi_track = None  # Set in _setup_ui from MidiFileController
-        self.clipboard = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
+        self.clipboard = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
         self._pattern_paused = False
         self.row_specs = [
             SequencerRowSpec(
@@ -177,7 +177,7 @@ class PatternUI(SynthEditor):
 
         self.layout.addLayout(control_panel)
 
-        # Create splitter for bars list and sequencer (builds measures group + sequencer widget)
+        # Create splitter for measures list and sequencer (builds measures group + sequencer widget)
         self._build_splitter_section()
 
         self.channel_map = self._build_channel_map()
@@ -195,7 +195,7 @@ class PatternUI(SynthEditor):
         self._container_layout.addWidget(content_widget)
 
     def _build_splitter_section(self):
-        """Build splitter section for the list of measures/bars"""
+        """Build splitter section for the list of measures/measures"""
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
         splitter.addWidget(self._create_measures_group())
@@ -369,14 +369,14 @@ class PatternUI(SynthEditor):
         self.main_layout.addWidget(self.base_widget)
 
     def _create_measures_group(self) -> QGroupBox:
-        """Bars list widget"""
+        """Measures list widget"""
         measures_group = QGroupBox(f"{self.measure_name}")
-        bars_layout = QVBoxLayout()
+        measures_layout = QVBoxLayout()
         self.measures_list = QListWidget()
         self.measures_list.setMaximumWidth(150)
         self.measures_list.itemClicked.connect(self._on_measure_selected)
-        bars_layout.addWidget(self.measures_list)
-        measures_group.setLayout(bars_layout)
+        measures_layout.addWidget(self.measures_list)
+        measures_group.setLayout(measures_layout)
         return measures_group
 
     def _create_duration_group(self) -> QGroupBox:
@@ -410,7 +410,7 @@ class PatternUI(SynthEditor):
 
     def _create_beats_group(self) -> QGroupBox:
         """Beats per measure control area"""
-        beats_group = QGroupBox("Beats per Bar")
+        beats_group = QGroupBox("Beats per Measure")
         beats_layout = QHBoxLayout()
 
         self.beats_per_measure_combo = create_combo_box(
@@ -497,7 +497,7 @@ class PatternUI(SynthEditor):
         return learn_group
 
     def _create_measure_group(self) -> QGroupBox:
-        """Bar management area (separate row for Add Measure button and checkbox)"""
+        """Measure management area (separate row for Add Measure button and checkbox)"""
 
         # First row: Add Measure button and Copy checkbox
         measure_controls_layout = QHBoxLayout()
@@ -724,13 +724,13 @@ class PatternUI(SynthEditor):
                 "copy": ButtonSpec(
                     label="Copy Section",
                     icon=JDXi.UI.Icon.FILE_DOCUMENT,
-                    tooltip="Copy selected steps from current bar",
+                    tooltip="Copy selected steps from current measure",
                     slot=self._copy_section,
                 ),
                 "paste": ButtonSpec(
                     label="Paste Section",
                     icon=JDXi.UI.Icon.ADD,
-                    tooltip="Paste copied steps to current bar",
+                    tooltip="Paste copied steps to current measure",
                     slot=self._paste_section,
                 ),
                 "learn": ButtonSpec(
