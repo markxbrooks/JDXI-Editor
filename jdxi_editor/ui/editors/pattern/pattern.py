@@ -200,7 +200,7 @@ class PatternSequenceEditor(PatternUI):
         self._playback_controller.on_playback_stopped = (
             self._on_playback_controller_stopped
         )
-        self._playback_controller.on_measure_changed = self._on_playback_measure_changed
+        self._playback_controller.on_bar_changed = self._on_playback_measure_changed
         self._playback_controller.on_step_changed = self._on_playback_step_changed
         if self.midi_helper:
             self._playback_controller.on_midi_event = (

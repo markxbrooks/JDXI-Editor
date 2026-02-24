@@ -17,6 +17,21 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 import mido
 
+try:
+    from PySide6.QtWidgets import QApplication
+except ImportError:
+    QApplication = None
+
+
+def _get_qapp():
+    """Get or create QApplication for controller/worker tests."""
+    if QApplication is None:
+        return None
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    return app
+
 
 class TestSheepPlayback(unittest.TestCase):
     """Test sheep.mid playback with tempo changes"""
@@ -321,6 +336,44 @@ class TestSheepPlayback(unittest.TestCase):
                 print("⚠️ No tempo changes were processed during simulation")
 
 
+def _make_mock_button(note=60, velocity=100, duration_ms=120):
+    """Create a mock button with note, velocity, and duration."""
+    btn = Mock()
+    btn.isChecked.return_value = True
+    btn.note = note
+    btn.note_velocity = velocity
+    btn.note_duration = duration_ms
+    btn.note_spec = None  # Use attribute fallback
+    return btn
+
+
+def _make_mock_measure(buttons_by_step=None):
+    """
+    Create a mock measure. buttons_by_step: list of (step, row, note, velocity, duration_ms).
+    Each (step, row) gets a checked button; others get unchecked.
+    """
+    # measure.buttons[row][step] - 4 rows, 16 steps each
+    buttons = [[None] * 16 for _ in range(4)]
+    for row in range(4):
+        for step in range(16):
+            btn = Mock()
+            btn.isChecked.return_value = False
+            btn.note = None
+            btn.note_velocity = 100
+            btn.note_duration = 120
+            btn.note_spec = None
+            buttons[row][step] = btn
+
+    if buttons_by_step:
+        for step, row, note, velocity, duration_ms in buttons_by_step:
+            btn = _make_mock_button(note=note, velocity=velocity, duration_ms=duration_ms)
+            buttons[row][step] = btn
+
+    measure = Mock()
+    measure.buttons = buttons
+    return measure
+
+
 class TestPatternPlaybackControllerTempo(unittest.TestCase):
     """Test PatternPlaybackController tempo handling (built MIDI, engine, timing)"""
 
@@ -481,6 +534,221 @@ class TestPatternPlaybackControllerTempo(unittest.TestCase):
         self.assertEqual(engine._tempo_map[0], 967745)
         self.assertGreater(len(engine._tempo_map), 1, "sheep.mid should have multiple tempo changes")
         print("✓ PlaybackEngine loads sheep.mid with correct tempo map")
+
+    def test_note_velocity_preserved(self):
+        """Built MIDI note_on messages have correct velocity from button"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        # One note at step 0, row 0, velocity 87
+        measures = [_make_mock_measure([(0, 0, 60, 87, 120)])]
+        midi_file = controller._build_midi_file_for_playback(measures)
+
+        note_on_msgs = [m for m in midi_file.tracks[0] if m.type == "note_on"]
+        self.assertEqual(len(note_on_msgs), 1)
+        self.assertEqual(note_on_msgs[0].velocity, 87)
+        self.assertEqual(note_on_msgs[0].note, 60)
+        self.assertEqual(note_on_msgs[0].channel, 0)
+        print("✓ PatternPlaybackController preserves note velocity=87")
+
+    def test_note_velocity_clamped_to_127(self):
+        """Velocity above 127 is clamped to 127"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        measures = [_make_mock_measure([(0, 0, 60, 200, 120)])]  # velocity 200
+        midi_file = controller._build_midi_file_for_playback(measures)
+
+        note_on_msgs = [m for m in midi_file.tracks[0] if m.type == "note_on"]
+        self.assertEqual(len(note_on_msgs), 1)
+        self.assertEqual(note_on_msgs[0].velocity, 127)
+        print("✓ PatternPlaybackController clamps velocity 200 -> 127")
+
+    def test_note_duration_as_ticks(self):
+        """Note duration from button is converted to correct ticks (note_off Delta)"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        # At 120 BPM: 480 ticks/beat, 1 beat = 0.5s, so 125ms = 120 ticks
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        # 125ms at 120 BPM -> 120 ticks (approx)
+        measures = [_make_mock_measure([(0, 0, 60, 100, 125.0)])]
+        midi_file = controller._build_midi_file_for_playback(measures)
+
+        # Build absolute ticks from track (delta times)
+        events = []
+        abs_tick = 0
+        for msg in midi_file.tracks[0]:
+            abs_tick += msg.time
+            if not msg.is_meta:
+                events.append((abs_tick, msg.type, msg.note, msg.velocity))
+
+        note_ons = [e for e in events if e[1] == "note_on"]
+        note_offs = [e for e in events if e[1] == "note_off"]
+        self.assertEqual(len(note_ons), 1)
+        self.assertEqual(len(note_offs), 1)
+        # note_on at 0, note_off at 0 + duration_ticks
+        note_on_tick = note_ons[0][0]
+        note_off_tick = note_offs[0][0]
+        duration_ticks = note_off_tick - note_on_tick
+        # 125ms at 120 BPM: (125/1000) * (120/60) * 480 = 120 ticks
+        self.assertEqual(duration_ticks, 120)
+        print("✓ PatternPlaybackController converts 125ms duration to 120 ticks at 120 BPM")
+
+    def test_multiple_notes_velocity_and_duration(self):
+        """Multiple notes retain their individual velocity and duration"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        measures = [
+            _make_mock_measure([
+                (0, 0, 60, 64, 100),   # C4, vel 64, 100ms
+                (2, 1, 62, 96, 200),  # D4, vel 96, 200ms
+            ]),
+        ]
+        midi_file = controller._build_midi_file_for_playback(measures)
+
+        note_ons = [m for m in midi_file.tracks[0] if m.type == "note_on"]
+        self.assertEqual(len(note_ons), 2)
+        by_note = {m.note: m.velocity for m in note_ons}
+        self.assertEqual(by_note[60], 64)
+        self.assertEqual(by_note[62], 96)
+        print("✓ PatternPlaybackController preserves velocity per note (64, 96)")
+
+
+class TestPatternPlaybackFromController(unittest.TestCase):
+    """Test full playback flow from PatternPlaybackController (pattern editor style)."""
+
+    def setUp(self):
+        _get_qapp()
+
+    def test_playback_sends_note_on_note_off(self):
+        """start_playback + process_playback_tick sends note_on then note_off via on_midi_event"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        received = []
+
+        def capture(msg):
+            received.append(msg)
+
+        controller.on_midi_event = capture
+
+        measures = [_make_mock_measure([(0, 0, 60, 100, 120)])]
+        ok = controller.start_playback(measures, 120)
+        self.assertTrue(ok, "start_playback should succeed")
+
+        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        with patch(f"{engine_module}.time") as mock_time:
+            mock_time.time.return_value = 1000.0
+            # Re-trigger start time (engine.start already ran with real time)
+            controller.playback_engine._start_time = 1000.0
+
+            # At t=1000.2: note_on (tick 0) and note_off (tick ~120) both due
+            mock_time.time.return_value = 1000.2
+            total_steps = 16
+            controller.process_playback_tick(total_steps)
+
+        self.assertGreaterEqual(
+            len(received), 1,
+            "Should receive at least note_on",
+        )
+        note_ons = [m for m in received if m.type == "note_on"]
+        note_offs = [m for m in received if m.type == "note_off"]
+        self.assertEqual(len(note_ons), 1)
+        self.assertEqual(note_ons[0].note, 60)
+        self.assertEqual(note_ons[0].velocity, 100)
+        self.assertGreaterEqual(
+            len(note_offs), 1,
+            "Should receive note_off",
+        )
+        self.assertEqual(note_offs[0].note, 60)
+        print("✓ PatternPlaybackController playback sends note_on then note_off")
+
+    def test_playback_position_updates(self):
+        """process_playback_tick returns PlaybackPosition with correct global_step"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+        controller.on_midi_event = lambda m: None
+
+        measures = [_make_mock_measure([(0, 0, 60, 100, 120), (4, 1, 62, 80, 100)])]
+        ok = controller.start_playback(measures, 120)
+        self.assertTrue(ok)
+
+        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        with patch(f"{engine_module}.time") as mock_time:
+            mock_time.time.return_value = 1000.0
+            controller.playback_engine._start_time = 1000.0
+
+            mock_time.time.return_value = 1000.1
+            pos = controller.process_playback_tick(total_steps=32)
+            self.assertIsNotNone(pos)
+            self.assertIsInstance(pos.global_step, int)
+            self.assertGreaterEqual(pos.global_step, 0)
+        print("✓ PatternPlaybackController playback updates position")
+
+    def test_playback_stops_when_finished(self):
+        """Playback stops (is_playing=False) after all events processed"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+        controller.on_midi_event = lambda m: None
+
+        measures = [_make_mock_measure([(0, 0, 60, 100, 100)])]
+        ok = controller.start_playback(measures, 120)
+        self.assertTrue(ok)
+        self.assertTrue(controller.is_playing)
+
+        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        with patch(f"{engine_module}.time") as mock_time:
+            mock_time.time.return_value = 1000.0
+            controller.playback_engine._start_time = 1000.0
+
+            mock_time.time.return_value = 1001.0
+            controller.process_playback_tick(total_steps=16)
+
+        self.assertFalse(controller.is_playing)
+        print("✓ PatternPlaybackController playback stops when finished")
 
 
 if __name__ == '__main__':
