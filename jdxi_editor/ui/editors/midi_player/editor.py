@@ -1551,7 +1551,7 @@ class MidiFilePlayer(SynthEditor):
                 self.ticks_per_beat = 480
         self.tick_duration = (
             self.midi_state.tempo_at_position
-            / Midi.TEMPO.CONVERT_SEC_TO_USEC
+            / Midi.TEMPO.MILLISECONDS_PER_SECOND
             / self.ticks_per_beat
         )
 

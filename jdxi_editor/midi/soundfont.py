@@ -6,6 +6,8 @@ import time
 import fluidsynth
 import mido
 from mido import MidiFile
+
+from picomidi import MidiTempo, Midi
 from picomidi.message.type import MidoMessageType
 
 from jdxi_editor.midi.synth_select import list_and_select_instrument
@@ -94,7 +96,7 @@ def ticks_to_seconds(ticks: int, tempo: int, ticks_per_beat: int) -> float:
     :param ticks_per_beat: int
     :return: float
     """
-    return (tempo / 1_000_000.0) * (ticks / ticks_per_beat)
+    return (tempo / float(MidiTempo.MICROSECONDS_PER_SECOND)) * (ticks / ticks_per_beat)
 
 
 def get_total_duration_in_seconds(midi_file):
@@ -103,7 +105,7 @@ def get_total_duration_in_seconds(midi_file):
     Uses the same approach as the main player.
     """
     ticks_per_beat = midi_file.ticks_per_beat
-    current_tempo = 500_000  # default: 120 BPM
+    current_tempo = Midi.TEMPO.BPM_120_USEC  # default: 120 BPM
     time_seconds = 0
     last_tick = 0
 
@@ -120,7 +122,7 @@ def get_total_duration_in_seconds(midi_file):
 
     for abs_tick, msg in events:
         delta_ticks = abs_tick - last_tick
-        time_seconds += (current_tempo / 1_000_000) * (delta_ticks / ticks_per_beat)
+        time_seconds += (current_tempo / MidiTempo.MICROSECONDS_PER_SECOND) * (delta_ticks / ticks_per_beat)
         last_tick = abs_tick
 
         if msg.type == MidoMessageType.SET_TEMPO:
@@ -134,7 +136,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
     # Collect all events with absolute ticks and tempo
     events = []
-    current_tempo = 500_000  # Default tempo (120 BPM)
+    current_tempo = Midi.TEMPO.BPM_120_USEC  # Default tempo (120 BPM)
     ticks_per_beat = mid.ticks_per_beat
 
     for track in mid.tracks:
@@ -152,7 +154,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
     # Play messages with proper timing
     start_time = time.time()
-    print(f"[INFO] Starting playback with {mido.tempo2bpm(500_000):.1f} BPM")
+    print(f"[INFO] Starting playback with {mido.tempo2bpm(Midi.TEMPO.BPM_120_USEC):.1f} BPM")
 
     for abs_tick, msg, msg_tempo in events:
         # Calculate when this message should be played using its tempo

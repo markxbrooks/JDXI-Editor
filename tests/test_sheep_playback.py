@@ -143,7 +143,7 @@ class TestSheepPlayback(unittest.TestCase):
         """Test that ticks to seconds conversion works correctly"""
         # Simple ticks to seconds conversion (same as in utils)
         def ticks_to_seconds(ticks, tempo, ticks_per_beat):
-            return (tempo / 1_000_000.0) * (ticks / ticks_per_beat)
+            return (tempo / float(MidiTempo.MICROSECONDS_PER_SECOND)) * (ticks / ticks_per_beat)
         
         # Test with 62 BPM (967745 microseconds)
         tempo_62_bpm = 967745
@@ -167,7 +167,7 @@ class TestSheepPlayback(unittest.TestCase):
         """Test that tempo changes occur at the correct times"""
         # Simple ticks to seconds conversion (same as in utils)
         def ticks_to_seconds(ticks, tempo, ticks_per_beat):
-            return (tempo / 1_000_000.0) * (ticks / ticks_per_beat)
+            return (tempo / float(MidiTempo.MICROSECONDS_PER_SECOND)) * (ticks / ticks_per_beat)
         
         # Get tempo changes with their timing
         tempo_changes = []

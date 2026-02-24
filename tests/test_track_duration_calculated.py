@@ -41,7 +41,7 @@ def calculate_track_duration():
     
     print(f"\nFound {len(tempo_changes)} tempo changes:")
     for i, (track, tick, tempo) in enumerate(tempo_changes):
-        bpm = 60_000_000 / tempo
+        bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
         time_sec = mido.tick2second(tick, midi_file.ticks_per_beat, tempo)
         print(f"  {i+1}: Track {track}, Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     

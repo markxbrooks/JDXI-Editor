@@ -42,7 +42,7 @@ def test_emitting_timing():
     
     # Create a simple test that simulates the worker behavior
     def ticks_to_seconds(ticks, tempo, ticks_per_beat):
-        return (tempo / 1_000_000.0) * (ticks / ticks_per_beat)
+        return (tempo / float(MidiTempo.MICROSECONDS_PER_SECOND)) * (ticks / ticks_per_beat)
     
     # Calculate expected timing for tempo changes
     current_tempo = 500000  # Default 120 BPM

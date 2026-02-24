@@ -3,6 +3,8 @@ Editor IO Utils
 """
 
 from mido import MidiFile
+
+from picomidi import MidiTempo
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
 
@@ -26,7 +28,7 @@ def tempo2bpm(tempo: int) -> float:
     :param tempo: float
     :return: float
     """
-    return 60_000_000 / tempo
+    return MidiTempo.MICROSECONDS_PER_MINUTE / tempo
 
 
 def get_last_tempo(midi_file: MidiFile) -> int:
