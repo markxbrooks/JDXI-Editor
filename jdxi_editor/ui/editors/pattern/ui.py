@@ -420,6 +420,9 @@ class PatternUI(SynthEditor):
         beats_group.setLayout(beats_layout)
         return beats_group
 
+    def _on_beats_per_measure_changed(self):
+        raise NotImplementedError
+
     def _create_tempo_group(self) -> QGroupBox:
         """Tempo control area"""
         tempo_group = QGroupBox("Tempo")

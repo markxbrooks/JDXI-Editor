@@ -20,7 +20,7 @@ class LeafSpec(UiNodeSpec):
 
 
 @dataclass
-class ButtonSpec(UiNodeSpec):
+class ButtonSpec:
     """Button Spec"""
     label: str = ""
     icon: str = ""
