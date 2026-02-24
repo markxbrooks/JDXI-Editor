@@ -8,6 +8,8 @@ from unittest.mock import Mock, patch
 import sys
 import os
 
+from picomidi import MidiTempo
+
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -317,6 +319,168 @@ class TestSheepPlayback(unittest.TestCase):
                 print(f"✓ Total tempo changes processed: {len(tempo_update_times)}")
             else:
                 print("⚠️ No tempo changes were processed during simulation")
+
+
+class TestPatternPlaybackControllerTempo(unittest.TestCase):
+    """Test PatternPlaybackController tempo handling (built MIDI, engine, timing)"""
+
+    def test_build_midi_file_tempo_120_bpm(self):
+        """Built MIDI file has set_tempo 500000 µs (120 BPM) when current_bpm=120"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+        from mido import tempo2bpm
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        midi_file = controller._build_midi_file_for_playback([])
+
+        self.assertEqual(len(midi_file.tracks), 1)
+        track = midi_file.tracks[0]
+        self.assertGreaterEqual(len(track), 1)
+        first_msg = track[0]
+        self.assertEqual(first_msg.type, "set_tempo")
+        self.assertEqual(first_msg.tempo, 500000)
+        self.assertEqual(tempo2bpm(first_msg.tempo), 120)
+        print("✓ PatternPlaybackController built MIDI has set_tempo 500000 (120 BPM)")
+
+    def test_build_midi_file_tempo_matches_bpm2tempo(self):
+        """Built set_tempo equals mido.bpm2tempo(current_bpm) for various BPMs"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+        from mido import tempo2bpm, bpm2tempo
+
+        for bpm in [60, 90, 120, 126, 140, 180]:
+            config = PlaybackConfig(default_bpm=bpm)
+            controller = PatternPlaybackController(config=config)
+            controller.current_bpm = bpm
+
+            midi_file = controller._build_midi_file_for_playback([])
+            track = midi_file.tracks[0]
+            set_tempo_msg = next(m for m in track if m.type == "set_tempo")
+
+            expected_tempo_us = bpm2tempo(bpm)
+            self.assertEqual(
+                set_tempo_msg.tempo,
+                expected_tempo_us,
+                f"BPM {bpm}: expected tempo {expected_tempo_us}, got {set_tempo_msg.tempo}",
+            )
+            self.assertAlmostEqual(tempo2bpm(set_tempo_msg.tempo), bpm, places=1)
+        print("✓ PatternPlaybackController tempo matches bpm2tempo for 60,90,120,126,140,180 BPM")
+
+    def test_engine_tempo_map_from_built_file(self):
+        """PlaybackEngine loaded with built file has correct tempo map"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+        from mido import bpm2tempo
+
+        for bpm in [60, 120, 126]:
+            config = PlaybackConfig(default_bpm=bpm)
+            controller = PatternPlaybackController(config=config)
+            controller.current_bpm = bpm
+
+            midi_file = controller._build_midi_file_for_playback([])
+            engine = PlaybackEngine()
+            engine.load_file(midi_file)
+
+            expected_tempo_us = bpm2tempo(bpm)
+            self.assertIn(0, engine._tempo_map)
+            self.assertEqual(engine._tempo_map[0], expected_tempo_us)
+        print("✓ PlaybackEngine tempo map correct for controller-built files (60,120,126 BPM)")
+
+    def test_get_tempo_returns_current_bpm(self):
+        """get_tempo() returns the controller's current_bpm"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        self.assertEqual(controller.get_tempo(), 120)
+
+        controller.current_bpm = 126
+        self.assertEqual(controller.get_tempo(), 126)
+        print("✓ PatternPlaybackController get_tempo returns current_bpm")
+
+    def test_set_tempo_updates_current_bpm_and_built_file(self):
+        """set_tempo() updates current_bpm; next built file uses new tempo"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+        from mido import bpm2tempo
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+
+        controller.set_tempo(90)
+        self.assertEqual(controller.current_bpm, 90)
+        midi_file = controller._build_midi_file_for_playback([])
+        set_tempo_msg = next(m for m in midi_file.tracks[0] if m.type == "set_tempo")
+        self.assertEqual(set_tempo_msg.tempo, bpm2tempo(90))
+        print("✓ PatternPlaybackController set_tempo updates built file")
+
+    def test_ticks_per_beat_preserved(self):
+        """Built MIDI file has correct ticks_per_beat from config"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+
+        config = PlaybackConfig(ticks_per_beat=480, default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+
+        midi_file = controller._build_midi_file_for_playback([])
+        self.assertEqual(midi_file.ticks_per_beat, 480)
+        print("✓ PatternPlaybackController preserves ticks_per_beat=480")
+
+    def test_tick_to_seconds_timing_at_120_bpm(self):
+        """At 120 BPM, 480 ticks (1 beat) = 0.5s; 120 ticks (1 16th) = 0.125s"""
+        from jdxi_editor.midi.playback.controller import (
+            PatternPlaybackController,
+            PlaybackConfig,
+        )
+        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+
+        config = PlaybackConfig(default_bpm=120)
+        controller = PatternPlaybackController(config=config)
+        controller.current_bpm = 120
+
+        midi_file = controller._build_midi_file_for_playback([])
+        engine = PlaybackEngine()
+        engine.load_file(midi_file)
+
+        t480 = engine._tick_to_seconds(480)
+        self.assertAlmostEqual(t480, 0.5, places=6)
+        t120 = engine._tick_to_seconds(120)
+        self.assertAlmostEqual(t120, 0.125, places=6)
+        print("✓ Engine tick_to_seconds correct at 120 BPM (480 ticks=0.5s, 120 ticks=0.125s)")
+
+    def test_sheep_midi_engine_tempo_map(self):
+        """PlaybackEngine loads sheep.mid with correct tempo map (matches sheep test)"""
+        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+
+        midi_file_path = os.path.join(os.path.dirname(__file__), 'sheep.mid')
+        self.assertTrue(os.path.exists(midi_file_path), "sheep.mid test file not found")
+        sheep_midi = mido.MidiFile(midi_file_path)
+
+        engine = PlaybackEngine()
+        engine.load_file(sheep_midi)
+
+        # sheep.mid has tempo 967745 (62 BPM) at tick 0
+        self.assertIn(0, engine._tempo_map)
+        self.assertEqual(engine._tempo_map[0], 967745)
+        self.assertGreater(len(engine._tempo_map), 1, "sheep.mid should have multiple tempo changes")
+        print("✓ PlaybackEngine loads sheep.mid with correct tempo map")
 
 
 if __name__ == '__main__':

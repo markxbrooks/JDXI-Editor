@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 # Linux building files
+*.mid
 deps/
 *.dmg
 *.pkg

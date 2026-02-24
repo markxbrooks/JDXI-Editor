@@ -66,6 +66,17 @@ from picoui.specs.widgets import (
 from picoui.widget.helper import create_combo_box
 
 
+def _combo_spec(items, tooltip: str = "") -> ComboBoxSpec:
+    """Build ComboBoxSpec with items list, no slot."""
+    return ComboBoxSpec(items=list(items), tooltip=tooltip, slot=None)
+
+
+_EXPANDING = (
+    QSizePolicy.Policy.Expanding,
+    QSizePolicy.Policy.Expanding,
+)
+
+
 class PatternUI(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
@@ -204,10 +215,7 @@ class PatternUI(SynthEditor):
 
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
-        splitter.setSizePolicy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Expanding,
-        )
+        splitter.setSizePolicy(*_EXPANDING)
 
         self.layout.addWidget(splitter)
 
@@ -215,10 +223,7 @@ class PatternUI(SynthEditor):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        widget.setSizePolicy(
-            QSizePolicy.Policy.Expanding,
-            QSizePolicy.Policy.Expanding,
-        )
+        widget.setSizePolicy(*_EXPANDING)
 
         for row_idx, label in enumerate(self.row_labels):
             layout.addLayout(self._create_sequencer_row(row_idx, label))
@@ -345,17 +350,6 @@ class PatternUI(SynthEditor):
             control_panel.addWidget(group)
 
         self.layout.addLayout(control_panel)
-
-    def _init_model_structures(self):
-        self.row_labels = [
-            "Digital Synth 1",
-            "Digital Synth 2",
-            "Analog Synth",
-            "Drums",
-        ]
-        self.buttons = [[] for _ in range(4)]
-        self.mute_buttons = []
-        self.specs = self._build_specs()
 
     def _init_base_widget(self):
         """init base widget"""
@@ -757,11 +751,7 @@ class PatternUI(SynthEditor):
                 ),
             },
             "combos": {
-                "drum": ComboBoxSpec(
-                    items=list(self.drum_options),
-                    tooltip="",
-                    slot=None,
-                ),
+                "drum": _combo_spec(self.drum_options),
                 "beats_per_measure": ComboBoxSpec(
                     items=["16 beats per measure", "12 beats per measure"],
                     tooltip="",
@@ -781,21 +771,9 @@ class PatternUI(SynthEditor):
                     tooltip="Default note duration for new notes",
                     slot=None,
                 ),
-                "digital1": ComboBoxSpec(
-                    items=list(self.digital_options),
-                    tooltip="",
-                    slot=None,
-                ),
-                "digital2": ComboBoxSpec(
-                    items=list(self.digital_options),
-                    tooltip="",
-                    slot=None,
-                ),
-                "analog": ComboBoxSpec(
-                    items=list(self.analog_options),
-                    tooltip="",
-                    slot=None,
-                ),
+                "digital1": _combo_spec(self.digital_options),
+                "digital2": _combo_spec(self.digital_options),
+                "analog": _combo_spec(self.analog_options),
             },
             "spinboxes": self._create_spinbox_specs(),
             "transport": [

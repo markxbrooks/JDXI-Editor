@@ -7,6 +7,8 @@ Handles real-time note-to-selector mapping and drum kit selection updates.
 
 from typing import Callable, Dict, List, Optional
 
+import mido
+
 from decologr import Decologr as log
 from mido import Message
 from picomidi.message.type import MidoMessageType
@@ -423,7 +425,7 @@ class ComboBoxSynchronizer:
                 scope=self.scope,
             )
 
-    def _handle_note_on(self, message: Message) -> None:
+    def _handle_note_on(self, message: mido.Message) -> None:
         """
         Handle a NOTE_ON message.
 

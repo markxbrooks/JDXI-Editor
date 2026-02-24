@@ -13,10 +13,11 @@ import random
 from typing import Callable, Dict, List, Optional
 
 from decologr import Decologr as log
-from mido import Message, MetaMessage, MidiFile, MidiTrack
-from picomidi import MidiTempo
+from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
+
+from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 from picomidi.message.type import MidoMessageType
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QObject
 
 from jdxi_editor.ui.editors.midi_player.playback.engine import (
     PlaybackEngine,
@@ -99,7 +100,7 @@ class SequencerEvent:
         self.duration_ticks = duration_ticks
 
 
-class PatternPlaybackController:
+class PatternPlaybackController(QObject):
     """
     Controls pattern playback and synchronization.
 
@@ -124,6 +125,7 @@ class PatternPlaybackController:
         :param playback_engine: PlaybackEngine instance. If not provided, creates one
         :param scope: Logging scope name
         """
+        super().__init__()
         self.config = config or PlaybackConfig()
         self.playback_engine = playback_engine or PlaybackEngine()
         self.scope = scope
@@ -143,6 +145,8 @@ class PatternPlaybackController:
 
         # Timer for driving playback
         self.timer: Optional[QTimer] = None
+
+        self.worker = MidiPlaybackWorker(parent=self)
 
         # Callbacks for UI updates
         self.on_playback_started: Optional[Callable[[], None]] = None
@@ -214,6 +218,18 @@ class PatternPlaybackController:
             # Start engine
             self.playback_engine.start(0)
 
+            # Setup worker for MIDI playback (drives engine.process_until_now)
+            self.worker.setup(
+                buffered_msgs=[],
+                midi_out_port=None,
+                ticks_per_beat=midi_file.ticks_per_beat,
+                play_program_changes=True,
+                start_time=None,
+                initial_tempo=bpm2tempo(self.current_bpm),
+                playback_engine=self.playback_engine,
+            )
+            self.worker.finished.connect(self._on_worker_finished)
+
             # Initialize position tracking
             self.current_position = PlaybackPosition()
             self.last_bar_index = -1
@@ -226,8 +242,12 @@ class PatternPlaybackController:
             self.is_playing = True
             self.is_paused = False
 
+            tempo_us = bpm2tempo(self.current_bpm)
             log.message(
-                message="Pattern playback started",
+                message=(
+                    f"Pattern playback started: {self.current_bpm} BPM "
+                    f"(tempo={tempo_us} µs/beat)"
+                ),
                 scope=self.scope,
             )
 
@@ -243,14 +263,23 @@ class PatternPlaybackController:
             )
             return False
 
+    def _on_worker_finished(self) -> None:
+        """Handle worker.finished when engine stops playing."""
+        if self.is_playing:
+            self.stop_playback()
+
     def stop_playback(self) -> None:
         """Stop pattern playback."""
         if not self.is_playing:
             return
 
         try:
-            # Stop engine
+            self.worker.stop()
             self.playback_engine.stop()
+            try:
+                self.worker.finished.disconnect(self._on_worker_finished)
+            except (TypeError, RuntimeError):
+                pass
 
             # Stop timer
             self._stop_timer()
@@ -449,8 +478,8 @@ class PatternPlaybackController:
             return None
 
         try:
-            # Drive engine
-            self.playback_engine.process_until_now()
+            # Drive engine via worker (same pattern as MIDI file editor)
+            self.worker.do_work()
 
             # Calculate current position from engine state
             tick = self._get_engine_tick()
@@ -529,6 +558,35 @@ class PatternPlaybackController:
             scope=self.scope,
         )
 
+    def reload_playback_with_tempo(self, measures: List, bpm: int) -> bool:
+        """
+        Rebuild MIDI with new tempo and resume from current position.
+        Call when tempo changes during playback.
+
+        :param measures: Current pattern measures
+        :param bpm: New tempo in BPM
+        :return: True if reload succeeded
+        """
+        if not self.is_playing or self.is_paused:
+            return False
+        try:
+            tick = self._get_engine_tick()
+            self.current_bpm = max(20, min(300, bpm))
+            midi_file = self._build_midi_file_for_playback(measures)
+            self.playback_engine.load_file(midi_file)
+            for ch in range(16):
+                self.playback_engine.mute_channel(ch, ch in self.muted_channels)
+            if self.on_midi_event:
+                self.playback_engine.on_event = lambda m: self.on_midi_event(m)
+            self.playback_engine.start(tick)
+            return True
+        except Exception as ex:
+            log.error(
+                message=f"Error reloading playback tempo: {ex}",
+                scope=self.scope,
+            )
+            return False
+
     def get_tempo(self) -> int:
         """Get current playback tempo."""
         return self.current_bpm
@@ -547,8 +605,8 @@ class PatternPlaybackController:
         track = MidiTrack()
         midi_file.tracks.append(track)
 
-        # Add tempo
-        tempo_us = int(MidiTempo.MICROSECONDS_PER_MINUTE / self.current_bpm)
+        # Add tempo (use mido.bpm2tempo to match Playback Worker / MIDI editor)
+        tempo_us = bpm2tempo(self.current_bpm)
         track.append(
             MetaMessage(
                 MidoMessageType.SET_TEMPO,

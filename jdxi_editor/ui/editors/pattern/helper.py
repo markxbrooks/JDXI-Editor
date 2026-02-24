@@ -24,11 +24,8 @@ def reset_measure(measure: PatternMeasure):
             reset_button(btn)
 
 
-def get_button_note_spec(button) -> NoteButtonSpec:
-    """Return the effective NoteButtonSpec for a step button (from attribute or built from NOTE/NOTE_DURATION/NOTE_VELOCITY)."""
-    spec = getattr(button, "note_spec", None)
-    if spec is not None:
-        return spec
+def _note_spec_from_button(button) -> NoteButtonSpec:
+    """Build NoteButtonSpec from button NOTE/NOTE_DURATION/NOTE_VELOCITY."""
     return NoteButtonSpec(
         note=getattr(button, NoteButtonAttrs.NOTE, None),
         duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
@@ -36,13 +33,17 @@ def get_button_note_spec(button) -> NoteButtonSpec:
     )
 
 
+def get_button_note_spec(button) -> NoteButtonSpec:
+    """Return the effective NoteButtonSpec (from attribute or built from attrs)."""
+    spec = getattr(button, "note_spec", None)
+    if spec is not None:
+        return spec
+    return _note_spec_from_button(button)
+
+
 def sync_button_note_spec(button) -> None:
     """Update button.note_spec from NOTE, NOTE_DURATION, NOTE_VELOCITY."""
-    button.note_spec = NoteButtonSpec(
-        note=getattr(button, NoteButtonAttrs.NOTE, None),
-        duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
-        velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, 100) or 100,
-    )
+    button.note_spec = _note_spec_from_button(button)
 
 
 def update_button_state(

@@ -2,10 +2,9 @@ import bisect
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Callable, List, Optional
+from typing import Optional, Callable, List
 
 import mido
-from picomidi import MidiTempo
 
 
 @dataclass
@@ -18,12 +17,10 @@ class ScheduledEvent:
 
 
 class TransportState(Enum):
-    """Transport State"""
-
     STOPPED = auto()
     PLAYING = auto()
     PAUSED = auto()
-
+    
 
 class PlaybackEngine:
     """
@@ -47,15 +44,12 @@ class PlaybackEngine:
     """
 
     def __init__(self):
-        """constructor"""
         self.midi_file: Optional[mido.MidiFile] = None
         self.ticks_per_beat: int = 480
 
         self.tempo_us: int = 500000  # default 120 BPM
         self._tempo_map: dict[int, int] = {}
-        self._tick_to_time: List[tuple[int, float]] = (
-            []
-        )  # (tick, cumulative seconds from 0)
+        self._tick_to_time: List[tuple[int, float]] = []  # (tick, cumulative seconds from 0)
 
         self._events: List[ScheduledEvent] = []
         self._event_index: int = 0
@@ -77,13 +71,12 @@ class PlaybackEngine:
 
     @property
     def state(self) -> TransportState:
-        """state property"""
         return self._state
 
     def _set_state(self, new_state: TransportState) -> None:
-        """set state"""
         if self._state == new_state:
             return
+
         self._state = new_state
         if new_state == TransportState.PLAYING:
             self._enter_playing()
@@ -93,19 +86,15 @@ class PlaybackEngine:
             self._enter_paused()
 
     def _enter_playing(self) -> None:
-        """enter playing"""
         self._is_playing = True
 
     def _enter_stopped(self) -> None:
-        """enter stopped"""
         self._is_playing = False
 
     def _enter_paused(self) -> None:
-        """enter paused state"""
         self._is_playing = False
 
     def load_file(self, midi_file: mido.MidiFile) -> None:
-        """Load File"""
         self.midi_file = midi_file
         self.ticks_per_beat = midi_file.ticks_per_beat
 
@@ -195,10 +184,8 @@ class PlaybackEngine:
                 prev_tempo = self._tempo_map[0]
                 continue
             segment_ticks = t - prev_tick
-            time_sec += (
-                segment_ticks
-                * (prev_tempo / MidiTempo.MICROSECONDS_PER_SECOND)
-                / self.ticks_per_beat
+            time_sec += mido.tick2second(
+                segment_ticks, self.ticks_per_beat, prev_tempo
             )
             out.append((t, time_sec))
             prev_tick = t
@@ -209,12 +196,9 @@ class PlaybackEngine:
         """Seconds from 0 to tick using segment-wise tempo (variable tempo safe)."""
         if tick <= 0:
             return 0.0
+        tempo = self._get_tempo_at_tick(0)
         if not self._tick_to_time:
-            return (
-                tick
-                * (self._get_tempo_at_tick(0) / MidiTempo.MICROSECONDS_PER_SECOND)
-                / self.ticks_per_beat
-            )
+            return mido.tick2second(tick, self.ticks_per_beat, tempo)
         # Find segment: last (t, time) where t <= tick
         idx = bisect.bisect_right([t for t, _ in self._tick_to_time], tick) - 1
         if idx < 0:
@@ -222,22 +206,17 @@ class PlaybackEngine:
         seg_tick, seg_time = self._tick_to_time[idx]
         tempo = self._get_tempo_at_tick(seg_tick)
         delta_ticks = tick - seg_tick
-        return (
-            seg_time
-            + delta_ticks
-            * (tempo / MidiTempo.MICROSECONDS_PER_SECOND)
-            / self.ticks_per_beat
+        return seg_time + mido.tick2second(
+            delta_ticks, self.ticks_per_beat, tempo
         )
 
     def _get_tempo_at_tick(self, tick: int) -> int:
-        """get tempo at tick"""
         applicable = [t for t in self._tempo_map if t <= tick]
         if not applicable:
             return 500000
         return self._tempo_map[max(applicable)]
 
     def process_until_now(self) -> None:
-        """process until now"""
         if not self._is_playing:
             return
 
@@ -247,7 +226,9 @@ class PlaybackEngine:
         while self._event_index < len(self._events):
             event = self._events[self._event_index]
 
-            event_time = self._tick_to_seconds(event.absolute_tick - self._start_tick)
+            event_time = self._tick_to_seconds(
+                event.absolute_tick - self._start_tick
+            )
 
             if event_time > elapsed:
                 break
@@ -262,7 +243,6 @@ class PlaybackEngine:
             self._set_state(TransportState.STOPPED)
 
     def _should_send(self, event: ScheduledEvent) -> bool:
-        """should send"""
         msg = event.message
 
         if event.track_index in self._muted_tracks:
@@ -281,21 +261,19 @@ class PlaybackEngine:
         return True
 
     def mute_channel(self, channel: int, muted: bool) -> None:
-        """Mute channel"""
         if muted:
             self._muted_channels.add(channel)
         else:
             self._muted_channels.discard(channel)
 
     def mute_track(self, track_index: int, muted: bool) -> None:
-        """mute track"""
         if muted:
             self._muted_tracks.add(track_index)
         else:
             self._muted_tracks.discard(track_index)
 
     def scrub_to_tick(self, tick: int) -> None:
-        """scrub to track"""
         self._event_index = self._find_start_index(tick)
         self._start_tick = tick
         self._start_time = time.time()
+
