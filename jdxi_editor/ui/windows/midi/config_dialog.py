@@ -180,7 +180,7 @@ class MIDIConfigDialog(QDialog):
         synth_layout = QVBoxLayout(synth_group)
 
         self.fluidsynth_enable = QCheckBox("Enable FluidSynth for local playback")
-        JDXi.UI.Theme.apply_partial_switch(self.fluidsynth_enable)
+        JDXi.UI.Theme.apply_button_mini_style(self.fluidsynth_enable)
         self.fluidsynth_enable.toggled.connect(self._toggle_fluidsynth_controls)
         synth_layout.addWidget(self.fluidsynth_enable)
 

@@ -366,10 +366,10 @@ class MidiFilePlayer(SynthEditor):
             cc_label,
             self.ui.midi_suppress_control_changes_checkbox,
         ]
-        JDXi.UI.Theme.apply_partial_switch(
+        JDXi.UI.Theme.apply_button_mini_style(
             self.ui.midi_suppress_program_changes_checkbox
         )
-        JDXi.UI.Theme.apply_partial_switch(
+        JDXi.UI.Theme.apply_button_mini_style(
             self.ui.midi_suppress_control_changes_checkbox
         )
         layout = create_layout_with_widgets(
@@ -723,7 +723,7 @@ class MidiFilePlayer(SynthEditor):
 
         # --- Row 2 still: Save USB recording checkbox
         self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_record_checkbox)
+        JDXi.UI.Theme.apply_button_mini_style(self.ui.usb_file_record_checkbox)
         self.ui.usb_file_record_checkbox.setChecked(
             self.usb_recorder.file_save_recording
         )
@@ -737,7 +737,7 @@ class MidiFilePlayer(SynthEditor):
         self.ui.usb_file_auto_generate_checkbox = QCheckBox(
             "Generate .Wav filename based on date, time and Midi file"
         )
-        JDXi.UI.Theme.apply_partial_switch(self.ui.usb_file_auto_generate_checkbox)
+        JDXi.UI.Theme.apply_button_mini_style(self.ui.usb_file_auto_generate_checkbox)
         self.ui.usb_file_auto_generate_checkbox.setChecked(False)
         self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
@@ -1189,17 +1189,31 @@ class MidiFilePlayer(SynthEditor):
 
         controls = [
             TransportSpec(
-                "play", JDXi.UI.Icon.PLAY, "Play", self.midi_playback_start, True
+                label="Play",
+                icon=JDXi.UI.Icon.PLAY,
+                tooltip="Play",
+                slot=self.midi_playback_start,
+                grouped=True,
+                name="play",
+                text="Play",
             ),
             TransportSpec(
-                "stop", JDXi.UI.Icon.STOP, "Stop", self.midi_playback_stop, True
+                label="Stop",
+                icon=JDXi.UI.Icon.STOP,
+                tooltip="Stop",
+                slot=self.midi_playback_stop,
+                grouped=True,
+                name="stop",
+                text="Stop",
             ),
             TransportSpec(
-                "pause",
-                JDXi.UI.Icon.PAUSE,
-                "Pause",
-                self.midi_playback_pause_toggle,
-                False,
+                label="Pause",
+                icon=JDXi.UI.Icon.PAUSE,
+                tooltip="Pause",
+                slot=self.midi_playback_pause_toggle,
+                grouped=False,
+                name="pause",
+                text="Pause",
             ),
         ]
 

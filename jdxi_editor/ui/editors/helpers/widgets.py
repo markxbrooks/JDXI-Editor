@@ -65,7 +65,10 @@ def create_jdxi_button_from_spec(
     button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
     button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
     button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
-    button.setToolTip(getattr(spec, "tooltip", "") or "")
+    tooltip = getattr(spec, "tooltip", "") or ""
+    if not isinstance(tooltip, str):
+        tooltip = ""
+    button.setToolTip(tooltip)
     button.setCheckable(checkable)
     if getattr(spec, "slot", None) is not None:
         button.clicked.connect(spec.slot)

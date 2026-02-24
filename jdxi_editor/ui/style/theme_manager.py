@@ -144,7 +144,7 @@ class JDXiUIThemeManager(QObject):
             JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.MIXER_LABEL)
 
     @staticmethod
-    def apply_partial_switch(widget: QWidget) -> None:
+    def apply_button_mini_style(widget: QWidget) -> None:
         """Apply partial switch (checkbox) style"""
         JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.PARTIAL_SWITCH)
 

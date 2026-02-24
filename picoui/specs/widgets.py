@@ -3,11 +3,24 @@ Button Spec
 """
 
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import Callable, List
 
 
 @dataclass
-class ButtonSpec:
+class UiNodeSpec:
+    """Node with Children"""
+    children: List["UiNodeSpec"] = field(default_factory=list)
+
+
+@dataclass
+class LeafSpec(UiNodeSpec):
+    def __post_init__(self):
+        if self.children:
+            raise ValueError(f"{self.__class__.__name__} cannot have children")
+
+
+@dataclass
+class ButtonSpec(UiNodeSpec):
     """Button Spec"""
     label: str = ""
     icon: str = ""
@@ -17,7 +30,7 @@ class ButtonSpec:
 
 
 @dataclass
-class MessageBoxSpec:
+class MessageBoxSpec(LeafSpec):
     """Message Box Spec"""
     title: str = ""
     message: str = ""
@@ -27,7 +40,7 @@ class MessageBoxSpec:
 
 
 @dataclass
-class CheckBoxSpec:
+class CheckBoxSpec(LeafSpec):
     """Button Spec"""
     label: str = ""
     tooltip: str = ""
@@ -37,7 +50,7 @@ class CheckBoxSpec:
 
 
 @dataclass
-class ComboBoxSpec:
+class ComboBoxSpec(LeafSpec):
     """Button Spec"""
     items: list = field(default_factory=list)
     tooltip: str = ""
@@ -45,7 +58,7 @@ class ComboBoxSpec:
 
 
 @dataclass
-class FileSelectionSpec:
+class FileSelectionSpec(LeafSpec):
     """class File Selection Spec"""
     mode: str = "save"
     file_type: str = "datasets"
@@ -55,14 +68,16 @@ class FileSelectionSpec:
 
 
 @dataclass
-class TabSpec:
-    name: str
+class TabSpec(UiNodeSpec):
+    """Tab Spec"""
+    name: str = ""
     icon: str | None = None
     widget_attr: str | None = None
 
 
 @dataclass
-class TabWidgetSpec:
+class TabWidgetSpec(UiNodeSpec):
+    """Tab Widget Spec"""
     name: str | None = None
     tabs: list[TabSpec] = field(default_factory=list)
 
@@ -74,7 +89,7 @@ class TabWidgetSpec:
 
 
 @dataclass
-class IconSpec:
+class IconSpec(LeafSpec):
     """IconSpec"""
     name: str = ""
     width: int = 40
@@ -82,9 +97,9 @@ class IconSpec:
 
 
 @dataclass
-class WindowSpec:
+class WindowSpec(UiNodeSpec):
     """WindowSpec"""
-    title: str
+    title: str = ""
     icon: IconSpec = field(default_factory=IconSpec)
     width: int = 750
     height: int = 400
