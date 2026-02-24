@@ -164,7 +164,7 @@ class PatternSequenceEditor(PatternUI):
             ),
             SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
         ]
-        self._init_midi_file()
+        # self._init_midi_file()
         self._initialize_default_measure()
 
         JDXi.UI.Theme.apply_editor_style(self)
@@ -224,6 +224,13 @@ class PatternSequenceEditor(PatternUI):
     def _on_learner_stopped(self) -> None:
         """When learner stops: disconnect learn handler, reconnect combo updates."""
         self.midi_helper.midi_message_incoming.disconnect(self._learn_pattern)
+        self._reconnect_combo_synchronizer()
+        self._sync_midi_track_from_learner()
+
+    def on_stop_learn_pattern_button_clicked(self):
+        """Disconnect MIDI from learn pattern and stop the learner."""
+        self.midi_helper.midi_message_incoming.disconnect(self._learn_pattern)
+        self._pattern_learner.stop_learning()
         self._reconnect_combo_synchronizer()
         self._sync_midi_track_from_learner()
 
@@ -611,10 +618,10 @@ class PatternSequenceEditor(PatternUI):
         return SequencerStyle.row_label(spec.accent_color)
 
     def _connect_midi_signals(self):
-        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
-        self.midi_helper.midi_message_outgoing.connect(
-            self._update_combo_boxes_from_outgoing
-        )
+        combo = getattr(self, "_combo_synchronizer", None)
+        if combo:
+            self._reconnect_combo_synchronizer()
+            self.midi_helper.midi_message_outgoing.connect(combo.process_outgoing_midi)
 
     def _create_selector_for_row(self, row_idx: int):
         """Create and return the combo selector for this row; assign to self for channel_map / _update_combo_boxes."""
@@ -662,17 +669,6 @@ class PatternSequenceEditor(PatternUI):
         row_buttons_layout.addLayout(step_buttons_layout)
 
         return row_buttons_layout
-
-    def _create_sequencer_row(self, row_idx: int, label_text: str) -> QVBoxLayout:
-        row_layout = QVBoxLayout()
-
-        header = self._create_row_header(row_idx, label_text)
-        buttons = self._create_row_buttons(row_idx)
-
-        row_layout.addLayout(header)
-        row_layout.addLayout(buttons)
-
-        return row_layout
 
     def _build_top_controls(self):
         self.content_widget = QWidget()
@@ -970,91 +966,14 @@ class PatternSequenceEditor(PatternUI):
         return measure
 
     def on_learn_pattern_button_clicked(self):
-        """Connect the MIDI input to the learn pattern function."""
-        self.midi_helper.midi_message_incoming.connect(self._learn_pattern)
-        self.midi_helper.midi_message_incoming.disconnect(self._update_combo_boxes)
-
-    def on_stop_learn_pattern_button_clicked(self):
-        """Disconnect the MIDI input from the learn pattern function and update combo boxes."""
-        self.midi_helper.midi_message_incoming.disconnect(self._learn_pattern)
-        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
-
-    def _update_combo_boxes_from_outgoing(self, message):
-        """
-        Update combo boxes from outgoing MIDI messages (sent from virtual instrument).
-        Converts raw message list to mido Message and calls _update_combo_boxes.
-
-        :param message: List[int] or mido.Message Raw MIDI message bytes or mido Message
-        """
-        try:
-            # If it's already a mido Message, use it directly
-            if isinstance(message, Message):
-                self._update_combo_boxes(message)
-                return
-
-            # Convert raw message list to mido Message
-            if isinstance(message, (list, tuple)) and len(message) >= 2:
-                status_byte = message[0]
-                note = message[1]
-                velocity = message[2] if len(message) > 2 else 0
-
-                # Extract channel from status byte
-                # Note On: 0x90-0x9F, Note Off: 0x80-0x8F
-                if (status_byte & MidiMessage.MIDI_STATUS_MASK) in (
-                        NOTE_ON,
-                        NOTE_OFF,
-                ):  # Note On or Note Off
-                    channel = status_byte & MidiMessage.MIDI_STATUS_MASK
-                    msg_type = (
-                        MidoMessageType.NOTE_ON
-                        if (status_byte & MidiMessage.MIDI_STATUS_MASK) == NOTE_ON
-                           and velocity > 0
-                        else MidoMessageType.NOTE_OFF
-                    )
-
-                    # Create mido Message
-                    mido_msg = Message(
-                        msg_type, note=note, velocity=velocity, channel=channel
-                    )
-                    self._update_combo_boxes(mido_msg)
-        except Exception as ex:
-            log.debug(
-                f"Error updating combo boxes from outgoing message: {ex}",
-                scope=self.__class__.__name__,
+        """Connect MIDI to learn pattern and start the learner."""
+        if self._combo_synchronizer:
+            self.midi_helper.midi_message_incoming.disconnect(
+                self._combo_synchronizer.process_incoming_midi
             )
-
-    def _update_combo_boxes(self, message):
-        """Update the combo box index to match the note for each channel."""
-        if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
-            note = message.note  # mido uses lowercase 'note'
-            channel = message.channel
-            if not silence_midi_note_logging():
-                log.message(
-                    message=f"message note: {note} channel: {channel}",
-                    scope=self.__class__.__name__,
-                )
-
-            # Calculate combo box index (notes start at MIDI note 36 = C2)
-            combo_index = note - 36
-
-            # Ensure index is valid
-            if combo_index < 0:
-                log.debug(
-                    message=f"Note {note} is below C2 (36), skipping combo box update",
-                    scope=self.__class__.__name__,
-                )
-                return
-
-            channel_map = {
-                MidiChannel.DIGITAL_SYNTH_1: self.digital1_selector,
-                MidiChannel.DIGITAL_SYNTH_2: self.digital2_selector,
-                MidiChannel.ANALOG_SYNTH: self.analog_selector,
-                MidiChannel.DRUM_KIT: self.drum_selector,
-            }
-            selector = channel_map.get(channel)
-            if selector is not None:
-                if combo_index < selector.count():
-                    selector.setCurrentIndex(combo_index)
+        self.midi_helper.midi_message_incoming.connect(self._learn_pattern)
+        self._pattern_learner.start_learning()
+        self.current_step = self._pattern_learner.current_step
 
     def _midi_note_to_combo_index(self, row, midi_note):
         """Convert a MIDI note number to the corresponding combo box index."""

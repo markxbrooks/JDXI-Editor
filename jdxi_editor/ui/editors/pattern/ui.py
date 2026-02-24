@@ -318,6 +318,7 @@ class PatternUI(SynthEditor):
         return row_buttons_layout
 
     def _create_sequencer_row(self, row_idx: int, label_text: str) -> QVBoxLayout:
+        """create sequencer row deprecated"""
         row_layout = QVBoxLayout()
 
         header = self._create_row_header(row_idx, label_text)
