@@ -4,7 +4,6 @@ Midi Widget Utils
 
 import mido
 from mido import MidiFile
-
 from picomidi import Midi, MidiTempo
 from picomidi.message.type import MidoMessageType
 from PySide6.QtGui import QColor
@@ -46,7 +45,9 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
 
     for abs_tick, msg in events:
         delta_ticks = abs_tick - last_tick
-        time_seconds += (current_tempo / MidiTempo.MICROSECONDS_PER_SECOND) * (delta_ticks / ticks_per_beat)
+        time_seconds += (current_tempo / MidiTempo.MICROSECONDS_PER_SECOND) * (
+            delta_ticks / ticks_per_beat
+        )
         last_tick = abs_tick
 
         if msg.type == MidoMessageType.SET_TEMPO:

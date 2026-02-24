@@ -20,20 +20,8 @@ import datetime
 from typing import Any, Callable, Optional
 
 import mido
-
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
-
-from jdxi_editor.ui.editors.pattern.helper import reset_button, reset_measure, get_button_note_spec, \
-    sync_button_note_spec, update_button_state
-from jdxi_editor.ui.editors.pattern.learner import (
-    PatternLearner,
-    PatternLearnerConfig,
-    PatternLearnerEvent,
-)
-from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs, ButtonAttrs, ClipboardData, SequencerEvent
-from jdxi_editor.ui.editors.pattern.ui import PatternUI
-from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi import MidiTempo
 from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Qt, QTimer
@@ -55,19 +43,14 @@ from jdxi_editor.midi.file.controller import (
     MidiFileController,
     MidiFileControllerConfig,
 )
-from jdxi_editor.ui.widgets.combo_box.synchronizer import (
-    ComboBoxSynchronizer,
-    ComboBoxUpdateConfig,
-)
-from jdxi_editor.ui.sequencer.button.manager import SequencerButtonManager
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message import MidiMessage
-from jdxi_editor.ui.editors.helpers.widgets import (
-    create_jdxi_button_with_label_from_spec
-)
 from jdxi_editor.midi.playback.controller import (
-    PlaybackConfig,
     PatternPlaybackController,
+    PlaybackConfig,
+)
+from jdxi_editor.ui.editors.helpers.widgets import (
+    create_jdxi_button_with_label_from_spec,
 )
 from jdxi_editor.ui.editors.midi_player.playback.engine import (
     PlaybackEngine,
@@ -76,8 +59,33 @@ from jdxi_editor.ui.editors.midi_player.playback.engine import (
 from jdxi_editor.ui.editors.midi_player.transport.spec import (
     TransportSpec,
 )
+from jdxi_editor.ui.editors.pattern.helper import (
+    get_button_note_spec,
+    reset_button,
+    reset_measure,
+    sync_button_note_spec,
+    update_button_state,
+)
+from jdxi_editor.ui.editors.pattern.learner import (
+    PatternLearner,
+    PatternLearnerConfig,
+    PatternLearnerEvent,
+)
+from jdxi_editor.ui.editors.pattern.models import (
+    ButtonAttrs,
+    ClipboardData,
+    NoteButtonAttrs,
+    SequencerEvent,
+)
+from jdxi_editor.ui.editors.pattern.ui import PatternUI
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.sequencer.button.manager import SequencerButtonManager
+from jdxi_editor.ui.widgets.combo_box.synchronizer import (
+    ComboBoxSynchronizer,
+    ComboBoxUpdateConfig,
+)
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.specs.widgets import (
     ButtonSpec,
     ComboBoxSpec,
@@ -96,16 +104,18 @@ class PatternSequenceEditor(PatternUI):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper],
-            preset_helper: Optional[JDXiPresetHelper],
-            parent: Optional[QWidget] = None,
-            midi_file_editor: Optional[Any] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper],
+        preset_helper: Optional[JDXiPresetHelper],
+        parent: Optional[QWidget] = None,
+        midi_file_editor: Optional[Any] = None,
     ):
-        super().__init__(parent=parent,
-                         midi_helper=midi_helper,
-                         preset_helper=preset_helper,
-                         midi_file_editor=midi_file_editor)
+        super().__init__(
+            parent=parent,
+            midi_helper=midi_helper,
+            preset_helper=preset_helper,
+            midi_file_editor=midi_file_editor,
+        )
         self._init_playing_controllers()
         self._connect_midi_signals()
         self._init_midi_file()
@@ -182,8 +192,12 @@ class PatternSequenceEditor(PatternUI):
             playback_engine=self.playback_engine,
             scope=self.__class__.__name__,
         )
-        self._playback_controller.on_playback_started = self._on_playback_controller_started
-        self._playback_controller.on_playback_stopped = self._on_playback_controller_stopped
+        self._playback_controller.on_playback_started = (
+            self._on_playback_controller_started
+        )
+        self._playback_controller.on_playback_stopped = (
+            self._on_playback_controller_stopped
+        )
         self._playback_controller.on_measure_changed = self._on_playback_measure_changed
         self._playback_controller.on_step_changed = self._on_playback_step_changed
         if self.midi_helper:
@@ -318,14 +332,14 @@ class PatternSequenceEditor(PatternUI):
                 # Extract channel from status byte
                 # Note On: 0x90-0x9F, Note Off: 0x80-0x8F
                 if (status_byte & MidiMessage.MIDI_STATUS_MASK) in (
-                        NOTE_ON,
-                        NOTE_OFF,
+                    NOTE_ON,
+                    NOTE_OFF,
                 ):  # Note On or Note Off
                     channel = status_byte & MidiMessage.MIDI_STATUS_MASK
                     msg_type = (
                         MidoMessageType.NOTE_ON
                         if (status_byte & MidiMessage.MIDI_STATUS_MASK) == NOTE_ON
-                           and velocity > 0
+                        and velocity > 0
                         else MidoMessageType.NOTE_OFF
                     )
 
@@ -411,7 +425,7 @@ class PatternSequenceEditor(PatternUI):
             for row in range():
                 for step in range(self.measure_beats):
                     if step < len(previous_measure.buttons[row]) and step < len(
-                            measure.buttons[row]
+                        measure.buttons[row]
                     ):
                         previous_button = previous_measure.buttons[row][step]
                         new_button = measure.buttons[row][step]
@@ -675,7 +689,9 @@ class PatternSequenceEditor(PatternUI):
         self.set_tempo(bpm)
         if self.timer and self.timer.isActive():
             # Update timer interval for running sequence
-            ms_per_step = (MidiTempo.MILLISECONDS_PER_MINUTE / bpm) / 4  # ms per 16th note
+            ms_per_step = (
+                MidiTempo.MILLISECONDS_PER_MINUTE / bpm
+            ) / 4  # ms per 16th note
             self.timer.setInterval(int(ms_per_step))
 
     def _on_tap_tempo(self):
@@ -772,7 +788,9 @@ class PatternSequenceEditor(PatternUI):
 
         # Update playback speed if sequence is running
         if hasattr(self, "timer") and self.timer and self.timer.isActive():
-            ms_per_step = (MidiTempo.MILLISECONDS_PER_MINUTE / self.bpm) / 4  # ms per 16th note
+            ms_per_step = (
+                MidiTempo.MILLISECONDS_PER_MINUTE / self.bpm
+            ) / 4  # ms per 16th note
             self.timer.setInterval(int(ms_per_step))
 
         log.message(
@@ -790,15 +808,25 @@ class PatternSequenceEditor(PatternUI):
         """get channel for row, i.e. 1, 2 or 3, and deal with the drum kit on MIDI Ch 9"""
         return row if row < 3 else MidiChannel.DRUM_KIT
 
-    def _step_to_ticks(self, measure_index: int,
-                       step: int,
-                       steps_per_measure: int = 16,
-                       ticks_per_step: int = 120) -> int:
-        """Convert steps """
+    def _step_to_ticks(
+        self,
+        measure_index: int,
+        step: int,
+        steps_per_measure: int = 16,
+        ticks_per_step: int = 120,
+    ) -> int:
+        """Convert steps"""
         absolute_step = measure_index * steps_per_measure + step
         return absolute_step * ticks_per_step
 
-    def _append_note_messages(self, track: mido.MidiTrack, spec, channel, start_tick, ticks_per_step: int = 120):
+    def _append_note_messages(
+        self,
+        track: mido.MidiTrack,
+        spec,
+        channel,
+        start_tick,
+        ticks_per_step: int = 120,
+    ):
         """append note message"""
         track.append(
             Message(
@@ -830,12 +858,8 @@ class PatternSequenceEditor(PatternUI):
         track = MidiTrack()
         self.midi_file.tracks.append(track)
 
-        track.append(
-            MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm))
-        )
-        track.append(
-            MetaMessage("time_signature", numerator=4, denominator=4)
-        )
+        track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm)))
+        track.append(MetaMessage("time_signature", numerator=4, denominator=4))
 
         for row in range(ROWS):
             channel = self._get_channel_for_row(row)
@@ -902,7 +926,7 @@ class PatternSequenceEditor(PatternUI):
             self._load_midi_file(midi_file)
 
     def load_from_midi_file_editor(
-            self, midi_file_editor: Optional[Any] = None
+        self, midi_file_editor: Optional[Any] = None
     ) -> None:
         """
         Load pattern from a MidiFileEditor's current MIDI file.
@@ -939,6 +963,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
             import traceback
+
             log.debug(traceback.format_exc())
 
     def _load_notes_from_tracks(self, tracks, channel_to_row, ticks_per_measure) -> int:
@@ -973,7 +998,9 @@ class PatternSequenceEditor(PatternUI):
                     button = measure.buttons[row][step_in_measure]
                     update_button_state(button, True)
                     button.note = msg.note
-                    button.note_velocity = getattr(msg, "velocity", self.velocity_spinbox.value())
+                    button.note_velocity = getattr(
+                        msg, "velocity", self.velocity_spinbox.value()
+                    )
                     button.note_duration = self._get_duration_ms()
                     sync_button_note_spec(button)
                     notes_loaded += 1
@@ -1028,7 +1055,7 @@ class PatternSequenceEditor(PatternUI):
         if hasattr(midi_file, "filename"):
             filename = midi_file.filename
         elif hasattr(editor.midi_state, "file") and hasattr(
-                editor.midi_state.file, "filename"
+            editor.midi_state.file, "filename"
         ):
             filename = editor.midi_state.file.filename
         return filename
@@ -1091,9 +1118,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Keep editor references in sync with controller's current file
         self.midi_file = self._midi_file_controller.midi_file
-        self.midi_track = (
-            self.midi_file.tracks[0] if self.midi_file.tracks else None
-        )
+        self.midi_track = self.midi_file.tracks[0] if self.midi_file.tracks else None
 
         log.message(
             message=f"Pattern saved to {filename}", scope=self.__class__.__name__
@@ -1168,7 +1193,9 @@ class PatternSequenceEditor(PatternUI):
 
                 # Add to measures list
                 item = QListWidgetItem(f"{self.measure_name} {measure_num + 1}")
-                item.setData(Qt.ItemDataRole.UserRole, measure_num)  # Store measure index
+                item.setData(
+                    Qt.ItemDataRole.UserRole, measure_num
+                )  # Store measure index
                 self.measures_list.addItem(item)
 
             # Update total measures
@@ -1201,8 +1228,8 @@ class PatternSequenceEditor(PatternUI):
 
                     # Collect note_on and note_off events
                     if hasattr(msg, "channel") and (
-                            msg.type == MidoMessageType.NOTE_ON
-                            or msg.type == MidoMessageType.NOTE_OFF
+                        msg.type == MidoMessageType.NOTE_ON
+                        or msg.type == MidoMessageType.NOTE_OFF
                     ):
                         note_events.append(
                             (absolute_time, msg, msg.channel, current_tempo)
@@ -1220,7 +1247,7 @@ class PatternSequenceEditor(PatternUI):
                     # Store note_on event
                     active_notes[note_key] = (abs_time, tempo)
                 elif msg.type == MidoMessageType.NOTE_OFF or (
-                        msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
                 ):
                     # Find matching note_on
                     if note_key in active_notes:
@@ -1246,7 +1273,9 @@ class PatternSequenceEditor(PatternUI):
 
                     # Calculate which measure and step this note belongs to
                     measure_index = int(abs_time / ticks_per_measure)
-                    step_in_measure = int((abs_time % ticks_per_measure) / (ticks_per_measure / 16))
+                    step_in_measure = int(
+                        (abs_time % ticks_per_measure) / (ticks_per_measure / 16)
+                    )
 
                     # Ensure we have enough measures (safety check)
                     while measure_index >= len(self.measures):
@@ -1277,7 +1306,7 @@ class PatternSequenceEditor(PatternUI):
                                 # Default to step duration if no note_off found
                                 # Step duration = (ticks_per_measure / 16) / ppq * tempo / 1000
                                 step_duration_ms = (ticks_per_measure / 16.0 / ppq) * (
-                                        tempo / 1000.0
+                                    tempo / 1000.0
                                 )
                                 button.note_duration = step_duration_ms
 
@@ -1323,7 +1352,8 @@ class PatternSequenceEditor(PatternUI):
         try:
             midi_file = MidiFile(filename)
             log.message(
-                f"Loading pattern from MIDI file: {filename}", scope=self.__class__.__name__
+                f"Loading pattern from MIDI file: {filename}",
+                scope=self.__class__.__name__,
             )
 
             # Step 1: Clear measures and create measures
@@ -1332,7 +1362,9 @@ class PatternSequenceEditor(PatternUI):
             self._create_measures(num_measures)
 
             # Step 2: Build note events with absolute time & tempo
-            note_events, note_durations = self._collect_midi_notes_with_durations(midi_file)
+            note_events, note_durations = self._collect_midi_notes_with_durations(
+                midi_file
+            )
 
             # Step 3: Assign notes and durations to sequencer buttons
             notes_loaded = self._assign_notes_to_buttons(note_events, note_durations)
@@ -1375,8 +1407,8 @@ class PatternSequenceEditor(PatternUI):
                     current_tempo = msg.tempo
 
                 if hasattr(msg, "channel") and getattr(msg, "type", None) in (
-                        MidoMessageType.NOTE_ON,
-                        MidoMessageType.NOTE_OFF,
+                    MidoMessageType.NOTE_ON,
+                    MidoMessageType.NOTE_OFF,
                 ):
                     note_events.append((absolute_time, msg, msg.channel, current_tempo))
 
@@ -1385,7 +1417,7 @@ class PatternSequenceEditor(PatternUI):
             if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
                 active_notes[key] = (abs_time, tempo)
             elif msg.type == MidoMessageType.NOTE_OFF or (
-                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
             ):
                 if key in active_notes:
                     on_time, on_tempo = active_notes[key]
@@ -1417,7 +1449,9 @@ class PatternSequenceEditor(PatternUI):
 
             row = channel_to_row[channel]
             measure_index = int(abs_time / ticks_per_measure)
-            step_in_measure = int((abs_time % ticks_per_measure) / (ticks_per_measure / 16))
+            step_in_measure = int(
+                (abs_time % ticks_per_measure) / (ticks_per_measure / 16)
+            )
 
             # Ensure measure exists
             while measure_index >= len(self.measures):
@@ -1445,11 +1479,11 @@ class PatternSequenceEditor(PatternUI):
         spinbox.blockSignals(False)
 
     def _add_button_with_label_from_spec(
-            self,
-            name: str,
-            spec: ButtonSpec,
-            layout: QHBoxLayout,
-            slot: Optional[Callable[[], None]] = None,
+        self,
+        name: str,
+        spec: ButtonSpec,
+        layout: QHBoxLayout,
+        slot: Optional[Callable[[], None]] = None,
     ) -> QPushButton:
         """Create a round button + label row from a ButtonSpec and add to layout."""
         label_row, btn = create_jdxi_button_with_label_from_spec(spec, checkable=False)
@@ -1534,7 +1568,9 @@ class PatternSequenceEditor(PatternUI):
         if duration_ms <= 0:
             return 0
 
-        ticks = duration_ms * self.bpm * ticks_per_beat / MidiTempo.MILLISECONDS_PER_MINUTE
+        ticks = (
+            duration_ms * self.bpm * ticks_per_beat / MidiTempo.MILLISECONDS_PER_MINUTE
+        )
         return max(1, int(ticks))
 
     def _collect_sequencer_events(self, ticks_per_beat: int) -> list[SequencerEvent]:
@@ -1566,8 +1602,8 @@ class PatternSequenceEditor(PatternUI):
                     channel = row if row < 3 else 9
                     velocity = max(0, min(127, spec.velocity))
                     duration_ticks = (
-                            self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
-                            or ticks_per_step
+                        self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
+                        or ticks_per_step
                     )
 
                     events.append(
@@ -1676,9 +1712,7 @@ class PatternSequenceEditor(PatternUI):
         """Drive PatternPlaybackController and sync position; callbacks handle measure/step UI."""
         if not self._playback_controller:
             return
-        total_steps = (
-            len(self.measures) * self.measure_beats if self.measures else 0
-        )
+        total_steps = len(self.measures) * self.measure_beats if self.measures else 0
         pos = self._playback_controller.process_playback_tick(total_steps)
         if pos is not None:
             self.current_step = pos.global_step
@@ -1752,8 +1786,8 @@ class PatternSequenceEditor(PatternUI):
 
         log.message(
             message=f"Playing step {step_in_measure} in measure {measure_index + 1} "
-                    f"(global step {global_step}"
-                    f" {self.measure_beats} beats per measure)",
+            f"(global step {global_step}"
+            f" {self.measure_beats} beats per measure)",
             scope=self.__class__.__name__,
         )
 
@@ -1799,7 +1833,11 @@ class PatternSequenceEditor(PatternUI):
 
                                 # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
                                 note_duration_ms = play_spec.duration_ms or (
-                                        (float(MidiTempo.MILLISECONDS_PER_MINUTE) / self.bpm) / 4.0
+                                    (
+                                        float(MidiTempo.MILLISECONDS_PER_MINUTE)
+                                        / self.bpm
+                                    )
+                                    / 4.0
                                 )
 
                                 QTimer.singleShot(
@@ -1830,7 +1868,7 @@ class PatternSequenceEditor(PatternUI):
                     button = self.buttons[row][col]
                     is_checked = button.isChecked()
                     is_current = (
-                            step_in_measure == col
+                        step_in_measure == col
                     )  # Current step within the displayed measure
                     button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(

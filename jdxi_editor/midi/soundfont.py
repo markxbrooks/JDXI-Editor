@@ -6,8 +6,7 @@ import time
 import fluidsynth
 import mido
 from mido import MidiFile
-
-from picomidi import MidiTempo, Midi
+from picomidi import Midi, MidiTempo
 from picomidi.message.type import MidoMessageType
 
 from jdxi_editor.midi.synth_select import list_and_select_instrument
@@ -122,7 +121,9 @@ def get_total_duration_in_seconds(midi_file):
 
     for abs_tick, msg in events:
         delta_ticks = abs_tick - last_tick
-        time_seconds += (current_tempo / MidiTempo.MICROSECONDS_PER_SECOND) * (delta_ticks / ticks_per_beat)
+        time_seconds += (current_tempo / MidiTempo.MICROSECONDS_PER_SECOND) * (
+            delta_ticks / ticks_per_beat
+        )
         last_tick = abs_tick
 
         if msg.type == MidoMessageType.SET_TEMPO:
@@ -154,7 +155,9 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
     # Play messages with proper timing
     start_time = time.time()
-    print(f"[INFO] Starting playback with {mido.tempo2bpm(Midi.TEMPO.BPM_120_USEC):.1f} BPM")
+    print(
+        f"[INFO] Starting playback with {mido.tempo2bpm(Midi.TEMPO.BPM_120_USEC):.1f} BPM"
+    )
 
     for abs_tick, msg, msg_tempo in events:
         # Calculate when this message should be played using its tempo

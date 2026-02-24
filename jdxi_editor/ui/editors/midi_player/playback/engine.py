@@ -5,7 +5,6 @@ from enum import Enum, auto
 from typing import Callable, List, Optional
 
 import mido
-
 from picomidi import MidiTempo
 
 
@@ -196,7 +195,11 @@ class PlaybackEngine:
                 prev_tempo = self._tempo_map[0]
                 continue
             segment_ticks = t - prev_tick
-            time_sec += segment_ticks * (prev_tempo / MidiTempo.MICROSECONDS_PER_SECOND) / self.ticks_per_beat
+            time_sec += (
+                segment_ticks
+                * (prev_tempo / MidiTempo.MICROSECONDS_PER_SECOND)
+                / self.ticks_per_beat
+            )
             out.append((t, time_sec))
             prev_tick = t
             prev_tempo = self._tempo_map[t]
@@ -207,7 +210,11 @@ class PlaybackEngine:
         if tick <= 0:
             return 0.0
         if not self._tick_to_time:
-            return tick * (self._get_tempo_at_tick(0) / MidiTempo.MICROSECONDS_PER_SECOND) / self.ticks_per_beat
+            return (
+                tick
+                * (self._get_tempo_at_tick(0) / MidiTempo.MICROSECONDS_PER_SECOND)
+                / self.ticks_per_beat
+            )
         # Find segment: last (t, time) where t <= tick
         idx = bisect.bisect_right([t for t, _ in self._tick_to_time], tick) - 1
         if idx < 0:
@@ -215,7 +222,12 @@ class PlaybackEngine:
         seg_tick, seg_time = self._tick_to_time[idx]
         tempo = self._get_tempo_at_tick(seg_tick)
         delta_ticks = tick - seg_tick
-        return seg_time + delta_ticks * (tempo / MidiTempo.MICROSECONDS_PER_SECOND) / self.ticks_per_beat
+        return (
+            seg_time
+            + delta_ticks
+            * (tempo / MidiTempo.MICROSECONDS_PER_SECOND)
+            / self.ticks_per_beat
+        )
 
     def _get_tempo_at_tick(self, tick: int) -> int:
         """get tempo at tick"""

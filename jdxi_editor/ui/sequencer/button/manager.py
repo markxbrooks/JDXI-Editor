@@ -158,9 +158,15 @@ class SequencerButtonManager:
                 button.note = midi_note
 
                 # Set duration and velocity
-                if not hasattr(button, NoteButtonAttrs.NOTE_DURATION) or button.note_duration is None:
+                if (
+                    not hasattr(button, NoteButtonAttrs.NOTE_DURATION)
+                    or button.note_duration is None
+                ):
                     button.note_duration = self._get_duration()
-                if not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY) or button.note_velocity is None:
+                if (
+                    not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY)
+                    or button.note_velocity is None
+                ):
                     button.note_velocity = self._get_velocity()
 
                 # Sync button note spec
@@ -498,8 +504,9 @@ class SequencerButtonManager:
             measure = measures[self.current_measure_index]
             step_in_bar = button.column
 
-            if (button.row < len(measure.buttons) and
-                step_in_bar < len(measure.buttons[button.row])):
+            if button.row < len(measure.buttons) and step_in_bar < len(
+                measure.buttons[button.row]
+            ):
 
                 measure_button = measure.buttons[button.row][step_in_bar]
                 self._update_button_state_silent(measure_button, checked)
@@ -599,8 +606,12 @@ class SequencerButtonManager:
         return ButtonState(
             is_checked=button.isChecked(),
             note=getattr(button, NoteButtonAttrs.NOTE, None),
-            velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, self.default_velocity),
-            duration_ms=getattr(button, NoteButtonAttrs.NOTE_DURATION, self.default_duration_ms),
+            velocity=getattr(
+                button, NoteButtonAttrs.NOTE_VELOCITY, self.default_velocity
+            ),
+            duration_ms=getattr(
+                button, NoteButtonAttrs.NOTE_DURATION, self.default_duration_ms
+            ),
         )
 
     def _sync_button_note_spec(self, button) -> None:
@@ -614,8 +625,12 @@ class SequencerButtonManager:
             if hasattr(button, "note_spec"):
                 note_spec = self._create_note_spec(
                     note=getattr(button, NoteButtonAttrs.NOTE, None),
-                    duration_ms=getattr(button, NoteButtonAttrs.NOTE_DURATION, self.default_duration_ms),
-                    velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, self.default_velocity),
+                    duration_ms=getattr(
+                        button, NoteButtonAttrs.NOTE_DURATION, self.default_duration_ms
+                    ),
+                    velocity=getattr(
+                        button, NoteButtonAttrs.NOTE_VELOCITY, self.default_velocity
+                    ),
                 )
                 button.note_spec = note_spec
 
@@ -634,6 +649,7 @@ class SequencerButtonManager:
         :param velocity: Velocity (0-127)
         :return: NoteButtonSpec-like object
         """
+
         class NoteSpec:
             def __init__(self, note, duration_ms, velocity):
                 self.note = note
@@ -645,7 +661,9 @@ class SequencerButtonManager:
 
     def _create_empty_note_spec(self):
         """Create an empty note spec."""
-        return self._create_note_spec(None, self.default_duration_ms, self.default_velocity)
+        return self._create_note_spec(
+            None, self.default_duration_ms, self.default_velocity
+        )
 
     def _reset_button_internal(self, button) -> None:
         """Internal button reset (without logging)."""
@@ -700,8 +718,18 @@ class SequencerButtonManager:
         """
         try:
             note_to_semitone = {
-                "C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
-                "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11,
+                "C": 0,
+                "C#": 1,
+                "D": 2,
+                "D#": 3,
+                "E": 4,
+                "F": 5,
+                "F#": 6,
+                "G": 7,
+                "G#": 8,
+                "A": 9,
+                "A#": 10,
+                "B": 11,
             }
 
             if "#" in note_name:

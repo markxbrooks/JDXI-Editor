@@ -117,6 +117,7 @@ class PatternLearner:
 
         # MIDI track for recording raw messages
         from mido import MidiTrack
+
         self.midi_track = MidiTrack()
 
         # Callbacks for external event handling
@@ -327,10 +328,10 @@ class PatternLearner:
 
         # Fallback to hardcoded ranges
         ranges = {
-            0: range(60, 72),   # C4 to B4 (Digital Synth 1)
-            1: range(60, 72),   # C4 to B4 (Digital Synth 2)
-            2: range(48, 60),   # C3 to B3 (Analog Synth)
-            3: range(36, 48),   # C2 to B2 (Drums)
+            0: range(60, 72),  # C4 to B4 (Digital Synth 1)
+            1: range(60, 72),  # C4 to B4 (Digital Synth 2)
+            2: range(48, 60),  # C3 to B3 (Analog Synth)
+            3: range(36, 48),  # C2 to B2 (Drums)
         }
 
         for row, note_range in ranges.items():
@@ -438,15 +439,9 @@ if __name__ == "__main__":
     learner.process_midi_message(
         Message(MidoMessageType.NOTE_ON, note=60, velocity=100)
     )
-    learner.process_midi_message(
-        Message(MidoMessageType.NOTE_OFF, note=60, velocity=0)
-    )
-    learner.process_midi_message(
-        Message(MidoMessageType.NOTE_ON, note=64, velocity=80)
-    )
-    learner.process_midi_message(
-        Message(MidoMessageType.NOTE_OFF, note=64, velocity=0)
-    )
+    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF, note=60, velocity=0))
+    learner.process_midi_message(Message(MidoMessageType.NOTE_ON, note=64, velocity=80))
+    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF, note=64, velocity=0))
 
     # Get results
     log.message("\nLearned pattern:", learner.get_learned_pattern())

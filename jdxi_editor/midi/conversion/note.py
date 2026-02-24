@@ -31,7 +31,18 @@ class MidiNoteConverter:
 
     # Reverse mapping for conversion from semitone to note
     SEMITONE_TO_NOTE: List[str] = [
-        "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B",
     ]
 
     # Note ranges for each row in the sequencer
@@ -40,10 +51,10 @@ class MidiNoteConverter:
     # Row 2: Analog Synth (C3-B3)
     # Row 3: Drums (C2-B2, mapped to drum kit names)
     NOTE_RANGES: Dict[int, range] = {
-        0: range(60, 72),   # C4 to B4 (Digital Synth 1)
-        1: range(60, 72),   # C4 to B4 (Digital Synth 2)
-        2: range(48, 60),   # C3 to B3 (Analog Synth)
-        3: range(36, 48),   # C2 to B2 (Drums)
+        0: range(60, 72),  # C4 to B4 (Digital Synth 1)
+        1: range(60, 72),  # C4 to B4 (Digital Synth 2)
+        2: range(48, 60),  # C3 to B3 (Analog Synth)
+        3: range(36, 48),  # C2 to B2 (Drums)
     }
 
     def __init__(self, drum_options: Optional[List[str]] = None):
@@ -89,7 +100,9 @@ class MidiNoteConverter:
         midi_note = (octave + 1) * 12 + semitone
 
         if not (0 <= midi_note <= 127):
-            raise ValueError(f"Calculated MIDI note {midi_note} is out of range (0-127)")
+            raise ValueError(
+                f"Calculated MIDI note {midi_note} is out of range (0-127)"
+            )
 
         return midi_note
 
@@ -228,11 +241,31 @@ if __name__ == "__main__":
     # Initialize converter
     converter = MidiNoteConverter(
         drum_options=[
-            "Kick", "Snare", "Hi-Hat", "Tom", "Crash",
-            "Ride", "Perc1", "Perc2", "Perc3", "Perc4",
-            "Perc5", "Perc6", "Perc7", "Perc8", "Perc9",
-            "Perc10", "Perc11", "Perc12", "Perc13", "Perc14",
-            "Perc15", "Perc16", "Perc17", "Perc18", "Perc19",
+            "Kick",
+            "Snare",
+            "Hi-Hat",
+            "Tom",
+            "Crash",
+            "Ride",
+            "Perc1",
+            "Perc2",
+            "Perc3",
+            "Perc4",
+            "Perc5",
+            "Perc6",
+            "Perc7",
+            "Perc8",
+            "Perc9",
+            "Perc10",
+            "Perc11",
+            "Perc12",
+            "Perc13",
+            "Perc14",
+            "Perc15",
+            "Perc16",
+            "Perc17",
+            "Perc18",
+            "Perc19",
         ]
     )
 
@@ -246,8 +279,12 @@ if __name__ == "__main__":
     log.message(f"MIDI 69 -> {converter.midi_to_note_name(69)}")  # A4
 
     # Convert MIDI to drum name
-    log.message(f"MIDI 36 (drums) -> {converter.midi_to_note_name(36, drums=True)}")  # Kick
-    log.message(f"MIDI 37 (drums) -> {converter.midi_to_note_name(37, drums=True)}")  # Snare
+    log.message(
+        f"MIDI 36 (drums) -> {converter.midi_to_note_name(36, drums=True)}"
+    )  # Kick
+    log.message(
+        f"MIDI 37 (drums) -> {converter.midi_to_note_name(37, drums=True)}"
+    )  # Snare
 
     # Check note ranges
     log.message(f"Note 60 in row 0? {converter.is_note_in_row_range(0, 60)}")  # True

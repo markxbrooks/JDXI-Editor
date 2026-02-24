@@ -88,8 +88,8 @@ class MidiFileController:
     CHANNEL_TO_ROW = {
         MidiChannel.DIGITAL_SYNTH_1: 0,  # Channel 0
         MidiChannel.DIGITAL_SYNTH_2: 1,  # Channel 1
-        MidiChannel.ANALOG_SYNTH: 2,     # Channel 2
-        MidiChannel.DRUM_KIT: 3,         # Channel 9
+        MidiChannel.ANALOG_SYNTH: 2,  # Channel 2
+        MidiChannel.DRUM_KIT: 3,  # Channel 9
     }
 
     ROW_TO_CHANNEL = {v: k for k, v in CHANNEL_TO_ROW.items()}
@@ -512,9 +512,7 @@ class MidiFileController:
                     msg.type == MidoMessageType.NOTE_ON
                     or msg.type == MidoMessageType.NOTE_OFF
                 ):
-                    note_events.append(
-                        (absolute_time, msg, msg.channel, current_tempo)
-                    )
+                    note_events.append((absolute_time, msg, msg.channel, current_tempo))
 
         # Second pass: match note-on with note-off to get durations
         active_notes = {}  # (channel, note) -> (on_time, on_tempo)
@@ -543,7 +541,9 @@ class MidiFileController:
 
                 row = self.CHANNEL_TO_ROW[channel]
                 bar_index = int(abs_time / ticks_per_measure)
-                step_in_bar = int((abs_time % ticks_per_measure) / (ticks_per_measure / 16))
+                step_in_bar = int(
+                    (abs_time % ticks_per_measure) / (ticks_per_measure / 16)
+                )
 
                 duration_key = (channel, msg.note, abs_time)
                 duration_ms = note_durations.get(
@@ -617,7 +617,10 @@ class MidiFileController:
         return NoteSpec(
             note=getattr(button, NoteButtonAttrs.NOTE, None),
             duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
-            velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, self.config.default_velocity) or self.config.default_velocity,
+            velocity=getattr(
+                button, NoteButtonAttrs.NOTE_VELOCITY, self.config.default_velocity
+            )
+            or self.config.default_velocity,
         )
 
     def set_config(self, config: MidiFileControllerConfig) -> None:

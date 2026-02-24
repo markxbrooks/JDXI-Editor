@@ -16,7 +16,7 @@ from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 from picomidi import MidiTempo
 from picomidi.message.type import MidoMessageType
-from PySide6.QtCore import QTimer, Qt
+from PySide6.QtCore import Qt, QTimer
 
 from jdxi_editor.ui.editors.midi_player.playback.engine import (
     PlaybackEngine,
@@ -203,13 +203,13 @@ class PatternPlaybackController:
 
             # Apply mute state
             for channel in range(16):
-                self.playback_engine.mute_channel(channel, channel in self.muted_channels)
+                self.playback_engine.mute_channel(
+                    channel, channel in self.muted_channels
+                )
 
             # Set MIDI event callback
             if self.on_midi_event:
-                self.playback_engine.on_event = (
-                    lambda msg: self.on_midi_event(msg)
-                )
+                self.playback_engine.on_event = lambda msg: self.on_midi_event(msg)
 
             # Start engine
             self.playback_engine.start(0)
@@ -455,7 +455,9 @@ class PatternPlaybackController:
             # Calculate current position from engine state
             tick = self._get_engine_tick()
             ticks_per_step = self.config.ticks_per_beat // 4  # 16th notes
-            global_step = (tick // ticks_per_step) % total_steps if total_steps > 0 else 0
+            global_step = (
+                (tick // ticks_per_step) % total_steps if total_steps > 0 else 0
+            )
 
             self.current_position.global_step = global_step
             self.current_position.bar_index = global_step // self.config.measure_beats
@@ -652,7 +654,9 @@ class PatternPlaybackController:
                     velocity = max(0, min(127, spec.velocity))
 
                     # Calculate duration
-                    duration_ticks = self._ms_to_ticks(spec.duration_ms) or ticks_per_step
+                    duration_ticks = (
+                        self._ms_to_ticks(spec.duration_ms) or ticks_per_step
+                    )
 
                     events.append(
                         SequencerEvent(
@@ -678,7 +682,11 @@ class PatternPlaybackController:
         if duration_ms <= 0:
             return 0
 
-        ticks = (duration_ms / 1000.0) * (self.current_bpm / 60.0) * self.config.ticks_per_beat
+        ticks = (
+            (duration_ms / 1000.0)
+            * (self.current_bpm / 60.0)
+            * self.config.ticks_per_beat
+        )
         return max(1, int(ticks))
 
     def _get_button_note_spec(self, button):
@@ -690,6 +698,7 @@ class PatternPlaybackController:
         :param button: SequencerButton instance
         :return: Object with note, duration_ms, velocity, is_active properties
         """
+
         class NoteSpec:
             def __init__(self, note, duration_ms, velocity):
                 self.note = note

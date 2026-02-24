@@ -15,8 +15,8 @@ from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_OFF, NOTE_ON
 
 from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.message import MidiMessage
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from jdxi_editor.midi.message import MidiMessage
 
 
 class ComboBoxUpdateConfig:
@@ -80,8 +80,8 @@ class ComboBoxSynchronizer:
     CHANNEL_TO_ROW = {
         MidiChannel.DIGITAL_SYNTH_1: 0,  # Channel 0
         MidiChannel.DIGITAL_SYNTH_2: 1,  # Channel 1
-        MidiChannel.ANALOG_SYNTH: 2,     # Channel 2
-        MidiChannel.DRUM_KIT: 3,         # Channel 9
+        MidiChannel.ANALOG_SYNTH: 2,  # Channel 2
+        MidiChannel.DRUM_KIT: 3,  # Channel 9
     }
 
     ROW_TO_CHANNEL = {v: k for k, v in CHANNEL_TO_ROW.items()}
@@ -543,7 +543,18 @@ class ComboBoxSynchronizer:
 
         # Fallback
         semitone_to_note = [
-            "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+            "C",
+            "C#",
+            "D",
+            "D#",
+            "E",
+            "F",
+            "F#",
+            "G",
+            "G#",
+            "A",
+            "A#",
+            "B",
         ]
 
         octave = (midi_note // 12) - 1
@@ -573,8 +584,18 @@ class ComboBoxSynchronizer:
         """
         try:
             note_to_semitone = {
-                "C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5,
-                "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11,
+                "C": 0,
+                "C#": 1,
+                "D": 2,
+                "D#": 3,
+                "E": 4,
+                "F": 5,
+                "F#": 6,
+                "G": 7,
+                "G#": 8,
+                "A": 9,
+                "A#": 10,
+                "B": 11,
             }
 
             if "#" in note_name:

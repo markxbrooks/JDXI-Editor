@@ -19,11 +19,6 @@ Features:
 from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
-
-from jdxi_editor.ui.editors.pattern.models import SequencerStyle
-from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
-from jdxi_editor.ui.style import JDXiUIThemeManager
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -52,10 +47,14 @@ from jdxi_editor.ui.editors.helpers.widgets import (
 from jdxi_editor.ui.editors.midi_player.transport.spec import (
     TransportSpec,
 )
+from jdxi_editor.ui.editors.pattern.models import SequencerStyle
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
+from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.helpers import create_layout_with_widgets, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
@@ -71,11 +70,11 @@ class PatternUI(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper],
-            preset_helper: Optional[JDXiPresetHelper],
-            parent: Optional[QWidget] = None,
-            midi_file_editor: Optional[Any] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper],
+        preset_helper: Optional[JDXiPresetHelper],
+        parent: Optional[QWidget] = None,
+        midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
@@ -99,7 +98,9 @@ class PatternUI(SynthEditor):
         self.current_measure_index = 0  # Currently selected measure (0-indexed)
         self.timer = None
         self.current_step = 0
-        self.total_steps = 16  # Always 16 steps per measure (don't multiply by measures)
+        self.total_steps = (
+            16  # Always 16 steps per measure (don't multiply by measures)
+        )
         self.beats_per_pattern = 4
         self.measure_beats = 16  # Number of beats per measure (16 or 12)
         self.bpm = 120
@@ -335,11 +336,11 @@ class PatternUI(SynthEditor):
         duration_group = self._create_duration_group()
 
         for group in (
-                measure_group,
-                tempo_group,
-                beats_group,
-                velocity_group,
-                duration_group,
+            measure_group,
+            tempo_group,
+            beats_group,
+            velocity_group,
+            duration_group,
         ):
             control_panel.addWidget(group)
 
@@ -539,17 +540,20 @@ class PatternUI(SynthEditor):
         step_label = QLabel(self.tr("Steps:"))
         to_label = QLabel(self.tr("to"))
 
-        step_layout_widgets = [step_label,
-                               start_label,
-                               self.start_step_spinbox,
-                               to_label,
-                               end_label,
-                               self.end_step_spinbox
-                               ]
-        step_range_layout = create_layout_with_widgets(widgets=step_layout_widgets,
-                                                       start_stretch=False,
-                                                       end_stretch=False)
-        measure_group , measure_layout = create_group_with_layout(label=self.measure_name_plural, vertical=True)
+        step_layout_widgets = [
+            step_label,
+            start_label,
+            self.start_step_spinbox,
+            to_label,
+            end_label,
+            self.end_step_spinbox,
+        ]
+        step_range_layout = create_layout_with_widgets(
+            widgets=step_layout_widgets, start_stretch=False, end_stretch=False
+        )
+        measure_group, measure_layout = create_group_with_layout(
+            label=self.measure_name_plural, vertical=True
+        )
         measure_group_layouts = [
             measure_controls_layout,
             copy_paste_layout,
@@ -616,11 +620,11 @@ class PatternUI(SynthEditor):
         return channel_map
 
     def _add_button_with_label_from_spec(
-            self,
-            name: str,
-            spec: ButtonSpec,
-            layout: QHBoxLayout,
-            slot: Optional[Callable[[], None]] = None,
+        self,
+        name: str,
+        spec: ButtonSpec,
+        layout: QHBoxLayout,
+        slot: Optional[Callable[[], None]] = None,
     ) -> QPushButton:
         """Create a round button + label row from a ButtonSpec and add to layout."""
         label_row, btn = create_jdxi_button_with_label_from_spec(spec, checkable=False)
@@ -632,15 +636,15 @@ class PatternUI(SynthEditor):
         return btn
 
     def _add_round_action_button(
-            self,
-            icon_enum: Any,
-            text: str,
-            slot: Any,
-            layout: QHBoxLayout,
-            *,
-            name: Optional[str] = None,
-            checkable: bool = False,
-            append_to: Optional[list] = None,
+        self,
+        icon_enum: Any,
+        text: str,
+        slot: Any,
+        layout: QHBoxLayout,
+        *,
+        name: Optional[str] = None,
+        checkable: bool = False,
+        append_to: Optional[list] = None,
     ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
@@ -660,10 +664,10 @@ class PatternUI(SynthEditor):
         return btn
 
     def _create_transport_control(
-            self,
-            spec: TransportSpec,
-            layout: QHBoxLayout,
-            button_group: Optional[QButtonGroup],
+        self,
+        spec: TransportSpec,
+        layout: QHBoxLayout,
+        button_group: Optional[QButtonGroup],
     ) -> None:
         """Create a transport button + label row (same pattern as Midi File Player)."""
         btn = create_jdxi_button_from_spec(spec, button_group)

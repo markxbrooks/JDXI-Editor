@@ -46,7 +46,7 @@ def sync_button_note_spec(button) -> None:
 
 
 def update_button_state(
-        button: QPushButton, checked_state: bool = None, enabled_state: bool = None
+    button: QPushButton, checked_state: bool = None, enabled_state: bool = None
 ):
     """update button state"""
     button.blockSignals(True)
