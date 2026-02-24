@@ -2342,13 +2342,9 @@ class PatternSequenceEditor(PatternUI):
                         note_name = self._midi_to_note_name(button.note)
                         button.setToolTip(f"Note: {note_name}")
 
-    def _get_note_range_for_row(self, row):
+    def _get_note_range_for_row(self, row: int) -> range:
         """Get the note range for a specific row."""
-        if row in [0, 1]:
-            return range(60, 72)  # C4 to B4
-        if row == 2:
-            return range(48, 60)  # C3 to B3
-        return range(36, 48)  # C2 to B2
+        return self._note_converter.get_note_range_for_row(row)
 
     def _move_to_next_step(self):
         """Move to the next step in the pattern."""
