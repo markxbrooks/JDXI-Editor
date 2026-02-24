@@ -18,7 +18,6 @@ Features:
 
 import datetime
 import random
-from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
@@ -30,13 +29,14 @@ from jdxi_editor.midi.playback.controller import PlaybackConfig, PatternPlayback
 from jdxi_editor.ui.editors.pattern.helper import sync_button_note_spec, get_button_note_spec, reset_button, \
     update_button_state, reset_measure
 from jdxi_editor.ui.editors.pattern.learner import PatternLearnerConfig, PatternLearnerEvent, PatternLearner
-from jdxi_editor.ui.editors.pattern.models import ClipboardData, ButtonAttrs, SequencerStyle
+from jdxi_editor.ui.editors.pattern.models import ClipboardData, ButtonAttrs
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.pattern.ui import PatternUI
 from jdxi_editor.ui.sequencer.button.manager import SequencerButtonManager, NoteButtonAttrs
 from jdxi_editor.ui.widgets.combo_box.synchronizer import ComboBoxUpdateConfig, ComboBoxSynchronizer
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi import MidiTempo
+from picomidi.core.tempo import milliseconds_per_note
 from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -46,23 +46,17 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QListWidget,
     QListWidgetItem,
     QMessageBox,
     QPushButton,
-    QSizePolicy,
     QSpinBox,
-    QSplitter,
-    QVBoxLayout,
     QWidget,
 )
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_OFF, NOTE_ON
+from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message import MidiMessage
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
@@ -74,20 +68,15 @@ from jdxi_editor.ui.editors.midi_player.playback.engine import (
     TransportState,
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import (
-    NoteButtonSpec,
     TransportSpec,
 )
-from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.helpers import create_layout_with_widgets, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import (
     ButtonSpec,
-    ComboBoxSpec,
     FileSelectionSpec,
     SpinBoxSpec,
 )
@@ -296,7 +285,7 @@ class PatternSequenceEditor(PatternUI):
         )
         self._midi_file_controller.create_new_file()
         self._sync_from_midi_file_controller()
-        ms_per_step = int((MidiTempo.MILLISECONDS_PER_MINUTE / self.bpm) / 4)
+        ms_per_step = int(self._calculate_step_duration())
         playback_config = PlaybackConfig(
             ticks_per_beat=480,
             beats_per_measure=4,
@@ -1100,8 +1089,12 @@ class PatternSequenceEditor(PatternUI):
         steps = duration_multipliers[index] if index < len(duration_multipliers) else 1
         # Each step is a 16th note, so duration = steps * (beat_duration / 4)
         # beat_duration in ms = 60000 / bpm
-        step_duration_ms = (60000.0 / self.bpm) / 4.0
+        step_duration_ms = self._calculate_step_duration()
         return step_duration_ms * steps
+
+    def _calculate_step_duration(self) -> float:
+        """calculate step duration"""
+        return float(milliseconds_per_note(self.bpm))
 
     def _on_duration_changed(self, index: int):
         """Handle duration changes from the combo box"""
@@ -1113,8 +1106,7 @@ class PatternSequenceEditor(PatternUI):
         """Handle tempo changes from the spinbox"""
         self.set_tempo(bpm)
         if self.timer and self.timer.isActive():
-            # Update timer interval for running sequence
-            ms_per_step = (60000 / bpm) / 4  # ms per 16th note
+            ms_per_step = milliseconds_per_note(bpm)
             self.timer.setInterval(int(ms_per_step))
 
     def _on_tap_tempo(self):
@@ -1221,7 +1213,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Update playback speed if sequence is running
         if hasattr(self, "timer") and self.timer and self.timer.isActive():
-            ms_per_step = (60000 / bpm) / 4  # ms per 16th note
+            ms_per_step = milliseconds_per_note(bpm)  # ms per 16th note
             self.timer.setInterval(int(ms_per_step))
 
         log.message(message=f"Tempo set to {bpm} BPM", scope=self.__class__.__name__)
@@ -1851,7 +1843,7 @@ class PatternSequenceEditor(PatternUI):
         """Pause or resume pattern playback."""
         if self._pattern_paused:
             if hasattr(self, "timer") and self.timer and not self.timer.isActive():
-                ms_per_step = (60000 / self.bpm) / 4
+                ms_per_step = self._calculate_step_duration()
                 self.timer.start(int(ms_per_step))
             self._pattern_paused = False
             log.message(
@@ -1884,7 +1876,7 @@ class PatternSequenceEditor(PatternUI):
         if duration_ms <= 0:
             return 0
 
-        ticks = duration_ms * self.bpm * ticks_per_beat / 60000
+        ticks = duration_ms * self.bpm * ticks_per_beat / MidiTempo.MILLISECONDS_PER_MINUTE
         return max(1, int(ticks))
 
     def _collect_sequencer_events(self, ticks_per_beat: int) -> list[SequencerEvent]:
@@ -2276,7 +2268,7 @@ class PatternSequenceEditor(PatternUI):
 
                                 # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
                                 note_duration_ms = play_spec.duration_ms or (
-                                        (60000.0 / self.bpm) / 4.0
+                                        (float(MidiTempo.MILLISECONDS_PER_MINUTE) / self.bpm) / 4.0
                                 )
 
                                 QTimer.singleShot(
