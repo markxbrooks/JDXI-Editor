@@ -1072,8 +1072,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
 
-            self._clear_measures()
-            self._create_measures(num_measures)
+            self._clear_and_create_measures(num_measures)
 
             # Channel mapping: MIDI -> sequencer row
             channel_to_row = {0: 0, 1: 1, 2: 2, 9: 3}
@@ -1103,6 +1102,11 @@ class PatternSequenceEditor(PatternUI):
             import traceback
 
             log.debug(traceback.format_exc())
+
+    def _clear_and_create_measures(self, num_measures: int):
+        """clear and create measures"""
+        self._clear_measures()
+        self._create_measures(num_measures)
 
     def save_pattern(self, filename: str):
         """Save the current pattern to a MIDI file using the MIDI file controller."""
@@ -1179,8 +1183,7 @@ class PatternSequenceEditor(PatternUI):
 
             # Step 1: Clear measures and create measures
             num_measures = self._detect_measures_from_midi(midi_file)
-            self._clear_measures()
-            self._create_measures(num_measures)
+            self._clear_and_create_measures(num_measures)
 
             # Step 2: Build note events with absolute time & tempo
             note_events, note_durations = self._collect_midi_notes_with_durations(
