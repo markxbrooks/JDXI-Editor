@@ -30,7 +30,7 @@ class PlaybackConfig:
     def __init__(
         self,
         ticks_per_beat: int = 480,
-        beats_per_bar: int = 4,
+        beats_per_measure: int = 4,
         measure_beats: int = 16,
         default_bpm: int = 120,
         playback_interval_ms: int = 20,
@@ -39,21 +39,21 @@ class PlaybackConfig:
         Initialize playback configuration.
 
         :param ticks_per_beat: MIDI ticks per beat
-        :param beats_per_bar: Beats per bar (4/4 time)
+        :param beats_per_measure: Beats per measure (4/4 time)
         :param measure_beats: Beats per measure for sequencer display
         :param default_bpm: Default tempo
         :param playback_interval_ms: Timer interval for playback updates
         """
         self.ticks_per_beat = ticks_per_beat
-        self.beats_per_bar = beats_per_bar
+        self.beats_per_measure = beats_per_measure
         self.measure_beats = measure_beats
         self.default_bpm = default_bpm
         self.playback_interval_ms = playback_interval_ms
 
     @property
-    def ticks_per_bar(self) -> int:
+    def ticks_per_measure(self) -> int:
         """Calculate ticks per bar."""
-        return self.ticks_per_beat * self.beats_per_bar
+        return self.ticks_per_beat * self.beats_per_measure
 
 
 class PlaybackPosition:

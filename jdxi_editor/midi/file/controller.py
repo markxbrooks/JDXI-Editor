@@ -22,7 +22,7 @@ class MidiFileControllerConfig:
     def __init__(
         self,
         ticks_per_beat: int = 480,
-        beats_per_bar: int = 4,
+        beats_per_measure: int = 4,
         default_bpm: int = 120,
         default_velocity: int = 100,
     ):
@@ -30,19 +30,19 @@ class MidiFileControllerConfig:
         Initialize controller configuration.
 
         :param ticks_per_beat: MIDI ticks per beat (standard is 480)
-        :param beats_per_bar: Number of beats per bar (typically 4)
+        :param beats_per_measure: Number of beats per measure (typically 4)
         :param default_bpm: Default tempo in BPM
         :param default_velocity: Default note velocity
         """
         self.ticks_per_beat = ticks_per_beat
-        self.beats_per_bar = beats_per_bar
+        self.beats_per_measure = beats_per_measure
         self.default_bpm = default_bpm
         self.default_velocity = default_velocity
 
     @property
-    def ticks_per_bar(self) -> int:
+    def ticks_per_measure(self) -> int:
         """Calculate ticks per bar."""
-        return self.ticks_per_beat * self.beats_per_bar
+        return self.ticks_per_beat * self.beats_per_measure
 
 
 class MidiFileLoadResult:
@@ -221,7 +221,7 @@ class MidiFileController:
             track.append(
                 MetaMessage(
                     "time_signature",
-                    numerator=self.config.beats_per_bar,
+                    numerator=self.config.beats_per_measure,
                     denominator=4,
                 )
             )
@@ -320,13 +320,13 @@ class MidiFileController:
             # Detect structure
             num_bars = self._detect_bars_from_midi(midi_file)
             ppq = midi_file.ticks_per_beat
-            ticks_per_bar = self.config.ticks_per_bar
+            ticks_per_measure = self.config.ticks_per_measure
 
             # Parse MIDI to extract notes
             notes_data = self._parse_midi_file(
                 midi_file,
                 ppq,
-                ticks_per_bar,
+                ticks_per_measure,
             )
 
             # Extract tempo
@@ -426,12 +426,12 @@ class MidiFileController:
         try:
             num_bars = self._detect_bars_from_midi(midi_file)
             ppq = midi_file.ticks_per_beat
-            ticks_per_bar = self.config.ticks_per_bar
+            ticks_per_measure = self.config.ticks_per_measure
 
             notes_data = self._parse_midi_file(
                 midi_file,
                 ppq,
-                ticks_per_bar,
+                ticks_per_measure,
             )
 
             tempo_bpm = self._extract_tempo_from_midi(midi_file)
@@ -465,7 +465,7 @@ class MidiFileController:
         :return: Number of bars detected (minimum 1)
         """
         ppq = midi_file.ticks_per_beat
-        ticks_per_bar = ppq * self.config.beats_per_bar
+        ticks_per_measure = ppq * self.config.beats_per_measure
 
         max_time = 0
         for track in midi_file.tracks:
@@ -475,14 +475,14 @@ class MidiFileController:
                 if not msg.is_meta:
                     max_time = max(max_time, absolute_time)
 
-        num_bars = int((max_time / ticks_per_bar) + 1) if max_time > 0 else 1
+        num_bars = int((max_time / ticks_per_measure) + 1) if max_time > 0 else 1
         return max(1, num_bars)
 
     def _parse_midi_file(
         self,
         midi_file: MidiFile,
         ppq: int,
-        ticks_per_bar: int,
+        ticks_per_measure: int,
     ) -> List[Dict]:
         """
         Parse MIDI file and extract note events.
@@ -491,7 +491,7 @@ class MidiFileController:
 
         :param midi_file: MidiFile to parse
         :param ppq: Ticks per beat from the file
-        :param ticks_per_bar: Ticks per bar calculation
+        :param ticks_per_measure: Ticks per bar calculation
         :return: List of parsed note events
         """
         notes = []
@@ -542,13 +542,13 @@ class MidiFileController:
                     continue
 
                 row = self.CHANNEL_TO_ROW[channel]
-                bar_index = int(abs_time / ticks_per_bar)
-                step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
+                bar_index = int(abs_time / ticks_per_measure)
+                step_in_bar = int((abs_time % ticks_per_measure) / (ticks_per_measure / 16))
 
                 duration_key = (channel, msg.note, abs_time)
                 duration_ms = note_durations.get(
                     duration_key,
-                    (ticks_per_bar / 16.0 / ppq) * (tempo / 1000.0),
+                    (ticks_per_measure / 16.0 / ppq) * (tempo / 1000.0),
                 )
 
                 notes.append(

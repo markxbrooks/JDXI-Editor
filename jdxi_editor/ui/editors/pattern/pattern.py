@@ -19,6 +19,8 @@ Features:
 import datetime
 from typing import Any, Callable, Optional
 
+import mido
+
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 
@@ -82,6 +84,10 @@ from picoui.specs.widgets import (
     FileSelectionSpec,
 )
 from picoui.widget.helper import get_file_path_from_spec
+
+ROWS = 4
+STEPS_PER_MEASURE = 16
+TICKS_PER_STEP = 120
 
 
 class PatternSequenceEditor(PatternUI):
@@ -148,7 +154,7 @@ class PatternSequenceEditor(PatternUI):
 
         midi_controller_config = MidiFileControllerConfig(
             ticks_per_beat=480,
-            beats_per_bar=4,
+            beats_per_measure=4,
             default_bpm=self.bpm,
             default_velocity=100,
         )
@@ -164,7 +170,7 @@ class PatternSequenceEditor(PatternUI):
 
         playback_config = PlaybackConfig(
             ticks_per_beat=480,
-            beats_per_bar=4,
+            beats_per_measure=4,
             measure_beats=self.measure_beats,
             default_bpm=self.bpm,
             playback_interval_ms=20,
@@ -610,20 +616,20 @@ class PatternSequenceEditor(PatternUI):
         self._button_manager.total_steps = self.total_steps
         self._button_manager.handle_button_click(button, checked_state, self.measures)
 
-    def _on_beats_per_bar_changed(self, index: int):
-        """Handle beats per bar changes from the combobox"""
+    def _on_beats_per_measure_changed(self, index: int):
+        """Handle beats per measure changes from the combobox"""
         if index == 0:
             self.measure_beats = 16
         else:
             self.measure_beats = 12
 
-        # Update button states based on beats per bar
-        self._update_button_states_for_beats_per_bar()
-        log.message(f"Beats per bar changed to {self.measure_beats}")
+        # Update button states based on beats per measure
+        self._update_button_states_for_beats_per_measure()
+        log.message(f"Beats per measure changed to {self.measure_beats}")
 
-    def _update_button_states_for_beats_per_bar(self):
-        """Enable/disable sequencer buttons based on beats per bar setting"""
-        # Steps 0-11 are always enabled, steps 12-15 are disabled when beats_per_bar is 12
+    def _update_button_states_for_beats_per_measure(self):
+        """Enable/disable sequencer buttons based on beats per measure setting"""
+        # Steps 0-11 are always enabled, steps 12-15 are disabled when beats_per_measure is 12
         for row in range(4):
             for step in range(16):
                 if step < len(self.buttons[row]):
@@ -778,25 +784,94 @@ class PatternSequenceEditor(PatternUI):
         self.midi_track = self._midi_file_controller.midi_file.tracks[0]
         self.bpm = self._midi_file_controller.get_tempo()
 
+    def _get_channel_for_row(self, row: int) -> int:
+        """get channel for row, i.e. 1, 2 or 3, and deal with the drum kit on MIDI Ch 9"""
+        return row if row < 3 else MidiChannel.DRUM_KIT
+
+    def _step_to_ticks(self, measure_index: int,
+                       step: int,
+                       steps_per_measure: int = 16,
+                       ticks_per_step: int = 120) -> int:
+        """Convert steps """
+        absolute_step = measure_index * steps_per_measure + step
+        return absolute_step * ticks_per_step
+
+    def _append_note_messages(self, track: mido.MidiTrack, spec, channel, start_tick, ticks_per_step: int = 120):
+        """append note message"""
+        track.append(
+            Message(
+                MidoMessageType.NOTE_ON,
+                note=spec.note,
+                velocity=spec.velocity,
+                time=start_tick,
+                channel=channel,
+            )
+        )
+        track.append(
+            Message(
+                MidoMessageType.NOTE_OFF,
+                note=spec.note,
+                velocity=spec.velocity,
+                time=start_tick + ticks_per_step,
+                channel=channel,
+            )
+        )
+
+    def _update_button_tooltip(self, button, note: int, is_drum: bool):
+        name = self._midi_to_note_name(note, drums=is_drum)
+        button.setToolTip(f"Note: {name}")
+
     def update_pattern(self):
-        """Update the MIDI file with current pattern state"""
+        """Rebuild MIDI file from current sequencer state."""
+
         self.midi_file = MidiFile()
         track = MidiTrack()
         self.midi_file.tracks.append(track)
 
+        track.append(
+            MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm))
+        )
+        track.append(
+            MetaMessage("time_signature", numerator=4, denominator=4)
+        )
+
+        for row in range(ROWS):
+            channel = self._get_channel_for_row(row)
+            is_drum = row == 3
+
+            for measure_index, measure in enumerate(self.measures):
+                for step in range(self.measure_beats):
+                    button = measure.buttons[row][step]
+                    spec = get_button_note_spec(button)
+
+                    if not (button.isChecked() and spec.is_active):
+                        continue
+
+                    start_tick = self._step_to_ticks(measure_index, step)
+
+                    self._append_note_messages(track, spec, channel, start_tick)
+                    self._update_button_tooltip(button, spec.note, is_drum)
+
+    def update_pattern_old(self):
+        """Update the MIDI file with current pattern state"""
+        self.midi_file = MidiFile()
+        track = MidiTrack()
+        self.midi_file.tracks.append(track)
         track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm)))
         track.append(MetaMessage("time_signature", numerator=4, denominator=4))
 
-        for row in range(4):
+        for row in range(ROWS):
             channel = row if row < 3 else 9
             for measure_index, measure in enumerate(self.measures):
-                for step in range(16):
+                for step in range(STEPS_PER_MEASURE):
                     button = measure.buttons[row][step]
                     spec = get_button_note_spec(button)
                     if button.isChecked() and spec.is_active:
                         time = int(
-                            (measure_index * 16 + step) * 120
-                        )  # Convert to ticks
+                            (measure_index * STEPS_PER_MEASURE + step) * TICKS_PER_STEP
+                        )
+                        _append_note_messages
+                        # Convert to ticks
                         track.append(
                             Message(
                                 MidoMessageType.NOTE_ON,
@@ -811,7 +886,7 @@ class PatternSequenceEditor(PatternUI):
                                 MidoMessageType.NOTE_OFF,
                                 note=spec.note,
                                 velocity=spec.velocity,
-                                time=time + 120,
+                                time=time + TICKS_PER_STEP,
                                 channel=channel,
                             )
                         )
@@ -912,8 +987,8 @@ class PatternSequenceEditor(PatternUI):
         """Load pattern from a MidiFile object (internal method)."""
         try:
             ppq = midi_file.ticks_per_beat
-            beats_per_bar = 4
-            ticks_per_bar = ppq * beats_per_bar
+            beats_per_measure = 4
+            ticks_per_measure = ppq * beats_per_measure
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
@@ -962,9 +1037,9 @@ class PatternSequenceEditor(PatternUI):
                         if channel not in channel_to_row:
                             continue
                         row = channel_to_row[channel]
-                        bar_index = int(absolute_time / ticks_per_bar)
+                        bar_index = int(absolute_time / ticks_per_measure)
                         step_in_bar = int(
-                            (absolute_time % ticks_per_bar) / (ticks_per_bar / 16)
+                            (absolute_time % ticks_per_measure) / (ticks_per_measure / 16)
                         )
 
                         while bar_index >= len(self.measures):
@@ -1083,8 +1158,8 @@ class PatternSequenceEditor(PatternUI):
     def _detect_bars_from_midi(self, midi_file: MidiFile) -> int:
         """Detect number of bars in MIDI file"""
         ppq = midi_file.ticks_per_beat
-        beats_per_bar = 4  # Assuming 4/4 time signature
-        ticks_per_bar = ppq * beats_per_bar
+        beats_per_measure = 4  # Assuming 4/4 time signature
+        ticks_per_measure = ppq * beats_per_measure
 
         max_time = 0
         for track in midi_file.tracks:
@@ -1095,7 +1170,7 @@ class PatternSequenceEditor(PatternUI):
                     max_time = max(max_time, absolute_time)
 
         # Calculate number of bars (round up)
-        num_bars = int((max_time / ticks_per_bar) + 1) if max_time > 0 else 1
+        num_bars = int((max_time / ticks_per_measure) + 1) if max_time > 0 else 1
         return max(1, num_bars)  # At least 1 bar
 
     def load_pattern(self, filename: str):
@@ -1103,8 +1178,8 @@ class PatternSequenceEditor(PatternUI):
         try:
             midi_file = MidiFile(filename)
             ppq = midi_file.ticks_per_beat
-            beats_per_bar = 4
-            ticks_per_bar = ppq * beats_per_bar
+            beats_per_measure = 4
+            ticks_per_measure = ppq * beats_per_measure
 
             # Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
@@ -1202,8 +1277,8 @@ class PatternSequenceEditor(PatternUI):
                     row = channel_to_row[channel]
 
                     # Calculate which bar and step this note belongs to
-                    bar_index = int(abs_time / ticks_per_bar)
-                    step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
+                    bar_index = int(abs_time / ticks_per_measure)
+                    step_in_bar = int((abs_time % ticks_per_measure) / (ticks_per_measure / 16))
 
                     # Ensure we have enough bars (safety check)
                     while bar_index >= len(self.measures):
@@ -1232,8 +1307,8 @@ class PatternSequenceEditor(PatternUI):
                                 button.note_duration = note_durations[duration_key]
                             else:
                                 # Default to step duration if no note_off found
-                                # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
-                                step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
+                                # Step duration = (ticks_per_measure / 16) / ppq * tempo / 1000
+                                step_duration_ms = (ticks_per_measure / 16.0 / ppq) * (
                                         tempo / 1000.0
                                 )
                                 button.note_duration = step_duration_ms
@@ -1578,7 +1653,7 @@ class PatternSequenceEditor(PatternUI):
     def _play_step(self):
         """Plays the current step and advances to the next one."""
         # Calculate which bar and step within that bar
-        # Use beats_per_bar to determine steps per bar
+        # Use beats_per_measure to determine steps per bar
         steps_per_bar = self.measure_beats
         total_pattern_steps = len(self.measures) * steps_per_bar
         global_step = (
@@ -1590,7 +1665,7 @@ class PatternSequenceEditor(PatternUI):
         log.message(
             message=f"Playing step {step_in_bar} in bar {bar_index + 1} "
                     f"(global step {global_step}"
-                    f" {self.measure_beats} beats per bar)",
+                    f" {self.measure_beats} beats per measure)",
             scope=self.__class__.__name__,
         )
 
@@ -1824,8 +1899,8 @@ class PatternSequenceEditor(PatternUI):
                     tooltip="",
                     slot=None,
                 ),
-                "beats_per_bar": ComboBoxSpec(
-                    items=["16 beats per bar", "12 beats per bar"],
+                "beats_per_measure": ComboBoxSpec(
+                    items=["16 beats per measure", "12 beats per measure"],
                     tooltip="",
                     slot=None,
                 ),

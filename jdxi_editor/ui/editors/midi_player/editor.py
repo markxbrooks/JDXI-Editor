@@ -2360,7 +2360,7 @@ class MidiFilePlayer(SynthEditor):
                 tempo=self.midi_state.tempo_at_position,
             )
 
-            # Calculate bar number (assuming 4/4 time signature: 4 beats per bar)
+            # Calculate bar number (assuming 4/4 time signature: 4 beats per measure)
             # Bar number is 1-based
             current_bar = (current_tick / (4 * self.ticks_per_beat)) + 1
 

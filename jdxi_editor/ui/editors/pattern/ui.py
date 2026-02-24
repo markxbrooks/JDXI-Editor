@@ -101,7 +101,7 @@ class PatternUI(SynthEditor):
         self.current_step = 0
         self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
         self.beats_per_pattern = 4
-        self.measure_beats = 16  # Number of beats per bar (16 or 12)
+        self.measure_beats = 16  # Number of beats per measure (16 or 12)
         self.bpm = 120
         self.last_tap_time = None
         self.tap_times = []
@@ -409,19 +409,19 @@ class PatternUI(SynthEditor):
         return velocity_group
 
     def _create_beats_group(self) -> QGroupBox:
-        """Beats per bar control area"""
+        """Beats per measure control area"""
         beats_group = QGroupBox("Beats per Bar")
         beats_layout = QHBoxLayout()
 
-        self.beats_per_bar_combo = create_combo_box(
-            spec=self.specs["combos"]["beats_per_bar"]
+        self.beats_per_measure_combo = create_combo_box(
+            spec=self.specs["combos"]["beats_per_measure"]
         )
-        self.beats_per_bar_combo.setCurrentIndex(0)  # Default to 16 beats
-        self.beats_per_bar_combo.currentIndexChanged.connect(
-            self._on_beats_per_bar_changed
+        self.beats_per_measure_combo.setCurrentIndex(0)  # Default to 16 beats
+        self.beats_per_measure_combo.currentIndexChanged.connect(
+            self._on_beats_per_measure_changed
         )
 
-        beats_layout.addWidget(self.beats_per_bar_combo)
+        beats_layout.addWidget(self.beats_per_measure_combo)
         beats_group.setLayout(beats_layout)
         return beats_group
 
@@ -758,8 +758,8 @@ class PatternUI(SynthEditor):
                     tooltip="",
                     slot=None,
                 ),
-                "beats_per_bar": ComboBoxSpec(
-                    items=["16 beats per bar", "12 beats per bar"],
+                "beats_per_measure": ComboBoxSpec(
+                    items=["16 beats per measure", "12 beats per measure"],
                     tooltip="",
                     slot=None,
                 ),

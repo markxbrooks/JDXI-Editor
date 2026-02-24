@@ -9,6 +9,8 @@ import os
 import mido
 from mido import MidiFile
 
+from picomidi import MidiTempo
+
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
@@ -99,9 +101,9 @@ def calculate_track_duration():
     print(f"\nTotal duration by segments: {total_duration_by_segments:.2f}s ({total_duration_by_segments/60:.2f} minutes)")
     
     # Calculate bars
-    ticks_per_bar = midi_file.ticks_per_beat * 4  # Assuming 4/4 time
-    total_bars = last_event_tick / ticks_per_bar
-    print(f"Total bars: {total_bars:.1f}")
+    ticks_per_measure = midi_file.ticks_per_beat * 4  # Assuming 4/4 time
+    total_measures = last_event_tick / ticks_per_measure
+    print(f"Total bars: {total_measures:.1f}")
     
     return total_duration
 
