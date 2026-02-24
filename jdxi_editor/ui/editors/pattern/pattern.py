@@ -2136,76 +2136,12 @@ class PatternSequenceEditor(PatternUI):
         log.message(message="Pattern playback stopped", scope=self.__class__.__name__)
 
     def _note_name_to_midi(self, note_name: str) -> int:
-        """Convert note name (e.g., 'C4') to MIDI note number"""
-        # Note name to semitone mapping
-        note_to_semitone = {
-            "C": 0,
-            "C#": 1,
-            "D": 2,
-            "D#": 3,
-            "E": 4,
-            "F": 5,
-            "F#": 6,
-            "G": 7,
-            "G#": 8,
-            "A": 9,
-            "A#": 10,
-            "B": 11,
-        }
+        """Convert note name (e.g., 'C4') to MIDI note number."""
+        return self._note_converter.note_name_to_midi(note_name)
 
-        # Split note name into note and octave
-        if "#" in note_name:
-            note = note_name[:-1]  # Everything except last character (octave)
-            octave = int(note_name[-1])
-        else:
-            note = note_name[0]
-            octave = int(note_name[1])
-
-        # Calculate MIDI note number
-        # MIDI note 60 is middle C (C4)
-        # Each octave is 12 semitones
-        # Formula: (octave + 1) * 12 + semitone
-        midi_note = (octave + 1) * 12 + note_to_semitone[note]
-
-        return midi_note
-
-    def _midi_to_note_name(self, midi_note: int, drums=False) -> str:
-        """Convert MIDI note number to note name (e.g., 60 -> 'C4')"""
-        # Handle None or invalid input
-        if midi_note is None:
-            return "N/A"
-
-        # Note mapping (reverse of note_to_semitone)
-        semitone_to_note = [
-            "C",
-            "C#",
-            "D",
-            "D#",
-            "E",
-            "F",
-            "F#",
-            "G",
-            "G#",
-            "A",
-            "A#",
-            "B",
-        ]
-
-        if drums:
-            # Drum notes should be in range 36-60 (mapping to indices 0-24)
-            if midi_note < 36 or midi_note >= 36 + len(self.drum_options):
-                # Out of range, return a fallback
-                return f"Drum({midi_note})"
-            return self.drum_options[midi_note - 36]
-
-        # Calculate octave and note for non-drum notes
-        # Ensure midi_note is within valid MIDI range (0-127)
-        if midi_note < 0 or midi_note > 127:
-            return f"Note({midi_note})"
-
-        octave = (midi_note // 12) - 1
-        note = semitone_to_note[midi_note % 12]
-        return f"{note}{octave}"
+    def _midi_to_note_name(self, midi_note: int, drums: bool = False) -> str:
+        """Convert MIDI note number to note name (e.g., 60 -> 'C4') or drum name."""
+        return self._note_converter.midi_to_note_name(midi_note, drums=drums)
 
     def _play_step(self):
         """Plays the current step and advances to the next one."""
