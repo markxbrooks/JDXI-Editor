@@ -476,7 +476,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             )
             return False
 
-    def reconnect_port_names(self, in_port: str, out_port: str) -> None:
+    def reconnect_port_names(self, in_port: str, out_port: str) -> bool:
         """
         Reconnect ports
 
@@ -489,8 +489,10 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.connect_port_names(in_port, out_port)
             self.open_output_port(out_port)
             self.reopen_input_port_name(in_port)
+            return True
         except Exception as ex:
             log.error(f"Error {ex} occurred reconnecting ports", scope="MidiIOHelper")
+            return False
 
     def auto_connect_jdxi(self) -> bool:
         """
