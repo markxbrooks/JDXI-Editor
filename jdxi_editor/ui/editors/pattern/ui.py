@@ -15,7 +15,7 @@ Features:
 - Start/Stop playback buttons for sequence control. ..
 
 """
-
+import datetime
 from typing import Any, Callable, Optional
 
 from mido import MidiFile, MidiTrack
@@ -111,11 +111,11 @@ class PatternUI(SynthEditor):
         self.beats_per_pattern: int = 4
         self.measure_beats: int = 16  # Number of beats per measure (16 or 12)
         self.bpm: int = 120
-        self.last_tap_time: Optional[float] = None
+        self.last_tap_time: Optional[datetime] = None
         self.tap_times: list[float] = []
         self.midi_file: Optional[MidiFile] = None  # Set in _setup_ui from MidiFileController
         self.midi_track: Optional[MidiTrack] = None  # Set in _setup_ui from MidiFileController
-        self.clipboard: Optional[ClipboardData] = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
+        self.clipboard: Optional[dict[str, Any]] | None = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
         self._pattern_paused: bool = False
         self.row_specs = [
             SequencerRowSpec(
@@ -417,7 +417,7 @@ class PatternUI(SynthEditor):
         beats_group.setLayout(beats_layout)
         return beats_group
 
-    def _on_beats_per_measure_changed(self):
+    def _on_beats_per_measure_changed(self, index):
         raise NotImplementedError
 
     def _create_tempo_group(self) -> QGroupBox:

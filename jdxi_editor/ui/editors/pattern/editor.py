@@ -563,7 +563,7 @@ class PatternSequenceEditor(PatternUI):
                     # Calculate destination step
                     dest_step = start_step + (source_step - source_start)
 
-                    if dest_step < 0 or dest_step >= STEPS_PER_MEASURE_4_4:
+                    if dest_step < 0 or dest_step >= self.measure_beats:
                         continue  # Skip if out of bounds
 
                     if dest_step < len(measure.buttons[row]):
