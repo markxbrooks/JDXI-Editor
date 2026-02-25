@@ -24,7 +24,7 @@ from jdxi_editor.ui.editors.base.filter.widget import FilterWidgets
 from jdxi_editor.ui.editors.base.layout.spec import FilterFeature
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_adsr_with_hlayout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.spec import FilterSpec, FilterWidgetSpec, SliderSpec
@@ -180,7 +180,7 @@ class BaseFilterSection(SectionBaseWidget):
         )
         sliders = self._build_sliders(slider_specs)
 
-        layout = create_layout_with_widgets([self.filter_widget, *sliders])
+        layout = create_layout_with_items([self.filter_widget, *sliders])
         return create_group_adsr_with_hlayout("Controls", layout, analog=self.analog)
 
     def _create_tab_widget(self):

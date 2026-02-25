@@ -25,7 +25,7 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
 )
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_scroll_container,
     transfer_layout_items,
 )
@@ -332,7 +332,7 @@ class InstrumentPresetWidget(QWidget):
         load_row_widget = QWidget()
         load_row_widget.setLayout(load_row)
 
-        selection_layout = create_layout_with_widgets(
+        selection_layout = create_layout_with_items(
             [self.instrument_selection_combo, load_row_widget], vertical=True
         )
 

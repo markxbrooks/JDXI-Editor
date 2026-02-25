@@ -33,7 +33,7 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_widgets,
     create_group_from_definition,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.editor.mode_button_group import (
     ModeButtonGroup,
@@ -232,8 +232,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         centered_layout = QHBoxLayout()
         centered_layout.addStretch()
         pitch_env_widget = self.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV)
-        pitch_env_layout = create_layout_with_widgets(
-            widgets=[pitch_env_widget] if pitch_env_widget else [], vertical=False
+        pitch_env_layout = create_layout_with_items(
+            items=[pitch_env_widget] if pitch_env_widget else [], vertical=False
         )
         pitch_env_group = create_group_from_definition(
             key=Digital.GroupBox.PITCH_ENVELOPE,
@@ -277,7 +277,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
     ) -> QWidget:
         """Create a QWidget containing a horizontal row of widgets."""
         widget = QWidget()
-        layout = create_layout_with_widgets(widgets, vertical=False)
+        layout = create_layout_with_items(widgets, vertical=False)
         widget.setLayout(layout)
         return widget
 

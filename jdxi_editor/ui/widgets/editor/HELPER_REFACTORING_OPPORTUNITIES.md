@@ -71,10 +71,11 @@ filter_row.addStretch()
 ```
 
 **Should Use:**
-```python
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
 
-filter_row = create_layout_with_widgets([label, button1, button2], vertical=False)
+```python
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_items
+
+filter_row = create_layout_with_items([label, button1, button2], vertical=False)
 ```
 
 **Files Affected:**

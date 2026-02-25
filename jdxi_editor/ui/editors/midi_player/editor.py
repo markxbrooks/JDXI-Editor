@@ -78,7 +78,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_checkbox_from_spec,
     create_group_with_layout,
     create_icon_and_label,
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_vertical_layout,
 )
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
@@ -188,8 +188,8 @@ class MidiFilePlayer(SynthEditor):
             self.build_panel(self._build_right_panel),
         ]
         # --- Top horizontal layout: file title and right-hand controls
-        header_layout = create_layout_with_widgets(
-            widgets=panel_widgets,
+        header_layout = create_layout_with_items(
+            items=panel_widgets,
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
@@ -200,8 +200,8 @@ class MidiFilePlayer(SynthEditor):
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
         self.base_widget.setup_scrollable_content()
         # --- Create content widget
-        centered_layout = create_layout_with_widgets(
-            widgets=[
+        centered_layout = create_layout_with_items(
+            items=[
                 self.init_transport_controls(),
                 self.init_midi_file_controls(),
                 self.init_event_suppression_controls(),
@@ -248,8 +248,8 @@ class MidiFilePlayer(SynthEditor):
             tone_name="No file loaded", show_upper_text=True
         )
         classification_widget = self._create_classify_tracks_widget()
-        layout = create_layout_with_widgets(
-            widgets=[self.ui.digital_title_file_name, classification_widget],
+        layout = create_layout_with_items(
+            items=[self.ui.digital_title_file_name, classification_widget],
             vertical=True,
             start_stretch=False,
             end_stretch=False,
@@ -261,8 +261,8 @@ class MidiFilePlayer(SynthEditor):
     def _create_classify_tracks_widget(self) -> QWidget:
         """Create classify tracks widget"""
         classify_tracks_widgets = self._build_classify_tracks_widgets()
-        classification_hlayout = create_layout_with_widgets(
-            widgets=classify_tracks_widgets,
+        classification_hlayout = create_layout_with_items(
+            items=classify_tracks_widgets,
             spacing=5,
             start_stretch=False,
             end_stretch=False,
@@ -319,8 +319,8 @@ class MidiFilePlayer(SynthEditor):
         self.init_midi_file_position_label()
         self.init_midi_file_position_slider()
         widgets = [self.ui.position_label, self.ui.midi_file_position_slider]
-        ruler_layout = create_layout_with_widgets(
-            widgets=widgets,
+        ruler_layout = create_layout_with_items(
+            items=widgets,
             margins=QMargins(0, 0, 0, 0),
             spacing=0,
             start_stretch=False,
@@ -372,8 +372,8 @@ class MidiFilePlayer(SynthEditor):
         JDXi.UI.Theme.apply_button_mini_style(
             self.ui.midi_suppress_control_changes_checkbox
         )
-        layout = create_layout_with_widgets(
-            widgets=widgets,
+        layout = create_layout_with_items(
+            items=widgets,
             vertical=False,
             start_stretch=False,
             end_stretch=False,
@@ -397,8 +397,8 @@ class MidiFilePlayer(SynthEditor):
         self.ui.save_button, save_label_row = create_jdxi_button_with_label_from_spec(
             self.specs["buttons"]["save_midi_file"], checkable=False
         )
-        layout = create_layout_with_widgets(
-            widgets=[
+        layout = create_layout_with_items(
+            items=[
                 self.ui.load_button,
                 load_label_row,
                 self.ui.save_button,
@@ -997,7 +997,7 @@ class MidiFilePlayer(SynthEditor):
             self.mute_channel_buttons[ch] = btn
             layout_widgets.append(btn)
 
-        layout = create_layout_with_widgets(
+        layout = create_layout_with_items(
             layout_widgets,
             start_stretch=False,
             end_stretch=False,
@@ -1017,8 +1017,8 @@ class MidiFilePlayer(SynthEditor):
         row_widget, self.ui.apply_all_track_changes_label = create_jdxi_row(
             spec.label, icon_pixmap=apply_all_icon_pixmap
         )
-        apply_all_label_layout = create_layout_with_widgets(
-            widgets=[self.ui.apply_all_track_changes_button, row_widget],
+        apply_all_label_layout = create_layout_with_items(
+            items=[self.ui.apply_all_track_changes_button, row_widget],
             spacing=4,
             margins=QMargins(0, 0, 0, 0),
         )

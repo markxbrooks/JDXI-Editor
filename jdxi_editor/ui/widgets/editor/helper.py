@@ -36,7 +36,7 @@ from picoui.helpers import (
     create_form_layout,
     create_layout,
     create_layout_with_inner_layouts,
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_left_aligned_row,
     create_vertical_layout,
     group_from_definition,
@@ -191,7 +191,7 @@ def create_adsr_icon() -> QIcon:
 def create_centered_adsr_icon_layout() -> QHBoxLayout:
     """Create a centered ADSR icon layout (for consistent centering in envelope groups)"""
     icon_label = create_adsr_icon_label()
-    return create_layout_with_widgets([icon_label])
+    return create_layout_with_items([icon_label])
 
 
 def create_group_adsr_with_hlayout(
@@ -368,7 +368,7 @@ def create_group_with_widgets_in_hlayout(
     """create group with widgets"""
     hlayout = QHBoxLayout()
     hlayout.addStretch()  # center the widgets
-    child_layout = create_layout_with_widgets(widgets=widgets, vertical=vertical)
+    child_layout = create_layout_with_items(items=widgets, vertical=vertical)
     hlayout.addLayout(child_layout)
     hlayout.addStretch()  # center the widgets
     # hlayout = create_layout_with_inner_layouts(inner_layouts=[child_layout], vertical=False)
@@ -380,7 +380,7 @@ def create_group_with_widgets(
     label: str, widgets: list, vertical: bool = False
 ) -> QGroupBox:
     """create group with widgets"""
-    layout = create_layout_with_widgets(widgets=widgets, vertical=vertical)
+    layout = create_layout_with_items(items=widgets, vertical=vertical)
     group, _ = create_group_with_layout(label=label, layout=layout)
     return group
 
@@ -432,7 +432,7 @@ def create_centered_layout(spacing: int = None) -> QHBoxLayout:
 def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
     """create centered layout with stretch either side to squish in widgets"""
     layout = QHBoxLayout()
-    pcm_layout = create_layout_with_widgets(widgets=widgets, vertical=True)
+    pcm_layout = create_layout_with_items(items=widgets, vertical=True)
     layout.addStretch()
     layout.addLayout(pcm_layout)
     layout.addStretch()

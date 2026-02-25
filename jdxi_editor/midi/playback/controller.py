@@ -783,12 +783,12 @@ class PatternPlaybackController(QObject):
         :return: Absolute tick position
         """
         try:
-            if self.playback_engine._events:
-                idx = self.playback_engine._event_index
-                if idx > 0 and idx <= len(self.playback_engine._events):
-                    return self.playback_engine._events[idx - 1].absolute_tick
+            if self.playback_engine.events:
+                idx = self.playback_engine.event_index
+                if idx > 0 and idx <= len(self.playback_engine.events):
+                    return self.playback_engine.events[idx - 1].absolute_tick
                 else:
-                    return self.playback_engine._start_tick
+                    return self.playback_engine.start_tick
             return 0
         except Exception:
             return 0

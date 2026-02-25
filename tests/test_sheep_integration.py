@@ -113,10 +113,10 @@ class TestSheepIntegration(unittest.TestCase):
         self.player.setup_playback_worker()
 
         # Engine should have events after load
-        self.assertGreater(len(self.player.playback_engine._events), 0,
+        self.assertGreater(len(self.player.playback_engine.events), 0,
                           "No events in playback engine from sheep.mid")
 
-        print(f"Engine has {len(self.player.playback_engine._events)} events from sheep.mid")
+        print(f"Engine has {len(self.player.playback_engine.events)} events from sheep.mid")
         self.assertGreater(len(self.player.playback_engine._tempo_map), 0,
                           "No tempo map in engine")
         print(f"Engine has {len(self.player.playback_engine._tempo_map)} tempo entries")
@@ -143,7 +143,7 @@ class TestSheepIntegration(unittest.TestCase):
         self.assertEqual(worker.playback_engine, self.player.playback_engine)
         self.assertEqual(worker.initial_tempo, self.player.midi_state.tempo_at_position)
 
-        print(f"Worker has playback_engine with {len(worker.playback_engine._events)} events")
+        print(f"Worker has playback_engine with {len(worker.playback_engine.events)} events")
         print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
     
     def test_playback_simulation_with_real_timing(self):
@@ -169,7 +169,7 @@ class TestSheepIntegration(unittest.TestCase):
             time.sleep(0.01)
 
         print(f"Processed {messages_processed} worker cycles")
-        print(f"Engine event index: {engine._event_index} / {len(engine._events)}")
+        print(f"Engine event index: {engine.event_index} / {len(engine.events)}")
         print(f"Sent {len(self.sent_messages)} MIDI messages")
 
         self.assertGreater(len(self.sent_messages), 0, "No MIDI messages were sent during simulation")

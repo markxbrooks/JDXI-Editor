@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from picoui.helpers.layout import create_layout, create_layout_with_widgets
+from picoui.helpers.layout import create_layout, create_layout_with_items
 
 
 class GroupDefinition(Protocol):
@@ -42,11 +42,11 @@ def build_group(
     """
     group = QGroupBox(title)
     if isinstance(layout_or_widget, list):
-        group.setLayout(create_layout_with_widgets(layout_or_widget))
+        group.setLayout(create_layout_with_items(layout_or_widget))
     elif isinstance(layout_or_widget, QLayout):
         group.setLayout(layout_or_widget)
     elif isinstance(layout_or_widget, QWidget):
-        group.setLayout(create_layout_with_widgets([layout_or_widget]))
+        group.setLayout(create_layout_with_items([layout_or_widget]))
     elif layout_or_widget is None:
         group.setLayout(create_layout(vertical=True))
     else:

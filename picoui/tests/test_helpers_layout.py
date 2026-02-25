@@ -28,7 +28,7 @@ from picoui.helpers.layout import (
     create_header_row,
     create_layout,
     create_layout_with_inner_layouts,
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_left_aligned_row,
     create_row_with_widgets,
     create_vertical_layout,
@@ -76,25 +76,25 @@ class TestCreateLayoutWithWidgets(unittest.TestCase):
         get_qapp()
 
     def test_empty_list_default_stretches(self):
-        layout = create_layout_with_widgets([])
+        layout = create_layout_with_items([])
         # top_stretch + bottom_stretch = 2 stretch items
         self.assertEqual(layout.count(), 2)
 
     def test_empty_list_no_stretches(self):
-        layout = create_layout_with_widgets(
+        layout = create_layout_with_items(
             [], start_stretch=False, end_stretch=False
         )
         self.assertEqual(layout.count(), 0)
 
     def test_one_widget_default_stretches(self):
         w = QLabel("x")
-        layout = create_layout_with_widgets([w])
+        layout = create_layout_with_items([w])
         self.assertEqual(layout.count(), 3)  # stretch, widget, stretch
         self.assertEqual(layout.indexOf(w), 1)
 
     def test_spacing_and_margins(self):
         w = QLabel("a")
-        layout = create_layout_with_widgets(
+        layout = create_layout_with_items(
             [w],
             spacing=10,
             margins=QMargins(1, 2, 3, 4),
@@ -107,7 +107,7 @@ class TestCreateLayoutWithWidgets(unittest.TestCase):
 
     def test_vertical_layout(self):
         w1, w2 = QLabel("1"), QLabel("2")
-        layout = create_layout_with_widgets(
+        layout = create_layout_with_items(
             [w1, w2], vertical=True, start_stretch=False, end_stretch=False
         )
         self.assertIsInstance(layout, QVBoxLayout)

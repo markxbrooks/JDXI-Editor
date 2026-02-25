@@ -7,7 +7,7 @@ from typing import Callable
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
@@ -43,19 +43,19 @@ class BaseCommonSection(SectionBaseWidget):
         group, sub_layout = create_group_with_layout(label="Common")
         layout.addWidget(group)
         # --- Octave Switch row
-        octave_shift_switch_row = create_layout_with_widgets([self.octave_shift_switch])
+        octave_shift_switch_row = create_layout_with_items([self.octave_shift_switch])
         sub_layout.addLayout(octave_shift_switch_row)
 
         # --- Legato Switch row
-        legato_row = create_layout_with_widgets([self.legato_switch])
+        legato_row = create_layout_with_items([self.legato_switch])
         sub_layout.addLayout(legato_row)
 
         # --- Portamento row
-        portamento_switch_row = create_layout_with_widgets([self.portamento_switch])
+        portamento_switch_row = create_layout_with_items([self.portamento_switch])
         sub_layout.addLayout(portamento_switch_row)
 
         # --- Pitch Bend etc
-        pitch_bend_row = create_layout_with_widgets(
+        pitch_bend_row = create_layout_with_items(
             [self.pitch_bend_up, self.pitch_bend_down, self.portamento_time]
         )
         sub_layout.addLayout(pitch_bend_row)

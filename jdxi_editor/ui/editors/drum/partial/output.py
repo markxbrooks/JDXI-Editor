@@ -55,7 +55,7 @@ from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 
@@ -108,18 +108,18 @@ class DrumOutputSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_REVERB_SEND_LEVEL],
         ]
         row_layout = QVBoxLayout()
-        output_layout = create_layout_with_widgets(
-            widgets=[self.controls[DrumPartialParam.PARTIAL_OUTPUT_ASSIGN]],
+        output_layout = create_layout_with_items(
+            items=[self.controls[DrumPartialParam.PARTIAL_OUTPUT_ASSIGN]],
             vertical=False,
         )
-        slider_layout = create_layout_with_widgets(widgets=widgets)
+        slider_layout = create_layout_with_items(items=widgets)
         row_layout.addLayout(output_layout)
         row_layout.addLayout(slider_layout)
         group, layout = create_group_with_layout(label="Output", layout=row_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
-        main_row_hlayout = create_layout_with_widgets([group], vertical=True)
+        main_row_hlayout = create_layout_with_items([group], vertical=True)
 
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()

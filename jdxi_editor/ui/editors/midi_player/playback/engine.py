@@ -51,10 +51,10 @@ class PlaybackEngine:
         self._tempo_map: dict[int, int] = {}
         self._tick_to_time: List[tuple[int, float]] = []  # (tick, cumulative seconds from 0)
 
-        self._events: List[ScheduledEvent] = []
-        self._event_index: int = 0
+        self.events: List[ScheduledEvent] = []
+        self.event_index: int = 0
 
-        self._start_tick: int = 0
+        self.start_tick: int = 0
         self._start_time: float = 0.0
 
         self._muted_tracks: set[int] = set()
@@ -105,8 +105,8 @@ class PlaybackEngine:
 
     def reset(self) -> None:
         """Reset playback state (position, play flag). Mute/suppress settings are unchanged."""
-        self._event_index = 0
-        self._start_tick = 0
+        self.event_index = 0
+        self.start_tick = 0
         self._start_time = 0.0
         self._set_state(TransportState.STOPPED)
 
@@ -130,7 +130,7 @@ class PlaybackEngine:
             self._tempo_map[0] = 500000  # default
 
     def _build_event_list(self) -> None:
-        self._events.clear()
+        self.events.clear()
 
         for track_index, track in enumerate(self.midi_file.tracks):
             absolute_tick = 0
@@ -139,7 +139,7 @@ class PlaybackEngine:
                 absolute_tick += msg.time
 
                 if not msg.is_meta:
-                    self._events.append(
+                    self.events.append(
                         ScheduledEvent(
                             absolute_tick=absolute_tick,
                             message=msg.copy(),
@@ -147,14 +147,14 @@ class PlaybackEngine:
                         )
                     )
 
-        self._events.sort(key=lambda e: e.absolute_tick)
+        self.events.sort(key=lambda e: e.absolute_tick)
 
         # cache ticks for binary search
-        self._event_ticks = [e.absolute_tick for e in self._events]
+        self._event_ticks = [e.absolute_tick for e in self.events]
 
     def start(self, start_tick: int = 0) -> None:
-        self._start_tick = start_tick
-        self._event_index = self._find_start_index(start_tick)
+        self.start_tick = start_tick
+        self.event_index = self._find_start_index(start_tick)
         self._start_time = time.time()
         self._set_state(TransportState.PLAYING)
 
@@ -223,11 +223,11 @@ class PlaybackEngine:
         current_time = time.time()
         elapsed = current_time - self._start_time
 
-        while self._event_index < len(self._events):
-            event = self._events[self._event_index]
+        while self.event_index < len(self.events):
+            event = self.events[self.event_index]
 
             event_time = self._tick_to_seconds(
-                event.absolute_tick - self._start_tick
+                event.absolute_tick - self.start_tick
             )
 
             if event_time > elapsed:
@@ -237,9 +237,9 @@ class PlaybackEngine:
                 if self.on_event:
                     self.on_event(event.message)
 
-            self._event_index += 1
+            self.event_index += 1
 
-        if self._event_index >= len(self._events):
+        if self.event_index >= len(self.events):
             self._set_state(TransportState.STOPPED)
 
     def _should_send(self, event: ScheduledEvent) -> bool:
@@ -273,7 +273,7 @@ class PlaybackEngine:
             self._muted_tracks.discard(track_index)
 
     def scrub_to_tick(self, tick: int) -> None:
-        self._event_index = self._find_start_index(tick)
-        self._start_tick = tick
+        self.event_index = self._find_start_index(tick)
+        self.start_tick = tick
         self._start_time = time.time()
 

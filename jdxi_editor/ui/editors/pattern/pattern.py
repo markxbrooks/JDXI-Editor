@@ -73,7 +73,7 @@ from jdxi_editor.ui.editors.midi_player.transport.spec import (
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from picoui.helpers import create_layout_with_widgets, group_with_layout
+from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import (
     ButtonSpec,
@@ -101,6 +101,15 @@ CHANNEL_TO_ROW = {
     MidiChannel.ANALOG_SYNTH: 2,
     MidiChannel.DRUM_KIT: 3,
 }
+
+
+def set_sequencer_style(btn: QPushButton, is_current: bool):
+    """set sequencer style"""
+    btn.setStyleSheet(
+        JDXi.UI.Style.generate_sequencer_button_style(
+            btn.isChecked(), is_current, is_selected_bar=True
+        )
+    )
 
 
 class PatternSequenceEditor(PatternUI):
@@ -403,18 +412,10 @@ class PatternSequenceEditor(PatternUI):
         for row in range(ROWS):
             if 0 <= last_step < len(self.buttons[row]):
                 btn = self.buttons[row][last_step]
-                btn.setStyleSheet(
-                    JDXi.UI.Style.generate_sequencer_button_style(
-                        btn.isChecked(), False, is_selected_bar=True
-                    )
-                )
+                set_sequencer_style(btn, False)
             if step_in_measure < len(self.buttons[row]):
                 btn = self.buttons[row][step_in_measure]
-                btn.setStyleSheet(
-                    JDXi.UI.Style.generate_sequencer_button_style(
-                        btn.isChecked(), True, is_selected_bar=True
-                    )
-                )
+                set_sequencer_style(btn, True)
         self._playback_last_step_in_measure = step_in_measure
 
         self._button_manager = SequencerButtonManager(
@@ -626,9 +627,9 @@ class PatternSequenceEditor(PatternUI):
                                end_label,
                                self.end_step_spinbox
                                ]
-        step_range_layout = create_layout_with_widgets(widgets=step_layout_widgets,
-                                                       start_stretch=False,
-                                                       end_stretch=False)
+        step_range_layout = create_layout_with_items(items=step_layout_widgets,
+                                                     start_stretch=False,
+                                                     end_stretch=False)
         measure_group , measure_layout = create_group_with_layout(label=self.measure_name_plural, vertical=True)
         measure_group_layouts = [
             measure_controls_layout,
@@ -1405,7 +1406,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
 
-            self._clear_measures_and_mesasures_list()
+            self._clear_measures_and_measures_list()
 
             # Create new bars
             for measure_num in range(num_bars):
@@ -1477,18 +1478,7 @@ class PatternSequenceEditor(PatternUI):
                                 sync_button_note_spec(button)
                                 notes_loaded += 1
 
-            # Update tempo from file: search all tracks for first set_tempo
-            tempo_bpm = None
-            for track in midi_file.tracks:
-                for event in track:
-                    if event.type == MidoMessageType.SET_TEMPO:
-                        tempo_bpm = int(tempo2bpm(event.tempo))
-                        break
-                if tempo_bpm is not None:
-                    break
-            if tempo_bpm is not None:
-                set_spinbox_value(self.tempo_spinbox, tempo_bpm)
-                self.set_tempo(tempo_bpm)
+            self._update_spinbox_from_file_tempo(midi_file)
 
             # Select first bar and sync
             if self.measures_list.count() > 0:
@@ -1513,8 +1503,22 @@ class PatternSequenceEditor(PatternUI):
 
             log.debug(traceback.format_exc())
 
-    def _clear_measures_and_mesasures_list(self):
-        # Clear existing bars and bars list
+    def _update_spinbox_from_file_tempo(self, midi_file: MidiFile):
+        """update spinbox from file tempo"""
+        tempo_bpm = None
+        for track in midi_file.tracks:
+            for event in track:
+                if event.type == MidoMessageType.SET_TEMPO:
+                    tempo_bpm = int(tempo2bpm(event.tempo))
+                    break
+            if tempo_bpm is not None:
+                break
+        if tempo_bpm is not None:
+            set_spinbox_value(self.tempo_spinbox, tempo_bpm)
+            self.set_tempo(tempo_bpm)
+
+    def _clear_measures_and_measures_list(self):
+        """Clear existing bars and bars list"""
         self.measures_list.clear()
         self.measures.clear()
 
@@ -1618,16 +1622,16 @@ class PatternSequenceEditor(PatternUI):
             ticks_per_bar = ppq * beats_per_bar
 
             # Detect number of bars
-            num_bars = self._detect_bars_from_midi(midi_file)
+            num_measures = self._detect_bars_from_midi(midi_file)
             log.message(
-                message=f"Detected {num_bars} bars in MIDI file",
+                message=f"Detected {num_measures} bars in MIDI file",
                 scope=self.__class__.__name__,
             )
 
-            self._clear_measures_and_mesasures_list()
+            self._clear_measures_and_measures_list()
 
             # Create new bars without selecting them (to avoid UI flicker)
-            for bar_num in range(num_bars):
+            for bar_num in range(num_measures):
                 measure = PatternMeasure()
                 reset_measure(measure)
                 self.measures.append(measure)
@@ -1652,120 +1656,20 @@ class PatternSequenceEditor(PatternUI):
                 MidiChannel.DRUM_KIT: 3,  # Channel 9
             }
 
-            # First pass: collect all note events with their absolute times and tempos
-            note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
-            current_tempo = 500000  # Default tempo (120 BPM in microseconds)
+            note_events = self._collect_notes_with_times_and_tempos_from_file(midi_file)
 
-            for track in midi_file.tracks:
-                absolute_time = 0
-                for msg in track:
-                    absolute_time += msg.time
+            note_durations = self._collect_note_on_and_off_to_calculate_durations(note_events, ppq)
 
-                    # Track tempo changes
-                    if msg.type == MidoMessageType.SET_TEMPO:
-                        current_tempo = msg.tempo
+            self._assign_notes_and_durations_to_buttons(channel_to_row,
+                                                        note_durations,
+                                                        note_events,
+                                                        notes_loaded,
+                                                        ppq,
+                                                        ticks_per_bar)
 
-                    # Collect note_on and note_off events
-                    if hasattr(msg, "channel") and (
-                            msg.type == MidoMessageType.NOTE_ON
-                            or msg.type == MidoMessageType.NOTE_OFF
-                    ):
-                        note_events.append(
-                            (absolute_time, msg, msg.channel, current_tempo)
-                        )
+            self._update_spinbox_from_file_tempo(midi_file)
 
-            # Second pass: match note_on with note_off to calculate durations
-            # Dictionary to track active notes: (channel, note) -> (on_time, on_tempo)
-            active_notes = {}
-            note_durations = {}  # (channel, note, on_time) -> duration_ms
-
-            for abs_time, msg, channel, tempo in note_events:
-                note_key = (channel, msg.note)
-
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                    # Store note_on event
-                    active_notes[note_key] = (abs_time, tempo)
-                elif msg.type == MidoMessageType.NOTE_OFF or (
-                        msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
-                ):
-                    # Find matching note_on
-                    if note_key in active_notes:
-                        on_time, on_tempo = active_notes[note_key]
-                        duration_ticks = abs_time - on_time
-
-                        # Convert ticks to milliseconds using the tempo at note_on time
-                        # tempo is in microseconds per quarter note
-                        # duration_ms = (duration_ticks / ticks_per_beat) * (tempo / 1000)
-                        duration_ms = (duration_ticks / ppq) * (on_tempo / 1000.0)
-
-                        note_durations[(channel, msg.note, on_time)] = duration_ms
-                        del active_notes[note_key]
-
-            # Third pass: assign notes and durations to buttons
-            for abs_time, msg, channel, tempo in note_events:
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                    # Map channel to row (skip channels we don't support)
-                    if channel not in channel_to_row:
-                        continue
-
-                    row = channel_to_row[channel]
-
-                    # Calculate which bar and step this note belongs to
-                    bar_index = int(abs_time / ticks_per_bar)
-                    step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
-
-                    # Ensure we have enough bars (safety check)
-                    while bar_index >= len(self.measures):
-                        measure = PatternMeasure()
-                        reset_measure(measure)
-                        self.measures.append(measure)
-                        item = QListWidgetItem(
-                            f"[{self.measure_name} {len(self.measures)}"
-                        )
-                        item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
-                        self.measures_list.addItem(item)
-
-                    if bar_index < len(self.measures) and step_in_bar < 16:
-                        measure = self.measures[bar_index]
-                        if step_in_bar < len(measure.buttons[row]):
-                            button = measure.buttons[row][step_in_bar]
-                            update_button_state(button, True)
-                            button.note = msg.note  # mido uses lowercase 'note'
-
-                            # Store note velocity from MIDI file
-                            button.note_velocity = msg.velocity
-
-                            # Store note duration if available
-                            duration_key = (channel, msg.note, abs_time)
-                            if duration_key in note_durations:
-                                button.note_duration = note_durations[duration_key]
-                            else:
-                                # Default to step duration if no note_off found
-                                # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
-                                step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
-                                        tempo / 1000.0
-                                )
-                                button.note_duration = step_duration_ms
-
-                            sync_button_note_spec(button)
-                            notes_loaded += 1
-
-            log.message(
-                message=f"Loaded {notes_loaded} notes from MIDI file across all tracks and channels",
-                scope=self.__class__.__name__,
-            )
-
-            self._update_tempo_from_file(midi_file)
-
-            # Select first bar and sync sequencer digital
-            if self.measures_list.count() > 0:
-                self.current_measure_index = 0
-                self.measures_list.setCurrentRow(0)
-                self._sync_sequencer_with_measure(0)
-                log.message(
-                    message=f"Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel.",
-                    scope=self.__class__.__name__,
-                )
+            self._set_to_first_measure(num_measures)
 
         except Exception as ex:
             log.error(
@@ -1773,19 +1677,130 @@ class PatternSequenceEditor(PatternUI):
             )
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
-    def _update_tempo_from_file(self, midi_file: MidiFile) -> None:
-        """Update tempo from file: search all tracks for first set_tempo (many files put it in track 0, some in another track)"""
-        tempo_bpm = None
+    def _set_to_first_measure(self, num_bars: int):
+        """Select first bar and sync sequencer"""
+        if self.measures_list.count() > 0:
+            self.current_measure_index = 0
+            self.measures_list.setCurrentRow(0)
+            self._sync_sequencer_with_measure(0)
+            log.message(
+                message=f"Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel.",
+                scope=self.__class__.__name__,
+            )
+
+    def _assign_notes_and_durations_to_buttons(self,
+                                               channel_to_row: dict[MidiChannel, int],
+                                               note_durations: dict[Any, Any],
+                                               note_events: list[Any],
+                                               notes_loaded: int,
+                                               ppq: int,
+                                               ticks_per_bar: int):
+        """Third pass: assign notes and durations to buttons"""
+        for abs_time, msg, channel, tempo in note_events:
+            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                # --- Map channel to row (skip channels we don't support)
+                if channel not in channel_to_row:
+                    continue
+
+                row = channel_to_row[channel]
+
+                # Calculate which bar and step this note belongs to
+                bar_index = int(abs_time / ticks_per_bar)
+                step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
+
+                # Ensure we have enough bars (safety check)
+                while bar_index >= len(self.measures):
+                    measure = PatternMeasure()
+                    reset_measure(measure)
+                    self.measures.append(measure)
+                    item = QListWidgetItem(
+                        f"[{self.measure_name} {len(self.measures)}"
+                    )
+                    item.setData(Qt.ItemDataRole.UserRole, len(self.measures) - 1)
+                    self.measures_list.addItem(item)
+
+                if bar_index < len(self.measures) and step_in_bar < 16:
+                    measure = self.measures[bar_index]
+                    if step_in_bar < len(measure.buttons[row]):
+                        button = measure.buttons[row][step_in_bar]
+                        update_button_state(button, True)
+                        button.note = msg.note  # mido uses lowercase 'note'
+
+                        # Store note velocity from MIDI file
+                        button.note_velocity = msg.velocity
+
+                        # Store note duration if available
+                        duration_key = (channel, msg.note, abs_time)
+                        if duration_key in note_durations:
+                            button.note_duration = note_durations[duration_key]
+                        else:
+                            # Default to step duration if no note_off found
+                            # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
+                            step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
+                                    tempo / 1000.0
+                            )
+                            button.note_duration = step_duration_ms
+
+                        sync_button_note_spec(button)
+                        notes_loaded += 1
+
+        log.message(
+            message=f"Loaded {notes_loaded} notes from MIDI file across all tracks and channels",
+            scope=self.__class__.__name__,
+        )
+
+    def _collect_note_on_and_off_to_calculate_durations(self, note_events: list[Any], ppq: int) -> dict[Any, Any]:
+        # Second pass: match note_on with note_off to calculate durations
+        # Dictionary to track active notes: (channel, note) -> (on_time, on_tempo)
+        active_notes = {}
+        note_durations = {}  # (channel, note, on_time) -> duration_ms
+
+        for abs_time, msg, channel, tempo in note_events:
+            note_key = (channel, msg.note)
+
+            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                # Store note_on event
+                active_notes[note_key] = (abs_time, tempo)
+            elif msg.type == MidoMessageType.NOTE_OFF or (
+                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+            ):
+                # Find matching note_on
+                if note_key in active_notes:
+                    on_time, on_tempo = active_notes[note_key]
+                    duration_ticks = abs_time - on_time
+
+                    # Convert ticks to milliseconds using the tempo at note_on time
+                    # tempo is in microseconds per quarter note
+                    # duration_ms = (duration_ticks / ticks_per_beat) * (tempo / 1000)
+                    duration_ms = (duration_ticks / ppq) * (on_tempo / 1000.0)
+
+                    note_durations[(channel, msg.note, on_time)] = duration_ms
+                    del active_notes[note_key]
+        return note_durations
+
+    def _collect_notes_with_times_and_tempos_from_file(self, midi_file: MidiFile) -> list[Any]:
+        """First pass: collect all note events with their absolute times and tempos"""
+        note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
+        current_tempo = 500000  # Default tempo (120 BPM in microseconds)
+
         for track in midi_file.tracks:
-            for event in track:
-                if event.type == MidoMessageType.SET_TEMPO:
-                    tempo_bpm = int(tempo2bpm(event.tempo))
-                    break
-            if tempo_bpm is not None:
-                break
-        if tempo_bpm is not None:
-            set_spinbox_value(self.tempo_spinbox, tempo_bpm)
-            self.set_tempo(tempo_bpm)
+            absolute_time = 0
+            for msg in track:
+                absolute_time += msg.time
+
+                # Track tempo changes
+                if msg.type == MidoMessageType.SET_TEMPO:
+                    current_tempo = msg.tempo
+
+                # Collect note_on and note_off events
+                if hasattr(msg, "channel") and (
+                        msg.type == MidoMessageType.NOTE_ON
+                        or msg.type == MidoMessageType.NOTE_OFF
+                ):
+                    note_events.append(
+                        (absolute_time, msg, msg.channel, current_tempo)
+                    )
+        return note_events
 
     def _add_button_with_label_from_spec(
             self,
@@ -1880,12 +1895,12 @@ class PatternSequenceEditor(PatternUI):
             # Must call engine.start(current_tick) to reset _start_time so process_until_now
             # does not think a long pause elapsed (which would cause a burst of notes).
             if hasattr(self, "playback_engine") and self.playback_engine:
-                events = self.playback_engine._events
-                idx = self.playback_engine._event_index
+                events = self.playback_engine.events
+                idx = self.playback_engine.event_index
                 if events and idx < len(events):
                     current_tick = events[idx].absolute_tick
                 else:
-                    current_tick = self.playback_engine._start_tick
+                    current_tick = self.playback_engine.start_tick
                 self.playback_engine.start(current_tick)
             if hasattr(self, "timer") and self.timer and not self.timer.isActive():
                 playback_interval_ms = 20
@@ -2089,12 +2104,12 @@ class PatternSequenceEditor(PatternUI):
         """Drive PlaybackEngine and sync UI to current position."""
         self.playback_engine.process_until_now()
         # Sync bar/step highlight from engine position
-        if self.playback_engine._events:
-            idx = self.playback_engine._event_index
-            if idx > 0 and idx <= len(self.playback_engine._events):
-                tick = self.playback_engine._events[idx - 1].absolute_tick
+        if self.playback_engine.events:
+            idx = self.playback_engine.event_index
+            if idx > 0 and idx <= len(self.playback_engine.events):
+                tick = self.playback_engine.events[idx - 1].absolute_tick
             else:
-                tick = self.playback_engine._start_tick
+                tick = self.playback_engine.start_tick
         else:
             tick = 0
         ticks_per_step = 480 // 4
@@ -2108,33 +2123,19 @@ class PatternSequenceEditor(PatternUI):
 
         if bar_index < len(self.measures):
             self.current_measure_index = bar_index
-            # Only sync sequencer and bar list when the displayed bar changes
-            if bar_index != last_bar:
-                self._sync_sequencer_with_measure(bar_index)
-                self._playback_last_bar_index = bar_index
-                if self.measures_list and bar_index < self.measures_list.count():
-                    self.measures_list.setCurrentRow(bar_index)
-                    item = self.measures_list.item(bar_index)
-                    if item:
-                        self.measures_list.scrollToItem(item)
+            self._sync_sequencer_on_step_change(bar_index, last_bar)
             # Only update step highlight when the current step changes (at most 2 columns)
             if step_in_bar != last_step:
                 n_cols = len(self.buttons[0]) if self.buttons else 0
                 for row in range(ROWS):
-                    if last_step >= 0 and last_step < len(self.buttons[row]):
+                    if 0 <= last_step < len(self.buttons[row]):
                         btn = self.buttons[row][last_step]
-                        btn.setStyleSheet(
-                            JDXi.UI.Style.generate_sequencer_button_style(
-                                btn.isChecked(), False, is_selected_bar=True
-                            )
-                        )
+                        is_current = False
+                        set_sequencer_style(btn, is_current)
                     if step_in_bar < len(self.buttons[row]):
                         btn = self.buttons[row][step_in_bar]
-                        btn.setStyleSheet(
-                            JDXi.UI.Style.generate_sequencer_button_style(
-                                btn.isChecked(), True, is_selected_bar=True
-                            )
-                        )
+                        is_current = True
+                        set_sequencer_style(btn, is_current)
                 self._playback_last_step_in_bar = step_in_bar
 
         if self.playback_engine.state == TransportState.STOPPED:
@@ -2142,6 +2143,17 @@ class PatternSequenceEditor(PatternUI):
             log.message(
                 message="Pattern playback finished", scope=self.__class__.__name__
             )
+
+    def _sync_sequencer_on_step_change(self, bar_index: int, last_bar: int | Any):
+        """Only sync sequencer and bar list when the displayed bar changes"""
+        if bar_index != last_bar:
+            self._sync_sequencer_with_measure(bar_index)
+            self._playback_last_bar_index = bar_index
+            if self.measures_list and bar_index < self.measures_list.count():
+                self.measures_list.setCurrentRow(bar_index)
+                item = self.measures_list.item(bar_index)
+                if item:
+                    self.measures_list.scrollToItem(item)
 
     def _update_transport_ui(self):
         """update ui regarding playing state"""

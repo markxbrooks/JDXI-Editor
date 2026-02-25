@@ -60,7 +60,7 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.plot.drum import DrumTVFEnvPlot
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
@@ -387,8 +387,8 @@ class DrumTVFSection(DrumBaseSection):
         tvf_cutoff_frequency_slider = self.controls[
             DrumPartialParam.TVF_CUTOFF_FREQUENCY
         ]
-        tvf_cutoff_frequency_layout = create_layout_with_widgets(
-            widgets=[tvf_cutoff_frequency_slider], vertical=False
+        tvf_cutoff_frequency_layout = create_layout_with_items(
+            items=[tvf_cutoff_frequency_slider], vertical=False
         )
         basic_tvf_layout.addRow(tvf_cutoff_frequency_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)

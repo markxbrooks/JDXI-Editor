@@ -35,8 +35,11 @@ def create_layout(
     return layout_cls()
 
 
-def create_layout_with_widgets(
-    widgets: List[QWidget],
+LayoutItem = Union[QWidget, QHBoxLayout, QVBoxLayout]
+
+
+def create_layout_with_items(
+    items: List[LayoutItem],
     vertical: bool = False,
     start_stretch: bool = True,
     end_stretch: bool = True,
@@ -47,7 +50,7 @@ def create_layout_with_widgets(
     """
     Create a row (or column) from a list of widgets, with optional stretches.
 
-    :param widgets: List of widgets to add.
+    :param items: List of widgets or layouts to add.
     :param vertical: If True, use QVBoxLayout; else QHBoxLayout.
     :param start_stretch: Add stretch before widgets.
     :param end_stretch: Add stretch after widgets.
@@ -56,18 +59,21 @@ def create_layout_with_widgets(
     :param parent: Optional parent widget for the layout.
     :return: The created layout (HBox or VBox).
     """
-    layout = create_layout(vertical=vertical, parent=parent)
+    container_layout = create_layout(vertical=vertical, parent=parent)
     if start_stretch:
-        layout.addStretch()
-    for widget in widgets:
-        layout.addWidget(widget)
+        container_layout.addStretch()
+    for item in items:
+        if isinstance(item, LayoutItem):
+            container_layout.addWidget(item)
+        else:
+            container_layout.addLayout(item)
     if end_stretch:
-        layout.addStretch()
+        container_layout.addStretch()
     if spacing is not None:
-        layout.setSpacing(spacing)
+        container_layout.setSpacing(spacing)
     if margins is not None:
-        layout.setContentsMargins(margins)
-    return layout
+        container_layout.setContentsMargins(margins)
+    return container_layout
 
 
 def create_row_with_widgets(widgets: List[QWidget], spacing: int = 4) -> QHBoxLayout:

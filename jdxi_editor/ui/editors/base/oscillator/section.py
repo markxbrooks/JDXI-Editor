@@ -32,7 +32,7 @@ from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_widgets,
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_widget_with_layout,
 )
 from jdxi_editor.ui.widgets.editor.mode_button_group import (
@@ -384,7 +384,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_switch_row_layout(self) -> QHBoxLayout:
         """Create Switch row"""
-        switch_row_layout = create_layout_with_widgets(self.switch_row_widgets)
+        switch_row_layout = create_layout_with_items(self.switch_row_widgets)
         return switch_row_layout
 
     def _create_switch_layout_widgets(self):
@@ -469,15 +469,15 @@ class BaseOscillatorSection(SectionBaseWidget):
 
         button_row = QHBoxLayout()
         button_row.addStretch()
-        button_row.addLayout(create_layout_with_widgets(self.wave_layout_widgets))
+        button_row.addLayout(create_layout_with_items(self.wave_layout_widgets))
         button_row.addWidget(self.wave_variation)  # Add wave variation switch
         button_row.addStretch()
         return button_row
 
     def _create_tuning_pitch_widget(self) -> QWidget:
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
-        pitch_layout = create_layout_with_widgets(
-            widgets=[self._create_pitch_env_group()]
+        pitch_layout = create_layout_with_items(
+            items=[self._create_pitch_env_group()]
         )
         pitch_widget = create_widget_with_layout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
@@ -500,7 +500,7 @@ class BaseOscillatorSection(SectionBaseWidget):
         ]
         if self.sub_oscillator_type_switch is not None:
             waveform_buttons_list.append(self.sub_oscillator_type_switch)
-        wave_layout = create_layout_with_widgets(waveform_buttons_list)
+        wave_layout = create_layout_with_items(waveform_buttons_list)
         return wave_layout
 
     def _create_tuning_group(self) -> QGroupBox:

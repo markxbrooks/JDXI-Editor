@@ -14,7 +14,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.parameters import ADSRParameters
 from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 from jdxi_editor.ui.widgets.editor import IconType
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_items
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -84,7 +84,7 @@ class BaseAmpSection(SectionBaseWidget):
 
     def _create_controls_widget(self) -> QWidget:
         """Build the Controls tab content. Base: vertical sliders from amp_sliders. Digital overrides to add amp_control_widgets + pan."""
-        self.controls_layout = create_layout_with_widgets(
+        self.controls_layout = create_layout_with_items(
             list(self.amp_sliders.values())
         )
         level_controls_widget = QWidget()

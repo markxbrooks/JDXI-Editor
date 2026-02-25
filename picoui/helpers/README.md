@@ -24,7 +24,7 @@ Layout and group box helpers for PySide6 UI. Used by picoui widgets and by jdxi_
 ```python
 from picoui.helpers import (
     build_group,
-    create_layout_with_widgets,
+    create_layout_with_items,
     group_with_layout,
 )
 

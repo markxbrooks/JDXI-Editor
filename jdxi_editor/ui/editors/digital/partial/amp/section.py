@@ -20,7 +20,7 @@ from jdxi_editor.ui.editors.base.amp.section import BaseAmpSection
 from jdxi_editor.ui.editors.base.amp.widget import AmpWidgets
 from jdxi_editor.ui.editors.digital.partial.amp.spec import AmpLayoutSpec
 from jdxi_editor.ui.editors.digital.partial.amp.widget import DigitalAmpWidgets
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_items
 from jdxi_editor.ui.widgets.spec import SliderSpec
 
 
@@ -79,11 +79,11 @@ class DigitalAmpSection(BaseAmpSection):
         controls_layout = QVBoxLayout()
 
         # --- Add regular vertical sliders
-        regular_layout = create_layout_with_widgets(self.amp_control_widgets)
+        regular_layout = create_layout_with_items(self.amp_control_widgets)
         controls_layout.addLayout(regular_layout)
 
         # --- Add Pan slider in its own horizontal layout
-        pan_layout = create_layout_with_widgets(self.widgets.pan or [])
+        pan_layout = create_layout_with_items(self.widgets.pan or [])
         controls_layout.addLayout(pan_layout)
 
         controls_widget.setLayout(controls_layout)

@@ -59,7 +59,7 @@ from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from picoui.helpers import create_layout_with_widgets, group_with_layout
+from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import (
     ButtonSpec,
@@ -191,7 +191,7 @@ class PatternUI(SynthEditor):
         self.channel_map = self._build_channel_map()
 
         # Transport at bottom, centered (stretch on both sides)
-        transport_bottom_layout = create_layout_with_widgets(
+        transport_bottom_layout = create_layout_with_items(
             [
                 self._init_transport_controls(),
                 file_group,
@@ -238,7 +238,7 @@ class PatternUI(SynthEditor):
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setStyleSheet(self._get_row_label_style(row_idx))
 
-        layout = create_layout_with_widgets([icon_label, label])
+        layout = create_layout_with_items([icon_label, label])
 
         selector = self._create_selector_for_row(row_idx)
         if selector:
@@ -542,8 +542,8 @@ class PatternUI(SynthEditor):
             end_label,
             self.end_step_spinbox,
         ]
-        step_range_layout = create_layout_with_widgets(
-            widgets=step_layout_widgets, start_stretch=False, end_stretch=False
+        step_range_layout = create_layout_with_items(
+            items=step_layout_widgets, start_stretch=False, end_stretch=False
         )
         measure_group, measure_layout = create_group_with_layout(
             label=self.measure_name_plural, vertical=True

@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.editor.helper import create_layout_with_widgets
+from jdxi_editor.ui.widgets.editor.helper import create_layout_with_items
 
 
 def add_tone_container(
@@ -58,7 +58,7 @@ def create_tone_buttons_row(previous_tone, next_tone):
     tone_up_button.clicked.connect(next_tone)
 
     # --- Button layout
-    button_layout = create_layout_with_widgets(
+    button_layout = create_layout_with_items(
         [tone_down_button, tone_spacer, tone_up_button]
     )
     return button_layout, tone_down_button, tone_up_button

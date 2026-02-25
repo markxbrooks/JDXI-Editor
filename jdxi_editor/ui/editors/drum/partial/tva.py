@@ -50,7 +50,7 @@ from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
     create_group_with_layout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot
@@ -159,15 +159,15 @@ class DrumTVASection(DrumBaseSection):
         self.tva_group = self._create_tva_group()
         self.plot = self._create_tva_plot()
 
-        main_row_hlayout = create_layout_with_widgets(
-            widgets=[self.tva_group, self.plot], vertical=False
+        main_row_hlayout = create_layout_with_items(
+            items=[self.tva_group, self.plot], vertical=False
         )
 
         # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
         layout = self.get_layout()
 
-        main_vbox_layout = create_layout_with_widgets(
-            widgets=[self.tva_level_velocity_curve_spin], vertical=True
+        main_vbox_layout = create_layout_with_items(
+            items=[self.tva_level_velocity_curve_spin], vertical=True
         )
 
         centered_layout = create_centered_layout_with_child(main_vbox_layout)

@@ -49,7 +49,7 @@ from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_icon_label_with_pixmap,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from jdxi_editor.utils.profiling_decorator import profiling_decorator
@@ -236,7 +236,7 @@ def setup_splash_screen(
     progress_bar.setValue(0)
     progress_bar.setFixedWidth(JDXiUIDimensions.SPLASH.WIDTH - 56)
     progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
-    progress_row = create_layout_with_widgets([progress_bar])
+    progress_row = create_layout_with_items([progress_bar])
     content_layout.addLayout(progress_row)
 
     # --- Rotating status label

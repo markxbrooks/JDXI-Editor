@@ -50,7 +50,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout,
     create_group_with_widgets_in_hlayout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 
@@ -206,7 +206,7 @@ class DrumPartialSection(DrumBaseSection):
         group, layout = create_group_with_form_layout(
             widgets=form_widgets, label="Misc"
         )
-        slider_layout = create_layout_with_widgets(widgets=slider_widgets)
+        slider_layout = create_layout_with_items(items=slider_widgets)
         layout.addRow(slider_layout)
         group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)

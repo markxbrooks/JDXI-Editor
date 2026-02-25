@@ -43,8 +43,8 @@ def test_engine_load_file_builds_events_and_tempo():
     assert 0 in engine._tempo_map
     assert engine._tempo_map[0] == 500000
     # 4 note events (no set_tempo in event list)
-    assert len(engine._events) == 4
-    assert engine._event_index == 0
+    assert len(engine.events) == 4
+    assert engine.event_index == 0
     assert engine._is_playing is False
 
 
@@ -60,10 +60,10 @@ def test_engine_start_sets_position_and_playing():
         mock_time.time.return_value = 1000.0
         engine.start(0)
 
-    assert engine._start_tick == 0
+    assert engine.start_tick == 0
     assert engine._start_time == 1000.0
     assert engine._is_playing is True
-    assert engine._event_index == 0
+    assert engine.event_index == 0
 
 
 def test_engine_process_until_now_calls_on_event_at_correct_times():
@@ -129,7 +129,7 @@ def test_engine_stop_clears_playing():
     assert engine._is_playing is True
     engine.stop()
     assert engine._is_playing is False
-    assert engine._event_index == 0
+    assert engine.event_index == 0
 
 
 def test_engine_mute_track_filters_events():
@@ -180,8 +180,8 @@ def test_engine_scrub_to_tick_repositions():
     engine.load_file(mid)
 
     engine.scrub_to_tick(480)
-    assert engine._event_index >= 1
-    assert engine._start_tick == 480
+    assert engine.event_index >= 1
+    assert engine.start_tick == 480
 
 
 def test_engine_reset_clears_position_not_mute():
@@ -194,8 +194,8 @@ def test_engine_reset_clears_position_not_mute():
     engine.mute_track(0, True)
     engine.reset()
 
-    assert engine._event_index == 0
-    assert engine._start_tick == 0
+    assert engine.event_index == 0
+    assert engine.start_tick == 0
     assert engine._is_playing is False
     assert 0 in engine._muted_tracks
 

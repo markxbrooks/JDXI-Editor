@@ -71,7 +71,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_icon_from_qta,
     create_layout_with_child,
-    create_layout_with_widgets,
+    create_layout_with_items,
     create_widget_with_layout,
     transfer_layout_items,
 )
@@ -240,7 +240,7 @@ class SectionBaseWidget(SynthBase):
 
     def _create_controls_widget(self) -> QWidget:
         """Controls tab"""
-        controls_layout = create_layout_with_widgets(self.amp_control_widgets)
+        controls_layout = create_layout_with_items(self.amp_control_widgets)
         return create_widget_with_layout(controls_layout)
 
     def _get_param_specs(self) -> list:
@@ -305,7 +305,7 @@ class SectionBaseWidget(SynthBase):
         """Create layout for button row. Override in subclasses."""
         if not self.button_widgets:
             return None
-        widget_layout = create_layout_with_widgets(list(self.button_widgets.values()))
+        widget_layout = create_layout_with_items(list(self.button_widgets.values()))
         layout = create_layout_with_child(widget_layout)
         return layout
 
@@ -648,7 +648,7 @@ class SectionBaseWidget(SynthBase):
     ):
         """add a list of rows of widgets to a layout"""
         for row in rows:
-            layout.addLayout(create_layout_with_widgets(row))
+            layout.addLayout(create_layout_with_items(row))
 
     def _add_group_with_widget_rows(self, label: str, rows: list[list[QWidget]]):
         """Create a group box, populate it with rows of widgets, and add it to the parent layout."""
@@ -688,7 +688,7 @@ class SectionBaseWidget(SynthBase):
 
         self.wave_shape_group.idToggled.connect(self._on_shape_group_changed)
 
-        return create_layout_with_widgets(layout_widgets)
+        return create_layout_with_items(layout_widgets)
 
     def _apply_wave_shape_style(self, active_shape):
         """Apply wave shape style (match Digital Filter section mode buttons)."""
@@ -789,7 +789,7 @@ class SectionBaseWidget(SynthBase):
         (tabs, group boxes, pages). So we wrap the layout inside a QWidget.
         """
         row_widget = QWidget()
-        row_layout = create_layout_with_widgets(widgets)
+        row_layout = create_layout_with_items(widgets)
         row_widget.setLayout(row_layout)
         return row_widget
 

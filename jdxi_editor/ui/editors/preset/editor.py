@@ -71,7 +71,7 @@ from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
-    create_layout_with_widgets,
+    create_layout_with_items,
 )
 
 
@@ -338,7 +338,7 @@ class PresetEditor(BasicEditor):
         # Search Box
 
         self.search_box = QLineEdit()
-        search_row = create_layout_with_widgets([QLabel("Search:"), self.search_box])
+        search_row = create_layout_with_items([QLabel("Search:"), self.search_box])
         self.search_box.setStyleSheet(JDXi.UI.Style.QLINEEDIT)
         self.search_box.setPlaceholderText("Search presets...")
         self.search_box.textChanged.connect(self._populate_presets)
