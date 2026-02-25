@@ -116,6 +116,7 @@ class PatternSequenceEditor(PatternUI):
             preset_helper=preset_helper,
             midi_file_editor=midi_file_editor,
         )
+        self._state = None
         self._init_playing_controllers()
         self._connect_midi_signals()
         self._init_midi_file()
@@ -1319,7 +1320,9 @@ class PatternSequenceEditor(PatternUI):
         """Sync play/stop buttons to stopped state."""
         self._pattern_paused = False
         if hasattr(self, "play_button") and self.play_button:
-            update_button_state(self.play_button, checked_state=False)
+            update_button_state(
+                self.play_button, checked_state=False, enabled_state=True
+            )
         if hasattr(self, "stop_button") and self.stop_button:
             kwargs = {"checked_state": True}
             if disable_stop:

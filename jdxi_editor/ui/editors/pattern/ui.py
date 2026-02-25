@@ -18,8 +18,10 @@ Features:
 
 from typing import Any, Callable, Optional
 
+from mido import MidiFile, MidiTrack
+
 from decologr import Decologr as log
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -33,7 +35,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QSplitter,
     QVBoxLayout,
-    QWidget,
+    QWidget, QAbstractButton,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -47,7 +49,7 @@ from jdxi_editor.ui.editors.helpers.widgets import (
 from jdxi_editor.ui.editors.midi_player.transport.spec import (
     TransportSpec,
 )
-from jdxi_editor.ui.editors.pattern.models import SequencerStyle
+from jdxi_editor.ui.editors.pattern.models import SequencerStyle, ClipboardData
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -55,6 +57,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
+from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.helpers import create_layout_with_widgets, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
@@ -89,38 +92,31 @@ class PatternUI(SynthEditor):
     ):
         super().__init__(parent=parent)
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
-        self.measure_name = self.tr("Measure")
-        self.measure_name_plural = self.tr("Measures")
-        self._state = None
-        self.stop_button = None
-        self.play_button = None
-        self.analog_selector = None
-        self.digital2_selector = None
-        self.digital1_selector = None
-        self.paste_button = None
-        self.muted_channels = []
-        self.total_measures = 1  # Start with 1 measure by default
-        self.midi_helper = midi_helper
-        self.preset_helper = preset_helper
-        self.midi_file_editor = midi_file_editor  # Reference to MidiFileEditor
-        self.buttons = []  # Main sequencer buttons (always 16 steps, one measure)
-        self.button_layouts = []  # Store references to button layouts for each row
-        self.measures = []  # Each measure stores its own notes
-        self.current_measure_index = 0  # Currently selected measure (0-indexed)
-        self.timer = None
-        self.current_step = 0
-        self.total_steps = (
+        self.measure_name: str = self.tr("Measure")
+        self.measure_name_plural: str = self.tr("Measures")
+        self.muted_channels: list[int] = []
+        self.total_measures: int = 1  # Start with 1 bar by default
+        self.midi_helper: Optional[MidiIOHelper] = midi_helper
+        self.preset_helper: Optional[JDXiPresetHelper] = preset_helper
+        self.midi_file_editor: Optional[Any] = midi_file_editor  # Reference to MidiFileEditor
+        # self.buttons populated by parent PatternUI._setup_ui() - do not overwrite
+        self.button_layouts: list[QHBoxLayout] = []  # Store references to button layouts for each row
+        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
+        self.current_measure_index = 0  # Currently selected bar (0-indexed)
+        self.timer: Optional[QTimer] = None
+        self.current_step: int = 0 # Currently selected step (0-indexed)
+        self.total_steps: int = (
             16  # Always 16 steps per measure (don't multiply by measures)
         )
-        self.beats_per_pattern = 4
-        self.measure_beats = 16  # Number of beats per measure (16 or 12)
-        self.bpm = 120
-        self.last_tap_time = None
-        self.tap_times = []
-        self.midi_file = None  # Set in _setup_ui from MidiFileController
-        self.midi_track = None  # Set in _setup_ui from MidiFileController
-        self.clipboard = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
-        self._pattern_paused = False
+        self.beats_per_pattern: int = 4
+        self.measure_beats: int = 16  # Number of beats per measure (16 or 12)
+        self.bpm: int = 120
+        self.last_tap_time: Optional[float] = None
+        self.tap_times: list[float] = []
+        self.midi_file: Optional[MidiFile] = None  # Set in _setup_ui from MidiFileController
+        self.midi_track: Optional[MidiTrack] = None  # Set in _setup_ui from MidiFileController
+        self.clipboard: Optional[ClipboardData] = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
+        self._pattern_paused: bool = False
         self.row_specs = [
             SequencerRowSpec(
                 "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT

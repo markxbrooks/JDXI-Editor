@@ -115,6 +115,7 @@ class PatternSequenceEditor(PatternUI):
             midi_file_editor=midi_file_editor,
         )
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
+        self._state: TransportState | None = None
         self.measure_name: str = self.tr("Measure")
         self.measure_name_plural: str = self.tr("Measures")
         self.muted_channels: list[int] = []
@@ -174,6 +175,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _load_from_midi_file_editor_if_available(self) -> None:
         """Load from MidiFileEditor if it has a file."""
+        self.clear_pattern()
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             if self.midi_file_editor.midi_state.file:
                 self.load_from_midi_file_editor()
@@ -314,26 +316,41 @@ class PatternSequenceEditor(PatternUI):
 
     def _on_playback_controller_started(self) -> None:
         """Update play/stop buttons when playback controller starts."""
-        if hasattr(self, "play_button") and self.play_button:
-            update_button_state(self.play_button, checked_state=True)
-        if hasattr(self, "stop_button") and self.stop_button:
-            update_button_state(self.stop_button, checked_state=False)
+        self.update_play_and_stop_buttons(TransportState.PLAYING)
+
+    def update_play_and_stop_buttons(self, state: TransportState) -> None:
+        """update play and stop buttons"""
+        play_checked = state == TransportState.PLAYING
+        stop_checked = state == TransportState.STOPPED
+        # When playing: disable Play, enable Stop. When stopped: enable Play, disable Stop.
+        play_enabled = state == TransportState.STOPPED
+        stop_enabled = state == TransportState.PLAYING
+
+        if self.play_button is not None:
+            update_button_state(
+                self.play_button,
+                checked_state=play_checked,
+                enabled_state=play_enabled,
+            )
+
+        if self.stop_button is not None:
+            update_button_state(
+                self.stop_button,
+                checked_state=stop_checked,
+                enabled_state=stop_enabled,
+            )
 
     def _on_playback_controller_stopped(self) -> None:
-        """Sync UI when playback controller stops."""
-        self._sync_transport_ui_stopped()
+        self.update_play_and_stop_buttons(TransportState.STOPPED)
         self.current_step = 0
-
-    def _sync_transport_ui_stopped(self, disable_stop: bool = False) -> None:
-        """Sync play/stop buttons to stopped state."""
         self._pattern_paused = False
-        if hasattr(self, "play_button") and self.play_button:
-            update_button_state(self.play_button, checked_state=False)
-        if hasattr(self, "stop_button") and self.stop_button:
-            kwargs = {"checked_state": True}
-            if disable_stop:
-                kwargs["enabled_state"] = False
-            update_button_state(self.stop_button, **kwargs)
+
+    def _apply_transport_state(self, state: TransportState) -> None:
+        self.update_play_and_stop_buttons(state)
+
+        if state == TransportState.STOPPED:
+            self.current_step = 0
+            self._pattern_paused = False
 
     def _log_traceback(self) -> None:
         """Log current exception traceback at debug level."""
@@ -2092,35 +2109,23 @@ class PatternSequenceEditor(PatternUI):
                 self._playback_last_step_in_bar = step_in_bar
 
         if self.playback_engine.state == TransportState.STOPPED:
-            self._sync_ui_to_stopped()
+            self._apply_transport_state(TransportState.STOPPED)
             log.message(
                 message="Pattern playback finished", scope=self.__class__.__name__
             )
 
+    def _update_transport_ui(self):
+        """update ui regarding playing state"""
+        state = TransportState.STOPPED
+        self.update_play_and_stop_buttons(state)
+
     def _sync_ui_to_stopped(self) -> None:
-        """Sync UI to engine STOPPED state: stop timer, update play/stop buttons."""
+        """Sync UI to stopped state: stop timer, update play/stop buttons."""
         if hasattr(self, "timer") and self.timer:
             self.timer.stop()
             self.timer = None
         self._pattern_paused = False
-        if hasattr(self, "play_button") and self.play_button:
-            update_button_state(self.play_button, checked_state=False)
-        if hasattr(self, "stop_button") and self.stop_button:
-            update_button_state(
-                self.stop_button, checked_state=True, enabled_state=False
-            )
-
-    def _update_transport_ui(self):
-        """update ui regarding playing state"""
-        is_playing = self._state == TransportState.PLAYING
-        is_stopped = self._state == TransportState.STOPPED
-        if hasattr(self, "play_button"):
-            update_button_state(
-                self.play_button, checked_state=is_playing, enabled_state=not is_playing
-            )
-        update_button_state(
-            self.stop_button, checked_state=is_stopped, enabled_state=not is_stopped
-        )
+        self._apply_transport_state(TransportState.STOPPED)
 
     def stop_pattern(self):
         """Stop playing the pattern"""
