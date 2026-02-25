@@ -47,15 +47,19 @@ def sync_button_note_spec(button) -> None:
 
 
 def update_button_state(
-    button: QPushButton, checked_state: bool = None, enabled_state: bool = None
+    button: QPushButton,
+    checked_state: bool | None = None,
+    enabled_state: bool | None = None,
 ):
-    """update button state"""
-    button.blockSignals(True)
+    previous = button.blockSignals(True)
+
     if enabled_state is not None:
         button.setEnabled(enabled_state)
+
     if checked_state is not None:
         button.setChecked(checked_state)
-    button.blockSignals(False)
+
+    button.blockSignals(previous)
 
 
 def set_spinbox_value(spinbox: QSpinBox, value: int):

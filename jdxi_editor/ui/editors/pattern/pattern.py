@@ -84,10 +84,9 @@ from picoui.specs.widgets import (
 from picoui.widget.helper import create_combo_box, get_file_path_from_spec
 
 ROWS = 4
-STEPS_PER_MEASURE = 16
+STEPS_PER_MEASURE_4_4 = 16
+STEPS_PER_MEASURE_3_4 = 12
 TICKS_PER_STEP = 120
-STEPS_PER_BAR_4_4 = 16
-STEPS_PER_BAR_3_4 = 12
 
 # MIDI channel -> sequencer row: 0=Digital1, 1=Digital2, 2=Analog, 9=Drum
 CHANNEL_TO_ROW = {
@@ -115,6 +114,9 @@ class PatternSequenceEditor(PatternUI):
             midi_file_editor=midi_file_editor,
         )
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
+        self.pause_button: QPushButton | None = None
+        self.stop_button: QPushButton | None = None
+        self.play_button: QPushButton | None = None
         self._state: TransportState | None = None
         self.measure_name: str = self.tr("Measure")
         self.measure_name_plural: str = self.tr("Measures")
@@ -307,6 +309,9 @@ class PatternSequenceEditor(PatternUI):
         self._playback_controller.on_playback_stopped = (
             self._on_playback_controller_stopped
         )
+        self._playback_controller.on_playback_paused = (
+            self._on_playback_controller_paused
+        )
         self._playback_controller.on_bar_changed = self._on_playback_measure_changed
         self._playback_controller.on_step_changed = self._on_playback_step_changed
         if self.midi_helper:
@@ -316,41 +321,54 @@ class PatternSequenceEditor(PatternUI):
 
     def _on_playback_controller_started(self) -> None:
         """Update play/stop buttons when playback controller starts."""
-        self.update_play_and_stop_buttons(TransportState.PLAYING)
+        self.update_transport_buttons(TransportState.PLAYING)
 
-    def update_play_and_stop_buttons(self, state: TransportState) -> None:
-        """update play and stop buttons"""
-        play_checked = state == TransportState.PLAYING
-        stop_checked = state == TransportState.STOPPED
-        # When playing: disable Play, enable Stop. When stopped: enable Play, disable Stop.
-        play_enabled = state == TransportState.STOPPED
-        stop_enabled = state == TransportState.PLAYING
+    def update_transport_buttons(self, state: TransportState) -> None:
+        """Update play, pause and stop buttons."""
 
-        if self.play_button is not None:
-            update_button_state(
-                self.play_button,
-                checked_state=play_checked,
-                enabled_state=play_enabled,
-            )
+        config = {
+            TransportState.STOPPED: {
+                self.play_button:  {"checked_state": False, "enabled_state": True},
+                self.pause_button: {"checked_state": False, "enabled_state": False},
+                self.stop_button:  {"checked_state": True,  "enabled_state": False},
+            },
+            TransportState.PLAYING: {
+                self.play_button:  {"checked_state": True,  "enabled_state": False},
+                self.pause_button: {"checked_state": False, "enabled_state": True},
+                self.stop_button:  {"checked_state": False, "enabled_state": True},
+            },
+            TransportState.PAUSED: {
+                self.play_button:  {"checked_state": False, "enabled_state": True},
+                self.pause_button: {"checked_state": True,  "enabled_state": True},
+                self.stop_button:  {"checked_state": False, "enabled_state": True},
+            },
+        }
+    
+        for button, kwargs in config[state].items():
+            if button is not None:
+                update_button_state(button, **kwargs)
 
-        if self.stop_button is not None:
-            update_button_state(
-                self.stop_button,
-                checked_state=stop_checked,
-                enabled_state=stop_enabled,
-            )
+    def _on_playback_controller_paused(self) -> None:
+        """Update play/pause buttons when playback controller pauses."""
+        self.update_transport_buttons(TransportState.PAUSED)
+        self._pattern_paused = True
 
     def _on_playback_controller_stopped(self) -> None:
-        self.update_play_and_stop_buttons(TransportState.STOPPED)
+        """Update play/stop buttons when playback controller stops."""
+        self.update_transport_buttons(TransportState.STOPPED)
         self.current_step = 0
         self._pattern_paused = False
 
     def _apply_transport_state(self, state: TransportState) -> None:
-        self.update_play_and_stop_buttons(state)
+        """Apply transport state to the UI."""
+        self.update_transport_buttons(state)
 
         if state == TransportState.STOPPED:
             self.current_step = 0
             self._pattern_paused = False
+
+        if state == TransportState.PAUSED:
+            self._pattern_paused = True
 
     def _log_traceback(self) -> None:
         """Log current exception traceback at debug level."""
@@ -720,7 +738,7 @@ class PatternSequenceEditor(PatternUI):
             # Copy notes from the previous bar (most recently added bar)
             previous_measure = self.measures[-1]
             for row in range(ROWS):
-                for step in range(STEPS_PER_MEASURE):
+                for step in range(STEPS_PER_MEASURE_4_4):
                     if step < len(previous_measure.buttons[row]) and step < len(
                             measure.buttons[row]
                     ):
@@ -884,7 +902,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Copy note data from the measure to the main sequencer buttons
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE):
+            for step in range(STEPS_PER_MEASURE_4_4):
                 if step < len(self.buttons[row]) and step < len(measure.buttons[row]):
                     sequencer_button = self.buttons[row][step]
                     measure_button = measure.buttons[row][step]
@@ -933,7 +951,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Update all sequencer buttons to show current step
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE):
+            for step in range(STEPS_PER_MEASURE_4_4):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
                     is_checked = button.isChecked()
@@ -980,7 +998,7 @@ class PatternSequenceEditor(PatternUI):
         """Update total pattern length based on measure count"""
         # Keep total_steps at 16 (one bar) - sequencer always shows one bar at a time
         # Playback will iterate through all bars
-        self.total_steps = 16
+        self.total_steps = STEPS_PER_MEASURE_4_4
 
     def _on_button_clicked(self, button, checked):
         """Handle button clicks and store the selected note"""
@@ -1076,17 +1094,79 @@ class PatternSequenceEditor(PatternUI):
         self._update_button_states_for_beats_per_bar()
         log.message(f"Beats per bar changed to {self.measure_beats}")
 
-    def _update_button_states_for_beats_per_bar(self):
+    def _update_button_states_for_beats_per_bar(self) -> None:
+        """Enable/disable sequencer buttons based on beats per bar setting."""
+
+        active_steps = (
+            STEPS_PER_MEASURE_3_4
+            if self.measure_beats == STEPS_PER_MEASURE_3_4
+            else STEPS_PER_MEASURE_4_4
+        )
+
+        for row in range(ROWS):
+            for step in range(STEPS_PER_MEASURE_4_4):
+                if step >= len(self.buttons[row]):
+                    continue
+
+                button = self.buttons[row][step]
+
+                is_active = step < active_steps
+
+                button.setEnabled(is_active)
+
+                if not is_active:
+                    button.setChecked(False)
+
+                    for measure in self.measures:
+                        if step < len(measure.buttons[row]):
+                            reset_button(measure.buttons[row][step])
+
+    def _update_button_states_for_beats_per_bar_old(self):
         """Enable/disable sequencer buttons based on beats per bar setting"""
         # Steps 0-11 are always enabled, steps 12-15 are disabled when beats_per_bar is 12
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE):
+            for step in range(STEPS_PER_MEASURE_4_4):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
                     if self.measure_beats == 12:
                         # Disable last 4 buttons (steps 12-15)
                         button.setEnabled(step < 12)
                         if step >= 12:
+                            button.setEnabled(False)
+                            button.setChecked(False)  # Uncheck disabled buttons
+                            for measure in self.measures:
+                                if step < len(measure.buttons[row]):
+                                    reset_button(measure.buttons[row][step])
+                    else:
+                        # Enable all 16 buttons
+                        update_button_state(button, button.isChecked())
+
+        # Sync sequencer digital after updating button states
+        if self.current_measure_index < len(self.measures):
+            self._sync_sequencer_with_measure(self.current_measure_index)
+
+    def _on_beats_per_measure_changed(self, index: int):
+        """Handle beats per measure changes from the combobox"""
+        if index == 0:
+            self.measure_beats = STEPS_PER_MEASURE_4_4
+        else:
+            self.measure_beats = STEPS_PER_MEASURE_3_4
+
+        # Update button states based on beats per measure
+        self._update_button_states_for_beats_per_measure()
+        log.message(f"Beats per measure changed to {self.measure_beats}")
+
+    def _update_button_states_for_beats_per_measure(self):
+        """Enable/disable sequencer buttons based on beats per measure setting"""
+        # Steps 12-15 disabled when beats_per_measure is 12
+        for row in range(ROWS):
+            for step in range(self.measure_beats):
+                if step < len(self.buttons[row]):
+                    button = self.buttons[row][step]
+                    if self.measure_beats == STEPS_PER_MEASURE_3_4:
+                        # Disable last 4 buttons (steps 12-15)
+                        button.setEnabled(step < STEPS_PER_MEASURE_3_4)
+                        if step >= STEPS_PER_MEASURE_3_4:
                             button.setEnabled(False)
                             button.setChecked(False)  # Uncheck disabled buttons
                             for measure in self.measures:
@@ -1256,7 +1336,7 @@ class PatternSequenceEditor(PatternUI):
         for row in range(ROWS):
             channel = row if row < 3 else 9
             for measure_index, measure in enumerate(self.measures):
-                for step in range(STEPS_PER_MEASURE):
+                for step in range(STEPS_PER_MEASURE_4_4):
                     button = measure.buttons[row][step]
                     spec = get_button_note_spec(button)
                     if button.isChecked() and spec.is_active:
@@ -1512,7 +1592,7 @@ class PatternSequenceEditor(PatternUI):
 
             # Add notes from all bars to the track
             for bar_index, measure in enumerate(self.measures):
-                for step in range(STEPS_PER_MEASURE):
+                for step in range(STEPS_PER_MEASURE_4_4):
                     if step < len(measure.buttons[row]):
                         measure_button = measure.buttons[row][step]
                         spec = get_button_note_spec(measure_button)
@@ -1564,7 +1644,7 @@ class PatternSequenceEditor(PatternUI):
         if self.current_measure_index < len(self.measures):
             measure = self.measures[self.current_measure_index]
             for row in range(ROWS):
-                for step in range(STEPS_PER_MEASURE):
+                for step in range(STEPS_PER_MEASURE_4_4):
                     if step < len(measure.buttons[row]):
                         reset_button(measure.buttons[row][step])
 
@@ -1861,16 +1941,30 @@ class PatternSequenceEditor(PatternUI):
     def _pattern_transport_pause_toggle(self) -> None:
         """Pause or resume pattern playback."""
         if self._pattern_paused:
+            # Resume: restart engine from current position, then restart timer.
+            # Must call engine.start(current_tick) to reset _start_time so process_until_now
+            # does not think a long pause elapsed (which would cause a burst of notes).
+            if hasattr(self, "playback_engine") and self.playback_engine:
+                events = self.playback_engine._events
+                idx = self.playback_engine._event_index
+                if events and idx < len(events):
+                    current_tick = events[idx].absolute_tick
+                else:
+                    current_tick = self.playback_engine._start_tick
+                self.playback_engine.start(current_tick)
             if hasattr(self, "timer") and self.timer and not self.timer.isActive():
-                ms_per_step = self._calculate_step_duration()
-                self.timer.start(int(ms_per_step))
+                playback_interval_ms = 20
+                self.timer.start(playback_interval_ms)
             self._pattern_paused = False
             log.message(
                 message="Pattern playback resumed", scope=self.__class__.__name__
             )
         else:
+            # Pause: stop timer and pause engine so no events advance during pause.
             if hasattr(self, "timer") and self.timer and self.timer.isActive():
                 self.timer.stop()
+            if hasattr(self, "playback_engine") and self.playback_engine:
+                self.playback_engine.pause()
             self._pattern_paused = True
             log.message(
                 message="Pattern playback paused", scope=self.__class__.__name__
@@ -2027,7 +2121,7 @@ class PatternSequenceEditor(PatternUI):
             return
 
         self.playback_engine.load_file(mid)
-        for ch in range(STEPS_PER_MEASURE):
+        for ch in range(STEPS_PER_MEASURE_4_4):
             self.playback_engine.mute_channel(ch, ch in self.muted_channels)
         if self.midi_helper:
             self.playback_engine.on_event = (
@@ -2117,7 +2211,7 @@ class PatternSequenceEditor(PatternUI):
     def _update_transport_ui(self):
         """update ui regarding playing state"""
         state = TransportState.STOPPED
-        self.update_play_and_stop_buttons(state)
+        self.update_transport_buttons(state)
 
     def _sync_ui_to_stopped(self) -> None:
         """Sync UI to stopped state: stop timer, update play/stop buttons."""
@@ -2137,7 +2231,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Send all notes off
         if self.midi_helper:
-            for channel in range(STEPS_PER_MEASURE):
+            for channel in range(STEPS_PER_MEASURE_4_4):
                 self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
 
         log.message(message="Pattern playback stopped", scope=self.__class__.__name__)
@@ -2237,7 +2331,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Update UI to show current step
         for row in range(ROWS):
-            for col in range(STEPS_PER_MEASURE):  # Always 16 steps in sequencer
+            for col in range(STEPS_PER_MEASURE_4_4):  # Always 16 steps in sequencer
                 if col < len(self.buttons[row]):
                     button = self.buttons[row][col]
                     is_checked = button.isChecked()

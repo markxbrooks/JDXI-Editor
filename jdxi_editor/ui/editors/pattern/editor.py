@@ -88,8 +88,8 @@ from picoui.widget.helper import get_file_path_from_spec
 ROWS = 4
 STEPS_PER_MEASURE = 16
 TICKS_PER_STEP = 120
-STEPS_PER_BAR_4_4 = 16
-STEPS_PER_BAR_3_4 = 12
+STEPS_PER_MEASURE_4_4 = 16
+STEPS_PER_MEASURE_3_4 = 12
 
 # MIDI channel -> sequencer row: 0=Digital1, 1=Digital2, 2=Analog, 9=Drum
 CHANNEL_TO_ROW = {
@@ -563,7 +563,7 @@ class PatternSequenceEditor(PatternUI):
                     # Calculate destination step
                     dest_step = start_step + (source_step - source_start)
 
-                    if dest_step < 0 or dest_step >= STEPS_PER_BAR_4_4:
+                    if dest_step < 0 or dest_step >= STEPS_PER_MEASURE_4_4:
                         continue  # Skip if out of bounds
 
                     if dest_step < len(measure.buttons[row]):
@@ -634,7 +634,7 @@ class PatternSequenceEditor(PatternUI):
         """Update total pattern length based on measure count"""
         # Keep total_steps at 16; sequencer shows one measure at a time
         # Playback will iterate through all measures
-        self.total_steps = STEPS_PER_BAR_4_4
+        self.total_steps = STEPS_PER_MEASURE_4_4
 
     def _on_button_clicked(self, btn: SequencerButton, checked: bool):
         """Handle button clicks via SequencerButtonManager."""
@@ -646,9 +646,9 @@ class PatternSequenceEditor(PatternUI):
     def _on_beats_per_measure_changed(self, index: int):
         """Handle beats per measure changes from the combobox"""
         if index == 0:
-            self.measure_beats = STEPS_PER_BAR_4_4
+            self.measure_beats = STEPS_PER_MEASURE_4_4
         else:
-            self.measure_beats = STEPS_PER_BAR_3_4
+            self.measure_beats = STEPS_PER_MEASURE_3_4
 
         # Update button states based on beats per measure
         self._update_button_states_for_beats_per_measure()
@@ -661,10 +661,10 @@ class PatternSequenceEditor(PatternUI):
             for step in range(self.measure_beats):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
-                    if self.measure_beats == STEPS_PER_BAR_3_4:
+                    if self.measure_beats == STEPS_PER_MEASURE_3_4:
                         # Disable last 4 buttons (steps 12-15)
-                        button.setEnabled(step < STEPS_PER_BAR_3_4)
-                        if step >= STEPS_PER_BAR_3_4:
+                        button.setEnabled(step < STEPS_PER_MEASURE_3_4)
+                        if step >= STEPS_PER_MEASURE_3_4:
                             button.setEnabled(False)
                             button.setChecked(False)  # Uncheck disabled buttons
                             for measure in self.measures:
