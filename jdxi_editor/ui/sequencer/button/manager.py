@@ -780,3 +780,15 @@ class SequencerButtonManager:
         """
         self.default_velocity = velocity
         self.default_duration_ms = duration_ms
+
+    def highlight_measure(self, measure_index: int) -> None:
+        """
+        Highlight the current measure/bar in the sequencer display.
+
+        Updates button styles to show the selected measure and the current step.
+        Equivalent to highlight_bar; "measure" and "bar" are interchangeable.
+
+        :param measure_index: Index of the measure being displayed
+        """
+        self.current_measure_index = measure_index
+        self.highlight_bar(measure_index)

@@ -37,7 +37,7 @@ from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.combo_box.synchronizer import ComboBoxUpdateConfig, ComboBoxSynchronizer
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi import MidiTempo
-from picomidi.core.tempo import milliseconds_per_note
+from picomidi.core.tempo import milliseconds_per_note, convert_absolute_time_to_delta_time
 from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -84,10 +84,15 @@ from picoui.widget.helper import create_combo_box, get_file_path_from_spec
 from picoui.widget.setters import set_spinbox_value
 
 ROWS = 4
-STEPS_PER_MEASURE_4_4 = 16
-STEPS_PER_MEASURE_3_4 = 12
 TICKS_PER_STEP = 120
 SECONDS_PER_MINUTE = 60
+
+
+class MeasureBeats:
+    """Measure Beats"""
+    PER_MEASURE_4_4 = 16
+    PER_MEASURE_3_4 = 12
+
 
 # MIDI channel -> sequencer row: 0=Digital1, 1=Digital2, 2=Analog, 9=Drum
 CHANNEL_TO_ROW = {
@@ -839,7 +844,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Copy note data from the measure to the main sequencer buttons
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE_4_4):
+            for step in range(MeasureBeats.PER_MEASURE_4_4):
                 if step < len(self.buttons[row]) and step < len(measure.buttons[row]):
                     sequencer_button = self.buttons[row][step]
                     measure_button = measure.buttons[row][step]
@@ -888,7 +893,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Update all sequencer buttons to show current step
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE_4_4):
+            for step in range(MeasureBeats.PER_MEASURE_4_4):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
                     is_checked = button.isChecked()
@@ -935,7 +940,7 @@ class PatternSequenceEditor(PatternUI):
         """Update total pattern length based on measure count"""
         # Keep total_steps at 16 (one bar) - sequencer always shows one bar at a time
         # Playback will iterate through all bars
-        self.total_steps = STEPS_PER_MEASURE_4_4
+        self.total_steps = MeasureBeats.PER_MEASURE_4_4
 
     def _on_button_clicked(self, button, checked):
         """Handle button clicks and store the selected note"""
@@ -1035,13 +1040,13 @@ class PatternSequenceEditor(PatternUI):
         """Enable/disable sequencer buttons based on beats per bar setting."""
 
         active_steps = (
-            STEPS_PER_MEASURE_3_4
-            if self.measure_beats == STEPS_PER_MEASURE_3_4
-            else STEPS_PER_MEASURE_4_4
+            MeasureBeats.PER_MEASURE_3_4
+            if self.measure_beats == MeasureBeats.PER_MEASURE_3_4
+            else MeasureBeats.PER_MEASURE_4_4
         )
 
         for row in range(ROWS):
-            for step in range(STEPS_PER_MEASURE_4_4):
+            for step in range(MeasureBeats.PER_MEASURE_4_4):
                 if step >= len(self.buttons[row]):
                     continue
 
@@ -1061,13 +1066,16 @@ class PatternSequenceEditor(PatternUI):
     def _on_beats_per_measure_changed(self, index: int):
         """Handle beats per measure changes from the combobox"""
         if index == 0:
-            self.measure_beats = STEPS_PER_MEASURE_4_4
+            self._update_measure_beats(MeasureBeats.PER_MEASURE_4_4)
         else:
-            self.measure_beats = STEPS_PER_MEASURE_3_4
+            self._update_measure_beats(MeasureBeats.PER_MEASURE_3_4)
 
         # Update button states based on beats per measure
         self._update_button_states_for_beats_per_measure()
         log.message(f"Beats per measure changed to {self.measure_beats}")
+
+    def _update_measure_beats(self, beats: int):
+        self.measure_beats = beats
 
     def _update_button_states_for_beats_per_measure(self):
         """Enable/disable sequencer buttons based on beats per measure setting"""
@@ -1076,10 +1084,10 @@ class PatternSequenceEditor(PatternUI):
             for step in range(self.measure_beats):
                 if step < len(self.buttons[row]):
                     button = self.buttons[row][step]
-                    if self.measure_beats == STEPS_PER_MEASURE_3_4:
+                    if self.measure_beats == MeasureBeats.PER_MEASURE_3_4:
                         # Disable last 4 buttons (steps 12-15)
-                        button.setEnabled(step < STEPS_PER_MEASURE_3_4)
-                        if step >= STEPS_PER_MEASURE_3_4:
+                        button.setEnabled(step < MeasureBeats.PER_MEASURE_3_4)
+                        if step >= MeasureBeats.PER_MEASURE_3_4:
                             button.setEnabled(False)
                             button.setChecked(False)  # Uncheck disabled buttons
                             for measure in self.measures:
@@ -1238,6 +1246,7 @@ class PatternSequenceEditor(PatternUI):
             self.midi_file.tracks.append(track)
 
     def update_pattern(self):
+        """update pattern"""
         self.midi_file = MidiFile()
         track = MidiTrack()
         self.midi_file.tracks.append(track)
@@ -1253,7 +1262,7 @@ class PatternSequenceEditor(PatternUI):
         events = []
 
         for measure_index, measure in enumerate(self.measures):
-            for step in range(STEPS_PER_MEASURE_4_4):
+            for step in range(MeasureBeats.PER_MEASURE_4_4):
                 absolute_tick = (
                         measure_index * ticks_per_bar
                         + step * ticks_per_step
@@ -1290,58 +1299,7 @@ class PatternSequenceEditor(PatternUI):
         # Sort events by absolute time
         events.sort(key=lambda e: e[0])
 
-        # Convert absolute time → delta time
-        last_time = 0
-        for abs_time, msg in events:
-            delta = abs_time - last_time
-            msg.time = delta
-            track.append(msg)
-            last_time = abs_time
-
-    def update_pattern_old(self):
-        """Update the MIDI file with current pattern state"""
-        self.midi_file = MidiFile()
-        track = MidiTrack()
-        self.midi_file.tracks.append(track)
-
-        track.append(MetaMessage(MidoMessageType.SET_TEMPO, tempo=bpm2tempo(self.bpm)))
-        track.append(MetaMessage("time_signature", numerator=4, denominator=4))
-
-        for row in range(ROWS):
-            channel = self.get_channel_for_row(row)
-            for measure_index, measure in enumerate(self.measures):
-                for step in range(STEPS_PER_MEASURE_4_4):
-                    button = measure.buttons[row][step]
-                    spec = get_button_note_spec(button)
-                    if button.isChecked() and spec.is_active:
-                        time = int(
-                            (measure_index * STEPS_PER_MEASURE_4_4 + step) * 120
-                        )  # Convert to ticks
-                        track.append(
-                            Message(
-                                MidoMessageType.NOTE_ON,
-                                note=spec.note,
-                                velocity=spec.velocity,
-                                time=time,
-                                channel=channel,
-                            )
-                        )
-                        track.append(
-                            Message(
-                                MidoMessageType.NOTE_OFF,
-                                note=spec.note,
-                                velocity=spec.velocity,
-                                time=time + 120,
-                                channel=channel,
-                            )
-                        )
-
-                        note_name = (
-                            self._midi_to_note_name(spec.note, drums=True)
-                            if row == 3
-                            else self._midi_to_note_name(spec.note)
-                        )
-                        button.setToolTip(f"Note: {note_name}")
+        convert_absolute_time_to_delta_time(events, track)
 
     def get_channel_for_row(self, row: int) -> int:
         """Get idi channel for each row"""
@@ -1447,9 +1405,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
 
-            # Clear existing bars and bars list
-            self.measures_list.clear()
-            self.measures.clear()
+            self._clear_measures_and_mesasures_list()
 
             # Create new bars
             for measure_num in range(num_bars):
@@ -1557,6 +1513,11 @@ class PatternSequenceEditor(PatternUI):
 
             log.debug(traceback.format_exc())
 
+    def _clear_measures_and_mesasures_list(self):
+        # Clear existing bars and bars list
+        self.measures_list.clear()
+        self.measures.clear()
+
     def save_pattern(self, filename: str):
         """Save the current pattern to a MIDI file using mido."""
         midi_file = MidiFile()
@@ -1571,7 +1532,7 @@ class PatternSequenceEditor(PatternUI):
 
             # Add notes from all bars to the track
             for bar_index, measure in enumerate(self.measures):
-                for step in range(STEPS_PER_MEASURE_4_4):
+                for step in range(MeasureBeats.PER_MEASURE_4_4):
                     if step < len(measure.buttons[row]):
                         measure_button = measure.buttons[row][step]
                         spec = get_button_note_spec(measure_button)
@@ -1623,7 +1584,7 @@ class PatternSequenceEditor(PatternUI):
         if self.current_measure_index < len(self.measures):
             measure = self.measures[self.current_measure_index]
             for row in range(ROWS):
-                for step in range(STEPS_PER_MEASURE_4_4):
+                for step in range(MeasureBeats.PER_MEASURE_4_4):
                     if step < len(measure.buttons[row]):
                         reset_button(measure.buttons[row][step])
 
@@ -1663,9 +1624,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
 
-            # Clear existing bars and bars list
-            self.measures_list.clear()
-            self.measures.clear()
+            self._clear_measures_and_mesasures_list()
 
             # Create new bars without selecting them (to avoid UI flicker)
             for bar_num in range(num_bars):
@@ -1796,18 +1755,7 @@ class PatternSequenceEditor(PatternUI):
                 scope=self.__class__.__name__,
             )
 
-            # Update tempo from file: search all tracks for first set_tempo (many files put it in track 0, some in another track)
-            tempo_bpm = None
-            for track in midi_file.tracks:
-                for event in track:
-                    if event.type == MidoMessageType.SET_TEMPO:
-                        tempo_bpm = int(tempo2bpm(event.tempo))
-                        break
-                if tempo_bpm is not None:
-                    break
-            if tempo_bpm is not None:
-                set_spinbox_value(self.tempo_spinbox, tempo_bpm)
-                self.set_tempo(tempo_bpm)
+            self._update_tempo_from_file(midi_file)
 
             # Select first bar and sync sequencer digital
             if self.measures_list.count() > 0:
@@ -1824,6 +1772,20 @@ class PatternSequenceEditor(PatternUI):
                 message=f"Error loading pattern: {ex}", scope=self.__class__.__name__
             )
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
+
+    def _update_tempo_from_file(self, midi_file: MidiFile) -> None:
+        """Update tempo from file: search all tracks for first set_tempo (many files put it in track 0, some in another track)"""
+        tempo_bpm = None
+        for track in midi_file.tracks:
+            for event in track:
+                if event.type == MidoMessageType.SET_TEMPO:
+                    tempo_bpm = int(tempo2bpm(event.tempo))
+                    break
+            if tempo_bpm is not None:
+                break
+        if tempo_bpm is not None:
+            set_spinbox_value(self.tempo_spinbox, tempo_bpm)
+            self.set_tempo(tempo_bpm)
 
     def _add_button_with_label_from_spec(
             self,
@@ -2032,38 +1994,38 @@ class PatternSequenceEditor(PatternUI):
             return mid
 
         # Expand note_on / note_off
-        midi_events = []
+        events = []
 
-        for e in seq_events:
-            midi_events.append(
+        for absolute_tick in seq_events:
+            events.append(
                 (
-                    e.tick,
+                    absolute_tick.tick,
                     Message(
                         MidoMessageType.NOTE_ON,
-                        note=e.note,
-                        velocity=e.velocity,
-                        channel=e.channel,
+                        note=absolute_tick.note,
+                        velocity=absolute_tick.velocity,
+                        channel=absolute_tick.channel,
                         time=0,
                     ),
                 )
             )
-            midi_events.append(
+            events.append(
                 (
-                    e.tick + e.duration_ticks,
+                    absolute_tick.tick + absolute_tick.duration_ticks,
                     Message(
                         MidoMessageType.NOTE_OFF,
-                        note=e.note,
+                        note=absolute_tick.note,
                         velocity=0,
-                        channel=e.channel,
+                        channel=absolute_tick.channel,
                         time=0,
                     ),
                 )
             )
 
-        midi_events.sort(key=lambda x: x[0])
+        events.sort(key=lambda x: x[0])
 
         prev_tick = 0
-        for tick, msg in midi_events:
+        for tick, msg in events:
             delta = tick - prev_tick
             track.append(
                 Message(
@@ -2094,7 +2056,7 @@ class PatternSequenceEditor(PatternUI):
             return
 
         self.playback_engine.load_file(mid)
-        for ch in range(STEPS_PER_MEASURE_4_4):
+        for ch in range(MeasureBeats.PER_MEASURE_4_4):
             self.playback_engine.mute_channel(ch, ch in self.muted_channels)
         if self.midi_helper:
             self.playback_engine.on_event = (
@@ -2204,7 +2166,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Send all notes off
         if self.midi_helper:
-            for channel in range(STEPS_PER_MEASURE_4_4):
+            for channel in range(MeasureBeats.PER_MEASURE_4_4):
                 self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
 
         log.message(message="Pattern playback stopped", scope=self.__class__.__name__)
@@ -2304,7 +2266,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Update UI to show current step
         for row in range(ROWS):
-            for col in range(STEPS_PER_MEASURE_4_4):  # Always 16 steps in sequencer
+            for col in range(MeasureBeats.PER_MEASURE_4_4):  # Always 16 steps in sequencer
                 if col < len(self.buttons[row]):
                     button = self.buttons[row][col]
                     is_checked = button.isChecked()
