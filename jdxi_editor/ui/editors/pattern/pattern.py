@@ -115,34 +115,34 @@ class PatternSequenceEditor(PatternUI):
             midi_file_editor=midi_file_editor,
         )
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
-        self.measure_name = self.tr("Measure")
-        self.measure_name_plural = self.tr("Measures")
-        self.muted_channels = []
-        self.total_measures = 1  # Start with 1 bar by default
-        self.midi_helper = midi_helper
-        self.preset_helper = preset_helper
-        self.midi_file_editor = midi_file_editor  # Reference to MidiFileEditor
+        self.measure_name: str = self.tr("Measure")
+        self.measure_name_plural: str = self.tr("Measures")
+        self.muted_channels: list[int] = []
+        self.total_measures: int = 1  # Start with 1 bar by default
+        self.midi_helper: Optional[MidiIOHelper] = midi_helper
+        self.preset_helper: Optional[JDXiPresetHelper] = preset_helper
+        self.midi_file_editor: Optional[Any] = midi_file_editor  # Reference to MidiFileEditor
         # self.buttons populated by parent PatternUI._setup_ui() - do not overwrite
-        self.button_layouts = []  # Store references to button layouts for each row
-        self.measures = []  # Each measure stores its own notes
+        self.button_layouts: list[QHBoxLayout] = []  # Store references to button layouts for each row
+        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
         self.current_measure_index = 0  # Currently selected bar (0-indexed)
-        # self.timer = None
-        self.current_step = 0
+        self.timer: Optional[QTimer] = None
+        self.current_step: int = 0 # Currently selected step (0-indexed)
         self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
-        self.beats_per_pattern = 4
-        self.measure_beats = 16  # Number of beats per bar (16 or 12)
-        self.bpm = 120
-        # self.last_tap_time = None
-        self.tap_times = []
-        self.learned_pattern = [[None] * self.total_steps for _ in range(ROWS)]
-        self.active_notes = {}  # Track active notes
-        self.midi_file = MidiFile()  # Initialize a new MIDI file
-        self.midi_track = MidiTrack()  # Create a new track
+        self.beats_per_pattern: int = 4 # Number of beats per pattern
+        self.measure_beats: int = 16  # Number of beats per bar (16 or 12)
+        self.bpm: int = 120 # Beats per minute
+        self.last_tap_time: Optional[float] = None # Last tap time
+        self.tap_times: list[float] = [] # List of tap times
+        self.learned_pattern: list[list[Optional[int]]] = [[None] * self.total_steps for _ in range(ROWS)] # Learned pattern (row -> step -> midi_note)
+        self.active_notes: dict[int, int] = {}  # Track active notes (midi_note -> row index)
+        self.midi_file: MidiFile = MidiFile()  # Initialize a new MIDI file
+        self.midi_track: MidiTrack = MidiTrack()  # Create a new track
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
-        # self.clipboard = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
-        self._pattern_paused = False
-        self.playback_engine = PlaybackEngine()
-        self.row_specs = [
+        self.clipboard: Optional[ClipboardData] = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
+        self._pattern_paused: bool = False
+        self.playback_engine: PlaybackEngine = PlaybackEngine()
+        self.row_specs: list[SequencerRowSpec] = [
             SequencerRowSpec(
                 "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
             ),
