@@ -33,6 +33,7 @@ from jdxi_editor.ui.editors.pattern.models import ClipboardData, ButtonAttrs
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.pattern.ui import PatternUI
 from jdxi_editor.ui.sequencer.button.manager import SequencerButtonManager, NoteButtonAttrs
+from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.combo_box.synchronizer import ComboBoxUpdateConfig, ComboBoxSynchronizer
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from picomidi import MidiTempo
@@ -547,6 +548,7 @@ class PatternSequenceEditor(PatternUI):
             f"Copy previous {self.measure_name.lower()}"
         )
         self.copy_previous_measure_checkbox.setChecked(False)
+        JDXiUIThemeManager.apply_button_mini_style(self.copy_previous_measure_checkbox)
 
         measure_controls_layout.addWidget(self.copy_previous_measure_checkbox)
         measure_controls_layout.addStretch()  # Push controls to the left
