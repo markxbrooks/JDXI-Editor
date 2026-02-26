@@ -68,7 +68,7 @@ from jdxi_editor.ui.editors.midi_player.playback.engine import (
     TransportState,
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import (
-    TransportSpec,
+    TransportSpec, NoteButtonSpec,
 )
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
@@ -86,6 +86,7 @@ from picoui.widget.setters import set_spinbox_value
 ROWS = 4
 TICKS_PER_STEP = 120
 SECONDS_PER_MINUTE = 60
+PPQ = 480
 
 
 class MeasureBeats:
@@ -294,7 +295,7 @@ class PatternSequenceEditor(PatternUI):
         self._pattern_learner.on_learning_stopped = self._on_learner_stopped
 
         midi_controller_config = MidiFileControllerConfig(
-            ticks_per_beat=480,
+            ticks_per_beat=PPQ,
             beats_per_measure=4,
             default_bpm=self.bpm,
             default_velocity=100,
@@ -308,7 +309,7 @@ class PatternSequenceEditor(PatternUI):
         self._sync_from_midi_file_controller()
         ms_per_step = int(self._calculate_step_duration())
         playback_config = PlaybackConfig(
-            ticks_per_beat=480,
+            ticks_per_beat=PPQ,
             beats_per_measure=4,
             measure_beats=self.measure_beats,
             default_bpm=self.bpm,
@@ -1539,7 +1540,14 @@ class PatternSequenceEditor(PatternUI):
         """Save the current pattern to a MIDI file using mido."""
         midi_file = MidiFile()
 
-        # Create tracks for each row
+        self._create_tracks_per_row(midi_file)
+
+        self._save_midi_file(filename, midi_file)
+
+        self._update_midi_file_editor_with_file(filename)
+
+    def _create_tracks_per_row(self, midi_file: MidiFile):
+        """Create tracks for each row"""
         for row in range(ROWS):
             track = MidiTrack()
             midi_file.tracks.append(track)
@@ -1547,21 +1555,33 @@ class PatternSequenceEditor(PatternUI):
             # Add track name and program change
             track.append(Message(MidoMessageType.PROGRAM_CHANGE, program=0, time=0))
 
-            # Add notes from all bars to the track
-            for bar_index, measure in enumerate(self.measures):
-                for step in range(MeasureBeats.PER_MEASURE_4_4):
-                    if step < len(measure.buttons[row]):
-                        measure_button = measure.buttons[row][step]
-                        spec = get_button_note_spec(measure_button)
-                        if measure_button.isChecked() and spec.is_active:
-                            # Calculate the time for the note_on event (across all bars)
-                            global_step = bar_index * 16 + step
-                            time = global_step * 480  # Assuming 480 ticks per beat
-                            self._append_note_on_and_off(spec, time, track)
+            self._add_motes_from_all_bars_to_track(row, track)
 
-        self._save_midi_file(filename, midi_file)
+    def _add_motes_from_all_bars_to_track(self, row: int, track: MidiTrack[Any]):
+        """Add notes from all bars to the track"""
+        for bar_index, measure in enumerate(self.measures):
+            for step in range(MeasureBeats.PER_MEASURE_4_4):
+                if step < len(measure.buttons[row]):
+                    measure_button = measure.buttons[row][step]
+                    spec = get_button_note_spec(measure_button)
+                    if measure_button.isChecked() and spec.is_active:
+                        time = self._calculate_note_on_time(bar_index, step)
+                        self._append_note_on_and_off(spec, time, track)
 
-        self._update_midi_file_editor_with_file(filename)
+    def _calculate_note_on_time_old(self, bar_index: int, step: int) -> int:
+        """Calculate the time for the note_on event (across all bars)"""
+        global_step = bar_index * 16 + step
+        time = global_step * PPQ  # Assuming 480 ticks per beat
+        return time
+
+    def _calculate_note_on_time(self, bar_index: int, step: int) -> int:
+        """Calculate the time for the note_on event (across all bars)"""
+        ppq = self.midi_file.ticks_per_beat
+        ticks_per_step = ppq // 4  # 16th note
+        steps_per_bar = 16
+
+        global_step = bar_index * steps_per_bar + step
+        return global_step * ticks_per_step
 
     def _update_midi_file_editor_with_file(self, filename: str):
         """f MidiFileEditor is connected, update its file too"""
@@ -2011,7 +2031,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _build_midi_file_for_playback(self) -> MidiFile:
         """Build a MidiFile from the current pattern for PlaybackEngine."""
-        ticks_per_beat = 480
+        ticks_per_beat = PPQ
         tempo_us = int(MidiTempo.MICROSECONDS_PER_MINUTE / self.bpm)
 
         seq_events = self._collect_sequencer_events(ticks_per_beat)
@@ -2135,7 +2155,7 @@ class PatternSequenceEditor(PatternUI):
                 tick = self.playback_engine.start_tick
         else:
             tick = 0
-        ticks_per_step = 480 // 4
+        ticks_per_step = PPQ // 4
         total_steps = len(self.measures) * self.measure_beats if self.measures else 0
         global_step = (tick // ticks_per_step) % total_steps if total_steps > 0 else 0
         self.current_step = global_step
