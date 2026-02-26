@@ -1314,7 +1314,7 @@ class PatternSequenceEditor(PatternUI):
         :param midi_file_editor: MidiFileEditor instance
         """
         self.midi_file_editor = midi_file_editor
-        # If MidiFileEditor already has a loaded file, load it
+        # --- If MidiFileEditor already has a loaded file, load it
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             if self.midi_file_editor.midi_state.file:
                 self.load_from_midi_file_editor()
@@ -1328,7 +1328,7 @@ class PatternSequenceEditor(PatternUI):
         :param midi_file_editor: Optional MidiFileEditor instance. If not provided, uses self.midi_file_editor
         """
         try:
-            # Use provided instance or fall back to stored reference
+            # --- Use provided instance or fall back to stored reference
             editor = midi_file_editor or self.midi_file_editor
 
             if not editor:
@@ -1361,28 +1361,7 @@ class PatternSequenceEditor(PatternUI):
                 )
                 return
 
-            # Try to get filename from multiple possible locations
-            filename = None
-            if hasattr(midi_file, "filename"):
-                filename = midi_file.filename
-            elif hasattr(editor.midi_state, "file") and hasattr(
-                    editor.midi_state.file, "filename"
-            ):
-                filename = editor.midi_state.file.filename
-
-            if filename:
-                log.message(
-                    message=f"Loading pattern from MidiFileEditor file: {filename}",
-                    scope=self.__class__.__name__,
-                )
-                self.load_pattern(filename)
-            else:
-                # Load from the MidiFile object directly
-                log.message(
-                    message="Loading pattern from MidiFileEditor's MidiFile object (no filename available)",
-                    scope=self.__class__.__name__,
-                )
-                self._load_from_midi_file_object(midi_file)
+            self._get_filename_from_available_locations(editor, midi_file)
         except Exception as ex:
             log.error(
                 message=f"Error loading from MidiFileEditor: {ex}",
@@ -1391,6 +1370,30 @@ class PatternSequenceEditor(PatternUI):
             import traceback
 
             log.debug(traceback.format_exc())
+
+    def _get_filename_from_available_locations(self, editor: Any | None, midi_file):
+        """Try to get filename from multiple possible locations"""
+        filename = None
+        if hasattr(midi_file, "filename"):
+            filename = midi_file.filename
+        elif hasattr(editor.midi_state, "file") and hasattr(
+                editor.midi_state.file, "filename"
+        ):
+            filename = editor.midi_state.file.filename
+
+        if filename:
+            log.message(
+                message=f"Loading pattern from MidiFileEditor file: {filename}",
+                scope=self.__class__.__name__,
+            )
+            self.load_pattern(filename)
+        else:
+            # --- Load from the MidiFile object directly
+            log.message(
+                message="Loading pattern from MidiFileEditor's MidiFile object (no filename available)",
+                scope=self.__class__.__name__,
+            )
+            self._load_from_midi_file_object(midi_file)
 
     def _load_from_midi_file_object(self, midi_file: MidiFile) -> None:
         """Load pattern from a MidiFile object (internal method)."""
@@ -1399,7 +1402,7 @@ class PatternSequenceEditor(PatternUI):
             beats_per_bar = 4
             ticks_per_bar = ppq * beats_per_bar
 
-            # Detect number of bars
+            # --- Detect number of bars
             num_bars = self._detect_bars_from_midi(midi_file)
             log.message(
                 message=f"Detected {num_bars} bars in MIDI file",
@@ -1408,92 +1411,16 @@ class PatternSequenceEditor(PatternUI):
 
             self._clear_measures_and_measures_list()
 
-            # Create new bars
-            for measure_num in range(num_bars):
-                measure = PatternMeasure()
-                reset_measure(measure)
-                self.measures.append(measure)
-                item = QListWidgetItem(f"measure {measure_num + 1}")
-                item.setData(Qt.ItemDataRole.UserRole, measure_num)
-                self.measures_list.addItem(item)
+            self._create_new_measures(num_bars)
 
             self.total_measures = len(self.measures)
             self._update_pattern_length()
 
-            # Load notes from all tracks, mapping by MIDI channel
-            # Channel mapping: 0 -> Digital Synth 1 (row 0), 1 -> Digital Synth 2 (row 1),
-            #                  2 -> Analog Synth (row 2), 9 -> Drums (row 3)
-            notes_loaded = 0
-            channel_to_row = {
-                0: 0,  # Channel 0 -> Digital Synth 1 (row 0)
-                1: 1,  # Channel 1 -> Digital Synth 2 (row 1)
-                2: 2,  # Channel 2 -> Analog Synth (row 2)
-                9: 3,  # Channel 9 -> Drums (row 3)
-            }
-
-            for track in midi_file.tracks:
-                absolute_time = 0
-                for msg in track:
-                    absolute_time += msg.time
-                    # Check if message is a note_on with velocity > 0 and has a channel attribute
-                    if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
-                        # Get channel - note messages always have channel attribute
-                        if not hasattr(msg, "channel"):
-                            continue
-                        channel = msg.channel
-                        if channel not in channel_to_row:
-                            continue
-                        row = channel_to_row[channel]
-                        bar_index = int(absolute_time / ticks_per_bar)
-                        step_in_bar = int(
-                            (absolute_time % ticks_per_bar) / (ticks_per_bar / 16)
-                        )
-
-                        while bar_index >= len(self.measures):
-                            measure = PatternMeasure()
-                            reset_measure(measure)
-                            self.measures.append(measure)
-                            item = QListWidgetItem(
-                                f"{self.measure_name} {len(self.measures)}"
-                            )
-                            item.setData(
-                                Qt.ItemDataRole.UserRole, len(self.measures) - 1
-                            )
-                            self.measures_list.addItem(item)
-
-                        if bar_index < len(self.measures) and step_in_bar < 16:
-                            measure = self.measures[bar_index]
-                            if step_in_bar < len(measure.buttons[row]):
-                                button = measure.buttons[row][step_in_bar]
-                                update_button_state(button, True)
-                                button.note = msg.note
-                                # Store velocity from MIDI file editor
-                                button.note_velocity = (
-                                    msg.velocity
-                                    if hasattr(msg, "velocity")
-                                    else self.velocity_spinbox.value()
-                                )
-                                # Set default duration for MIDI file editor loaded notes
-                                button.note_duration = self._get_duration_ms()
-                                sync_button_note_spec(button)
-                                notes_loaded += 1
+            notes_loaded = self._load_notes_from_tracks_to_channels(midi_file, ticks_per_bar)
 
             self._update_spinbox_from_file_tempo(midi_file)
 
-            # Select first bar and sync
-            if self.measures_list.count() > 0:
-                self.current_measure_index = 0
-                self.measures_list.setCurrentRow(0)
-                self._sync_sequencer_with_measure(0)
-                log.message(
-                    message=f"Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars",
-                    scope=self.__class__.__name__,
-                )
-            else:
-                log.warning(
-                    message="No bars were created from MIDI file",
-                    scope=self.__class__.__name__,
-                )
+            self._select_first_measure_and_sync(notes_loaded)
         except Exception as ex:
             log.error(
                 message=f"Error loading from MidiFileEditor: {ex}",
@@ -1502,6 +1429,92 @@ class PatternSequenceEditor(PatternUI):
             import traceback
 
             log.debug(traceback.format_exc())
+
+    def _create_new_measures(self, num_bars: int):
+        """Create new bars"""
+        for measure_num in range(num_bars):
+            measure = PatternMeasure()
+            reset_measure(measure)
+            self.measures.append(measure)
+            item = QListWidgetItem(f"measure {measure_num + 1}")
+            item.setData(Qt.ItemDataRole.UserRole, measure_num)
+            self.measures_list.addItem(item)
+
+    def _load_notes_from_tracks_to_channels(self, midi_file: MidiFile, ticks_per_bar: int) -> int:
+        """Load notes from all tracks, mapping by MIDI channel"""
+        # Channel mapping: 0 -> Digital Synth 1 (row 0), 1 -> Digital Synth 2 (row 1),
+        #                  2 -> Analog Synth (row 2), 9 -> Drums (row 3)
+        notes_loaded = 0
+        channel_to_row = {
+            0: 0,  # Channel 0 -> Digital Synth 1 (row 0)
+            1: 1,  # Channel 1 -> Digital Synth 2 (row 1)
+            2: 2,  # Channel 2 -> Analog Synth (row 2)
+            9: 3,  # Channel 9 -> Drums (row 3)
+        }
+
+        for track in midi_file.tracks:
+            absolute_time = 0
+            for msg in track:
+                absolute_time += msg.time
+                # Check if message is a note_on with velocity > 0 and has a channel attribute
+                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                    # Get channel - note messages always have channel attribute
+                    if not hasattr(msg, "channel"):
+                        continue
+                    channel = msg.channel
+                    if channel not in channel_to_row:
+                        continue
+                    row = channel_to_row[channel]
+                    bar_index = int(absolute_time / ticks_per_bar)
+                    step_in_bar = int(
+                        (absolute_time % ticks_per_bar) / (ticks_per_bar / 16)
+                    )
+
+                    while bar_index >= len(self.measures):
+                        measure = PatternMeasure()
+                        reset_measure(measure)
+                        self.measures.append(measure)
+                        item = QListWidgetItem(
+                            f"{self.measure_name} {len(self.measures)}"
+                        )
+                        item.setData(
+                            Qt.ItemDataRole.UserRole, len(self.measures) - 1
+                        )
+                        self.measures_list.addItem(item)
+
+                    if bar_index < len(self.measures) and step_in_bar < 16:
+                        measure = self.measures[bar_index]
+                        if step_in_bar < len(measure.buttons[row]):
+                            button = measure.buttons[row][step_in_bar]
+                            update_button_state(button, True)
+                            button.note = msg.note
+                            # Store velocity from MIDI file editor
+                            button.note_velocity = (
+                                msg.velocity
+                                if hasattr(msg, "velocity")
+                                else self.velocity_spinbox.value()
+                            )
+                            # Set default duration for MIDI file editor loaded notes
+                            button.note_duration = self._get_duration_ms()
+                            sync_button_note_spec(button)
+                            notes_loaded += 1
+        return notes_loaded
+
+    def _select_first_measure_and_sync(self, notes_loaded: int):
+        # Select first bar and sync
+        if self.measures_list.count() > 0:
+            self.current_measure_index = 0
+            self.measures_list.setCurrentRow(0)
+            self._sync_sequencer_with_measure(0)
+            log.message(
+                message=f"Loaded {notes_loaded} notes from MidiFileEditor's MIDI file in {len(self.measures)} bars",
+                scope=self.__class__.__name__,
+            )
+        else:
+            log.warning(
+                message="No bars were created from MIDI file",
+                scope=self.__class__.__name__,
+            )
 
     def _update_spinbox_from_file_tempo(self, midi_file: MidiFile):
         """update spinbox from file tempo"""
@@ -1544,31 +1557,14 @@ class PatternSequenceEditor(PatternUI):
                             # Calculate the time for the note_on event (across all bars)
                             global_step = bar_index * 16 + step
                             time = global_step * 480  # Assuming 480 ticks per beat
-                            track.append(
-                                Message(
-                                    MidoMessageType.NOTE_ON,
-                                    note=spec.note,
-                                    velocity=spec.velocity,
-                                    time=time,
-                                )
-                            )
-                            # Add a note_off event after a short duration
-                            track.append(
-                                Message(
-                                    MidoMessageType.NOTE_OFF,
-                                    note=spec.note,
-                                    velocity=0,
-                                    time=time + 120,
-                                )
-                            )
+                            self._append_note_on_and_off(spec, time, track)
 
-        # Save the MIDI file
-        midi_file.save(filename)
-        log.message(
-            message=f"Pattern saved to {filename}", scope=self.__class__.__name__
-        )
+        self._save_midi_file(filename, midi_file)
 
-        # If MidiFileEditor is connected, update its file too
+        self._update_midi_file_editor_with_file(filename)
+
+    def _update_midi_file_editor_with_file(self, filename: str):
+        """f MidiFileEditor is connected, update its file too"""
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             try:
                 # Reload the saved file into MidiFileEditor
@@ -1582,6 +1578,33 @@ class PatternSequenceEditor(PatternUI):
                     message=f"Could not update MidiFileEditor: {ex}",
                     scope=self.__class__.__name__,
                 )
+
+    def _save_midi_file(self, filename: str, midi_file: MidiFile):
+        """Save the MIDI file"""
+        midi_file.save(filename)
+        log.message(
+            message=f"Pattern saved to {filename}", scope=self.__class__.__name__
+        )
+
+    def _append_note_on_and_off(self, spec: NoteButtonSpec, time: int, track: MidiTrack):
+        """Append Note on and Off"""
+        track.append(
+            Message(
+                MidoMessageType.NOTE_ON,
+                note=spec.note,
+                velocity=spec.velocity,
+                time=time,
+            )
+        )
+        # Add a note_off event after a short duration
+        track.append(
+            Message(
+                MidoMessageType.NOTE_OFF,
+                note=spec.note,
+                velocity=0,
+                time=time + 120,
+            )
+        )
 
     def clear_pattern(self):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""
@@ -2195,101 +2218,108 @@ class PatternSequenceEditor(PatternUI):
         """Plays the current step and advances to the next one."""
         # Calculate which bar and step within that bar
         # Use beats_per_bar to determine steps per bar
-        steps_per_bar = self.measure_beats
-        total_pattern_steps = len(self.measures) * steps_per_bar
+        measure_beats = self.measure_beats
+        total_pattern_beats = len(self.measures) * self.measure_beats
         global_step = (
-            self.current_step % total_pattern_steps if total_pattern_steps > 0 else 0
+            self.current_step % total_pattern_beats if total_pattern_beats > 0 else 0
         )
-        bar_index = global_step // steps_per_bar
-        step_in_bar = global_step % steps_per_bar
+        measure_index = global_step // measure_beats
+        step_in_measure = global_step % measure_beats
 
         log.message(
-            message=f"Playing step {step_in_bar} in bar {bar_index + 1} "
+            message=f"Playing step {step_in_measure} in bar {measure_index + 1} "
                     f"(global step {global_step}"
                     f" {self.measure_beats} beats per bar)",
             scope=self.__class__.__name__,
         )
 
         # Sync sequencer with the current bar being played
-        if bar_index < len(self.measures):
-            self.current_measure_index = bar_index
-            self._sync_sequencer_with_measure(bar_index)
+        if measure_index < len(self.measures):
+            self.current_measure_index = measure_index
+            self._sync_sequencer_with_measure(measure_index)
 
             # Highlight the current bar in the bars list
-            if bar_index < self.measures_list.count():
-                self.measures_list.setCurrentRow(bar_index)
+            if measure_index < self.measures_list.count():
+                self.measures_list.setCurrentRow(measure_index)
                 # Ensure the item is visible (scroll to it if needed)
-                item = self.measures_list.item(bar_index)
+                item = self.measures_list.item(measure_index)
                 if item:
                     self.measures_list.scrollToItem(item)
 
-            # Play notes from the current bar
-            measure = self.measures[bar_index]
-            for row in range(ROWS):
-                if step_in_bar < len(measure.buttons[row]):
-                    measure_button = measure.buttons[row][step_in_bar]
-                    play_spec = get_button_note_spec(measure_button)
-                    if measure_button.isChecked() and play_spec.is_active:
-                        # Determine channel based on row
-                        channel = (
-                            row if row < 3 else 9
-                        )  # channels 0,1,2 for synths, 9 for drums
+            self._play_notes_from_current_measure(measure_index, step_in_measure)
 
-                        # Send Note On message using the stored note
-                        if self.midi_helper:
-                            if channel not in self.muted_channels:
-                                log.message(
-                                    message=f"Row {row} active at step {step_in_bar} in bar {bar_index + 1}, sending note {play_spec.note} on channel {channel}",
-                                    scope=self.__class__.__name__,
-                                )
-                                self.midi_helper.send_raw_message(
-                                    [
-                                        NOTE_ON | channel,
-                                        play_spec.note,
-                                        play_spec.velocity,
-                                    ]
-                                )
+        self._advance_to_next_step()
 
-                                # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
-                                note_duration_ms = play_spec.duration_ms or (
-                                        (float(MidiTempo.MILLISECONDS_PER_MINUTE) / self.bpm) / 4.0
-                                )
+        self._update_ui_for_current_step(step_in_measure)
 
-                                QTimer.singleShot(
-                                    int(note_duration_ms),
-                                    lambda ch=channel, n=play_spec.note: self.midi_helper.send_raw_message(
-                                        [NOTE_ON | ch, n, 0]
-                                    ),
-                                )
-                        else:
-                            log.warning(
-                                message="MIDI helper not available",
-                                scope=self.__class__.__name__,
-                            )
-
-        # Advance to next step (across all bars)
-        steps_per_bar = self.measure_beats
-        total_pattern_steps = len(self.measures) * steps_per_bar
-        self.current_step = (
-            (self.current_step + 1) % total_pattern_steps
-            if total_pattern_steps > 0
-            else 0
-        )
-
-        # Update UI to show current step
+    def _update_ui_for_current_step(self, step_in_measure: int):
+        """Update UI to show current step"""
         for row in range(ROWS):
             for col in range(MeasureBeats.PER_MEASURE_4_4):  # Always 16 steps in sequencer
                 if col < len(self.buttons[row]):
                     button = self.buttons[row][col]
                     is_checked = button.isChecked()
                     is_current = (
-                            step_in_bar == col
+                            step_in_measure == col
                     )  # Current step within the displayed bar
                     button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(
                             is_checked, is_current, is_selected_bar=True
                         )
                     )
+
+    def _advance_to_next_step(self):
+        """Advance to next step (across all measures)"""
+        measure_beats = self.measure_beats
+        total_pattern_beats = len(self.measures) * measure_beats
+        self.current_step = (
+            (self.current_step + 1) % total_pattern_beats
+            if total_pattern_beats > 0
+            else 0
+        )
+
+    def _play_notes_from_current_measure(self, measure_index: int, step_in_measure: int):
+        """Play notes from the current measure"""
+        measure = self.measures[measure_index]
+        for row in range(ROWS):
+            if step_in_measure < len(measure.buttons[row]):
+                measure_button = measure.buttons[row][step_in_measure]
+                play_spec = get_button_note_spec(measure_button)
+                if measure_button.isChecked() and play_spec.is_active:
+                    # Determine channel based on row
+                    channel = self.get_channel_for_row(row)
+
+                    # Send Note On message using the stored note
+                    if self.midi_helper:
+                        if channel not in self.muted_channels:
+                            log.message(
+                                message=f"Row {row} active at step {step_in_measure} in bar {measure_index + 1}, sending note {play_spec.note} on channel {channel}",
+                                scope=self.__class__.__name__,
+                            )
+                            self.midi_helper.send_raw_message(
+                                [
+                                    NOTE_ON | channel,
+                                    play_spec.note,
+                                    play_spec.velocity,
+                                ]
+                            )
+
+                            # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
+                            note_duration_ms = play_spec.duration_ms or (
+                                    (float(MidiTempo.MILLISECONDS_PER_MINUTE) / self.bpm) / 4.0
+                            )
+
+                            QTimer.singleShot(
+                                int(note_duration_ms),
+                                lambda ch=channel, n=play_spec.note: self.midi_helper.send_raw_message(
+                                    [NOTE_ON | ch, n, 0]
+                                ),
+                            )
+                    else:
+                        log.warning(
+                            message="MIDI helper not available",
+                            scope=self.__class__.__name__,
+                        )
 
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
@@ -2424,7 +2454,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _toggle_mute(self, row, checked):
         """Toggle mute for a specific row."""
-        channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
+        channel = self.get_channel_for_row(row)
         if checked:
             log.message(message=f"Row {row} muted", scope=self.__class__.__name__)
             self.muted_channels.append(channel)
