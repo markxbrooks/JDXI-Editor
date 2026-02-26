@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QPushButton, QSpinBox
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
 from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 
@@ -19,7 +19,7 @@ def reset_button(button: SequencerButton):
     update_button_state(button, False)
 
 
-def reset_measure(measure: PatternMeasure):
+def reset_measure(measure: PatternMeasureWidget):
     for r in range(4):
         for btn in measure.buttons[r]:
             reset_button(btn)

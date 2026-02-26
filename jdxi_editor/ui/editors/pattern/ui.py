@@ -57,7 +57,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
@@ -102,7 +102,7 @@ class PatternUI(SynthEditor):
         self.midi_file_editor: Optional[Any] = midi_file_editor  # Reference to MidiFileEditor
         # self.buttons populated by parent PatternUI._setup_ui() - do not overwrite
         self.button_layouts: list[QHBoxLayout] = []  # Store references to button layouts for each row
-        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
+        # self.measures: list[PatternMeasureWidget] = []  # Each measure stores its own notes
         self.current_measure_index = 0  # Currently selected bar (0-indexed)
         self.timer: Optional[QTimer] = None
         self.current_step: int = 0 # Currently selected step (0-indexed)
@@ -111,7 +111,7 @@ class PatternUI(SynthEditor):
         )
         self.beats_per_pattern: int = 4
         self.measure_beats: int = 16  # Number of beats per measure (16 or 12)
-        self.bpm: int = 120
+        self.timing_bpm: int = 120
         self.last_tap_time: Optional[datetime] = None
         self.tap_times: list[float] = []
         self.midi_file: Optional[MidiFile] = None  # Set in _setup_ui from MidiFileController
