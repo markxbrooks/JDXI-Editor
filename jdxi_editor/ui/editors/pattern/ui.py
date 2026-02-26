@@ -21,7 +21,7 @@ from typing import Any, Callable, Optional
 from mido import MidiFile, MidiTrack
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -51,6 +51,11 @@ from jdxi_editor.ui.editors.midi_player.transport.spec import (
 )
 from jdxi_editor.ui.editors.pattern.models import SequencerStyle, ClipboardData
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
+from jdxi_editor.ui.editors.pattern.preset_list_provider import (
+    get_analog_options,
+    get_digital_options,
+    get_drum_options,
+)
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -135,6 +140,26 @@ class PatternUI(SynthEditor):
 
         JDXi.UI.Theme.apply_editor_style(self)
 
+    def showEvent(self, event: QEvent) -> None:
+        """Refresh preset options when shown (e.g. after MIDI config change)."""
+        super().showEvent(event)
+        self._refresh_preset_options()
+
+    def _refresh_preset_options(self) -> None:
+        """Reload options from provider and update combo boxes if changed."""
+        new_digital = get_digital_options()
+        new_analog = get_analog_options()
+        new_drum = get_drum_options()
+        if (
+            new_digital != self.digital_options
+            or new_analog != self.analog_options
+            or new_drum != self.drum_options
+        ):
+            self.digital_options = new_digital
+            self.analog_options = new_analog
+            self.drum_options = new_drum
+            self._reload_combo_options()
+
     def _setup_ui(self):
         """Use EditorBaseWidget for consistent scrollable layout structure"""
         self._init_base_widget()
@@ -151,13 +176,10 @@ class PatternUI(SynthEditor):
         self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
 
-        # Define synth options
-        self.digital_options = DIGITAL_OPTIONS
-
-        self.analog_options = self.digital_options
-
-        # Define drum kit options
-        self.drum_options = DRUM_OPTIONS
+        # Define synth options (from built-in or SoundFont via MIDI config)
+        self.digital_options = get_digital_options()
+        self.analog_options = get_analog_options()
+        self.drum_options = get_drum_options()
 
         # Assemble all specs for buttons and combos (used below)
         self.specs = self._build_specs()
@@ -617,6 +639,28 @@ class PatternUI(SynthEditor):
             2: self.analog_selector,
             3: self.drum_selector,
         }
+
+    def _reload_combo_options(self) -> None:
+        """Reload combo box options from current digital/analog/drum_options."""
+        if not hasattr(self, "row_map") or not self.row_map:
+            return
+        row_options = [
+            self.digital_options,
+            self.digital_options,
+            self.analog_options,
+            self.drum_options,
+        ]
+        for row, selector in self.row_map.items():
+            if row >= len(row_options):
+                continue
+            opts = row_options[row]
+            prev_text = selector.currentText()
+            selector.blockSignals(True)
+            selector.clear()
+            selector.addItems(opts)
+            idx = selector.findText(prev_text)
+            selector.setCurrentIndex(idx if idx >= 0 else 0)
+            selector.blockSignals(False)
 
     def _add_button_with_label_from_spec(
         self,

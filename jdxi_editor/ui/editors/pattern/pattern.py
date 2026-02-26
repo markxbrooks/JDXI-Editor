@@ -353,6 +353,17 @@ class PatternSequenceEditor(PatternUI):
                 lambda msg: self.midi_helper.send_raw_message(msg.bytes())
             )
 
+    def _refresh_preset_options(self) -> None:
+        """Override to also update note converter and combo synchronizer."""
+        super()._refresh_preset_options()
+        if hasattr(self, "_note_converter"):
+            self._note_converter.update_drum_options(list(self.drum_options))
+        if hasattr(self, "_combo_synchronizer"):
+            self._combo_synchronizer.set_selector_options(0, list(self.digital_options))
+            self._combo_synchronizer.set_selector_options(1, list(self.digital_options))
+            self._combo_synchronizer.set_selector_options(2, list(self.analog_options))
+            self._combo_synchronizer.set_selector_options(3, list(self.drum_options))
+
     def _on_playback_controller_started(self) -> None:
         """Update play/stop buttons when playback controller starts."""
         self.update_transport_buttons(TransportState.PLAYING)

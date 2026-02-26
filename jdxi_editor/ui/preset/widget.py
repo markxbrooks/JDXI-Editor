@@ -16,6 +16,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.editors.pattern.preset_list_provider import (
+    get_preset_list_for_synth_type,
+)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
@@ -227,16 +230,8 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
 
-        # Determine the correct preset list based on synth_type
-        if synth_type == "Analog":
-            preset_list = JDXi.UI.Preset.Analog.PROGRAM_CHANGE
-        elif synth_type == "Digital":
-            preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
-        elif synth_type == "Drums":
-            preset_list = JDXi.UI.Preset.Drum.PROGRAM_CHANGE
-        else:
-            # Default to digital preset list if synth_type is unknown
-            preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE
+        # Determine the correct preset list (SoundFont when enabled, else JD-Xi)
+        preset_list = get_preset_list_for_synth_type(synth_type)
 
         # Convert dictionary format (Digital/Analog) to list format if needed
         if isinstance(preset_list, dict):
@@ -253,8 +248,11 @@ class InstrumentPresetWidget(QWidget):
                 for preset_id, preset_data in sorted(preset_list.items())
             ]
         else:
-            # Already a list (Drum format)
+            # Already a list (Drum format or SoundFont)
             converted_preset_list = preset_list
+
+        # Ensure parent uses this list for load_preset lookups
+        self.parent.preset_preset_list = converted_preset_list
 
         # Build preset options, values, and categories from converted_preset_list
         preset_options = [

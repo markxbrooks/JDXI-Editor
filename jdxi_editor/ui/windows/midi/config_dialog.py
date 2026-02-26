@@ -46,6 +46,12 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.pattern.preset_list_provider import (
+    get_sf2_path,
+    get_use_soundfont_list,
+    set_sf2_path,
+    set_use_soundfont_list,
+)
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
@@ -71,9 +77,13 @@ class MIDIConfigDialog(QDialog):
         self.sfid = None
         self.sf2_path = ""
         self._create_ui()
-        # Prefill default SoundFont path if present
+        # Prefill SoundFont path: prefer saved path, else default if file exists
         try:
-            if os.path.isfile(SF2_PATH):
+            saved_path = get_sf2_path()
+            if saved_path and os.path.isfile(saved_path):
+                self.sf2_edit.setText(saved_path)
+                self.sf2_path = saved_path
+            elif os.path.isfile(SF2_PATH):
                 self.sf2_edit.setText(SF2_PATH)
                 self.sf2_path = SF2_PATH
         except Exception:
@@ -183,6 +193,15 @@ class MIDIConfigDialog(QDialog):
         JDXi.UI.Theme.apply_button_mini_style(self.fluidsynth_enable)
         self.fluidsynth_enable.toggled.connect(self._toggle_fluidsynth_controls)
         synth_layout.addWidget(self.fluidsynth_enable)
+
+        self.use_soundfont_list = QCheckBox("Use SoundFont List")
+        JDXi.UI.Theme.apply_button_mini_style(self.use_soundfont_list)
+        self.use_soundfont_list.setToolTip(
+            "Use SoundFont drum names (GM percussion) for the Drums row "
+            "in the Pattern editor instead of built-in JD-Xi names"
+        )
+        self.use_soundfont_list.setChecked(get_use_soundfont_list())
+        synth_layout.addWidget(self.use_soundfont_list)
 
         sf_row = QHBoxLayout()
         sf_row.addWidget(QLabel("SoundFont (SF2/SF3):"))
@@ -402,6 +421,10 @@ class MIDIConfigDialog(QDialog):
                 return
 
     def accept(self):
+        set_use_soundfont_list(self.use_soundfont_list.isChecked())
+        sf_path = self.sf2_edit.text().strip()
+        if sf_path:
+            set_sf2_path(sf_path)
         super().accept()
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()

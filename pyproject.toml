@@ -38,6 +38,9 @@ dependencies = [
     "picomidi",
 ]
 
+[project.optional-dependencies]
+soundfont = ["sf2utils>=1.0.0"]
+
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"
 Repository = "https://github.com/markxbrooks/JDXI-Manager.git"
