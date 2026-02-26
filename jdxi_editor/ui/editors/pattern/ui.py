@@ -62,6 +62,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
+from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picoui.helpers import create_layout_with_items, group_with_layout
@@ -97,6 +98,10 @@ class PatternUI(SynthEditor):
     ):
         super().__init__(parent=parent)
         self.paste_button: QPushButton | None = None
+        self.pause_button: QPushButton | None = None
+        self.stop_button: QPushButton | None = None
+        self.play_button: QPushButton | None = None
+        self._build_row_specs()
         self.sequencer_rows: int = 4
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
         self.measure_name: str = self.tr("Measure")
@@ -106,17 +111,20 @@ class PatternUI(SynthEditor):
         self.midi_helper: Optional[MidiIOHelper] = midi_helper
         self.preset_helper: Optional[JDXiPresetHelper] = preset_helper
         self.midi_file_editor: Optional[Any] = midi_file_editor  # Reference to MidiFileEditor
-        # self.buttons populated by parent PatternUI._setup_ui() - do not overwrite
+        self.buttons = [] # populated by parent PatternUI._setup_ui() - do not overwrite
         self.button_layouts: list[QHBoxLayout] = []  # Store references to button layouts for each row
-        # self.measures: list[PatternMeasureWidget] = []  # Each measure stores its own notes
+        self.measure_beats: int = 16  # Number of beats per bar (16 or 12)
+        self.measure_widgets: list[PatternMeasureWidget] = []  # Each measure stores its own notes
+        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
         self.current_measure_index = 0  # Currently selected bar (0-indexed)
         self.timer: Optional[QTimer] = None
         self.current_step: int = 0 # Currently selected step (0-indexed)
         self.total_steps: int = (
             16  # Always 16 steps per measure (don't multiply by measures)
         )
+        self.clipboard: Optional[dict[
+            str, Any]] | None = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
         self.beats_per_pattern: int = 4
-        self.measure_beats: int = 16  # Number of beats per measure (16 or 12)
         self.timing_bpm: int = 120
         self.last_tap_time: Optional[datetime] = None
         self.tap_times: list[float] = []
@@ -124,7 +132,13 @@ class PatternUI(SynthEditor):
         self.midi_track: Optional[MidiTrack] = None  # Set in _setup_ui from MidiFileController
         self.clipboard: Optional[dict[str, Any]] | None = None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
         self._pattern_paused: bool = False
-        self.row_specs = [
+        self._setup_ui()
+
+        JDXi.UI.Theme.apply_editor_style(self)
+
+    def _build_row_specs(self):
+        """build row specs"""
+        self.row_specs: list[SequencerRowSpec] = [
             SequencerRowSpec(
                 "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
             ),
@@ -136,9 +150,6 @@ class PatternUI(SynthEditor):
             ),
             SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
         ]
-        self._setup_ui()
-
-        JDXi.UI.Theme.apply_editor_style(self)
 
     def showEvent(self, event: QEvent) -> None:
         """Refresh preset options when shown (e.g. after MIDI config change)."""

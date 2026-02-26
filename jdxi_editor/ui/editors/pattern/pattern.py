@@ -123,76 +123,41 @@ class PatternSequenceEditor(PatternUI):
             midi_file_editor=midi_file_editor,
         )
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
-        self.paste_button: QPushButton | None = None
-        self.pause_button: QPushButton | None = None
-        self.stop_button: QPushButton | None = None
-        self.play_button: QPushButton | None = None
         self._state: TransportState | None = None
-        self.measure_name: str = self.tr("Measure")
-        self.measure_name_plural: str = self.tr("Measures")
-        self.muted_channels: list[int] = []
-        self.total_measures: int = 1  # Start with 1 bar by default
-        self.midi_helper: Optional[MidiIOHelper] = midi_helper
-        self.preset_helper: Optional[JDXiPresetHelper] = preset_helper
-        self.midi_file_editor: Optional[Any] = midi_file_editor  # Reference to MidiFileEditor
-        # self.buttons populated by parent PatternUI._setup_ui() - do not overwrite
-        self.button_layouts: list[QHBoxLayout] = []  # Store references to button layouts for each row
-        self.current_measure_index = 0  # Currently selected bar (0-indexed)
-        self.timer: Optional[QTimer] = None
-        self.current_step: int = 0  # Currently selected step (0-indexed)
-        self.timing_bpm: int = 120  # Beats per minute
         self.timing = TimingConfig()
-        self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
         self.beats_per_pattern: int = 4  # Number of beats per pattern
-        self.measure_beats: int = 16  # Number of beats per bar (16 or 12)
         self.last_tap_time: Optional[datetime] = None  # Last tap time
         self.tap_times: list[float] = []  # List of tap times
+        # Learned pattern (row -> step -> midi_note)
         self.learned_pattern: list[list[Optional[int]]] = [[None] * self.total_steps for _ in
                                                            range(
-                                                               self.sequencer_rows)]  # Learned pattern (row -> step -> midi_note)
+                                                               self.sequencer_rows)]
         self.active_notes: dict[int, int] = {}  # Track active notes (midi_note -> row index)
-        self.midi_file: MidiFile = MidiFile()  # Initialize a new MIDI file
-        self.midi_track: MidiTrack = MidiTrack()  # Create a new track
-        self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
-        self.clipboard: Optional[dict[
-            str, Any]] | None = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
-        self.measure_widgets: list[PatternMeasureWidget] = []  # Each measure stores its own notes
-        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
         self._pattern_paused: bool = False
         self.playback_engine: PlaybackEngine = PlaybackEngine()
-        self.row_specs: list[SequencerRowSpec] = [
-            SequencerRowSpec(
-                "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
-            ),
-            SequencerRowSpec(
-                "Digital Synth 2", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
-            ),
-            SequencerRowSpec(
-                "Analog Synth", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT_ANALOG
-            ),
-            SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
-        ]
-
-        JDXi.UI.Theme.apply_editor_style(self)
+        self._init_style()
         self._init_playing_controllers()
         self._connect_midi_signals()
         self._clear_pattern()
-
-        JDXi.UI.Theme.apply_editor_style(self)
-
+        # --- Load file
         self._load_from_midi_file_editor_if_available()
-
         # If MidiFileEditor is provided and has a loaded file, load it
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             if self.midi_file_editor.midi_state.file:
                 self.load_from_midi_file_editor()
 
+    def _init_style(self):
+        """init style"""
+        JDXi.UI.Theme.apply_editor_style(self)
+
     def on_button_toggled(self, row: int, step: int, checked: bool):
+        """on button toggled"""
         measure = self.measures[self.current_measure_index]
         step_data = measure.steps[row][step]
         step_data.active = checked
 
     def sync_ui_to_measure(self, bar_index: int):
+        """sync ui to measure"""
         measure = self.measures[bar_index]
         widget = self.measure_widgets[bar_index]
 
@@ -206,6 +171,7 @@ class PatternSequenceEditor(PatternUI):
                 button.set_velocity(step_data.velocity)
 
     def _update_timer_interval(self):
+        """update timer interval"""
         interval = self.timing.ms_per_step
         self.timer.setInterval(int(interval))
 
@@ -296,34 +262,12 @@ class PatternSequenceEditor(PatternUI):
         self._combo_synchronizer.set_selector_options(2, list(self.analog_options))
         self._combo_synchronizer.set_selector_options(3, list(self.drum_options))
 
-        learner_config = PatternLearnerConfig(
-            total_steps=self.measure_beats,
-            total_rows=4,
-            default_velocity=100,
-            default_duration_ms=120.0,
-        )
-        self._pattern_learner = PatternLearner(
-            config=learner_config,
-            midi_converter=self._note_converter,
-            scope=self.__class__.__name__,
-        )
-        self._pattern_learner.on_note_learned = self._on_learner_note_learned
-        self._pattern_learner.on_step_advance = self._on_learner_step_advance
-        self._pattern_learner.on_learning_stopped = self._on_learner_stopped
+        self._init_pattern_learner()
 
-        midi_controller_config = MidiFileControllerConfig(
-            ticks_per_beat=PPQ,
-            beats_per_measure=4,
-            default_bpm=self.timing.bpm,
-            default_velocity=100,
-        )
-        self._midi_file_controller = MidiFileController(
-            config=midi_controller_config,
-            midi_converter=self._note_converter,
-            scope=self.__class__.__name__,
-        )
-        self._midi_file_controller.create_new_file()
-        self._sync_from_midi_file_controller()
+        self._init_midi_file_controller()
+        self._init_playback_controller()
+
+    def _init_playback_controller(self):
         ms_per_step = int(self._calculate_step_duration())
         playback_config = PlaybackConfig(
             ticks_per_beat=PPQ,
@@ -337,6 +281,10 @@ class PatternSequenceEditor(PatternUI):
             playback_engine=self.playback_engine,
             scope=self.__class__.__name__,
         )
+        self._setup_playback_controller_connections()
+
+    def _setup_playback_controller_connections(self):
+        """setup playback controller connections"""
         self._playback_controller.on_playback_started = (
             self._on_playback_controller_started
         )
@@ -352,6 +300,37 @@ class PatternSequenceEditor(PatternUI):
             self._playback_controller.on_midi_event = (
                 lambda msg: self.midi_helper.send_raw_message(msg.bytes())
             )
+
+    def _init_midi_file_controller(self):
+        midi_controller_config = MidiFileControllerConfig(
+            ticks_per_beat=PPQ,
+            beats_per_measure=4,
+            default_bpm=self.timing.bpm,
+            default_velocity=100,
+        )
+        self._midi_file_controller = MidiFileController(
+            config=midi_controller_config,
+            midi_converter=self._note_converter,
+            scope=self.__class__.__name__,
+        )
+        self._midi_file_controller.create_new_file()
+        self._sync_from_midi_file_controller()
+
+    def _init_pattern_learner(self):
+        learner_config = PatternLearnerConfig(
+            total_steps=self.measure_beats,
+            total_rows=4,
+            default_velocity=100,
+            default_duration_ms=120.0,
+        )
+        self._pattern_learner = PatternLearner(
+            config=learner_config,
+            midi_converter=self._note_converter,
+            scope=self.__class__.__name__,
+        )
+        self._pattern_learner.on_note_learned = self._on_learner_note_learned
+        self._pattern_learner.on_step_advance = self._on_learner_step_advance
+        self._pattern_learner.on_learning_stopped = self._on_learner_stopped
 
     def _refresh_preset_options(self) -> None:
         """Override to also update note converter and combo synchronizer."""
