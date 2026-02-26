@@ -91,6 +91,7 @@ class PatternUI(SynthEditor):
         midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
+        self.paste_button: QPushButton | None = None
         self.sequencer_rows: int = 4
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
         self.measure_name: str = self.tr("Measure")
@@ -371,6 +372,9 @@ class PatternUI(SynthEditor):
         measures_layout.addWidget(self.measures_list)
         measures_group.setLayout(measures_layout)
         return measures_group
+
+    def _on_measure_selected(self):
+        raise NotImplementedError("Should be implemented in subclass")
 
     def _create_duration_group(self) -> QGroupBox:
         """Duration control area"""
@@ -711,8 +715,8 @@ class PatternUI(SynthEditor):
                 "clear_learn": ButtonSpec(
                     label="Clear",
                     icon=JDXi.UI.Icon.CLEAR,
-                    tooltip="Clear learned pattern",
-                    slot=self._clear_learned_pattern,
+                    tooltip="Clear pattern",
+                    slot=self._clear_pattern,
                 ),
                 "add_measure": ButtonSpec(
                     label="Add Measure",

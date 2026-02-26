@@ -156,10 +156,6 @@ class PatternSequenceEditor(PatternUI):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self.clipboard: Optional[dict[
             str, Any]] | None = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
-        """self.measures = [
-            PatternMeasure(rows=4, steps_per_bar=self.timing.steps_per_bar)
-            for _ in range(number_of_bars)
-        ]"""
         self.measure_widgets: list[PatternMeasureWidget] = []  # Each measure stores its own notes
         self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
         self._pattern_paused: bool = False
@@ -176,14 +172,11 @@ class PatternSequenceEditor(PatternUI):
             ),
             SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
         ]
-        # self._init_midi_file()
-        self._initialize_default_measure()
 
         JDXi.UI.Theme.apply_editor_style(self)
         self._init_playing_controllers()
         self._connect_midi_signals()
-        self._init_midi_file()
-        self._initialize_default_measure()
+        self._clear_pattern()
 
         JDXi.UI.Theme.apply_editor_style(self)
 
@@ -936,6 +929,13 @@ class PatternSequenceEditor(PatternUI):
 
         log.message(message="Cleared learned pattern.", scope=self.__class__.__name__)
 
+    def _clear_pattern(self):
+        """Clear the learned pattern and reset button states."""
+        self._init_midi_file()
+        self.measures_list.clear()
+        self._initialize_default_measure()
+        log.message(message="Cleared pattern.", scope=self.__class__.__name__)
+
     def _on_measure_count_changed(self, count: int):
         """Handle measure count changes"""
         current_count = len(self.measure_widgets)
@@ -1337,7 +1337,7 @@ class PatternSequenceEditor(PatternUI):
         channel = row if row < 3 else 9
         return channel
 
-    def set_midi_file_editor(self, midi_file_editor: Any) -> None:
+    def set_midi_file_editor(self, midi_file_editor: Any) -> str | None:
         """
         Set reference to MidiFileEditor for shared MIDI file editing.
 
@@ -1348,6 +1348,14 @@ class PatternSequenceEditor(PatternUI):
         if self.midi_file_editor and hasattr(self.midi_file_editor, "midi_state"):
             if self.midi_file_editor.midi_state.file:
                 self.load_from_midi_file_editor()
+                return self.midi_file_editor.midi_state.file.filename
+            else:
+                log.debug(
+                    message="No MIDI file loaded in MidiFileEditor",
+                    scope=self.__class__.__name__,
+                )
+                return None
+        return None
 
     def load_from_midi_file_editor(
             self, midi_file_editor: Optional[Any] = None
@@ -1377,13 +1385,13 @@ class PatternSequenceEditor(PatternUI):
 
             # Store the reference if it wasn't set before
             if not self.midi_file_editor:
-                self.midi_file_editor = editor
+                self.set_midi_file_editor(editor)
                 log.debug(
                     message="Stored MidiFileEditor reference in Pattern Sequencer",
                     scope=self.__class__.__name__,
                 )
 
-            midi_file = editor.midi_state.file
+            midi_file = self.midi_file_editor.midi_state.file
             if not midi_file:
                 log.debug(
                     message="No MIDI file loaded in MidiFileEditor",
@@ -1743,14 +1751,14 @@ class PatternSequenceEditor(PatternUI):
             )
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
-    def _set_to_first_measure(self, num_bars: int):
+    def _set_to_first_measure(self, num_measures: int):
         """Select first bar and sync sequencer"""
         if self.measures_list.count() > 0:
             self.current_measure_index = 0
             self.measures_list.setCurrentRow(0)
             self._sync_sequencer_with_measure(0)
             log.message(
-                message=f"Loaded {num_bars} bars from MIDI file. Bars are displayed in the side panel.",
+                message=f"Loaded {num_measures} measures from MIDI file. Measures are displayed in the side panel.",
                 scope=self.__class__.__name__,
             )
 

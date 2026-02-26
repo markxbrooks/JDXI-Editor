@@ -52,6 +52,7 @@ class PlaybackEngine:
         self._tick_to_time: List[tuple[int, float]] = []  # (tick, cumulative seconds from 0)
 
         self.events: List[ScheduledEvent] = []
+        self._event_ticks: List[int] = []  # Cached ticks for binary search; set in _build_event_list
         self.event_index: int = 0
 
         self.start_tick: int = 0
