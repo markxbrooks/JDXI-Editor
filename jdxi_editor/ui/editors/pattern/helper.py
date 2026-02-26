@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QPushButton, QSpinBox
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
 from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
@@ -67,3 +68,12 @@ def set_spinbox_value(spinbox: QSpinBox, value: int):
     spinbox.blockSignals(True)
     spinbox.setValue(value)
     spinbox.blockSignals(False)
+
+
+def set_sequencer_style(btn: SequencerButton, is_current: bool = False, checked: bool = False):
+    """set sequencer style"""
+    btn.setStyleSheet(
+        JDXi.UI.Style.generate_sequencer_button_style(
+            is_checked=checked, is_current=is_current, is_selected_bar=True
+        )
+    )

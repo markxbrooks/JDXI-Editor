@@ -91,6 +91,7 @@ class PatternUI(SynthEditor):
         midi_file_editor: Optional[Any] = None,
     ):
         super().__init__(parent=parent)
+        self.sequencer_rows: int = 4
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
         self.measure_name: str = self.tr("Measure")
         self.measure_name_plural: str = self.tr("Measures")
@@ -188,7 +189,7 @@ class PatternUI(SynthEditor):
         # Create splitter for measures list and sequencer (builds measures group + sequencer widget)
         self._build_splitter_section()
 
-        self.channel_map = self._build_channel_map()
+        self.row_map = self._build_row_map()
 
         # Transport at bottom, centered (stretch on both sides)
         transport_bottom_layout = create_layout_with_items(
@@ -604,14 +605,14 @@ class PatternUI(SynthEditor):
             log.debug(msg, scope=self.__class__.__name__)
         return ok
 
-    def _build_channel_map(self) -> dict[int, QComboBox]:
-        channel_map = {
+    def _build_row_map(self) -> dict[int, QComboBox]:
+        """build row map"""
+        return {
             0: self.digital1_selector,
             1: self.digital2_selector,
             2: self.analog_selector,
             3: self.drum_selector,
         }
-        return channel_map
 
     def _add_button_with_label_from_spec(
         self,

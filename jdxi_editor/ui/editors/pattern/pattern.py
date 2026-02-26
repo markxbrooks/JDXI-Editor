@@ -27,7 +27,7 @@ from jdxi_editor.midi.conversion.note import MidiNoteConverter
 from jdxi_editor.midi.file.controller import MidiFileControllerConfig, MidiFileController
 from jdxi_editor.midi.playback.controller import PlaybackConfig, PatternPlaybackController, SequencerEvent
 from jdxi_editor.ui.editors.pattern.helper import sync_button_note_spec, get_button_note_spec, reset_button, \
-    update_button_state, reset_measure
+    update_button_state, reset_measure, set_sequencer_style
 from jdxi_editor.ui.editors.pattern.learner import PatternLearnerConfig, PatternLearnerEvent, PatternLearner
 from jdxi_editor.ui.editors.pattern.models import ClipboardData, ButtonAttrs
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
@@ -104,15 +104,6 @@ CHANNEL_TO_ROW = {
 }
 
 
-def set_sequencer_style(btn: QPushButton, is_current: bool):
-    """set sequencer style"""
-    btn.setStyleSheet(
-        JDXi.UI.Style.generate_sequencer_button_style(
-            btn.isChecked(), is_current, is_selected_bar=True
-        )
-    )
-
-
 class PatternSequenceEditor(PatternUI):
     """Pattern Sequencer with MIDI Integration using mido"""
 
@@ -147,19 +138,21 @@ class PatternSequenceEditor(PatternUI):
         self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
         self.current_measure_index = 0  # Currently selected bar (0-indexed)
         self.timer: Optional[QTimer] = None
-        self.current_step: int = 0 # Currently selected step (0-indexed)
+        self.current_step: int = 0  # Currently selected step (0-indexed)
         self.total_steps = 16  # Always 16 steps per bar (don't multiply by measures)
-        self.beats_per_pattern: int = 4 # Number of beats per pattern
+        self.beats_per_pattern: int = 4  # Number of beats per pattern
         self.measure_beats: int = 16  # Number of beats per bar (16 or 12)
-        self.bpm: int = 120 # Beats per minute
-        self.last_tap_time: Optional[datetime] = None # Last tap time
-        self.tap_times: list[float] = [] # List of tap times
-        self.learned_pattern: list[list[Optional[int]]] = [[None] * self.total_steps for _ in range(ROWS)] # Learned pattern (row -> step -> midi_note)
+        self.bpm: int = 120  # Beats per minute
+        self.last_tap_time: Optional[datetime] = None  # Last tap time
+        self.tap_times: list[float] = []  # List of tap times
+        self.learned_pattern: list[list[Optional[int]]] = [[None] * self.total_steps for _ in
+                                                           range(ROWS)]  # Learned pattern (row -> step -> midi_note)
         self.active_notes: dict[int, int] = {}  # Track active notes (midi_note -> row index)
         self.midi_file: MidiFile = MidiFile()  # Initialize a new MIDI file
         self.midi_track: MidiTrack = MidiTrack()  # Create a new track
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
-        self.clipboard: Optional[dict[str, Any]] | None = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
+        self.clipboard: Optional[dict[
+            str, Any]] | None = None  # Store copied notes: {source_bar, rows, start_step, end_step, notes_data}
         self._pattern_paused: bool = False
         self.playback_engine: PlaybackEngine = PlaybackEngine()
         self.row_specs: list[SequencerRowSpec] = [
@@ -345,22 +338,22 @@ class PatternSequenceEditor(PatternUI):
 
         config = {
             TransportState.STOPPED: {
-                self.play_button:  {"checked_state": False, "enabled_state": True},
+                self.play_button: {"checked_state": False, "enabled_state": True},
                 self.pause_button: {"checked_state": False, "enabled_state": False},
-                self.stop_button:  {"checked_state": True,  "enabled_state": False},
+                self.stop_button: {"checked_state": True, "enabled_state": False},
             },
             TransportState.PLAYING: {
-                self.play_button:  {"checked_state": True,  "enabled_state": False},
+                self.play_button: {"checked_state": True, "enabled_state": False},
                 self.pause_button: {"checked_state": False, "enabled_state": True},
-                self.stop_button:  {"checked_state": False, "enabled_state": True},
+                self.stop_button: {"checked_state": False, "enabled_state": True},
             },
             TransportState.PAUSED: {
-                self.play_button:  {"checked_state": False, "enabled_state": True},
-                self.pause_button: {"checked_state": True,  "enabled_state": True},
-                self.stop_button:  {"checked_state": False, "enabled_state": True},
+                self.play_button: {"checked_state": False, "enabled_state": True},
+                self.pause_button: {"checked_state": True, "enabled_state": True},
+                self.stop_button: {"checked_state": False, "enabled_state": True},
             },
         }
-    
+
         for button, kwargs in config[state].items():
             if button is not None:
                 update_button_state(button, **kwargs)
@@ -413,10 +406,10 @@ class PatternSequenceEditor(PatternUI):
         for row in range(ROWS):
             if 0 <= last_step < len(self.buttons[row]):
                 btn = self.buttons[row][last_step]
-                set_sequencer_style(btn, False)
+                set_sequencer_style(btn=btn, is_current=False, checked=btn.isChecked())
             if step_in_measure < len(self.buttons[row]):
                 btn = self.buttons[row][step_in_measure]
-                set_sequencer_style(btn, True)
+                set_sequencer_style(btn=btn, is_current=True, checked=btn.isChecked())
         self._playback_last_step_in_measure = step_in_measure
 
         self._button_manager = SequencerButtonManager(
@@ -424,7 +417,7 @@ class PatternSequenceEditor(PatternUI):
             scope=self.__class__.__name__,
         )
         self._button_manager.set_buttons(self.buttons)
-        self._button_manager.set_channel_map(self.channel_map)
+        self._button_manager.set_channel_map(self.row_map)
         self._button_manager.set_style_generator(
             JDXi.UI.Style.generate_sequencer_button_style
         )
@@ -631,7 +624,7 @@ class PatternSequenceEditor(PatternUI):
         step_range_layout = create_layout_with_items(items=step_layout_widgets,
                                                      start_stretch=False,
                                                      end_stretch=False)
-        measure_group , measure_layout = create_group_with_layout(label=self.measure_name_plural, vertical=True)
+        measure_group, measure_layout = create_group_with_layout(label=self.measure_name_plural, vertical=True)
         measure_group_layouts = [
             measure_controls_layout,
             copy_paste_layout,
@@ -673,7 +666,7 @@ class PatternSequenceEditor(PatternUI):
         button_row_layout = QHBoxLayout()
         for i in range(self.measure_beats):
             button = SequencerButton(row=row_index, column=i)
-            button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
+            set_sequencer_style(button)
             button.clicked.connect(
                 lambda checked, btn=button: self._on_button_clicked(btn, checked)
             )
@@ -726,8 +719,8 @@ class PatternSequenceEditor(PatternUI):
 
     def _set_combo_box_index(self, row, index):
         """Set the combo box index for the specified row."""
-        self.channel_map = self._build_channel_map()
-        selector = self.channel_map.get(row)
+        self.row_map = self._build_row_map()
+        selector = self.row_map.get(row)
         if selector is not None:
             selector.setCurrentIndex(index)
 
@@ -880,6 +873,7 @@ class PatternSequenceEditor(PatternUI):
 
                     # Update style
                     is_current = (self.current_step % self.total_steps) == step
+                    set_sequencer_style(sequencer_button, checked=sequencer_button.isChecked, is_current=is_current)
                     sequencer_button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(
                             sequencer_button.isChecked(),
@@ -913,9 +907,7 @@ class PatternSequenceEditor(PatternUI):
         for row in range(ROWS):
             for button in self.buttons[row]:
                 reset_button(button)
-                button.setStyleSheet(
-                    JDXi.UI.Style.generate_sequencer_button_style(False)
-                )
+                set_sequencer_style(button)
 
         log.message(message="Cleared learned pattern.", scope=self.__class__.__name__)
 
@@ -952,7 +944,7 @@ class PatternSequenceEditor(PatternUI):
 
         if checked:
             # Store the currently selected note when button is activated
-            selector = self.channel_map.get(button.row)
+            selector = self.row_map.get(button.row)
             if selector is not None:
                 note_name = selector.currentText()
                 midi_note = self._note_name_to_midi(note_name)
@@ -1018,14 +1010,14 @@ class PatternSequenceEditor(PatternUI):
             )
         )
 
-    def _build_channel_map(self) -> dict[int, QComboBox]:
-        channel_map = {
+    def _build_row_map(self) -> dict[int, QComboBox]:
+        """build row map"""
+        return {
             0: self.digital1_selector,
             1: self.digital2_selector,
             2: self.analog_selector,
             3: self.drum_selector,
         }
-        return channel_map
 
     def _on_beats_per_bar_changed(self, index: int):
         """Handle beats per bar changes from the combobox"""
@@ -1157,7 +1149,7 @@ class PatternSequenceEditor(PatternUI):
         if len(self.tap_times) >= 2:
             # Calculate average interval and convert to BPM
             avg_interval = sum(self.tap_times) / len(self.tap_times)
-            bpm = int(SECONDS_PER_MINUTE/ avg_interval)
+            bpm = int(SECONDS_PER_MINUTE / avg_interval)
             # Constrain to valid range
             bpm = max(20, min(300, bpm))
             self.tempo_spinbox.setValue(bpm)
@@ -2174,11 +2166,11 @@ class PatternSequenceEditor(PatternUI):
                     if 0 <= last_step < len(self.buttons[row]):
                         btn = self.buttons[row][last_step]
                         is_current = False
-                        set_sequencer_style(btn, is_current)
+                        set_sequencer_style(btn=btn, is_current=is_current, checked=btn.isChecked())
                     if step_in_bar < len(self.buttons[row]):
                         btn = self.buttons[row][step_in_bar]
                         is_current = True
-                        set_sequencer_style(btn, is_current)
+                        set_sequencer_style(btn=btn, is_current=is_current, checked=btn.isChecked())
                 self._playback_last_step_in_bar = step_in_bar
 
         if self.playback_engine.state == TransportState.STOPPED:
@@ -2411,9 +2403,7 @@ class PatternSequenceEditor(PatternUI):
         for row in range(ROWS):
             for button in self.buttons[row]:
                 reset_button(button)
-                button.setStyleSheet(
-                    JDXi.UI.Style.generate_sequencer_button_style(False)
-                )
+                set_sequencer_style(button)
                 button.setToolTip("")
 
             # Apply the learned pattern

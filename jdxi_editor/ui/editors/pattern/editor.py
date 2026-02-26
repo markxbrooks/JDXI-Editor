@@ -403,7 +403,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _set_combo_box_index(self, row, index):
         """Set the combo box index for the specified row."""
-        self.channel_map = self._build_channel_map()
+        self.channel_map = self._build_row_map()
         self._button_manager.set_channel_map(self.channel_map)
         selector = self.channel_map.get(row)
         if selector is not None:
