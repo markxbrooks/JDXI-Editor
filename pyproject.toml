@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-soundfont = ["sf2utils>=1.0.0"]
+soundfont = ["sf2utils>=1.0.0", "sounddevice>=0.4.0"]
 
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"

@@ -1,11 +1,12 @@
 # sheep
-
+import logging
 import os
 import time
 
 import fluidsynth
 import mido
 from mido import MidiFile
+import sounddevice as sd
 from picomidi import Midi, MidiTempo
 from picomidi.message.type import MidoMessageType
 
@@ -16,6 +17,25 @@ HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 # SF2_PATH = os.path.expanduser("~/SoundFonts/Guitar/Guitar.sf2")
 MIDI_FILE_PATH = "tests/sheep.mid"  # Test file with tempo changes
+
+
+def get_output_devices():
+    devices = sd.query_devices()
+    return [
+        d["name"]
+        for d in devices
+        if d["max_output_channels"] > 0
+    ]
+
+
+def create_synth(device_name: str):
+    fs = fluidsynth.Synth()
+
+    fs.setting("audio.driver", "portaudio")
+    fs.setting("audio.portaudio.device", device_name)
+
+    fs.start()
+    return fs
 
 
 def find_hw_output_name(prefer_hw=True):
@@ -41,6 +61,29 @@ def setup_fluidsynth(sf2_path):
     fs = fluidsynth.Synth()
     # On macOS, default audio driver is typically CoreAudio; pyFluidSynth uses PortAudio by default on some builds.
     # The "driver" parameter is optional; omit if you encounter issues.
+    try:
+        hw_devices = get_output_devices()
+        for num, device in enumerate(hw_devices):
+            print(f"{num}: {device}")
+
+        while True:
+            try:
+                prompt = f"Select an hardware interface by number 1-{len(hw_devices)}:"
+                choice = input(prompt)
+                if not choice:
+                    continue
+                n = int(choice)
+                if 0 <= n <= len(hw_devices):
+                    print(f"Selected hardware interface #{n}: {hw_devices[n]}")
+                    break
+                else:
+                    print(f"Please enter a number between 1 and {len(hw_devices)}:")
+            except ValueError:
+                print(f"Invalid input. Enter a number between 1 and {len(hw_devices)}:.")
+    except Exception as ex:
+        logging.error(f"Exception {ex} occurred")
+
+
     try:
         fs.start(driver=None)  # let Fluidsynth pick a sensible default
     except TypeError:

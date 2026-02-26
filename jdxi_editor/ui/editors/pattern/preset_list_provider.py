@@ -15,9 +15,10 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.project import __organization_name__, __program__
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 
-# QSettings keys for SoundFont preset list preference
+# QSettings keys for MIDI config preferences
 USE_SOUNDFONT_LIST_KEY = "midi_config/use_soundfont_list"
 SF2_PATH_KEY = "midi_config/sf2_path"
+HARDWARE_INTERFACE_KEY = "midi_config/hardware_interface"
 
 # GM percussion key map (key 36–59): MIDI note -> display name
 GM_DRUM_NAMES: List[str] = [
@@ -102,6 +103,19 @@ def set_sf2_path(path: str) -> None:
     """Set the SoundFont path for preset list source."""
     settings = QSettings(__organization_name__, __program__)
     settings.setValue(SF2_PATH_KEY, path)
+    settings.sync()
+
+
+def get_hardware_interface() -> str:
+    """Read the saved hardware audio interface name from settings."""
+    settings = QSettings(__organization_name__, __program__)
+    return str(settings.value(HARDWARE_INTERFACE_KEY, ""))
+
+
+def set_hardware_interface(name: str) -> None:
+    """Set the hardware audio interface preference for FluidSynth."""
+    settings = QSettings(__organization_name__, __program__)
+    settings.setValue(HARDWARE_INTERFACE_KEY, name)
     settings.sync()
 
 

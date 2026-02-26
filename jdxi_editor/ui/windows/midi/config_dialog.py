@@ -26,6 +26,7 @@ Methods:
 """
 
 import os
+import sys
 
 import qtawesome as qta
 from decologr import Decologr as log
@@ -47,8 +48,10 @@ from PySide6.QtWidgets import (
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
+    get_hardware_interface,
     get_sf2_path,
     get_use_soundfont_list,
+    set_hardware_interface,
     set_sf2_path,
     set_use_soundfont_list,
 )
@@ -59,6 +62,39 @@ from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
+
+
+def _get_output_devices() -> list[tuple[str, str]]:
+    """
+    Get list of (display_name, device_spec) for audio output devices.
+
+    On macOS: device_spec is the name (for CoreAudio).
+    On Windows/Linux: device_spec is "index:HostApi:Name" (for PortAudio).
+    Requires sounddevice.
+    """
+    try:
+        import sounddevice as sd
+
+        devices = sd.query_devices()
+        hostapis = sd.query_hostapis()
+        output_devices = [
+            (i, d)
+            for i, d in enumerate(devices)
+            if d["max_output_channels"] > 0
+        ]
+        result = []
+        for idx, d in output_devices:
+            name = d["name"]
+            if sys.platform != "darwin":
+                hostapi_idx = d.get("hostapi", 0)
+                hostapi_name = hostapis[hostapi_idx].get("name", "Unknown")
+                spec = f"{idx}:{hostapi_name}:{name}"
+                result.append((name, spec))
+            else:
+                result.append((name, name))
+        return result
+    except Exception:
+        return []
 
 
 class MIDIConfigDialog(QDialog):
@@ -203,6 +239,18 @@ class MIDIConfigDialog(QDialog):
         self.use_soundfont_list.setChecked(get_use_soundfont_list())
         synth_layout.addWidget(self.use_soundfont_list)
 
+        # Hardware Interface (audio output device for FluidSynth)
+        hw_row = QHBoxLayout()
+        hw_row.addWidget(QLabel("Hardware Interface:"))
+        self.hardware_interface_combo = QComboBox()
+        self.hardware_interface_combo.setToolTip(
+            "Audio output device for FluidSynth playback. "
+            "Requires sounddevice (pip install sounddevice)."
+        )
+        self._refresh_hardware_devices()
+        hw_row.addWidget(self.hardware_interface_combo)
+        synth_layout.addLayout(hw_row)
+
         sf_row = QHBoxLayout()
         sf_row.addWidget(QLabel("SoundFont (SF2/SF3):"))
         self.sf2_edit = QLineEdit()
@@ -265,6 +313,23 @@ class MIDIConfigDialog(QDialog):
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
 
+    def _refresh_hardware_devices(self, event=None):
+        """refresh hardware devices"""
+        self.hardware_interface_combo.clear()
+        devices = _get_output_devices()
+        if devices:
+            self.hardware_interface_combo.addItem("(Default)", "")
+            for display_name, device_spec in devices:
+                self.hardware_interface_combo.addItem(display_name, device_spec)
+            saved = get_hardware_interface()
+            idx = self.hardware_interface_combo.findText(saved)
+            self.hardware_interface_combo.setCurrentIndex(idx if idx >= 0 else 0)
+        else:
+            self.hardware_interface_combo.addItem(
+                "(sounddevice not installed)",
+                "",
+            )
+
     def _on_input_combo_changed(self) -> None:
         """On input ComboBox changed, set the DigitalTitle text."""
         if hasattr(self, "input_display") and hasattr(self, "input_combo"):
@@ -280,6 +345,7 @@ class MIDIConfigDialog(QDialog):
         # Use the MIDIHelper instance to get the updated port lists
         self.input_ports = self.midi_helper.get_input_ports()
         self.output_ports = self.midi_helper.get_output_ports()
+        self._refresh_hardware_devices()
 
         # Update the combo boxes
         self.input_combo.clear()
@@ -293,7 +359,13 @@ class MIDIConfigDialog(QDialog):
 
     def _toggle_fluidsynth_controls(self, enabled: bool) -> None:
         controls_enabled = bool(self.fluidsynth_enable.isChecked())
-        for w in [self.sf2_edit, self.fs_start_btn, self.fs_stop_btn, self.fs_test_btn]:
+        for w in [
+            self.hardware_interface_combo,
+            self.sf2_edit,
+            self.fs_start_btn,
+            self.fs_stop_btn,
+            self.fs_test_btn,
+        ]:
             w.setEnabled(controls_enabled)
         if not controls_enabled:
             self.fs_status.setText("")
@@ -340,7 +412,31 @@ class MIDIConfigDialog(QDialog):
 
             if self.fs is None:
                 self.fs = Synth()
-                self.fs.start(driver="coreaudio")  # macOS
+                device_name = self.hardware_interface_combo.currentText()
+                if device_name and device_name not in ("(Default)", "(sounddevice not installed)"):
+                    if sys.platform == "darwin":
+                        # macOS: use CoreAudio with specific device (accepts device name)
+                        try:
+                            self.fs.setting("audio.coreaudio.device", device_name)
+                            self.fs.start(driver="coreaudio")
+                        except Exception as ex:
+                            log.warning(f"Could not set CoreAudio device '{device_name}': {ex}")
+                            self.fs.start(driver="coreaudio")  # fallback to default
+                    else:
+                        # Windows/Linux: use PortAudio with "index:HostApi:Name" format
+                        device_spec = self.hardware_interface_combo.currentData()
+                        try:
+                            if isinstance(device_spec, str) and ":" in device_spec:
+                                self.fs.setting("audio.driver", "portaudio")
+                                self.fs.setting("audio.portaudio.device", device_spec)
+                                self.fs.start(driver="portaudio")
+                            else:
+                                self.fs.start()
+                        except Exception as ex:
+                            log.warning(f"Could not set PortAudio device: {ex}")
+                            self.fs.start()
+                else:
+                    self.fs.start(driver="coreaudio" if sys.platform == "darwin" else None)
 
             self.sfid = self.fs.sfload(sf_path)
             self.fs.program_select(0, self.sfid, 0, 0)
@@ -425,6 +521,11 @@ class MIDIConfigDialog(QDialog):
         sf_path = self.sf2_edit.text().strip()
         if sf_path:
             set_sf2_path(sf_path)
+        hw_name = self.hardware_interface_combo.currentText()
+        if hw_name in ("(Default)", "(sounddevice not installed)", ""):
+            set_hardware_interface("")
+        else:
+            set_hardware_interface(hw_name)
         super().accept()
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()
