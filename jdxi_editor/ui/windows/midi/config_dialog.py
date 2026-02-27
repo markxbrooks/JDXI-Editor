@@ -53,7 +53,7 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     set_sf2_path,
     set_use_soundfont_list,
 )
-from jdxi_editor.ui.layout.helper import add_round_button, add_round_button_from_spec
+from jdxi_editor.ui.layout.helper import add_round_button_from_spec
 from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from picoui.specs.widgets import ButtonSpec
@@ -183,7 +183,6 @@ class MIDIConfigDialog(QDialog):
             self.current_out or "No output",
             show_upper_text=False,
         )
-        # output_layout.addWidget(self.output_display) @@@
 
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
