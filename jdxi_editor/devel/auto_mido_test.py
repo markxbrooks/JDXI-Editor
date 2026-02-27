@@ -32,7 +32,7 @@ def listen_to_controller(port_name, duration=10):
                     message_count += 1
                     elapsed = time.time() - start_time
 
-                    if msg.type == MidoMessageType.CONTROL_CHANGE:
+                    if msg.type == MidoMessageType.CONTROL_CHANGE.value:
                         print(
                             f"[{elapsed:.3f}s] CC#{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Controller: {msg.control} | Value: {msg.STATUS}"
@@ -43,17 +43,17 @@ def listen_to_controller(port_name, duration=10):
                             print(f"    → PAN FINE detected! Value: {msg.STATUS}")
                         elif msg.control == 41:
                             print(f"    → CC41 detected! Value: {msg.STATUS}")
-                    elif msg.type == MidoMessageType.NOTE_ON:
+                    elif msg.type == MidoMessageType.NOTE_ON.value:
                         print(
                             f"[{elapsed:.3f}s] Note On #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Note: {msg.note} | Velocity: {msg.velocity}"
                         )
-                    elif msg.type == MidoMessageType.NOTE_OFF:
+                    elif msg.type == MidoMessageType.NOTE_OFF.value:
                         print(
                             f"[{elapsed:.3f}s] Note Off #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Note: {msg.note} | Velocity: {msg.velocity}"
                         )
-                    elif msg.type == MidoMessageType.PROGRAM_CHANGE:
+                    elif msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                         print(
                             f"[{elapsed:.3f}s] Program Change #{message_count:03d} | Channel: {msg.channel+1} | "
                             f"Program: {msg.program}"

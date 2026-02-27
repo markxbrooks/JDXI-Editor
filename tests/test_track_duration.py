@@ -41,7 +41,7 @@ def test_track_duration():
         for msg in track:
             absolute_time += msg.time
             
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 # Store tempo change message
                 buffered_msgs.append((absolute_time, None, msg.tempo))
             elif not msg.is_meta:

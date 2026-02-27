@@ -98,7 +98,7 @@ class DeviceInfo:
                 len(data)
                 < JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()  # Minimum length check
                 or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
-                != Midi.SYSEX.START  # SysEx Start
+                != Midi.sysex.START  # SysEx Start
                 or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
                 != JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER  # 0x7E  # Universal Non-Realtime
                 or data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]

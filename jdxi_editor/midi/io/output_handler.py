@@ -106,7 +106,7 @@ class MidiOutHandler(MidiIOController):
                 # Parse SysEx safely - only attempt if message is actually SysEx (starts with 0xF0)
                 filtered_data = {}
                 message_list = list(message)
-                if message_list and message_list[0] == Midi.SYSEX.START:
+                if message_list and message_list[0] == Midi.sysex.START:
                     # This is a SysEx message, try to parse it
                     try:
                         parsed_data = self.sysex_parser.parse_bytes(bytes(message))
@@ -175,7 +175,7 @@ class MidiOutHandler(MidiIOController):
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(Midi.NOTE.ON, note, velocity, channel)
+        self.send_channel_message(Midi.note.ON, note, velocity, channel)
 
     def send_note_off(
         self, note: int = 60, velocity: int = 0, channel: int = 1
@@ -187,7 +187,7 @@ class MidiOutHandler(MidiIOController):
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(Midi.NOTE.OFF, note, velocity, channel)
+        self.send_channel_message(Midi.note.OFF, note, velocity, channel)
 
     def send_channel_message(
         self,
@@ -232,10 +232,10 @@ class MidiOutHandler(MidiIOController):
         log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
         try:
             # --- Bank Select MSB (CC#0)
-            status = Midi.CC.STATUS | (channel & BitMask.LOW_4_BITS)
-            self.send_raw_message([status, Midi.CC.BANK.MSB, msb])
+            status = Midi.cc.STATUS | (channel & BitMask.LOW_4_BITS)
+            self.send_raw_message([status, Midi.cc.BANK.MSB, msb])
             # --- Bank Select LSB (CC#32)
-            self.send_raw_message([status, Midi.CC.BANK.LSB, lsb])
+            self.send_raw_message([status, Midi.cc.BANK.LSB, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
             log.error(

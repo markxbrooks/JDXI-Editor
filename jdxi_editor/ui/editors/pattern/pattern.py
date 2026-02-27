@@ -19,7 +19,6 @@ Features:
 import datetime
 import random
 from typing import Any, Callable, Optional
-from dataclasses import dataclass
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
@@ -133,47 +132,13 @@ CHANNEL_TO_ROW = {
 }
 
 
-@dataclass(frozen=True)
-class NoteSpec:
-    """Spec for MIDI note messages.
-
-    - message_type: type of MIDI message (e.g., NOTE_ON, NOTE_OFF)
-    - note: MIDI note number (0-127); required for NOTE_ON/OFF
-    - velocity: velocity (0-127); typically None for NOTE_OFF
-    - time: delta time or timestamp (units defined by your system)
-    """
-    message_type: MidoMessageType = MidoMessageType.NOTE_OFF
-    note: Optional[int] = None
-    velocity: Optional[int] = None
-    time: int = 0
-
-    def __post_init__(self):
-        # Basic validation (only runs if not frozen; adjust if you keep mutable)
-        if self.note is not None and not (0 <= self.note <= 127):
-            raise ValueError("note must be in range 0-127")
-        if self.velocity is not None and not (0 <= self.velocity <= 127):
-            raise ValueError("velocity must be in range 0-127")
-        if self.message_type == MidoMessageType.NOTE_OFF:
-            # Common convention: NOTE_OFF may omit velocity
-            object.__setattr__(self, "velocity", None)
-
-    def to_on_off_pair(self, duration_ticks: int) -> tuple:
-        on = Message(
-            MidoMessageType.NOTE_ON, note=self.note, velocity=self.velocity, time=0
-        )
-        off = Message(
-            MidoMessageType.NOTE_OFF, note=self.note, velocity=None, time=duration_ticks
-        )
-        return on, off
-
-
 def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
     """ms to ticks"""
     ms_per_beat = MidiTempo.MILLISECONDS_PER_MINUTE / bpm
     return int((duration_ms / ms_per_beat) * ppq)
 
 
-def copy_note_attributes(button: SequencerButton, event: PatternLearnerEvent):
+def copy_note_attrs_from_event(button: SequencerButton, event: PatternLearnerEvent):
     """copy note attributes"""
     button.note = event.note
     button.note_velocity = event.velocity
@@ -183,7 +148,7 @@ def copy_note_attributes(button: SequencerButton, event: PatternLearnerEvent):
 def update_button_from_learned_event(button: SequencerButton, event: PatternLearnerEvent):
     """update button from learned event"""
     update_button_state(button, checked_state=True)
-    copy_note_attributes(button, event)
+    copy_note_attrs_from_event(button, event)
     sync_button_note_spec(button)
 
 
@@ -294,28 +259,11 @@ class PatternSequenceEditor(PatternUI):
         self._add_note_on_off_pair(duration_ticks, event)
 
     def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
-        # Build messages via the spec to avoid direct mutation and keep logic centralized
-        on_msg, off_msg = event.note_spec.to_on_off_pair(duration_ticks)
-        self.midi_track.extend([on_msg, off_msg])
-
-    def _add_note_on_off_pair_old(self, duration_ticks: int, event: PatternLearnerEvent):
         """add note on off pair to track"""
-        self.midi_track.append(
-            Message(
-                MidoMessageType.NOTE_ON,
-                note=event.note,
-                velocity=event.velocity,
-                time=0,
-            )
-        )
-        self.midi_track.append(
-            Message(
-                MidoMessageType.NOTE_OFF,
-                note=event.note,
-                velocity=0,
-                time=duration_ticks,
-            )
-        )
+        from picomidi.messages.note import MidiNote
+        midi_note = MidiNote(note=event.note, velocity=event.velocity, duration=duration_ticks)
+        on_msg, off_msg = midi_note.to_on_off_pair()
+        self.midi_track.extend([on_msg, off_msg])
 
     def _on_learner_step_advance(self, step: int) -> None:
         """Keep editor current_step in sync with the learner."""
@@ -1053,15 +1001,15 @@ class PatternSequenceEditor(PatternUI):
             # Set default duration for manually created notes
             if (
                 not hasattr(button, NoteButtonAttrs.NOTE_DURATION)
-                or button.note_duration is None
+                or button.duration is None
             ):
-                button.note_duration = self._get_duration_ms()
+                button.duration = self._get_duration_ms()
             # Set default velocity for manually created notes
             if (
                 not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY)
-                or button.note_velocity is None
+                or button.velocity is None
             ):
-                button.note_velocity = self.velocity_spinbox.value()
+                button.velocity = self.velocity_spinbox.value()
             sync_button_note_spec(button)
             note_name = self._midi_to_note_name(button.note)
             if button.row == 3:
@@ -1090,10 +1038,10 @@ class PatternSequenceEditor(PatternUI):
                 measure_button.note = button.note
                 # Copy duration if available
                 if hasattr(button, NoteButtonAttrs.NOTE_DURATION):
-                    measure_button.note_duration = button.note_duration
+                    measure_button.duration = button.note_duration
                 # Copy velocity if available
                 if hasattr(button, NoteButtonAttrs.NOTE_VELOCITY):
-                    measure_button.note_velocity = button.note_velocity
+                    measure_button.velocity = button.note_velocity
                 sync_button_note_spec(measure_button)
             else:
                 reset_button(measure_button)
@@ -1347,7 +1295,7 @@ class PatternSequenceEditor(PatternUI):
 
         # Create a set_tempo MetaMessage
         tempo_message = MetaMessage(
-            MidoMessageType.SET_TEMPO, tempo=microseconds_per_beat
+            MidoMessageType.SET_TEMPO.value, tempo=microseconds_per_beat
         )
 
         # Add the tempo message to the first track
@@ -1398,7 +1346,7 @@ class PatternSequenceEditor(PatternUI):
                             (
                                 absolute_tick,
                                 Message(
-                                    MidoMessageType.NOTE_ON,
+                                    MidoMessageType.NOTE_ON.value,
                                     note=spec.note,
                                     velocity=spec.velocity,
                                     time=0,
@@ -1411,7 +1359,7 @@ class PatternSequenceEditor(PatternUI):
                             (
                                 absolute_tick + ticks_per_step,
                                 Message(
-                                    MidoMessageType.NOTE_OFF,
+                                    MidoMessageType.NOTE_OFF.value,
                                     note=spec.note,
                                     velocity=spec.velocity,
                                     time=0,
@@ -1592,7 +1540,7 @@ class PatternSequenceEditor(PatternUI):
             for msg in track:
                 absolute_time += msg.time
                 # Check if message is a note_on with velocity > 0 and has a channel attribute
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                     # Get channel - note messages always have channel attribute
                     if not hasattr(msg, "channel"):
                         continue
@@ -1656,7 +1604,7 @@ class PatternSequenceEditor(PatternUI):
         tempo_bpm = None
         for track in midi_file.tracks:
             for event in track:
-                if event.type == MidoMessageType.SET_TEMPO:
+                if event.type == MidoMessageType.SET_TEMPO.value:
                     tempo_bpm = int(tempo2bpm(event.tempo))
                     break
             if tempo_bpm is not None:
@@ -1687,7 +1635,7 @@ class PatternSequenceEditor(PatternUI):
             midi_file.tracks.append(track)
 
             # Add track name and program change
-            track.append(Message(MidoMessageType.PROGRAM_CHANGE, program=0, time=0))
+            track.append(Message(MidoMessageType.PROGRAM_CHANGE.value, program=0, time=0))
 
             self._add_motes_from_all_bars_to_track(row, track)
 
@@ -1740,7 +1688,7 @@ class PatternSequenceEditor(PatternUI):
         """Append Note on and Off"""
         track.append(
             Message(
-                MidoMessageType.NOTE_ON,
+                MidoMessageType.NOTE_ON.value,
                 note=spec.note,
                 velocity=spec.velocity,
                 time=time,
@@ -1749,7 +1697,7 @@ class PatternSequenceEditor(PatternUI):
         # Add a note_off event after a short duration
         track.append(
             Message(
-                MidoMessageType.NOTE_OFF,
+                MidoMessageType.NOTE_OFF.value,
                 note=spec.note,
                 velocity=0,
                 time=time + 120,
@@ -1876,7 +1824,7 @@ class PatternSequenceEditor(PatternUI):
     ):
         """Third pass: assign notes and durations to buttons"""
         for abs_time, msg, channel, tempo in note_events:
-            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 # --- Map channel to row (skip channels we don't support)
                 if channel not in channel_to_row:
                     continue
@@ -1941,11 +1889,11 @@ class PatternSequenceEditor(PatternUI):
         for abs_time, msg, channel, tempo in note_events:
             note_key = (channel, msg.note)
 
-            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 # Store note_on event
                 active_notes[note_key] = (abs_time, tempo)
-            elif msg.type == MidoMessageType.NOTE_OFF or (
-                msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+            elif msg.type == MidoMessageType.NOTE_OFF.value or (
+                msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
             ):
                 # Find matching note_on
                 if note_key in active_notes:
@@ -1974,13 +1922,13 @@ class PatternSequenceEditor(PatternUI):
                 absolute_time += msg.time
 
                 # Track tempo changes
-                if msg.type == MidoMessageType.SET_TEMPO:
+                if msg.type == MidoMessageType.SET_TEMPO.value:
                     current_tempo = msg.tempo
 
                 # Collect note_on and note_off events
                 if hasattr(msg, "channel") and (
-                    msg.type == MidoMessageType.NOTE_ON
-                    or msg.type == MidoMessageType.NOTE_OFF
+                    msg.type == MidoMessageType.NOTE_ON.value
+                    or msg.type == MidoMessageType.NOTE_OFF.value
                 ):
                     note_events.append((absolute_time, msg, msg.channel, current_tempo))
         return note_events
@@ -2187,7 +2135,7 @@ class PatternSequenceEditor(PatternUI):
 
         track.append(
             MetaMessage(
-                MidoMessageType.SET_TEMPO,
+                MidoMessageType.SET_TEMPO.value,
                 tempo=tempo_us,
                 time=0,
             )
@@ -2204,7 +2152,7 @@ class PatternSequenceEditor(PatternUI):
                 (
                     absolute_tick.tick,
                     Message(
-                        MidoMessageType.NOTE_ON,
+                        MidoMessageType.NOTE_ON.value,
                         note=absolute_tick.note,
                         velocity=absolute_tick.velocity,
                         channel=absolute_tick.channel,
@@ -2216,7 +2164,7 @@ class PatternSequenceEditor(PatternUI):
                 (
                     absolute_tick.tick + absolute_tick.duration_ticks,
                     Message(
-                        MidoMessageType.NOTE_OFF,
+                        MidoMessageType.NOTE_OFF.value,
                         note=absolute_tick.note,
                         velocity=0,
                         channel=absolute_tick.channel,
@@ -2499,7 +2447,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
-        if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
+        if message.type == MidoMessageType.NOTE_ON.value and message.velocity > 0:
             note = message.note  # mido uses lowercase 'note'
 
             # Determine the correct row for the note
@@ -2512,8 +2460,8 @@ class PatternSequenceEditor(PatternUI):
                     for btn in self._get_step_buttons(row, step_in_bar):
                         update_button_state(btn, True)
                         btn.note = note
-                        btn.note_velocity = message.velocity
-                        btn.note_duration = self._get_duration_ms()
+                        btn.velocity = message.velocity
+                        btn.duration = self._get_duration_ms()
                         sync_button_note_spec(btn)
 
                     # Record the note in the learned pattern (for compatibility)
@@ -2523,7 +2471,7 @@ class PatternSequenceEditor(PatternUI):
                     # Add the note_on message to the MIDI track
                     self.midi_track.append(
                         Message(
-                            MidoMessageType.NOTE_ON,
+                            MidoMessageType.NOTE_ON.value,
                             note=note,
                             velocity=message.velocity,
                             time=0,
@@ -2531,7 +2479,7 @@ class PatternSequenceEditor(PatternUI):
                     )
                     break  # Stop checking once the note is assigned
 
-        elif message.type == MidoMessageType.NOTE_OFF:
+        elif message.type == MidoMessageType.NOTE_OFF.value:
             note = message.note  # mido uses lowercase 'note'
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
@@ -2543,7 +2491,7 @@ class PatternSequenceEditor(PatternUI):
 
                 # Add the note_off message to the MIDI track
                 self.midi_track.append(
-                    Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, time=0)
+                    Message(MidoMessageType.NOTE_OFF.value, note=note, velocity=0, time=0)
                 )
                 # Advance step within current bar (0 to beats_per_bar-1)
                 self.current_step = (self.current_step + 1) % self.measure_beats
@@ -2564,9 +2512,9 @@ class PatternSequenceEditor(PatternUI):
                     update_button_state(button, True)
                     button.note = note
                     # Set default duration for learned pattern notes
-                    button.note_duration = self._get_duration_ms()
+                    button.duration = self._get_duration_ms()
                     # Set default velocity for learned pattern notes
-                    button.note_velocity = self.velocity_spinbox.value()
+                    button.velocity = self.velocity_spinbox.value()
                     sync_button_note_spec(button)
                     button.setStyleSheet(
                         JDXi.UI.Style.generate_sequencer_button_style(True)

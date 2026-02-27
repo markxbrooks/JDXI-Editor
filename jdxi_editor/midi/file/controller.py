@@ -160,7 +160,7 @@ class MidiFileController:
         if self.midi_file and self.midi_file.tracks:
             # Remove existing tempo messages
             track = self.midi_file.tracks[0]
-            track[:] = [msg for msg in track if msg.type != MidoMessageType.SET_TEMPO]
+            track[:] = [msg for msg in track if msg.type != MidoMessageType.SET_TEMPO.value]
 
             # Add new tempo message
             self._add_tempo_to_track(track, bpm)
@@ -185,7 +185,7 @@ class MidiFileController:
         # Search for SET_TEMPO message in first track
         track = self.midi_file.tracks[0]
         for msg in track:
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 return int(tempo2bpm(msg.tempo))
 
         return self.current_bpm
@@ -253,7 +253,7 @@ class MidiFileController:
                         # Add note on/off
                         track.append(
                             Message(
-                                MidoMessageType.NOTE_ON,
+                                MidoMessageType.NOTE_ON.value,
                                 note=spec.note,
                                 velocity=spec.velocity,
                                 time=time,
@@ -269,7 +269,7 @@ class MidiFileController:
                         )
                         track.append(
                             Message(
-                                MidoMessageType.NOTE_OFF,
+                                MidoMessageType.NOTE_OFF.value,
                                 note=spec.note,
                                 velocity=0,
                                 time=time + duration_ticks,
@@ -505,12 +505,12 @@ class MidiFileController:
             for msg in track:
                 absolute_time += msg.time
 
-                if msg.type == MidoMessageType.SET_TEMPO:
+                if msg.type == MidoMessageType.SET_TEMPO.value:
                     current_tempo = msg.tempo
 
                 if hasattr(msg, "channel") and (
-                    msg.type == MidoMessageType.NOTE_ON
-                    or msg.type == MidoMessageType.NOTE_OFF
+                    msg.type == MidoMessageType.NOTE_ON.value
+                    or msg.type == MidoMessageType.NOTE_OFF.value
                 ):
                     note_events.append((absolute_time, msg, msg.channel, current_tempo))
 
@@ -521,10 +521,10 @@ class MidiFileController:
         for abs_time, msg, channel, tempo in note_events:
             note_key = (channel, msg.note)
 
-            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 active_notes[note_key] = (abs_time, tempo)
-            elif msg.type == MidoMessageType.NOTE_OFF or (
-                msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+            elif msg.type == MidoMessageType.NOTE_OFF.value or (
+                msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
             ):
                 if note_key in active_notes:
                     on_time, on_tempo = active_notes[note_key]
@@ -535,7 +535,7 @@ class MidiFileController:
 
         # Third pass: assign notes to measures/steps
         for abs_time, msg, channel, tempo in note_events:
-            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 if channel not in self.CHANNEL_TO_ROW:
                     continue
 
@@ -576,7 +576,7 @@ class MidiFileController:
         """
         for track in midi_file.tracks:
             for msg in track:
-                if msg.type == MidoMessageType.SET_TEMPO:
+                if msg.type == MidoMessageType.SET_TEMPO.value:
                     return int(tempo2bpm(msg.tempo))
 
         return None
@@ -590,7 +590,7 @@ class MidiFileController:
         """
         microseconds_per_beat = int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
         tempo_msg = MetaMessage(
-            MidoMessageType.SET_TEMPO,
+            MidoMessageType.SET_TEMPO.value,
             tempo=microseconds_per_beat,
             time=0,
         )

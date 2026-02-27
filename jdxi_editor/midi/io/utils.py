@@ -19,7 +19,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    if not (0 <= msb <= Midi.VALUE.MAX.EIGHT_BIT):  # 255
+    if not (0 <= msb <= Midi.value.max.EIGHT_BIT):  # 255
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
     if lsb > BitMask.LOW_7_BITS:  # 127
@@ -37,7 +37,7 @@ def nibble_data(data: list[int]) -> list[int]:
     """
     nibbled_data = []
     for byte in data:
-        if byte > Midi.VALUE.MAX.SEVEN_BIT:  # 127
+        if byte > Midi.value.max.SEVEN_BIT:  # 127
             high_nibble = (byte >> 4) & BitMask.LOW_4_BITS
             low_nibble = byte & BitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
@@ -95,9 +95,9 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     )
 
     message_byte_list = bytes(
-        [Midi.SYSEX.START]
+        [Midi.sysex.START]
         + [int(byte, 16) for byte in hex_string.split()]
-        + [Midi.SYSEX.END]
+        + [Midi.sysex.END]
     )
     return message_byte_list
 

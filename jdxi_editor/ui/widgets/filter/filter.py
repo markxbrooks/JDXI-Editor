@@ -79,12 +79,12 @@ class FilterWidget(EnvelopeWidgetBase):
         self.cutoff_param_control = PWMSliderSpinbox(
             cutoff_param,
             min_value=0,
-            max_value=Midi.VALUE.MAX.SEVEN_BIT,
+            max_value=Midi.value.max.SEVEN_BIT,
             units=" Hz/10",
             label="Cutoff (Hz /10)",
             value=int(
                 self.envelope[EnvelopeParameter.FILTER_CUTOFF]
-                * Midi.VALUE.MAX.SEVEN_BIT
+                * Midi.value.max.SEVEN_BIT
             ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
@@ -113,7 +113,7 @@ class FilterWidget(EnvelopeWidgetBase):
         )
 
         self.cutoff_param_control.setValue(
-            self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.VALUE.MAX.SEVEN_BIT
+            self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.value.max.SEVEN_BIT
         )
         if self.slope_param:
             self.slope_param_control = self._create_parameter_switch(
@@ -150,7 +150,7 @@ class FilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
-            val / Midi.VALUE.MAX.SEVEN_BIT
+            val / Midi.value.max.SEVEN_BIT
         )  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
@@ -208,7 +208,7 @@ class FilterWidget(EnvelopeWidgetBase):
                     ctrl.setValue(
                         int(
                             self.envelope[EnvelopeParameter.FILTER_CUTOFF]
-                            * Midi.VALUE.MAX.SEVEN_BIT
+                            * Midi.value.max.SEVEN_BIT
                         )
                     )
                 else:

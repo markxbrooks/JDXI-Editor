@@ -29,9 +29,9 @@ class ModWheel(WheelWidget):
         Set modulation wheel value (0.0 to 1.0) and send MIDI CC1.
         """
         self.value = max(0.0, min(1.0, value))  # Clamp between 0 and 1
-        cc_value = int(self.value * Midi.VALUE.MAX.SEVEN_BIT)
+        cc_value = int(self.value * Midi.value.max.SEVEN_BIT)
 
-        status = Midi.CC.STATUS | (self.channel & BitMask.LOW_4_BITS)
+        status = Midi.cc.STATUS | (self.channel & BitMask.LOW_4_BITS)
         cc_number = 1  # Modulation wheel
 
         if self.midi_helper.midi_out:

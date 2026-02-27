@@ -16,7 +16,7 @@ from typing import List, Optional, TextIO, Union
 
 import mido
 from decologr import Decologr as log
-from picomidi import SysExByte
+from picomidi import MidiSysExByte
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
 from picomidi.message.type import MidoMessageType
@@ -164,31 +164,31 @@ class JDXiSysExParser:
     def _is_identity_sysex(self) -> bool:
         data = self.sysex_data
         return (
-            len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == SysExByte.START
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
-            in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
-            == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-            in (
+                len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
+                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == MidiSysExByte.START
+                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+                in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
+                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+                == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
+                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+                in (
                 JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
                 JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
             )
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == SysExByte.END
+                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == MidiSysExByte.END
         )
 
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-            self.sysex_data[JDXiSysExMessageLayout.START] == Midi.SYSEX.START
-            and self.sysex_data[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
+            self.sysex_data[JDXiSysExMessageLayout.START] == Midi.sysex.START
+            and self.sysex_data[JDXiSysExMessageLayout.END] == Midi.sysex.END
         )
 
     def _is_sysex_frame(self) -> bool:
         return (
-            self.sysex_data[0] == SysExByte.START
-            and self.sysex_data[-1] == SysExByte.END
+                self.sysex_data[0] == MidiSysExByte.START
+                and self.sysex_data[-1] == MidiSysExByte.END
         )
 
     def _is_jdxi_sysex(self) -> bool:
@@ -216,7 +216,7 @@ class JDXiSysExParser:
             # Check if it matches the identity_request message structure
             if (
                 self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
-                == SysExByte.START
+                == MidiSysExByte.START
                 and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
                 in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
                 and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
@@ -418,13 +418,13 @@ class JDXiSysExParser:
             # Validate start byte
             start_field = JDXiSysExMessageLayout.FIELDS[0]
             start_bytes = self._extract_field_bytes(start_field)
-            if start_bytes[0] != Midi.SYSEX.START:
+            if start_bytes[0] != Midi.sysex.START:
                 return False
 
             # Validate end byte
             end_field = JDXiSysExMessageLayout.FIELDS[-1]
             end_bytes = self._extract_field_bytes(end_field)
-            if end_bytes[0] != Midi.SYSEX.END:
+            if end_bytes[0] != Midi.sysex.END:
                 return False
 
             # Validate Roland ID
@@ -549,8 +549,8 @@ class JDXiSysExParser:
         # Parse SysEx messages
         try:
             if (
-                status_byte == Midi.SYSEX.START
-                and message_content[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
+                status_byte == Midi.sysex.START
+                and message_content[JDXiSysExMessageLayout.END] == Midi.sysex.END
             ):
                 return self._parse_sysex_to_mido(message_content)
         except Exception as ex:
@@ -561,7 +561,7 @@ class JDXiSysExParser:
         # Parse Program Change messages
         try:
             if (
-                Midi.PC.STATUS <= status_byte <= Midi.PC.MAX_STATUS
+                Midi.pc.STATUS <= status_byte <= Midi.pc.MAX_STATUS
                 and len(message_content) >= 2
             ):
                 return self._parse_program_change_to_mido(message_content)
@@ -573,7 +573,7 @@ class JDXiSysExParser:
         # Parse Control Change messages
         try:
             if (
-                Midi.CC.STATUS <= status_byte <= Midi.CC.MAX_STATUS
+                Midi.cc.STATUS <= status_byte <= Midi.cc.MAX_STATUS
                 and len(message_content) >= 3
             ):
                 return self._parse_control_change_to_mido(message_content)
@@ -619,7 +619,7 @@ class JDXiSysExParser:
         channel = status_byte & BitMask.LOW_4_BITS
         program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
         return mido.Message(
-            MidoMessageType.PROGRAM_CHANGE, channel=channel, program=program
+            MidoMessageType.PROGRAM_CHANGE.value, channel=channel, program=program
         )
 
     def _parse_control_change_to_mido(self, message_content: List[int]) -> mido.Message:
@@ -634,7 +634,7 @@ class JDXiSysExParser:
         control = message_content[JDXIControlChangeOffset.CONTROL]
         value = message_content[JDXIControlChangeOffset.VALUE]
         return mido.Message(
-            MidoMessageType.CONTROL_CHANGE,
+            MidoMessageType.CONTROL_CHANGE.value,
             channel=channel,
             control=control,
             value=value,
@@ -650,8 +650,8 @@ class JDXiSysExParser:
         hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
         message_byte_list = bytes(
-            [Midi.SYSEX.START]
+            [Midi.sysex.START]
             + [int(byte, 16) for byte in hex_string.split()]
-            + [Midi.SYSEX.END]
+            + [Midi.sysex.END]
         )
         return message_byte_list

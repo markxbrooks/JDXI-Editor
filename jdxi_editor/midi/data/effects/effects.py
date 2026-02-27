@@ -331,7 +331,7 @@ class Effect2(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to digital value"""
-        if param == Midi.VALUE.ZERO:  # Effect preset_type
+        if param == Midi.value.ZERO:  # Effect preset_type
             if value == 0:
                 return "OFF"
             types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]

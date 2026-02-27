@@ -24,7 +24,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
         # Check header
         if (
             message[: JDXiSysExMessageLayout.COMMAND_ID]
-            != [Midi.SYSEX.START] + JDXiSysexHeader.to_list()
+            != [Midi.sysex.START] + JDXiSysexHeader.to_list()
         ):
             log.message("Invalid SysEx header")
             return False
@@ -38,7 +38,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
             return False
 
         # Check end marker
-        if message[JDXiSysExMessageLayout.END] != Midi.SYSEX.END:
+        if message[JDXiSysExMessageLayout.END] != Midi.sysex.END:
             log.message("Invalid SysEx end marker")
             return False
 
@@ -82,7 +82,7 @@ def validate_raw_midi_message(message: Iterable[int]) -> bool:
         return False
 
     for byte in message:
-        if not isinstance(byte, int) or not (0 <= byte <= Midi.VALUE.MAX.EIGHT_BIT):
+        if not isinstance(byte, int) or not (0 <= byte <= Midi.value.max.EIGHT_BIT):
             log.parameter("Invalid MIDI value detected:", message)
             return False
 

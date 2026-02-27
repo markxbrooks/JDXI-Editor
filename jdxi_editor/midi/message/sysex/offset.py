@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Type, Union
 
-from picomidi import SysExByte
+from picomidi import MidiSysExByte
 from picomidi.core.parameter.address import ParameterAddress
 
 from jdxi_editor.midi.data.address.address import CommandID, ModelID, RolandID
@@ -135,7 +135,7 @@ class JDXiSysExMessageLayout:
     """
 
     FIELDS = (
-        FieldSpec(0, 1, SysExByte.START),
+        FieldSpec(0, 1, MidiSysExByte.START),
         FieldSpec(1, 1, RolandID),
         FieldSpec(2, 1, RolandID),
         FieldSpec(JDXiSysExModelIDOffset, 4, ModelID),
@@ -144,7 +144,7 @@ class JDXiSysExMessageLayout:
         FieldSpec(JDXiSysExToneNameOffset, 12, bytes),
         FieldSpec(-3, 3, bytes),
         FieldSpec(-2, 1, Checksum),
-        FieldSpec(-1, 1, SysExByte.END),
+        FieldSpec(-1, 1, MidiSysExByte.END),
     )
     START = 0
     ROLAND_ID = 1

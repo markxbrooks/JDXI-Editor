@@ -22,8 +22,8 @@ class MidiPlaybackWorker(QObject):
     ) -> None:  # pylint: disable=unsupported-binary-operation
         super().__init__()
         self.parent = parent
-        self.position_tempo = Midi.TEMPO.BPM_120_USEC
-        self.initial_tempo = Midi.TEMPO.BPM_120_USEC
+        self.position_tempo = Midi.tempo.BPM_120_USEC
+        self.initial_tempo = Midi.tempo.BPM_120_USEC
         self.should_stop = False
         self.buffered_msgs = []
         self.midi_out_port = None
@@ -50,7 +50,7 @@ class MidiPlaybackWorker(QObject):
         ticks_per_beat: int = 480,
         play_program_changes: bool = True,
         start_time: float | None = None,  # pylint: disable=unsupported-binary-operation
-        initial_tempo: int = Midi.TEMPO.BPM_120_USEC,
+        initial_tempo: int = Midi.tempo.BPM_120_USEC,
         playback_engine=None,
     ) -> None:
         """Setup the playback worker; do_work drives playback_engine.process_until_now()."""
@@ -71,8 +71,8 @@ class MidiPlaybackWorker(QObject):
             self.initial_tempo = initial_tempo
             self.position_tempo = initial_tempo
         else:
-            self.initial_tempo = Midi.TEMPO.BPM_120_USEC
-            self.position_tempo = Midi.TEMPO.BPM_120_USEC
+            self.initial_tempo = Midi.tempo.BPM_120_USEC
+            self.position_tempo = Midi.tempo.BPM_120_USEC
 
         if self.playback_engine is not None:
             print(f"🎵 [{self.__class__.__name__}] Worker setup: playback_engine")

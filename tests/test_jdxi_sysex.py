@@ -93,8 +93,8 @@ class TestJDXiSysEx(unittest.TestCase):
         result = msg.to_message_list()
 
         # Should be valid SysEx message
-        self.assertEqual(result[0], Midi.SYSEX.START)
-        self.assertEqual(result[-1], Midi.SYSEX.END)
+        self.assertEqual(result[0], Midi.sysex.START)
+        self.assertEqual(result[-1], Midi.sysex.END)
         # Should have JD-Xi model ID
         self.assertEqual(result[3:7], [ModelID.MODEL_ID_1, ModelID.MODEL_ID_2, ModelID.MODEL_ID_3, ModelID.MODEL_ID_4])
 
@@ -120,8 +120,8 @@ class TestJDXiSysEx(unittest.TestCase):
         result = msg.to_bytes()
 
         self.assertIsInstance(result, bytes)
-        self.assertEqual(result[0], Midi.SYSEX.START)
-        self.assertEqual(result[-1], Midi.SYSEX.END)
+        self.assertEqual(result[0], Midi.sysex.START)
+        self.assertEqual(result[-1], Midi.sysex.END)
 
     def test_from_bytes_valid_message(self):
         """Test parsing valid JD-Xi message from bytes."""

@@ -33,7 +33,7 @@ from jdxi_editor.midi.message.channel.message import ChannelMessage
 class ProgramChangeMessage(ChannelMessage):
     """MIDI Program Change message"""
 
-    status: int = Midi.PC.STATUS  # Program Change status byte
+    status: int = Midi.pc.STATUS  # Program Change status byte
     program: int = 0
 
     def __post_init__(self) -> None:

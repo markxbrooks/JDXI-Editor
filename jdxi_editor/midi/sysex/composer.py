@@ -179,8 +179,8 @@ class JDXiSysExComposer:
         if not validate_raw_sysex_message(raw_message):
             raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-            raw_message[JDXiSysExMessageLayout.START] == Midi.SYSEX.START
-            and raw_message[JDXiSysExMessageLayout.END] == Midi.SYSEX.END
+            raw_message[JDXiSysExMessageLayout.START] == Midi.sysex.START
+            and raw_message[JDXiSysExMessageLayout.END] == Midi.sysex.END
         )
 
     def _verify_header(self) -> bool:

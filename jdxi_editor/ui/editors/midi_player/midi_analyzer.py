@@ -28,11 +28,11 @@ class MidiAnalyzer:
                  tempo_initial_usec: first tempo found or default 120 BPM
                  initial_track_tempos: map track_number -> tempo (for tracks that have set_tempo)
         """
-        tempo_initial = Midi.TEMPO.BPM_120_USEC
+        tempo_initial = Midi.tempo.BPM_120_USEC
         initial_track_tempos: dict[int, int] = {}
         for track_number, track in enumerate(midi_file.tracks):
             for msg in track:
-                if msg.type == MidoMessageType.SET_TEMPO:
+                if msg.type == MidoMessageType.SET_TEMPO.value:
                     tempo_initial = msg.tempo
                     initial_track_tempos[track_number] = msg.tempo
                     break

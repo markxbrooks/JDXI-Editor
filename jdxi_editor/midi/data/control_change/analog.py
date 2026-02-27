@@ -40,10 +40,10 @@ class RPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (Midi.CC.STATUS, 101, msb),  # RPN MSB
-            (Midi.CC.STATUS, 100, lsb),  # RPN LSB
-            (Midi.CC.STATUS, 6, value >> 7),  # Data Entry MSB
-            (Midi.CC.STATUS, 38, value & 0x7F),  # Data Entry LSB
+            (Midi.cc.STATUS, 101, msb),  # RPN MSB
+            (Midi.cc.STATUS, 100, lsb),  # RPN LSB
+            (Midi.cc.STATUS, 6, value >> 7),  # Data Entry MSB
+            (Midi.cc.STATUS, 38, value & 0x7F),  # Data Entry LSB
         ]
 
 
@@ -81,10 +81,10 @@ class PartialRPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (Midi.CC.STATUS, 101, msb),  # RPN MSB
-            (Midi.CC.STATUS, 100, lsb),  # RPN LSB
-            (Midi.CC.STATUS, 6, value >> 7),  # Data Entry MSB
-            (Midi.CC.STATUS, 38, value & 0x7F),  # Data Entry LSB
+            (Midi.cc.STATUS, 101, msb),  # RPN MSB
+            (Midi.cc.STATUS, 100, lsb),  # RPN LSB
+            (Midi.cc.STATUS, 6, value >> 7),  # Data Entry MSB
+            (Midi.cc.STATUS, 38, value & 0x7F),  # Data Entry LSB
         ]
 
 

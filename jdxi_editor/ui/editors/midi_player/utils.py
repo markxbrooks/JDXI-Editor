@@ -37,9 +37,9 @@ def get_last_tempo(midi_file: MidiFile) -> int:
     :param midi_file: MidiFile
     :return: int
     """
-    tempo = Midi.TEMPO.BPM_120_USEC  # 500_000 default
+    tempo = Midi.tempo.BPM_120_USEC  # 500_000 default
     for track in midi_file.tracks:
         for msg in track:
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 tempo = msg.tempo
     return tempo

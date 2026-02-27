@@ -12,7 +12,7 @@ from picomidi.message.type import MidoMessageType
 from jdxi_editor.ui.widgets.midi.utils import ticks_to_seconds
 
 # Constants
-default_tempo = Midi.TEMPO.BPM_120_USEC  # microseconds per beat (120 BPM)
+default_tempo = Midi.tempo.BPM_120_USEC  # microseconds per beat (120 BPM)
 
 
 def buffer_midi_tracks(
@@ -28,12 +28,12 @@ def buffer_midi_tracks(
         muted_channels = set()
 
     buffered_messages_list = []
-    default_tempo = Midi.TEMPO.BPM_120_USEC  # 120 BPM in microseconds per beat
+    default_tempo = Midi.tempo.BPM_120_USEC  # 120 BPM in microseconds per beat
 
     for i, track in enumerate(midi_file.tracks):
-        if i + Midi.CHANNEL.DISPLAY_TO_BINARY in muted_tracks:
+        if i + Midi.channel.DISPLAY_TO_BINARY in muted_tracks:
             log.message(
-                f"🚫 Skipping muted track {i + Midi.CHANNEL.DISPLAY_TO_BINARY} ({track.name})"
+                f"🚫 Skipping muted track {i + Midi.channel.DISPLAY_TO_BINARY} ({track.name})"
             )
             continue
         absolute_time_ticks = 0
@@ -42,7 +42,7 @@ def buffer_midi_tracks(
         for msg in track:
             absolute_time_ticks += msg.time
 
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 current_tempo = msg.tempo
                 buffered_messages_list.append(
                     (absolute_time_ticks, None, current_tempo)
@@ -50,9 +50,9 @@ def buffer_midi_tracks(
             elif not msg.is_meta:
                 if hasattr(msg, "channel"):
                     log.message(
-                        f"🔍 Checking msg.channel={msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY} in muted_channels={muted_channels}"
+                        f"🔍 Checking msg.channel={msg.channel + Midi.channel.BINARY_TO_DISPLAY} in muted_channels={muted_channels}"
                     )
-                    if msg.channel + Midi.CHANNEL.BINARY_TO_DISPLAY in muted_channels:
+                    if msg.channel + Midi.channel.BINARY_TO_DISPLAY in muted_channels:
                         log.message(f"🚫 Skipping muted channel {msg.channel}")
                         continue
                 log.message(f"🎵 Adding midi msg to buffer: {msg}")
@@ -94,7 +94,7 @@ def play_buffered(
 
         # Send message based on type and program change flag
         if not msg.is_meta:
-            if msg.type == MidoMessageType.PROGRAM_CHANGE:
+            if msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                 if suppress_program_changes:
                     midi_out_port.send_message(msg.bytes())
                 else:

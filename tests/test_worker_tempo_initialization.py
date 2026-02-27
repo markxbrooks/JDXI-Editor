@@ -57,8 +57,8 @@ class TestWorkerTempoInitialization(unittest.TestCase):
         
         # Test data
         buffered_msgs = [
-            (0, None, Midi.TEMPO.BPM_120_USEC),  # Default tempo
-            (480, b'\x90\x40\x40', Midi.TEMPO.BPM_120_USEC),  # Note on at 1 beat
+            (0, None, Midi.tempo.BPM_120_USEC),  # Default tempo
+            (480, b'\x90\x40\x40', Midi.tempo.BPM_120_USEC),  # Note on at 1 beat
         ]
         
         # Setup worker without initial tempo (should use default)
@@ -72,9 +72,9 @@ class TestWorkerTempoInitialization(unittest.TestCase):
         )
         
         # Should use default tempo
-        self.assertEqual(worker.position_tempo, Midi.TEMPO.BPM_120_USEC)
-        self.assertEqual(worker.initial_tempo, Midi.TEMPO.BPM_120_USEC)
-        print(f"✅ Worker correctly uses default tempo {Midi.TEMPO.BPM_120_USEC} (120 BPM)")
+        self.assertEqual(worker.position_tempo, Midi.tempo.BPM_120_USEC)
+        self.assertEqual(worker.initial_tempo, Midi.tempo.BPM_120_USEC)
+        print(f"✅ Worker correctly uses default tempo {Midi.tempo.BPM_120_USEC} (120 BPM)")
 
     def test_worker_timing_calculation_with_correct_tempo(self):
         """Test that timing calculations use the correct tempo."""

@@ -390,7 +390,7 @@ class MidiTrackViewer(QWidget):
         """
         log.message(f"Track index: {track_index}, Spin box value: {spin_box.value()}")
         return lambda: self.change_track_channel(
-            track_index, spin_box.value() + Midi.CHANNEL.DISPLAY_TO_BINARY
+            track_index, spin_box.value() + Midi.channel.DISPLAY_TO_BINARY
         )
 
     def make_apply_name(self, track_name: str, text_edit: QLineEdit) -> callable:
@@ -426,11 +426,11 @@ class MidiTrackViewer(QWidget):
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
-            first_channel = get_first_channel(track) + Midi.CHANNEL.BINARY_TO_DISPLAY
+            first_channel = get_first_channel(track) + Midi.channel.BINARY_TO_DISPLAY
             # Optional: Get the track name to show in dialog
             track = self.midi_file.tracks[i]
             track_name = getattr(
-                track, "name", f"Track {i + Midi.CHANNEL.BINARY_TO_DISPLAY}"
+                track, "name", f"Track {i + Midi.channel.BINARY_TO_DISPLAY}"
             )
             icon_names = {
                 10: "fa5s.drum",
@@ -617,7 +617,7 @@ class MidiTrackViewer(QWidget):
             desired_channel = (
                 None
                 if desired_display_channel is None
-                else desired_display_channel + Midi.CHANNEL.DISPLAY_TO_BINARY
+                else desired_display_channel + Midi.channel.DISPLAY_TO_BINARY
             )
             new_track = mido.MidiTrack()
 

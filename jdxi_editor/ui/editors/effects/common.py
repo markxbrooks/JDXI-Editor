@@ -315,7 +315,7 @@ class EffectsCommonEditor(BasicEditor):
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
             JDXiSysExOffsetSystemUMB.COMMON,
             JDXiSysExOffsetProgramLMB.COMMON,
-            Midi.VALUE.ZERO,
+            Midi.value.ZERO,
         )
         self.sysex_composer = JDXiSysExComposer()
         for param in self.EFX1_PARAMETERS:

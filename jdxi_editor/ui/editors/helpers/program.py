@@ -275,7 +275,7 @@ def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int
         pc_midi = pc - 1
 
         # Ensure PC is within range (0-127 for MIDI)
-        if pc_midi is None or not 0 <= pc_midi <= Midi.VALUE.MAX.SEVEN_BIT:
+        if pc_midi is None or not 0 <= pc_midi <= Midi.value.max.SEVEN_BIT:
             log.message(
                 f"Invalid Program Change value: {pc_midi} (calculated from program_number={program_number}, bank={bank}, pc={pc})"
             )

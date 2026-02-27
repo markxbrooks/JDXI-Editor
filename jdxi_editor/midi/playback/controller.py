@@ -608,7 +608,7 @@ class PatternPlaybackController(QObject):
         tempo_us = bpm2tempo(self.current_bpm)
         track.append(
             MetaMessage(
-                MidoMessageType.SET_TEMPO,
+                MidoMessageType.SET_TEMPO.value,
                 tempo=tempo_us,
                 time=0,
             )
@@ -629,7 +629,7 @@ class PatternPlaybackController(QObject):
                 (
                     event.tick,
                     Message(
-                        MidoMessageType.NOTE_ON,
+                        MidoMessageType.NOTE_ON.value,
                         note=event.note,
                         velocity=event.velocity,
                         channel=event.channel,
@@ -643,7 +643,7 @@ class PatternPlaybackController(QObject):
                 (
                     event.tick + event.duration_ticks,
                     Message(
-                        MidoMessageType.NOTE_OFF,
+                        MidoMessageType.NOTE_OFF.value,
                         note=event.note,
                         velocity=0,
                         channel=event.channel,

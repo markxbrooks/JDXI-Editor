@@ -179,7 +179,7 @@ class JDXiJSONComposer:
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
                     lmb=JDXiSysExOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
-                    lsb=Midi.VALUE.ZERO,  # 0x00
+                    lsb=Midi.value.ZERO,  # 0x00
                 )
                 self._save_editor_section(
                     editor, common_controls, common_address, temp_folder, "COMMON"
@@ -368,7 +368,7 @@ class JDXiJSONComposer:
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x70 (DRUM_KIT)
                     lmb=JDXiSysExOffsetProgramLMB.COMMON.value,  # 0x00 (COMMON)
-                    lsb=Midi.VALUE.ZERO,  # 0x00
+                    lsb=Midi.value.ZERO,  # 0x00
                 )
 
                 # Ensure KIT_LEVEL is included if it exists

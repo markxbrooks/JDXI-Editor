@@ -14,8 +14,8 @@ class ProgramCommonAddress(JDXiSysExAddress):
     def __init__(
         self,
         msb: int = JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
-        umb: int = Midi.VALUE.ZERO,
-        lmb: int = Midi.VALUE.ZERO,
-        lsb: int = Midi.VALUE.ZERO,
+        umb: int = Midi.value.ZERO,
+        lmb: int = Midi.value.ZERO,
+        lsb: int = Midi.value.ZERO,
     ):
         super().__init__(msb, umb, lmb, lsb)

@@ -82,7 +82,7 @@ class PWMSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = Midi.VALUE.MAX.SEVEN_BIT
+        self.factor = Midi.value.max.SEVEN_BIT
         self._raw_range = max_value > 1  # e.g. filter cutoff 0-127
         if max_value > 1:
             self.factor = max_value
@@ -102,7 +102,7 @@ class PWMSliderSpinbox(QWidget):
             min_value=min_value, max_value=max_value, step=0.01, value=value
         )
         self.spinbox.setRange(min_value, max_value)
-        self.factor = Midi.VALUE.MAX.SEVEN_BIT
+        self.factor = Midi.value.max.SEVEN_BIT
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
         layout.addWidget(self.spinbox)

@@ -100,7 +100,7 @@ class PitchEnvWidget(EnvelopeWidgetBase):
                 depth_param,
                 EnvelopeParameter.PEAK_LEVEL,
                 0,
-                Midi.VALUE.MAX.SEVEN_BIT,
+                Midi.value.max.SEVEN_BIT,
                 "Depth",
                 "",
                 enabled=False,

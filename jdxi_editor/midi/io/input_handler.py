@@ -250,10 +250,10 @@ class MidiInHandler(MidiIOController):
             preset_data = JDXiPresetButtonData()
             message_handlers = {
                 "sysex": self._handle_sysex_message,
-                MidoMessageType.CONTROL_CHANGE: self._handle_control_change,
-                MidoMessageType.PROGRAM_CHANGE: self._handle_program_change,
-                MidoMessageType.NOTE_ON: self._handle_note_change,
-                MidoMessageType.NOTE_OFF: self._handle_note_change,
+                MidoMessageType.CONTROL_CHANGE.value: self._handle_control_change,
+                MidoMessageType.PROGRAM_CHANGE.value: self._handle_program_change,
+                MidoMessageType.NOTE_ON.value: self._handle_note_change,
+                MidoMessageType.NOTE_OFF.value: self._handle_note_change,
                 "clock": self._handle_clock,
             }
             handler = message_handlers.get(message.type)
@@ -313,9 +313,9 @@ class MidiInHandler(MidiIOController):
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             sysex_message_bytes = (
-                bytes([Midi.SYSEX.START])
+                bytes([Midi.sysex.START])
                 + bytes(message.data)
-                + bytes([Midi.SYSEX.END])
+                + bytes([Midi.sysex.END])
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
@@ -392,9 +392,9 @@ class MidiInHandler(MidiIOController):
             self._incoming_preset_data.lsb = value
 
         self.midi_control_changed.emit(channel, control, value)
-        if control == Midi.CC.NRPN.MSB:  # NRPN MSB
+        if control == Midi.cc.NRPN.MSB:  # NRPN MSB
             self.nrpn_msb = value
-        elif control == Midi.CC.NRPN.LSB:  # NRPN LSB
+        elif control == Midi.cc.NRPN.LSB:  # NRPN LSB
             self.nrpn_lsb = value
         elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
             # We have both MSB and LSB; reconstruct NRPN address

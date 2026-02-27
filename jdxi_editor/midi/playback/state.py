@@ -34,10 +34,10 @@ class MidiPlaybackState:
     )  # False = send PCs so inserted PCs are heard
     custom_tempo_force: bool = field(default=False)
     custom_tempo: int = field(
-        default=Midi.TEMPO.BPM_162_USEC
+        default=Midi.tempo.BPM_162_USEC
     )  # Default custom tempo in microseconds
-    tempo_initial: int = field(default=Midi.TEMPO.BPM_120_USEC)
-    tempo_at_position: int = field(default=Midi.TEMPO.BPM_120_USEC)
+    tempo_initial: int = field(default=Midi.tempo.BPM_120_USEC)
+    tempo_at_position: int = field(default=Midi.tempo.BPM_120_USEC)
     timer: Optional[QTimer] = field(default=None)
     # end of new attributes
     muted_tracks: set[int] = field(default_factory=set)
@@ -51,4 +51,4 @@ class MidiPlaybackState:
         if self.custom_tempo_force:
             self.tempo_at_position = self.custom_tempo  # Use custom tempo if forced
         else:
-            self.tempo_at_position = Midi.TEMPO.BPM_120_USEC  # Default of 120 bpm
+            self.tempo_at_position = Midi.tempo.BPM_120_USEC  # Default of 120 bpm

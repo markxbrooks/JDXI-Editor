@@ -84,7 +84,7 @@ class AdsrSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = Midi.VALUE.MAX.SEVEN_BIT
+        self.factor = Midi.value.max.SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider

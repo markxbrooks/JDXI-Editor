@@ -57,15 +57,15 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
         for msg in in_port:
             if use_sw:
                 # Translate to FluidSynth
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                     fs.noteon(0, msg.note, msg.velocity)
-                elif (msg.type == MidoMessageType.NOTE_OFF) or (
-                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                elif (msg.type == MidoMessageType.NOTE_OFF.value) or (
+                    msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
                 ):
                     fs.noteoff(0, msg.note)
-                elif msg.type == MidoMessageType.CONTROL_CHANGE:
-                    fs.CC(0, msg.control, msg.STATUS)
-                elif msg.type == MidoMessageType.PROGRAM_CHANGE:
+                elif msg.type == MidoMessageType.CONTROL_CHANGE.value:
+                    fs.cc(0, msg.control, msg.STATUS)
+                elif msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                     fs.program_change(0, msg.program)
                 # You can extend with aftertouch, pitchwheel, etc.
             else:
@@ -100,15 +100,15 @@ def main():
         current_time = 0.0
         for msg in mid.play():
             if use_sw:
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                     fs.noteon(0, msg.note, msg.velocity)
-                elif (msg.type == MidoMessageType.NOTE_OFF) or (
-                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                elif (msg.type == MidoMessageType.NOTE_OFF.value) or (
+                    msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
                 ):
                     fs.noteoff(0, msg.note)
-                elif msg.type == MidoMessageType.CONTROL_CHANGE:
+                elif msg.type == MidoMessageType.CONTROL_CHANGE.value:
                     fs.cc(0, msg.control, msg.STATUS)
-                elif msg.type == MidoMessageType.PROGRAM_CHANGE:
+                elif msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                     fs.program_change(0, msg.program)
             else:
                 # If someone modified this script to feed live MIDI, they'd forward here

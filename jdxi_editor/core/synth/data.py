@@ -37,7 +37,7 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     def __post_init__(self) -> None:
         """Post Init"""
         self.address = JDXiSysExAddress(
-            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=Midi.VALUE.ZERO
+            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=Midi.value.ZERO
         )
 
     @property

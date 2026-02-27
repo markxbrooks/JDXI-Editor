@@ -188,7 +188,7 @@ class ComboBoxSynchronizer:
             if not isinstance(message, Message):
                 return
 
-            if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
+            if message.type == MidoMessageType.NOTE_ON.value and message.velocity > 0:
                 self._handle_note_on(message)
 
         except Exception as ex:
@@ -222,9 +222,9 @@ class ComboBoxSynchronizer:
                 if msg_status in (NOTE_ON, NOTE_OFF):
                     channel = status_byte & 0x0F
                     msg_type = (
-                        MidoMessageType.NOTE_ON
+                        MidoMessageType.NOTE_ON.value
                         if msg_status == NOTE_ON and velocity > 0
-                        else MidoMessageType.NOTE_OFF
+                        else MidoMessageType.NOTE_OFF.value
                     )
 
                     # Create mido Message

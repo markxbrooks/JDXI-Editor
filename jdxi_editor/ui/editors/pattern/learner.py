@@ -187,10 +187,10 @@ class PatternLearner:
             return
 
         try:
-            if message.type == MidoMessageType.NOTE_ON and message.velocity > 0:
+            if message.type == MidoMessageType.NOTE_ON.value and message.velocity > 0:
                 self._handle_note_on(message)
-            elif message.type == MidoMessageType.NOTE_OFF or (
-                message.type == MidoMessageType.NOTE_ON and message.velocity == 0
+            elif message.type == MidoMessageType.NOTE_OFF.value or (
+                message.type == MidoMessageType.NOTE_ON.value and message.velocity == 0
             ):
                 self._handle_note_off(message)
         except Exception as ex:
@@ -241,7 +241,7 @@ class PatternLearner:
         # Add to MIDI track
         self.midi_track.append(
             Message(
-                MidoMessageType.NOTE_ON,
+                MidoMessageType.NOTE_ON.value,
                 note=note,
                 velocity=velocity,
                 time=0,
@@ -283,7 +283,7 @@ class PatternLearner:
 
         # Add note_off to MIDI track
         self.midi_track.append(
-            Message(MidoMessageType.NOTE_OFF, note=note, velocity=0, time=0)
+            Message(MidoMessageType.NOTE_OFF.value, note=note, velocity=0, time=0)
         )
 
         # Advance to next step
@@ -437,11 +437,11 @@ if __name__ == "__main__":
 
     # Simulate some MIDI input
     learner.process_midi_message(
-        Message(MidoMessageType.NOTE_ON, note=60, velocity=100)
+        Message(MidoMessageType.NOTE_ON.value, note=60, velocity=100)
     )
-    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF, note=60, velocity=0))
-    learner.process_midi_message(Message(MidoMessageType.NOTE_ON, note=64, velocity=80))
-    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF, note=64, velocity=0))
+    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF.value, note=60, velocity=0))
+    learner.process_midi_message(Message(MidoMessageType.NOTE_ON.value, note=64, velocity=80))
+    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF.value, note=64, velocity=0))
 
     # Get results
     log.message("\nLearned pattern:", learner.get_learned_pattern())

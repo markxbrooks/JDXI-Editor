@@ -68,11 +68,11 @@ class PWMWidget(EnvelopeWidgetBase):
         self.pulse_width_control = PWMSliderSpinbox(
             pulse_width_param,
             min_value=0,
-            max_value=Midi.VALUE.MAX.SEVEN_BIT,
+            max_value=Midi.value.max.SEVEN_BIT,
             units=" %",
             label="Width",
             value=int(
-                self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.VALUE.MAX.SEVEN_BIT
+                self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.value.max.SEVEN_BIT
             ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
@@ -80,11 +80,11 @@ class PWMWidget(EnvelopeWidgetBase):
         self.mod_depth_control = PWMSliderSpinbox(
             mod_depth_param,
             min_value=0,
-            max_value=Midi.VALUE.MAX.SEVEN_BIT,
+            max_value=Midi.value.max.SEVEN_BIT,
             units=" %",
             label="Mod Depth",
             value=int(
-                self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.VALUE.MAX.SEVEN_BIT
+                self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.value.max.SEVEN_BIT
             ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
@@ -119,10 +119,10 @@ class PWMWidget(EnvelopeWidgetBase):
         )
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.pulse_width_control.setValue(
-            self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.VALUE.MAX.SEVEN_BIT
+            self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.value.max.SEVEN_BIT
         )
         self.mod_depth_control.setValue(
-            self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.VALUE.MAX.SEVEN_BIT
+            self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.value.max.SEVEN_BIT
         )
         JDXi.UI.Theme.apply_adsr_style(self, analog=analog)
 
@@ -145,7 +145,7 @@ class PWMWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
-            val / Midi.VALUE.MAX.SEVEN_BIT
+            val / Midi.value.max.SEVEN_BIT
         )  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
@@ -157,7 +157,7 @@ class PWMWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope[EnvelopeParameter.MOD_DEPTH] = (
-            val / Midi.VALUE.MAX.SEVEN_BIT
+            val / Midi.value.max.SEVEN_BIT
         )  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
@@ -168,11 +168,11 @@ class PWMWidget(EnvelopeWidgetBase):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == EnvelopeParameter.MOD_DEPTH:
                     self.envelope[EnvelopeParameter.MOD_DEPTH] = (
-                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.value.max.SEVEN_BIT
                     )
                 elif envelope_param_type == EnvelopeParameter.PULSE_WIDTH:
                     self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
-                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.value.max.SEVEN_BIT
                     )
                 else:
                     pass
@@ -186,11 +186,11 @@ class PWMWidget(EnvelopeWidgetBase):
                 log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == EnvelopeParameter.MOD_DEPTH:
                     self.envelope[EnvelopeParameter.MOD_DEPTH] = (
-                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.value.max.SEVEN_BIT
                     )
                 if envelope_param_type == EnvelopeParameter.PULSE_WIDTH:
                     self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
-                        slider.value() / Midi.VALUE.MAX.SEVEN_BIT
+                        slider.value() / Midi.value.max.SEVEN_BIT
                     )
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
@@ -210,14 +210,14 @@ class PWMWidget(EnvelopeWidgetBase):
                     slider.setValue(
                         int(
                             self.envelope[EnvelopeParameter.MOD_DEPTH]
-                            * Midi.VALUE.MAX.SEVEN_BIT
+                            * Midi.value.max.SEVEN_BIT
                         )
                     )
                 if envelope_param_type == EnvelopeParameter.PULSE_WIDTH:
                     slider.setValue(
                         int(
                             self.envelope[EnvelopeParameter.PULSE_WIDTH]
-                            * Midi.VALUE.MAX.SEVEN_BIT
+                            * Midi.value.max.SEVEN_BIT
                         )
                     )
                 else:
@@ -242,13 +242,13 @@ class PWMWidget(EnvelopeWidgetBase):
                 self.envelope[EnvelopeParameter.PULSE_WIDTH] = float(pw_val)
             else:
                 self.envelope[EnvelopeParameter.PULSE_WIDTH] = (
-                    pw_val / Midi.VALUE.MAX.SEVEN_BIT
+                    pw_val / Midi.value.max.SEVEN_BIT
                 )
             if isinstance(md_val, (int, float)) and md_val <= 1.0 and md_val >= 0.0:
                 self.envelope[EnvelopeParameter.MOD_DEPTH] = float(md_val)
             else:
                 self.envelope[EnvelopeParameter.MOD_DEPTH] = (
-                    md_val / Midi.VALUE.MAX.SEVEN_BIT
+                    md_val / Midi.value.max.SEVEN_BIT
                 )
             self.plot.set_values(self.envelope)
         except Exception as ex:

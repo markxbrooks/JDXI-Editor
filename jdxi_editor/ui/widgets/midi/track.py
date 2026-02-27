@@ -86,12 +86,12 @@ class MidiTrackWidget(QWidget):
             abs_time += msg.time
             if hasattr(msg, "channel"):
                 channels.add(msg.channel)
-            if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 note_count += 1
                 norm_time = abs_time / total_length if total_length else 0
                 # Use first_channel for all notes
                 rects.append((norm_time, first_channel))
-            if msg.type == MidoMessageType.PROGRAM_CHANGE:
+            if msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                 program_changes.append(msg.program)
 
         label = (
@@ -286,10 +286,10 @@ class MidiTrackWidget(QWidget):
         track = self.midi_file.tracks[track_index]
         for msg in track:
             if msg.type in [
-                MidoMessageType.NOTE_ON,
-                MidoMessageType.NOTE_OFF,
-                MidoMessageType.CONTROL_CHANGE,
-                MidoMessageType.PROGRAM_CHANGE,
+                MidoMessageType.NOTE_ON.value,
+                MidoMessageType.NOTE_OFF.value,
+                MidoMessageType.CONTROL_CHANGE.value,
+                MidoMessageType.PROGRAM_CHANGE.value,
                 MidoMessageType.PITCH_WHEEL,
                 MidoMessageType.AFTERTOUCH,
                 MidoMessageType.POLYTOUCH,

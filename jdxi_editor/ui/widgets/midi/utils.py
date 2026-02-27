@@ -28,7 +28,7 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
     :return: float
     """
     ticks_per_beat = midi_file.ticks_per_beat
-    current_tempo = Midi.TEMPO.BPM_120_USEC  # default: 120 BPM
+    current_tempo = Midi.tempo.BPM_120_USEC  # default: 120 BPM
     time_seconds = 0
     last_tick = 0
 
@@ -50,7 +50,7 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
         )
         last_tick = abs_tick
 
-        if msg.type == MidoMessageType.SET_TEMPO:
+        if msg.type == MidoMessageType.SET_TEMPO.value:
             current_tempo = msg.tempo
 
     return time_seconds
@@ -71,7 +71,7 @@ def extract_notes_with_absolute_time(
     current_time = 0
     for msg in track:
         current_time += msg.time
-        if msg.type == MidoMessageType.NOTE_ON:
+        if msg.type == MidoMessageType.NOTE_ON.value:
             abs_time = mido.tick2second(current_time, ticks_per_beat, tempo)
             notes.append((abs_time, msg))
     return notes
@@ -99,10 +99,10 @@ def get_first_channel(track: mido.MidiTrack) -> int | None:
     """
     for msg in track:
         if msg.type in {
-            MidoMessageType.NOTE_ON,
-            MidoMessageType.NOTE_OFF,
-            MidoMessageType.CONTROL_CHANGE,
-            MidoMessageType.PROGRAM_CHANGE,
+            MidoMessageType.NOTE_ON.value,
+            MidoMessageType.NOTE_OFF.value,
+            MidoMessageType.CONTROL_CHANGE.value,
+            MidoMessageType.PROGRAM_CHANGE.value,
         } and hasattr(msg, "channel"):
             return msg.channel
     return 0  # default fallback

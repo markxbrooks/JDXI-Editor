@@ -44,9 +44,9 @@ class SystemCommonMessage(JDXiSysEx):
     command: int = CommandID.DT1
     msb: int = JDXiSysExAddressStartMSB.SYSTEM  # 0x02: System area
     umb: int = JDXiSysExOffsetProgramLMB.COMMON  # 0x00: Common section
-    lmb: int = Midi.VALUE.ZERO  # Always 0x00
-    lsb: int = Midi.VALUE.ZERO  # Parameter number
-    value: int = Midi.VALUE.ZERO  # Parameter value
+    lmb: int = Midi.value.ZERO  # Always 0x00
+    lsb: int = Midi.value.ZERO  # Parameter number
+    value: int = Midi.value.ZERO  # Parameter value
 
     def __post_init__(self):
         # Master Tune (0x00) uses 4-byte encoding (nibbles) for values 24-2024

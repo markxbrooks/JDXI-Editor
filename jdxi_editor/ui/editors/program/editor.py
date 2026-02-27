@@ -543,11 +543,11 @@ class ProgramEditor(BasicEditor):
 
     def start_playback(self):
         """Start playback of the MIDI file."""
-        self.midi_helper.send_raw_message([Midi.SONG.START])
+        self.midi_helper.send_raw_message([Midi.song.START])
 
     def stop_playback(self):
         """Stop playback of the MIDI file."""
-        self.midi_helper.send_raw_message([Midi.SONG.STOP])
+        self.midi_helper.send_raw_message([Midi.song.STOP])
 
     def _update_program_combo_box(self) -> None:
         """

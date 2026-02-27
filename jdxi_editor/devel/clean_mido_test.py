@@ -58,7 +58,7 @@ def test_with_mido():
                     timestamp_str = f"{elapsed:.3f}"
 
                     # Decode the message
-                    if message.type == MidoMessageType.CONTROL_CHANGE:
+                    if message.type == MidoMessageType.CONTROL_CHANGE.value:
                         channel = message.channel + 1
                         controller = message.control
                         value = message.STATUS
@@ -76,21 +76,21 @@ def test_with_mido():
                             print(
                                 f"{timestamp_str:>8}\tFrom {port_name}\tControl\t{channel}\tController {controller}\t{value}"
                             )
-                    elif message.type == MidoMessageType.NOTE_ON:
+                    elif message.type == MidoMessageType.NOTE_ON.value:
                         channel = message.channel + 1
                         note = message.note
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote On\t{channel}\tNote {note}\t{velocity}"
                         )
-                    elif message.type == MidoMessageType.NOTE_OFF:
+                    elif message.type == MidoMessageType.NOTE_OFF.value:
                         channel = message.channel + 1
                         note = message.note
                         velocity = message.velocity
                         print(
                             f"{timestamp_str:>8}\tFrom {port_name}\tNote Off\t{channel}\tNote {note}\t{velocity}"
                         )
-                    elif message.type == MidoMessageType.PROGRAM_CHANGE:
+                    elif message.type == MidoMessageType.PROGRAM_CHANGE.value:
                         channel = message.channel + 1
                         program = message.program
                         print(

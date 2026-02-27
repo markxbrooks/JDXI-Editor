@@ -72,13 +72,13 @@ class JDXiSysEx(RolandSysExMessage):
 
     # --- JD-Xi specific address handling
     sysex_address: Optional[JDXiSysExAddress] = None
-    msb: int = Midi.VALUE.ZERO
-    umb: int = Midi.VALUE.ZERO
-    lmb: int = Midi.VALUE.ZERO
-    lsb: int = Midi.VALUE.ZERO
+    msb: int = Midi.value.ZERO
+    umb: int = Midi.value.ZERO
+    lmb: int = Midi.value.ZERO
+    lsb: int = Midi.value.ZERO
 
     # --- JD-Xi specific value handling
-    value: Union[int, List[int]] = Midi.VALUE.ZERO
+    value: Union[int, List[int]] = Midi.value.ZERO
     size: int = 1
 
     # --- JD-Xi specific attributes

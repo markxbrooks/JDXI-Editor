@@ -36,10 +36,10 @@ from __future__ import annotations
 from enum import IntEnum, unique
 from typing import Any, List, Optional, Tuple, Type, TypeVar, Union
 
+from picomidi import MidiSysExByte
 from picomidi.core.bitmask import BitMask
 
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
-from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 
 T = TypeVar("T", bound="Address")
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
@@ -104,7 +104,7 @@ class ResponseID(IntEnum):
     ERR = 0x4E  # Error
 
 
-class Address(SysExByte):
+class Address(MidiSysExByte):
     """
     Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)
     Includes lookup, offset arithmetic, and SysEx-ready address formatting.
@@ -381,7 +381,7 @@ JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 
 @unique
-class CommandID(SysExByte):
+class CommandID(IntEnum):
     """Roland Commands"""
 
     DT1 = 0x12  # Data Set 1

@@ -106,7 +106,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 EnvelopeParameter.RANGE_UPPER,
                 "Range Upper",
                 min_value=1,
-                max_value=Midi.VALUE.MAX.SEVEN_BIT,
+                max_value=Midi.value.max.SEVEN_BIT,
                 default_value=self.envelope[EnvelopeParameter.RANGE_UPPER],
                 enabled=False,
             ),
@@ -115,7 +115,7 @@ class WMTEnvelopeWidget(EnvelopeWidgetBase):
                 EnvelopeParameter.FADE_UPPER,
                 "Fade Upper",
                 min_value=1,
-                max_value=Midi.VALUE.MAX.SEVEN_BIT,
+                max_value=Midi.value.max.SEVEN_BIT,
                 default_value=self.envelope[EnvelopeParameter.FADE_UPPER],
             ),
         ]

@@ -36,7 +36,7 @@ class ControlChangeMessage(MidiMessage):
     controller: int
     value: int
     status: int = field(
-        init=False, default=Midi.CC.STATUS
+        init=False, default=Midi.cc.STATUS
     )  # Prevents status from being a required argument
 
     def __post_init__(self) -> None:

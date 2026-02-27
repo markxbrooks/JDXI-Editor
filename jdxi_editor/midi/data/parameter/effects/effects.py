@@ -390,7 +390,7 @@ class Effect1Param(AddressParameter):
             return display_value  # Already 0–127 or boolean-style
         else:
             return (
-                display_value + Midi.VALUE.MIN.SIGNED_SIXTEEN_BIT
+                display_value + Midi.value.min.SIGNED_SIXTEEN_BIT
             )  # Convert to unsigned 16 bit
 
     convert_from_display = convert_to_midi
@@ -644,7 +644,7 @@ class Effect2Param(AddressParameter):
             return display_value  # Already 0–127 or boolean-style
         else:
             return (
-                display_value + Midi.VALUE.MIN.SIGNED_SIXTEEN_BIT
+                display_value + Midi.value.min.SIGNED_SIXTEEN_BIT
             )  # Convert to unsigned 16 bit
 
     convert_from_display = convert_to_midi

@@ -2046,7 +2046,7 @@ class JDXiInstrument(JDXiWindow):
         """
         try:
             if self.midi_helper:
-                value = Midi.VALUE.ON if state else Midi.VALUE.OFF  # 1 = ON, 0 = OFF
+                value = Midi.value.ON if state else Midi.value.OFF  # 1 = ON, 0 = OFF
                 log.message(
                     scope="JDXiInstrument",
                     message=f" Sent arpeggiator on/off: {'ON' if state else 'OFF'}",
@@ -2063,7 +2063,7 @@ class JDXiInstrument(JDXiWindow):
                         msb=JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
                         umb=JDXiSysExOffsetSystemUMB.COMMON,
                         lmb=zone,
-                        lsb=Midi.VALUE.ZERO,
+                        lsb=Midi.value.ZERO,
                     )
                     sysex_message = self.sysex_composer.compose_message(
                         address=address,
@@ -2085,7 +2085,7 @@ class JDXiInstrument(JDXiWindow):
         """
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [Midi.NOTE.ON + self.channel, note_num, 100]
+            msg = [Midi.note.ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
             if not silence_midi_note_logging():
                 log.message(
@@ -2104,7 +2104,7 @@ class JDXiInstrument(JDXiWindow):
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
             if not self.midi_key_hold_latched:
-                status = Midi.NOTE.OFF + self.channel
+                status = Midi.note.OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 if not silence_midi_note_logging():

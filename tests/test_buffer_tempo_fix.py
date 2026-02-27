@@ -36,7 +36,7 @@ def test_buffer_tempo_fix():
         for msg in track:
             absolute_time += msg.time
             
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 # Store tempo change message
                 buffered_msgs.append((absolute_time, None, msg.tempo))
                 current_tempo = msg.tempo  # Update current tempo

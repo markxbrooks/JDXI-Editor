@@ -835,7 +835,7 @@ class MidiFilePlayer(SynthEditor):
 
         # Convert seconds to absolute ticks (approx using current tempo at position)
         try:
-            tempo_usecs = self.midi_state.tempo_at_position or Midi.TEMPO.BPM_120_USEC
+            tempo_usecs = self.midi_state.tempo_at_position or Midi.tempo.BPM_120_USEC
             abs_ticks = int(
                 mido.second2tick(
                     current_seconds, self.midi_state.file.ticks_per_beat, tempo_usecs
@@ -851,17 +851,17 @@ class MidiFilePlayer(SynthEditor):
         # Build messages: CC#0, CC#32, Program Change (PC is 0-based in MIDI spec)
         msgs = [
             self._build_message(
-                message_type=MidoMessageType.CONTROL_CHANGE,
+                message_type=MidoMessageType.CONTROL_CHANGE.value,
                 channel=channel,
                 value=int(msb),
             ),
             self._build_message(
-                message_type=MidoMessageType.CONTROL_CHANGE,
+                message_type=MidoMessageType.CONTROL_CHANGE.value,
                 channel=channel,
                 value=int(lsb),
             ),
             self._build_message(
-                message_type=MidoMessageType.PROGRAM_CHANGE,
+                message_type=MidoMessageType.PROGRAM_CHANGE.value,
                 channel=channel,
                 program=max(0, int(pc) - 1),
             ),
@@ -932,7 +932,7 @@ class MidiFilePlayer(SynthEditor):
                 if insert_delta > 0:
                     rebuilt.append(
                         mido.Message(
-                            MidoMessageType.NOTE_ON,
+                            MidoMessageType.NOTE_ON.value,
                             note=0,
                             velocity=0,
                             time=insert_delta,
@@ -1265,7 +1265,7 @@ class MidiFilePlayer(SynthEditor):
 
         # Create worker with correct initial tempo if available
         initial_tempo = getattr(
-            self.midi_state, "tempo_at_position", Midi.TEMPO.BPM_120_USEC
+            self.midi_state, "tempo_at_position", Midi.tempo.BPM_120_USEC
         )
         self.midi_playback_worker = MidiPlaybackWorker(parent=self)
         self.midi_playback_worker.set_tempo.connect(self.update_tempo_us_from_worker)
@@ -1551,7 +1551,7 @@ class MidiFilePlayer(SynthEditor):
                 self.ticks_per_beat = 480
         self.tick_duration = (
             self.midi_state.tempo_at_position
-            / Midi.TEMPO.MILLISECONDS_PER_SECOND
+            / Midi.tempo.MILLISECONDS_PER_SECOND
             / self.ticks_per_beat
         )
 
@@ -1687,7 +1687,7 @@ class MidiFilePlayer(SynthEditor):
                 JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
                 JDXiSysExOffsetSystemUMB.COMMON,
                 JDXiSysExOffsetProgramLMB.COMMON,
-                Midi.VALUE.ZERO,
+                Midi.value.ZERO,
             )
 
             # Turn off Effect 1: Set level to 0 and type to Thru (0)
@@ -1844,7 +1844,7 @@ class MidiFilePlayer(SynthEditor):
         for i in range(len(self.midi_state.file.tracks)):
             self.playback_engine.mute_track(i, i in self.midi_state.muted_tracks)
         for ch in range(16):
-            display_ch = ch + Midi.CHANNEL.BINARY_TO_DISPLAY
+            display_ch = ch + Midi.channel.BINARY_TO_DISPLAY
             self.playback_engine.mute_channel(
                 ch, display_ch in self.midi_state.muted_channels
             )
@@ -1940,7 +1940,7 @@ class MidiFilePlayer(SynthEditor):
         Check if the channel is muted.
         """
         return (
-            channel_index + Midi.CHANNEL.BINARY_TO_DISPLAY
+            channel_index + Midi.channel.BINARY_TO_DISPLAY
             in self.midi_state.muted_channels
         )
 
@@ -2102,7 +2102,7 @@ class MidiFilePlayer(SynthEditor):
             # CC 123 = All Notes Off
             self.midi_helper.midi_out.send_message(
                 mido.Message(
-                    MidoMessageType.CONTROL_CHANGE, control=123, value=0, channel=ch
+                    MidoMessageType.CONTROL_CHANGE.value, control=123, value=0, channel=ch
                 ).bytes()
             )
 
@@ -2110,7 +2110,7 @@ class MidiFilePlayer(SynthEditor):
             for note in range(128):
                 self.midi_helper.midi_out.send_message(
                     mido.Message(
-                        MidoMessageType.NOTE_OFF, note=note, velocity=0, channel=ch
+                        MidoMessageType.NOTE_OFF.value, note=note, velocity=0, channel=ch
                     ).bytes()
                 )
 
@@ -2464,7 +2464,7 @@ class MidiFilePlayer(SynthEditor):
                 pattern_editor.tempo_spinbox.blockSignals(True)
                 pattern_editor.tempo_spinbox.setValue(bpm_int)
                 pattern_editor.tempo_spinbox.blockSignals(False)
-            if hasattr(pattern_editor, MidoMessageType.SET_TEMPO):
+            if hasattr(pattern_editor, MidoMessageType.SET_TEMPO.value):
                 pattern_editor.set_tempo(bpm_int)
         except Exception as ex:
             log.debug(f"Could not push tempo to Pattern Sequencer: {ex}")

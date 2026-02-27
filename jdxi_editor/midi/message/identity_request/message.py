@@ -47,10 +47,10 @@ class IdentityRequestMessage(MidiMessage):
         from jdxi_editor.core.jdxi import JDXi
 
         return [
-            Midi.SYSEX.START,
+            Midi.sysex.START,
             JDXi.Midi.SYSEX.IDENTITY.CONST.NUMBER,
             JDXi.Midi.SYSEX.IDENTITY.CONST.DEVICE,
             JDXi.Midi.SYSEX.IDENTITY.CONST.SUB1_GENERAL_INFORMATION,
             JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REQUEST,
-            Midi.SYSEX.END,
+            Midi.sysex.END,
         ]

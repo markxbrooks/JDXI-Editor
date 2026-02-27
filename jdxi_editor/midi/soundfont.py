@@ -108,15 +108,15 @@ def midi_to_events(in_port, sink_send, use_sw, fs=None):
         for msg in in_port:
             if use_sw:
                 # Translate to FluidSynth
-                if msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+                if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                     fs.noteon(0, msg.note, msg.velocity)
-                elif (msg.type == MidoMessageType.NOTE_OFF) or (
-                    msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+                elif (msg.type == MidoMessageType.NOTE_OFF.value) or (
+                    msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
                 ):
                     fs.noteoff(0, msg.note)
-                elif msg.type == MidoMessageType.CONTROL_CHANGE:
-                    fs.CC(0, msg.control, msg.STATUS)
-                elif msg.type == MidoMessageType.PROGRAM_CHANGE:
+                elif msg.type == MidoMessageType.CONTROL_CHANGE.value:
+                    fs.cc(0, msg.control, msg.STATUS)
+                elif msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                     fs.program_change(0, msg.program)
                 # You can extend with aftertouch, pitchwheel, etc.
             else:
@@ -144,7 +144,7 @@ def get_total_duration_in_seconds(midi_file):
     Uses the same approach as the main player.
     """
     ticks_per_beat = midi_file.ticks_per_beat
-    current_tempo = Midi.TEMPO.BPM_120_USEC  # default: 120 BPM
+    current_tempo = Midi.tempo.BPM_120_USEC  # default: 120 BPM
     time_seconds = 0
     last_tick = 0
 
@@ -166,7 +166,7 @@ def get_total_duration_in_seconds(midi_file):
         )
         last_tick = abs_tick
 
-        if msg.type == MidoMessageType.SET_TEMPO:
+        if msg.type == MidoMessageType.SET_TEMPO.value:
             current_tempo = msg.tempo
 
     return time_seconds
@@ -177,7 +177,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
     # Collect all events with absolute ticks and tempo
     events = []
-    current_tempo = Midi.TEMPO.BPM_120_USEC  # Default tempo (120 BPM)
+    current_tempo = Midi.tempo.BPM_120_USEC  # Default tempo (120 BPM)
     ticks_per_beat = mid.ticks_per_beat
 
     for track in mid.tracks:
@@ -187,7 +187,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
             events.append((abs_tick, msg, current_tempo))
 
             # Update tempo when we encounter a tempo change
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 current_tempo = msg.tempo
 
     # Sort events by tick
@@ -196,7 +196,7 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
     # Play messages with proper timing
     start_time = time.time()
     print(
-        f"[INFO] Starting playback with {mido.tempo2bpm(Midi.TEMPO.BPM_120_USEC):.1f} BPM"
+        f"[INFO] Starting playback with {mido.tempo2bpm(Midi.tempo.BPM_120_USEC):.1f} BPM"
     )
 
     for abs_tick, msg, msg_tempo in events:
@@ -210,22 +210,22 @@ def play_midi_with_tempo_handling(mid, fs, use_sw):
 
         # Handle different message types
         if use_sw and fs:
-            if msg.type == MidoMessageType.SET_TEMPO:
+            if msg.type == MidoMessageType.SET_TEMPO.value:
                 bpm = mido.tempo2bpm(msg.tempo)
                 print(f"[INFO] Tempo change to {bpm:.1f} BPM at {msg_time_sec:.2f}s")
 
-            elif msg.type == MidoMessageType.NOTE_ON and msg.velocity > 0:
+            elif msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 fs.noteon(0, msg.note, msg.velocity)
 
-            elif (msg.type == MidoMessageType.NOTE_OFF) or (
-                msg.type == MidoMessageType.NOTE_ON and msg.velocity == 0
+            elif (msg.type == MidoMessageType.NOTE_OFF.value) or (
+                msg.type == MidoMessageType.NOTE_ON.value and msg.velocity == 0
             ):
                 fs.noteoff(0, msg.note)
 
-            elif msg.type == MidoMessageType.CONTROL_CHANGE:
-                fs.CC(0, msg.control, msg.STATUS)
+            elif msg.type == MidoMessageType.CONTROL_CHANGE.value:
+                fs.cc(0, msg.control, msg.STATUS)
 
-            elif msg.type == MidoMessageType.PROGRAM_CHANGE:
+            elif msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                 fs.program_change(0, msg.program)
 
             elif msg.type == "time_signature":

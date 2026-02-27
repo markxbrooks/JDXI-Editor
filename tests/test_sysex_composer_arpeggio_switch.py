@@ -27,7 +27,7 @@ class TestJDXiSysExComposer(unittest.TestCase):
             msb=JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
             umb=JDXiSysExOffsetSystemUMB.COMMON,
             lmb=0x00,
-            lsb=Midi.VALUE.ZERO,
+            lsb=Midi.value.ZERO,
         )
 
         # 2) Parameter and value

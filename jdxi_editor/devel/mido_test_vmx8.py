@@ -23,7 +23,7 @@ def listen_to_controller(port_name):
         )
         try:
             for msg in inport:
-                if msg.type == MidoMessageType.CONTROL_CHANGE:
+                if msg.type == MidoMessageType.CONTROL_CHANGE.value:
                     print(
                         f"Time: {msg.time:.3f} | Channel: {msg.channel+1} | "
                         f"Controller: {msg.control} | Value: {msg.STATUS}"
