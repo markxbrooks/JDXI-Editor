@@ -5,6 +5,8 @@ Button Spec
 from dataclasses import dataclass, field
 from typing import Callable, List
 
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
+
 
 @dataclass
 class UiNodeSpec:
@@ -27,6 +29,7 @@ class ButtonSpec:
     tooltip: str = ""
     slot: Callable = None
     grouped: bool = False
+    layout: QHBoxLayout | QVBoxLayout | None = None
 
 
 @dataclass

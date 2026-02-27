@@ -40,9 +40,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QPushButton,
     QVBoxLayout,
-    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -55,9 +53,10 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     set_sf2_path,
     set_use_soundfont_list,
 )
-from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
-from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
+from jdxi_editor.ui.layout.helper import add_round_button, add_round_button_from_spec
+from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
+from picoui.specs.widgets import ButtonSpec
 
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
@@ -140,20 +139,6 @@ class MIDIConfigDialog(QDialog):
         self.raise_()
         self.activateWindow()
         self.setFocus()
-
-    def _add_round_button(self, icon_enum, text: str, slot, layout: QHBoxLayout):
-        """Add a round button + icon/label row (Transport style). Returns the button."""
-        btn = create_jdxi_button("")
-        if slot is not None:
-            btn.clicked.connect(slot)
-        layout.addWidget(btn)
-
-        pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        label_row, _ = create_jdxi_row(text, icon_pixmap=pixmap)
-        layout.addWidget(label_row)
-        return btn
 
     def _create_ui(self):
         """Create the dialog UI"""
@@ -257,7 +242,7 @@ class MIDIConfigDialog(QDialog):
         self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2")  # default SoundFont
         sf_row.addWidget(self.sf2_edit)
         browse_btn_layout = QHBoxLayout()
-        self._add_round_button(
+        add_round_button(
             JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
             "Browse",
             self._browse_sf2,
@@ -275,15 +260,24 @@ class MIDIConfigDialog(QDialog):
         synth_layout.addLayout(combo_row)
 
         btn_row = QHBoxLayout()
-        self.fs_start_btn = self._add_round_button(
-            JDXi.UI.Icon.PLAY, "Start", self._start_fluidsynth, btn_row
-        )
-        self.fs_stop_btn = self._add_round_button(
-            JDXi.UI.Icon.STOP, "Stop", self._stop_fluidsynth, btn_row
-        )
-        self.fs_test_btn = self._add_round_button(
-            JDXi.UI.Icon.MUSIC_NOTE, "Test Note", self._test_fluidsynth, btn_row
-        )
+        fs_start_btn_spec = ButtonSpec(label="Start",
+                                       icon=JDXi.UI.Icon.PLAY,
+                                       slot=self._start_fluidsynth,
+                                       layout=btn_row)
+        fs_stop_btn_spec = ButtonSpec(label="Stop",
+                                      icon=JDXi.UI.Icon.STOP,
+                                      slot=self._stop_fluidsynth,
+                                      layout=btn_row)
+        fs_test_btn_spec = ButtonSpec(label="Test Note",
+                                      icon=JDXi.UI.Icon.MUSIC_NOTE,
+                                      slot=self._test_fluidsynth,
+                                      layout=btn_row)
+        button_row_button_specs = [fs_start_btn_spec, fs_stop_btn_spec, fs_test_btn_spec]
+        buttons = []
+        for btn_spec in button_row_button_specs:
+            button = add_round_button_from_spec(btn_spec)
+            buttons.append(button)
+        self.fs_start_btn, self.fs_stop_btn, self.fs_test_btn = buttons
         synth_layout.addLayout(btn_row)
 
         self.fs_status = QLabel("")
@@ -297,19 +291,27 @@ class MIDIConfigDialog(QDialog):
         # Refresh button (round + label)
         refresh_row = QHBoxLayout()
         refresh_row.addStretch()
-        self._add_round_button(
-            JDXi.UI.Icon.REFRESH, "Refresh Ports", self.refresh_ports, refresh_row
-        )
+        refresh_ports_spec = ButtonSpec(label="Refresh Ports",
+                                        icon=JDXi.UI.Icon.REFRESH,
+                                        slot=self.refresh_ports,
+                                        layout=refresh_row)
+        self.refresh = add_round_button_from_spec(refresh_ports_spec)
         refresh_row.addStretch()
         layout.addLayout(refresh_row)
 
         # Dialog buttons (round + labels, Transport style)
         dialog_btn_row = QHBoxLayout()
         dialog_btn_row.addStretch()
-        self._add_round_button(JDXi.UI.Icon.SAVE, "OK", self.accept, dialog_btn_row)
-        self._add_round_button(
-            JDXi.UI.Icon.CANCEL, "Cancel", self.reject, dialog_btn_row
-        )
+        ok_btn_spec = ButtonSpec(label="OK",
+                                 icon=JDXi.UI.Icon.SAVE,
+                                 slot=self.accept,
+                                 layout=dialog_btn_row)
+        self.accept = add_round_button_from_spec(ok_btn_spec)
+        cancel_btn_spec = ButtonSpec(label="Cancel",
+                                     icon=JDXi.UI.Icon.CANCEL,
+                                     slot=self.reject,
+                                     layout=dialog_btn_row)
+        self.reject = add_round_button_from_spec(cancel_btn_spec)
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
 
@@ -373,9 +375,9 @@ class MIDIConfigDialog(QDialog):
             # Auto-start if a valid SoundFont is already set and synth not running
             try:
                 if (
-                    self.fs is None
-                    and self.sf2_edit.text().strip()
-                    and os.path.isfile(self.sf2_edit.text().strip())
+                        self.fs is None
+                        and self.sf2_edit.text().strip()
+                        and os.path.isfile(self.sf2_edit.text().strip())
                 ):
                     self._start_fluidsynth()
             except Exception:
