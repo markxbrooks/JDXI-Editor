@@ -2,7 +2,7 @@ import bisect
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, Callable, List
+from typing import Callable, List, Optional
 
 import mido
 
@@ -20,7 +20,7 @@ class TransportState(Enum):
     STOPPED = auto()
     PLAYING = auto()
     PAUSED = auto()
-    
+
 
 class PlaybackEngine:
     """
@@ -49,10 +49,14 @@ class PlaybackEngine:
 
         self.tempo_us: int = 500000  # default 120 BPM
         self._tempo_map: dict[int, int] = {}
-        self._tick_to_time: List[tuple[int, float]] = []  # (tick, cumulative seconds from 0)
+        self._tick_to_time: List[tuple[int, float]] = (
+            []
+        )  # (tick, cumulative seconds from 0)
 
         self.events: List[ScheduledEvent] = []
-        self._event_ticks: List[int] = []  # Cached ticks for binary search; set in _build_event_list
+        self._event_ticks: List[int] = (
+            []
+        )  # Cached ticks for binary search; set in _build_event_list
         self.event_index: int = 0
 
         self.start_tick: int = 0
@@ -185,9 +189,7 @@ class PlaybackEngine:
                 prev_tempo = self._tempo_map[0]
                 continue
             segment_ticks = t - prev_tick
-            time_sec += mido.tick2second(
-                segment_ticks, self.ticks_per_beat, prev_tempo
-            )
+            time_sec += mido.tick2second(segment_ticks, self.ticks_per_beat, prev_tempo)
             out.append((t, time_sec))
             prev_tick = t
             prev_tempo = self._tempo_map[t]
@@ -207,9 +209,7 @@ class PlaybackEngine:
         seg_tick, seg_time = self._tick_to_time[idx]
         tempo = self._get_tempo_at_tick(seg_tick)
         delta_ticks = tick - seg_tick
-        return seg_time + mido.tick2second(
-            delta_ticks, self.ticks_per_beat, tempo
-        )
+        return seg_time + mido.tick2second(delta_ticks, self.ticks_per_beat, tempo)
 
     def _get_tempo_at_tick(self, tick: int) -> int:
         applicable = [t for t in self._tempo_map if t <= tick]
@@ -227,9 +227,7 @@ class PlaybackEngine:
         while self.event_index < len(self.events):
             event = self.events[self.event_index]
 
-            event_time = self._tick_to_seconds(
-                event.absolute_tick - self.start_tick
-            )
+            event_time = self._tick_to_seconds(event.absolute_tick - self.start_tick)
 
             if event_time > elapsed:
                 break
@@ -277,4 +275,3 @@ class PlaybackEngine:
         self.event_index = self._find_start_index(tick)
         self.start_tick = tick
         self._start_time = time.time()
-

@@ -5,6 +5,7 @@ from typing import Optional
 @dataclass
 class StepData:
     """Step data"""
+
     active: bool = False
     note: int = 60
     velocity: int = 100

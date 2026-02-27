@@ -16,12 +16,12 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
-from jdxi_editor.ui.editors.pattern.preset_list_provider import (
-    get_preset_list_for_synth_type,
-)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
+from jdxi_editor.ui.editors.pattern.preset_list_provider import (
+    get_preset_list_for_synth_type,
+)
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,

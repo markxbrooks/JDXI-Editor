@@ -77,9 +77,7 @@ def _get_output_devices() -> list[tuple[str, str]]:
         devices = sd.query_devices()
         hostapis = sd.query_hostapis()
         output_devices = [
-            (i, d)
-            for i, d in enumerate(devices)
-            if d["max_output_channels"] > 0
+            (i, d) for i, d in enumerate(devices) if d["max_output_channels"] > 0
         ]
         result = []
         for idx, d in output_devices:
@@ -100,7 +98,9 @@ class MIDIConfigDialog(QDialog):
     def __init__(self, midi_helper=MidiIOHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
-        self.setMinimumSize(JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT)
+        self.setMinimumSize(
+            JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT
+        )
         self.setStyleSheet(JDXi.UI.Style.EDITOR)
         self.midi_helper = midi_helper
         self.input_ports = midi_helper.get_input_ports()
@@ -242,12 +242,11 @@ class MIDIConfigDialog(QDialog):
         self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2")  # default SoundFont
         sf_row.addWidget(self.sf2_edit)
         browse_btn_layout = QHBoxLayout()
-        add_round_button(
-            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
-            "Browse",
-            self._browse_sf2,
-            browse_btn_layout,
-        )
+        browse_button_spec = ButtonSpec(icon=JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+                                        label="Browse",
+                                        slot=self._browse_sf2,
+                                        layout=browse_btn_layout)
+        add_round_button_from_spec(spec=browse_button_spec)
         sf_row.addLayout(browse_btn_layout)
         synth_layout.addLayout(sf_row)
 
@@ -260,19 +259,7 @@ class MIDIConfigDialog(QDialog):
         synth_layout.addLayout(combo_row)
 
         btn_row = QHBoxLayout()
-        fs_start_btn_spec = ButtonSpec(label="Start",
-                                       icon=JDXi.UI.Icon.PLAY,
-                                       slot=self._start_fluidsynth,
-                                       layout=btn_row)
-        fs_stop_btn_spec = ButtonSpec(label="Stop",
-                                      icon=JDXi.UI.Icon.STOP,
-                                      slot=self._stop_fluidsynth,
-                                      layout=btn_row)
-        fs_test_btn_spec = ButtonSpec(label="Test Note",
-                                      icon=JDXi.UI.Icon.MUSIC_NOTE,
-                                      slot=self._test_fluidsynth,
-                                      layout=btn_row)
-        button_row_button_specs = [fs_start_btn_spec, fs_stop_btn_spec, fs_test_btn_spec]
+        button_row_button_specs = self._create_button_row_specs(btn_row)
         buttons = []
         for btn_spec in button_row_button_specs:
             button = add_round_button_from_spec(btn_spec)
@@ -291,10 +278,12 @@ class MIDIConfigDialog(QDialog):
         # Refresh button (round + label)
         refresh_row = QHBoxLayout()
         refresh_row.addStretch()
-        refresh_ports_spec = ButtonSpec(label="Refresh Ports",
-                                        icon=JDXi.UI.Icon.REFRESH,
-                                        slot=self.refresh_ports,
-                                        layout=refresh_row)
+        refresh_ports_spec = ButtonSpec(
+            label="Refresh Ports",
+            icon=JDXi.UI.Icon.REFRESH,
+            slot=self.refresh_ports,
+            layout=refresh_row,
+        )
         self.refresh = add_round_button_from_spec(refresh_ports_spec)
         refresh_row.addStretch()
         layout.addLayout(refresh_row)
@@ -302,18 +291,46 @@ class MIDIConfigDialog(QDialog):
         # Dialog buttons (round + labels, Transport style)
         dialog_btn_row = QHBoxLayout()
         dialog_btn_row.addStretch()
-        ok_btn_spec = ButtonSpec(label="OK",
-                                 icon=JDXi.UI.Icon.SAVE,
-                                 slot=self.accept,
-                                 layout=dialog_btn_row)
+        ok_btn_spec = ButtonSpec(
+            label="OK", icon=JDXi.UI.Icon.SAVE, slot=self.accept, layout=dialog_btn_row
+        )
         self.accept = add_round_button_from_spec(ok_btn_spec)
-        cancel_btn_spec = ButtonSpec(label="Cancel",
-                                     icon=JDXi.UI.Icon.CANCEL,
-                                     slot=self.reject,
-                                     layout=dialog_btn_row)
+        cancel_btn_spec = ButtonSpec(
+            label="Cancel",
+            icon=JDXi.UI.Icon.CANCEL,
+            slot=self.reject,
+            layout=dialog_btn_row,
+        )
         self.reject = add_round_button_from_spec(cancel_btn_spec)
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
+
+    def _create_button_row_specs(self, btn_row: QHBoxLayout) -> list[ButtonSpec]:
+        """create button row specs"""
+        fs_start_btn_spec = ButtonSpec(
+            label="Start",
+            icon=JDXi.UI.Icon.PLAY,
+            slot=self._start_fluidsynth,
+            layout=btn_row,
+        )
+        fs_stop_btn_spec = ButtonSpec(
+            label="Stop",
+            icon=JDXi.UI.Icon.STOP,
+            slot=self._stop_fluidsynth,
+            layout=btn_row,
+        )
+        fs_test_btn_spec = ButtonSpec(
+            label="Test Note",
+            icon=JDXi.UI.Icon.MUSIC_NOTE,
+            slot=self._test_fluidsynth,
+            layout=btn_row,
+        )
+        button_row_button_specs = [
+            fs_start_btn_spec,
+            fs_stop_btn_spec,
+            fs_test_btn_spec,
+        ]
+        return button_row_button_specs
 
     def _refresh_hardware_devices(self, event=None):
         """refresh hardware devices"""
@@ -415,14 +432,19 @@ class MIDIConfigDialog(QDialog):
             if self.fs is None:
                 self.fs = Synth()
                 device_name = self.hardware_interface_combo.currentText()
-                if device_name and device_name not in ("(Default)", "(sounddevice not installed)"):
+                if device_name and device_name not in (
+                        "(Default)",
+                        "(sounddevice not installed)",
+                ):
                     if sys.platform == "darwin":
                         # macOS: use CoreAudio with specific device (accepts device name)
                         try:
                             self.fs.setting("audio.coreaudio.device", device_name)
                             self.fs.start(driver="coreaudio")
                         except Exception as ex:
-                            log.warning(f"Could not set CoreAudio device '{device_name}': {ex}")
+                            log.warning(
+                                f"Could not set CoreAudio device '{device_name}': {ex}"
+                            )
                             self.fs.start(driver="coreaudio")  # fallback to default
                     else:
                         # Windows/Linux: use PortAudio with "index:HostApi:Name" format
@@ -438,7 +460,9 @@ class MIDIConfigDialog(QDialog):
                             log.warning(f"Could not set PortAudio device: {ex}")
                             self.fs.start()
                 else:
-                    self.fs.start(driver="coreaudio" if sys.platform == "darwin" else None)
+                    self.fs.start(
+                        driver="coreaudio" if sys.platform == "darwin" else None
+                    )
 
             self.sfid = self.fs.sfload(sf_path)
             self.fs.program_select(0, self.sfid, 0, 0)

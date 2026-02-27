@@ -70,7 +70,9 @@ def set_spinbox_value(spinbox: QSpinBox, value: int):
     spinbox.blockSignals(False)
 
 
-def set_sequencer_style(btn: SequencerButton, is_current: bool = False, checked: bool = False):
+def set_sequencer_style(
+    btn: SequencerButton, is_current: bool = False, checked: bool = False
+):
     """set sequencer style"""
     btn.setStyleSheet(
         JDXi.UI.Style.generate_sequencer_button_style(

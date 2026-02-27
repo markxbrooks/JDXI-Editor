@@ -22,30 +22,30 @@ HARDWARE_INTERFACE_KEY = "midi_config/hardware_interface"
 
 # GM percussion key map (key 36–59): MIDI note -> display name
 GM_DRUM_NAMES: List[str] = [
-    "Bass Drum 1",      # 36
-    "Side Stick",       # 37
-    "Acoustic Snare",   # 38
-    "Hand Clap",        # 39
-    "Electric Snare",   # 40
-    "Low Floor Tom",    # 41
-    "Closed Hi-Hat",    # 42
-    "High Floor Tom",   # 43
-    "Pedal Hi-Hat",     # 44
-    "Low Tom",          # 45
-    "Open Hi-Hat",      # 46
-    "Low-Mid Tom",      # 47
-    "Hi-Mid Tom",       # 48
-    "Crash Cymbal 1",   # 49
-    "High Tom",         # 50
-    "Ride Cymbal 1",    # 51
-    "Chinese Cymbal",   # 52
-    "Ride Bell",        # 53
-    "Tambourine",       # 54
-    "Splash Cymbal",    # 55
-    "Cowbell",          # 56
-    "Crash Cymbal 2",   # 57
-    "Vibraslap",        # 58
-    "Ride Cymbal 2",    # 59
+    "Bass Drum 1",  # 36
+    "Side Stick",  # 37
+    "Acoustic Snare",  # 38
+    "Hand Clap",  # 39
+    "Electric Snare",  # 40
+    "Low Floor Tom",  # 41
+    "Closed Hi-Hat",  # 42
+    "High Floor Tom",  # 43
+    "Pedal Hi-Hat",  # 44
+    "Low Tom",  # 45
+    "Open Hi-Hat",  # 46
+    "Low-Mid Tom",  # 47
+    "Hi-Mid Tom",  # 48
+    "Crash Cymbal 1",  # 49
+    "High Tom",  # 50
+    "Ride Cymbal 1",  # 51
+    "Chinese Cymbal",  # 52
+    "Ride Bell",  # 53
+    "Tambourine",  # 54
+    "Splash Cymbal",  # 55
+    "Cowbell",  # 56
+    "Crash Cymbal 2",  # 57
+    "Vibraslap",  # 58
+    "Ride Cymbal 2",  # 59
 ]
 
 
@@ -126,11 +126,7 @@ def _load_sf2_presets(sf2_path: str) -> List[tuple]:
 
         with open(sf2_path, "rb") as f:
             sf2 = Sf2File(f)
-            return [
-                (p.bank, p.preset, p.name)
-                for p in sf2.presets
-                if p.name != "EOP"
-            ]
+            return [(p.bank, p.preset, p.name) for p in sf2.presets if p.name != "EOP"]
     except Exception:
         return []
 
@@ -160,10 +156,7 @@ def get_preset_list_for_synth_type(
 
     if synth_type == "Drums":
         # Bank 128 = GM drum kits
-        drum_presets = [
-            (b, p, n) for b, p, n in presets
-            if b == 128
-        ]
+        drum_presets = [(b, p, n) for b, p, n in presets if b == 128]
         if not drum_presets:
             # Fallback: use bank 0 if no bank 128 (some SF2s put drums elsewhere)
             drum_presets = [(b, p, n) for b, p, n in presets if b != 0][:16]

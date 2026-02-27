@@ -476,9 +476,7 @@ class BaseOscillatorSection(SectionBaseWidget):
 
     def _create_tuning_pitch_widget(self) -> QWidget:
         """Create tuning and pitch widget combining Tuning and Pitch Envelope (standardized name matching Digital)"""
-        pitch_layout = create_layout_with_items(
-            items=[self._create_pitch_env_group()]
-        )
+        pitch_layout = create_layout_with_items(items=[self._create_pitch_env_group()])
         pitch_widget = create_widget_with_layout(pitch_layout)
         pitch_widget.setMinimumHeight(JDXi.UI.Dimensions.EDITOR.MIN_HEIGHT)
         return pitch_widget

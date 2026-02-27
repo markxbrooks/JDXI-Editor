@@ -354,6 +354,7 @@ class OctaveButtonDimensions(Dimensions):
 
 class MidiConfig(Dimensions):
     """Midi Config Dimensions"""
+
     WIDTH = 300
     HEIGHT = 300
 

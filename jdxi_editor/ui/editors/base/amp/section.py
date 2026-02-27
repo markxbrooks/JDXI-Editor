@@ -84,9 +84,7 @@ class BaseAmpSection(SectionBaseWidget):
 
     def _create_controls_widget(self) -> QWidget:
         """Build the Controls tab content. Base: vertical sliders from amp_sliders. Digital overrides to add amp_control_widgets + pan."""
-        self.controls_layout = create_layout_with_items(
-            list(self.amp_sliders.values())
-        )
+        self.controls_layout = create_layout_with_items(list(self.amp_sliders.values()))
         level_controls_widget = QWidget()
         level_controls_widget.setLayout(self.controls_layout)
         return level_controls_widget

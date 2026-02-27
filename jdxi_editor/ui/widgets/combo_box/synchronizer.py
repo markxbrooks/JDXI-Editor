@@ -8,7 +8,6 @@ Handles real-time note-to-selector mapping and drum kit selection updates.
 from typing import Callable, Dict, List, Optional
 
 import mido
-
 from decologr import Decologr as log
 from mido import Message
 from picomidi.message.type import MidoMessageType

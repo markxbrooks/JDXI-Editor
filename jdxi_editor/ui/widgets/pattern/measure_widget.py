@@ -2,7 +2,7 @@
 Pattern Measure Widget
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 

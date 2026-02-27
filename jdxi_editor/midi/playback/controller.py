@@ -14,11 +14,10 @@ from typing import Callable, Dict, List, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
+from picomidi.message.type import MidoMessageType
+from PySide6.QtCore import QObject, Qt, QTimer
 
 from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
-from picomidi.message.type import MidoMessageType
-from PySide6.QtCore import Qt, QTimer, QObject
-
 from jdxi_editor.ui.editors.midi_player.playback.engine import (
     PlaybackEngine,
     TransportState,

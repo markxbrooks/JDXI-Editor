@@ -5,8 +5,8 @@ import time
 
 import fluidsynth
 import mido
-from mido import MidiFile
 import sounddevice as sd
+from mido import MidiFile
 from picomidi import Midi, MidiTempo
 from picomidi.message.type import MidoMessageType
 
@@ -21,11 +21,7 @@ MIDI_FILE_PATH = "tests/sheep.mid"  # Test file with tempo changes
 
 def get_output_devices():
     devices = sd.query_devices()
-    return [
-        d["name"]
-        for d in devices
-        if d["max_output_channels"] > 0
-    ]
+    return [d["name"] for d in devices if d["max_output_channels"] > 0]
 
 
 def create_synth(device_name: str):
@@ -79,10 +75,11 @@ def setup_fluidsynth(sf2_path):
                 else:
                     print(f"Please enter a number between 1 and {len(hw_devices)}:")
             except ValueError:
-                print(f"Invalid input. Enter a number between 1 and {len(hw_devices)}:.")
+                print(
+                    f"Invalid input. Enter a number between 1 and {len(hw_devices)}:."
+                )
     except Exception as ex:
         logging.error(f"Exception {ex} occurred")
-
 
     try:
         fs.start(driver=None)  # let Fluidsynth pick a sensible default
