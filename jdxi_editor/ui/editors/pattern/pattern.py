@@ -132,14 +132,36 @@ CHANNEL_TO_ROW = {
     MidiChannel.DRUM_KIT: 3,
 }
 
-@dataclass
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import Optional
+from some_midi_module import MidoMessageType  # adjust import as appropriate
+
+
+@dataclass(frozen=True)
 class NoteSpec:
-    """Notespec for Midi Notes"""
-    message_type: str = MidoMessageType.NOTE_OFF
-    note: int | None = None 
-    velocity: int | None = None
-    time: int = 0 # For note off as default 
-    
+    """Spec for MIDI note messages.
+
+    - message_type: type of MIDI message (e.g., NOTE_ON, NOTE_OFF)
+    - note: MIDI note number (0-127); required for NOTE_ON/OFF
+    - velocity: velocity (0-127); typically None for NOTE_OFF
+    - time: delta time or timestamp (units defined by your system)
+    """
+    message_type: MidoMessageType = MidoMessageType.NOTE_OFF
+    note: Optional[int] = None
+    velocity: Optional[int] = None
+    time: int = 0
+
+    def __post_init__(self):
+        # Basic validation (only runs if not frozen; adjust if you keep mutable)
+        if self.note is not None and not (0 <= self.note <= 127):
+            raise ValueError("note must be in range 0-127")
+        if self.velocity is not None and not (0 <= self.velocity <= 127):
+            raise ValueError("velocity must be in range 0-127")
+        if self.message_type == MidoMessageType.NOTE_OFF:
+            # Common convention: NOTE_OFF may omit velocity
+            object.__setattr__(self, "velocity", None)
+
 
 def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
     """ms to ticks"""
