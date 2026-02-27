@@ -16,10 +16,11 @@ class PatternMeasureWidget(QWidget):
         :param parent: QWidget
         """
         super().__init__(parent)
-        self.buttons = [[] for _ in range(4)]
+        self.buttons: list[list[SequencerButton]] = [[] for _ in range(4)]
         self._setup_ui()
 
     def _setup_ui(self) -> None:
+        """_setup ui"""
         layout = QVBoxLayout()
         button_layout = QHBoxLayout()
 

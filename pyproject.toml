@@ -36,6 +36,7 @@ dependencies = [
     "Pillow",
     "decologr",
     "picomidi",
+    "fluidsynth"
 ]
 
 [project.optional-dependencies]

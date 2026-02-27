@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QSplitter,
     QVBoxLayout,
-    QWidget,
+    QWidget, QListWidgetItem,
 )
 
 from jdxi_editor.core.jdxi import JDXi
@@ -422,7 +422,7 @@ class PatternUI(SynthEditor):
         measures_group.setLayout(measures_layout)
         return measures_group
 
-    def _on_measure_selected(self):
+    def _on_measure_selected(self, item: QListWidgetItem):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _create_duration_group(self) -> QGroupBox:

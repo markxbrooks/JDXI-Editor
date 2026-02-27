@@ -85,7 +85,6 @@ from jdxi_editor.ui.editors.pattern.learner import (
 )
 from jdxi_editor.ui.editors.pattern.models import ButtonAttrs, ClipboardData
 from jdxi_editor.ui.editors.pattern.sequencer.row import SequencerRow
-from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.pattern.timing.config import TimingConfig
 from jdxi_editor.ui.editors.pattern.ui import PatternUI
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -131,6 +130,41 @@ CHANNEL_TO_ROW = {
     MidiChannel.ANALOG_SYNTH: 2,
     MidiChannel.DRUM_KIT: 3,
 }
+
+
+def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
+    """ms to ticks"""
+    ms_per_beat = MidiTempo.MILLISECONDS_PER_MINUTE / bpm
+    return int((duration_ms / ms_per_beat) * ppq)
+
+
+def copy_note_attributes(button: SequencerButton, event: PatternLearnerEvent):
+    """copy note attributes"""
+    button.note = event.note
+    button.note_velocity = event.velocity
+    button.note_duration = event.duration_ms
+
+
+def update_button_from_learned_event(button: SequencerButton, event: PatternLearnerEvent):
+    """update button from learned event"""
+    update_button_state(button, checked_state=True)
+    copy_note_attributes(button, event)
+    sync_button_note_spec(button)
+
+
+def copy_note_attrs(previous_button: SequencerButton, new_button: SequencerButton):
+    """copy note attrs"""
+    new_button.note = previous_button.note
+    # Copy duration if available
+    if hasattr(previous_button, NoteButtonAttrs.NOTE_DURATION):
+        new_button.note_duration = previous_button.note_duration
+    else:
+        new_button.note_duration = None
+    # Copy velocity if available
+    if hasattr(previous_button, NoteButtonAttrs.NOTE_VELOCITY):
+        new_button.note_velocity = previous_button.note_velocity
+    else:
+        new_button.note_velocity = None
 
 
 class PatternSequenceEditor(PatternUI):
@@ -212,31 +246,34 @@ class PatternSequenceEditor(PatternUI):
                 self.load_from_midi_file_editor()
 
     def _on_learner_note_learned(self, event: PatternLearnerEvent) -> None:
-        """Update measure/sequencer from learned note; append NOTE_ON to midi_track."""
+        """Update measure/sequencer from learned note; append NOTE_ON/OFF."""
+
         step_in_measure = event.step
         row = event.row
-        if self.current_measure_index < len(self.measure_widgets):
-            measure = self.measure_widgets[self.current_measure_index]
-            if step_in_measure < len(measure.buttons[row]):
-                measure_button = measure.buttons[row][step_in_measure]
-                update_button_state(measure_button, True)
-                measure_button.note = event.note
-                measure_button.note_velocity = event.velocity
-                measure_button.note_duration = event.duration_ms
-                sync_button_note_spec(measure_button)
-        if step_in_measure < len(self.buttons[row]):
-            seq_btn = self.buttons[row][step_in_measure]
-            update_button_state(seq_btn, True)
-            seq_btn.note = event.note
-            seq_btn.note_velocity = event.velocity
-            seq_btn.note_duration = event.duration_ms
-            sync_button_note_spec(seq_btn)
+
+        for btn in self._get_step_buttons(row, step_in_measure):
+            update_button_from_learned_event(btn, event)
+
+        duration_ticks = ms_to_ticks(event.duration_ms, self.bpm, self.ppq)
+
+        self._add_note_on_off_pair(duration_ticks, event)
+
+    def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
+        """add note on off pair to track"""
         self.midi_track.append(
             Message(
                 MidoMessageType.NOTE_ON,
                 note=event.note,
                 velocity=event.velocity,
                 time=0,
+            )
+        )
+        self.midi_track.append(
+            Message(
+                MidoMessageType.NOTE_OFF,
+                note=event.note,
+                velocity=0,
+                time=duration_ticks,
             )
         )
 
@@ -447,11 +484,9 @@ class PatternSequenceEditor(PatternUI):
         """Update step highlight during playback."""
         last_step = getattr(self, "_playback_last_step_in_measure", -1)
         for row in range(self.sequencer_rows):
-            if 0 <= last_step < len(self.buttons[row]):
-                btn = self.buttons[row][last_step]
+            for btn in self._get_step_buttons(row, last_step) if 0 <= last_step else []:
                 set_sequencer_style(btn=btn, is_current=False, checked=btn.isChecked())
-            if step_in_measure < len(self.buttons[row]):
-                btn = self.buttons[row][step_in_measure]
+            for btn in self._get_step_buttons(row, step_in_measure):
                 set_sequencer_style(btn=btn, is_current=True, checked=btn.isChecked())
         self._playback_last_step_in_measure = step_in_measure
 
@@ -505,17 +540,7 @@ class PatternSequenceEditor(PatternUI):
                         new_button.row = row
                         new_button.column = step
                         update_button_state(new_button, previous_button.isChecked())
-                        new_button.note = previous_button.note
-                        # Copy duration if available
-                        if hasattr(previous_button, NoteButtonAttrs.NOTE_DURATION):
-                            new_button.note_duration = previous_button.note_duration
-                        else:
-                            new_button.note_duration = None
-                        # Copy velocity if available
-                        if hasattr(previous_button, NoteButtonAttrs.NOTE_VELOCITY):
-                            new_button.note_velocity = previous_button.note_velocity
-                        else:
-                            new_button.note_velocity = None
+                        copy_note_attrs(new_button=new_button, previous_button=previous_button)
             self.measure_widgets.append(measure)
         else:
             measure = self.add_and_reset_new_measure()
@@ -891,17 +916,7 @@ class PatternSequenceEditor(PatternUI):
 
                     # Sync checked state and note
                     update_button_state(sequencer_button, measure_button.isChecked())
-                    sequencer_button.note = measure_button.note
-                    # Copy duration if available
-                    if hasattr(measure_button, NoteButtonAttrs.NOTE_DURATION):
-                        sequencer_button.note_duration = measure_button.note_duration
-                    else:
-                        sequencer_button.note_duration = None
-                    # Copy velocity if available
-                    if hasattr(measure_button, NoteButtonAttrs.NOTE_VELOCITY):
-                        sequencer_button.note_velocity = measure_button.note_velocity
-                    else:
-                        sequencer_button.note_velocity = None
+                    copy_note_attrs(new_button=sequencer_button, previous_button=measure_button)
                     sync_button_note_spec(sequencer_button)
 
                     self._update_tooltip(row, sequencer_button)
@@ -1025,13 +1040,11 @@ class PatternSequenceEditor(PatternUI):
 
     def _store_note_in_measures(self, button: SequencerButton, checked: bool):
         """sore notes in measures"""
-        measure = self.measure_widgets[self.current_measure_index]
         step_in_bar = button.column  # button.column is 0-15 for sequencer buttons
+        step_buttons = self._get_step_buttons(button.row, step_in_bar)
 
-        if button.row < len(measure.buttons) and step_in_bar < len(
-            measure.buttons[button.row]
-        ):
-            measure_button = measure.buttons[button.row][step_in_bar]
+        if step_buttons:
+            measure_button = step_buttons[0]
             update_button_state(measure_button, checked)
             if checked:
                 measure_button.note = button.note
@@ -1156,6 +1169,20 @@ class PatternSequenceEditor(PatternUI):
         # Sync sequencer digital after updating button states
         if self.current_measure_index < len(self.measure_widgets):
             self._sync_sequencer_with_measure(self.current_measure_index)
+
+    def _get_step_buttons(self, row: int, step: int):
+        """get step buttons"""
+        buttons = []
+
+        if self.current_measure_index < len(self.measure_widgets):
+            measure = self.measure_widgets[self.current_measure_index]
+            if step < len(measure.buttons[row]):
+                buttons.append(measure.buttons[row][step])
+
+        if step < len(self.buttons[row]):
+            buttons.append(self.buttons[row][step])
+
+        return buttons
 
     def _get_duration_ms(self) -> float:
         """Get the default duration in milliseconds based on the duration combo selection"""
@@ -2251,19 +2278,14 @@ class PatternSequenceEditor(PatternUI):
             self._sync_sequencer_on_step_change(bar_index, last_bar)
             # Only update step highlight when the current step changes (at most 2 columns)
             if step_in_bar != last_step:
-                n_cols = len(self.buttons[0]) if self.buttons else 0
                 for row in range(self.sequencer_rows):
-                    if 0 <= last_step < len(self.buttons[row]):
-                        btn = self.buttons[row][last_step]
-                        is_current = False
+                    for btn in self._get_step_buttons(row, last_step) if 0 <= last_step else []:
                         set_sequencer_style(
-                            btn=btn, is_current=is_current, checked=btn.isChecked()
+                            btn=btn, is_current=False, checked=btn.isChecked()
                         )
-                    if step_in_bar < len(self.buttons[row]):
-                        btn = self.buttons[row][step_in_bar]
-                        is_current = True
+                    for btn in self._get_step_buttons(row, step_in_bar):
                         set_sequencer_style(
-                            btn=btn, is_current=is_current, checked=btn.isChecked()
+                            btn=btn, is_current=True, checked=btn.isChecked()
                         )
                 self._playback_last_step_in_bar = step_in_bar
 
@@ -2446,27 +2468,13 @@ class PatternSequenceEditor(PatternUI):
                     # Calculate step within current bar (0 to beats_per_bar-1)
                     step_in_bar = self.current_step % self.measure_beats
 
-                    # Store note in the current bar's measure
-                    if self.current_measure_index < len(self.measure_widgets):
-                        measure = self.measure_widgets[self.current_measure_index]
-                        if step_in_bar < len(measure.buttons[row]):
-                            measure_button = measure.buttons[row][step_in_bar]
-                            update_button_state(measure_button, True)
-                            measure_button.note = note
-                            # Store velocity from MIDI input
-                            measure_button.note_velocity = message.velocity
-                            # Set default duration for MIDI-learned notes
-                            measure_button.note_duration = self._get_duration_ms()
-                            sync_button_note_spec(measure_button)
-
-                            # Also update sequencer digital
-                            if step_in_bar < len(self.buttons[row]):
-                                seq_btn = self.buttons[row][step_in_bar]
-                                update_button_state(seq_btn, True)
-                                seq_btn.note = note
-                                seq_btn.note_velocity = message.velocity
-                                seq_btn.note_duration = self._get_duration_ms()
-                                sync_button_note_spec(seq_btn)
+                    # Store note in the current bar's measure and sequencer
+                    for btn in self._get_step_buttons(row, step_in_bar):
+                        update_button_state(btn, True)
+                        btn.note = note
+                        btn.note_velocity = message.velocity
+                        btn.note_duration = self._get_duration_ms()
+                        sync_button_note_spec(btn)
 
                     # Record the note in the learned pattern (for compatibility)
                     self.learned_pattern[row][step_in_bar] = note
