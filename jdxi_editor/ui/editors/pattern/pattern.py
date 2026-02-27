@@ -132,11 +132,6 @@ CHANNEL_TO_ROW = {
     MidiChannel.DRUM_KIT: 3,
 }
 
-from __future__ import annotations
-from dataclasses import dataclass
-from typing import Optional
-from some_midi_module import MidoMessageType  # adjust import as appropriate
-
 
 @dataclass(frozen=True)
 class NoteSpec:
