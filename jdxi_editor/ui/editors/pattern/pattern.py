@@ -19,6 +19,7 @@ Features:
 import datetime
 import random
 from typing import Any, Callable, Optional
+from dataclasses import dataclass
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
@@ -131,6 +132,14 @@ CHANNEL_TO_ROW = {
     MidiChannel.DRUM_KIT: 3,
 }
 
+@dataclass
+class NoteSpec:
+    """Notespec for Midi Notes"""
+    message_type: str = MidoMessageType.NOTE_OFF
+    note: int | None = None 
+    velocity: int | None = None
+    time: int = 0 # For note off as default 
+    
 
 def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
     """ms to ticks"""
