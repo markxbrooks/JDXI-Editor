@@ -294,6 +294,11 @@ class PatternSequenceEditor(PatternUI):
         self._add_note_on_off_pair(duration_ticks, event)
 
     def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
+        # Build messages via the spec to avoid direct mutation and keep logic centralized
+        on_msg, off_msg = event.note_spec.to_on_off_pair(duration_ticks)
+        self.midi_track.extend([on_msg, off_msg])
+
+    def _add_note_on_off_pair_old(self, duration_ticks: int, event: PatternLearnerEvent):
         """add note on off pair to track"""
         self.midi_track.append(
             Message(
