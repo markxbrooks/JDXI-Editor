@@ -157,6 +157,15 @@ class NoteSpec:
             # Common convention: NOTE_OFF may omit velocity
             object.__setattr__(self, "velocity", None)
 
+    def to_on_off_pair(self, duration_ticks: int) -> tuple:
+        on = Message(
+            MidoMessageType.NOTE_ON, note=self.note, velocity=self.velocity, time=0
+        )
+        off = Message(
+            MidoMessageType.NOTE_OFF, note=self.note, velocity=None, time=duration_ticks
+        )
+        return on, off
+
 
 def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
     """ms to ticks"""
