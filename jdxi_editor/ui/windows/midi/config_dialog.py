@@ -101,7 +101,7 @@ class MIDIConfigDialog(QDialog):
     def __init__(self, midi_helper=MidiIOHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
-        self.setMinimumSize(300, 300)
+        self.setMinimumSize(JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT)
         self.setStyleSheet(JDXi.UI.Style.EDITOR)
         self.midi_helper = midi_helper
         self.input_ports = midi_helper.get_input_ports()

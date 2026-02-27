@@ -352,6 +352,12 @@ class OctaveButtonDimensions(Dimensions):
     HEIGHT: int = 100
 
 
+class MidiConfig(Dimensions):
+    """Midi Config Dimensions"""
+    WIDTH = 300
+    HEIGHT = 300
+
+
 class JDXiUIDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
@@ -365,6 +371,9 @@ class JDXiUIDimensions(Dimensions):
 
     # --- Splash screen
     SPLASH: SplashScreenDimensions = SplashScreenDimensions
+
+    # Config
+    Config: MidiConfig = MidiConfig
 
     # --- Editor Windows
     INSTRUMENT: InstrumentDimensions = InstrumentDimensions
