@@ -270,6 +270,7 @@ class SequencerDimensions(Dimensions):
     STEPS: int = 16
     STEP_SIZE: int = 18
     SQUARE_SIZE: int = 25
+    LARGE_SQUARE_SIZE: int = 40
     # Sequencer above keyboard
     Y_WINDOWS = (
         InstrumentDimensions.HEIGHT - KeyboardDimensions.HEIGHT + 20

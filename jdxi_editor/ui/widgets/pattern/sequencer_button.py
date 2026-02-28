@@ -10,6 +10,7 @@ from typing import Optional
 from PySide6.QtWidgets import QPushButton, QWidget
 
 from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
+from jdxi_editor.ui.style import JDXiUIDimensions
 
 
 class SequencerButton(QPushButton):
@@ -26,7 +27,10 @@ class SequencerButton(QPushButton):
         self.column: int = column
         self.note_spec: NoteButtonSpec = NoteButtonSpec()
         self.setCheckable(True)
-        self.setFixedSize(40, 40)
+        self.setFixedSize(
+            JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE,
+            JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE,
+        )
 
     @property
     def note(self) -> Optional[int]:

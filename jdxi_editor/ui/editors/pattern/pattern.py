@@ -1651,7 +1651,9 @@ class PatternSequenceEditor(PatternUI):
         slot: Optional[Callable[[], None]] = None,
     ) -> QPushButton:
         """Create a round button + label row from a ButtonSpec and add to layout."""
-        label_row, btn = create_jdxi_button_with_label_from_spec(spec, checkable=False)
+        label_row, btn = create_jdxi_button_with_label_from_spec(
+            spec=spec, checkable=False
+        )
         setattr(self, f"{name}_button", btn)
         layout.addWidget(btn)
         layout.addWidget(label_row)
@@ -1671,20 +1673,36 @@ class PatternSequenceEditor(PatternUI):
         append_to: Optional[list] = None,
     ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
-        btn = create_jdxi_button("")
-        btn.setCheckable(checkable)
-        if slot is not None:
-            btn.clicked.connect(slot)
-        if name:
-            setattr(self, f"{name}_button", btn)
-        if append_to is not None:
-            append_to.append(btn)
-        layout.addWidget(btn)
-        pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        btn_spec = ButtonSpec(
+            icon=icon_enum,
+            label="",
+            slot=slot,
+            layout=layout,
+            append_to=append_to,
+            name=name,
+            checkable=checkable,
         )
-        label_row, _ = create_jdxi_row(text, icon_pixmap=pixmap)
-        layout.addWidget(label_row)
+        btn = self._create_round_action_button_from_spec(btn_spec, icon_enum, text)
+        return btn
+
+    def _create_round_action_button_from_spec(
+        self, btn_spec: ButtonSpec, icon_enum, text: str
+    ) -> QPushButton:
+        """create round button from spec"""
+        btn = create_jdxi_button(btn_spec.label)
+        btn.setCheckable(btn_spec.checkable)
+        if btn_spec.slot is not None:
+            btn.clicked.connect(btn_spec.slot)
+        if btn_spec.name:
+            setattr(self, f"{btn_spec.name}_button", btn)
+        if btn_spec.append_to is not None:
+            btn_spec.append_to.append(btn)
+        btn_spec.layout.addWidget(btn)
+        pixmap = JDXi.UI.Icon.get_icon_pixmap(
+            icon_name=icon_enum, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
+        label_row, _ = create_jdxi_row(label=text, icon_pixmap=pixmap)
+        btn_spec.layout.addWidget(label_row)
         return btn
 
     def _create_transport_control(

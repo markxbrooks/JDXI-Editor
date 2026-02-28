@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider,
     QSpinBox,
+    QWidget,
 )
 
 from jdxi_editor.ui.common import JDXi, QWidget
@@ -48,7 +49,8 @@ def get_icon_pixmap(icon_name) -> QPixmap | None:
 
 def create_jdxi_button_with_label_from_spec(
     spec: ButtonSpec, checkable: bool = True
-) -> tuple[QPushButton]:
+) -> tuple[QWidget, QPushButton]:
+    """create jdxi button from spec"""
     button = create_jdxi_button_from_spec(spec, checkable=checkable)
     classify_tracks_icon_pixmap = get_icon_pixmap(icon_name=spec.icon)
     row, _ = create_jdxi_row(spec.label, icon_pixmap=classify_tracks_icon_pixmap)
@@ -59,10 +61,7 @@ def create_jdxi_button_from_spec(
     spec: ButtonSpec, button_group: QButtonGroup = None, checkable: bool = True
 ) -> QPushButton:
     """Create a round JD-Xi styled button with optional tooltip."""
-    button = QPushButton()
-    button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
-    button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
-    button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
+    button = create_jdxi_button()
     tooltip = getattr(spec, "tooltip", "") or ""
     if not isinstance(tooltip, str):
         tooltip = ""
@@ -73,6 +72,23 @@ def create_jdxi_button_from_spec(
     if getattr(spec, "grouped", False) and button_group is not None:
         button_group.addButton(button)
     return button
+
+
+def _create_jdxi_button() -> QPushButton:
+    button = QPushButton()
+    button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+    button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
+    button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
+    return button
+
+
+def create_small_sequencer_square_for_channel(ch: int) -> QPushButton:
+    """create small sequencer square"""
+    btn = QPushButton(f"{ch}")
+    btn.setFixedWidth(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
+    btn.setFixedHeight(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
+    btn.setStyleSheet(JDXiUIStyle.BUTTON_SEQUENCER_SMALL)
+    return btn
 
 
 def create_jdxi_button(tooltip: str = "") -> QPushButton:
@@ -87,7 +103,7 @@ def create_jdxi_button(tooltip: str = "") -> QPushButton:
 
 def create_jdxi_row(
     label: str = "", icon_pixmap: QPixmap | None = None
-) -> tuple[QLabel]:
+) -> tuple[QWidget, QLabel]:
     """Create Row"""
     label_row = QWidget()
     label_layout = QHBoxLayout(label_row)

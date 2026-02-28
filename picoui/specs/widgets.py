@@ -3,9 +3,10 @@ Button Spec
 """
 
 from dataclasses import dataclass, field
-from typing import Callable, List
+from enum import Enum
+from typing import Callable, List, Any
 
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QFileDialog
 
 
 @dataclass
@@ -30,6 +31,9 @@ class ButtonSpec:
     slot: Callable = None
     grouped: bool = False
     layout: QHBoxLayout | QVBoxLayout | None = None
+    append_to: list | None = None
+    name: str | None = None
+    checkable: bool = True
 
 
 @dataclass
@@ -60,14 +64,21 @@ class ComboBoxSpec(LeafSpec):
     slot: Callable | None = None
 
 
+class FileSelectionMode(Enum):
+    """File selection mode"""
+    SAVE = "save"
+    LOAD = "load"
+
+
 @dataclass
 class FileSelectionSpec(LeafSpec):
     """class File Selection Spec"""
-    mode: str = "save"
+    mode: str | Any = FileSelectionMode.SAVE
     file_type: str = "datasets"
     default_name: str = "datasets"
     caption: str = "Select datasets folder"
     filter: str = "All files (*.*)"
+    dir: str = ""
 
 
 @dataclass
@@ -116,3 +127,27 @@ class SpinBoxSpec:
     max_val: int = 127
     value: int = None
     tooltip: str = ""
+
+
+_DIALOG_FUNCS = {
+    FileSelectionMode.SAVE: QFileDialog.getSaveFileName,
+    FileSelectionMode.LOAD: QFileDialog.getOpenFileName,
+}
+
+
+def get_file_save_from_spec(spec: FileSelectionSpec, parent: QWidget) -> str:
+    """Get file name using spec."""
+
+    func = _DIALOG_FUNCS.get(spec.mode)
+    if func is None:
+        log.message(f"mode {spec.mode} unsupported")
+        return ""
+
+    file_name, _ = func(
+        parent,
+        caption=spec.caption,
+        dir=spec.dir,
+        filter=spec.filter,
+    )
+
+    return file_name

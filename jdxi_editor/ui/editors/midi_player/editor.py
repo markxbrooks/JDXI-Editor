@@ -7,7 +7,6 @@ import time
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from turtledemo.penrose import start
 from typing import Any, Optional
 
 import mido
@@ -21,7 +20,6 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QComboBox,
-    QFileDialog,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
@@ -54,6 +52,7 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
     create_jdxi_button_with_label_from_spec,
     create_jdxi_row,
+    create_small_sequencer_square_for_channel,
 )
 from jdxi_editor.ui.editors.midi_player.midi_analyzer import MidiAnalyzer
 from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
@@ -68,7 +67,7 @@ from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.source import PresetSource
-from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
+from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
@@ -83,7 +82,14 @@ from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
-from picoui.specs.widgets import ButtonSpec, CheckBoxSpec, MessageBoxSpec
+from picoui.specs.widgets import (
+    ButtonSpec,
+    CheckBoxSpec,
+    FileSelectionMode,
+    FileSelectionSpec,
+    MessageBoxSpec,
+    get_file_save_from_spec,
+)
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -966,14 +972,10 @@ class MidiFilePlayer(SynthEditor):
         # --- Create mute buttons for channels 1-16
         self.mute_channel_buttons = {}
         for ch in range(1, 17):
-            btn = QPushButton(f"{ch}")
-            btn.setCheckable(True)
-            btn.setFixedWidth(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
-            btn.setFixedHeight(JDXiUIDimensions.SEQUENCER.SQUARE_SIZE)
+            btn = create_small_sequencer_square_for_channel(ch)
             btn.toggled.connect(
                 lambda checked, c=ch: self._toggle_channel_mute(c, checked, btn)
             )
-            btn.setStyleSheet(JDXiUIStyle.BUTTON_SEQUENCER_SMALL)
             btn.setCheckable(True)
             btn.setChecked(False)
             btn.setStyleSheet(
@@ -1402,12 +1404,12 @@ class MidiFilePlayer(SynthEditor):
 
     def usb_select_recording_file(self):
         """Open a file picker dialog to select output .wav file."""
-        file_name, _ = QFileDialog.getSaveFileName(
-            self,
-            "Save Recording As",
-            "",  # starting directory
-            "WAV files (*.wav)",  # filter
+        file_name_spec = FileSelectionSpec(
+            mode=FileSelectionMode.SAVE,
+            filter="WAV files (*.wav)",
+            caption="Save Recording As",
         )
+        file_name = get_file_save_from_spec(file_name_spec, parent=self)
         if file_name:
             self.ui.usb_file_select.setText(file_name)
             self.ui.usb_file_output_name = file_name
@@ -1421,10 +1423,10 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         Save the current MIDI file to disk.
         """
-
-        file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save MIDI File", "", "MIDI Files (*.mid)"
+        save_file_spec = FileSelectionSpec(
+            caption="Save MIDI File", dir="", filter="MIDI Files (*.mid)"
         )
+        file_path = get_file_save_from_spec(save_file_spec, parent=self)
         if file_path:
             self.ui.midi_track_viewer.midi_file.save(file_path)
             file_name = f"Saved: {Path(file_path).name}"
@@ -1439,9 +1441,13 @@ class MidiFilePlayer(SynthEditor):
         """
         Load a MIDI file and initialize parameters
         """
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open MIDI File", "", "MIDI Files (*.mid)"
+        load_file_spec = FileSelectionSpec(
+            mode=FileSelectionMode.LOAD,
+            caption="Open MIDI File",
+            dir="",
+            filter="MIDI Files (*.mid)",
         )
+        file_path = get_file_save_from_spec(load_file_spec, parent=self)
         if not file_path:
             return
 
