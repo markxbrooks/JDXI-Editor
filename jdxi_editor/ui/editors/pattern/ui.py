@@ -64,9 +64,9 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
+from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
 from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import (
@@ -121,18 +121,8 @@ class PatternUI(SynthEditor):
         self.midi_file_editor: Optional[Any] = (
             midi_file_editor  # Reference to MidiFileEditor
         )
-        self.buttons = (
-            []
-        )  # populated by parent PatternUI._setup_ui() - do not overwrite
-        self.button_layouts: list[QHBoxLayout] = (
-            []
-        )  # Store references to button layouts for each row
         self.measure_beats: int = 16  # Number of beats per bar (16 or 12)
-        self.measure_widgets: list[PatternMeasureWidget] = (
-            []
-        )  # Each measure stores its own notes
-        self.measures: list[PatternMeasure] = []  # Each measure stores its own notes
-        self.current_measure_index = 0  # Currently selected bar (0-indexed)
+        self.pattern_widget: Optional[PatternWidget] = None  # Set in _setup_ui
         self.timer: Optional[QTimer] = None
         self.current_step: int = 0  # Currently selected step (0-indexed)
         self.total_steps: int = (
@@ -207,7 +197,6 @@ class PatternUI(SynthEditor):
             "Analog Synth",
             "Drums",
         ]
-        self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
 
         # Define synth options (from built-in or SoundFont via MIDI config)
@@ -261,29 +250,45 @@ class PatternUI(SynthEditor):
         self._container_layout.addWidget(content_widget)
 
     def _build_splitter_section(self):
-        """Build splitter section for the list of measures/measures"""
-        splitter = QSplitter(Qt.Orientation.Horizontal)
+        """Build splitter section with PatternWidget (measures list + sequencer)."""
+        self.pattern_widget = PatternWidget(
+            config=PatternConfig(
+                rows=4,
+                steps_per_measure=self.measure_beats,
+                initial_measures=1,
+            )
+        )
+        self.pattern_widget.set_header_widget(self._create_headers_widget())
+        self.layout.addWidget(self.pattern_widget)
 
-        splitter.addWidget(self._create_measures_group())
-        splitter.addWidget(self._create_sequencer_widget())
-
-        splitter.setStretchFactor(0, 0)
-        splitter.setStretchFactor(1, 1)
-        splitter.setSizePolicy(*_EXPANDING)
-
-        self.layout.addWidget(splitter)
-
-    def _create_sequencer_widget(self) -> QWidget:
+    def _create_headers_widget(self) -> QWidget:
+        """Create header rows (icon, label, combo, mute) for PatternWidget."""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-
-        widget.setSizePolicy(*_EXPANDING)
-
         for row_idx, label in enumerate(self.row_labels):
-            layout.addLayout(self._create_sequencer_row(row_idx, label))
-
-        layout.addStretch()
+            layout.addLayout(self._create_header_row(row_idx, label))
         return widget
+
+    def _create_header_row(self, row_idx: int, label_text: str) -> QHBoxLayout:
+        """Create one row: [icon, label, combo] [mute] (no step buttons)."""
+        row_layout = QHBoxLayout()
+        row_layout.addLayout(self._create_row_header(row_idx, label_text))
+        mute_btn_layout = QHBoxLayout()
+        mute_btn_layout.addStretch()
+        mute_btn = self._add_round_action_button(
+            JDXi.UI.Icon.MUTE,
+            self.tr("Mute"),
+            None,
+            mute_btn_layout,
+            checkable=True,
+            append_to=self.mute_buttons,
+        )
+        mute_btn.toggled.connect(
+            lambda checked, row=row_idx: self._toggle_mute(row, checked)
+        )
+        mute_btn_layout.addStretch()
+        row_layout.addLayout(mute_btn_layout)
+        return row_layout
 
     def _create_row_header(self, row_idx: int, label_text: str) -> QHBoxLayout:
         """create row header"""
@@ -343,46 +348,6 @@ class PatternUI(SynthEditor):
             return self.drum_selector
         return None
 
-    def _create_row_buttons(self, row_idx: int) -> QHBoxLayout:
-        """Create the mute button + step buttons layout for one sequencer row."""
-        row_buttons_layout = QHBoxLayout()
-
-        # Mute button (round button + icon label) for this row
-        mute_btn_layout = QHBoxLayout()
-        mute_btn_layout.addStretch()
-        mute_btn = self._add_round_action_button(
-            JDXi.UI.Icon.MUTE,
-            self.tr("Mute"),
-            None,
-            mute_btn_layout,
-            checkable=True,
-            append_to=self.mute_buttons,
-        )
-        mute_btn.toggled.connect(
-            lambda checked, row=row_idx: self._toggle_mute(row, checked)
-        )
-        mute_btn_layout.addStretch()
-        row_buttons_layout.addLayout(mute_btn_layout)
-
-        # Step buttons for this row
-        step_buttons_layout = self.ui_generate_button_row(row_idx, visible=True)
-        self.button_layouts.append(step_buttons_layout)
-        row_buttons_layout.addLayout(step_buttons_layout)
-
-        return row_buttons_layout
-
-    def _create_sequencer_row(self, row_idx: int, label_text: str) -> QVBoxLayout:
-        """create sequencer row deprecated"""
-        row_layout = QVBoxLayout()
-
-        header = self._create_row_header(row_idx, label_text)
-        buttons = self._create_row_buttons(row_idx)
-
-        row_layout.addLayout(header)
-        row_layout.addLayout(buttons)
-
-        return row_layout
-
     def _build_top_controls(self):
         self.content_widget = QWidget()
         self.layout = QVBoxLayout(self.content_widget)
@@ -418,19 +383,42 @@ class PatternUI(SynthEditor):
 
         self.main_layout.addWidget(self.base_widget)
 
-    def _create_measures_group(self) -> QGroupBox:
-        """Measures list widget"""
-        measures_group = QGroupBox(f"{self.measure_name}")
-        measures_layout = QVBoxLayout()
-        self.measures_list = QListWidget()
-        self.measures_list.setMaximumWidth(150)
-        self.measures_list.itemClicked.connect(self._on_measure_selected)
-        measures_layout.addWidget(self.measures_list)
-        measures_group.setLayout(measures_layout)
-        return measures_group
-
     def _on_measure_selected(self, item: QListWidgetItem):
         raise NotImplementedError("Should be implemented in subclass")
+
+    @property
+    def buttons(self):
+        """Delegate to current measure's buttons for playback/display."""
+        if self.pattern_widget:
+            w = self.pattern_widget.get_current_measure_widget()
+            return w.buttons if w else [[] for _ in range(4)]
+        return [[] for _ in range(4)]
+
+    @property
+    def measure_widgets(self):
+        """Delegate to pattern_widget measure widgets."""
+        if self.pattern_widget:
+            return self.pattern_widget.get_measure_widgets()
+        return []
+
+    @property
+    def measures_list(self):
+        """Delegate to pattern_widget measures list."""
+        if self.pattern_widget:
+            return self.pattern_widget.measures_list
+        return None
+
+    @property
+    def current_measure_index(self):
+        """Delegate to pattern_widget current measure index."""
+        if self.pattern_widget:
+            return self.pattern_widget.current_measure_index
+        return 0
+
+    @current_measure_index.setter
+    def current_measure_index(self, value: int):
+        if self.pattern_widget:
+            self.pattern_widget.current_measure_index = value
 
     def _create_duration_group(self) -> QGroupBox:
         """Duration control area"""
@@ -644,20 +632,6 @@ class PatternUI(SynthEditor):
 
         file_group.setLayout(file_layout)
         return file_group
-
-    def ui_generate_button_row(self, row_index: int, visible: bool = False):
-        """Generate sequencer button row using SequencerButton."""
-        button_row_layout = QHBoxLayout()
-        for i in range(self.measure_beats):
-            button = SequencerButton(row=row_index, column=i)
-            button.setStyleSheet(JDXi.UI.Style.generate_sequencer_button_style(False))
-            button.clicked.connect(
-                lambda checked, btn=button: self._on_button_clicked(btn, checked)
-            )
-            self.buttons[row_index].append(button)
-            button.setVisible(visible)  # Initially hide all drum buttons
-            button_row_layout.addWidget(button)
-        return button_row_layout
 
     def _log_and_return(self, ok: bool, msg: str) -> bool:
         """log and return"""

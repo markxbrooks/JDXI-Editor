@@ -22,16 +22,14 @@ class PatternMeasureWidget(QWidget):
     def _setup_ui(self) -> None:
         """_setup ui"""
         layout = QVBoxLayout()
-        button_layout = QHBoxLayout()
 
-        # Create 16 buttons for each row (4 rows)
+        # Create 4 rows, each with 16 buttons (stacked vertically)
         for row in range(4):
             row_layout = QHBoxLayout()
             for i in range(16):
                 button = SequencerButton(row=row, column=i)
                 self.buttons[row].append(button)
                 row_layout.addWidget(button)
-            button_layout.addLayout(row_layout)
+            layout.addLayout(row_layout)
 
-        layout.addLayout(button_layout)
         self.setLayout(layout)
