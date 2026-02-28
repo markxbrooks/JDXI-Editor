@@ -11,6 +11,7 @@ from typing import Callable, Dict, List, Optional
 from decologr import Decologr as log
 from mido import Message
 from picomidi.message.type import MidoMessageType
+from picomidi.messages.note import MidiNote
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
 
@@ -73,7 +74,7 @@ class PatternLearnerEvent:
         self.note = note
         self.velocity = velocity
         self.duration_ms = duration_ms
-        self.midi_note = MidiNote(note=note, velocity=velocity, duration_ms=duration_ms)
+        self.midi_note = MidiNote(note=note, velocity=velocity, duration=duration_ms)
 
 
 class PatternLearner:
