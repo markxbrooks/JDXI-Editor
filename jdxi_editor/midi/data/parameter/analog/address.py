@@ -42,7 +42,7 @@ from typing import Optional, Tuple
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
-from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
+from jdxi_editor.midi.parameter.spec import RANGE_BIPOLAR_63, ParameterSpec
 
 
 class AnalogParam(AddressParameter):

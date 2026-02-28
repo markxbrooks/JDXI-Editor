@@ -61,17 +61,13 @@ from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import (
-    QFormLayout,
-    QHBoxLayout
-)
+from PySide6.QtWidgets import QFormLayout, QHBoxLayout
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
-    JDXiSysExOffsetSystemUMB
+    JDXiSysExOffsetSystemUMB,
 )
 from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
 from jdxi_editor.midi.data.effects.param.types import EFFECT_PARAM_TYPES
@@ -81,18 +77,19 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,
     Effect1Param,
     Effect2Param,
-    ReverbParam
+    ReverbParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.sysex.sections import SysExSection
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.effects.data import EffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_inner_layout_and_widgets,
-    transfer_layout_items
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.ui.widgets.group import WidgetGroups
@@ -107,8 +104,8 @@ class EffectsCommonEditor(BasicEditor):
         self,
         midi_helper: MidiIOHelper,
         preset_helper: JDXiPresetHelper = None,
-        parent=None
-):
+        parent=None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent)
 
         self.tab_widget = None
@@ -118,10 +115,9 @@ class EffectsCommonEditor(BasicEditor):
             controls=self.controls,
             param_registry=EffectParamRegistry(EFFECT_PARAM_TYPES),
             type_handler=EffectTypeHandler(
-                self.update_efx1_labels,
-                self.update_efx2_labels
-)
-)
+                self.update_efx1_labels, self.update_efx2_labels
+            ),
+        )
         self.EFX1_PARAMETERS = [
             Effect1Param.EFX1_PARAM_1,
             Effect1Param.EFX1_PARAM_2,
@@ -283,8 +279,8 @@ class EffectsCommonEditor(BasicEditor):
             base_widget=self.base_widget,
             title="Effects",
             image_folder="effects",
-            default_image="effects.png"
-)
+            default_image="effects.png",
+        )
 
         # Get tab widget from helper and add tabs
         self.tabs = self.editor_helper.get_tab_widget()
@@ -313,8 +309,8 @@ class EffectsCommonEditor(BasicEditor):
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
             JDXiSysExOffsetSystemUMB.COMMON,
             JDXiSysExOffsetProgramLMB.COMMON,
-            Midi.value.ZERO
-)
+            Midi.value.ZERO,
+        )
         self.sysex_composer = JDXiSysExComposer()
         for param in self.EFX1_PARAMETERS:
             slider = self.controls.get(param)
@@ -345,8 +341,8 @@ class EffectsCommonEditor(BasicEditor):
         else:
             log.warning(
                 "🎛️ : midi_helper is None, cannot connect to signals",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
 
         # Note: data_request() is called in showEvent() when editor is displayed
 
@@ -362,8 +358,8 @@ class EffectsCommonEditor(BasicEditor):
         if self.midi_helper:
             log.message(
                 "🎛️ shown - requesting current settings from instrument",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
         self.data_request()
 
     def update_flanger_rate_note_controls(self) -> None:
@@ -380,8 +376,8 @@ class EffectsCommonEditor(BasicEditor):
             if not all([rate_note_switch, rate_slider, note_slider]):
                 log.warning(
                     "One or more Flanger rate/note controls are missing.",
-                    scope=self.__class__.__name__
-)
+                    scope=self.__class__.__name__,
+                )
                 return
 
             rate_note_value = rate_note_switch.value()
@@ -392,13 +388,13 @@ class EffectsCommonEditor(BasicEditor):
 
             log.message(
                 message=f"Flanger control updated: Note mode = {is_note_mode}",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
         except Exception as ex:
             log.error(
                 message=f"Failed to update flanger rate/note controls: {ex}",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
 
     def update_phaser_rate_note_controls(self) -> None:
         """Update Flanger rate/note controls based on rate note switch."""
@@ -414,8 +410,8 @@ class EffectsCommonEditor(BasicEditor):
             if not all([rate_note_switch, rate_slider, note_slider]):
                 log.warning(
                     "One or more Phaser rate/note controls are missing.",
-                    scope=self.__class__.__name__
-)
+                    scope=self.__class__.__name__,
+                )
                 return
 
             rate_note_value = rate_note_switch.value()
@@ -426,13 +422,13 @@ class EffectsCommonEditor(BasicEditor):
 
             log.message(
                 scope=self.__class__.__name__,
-                message=f"Flanger control updated: Note mode = {is_note_mode}"
-)
+                message=f"Flanger control updated: Note mode = {is_note_mode}",
+            )
         except Exception as ex:
             log.error(
                 scope=self.__class__.__name__,
-                message=f"Failed to update flanger rate/note controls: {ex}"
-)
+                message=f"Failed to update flanger rate/note controls: {ex}",
+            )
 
     def update_efx1_labels(self, effect_type: int):
         """
@@ -443,8 +439,8 @@ class EffectsCommonEditor(BasicEditor):
         """
         log.message(
             scope=self.__class__.__name__,
-            message=f"Updating EFX1 labels for effect type {effect_type}"
-)
+            message=f"Updating EFX1 labels for effect type {effect_type}",
+        )
         try:
             label_map = self.efx1_param_labels.get(effect_type, {})
             for param, label in label_map.items():
@@ -454,13 +450,13 @@ class EffectsCommonEditor(BasicEditor):
                     slider.setLabel(label)
                     log.message(
                         scope=self.__class__.__name__,
-                        message=f"Updated slider {param.name} with label '{label}'"
-)
+                        message=f"Updated slider {param.name} with label '{label}'",
+                    )
                 else:
                     log.warning(
                         scope=self.__class__.__name__,
-                        message=f"No slider found for param {param}"
-)
+                        message=f"No slider found for param {param}",
+                    )
 
             # Build a complete set of all known EFX1 parameters
             all_efx1_params = set()
@@ -477,8 +473,8 @@ class EffectsCommonEditor(BasicEditor):
         except Exception as ex:
             log.error(
                 scope=self.__class__.__name__,
-                message=f"Error updating EFX1 labels: {ex}"
-)
+                message=f"Error updating EFX1 labels: {ex}",
+            )
 
     def update_efx2_labels(self, effect_type: int):
         """
@@ -488,15 +484,15 @@ class EffectsCommonEditor(BasicEditor):
         """
         log.message(
             scope=self.__class__.__name__,
-            message=f"Updating EFX2 labels for effect type {effect_type}"
-)
+            message=f"Updating EFX2 labels for effect type {effect_type}",
+        )
         label_map = self.efx2_param_labels.get(effect_type)
 
         if not label_map:
             log.warning(
                 scope=self.__class__.__name__,
-                message=f"No label mapping found for effect type {effect_type}"
-)
+                message=f"No label mapping found for effect type {effect_type}",
+            )
             return
 
         for param, label in label_map.items():
@@ -525,13 +521,13 @@ class EffectsCommonEditor(BasicEditor):
                 control.setLabel(label)
                 log.message(
                     scope=self.__class__.__name__,
-                    message=f"Set label '{label}' for {param.name}"
-)
+                    message=f"Set label '{label}' for {param.name}",
+                )
             else:
                 log.warning(
                     scope=self.__class__.__name__,
-                    message=f"No slider found for parameter {param}"
-)
+                    message=f"No slider found for parameter {param}",
+                )
 
         # Optional: hide unused sliders not in the current label set
         all_efx2_params = {
@@ -554,32 +550,32 @@ class EffectsCommonEditor(BasicEditor):
                 Effect1Param.EFX1_TYPE,
                 Effect1Param.EFX1_TYPE.display_name,
                 EffectsData.efx1_types,
-                EffectsData.efx1_type_values
-),
+                EffectsData.efx1_type_values,
+            ),
         ]
         sliders = [
             SliderSpec(
                 Effect1Param.EFX1_LEVEL,
                 Effect1Param.EFX1_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 Effect1Param.EFX1_DELAY_SEND_LEVEL,
                 Effect1Param.EFX1_DELAY_SEND_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 Effect1Param.EFX1_REVERB_SEND_LEVEL,
                 Effect1Param.EFX1_REVERB_SEND_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
         ]
         switches = [
             SwitchSpec(
                 Effect1Param.EFX1_OUTPUT_ASSIGN,
                 Effect1Param.EFX1_OUTPUT_ASSIGN.display_name,
-                EffectsData.output_assignments
-),
+                EffectsData.output_assignments,
+            ),
         ]
         for param in self.EFX1_PARAMETERS:
             if "TYPE" in param.name:
@@ -615,8 +611,8 @@ class EffectsCommonEditor(BasicEditor):
         return WidgetGroups(
             switches=self._build_switches(spec.switches),
             sliders=self._build_sliders(spec.sliders),
-            combos=self._build_combo_boxes(spec.combos)
-)
+            combos=self._build_combo_boxes(spec.combos),
+        )
 
     def _create_effect1_section(self):
         """Create Effect 1 section (spec-driven)."""
@@ -649,25 +645,25 @@ class EffectsCommonEditor(BasicEditor):
                 Effect2Param.EFX2_TYPE,
                 Effect2Param.EFX2_TYPE.display_name,
                 EffectsData.efx2_types,
-                EffectsData.efx2_type_values
-),
+                EffectsData.efx2_type_values,
+            ),
         ]
         sliders = [
             SliderSpec(
                 Effect2Param.EFX2_LEVEL,
                 Effect2Param.EFX2_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 Effect2Param.EFX2_DELAY_SEND_LEVEL,
                 Effect2Param.EFX2_DELAY_SEND_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 Effect2Param.EFX2_REVERB_SEND_LEVEL,
                 Effect2Param.EFX2_REVERB_SEND_LEVEL.display_name,
-                vertical=False
-),
+                vertical=False,
+            ),
         ]
         switches = []
         for param in self.EFX2_PARAMETERS:
@@ -716,8 +712,8 @@ class EffectsCommonEditor(BasicEditor):
             SliderSpec(
                 DelayParam.DELAY_REVERB_SEND_LEVEL,
                 "Delay to Reverb Send Level",
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(DelayParam.DELAY_PARAM_1, "Delay Time (ms)", vertical=False),
             SliderSpec(DelayParam.DELAY_PARAM_2, "Delay Tap Time (ms)", vertical=False),
             SliderSpec(DelayParam.DELAY_PARAM_24, "Feedback (%)", vertical=False),
@@ -787,13 +783,13 @@ class EffectsCommonEditor(BasicEditor):
             if not self.send_midi_parameter(param, value):
                 log.message(
                     scope=self.__class__.__name__,
-                    message=f"Failed to send parameter {param.name}"
-)
+                    message=f"Failed to send parameter {param.name}",
+                )
         except Exception as ex:
             log.error(
                 scope=self.__class__.__name__,
-                message=f"Error handling parameter {param.name}: {ex}"
-)
+                message=f"Error handling parameter {param.name}: {ex}",
+            )
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
@@ -822,8 +818,8 @@ class EffectsCommonEditor(BasicEditor):
         except Exception as ex:
             log.error(
                 scope=self.__class__.__name__,
-                message=f"MIDI error setting {param.name}: {ex}"
-)
+                message=f"MIDI error setting {param.name}: {ex}",
+            )
             return False
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
@@ -847,8 +843,8 @@ class EffectsCommonEditor(BasicEditor):
 
             log.header_message(
                 scope=self.__class__.__name__,
-                message=f"Updating Effects UI from SysEx\t{temporary_area}\t{synth_tone}"
-)
+                message=f"Updating Effects UI from SysEx\t{temporary_area}\t{synth_tone}",
+            )
 
             filtered = filter_sysex_keys(sysex_data)
 
@@ -858,19 +854,19 @@ class EffectsCommonEditor(BasicEditor):
             if stats.successes:
                 log.message(
                     scope=self.__class__.__name__,
-                    message=f"ℹ️✅  Successes ({len(stats.successes)}): {stats.successes[:10]}"
-)
+                    message=f"ℹ️✅  Successes ({len(stats.successes)}): {stats.successes[:10]}",
+                )
 
             if stats.failed:
                 log.warning(
                     scope=self.__class__.__name__,
-                    message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}"
-)
+                    message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}",
+                )
 
             log.message(
                 scope=self.__class__.__name__,
-                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1f}%"
-)
+                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1f}%",
+            )
 
         except Exception as ex:
             import traceback

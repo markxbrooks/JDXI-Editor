@@ -4,31 +4,25 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QTabWidget
-)
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
-    get_preset_list_for_synth_type
+    get_preset_list_for_synth_type,
 )
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox
+    SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_items,
     create_scroll_container,
-    transfer_layout_items
+    transfer_layout_items,
 )
 
 if TYPE_CHECKING:
@@ -73,8 +67,8 @@ class InstrumentPresetWidget(QWidget):
                 JDXi.UI.Style.PADDING,
                 JDXi.UI.Style.PADDING,
                 JDXi.UI.Style.PADDING,
-                JDXi.UI.Style.PADDING
-)
+                JDXi.UI.Style.PADDING,
+            )
             self.layout.setSpacing(JDXi.UI.Style.SPACING)
             self.setLayout(self.layout)
             # Add stretch at top for vertical centering
@@ -96,8 +90,8 @@ class InstrumentPresetWidget(QWidget):
         return (
             instrument_image_group,
             self.instrument_image_label,
-            instrument_group_layout
-)
+            instrument_group_layout,
+        )
 
     def _add_round_action_button(
         self,
@@ -107,8 +101,8 @@ class InstrumentPresetWidget(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False
-) -> QPushButton:
+        checkable: bool = False,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -130,8 +124,8 @@ class InstrumentPresetWidget(QWidget):
         text: str,
         slot: Any,
         parent_layout: Any,
-        name: Optional[str] = None
-) -> QPushButton:
+        name: Optional[str] = None,
+    ) -> QPushButton:
         """Add a round button + label row centered in a QHBoxLayout (stretch on both sides)."""
         row = QHBoxLayout()
         row.addStretch()
@@ -214,16 +208,16 @@ class InstrumentPresetWidget(QWidget):
             "Edit Tone Name",
             self.parent.edit_tone_name,
             layout,
-            name="edit_tone_name"
-)
+            name="edit_tone_name",
+        )
         # --- Send Read Request to Synth (round button + label, centered)
         self._add_centered_round_button(
             JDXi.UI.Icon.REFRESH,
             "Send Read Request to Synth",
             self.parent.data_request,
             layout,
-            name="read_request"
-)
+            name="read_request",
+        )
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
 
@@ -288,8 +282,8 @@ class InstrumentPresetWidget(QWidget):
             show_search=True,
             show_category=True,
             search_placeholder="Search presets...",
-            use_analog_style=(synth_type == "Analog")
-)
+            use_analog_style=(synth_type == "Analog"),
+        )
 
         # Apply styling
         if synth_type == "Analog":
@@ -321,8 +315,8 @@ class InstrumentPresetWidget(QWidget):
             "Load",
             self._on_load_preset,
             load_row,
-            name=None
-)
+            name=None,
+        )
         load_row.addStretch()
         load_row_widget = QWidget()
         load_row_widget.setLayout(load_row)
@@ -387,8 +381,8 @@ class InstrumentPresetWidget(QWidget):
             show_label=True,
             show_search=True,
             show_category=True,
-            search_placeholder="Search presets..."
-)
+            search_placeholder="Search presets...",
+        )
         layout.addWidget(self.cheat_preset_combo_box)
 
         # Load Preset (round button + label, centered)
@@ -397,8 +391,8 @@ class InstrumentPresetWidget(QWidget):
             "Load Preset",
             self._load_cheat_preset,
             layout,
-            name="cheat_load"
-)
+            name="cheat_load",
+        )
 
         layout.addStretch()
 

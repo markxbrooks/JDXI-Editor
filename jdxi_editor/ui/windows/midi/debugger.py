@@ -52,16 +52,16 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QSplitter,
-    QTextEdit
+    QTextEdit,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import CommandID, SysExOffsetByte
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message import MidiMessage
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.sections import SysExSection
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 T = TypeVar("T", bound="EnumWithAddress")
@@ -284,8 +284,8 @@ class MIDIDebugger(QMainWindow):
                 message[
                     JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.CHECKSUM
                 ],
-                checksum
-)
+                checksum,
+            )
 
             lines = [
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
@@ -298,8 +298,8 @@ class MIDIDebugger(QMainWindow):
                     1,
                     "Manufacturer ID",
                     hex(message[JDXiSysExMessageLayout.ROLAND_ID]),
-                    "Roland"
-),
+                    "Roland",
+                ),
                 fmt_row(2, "Device ID", hex(message[JDXiSysExMessageLayout.DEVICE_ID])),
                 fmt_row(
                     "3-6",
@@ -309,8 +309,8 @@ class MIDIDebugger(QMainWindow):
                         for x in message[
                             JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
                         ]
-                    )
-),
+                    ),
+                ),
                 fmt_row(7, "Command ID", hex(command_byte), command_id),
                 fmt_row("8-9", "Synth Area", hex(address_msb), temporary_area),
                 fmt_row(10, "Synth Part", hex(address_umb), synth_tone),
@@ -320,8 +320,8 @@ class MIDIDebugger(QMainWindow):
                     13,
                     "Checksum",
                     hex(checksum),
-                    "Valid" if checksum_valid else "Invalid"
-),
+                    "Valid" if checksum_valid else "Invalid",
+                ),
                 fmt_row(14, "End of SysEx", hex(message[JDXiSysExMessageLayout.END])),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
             ]

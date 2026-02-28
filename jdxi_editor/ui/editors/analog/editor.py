@@ -55,24 +55,22 @@ if __name__ == "__main__" and __package__ is None:
 
 from typing import Optional
 
+from decologr import Decologr as log
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
-from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
-
-from decologr import Decologr as log
-
-from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.analog.amp.section import AnalogAmpSection
 from jdxi_editor.ui.editors.analog.common.section import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter.section import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo.section import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator.section import AnalogOscillatorSection
+from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
 
 
 class AnalogSynthEditor(BaseSynthEditor):

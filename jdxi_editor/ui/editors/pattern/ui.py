@@ -35,27 +35,25 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSizePolicy,
     QSpinBox,
-    QSplitter
+    QSplitter,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
     create_jdxi_button_with_label_from_spec,
-    create_jdxi_row
+    create_jdxi_row,
 )
-from jdxi_editor.ui.editors.midi_player.transport.spec import (
-    TransportSpec
-)
+from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.pattern.models import ClipboardData, SequencerStyle
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_analog_options,
     get_digital_options,
-    get_drum_options
+    get_drum_options,
 )
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -68,11 +66,7 @@ from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
 from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
-from picoui.specs.widgets import (
-    ButtonSpec,
-    ComboBoxSpec,
-    SpinBoxSpec
-)
+from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
 from picoui.widget.helper import create_combo_box
 
 
@@ -81,10 +75,7 @@ def _combo_spec(items, tooltip: str = "") -> ComboBoxSpec:
     return ComboBoxSpec(items=list(items), tooltip=tooltip, slot=None)
 
 
-_EXPANDING = (
-    QSizePolicy.Policy.Expanding,
-    QSizePolicy.Policy.Expanding
-)
+_EXPANDING = (QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
 
 class PatternUI(SynthEditor):
@@ -95,8 +86,8 @@ class PatternUI(SynthEditor):
         midi_helper: Optional[MidiIOHelper],
         preset_helper: Optional[JDXiPresetHelper],
         parent: Optional[QWidget] = None,
-        midi_file_editor: Optional[Any] = None
-):
+        midi_file_editor: Optional[Any] = None,
+    ):
         super().__init__(parent=parent)
         self.paste_button: QPushButton | None = None
         self.pause_button: QPushButton | None = None
@@ -257,10 +248,8 @@ class PatternUI(SynthEditor):
         """Build splitter section with PatternWidget (measures list + sequencer)."""
         self.pattern_widget = PatternWidget(
             config=PatternConfig(
-                rows=4,
-                steps_per_measure=self.measure_beats,
-                initial_measures=1
-)
+                rows=4, steps_per_measure=self.measure_beats, initial_measures=1
+            )
         )
         self.pattern_widget.set_header_widget(self._create_headers_widget())
         self.layout.addWidget(self.pattern_widget)
@@ -285,8 +274,8 @@ class PatternUI(SynthEditor):
             None,
             mute_btn_layout,
             checkable=True,
-            append_to=self.mute_buttons
-)
+            append_to=self.mute_buttons,
+        )
         mute_btn.toggled.connect(
             lambda checked, row=row_idx: self._toggle_mute(row, checked)
         )
@@ -324,10 +313,7 @@ class PatternUI(SynthEditor):
 
         icon_key = icon_map.get(row_idx, JDXi.UI.Icon.PIANO)
 
-        return JDXi.UI.Icon.get_icon(
-            icon_key,
-            color=JDXi.UI.Style.FOREGROUND
-)
+        return JDXi.UI.Icon.get_icon(icon_key, color=JDXi.UI.Style.FOREGROUND)
 
     def _get_row_label_style(self, row_idx: int) -> str:
         spec = self.row_specs[row_idx]
@@ -369,8 +355,8 @@ class PatternUI(SynthEditor):
             tempo_group,
             beats_group,
             velocity_group,
-            duration_group
-):
+            duration_group,
+        ):
             control_panel.addWidget(group)
 
         self.layout.addLayout(control_panel)
@@ -486,10 +472,8 @@ class PatternUI(SynthEditor):
         tempo_layout.addWidget(self.tempo_label)
         tempo_layout.addWidget(self.tempo_spinbox)
         self._add_button_with_label_from_spec(
-            "tap_tempo",
-            self.specs["buttons"]["tap_tempo"],
-            tempo_layout
-)
+            "tap_tempo", self.specs["buttons"]["tap_tempo"], tempo_layout
+        )
         tempo_group.setLayout(tempo_layout)
         return tempo_group
 
@@ -501,29 +485,29 @@ class PatternUI(SynthEditor):
                 min_val=1,
                 max_val=127,
                 value=100,
-                tooltip="Default velocity for new notes (1-127)"
-),
+                tooltip="Default velocity for new notes (1-127)",
+            ),
             "tempo": SpinBoxSpec(
                 label="BPM:",
                 min_val=20,
                 max_val=300,
                 value=120,
-                tooltip=self.tr("Tempo in beats per minute (20–300)")
-),
+                tooltip=self.tr("Tempo in beats per minute (20–300)"),
+            ),
             "start": SpinBoxSpec(
                 label=self.tr("Start"),
                 min_val=0,
                 max_val=15,
                 value=0,
-                tooltip=self.tr("Start step (0–15)")
-),
+                tooltip=self.tr("Start step (0–15)"),
+            ),
             "end": SpinBoxSpec(
                 label=self.tr("End"),
                 min_val=0,
                 max_val=15,
                 value=15,
-                tooltip=self.tr("End step (0–15)")
-),
+                tooltip=self.tr("End step (0–15)"),
+            ),
         }
 
     def _create_learn_group(self) -> QGroupBox:
@@ -532,15 +516,11 @@ class PatternUI(SynthEditor):
         learn_layout = QHBoxLayout()
 
         self._add_button_with_label_from_spec(
-            "learn",
-            self.specs["buttons"]["learn"],
-            learn_layout
-)
+            "learn", self.specs["buttons"]["learn"], learn_layout
+        )
         self._add_button_with_label_from_spec(
-            "stop_learn",
-            self.specs["buttons"]["stop_learn"],
-            learn_layout
-)
+            "stop_learn", self.specs["buttons"]["stop_learn"], learn_layout
+        )
         learn_group.setLayout(learn_layout)
         return learn_group
 
@@ -550,10 +530,8 @@ class PatternUI(SynthEditor):
         # First row: Add Measure button and Copy checkbox
         measure_controls_layout = QHBoxLayout()
         self._add_button_with_label_from_spec(
-            "add_measure",
-            self.specs["buttons"]["add_measure"],
-            measure_controls_layout
-)
+            "add_measure", self.specs["buttons"]["add_measure"], measure_controls_layout
+        )
         self.copy_previous_measure_checkbox = QCheckBox(
             f"Copy previous {self.measure_name.lower()}"
         )
@@ -566,15 +544,11 @@ class PatternUI(SynthEditor):
         # Copy/Paste controls (round buttons + icon labels)
         copy_paste_layout = QHBoxLayout()
         self._add_button_with_label_from_spec(
-            "copy",
-            self.specs["buttons"]["copy"],
-            copy_paste_layout
-)
+            "copy", self.specs["buttons"]["copy"], copy_paste_layout
+        )
         self._add_button_with_label_from_spec(
-            "paste",
-            self.specs["buttons"]["paste"],
-            copy_paste_layout
-)
+            "paste", self.specs["buttons"]["paste"], copy_paste_layout
+        )
         self.paste_button.setEnabled(False)  # Disabled until something is copied
 
         # Step range selection (use SpinBoxSpec for both start and end)
@@ -616,20 +590,14 @@ class PatternUI(SynthEditor):
         file_group = QGroupBox("Pattern")
         file_layout = QHBoxLayout()
         self._add_button_with_label_from_spec(
-            "load",
-            self.specs["buttons"]["load"],
-            file_layout
-)
+            "load", self.specs["buttons"]["load"], file_layout
+        )
         self._add_button_with_label_from_spec(
-            "save",
-            self.specs["buttons"]["save"],
-            file_layout
-)
+            "save", self.specs["buttons"]["save"], file_layout
+        )
         self._add_button_with_label_from_spec(
-            "clear_learn",
-            self.specs["buttons"]["clear_learn"],
-            file_layout
-)
+            "clear_learn", self.specs["buttons"]["clear_learn"], file_layout
+        )
 
         self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
         self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
@@ -670,8 +638,8 @@ class PatternUI(SynthEditor):
         name: str,
         spec: ButtonSpec,
         layout: QHBoxLayout,
-        slot: Optional[Callable[[], None]] = None
-) -> QPushButton:
+        slot: Optional[Callable[[], None]] = None,
+    ) -> QPushButton:
         """Create a round button + label row from a ButtonSpec and add to layout."""
         label_row, btn = create_jdxi_button_with_label_from_spec(spec, checkable=False)
         setattr(self, f"{name}_button", btn)
@@ -690,8 +658,8 @@ class PatternUI(SynthEditor):
         *,
         name: Optional[str] = None,
         checkable: bool = False,
-        append_to: Optional[list] = None
-) -> QPushButton:
+        append_to: Optional[list] = None,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -713,8 +681,8 @@ class PatternUI(SynthEditor):
         self,
         spec: TransportSpec,
         layout: QHBoxLayout,
-        button_group: Optional[QButtonGroup]
-) -> None:
+        button_group: Optional[QButtonGroup],
+    ) -> None:
         """Create a transport button + label row (same pattern as Midi File Player)."""
         btn = create_jdxi_button_from_spec(spec, button_group)
         setattr(self, f"{spec.name}_button", btn)
@@ -751,64 +719,64 @@ class PatternUI(SynthEditor):
                     label="Load",
                     icon=JDXi.UI.Icon.MUSIC,
                     tooltip="Load pattern from file",
-                    slot=self._load_pattern_dialog
-),
+                    slot=self._load_pattern_dialog,
+                ),
                 "save": ButtonSpec(
                     label="Save",
                     icon=JDXi.UI.Icon.SAVE,
                     tooltip="Save pattern to file",
-                    slot=self._save_pattern_dialog
-),
+                    slot=self._save_pattern_dialog,
+                ),
                 "clear_learn": ButtonSpec(
                     label="Clear",
                     icon=JDXi.UI.Icon.CLEAR,
                     tooltip="Clear pattern",
-                    slot=self._clear_pattern
-),
+                    slot=self._clear_pattern,
+                ),
                 "add_measure": ButtonSpec(
                     label="Add Measure",
                     icon=JDXi.UI.Icon.ADD,
                     tooltip="Add a new Measure",
-                    slot=self._add_measure
-),
+                    slot=self._add_measure,
+                ),
                 "copy": ButtonSpec(
                     label="Copy Section",
                     icon=JDXi.UI.Icon.FILE_DOCUMENT,
                     tooltip="Copy selected steps from current measure",
-                    slot=self._copy_section
-),
+                    slot=self._copy_section,
+                ),
                 "paste": ButtonSpec(
                     label="Paste Section",
                     icon=JDXi.UI.Icon.ADD,
                     tooltip="Paste copied steps to current measure",
-                    slot=self._paste_section
-),
+                    slot=self._paste_section,
+                ),
                 "learn": ButtonSpec(
                     label="Start",
                     icon=JDXi.UI.Icon.PLAY,
                     tooltip="Start learning pattern",
-                    slot=self.on_learn_pattern_button_clicked
-),
+                    slot=self.on_learn_pattern_button_clicked,
+                ),
                 "stop_learn": ButtonSpec(
                     label="Stop",
                     icon=JDXi.UI.Icon.STOP,
                     tooltip="Stop learning pattern",
-                    slot=self.on_stop_learn_pattern_button_clicked
-),
+                    slot=self.on_stop_learn_pattern_button_clicked,
+                ),
                 "tap_tempo": ButtonSpec(
                     label="Tap",
                     icon=JDXi.UI.Icon.DRUM,
                     tooltip="Tap to set tempo",
-                    slot=self._on_tap_tempo
-),
+                    slot=self._on_tap_tempo,
+                ),
             },
             "combos": {
                 "drum": _combo_spec(self.drum_options),
                 "beats_per_measure": ComboBoxSpec(
                     items=["16 beats per measure", "12 beats per measure"],
                     tooltip="",
-                    slot=None
-),
+                    slot=None,
+                ),
                 "duration": ComboBoxSpec(
                     items=[
                         "16th (1 step)",
@@ -821,8 +789,8 @@ class PatternUI(SynthEditor):
                         "Whole (16 steps)",
                     ],
                     tooltip="Default note duration for new notes",
-                    slot=None
-),
+                    slot=None,
+                ),
                 "digital1": _combo_spec(self.digital_options),
                 "digital2": _combo_spec(self.digital_options),
                 "analog": _combo_spec(self.analog_options),
@@ -834,29 +802,29 @@ class PatternUI(SynthEditor):
                     icon=JDXi.UI.Icon.PLAY,
                     text="Play",
                     slot=self._pattern_transport_play,
-                    grouped=True
-),
+                    grouped=True,
+                ),
                 TransportSpec(
                     name="stop",
                     icon=JDXi.UI.Icon.STOP,
                     text="Stop",
                     slot=self._pattern_transport_stop,
-                    grouped=True
-),
+                    grouped=True,
+                ),
                 TransportSpec(
                     name="pause",
                     icon=JDXi.UI.Icon.PAUSE,
                     text="Pause",
                     slot=self._pattern_transport_pause_toggle,
-                    grouped=False
-),
+                    grouped=False,
+                ),
                 TransportSpec(
                     name="shuffle",
                     icon=JDXi.UI.Icon.SHUFFLE,
                     text="Shuffle Play",
                     slot=self._pattern_shuffle_play,
-                    grouped=True
-),
+                    grouped=True,
+                ),
             ],
         }
 

@@ -30,7 +30,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_ADDRESS_MAP,
     DRUM_GROUP_MAP,
 )
-from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
+from jdxi_editor.midi.parameter.spec import RANGE_BIPOLAR_63, ParameterSpec
 
 
 class DrumPartialParam(AddressParameter):

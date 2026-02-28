@@ -4,26 +4,24 @@ Digital Oscillator Section for the JDXI Editor
 
 from typing import Callable
 
-from PySide6.QtWidgets import (
-    QHBoxLayout
-)
+from PySide6.QtWidgets import QHBoxLayout
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.digital.spec import (
     DigitalGroupBox,
-    DigitalOscillatorTab
+    DigitalOscillatorTab,
 )
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
 from jdxi_editor.ui.editors.base.oscillator.section import BaseOscillatorSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.spec import (
-    DigitalOscillatorLayoutSpec
+    DigitalOscillatorLayoutSpec,
 )
 from jdxi_editor.ui.editors.digital.partial.oscillator.widget import (
-    DigitalOscillatorWidgets
+    DigitalOscillatorWidgets,
 )
 from jdxi_editor.ui.image.waveform import generate_icon_from_waveform
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
@@ -31,11 +29,11 @@ from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_widgets,
     create_group_from_definition,
-    create_layout_with_items
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.editor.mode_button_group import (
     ModeButtonGroup,
-    ModeButtonSpec
+    ModeButtonSpec,
 )
 from jdxi_editor.ui.widgets.pcm.wave import PCMWaveWidget
 from jdxi_editor.ui.widgets.spec import PitchEnvelopeSpec, PWMSpec, SliderSpec
@@ -67,8 +65,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         analog: bool = False,
         send_midi_parameter: Callable = None,
         midi_helper: MidiIOHelper = None,
-        address: JDXiSysExAddress = None
-):
+        address: JDXiSysExAddress = None,
+    ):
         self.widgets: DigitalOscillatorWidgets | None = None
         self.wave_shapes = self.generate_mode_button_specs()
         self._define_spec()
@@ -79,15 +77,15 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         self.pcm_wave = PCMWaveWidget(
             groupbox_spec=DigitalGroupBox,
             create_parameter_combo_box=self._create_parameter_combo_box,
-            send_param=send_midi_parameter
-)
+            send_param=send_midi_parameter,
+        )
         super().__init__(
             send_midi_parameter=send_midi_parameter,
             midi_helper=midi_helper,
             address=address,
             icons_row_type=icons_row_type,
-            analog=analog
-)
+            analog=analog,
+        )
         # With singleton, controls registered by PCMWaveWidget are already in the shared registry
         # Just ensure they're accessible via self.controls
         self.controls[self.SYNTH_SPEC.Param.PCM_WAVE_GAIN] = self.pcm_wave.pcm_wave_gain
@@ -115,8 +113,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             ModeButtonSpec(
                 mode=spec.param,  # Digital.Wave.Osc.*
                 label=spec.label,
-                icon_name=spec.icon_name
-)
+                icon_name=spec.icon_name,
+            )
             for spec in self.wave_shapes
         ]
 
@@ -136,8 +134,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             midi_param=Digital.Param.OSC_WAVEFORM,
             on_mode_changed=_on_mode_changed,
             icon_factory=_waveform_icon_factory,
-            parent=None
-)
+            parent=None,
+        )
 
         # Expose legacy mapping API used elsewhere
         self.wave_layout_widgets = list(self.wave_mode_group.buttons.values())
@@ -169,18 +167,14 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             ),
             super_saw_detune=self._resolve_rule_widget(
                 DigitalOscillatorWidgetTypes.SUPER_SAW_DETUNE
-            )
-)
+            ),
+        )
         # Aliases to old widgets for back compatibility
         # Dual-write: _widgets[key] and legacy names; migrate reads to _widgets then drop legacy_attr
         self._register_widget(
-            DigitalOscillatorWidgetTypes.PITCH_ENV,
-            self.widgets.pitch_env_widget
-)
-        self._register_widget(
-            DigitalOscillatorWidgetTypes.PWM,
-            self.widgets.pwm_widget
-)
+            DigitalOscillatorWidgetTypes.PITCH_ENV, self.widgets.pitch_env_widget
+        )
+        self._register_widget(DigitalOscillatorWidgetTypes.PWM, self.widgets.pwm_widget)
         self.pitch_env_widgets = [self.widgets.pitch_env_widget]
         self.tuning_sliders = [
             self.osc_pitch_coarse_slider,
@@ -236,8 +230,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         pitch_env_group = create_group_from_definition(
             key=Digital.GroupBox.PITCH_ENVELOPE,
             layout_or_widget=centered_layout,
-            set_attr=self
-)
+            set_attr=self,
+        )
         centered_layout.addLayout(pitch_env_layout)
         centered_layout.addStretch()
         pitch_env_group.setProperty("adsr", True)
@@ -258,10 +252,8 @@ class DigitalOscillatorSection(BaseOscillatorSection):
             pw_layout.addLayout(centered_pwshift_layout)
         pw_layout.addStretch()
         pw_group = create_group_from_definition(
-            key=Digital.GroupBox.PULSE_WIDTH,
-            layout_or_widget=pw_layout,
-            set_attr=self
-)
+            key=Digital.GroupBox.PULSE_WIDTH, layout_or_widget=pw_layout, set_attr=self
+        )
         self._add_tab(key=DigitalOscillatorTab.PULSE_WIDTH, widget=pw_group)
 
     def _add_tuning_tab(self):
@@ -269,10 +261,7 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         tuning_widget = self._create_row_widget(widgets=self.amp_control_widgets)
         self._add_tab(key=DigitalOscillatorTab.TUNING, widget=tuning_widget)
 
-    def _create_row_widget(
-        self,
-        widgets: list[QWidget]
-) -> QWidget:
+    def _create_row_widget(self, widgets: list[QWidget]) -> QWidget:
         """Create a QWidget containing a horizontal row of widgets."""
         widget = QWidget()
         layout = create_layout_with_items(widgets, vertical=False)
@@ -304,33 +293,32 @@ class DigitalOscillatorSection(BaseOscillatorSection):
         tuning = [
             SliderSpec(
                 param=S.Param.OSC_PITCH_COARSE,
-                label=S.Param.OSC_PITCH_COARSE.display_name
-),
+                label=S.Param.OSC_PITCH_COARSE.display_name,
+            ),
             SliderSpec(
-                param=S.Param.OSC_PITCH_FINE,
-                label=S.Param.OSC_PITCH_FINE.display_name
-),
+                param=S.Param.OSC_PITCH_FINE, label=S.Param.OSC_PITCH_FINE.display_name
+            ),
             SliderSpec(
                 param=S.Param.SUPER_SAW_DETUNE,
-                label=S.Param.SUPER_SAW_DETUNE.display_name
-),
+                label=S.Param.SUPER_SAW_DETUNE.display_name,
+            ),
         ]
         pw_controls = [
             SliderSpec(
                 param=S.Param.OSC_PULSE_WIDTH_SHIFT,
                 label=S.Display.Name.OSC_PULSE_WIDTH_SHIFT,
-                vertical=False
-),
+                vertical=False,
+            ),
         ]
         pwm = PWMSpec(
             pulse_width_param=S.Param.OSC_PULSE_WIDTH,
-            mod_depth_param=S.Param.OSC_PULSE_WIDTH_MOD_DEPTH
-)
+            mod_depth_param=S.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+        )
         pitch_env = PitchEnvelopeSpec(
             attack_param=S.Param.OSC_PITCH_ENV_ATTACK_TIME,
             decay_param=S.Param.OSC_PITCH_ENV_DECAY_TIME,
-            depth_param=S.Param.OSC_PITCH_ENV_DEPTH
-)
+            depth_param=S.Param.OSC_PITCH_ENV_DEPTH,
+        )
         return DigitalOscillatorLayoutSpec(
             tuning=tuning,
             pw_controls=pw_controls,
@@ -350,5 +338,5 @@ class DigitalOscillatorSection(BaseOscillatorSection):
                 OscillatorFeature.PWM: "_add_pwm_tab",
                 OscillatorFeature.PITCH_ENV: "_add_pitch_env_tab",
                 OscillatorFeature.PCM: "_add_pcm_wave_gain_tab",
-            }
-)
+            },
+        )

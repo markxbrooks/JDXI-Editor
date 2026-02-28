@@ -42,12 +42,12 @@ from picomidi.sysex.parameter.address import AddressParameter
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
+
 from PySide6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
     ArpeggioGrid,
@@ -61,6 +61,7 @@ from jdxi_editor.midi.data.arpeggio.data import (
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper

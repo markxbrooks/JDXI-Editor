@@ -58,7 +58,7 @@ class PatternLearnerEvent:
         note: int,
         velocity: int,
         duration_ms: float,
-        midi_note: MidiNote | None = None
+        midi_note: MidiNote | None = None,
     ):
         """
         Initialize a learned event.
@@ -74,9 +74,9 @@ class PatternLearnerEvent:
         self.note = note
         self.velocity = velocity
         self.duration_ms = duration_ms
-        self.midi_note = midi_note or MidiNote(note=note,
-                                               velocity=velocity,
-                                               duration_ms=duration_ms)
+        self.midi_note = midi_note or MidiNote(
+            note=note, velocity=velocity, duration_ms=duration_ms
+        )
 
 
 class PatternLearner:

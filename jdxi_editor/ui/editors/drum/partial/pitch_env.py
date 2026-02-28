@@ -35,14 +35,11 @@ Example:
 """
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QGridLayout,
-    QHBoxLayout
-)
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import create_group_and_grid_layout
@@ -57,10 +54,8 @@ class DrumPitchEnvSection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper
-):
+        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+    ):
         """
         Initialize the DrumPitchEnvSection
 
@@ -94,68 +89,68 @@ class DrumPitchEnvSection(DrumBaseSection):
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_DEPTH,
                 DrumPartialParam.PITCH_ENV_DEPTH.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_VELOCITY_SENS,
                 DrumPartialParam.PITCH_ENV_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS,
                 DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS,
                 DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_1,
                 DrumPartialParam.PITCH_ENV_TIME_1.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_2,
                 DrumPartialParam.PITCH_ENV_TIME_2.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_3,
                 DrumPartialParam.PITCH_ENV_TIME_3.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_TIME_4,
                 DrumPartialParam.PITCH_ENV_TIME_4.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_LEVEL_0,
                 DrumPartialParam.PITCH_ENV_LEVEL_0.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_LEVEL_1,
                 DrumPartialParam.PITCH_ENV_LEVEL_1.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_LEVEL_2,
                 DrumPartialParam.PITCH_ENV_LEVEL_2.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_LEVEL_3,
                 DrumPartialParam.PITCH_ENV_LEVEL_3.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PITCH_ENV_LEVEL_4,
                 DrumPartialParam.PITCH_ENV_LEVEL_4.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
         ]
         return LayoutSpec(controls=controls)
 
@@ -187,8 +182,8 @@ class DrumPitchEnvSection(DrumBaseSection):
             width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
             height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
-)
+            parent=self,
+        )
 
     def create_sliders(self, controls_layout: QGridLayout):
         """Create sliders and connect them - widgets from SLIDER_GROUPS['controls'] in build_widgets()."""
@@ -223,8 +218,8 @@ class DrumPitchEnvSection(DrumBaseSection):
             lambda v: self._update_envelope(
                 EnvelopeParameter.T1_V_SENS,
                 v,
-                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS
-)
+                DrumPartialParam.PITCH_ENV_TIME_1_VELOCITY_SENS,
+            )
         )
 
         t4_v_sens_slider = self.controls[
@@ -236,8 +231,8 @@ class DrumPitchEnvSection(DrumBaseSection):
             lambda v: self._update_envelope(
                 EnvelopeParameter.T4_V_SENS,
                 v,
-                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS
-)
+                DrumPartialParam.PITCH_ENV_TIME_4_VELOCITY_SENS,
+            )
         )
 
         # Row 1: Time 1, Time 2, Time 3, Time 4

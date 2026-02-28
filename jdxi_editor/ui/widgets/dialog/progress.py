@@ -2,11 +2,7 @@
 Progress Dialog
 """
 
-from PySide6.QtWidgets import (
-    QApplication,
-    QDialog,
-    QProgressBar
-)
+from PySide6.QtWidgets import QApplication, QDialog, QProgressBar
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
@@ -18,8 +14,8 @@ class ProgressDialog(QDialog):
         title: str = "Loading",
         message: str = "Please wait...",
         maximum: int = 100,
-        parent: QWidget = None
-):
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
         """Initialize the ProgressDialog
 

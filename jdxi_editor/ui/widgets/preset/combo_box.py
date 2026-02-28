@@ -13,13 +13,7 @@ from typing import Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QComboBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton
-)
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QLineEdit, QPushButton
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
@@ -76,8 +70,8 @@ class PresetComboBox(QWidget):
             "Load",
             self._on_load_clicked,
             load_row,
-            name="load"
-)
+            name="load",
+        )
         layout.addLayout(load_row)
         self._populate_presets()
         self.setStyleSheet(JDXi.UI.Style.COMBO_BOX)
@@ -90,8 +84,8 @@ class PresetComboBox(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False
-) -> QPushButton:
+        checkable: bool = False,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)

@@ -32,16 +32,13 @@ Example:
     editor.show()
 """
 
-from PySide6.QtWidgets import (
-    QGroupBox,
-    QTabWidget
-)
+from PySide6.QtWidgets import QGroupBox, QTabWidget
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.style import JDXiUIStyle
@@ -49,7 +46,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout,
     create_group_with_widgets_in_hlayout,
-    create_layout_with_items
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 
@@ -58,10 +55,8 @@ class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper
-):
+        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+    ):
         """
         Initialize the DrumPartialSection
 
@@ -78,77 +73,74 @@ class DrumPartialSection(DrumBaseSection):
             SliderSpec(
                 DrumPartialParam.PARTIAL_COARSE_TUNE,
                 DrumDisplayName.PARTIAL_COARSE_TUNE,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_FINE_TUNE,
                 DrumDisplayName.PARTIAL_FINE_TUNE,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH,
                 DrumDisplayName.PARTIAL_RANDOM_PITCH_DEPTH,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_PAN,
                 DrumDisplayName.PARTIAL_PAN,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_RANDOM_PAN_DEPTH,
                 DrumDisplayName.PARTIAL_RANDOM_PAN_DEPTH,
-                vertical=False
-),
+                vertical=False,
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_ALTERNATE_PAN_DEPTH,
                 DrumDisplayName.PARTIAL_ALTERNATE_PAN_DEPTH,
-                vertical=False
-),
+                vertical=False,
+            ),
             ComboBoxSpec(
                 DrumPartialParam.PARTIAL_ENV_MODE,
                 DrumDisplayName.PARTIAL_ENV_MODE,
                 options=DrumDisplayOptions.PARTIAL_ENV_MODE,
-                values=[0, 1]
-),
+                values=[0, 1],
+            ),
             SliderSpec(
                 DrumPartialParam.PARTIAL_PITCH_BEND_RANGE,
-                DrumDisplayName.PARTIAL_PITCH_BEND_RANGE
-),
+                DrumDisplayName.PARTIAL_PITCH_BEND_RANGE,
+            ),
             ComboBoxSpec(
                 DrumPartialParam.ASSIGN_TYPE,
                 DrumDisplayName.ASSIGN_TYPE,
                 options=DrumDisplayOptions.ASSIGN_TYPE,
-                values=[0, 1]
-),
+                values=[0, 1],
+            ),
             ComboBoxSpec(
                 DrumPartialParam.MUTE_GROUP,
                 DrumDisplayName.MUTE_GROUP,
                 options=DrumDisplayOptions.MUTE_GROUP,
-                values=list(range(0, 31))
-),
-            SliderSpec(
-                DrumPartialParam.PARTIAL_LEVEL,
-                DrumDisplayName.PARTIAL_LEVEL
-),
+                values=list(range(0, 31)),
+            ),
+            SliderSpec(DrumPartialParam.PARTIAL_LEVEL, DrumDisplayName.PARTIAL_LEVEL),
             ComboBoxSpec(
                 DrumPartialParam.PARTIAL_RECEIVE_EXPRESSION,
                 DrumDisplayName.PARTIAL_RECEIVE_EXPRESSION,
                 options=DrumDisplayOptions.PARTIAL_RECEIVE_EXPRESSION,
-                values=[0, 1]
-),
+                values=[0, 1],
+            ),
             ComboBoxSpec(
                 DrumPartialParam.PARTIAL_RECEIVE_HOLD_1,
                 DrumDisplayName.PARTIAL_RECEIVE_HOLD_1,
                 options=DrumDisplayOptions.PARTIAL_RECEIVE_HOLD_1,
-                values=[0, 1]
-),
+                values=[0, 1],
+            ),
             ComboBoxSpec(
                 DrumPartialParam.ONE_SHOT_MODE,
                 DrumDisplayName.ONE_SHOT_MODE,
                 options=DrumDisplayOptions.ONE_SHOT_MODE,
-                values=[0, 1]
-),
+                values=[0, 1],
+            ),
         ]
         return LayoutSpec(controls=controls)
 

@@ -8,16 +8,20 @@ Acts as the main container for the pattern sequencer grid.
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
+from picomidi.pattern.measure import PatternMeasure
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QListWidget, QListWidgetItem
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
     set_sequencer_style,
 )
-from jdxi_editor.ui.editors.pattern.step.data import StepData
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
@@ -240,6 +244,7 @@ class PatternWidget(QWidget):
         style_fn: Callable[[SequencerButton], None],
     ) -> None:
         """Reset and restyle each button in the current measure."""
+
         def apply(_r: int, _s: int, btn: SequencerButton) -> None:
             reset_fn(btn)
             style_fn(btn)

@@ -138,7 +138,9 @@ class Effect1Param(AddressParameter):
         "Selects the type of effect to be applied:\n00: Thru\n01: Distortion\n02: Fuzz\n03: Compressor\n04: Bit Crusher ",
         "Effect 1 Type",
     )
-    EFX1_LEVEL = ParameterSpec(0x01, 0, 127, description="Sets the level of the effect.")
+    EFX1_LEVEL = ParameterSpec(
+        0x01, 0, 127, description="Sets the level of the effect."
+    )
     EFX1_DELAY_SEND_LEVEL = ParameterSpec(
         0x02,
         0,

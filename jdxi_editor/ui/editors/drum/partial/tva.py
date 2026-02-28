@@ -33,23 +33,21 @@ Example:
 """
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QGridLayout
-)
+from PySide6.QtWidgets import QGridLayout
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.parameter.drum.option import (
     DrumDisplayOptions,
-    DrumDisplayValues
+    DrumDisplayValues,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
     create_group_with_layout,
-    create_layout_with_items
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.drum import DrumTVAEnvPlot
@@ -62,10 +60,8 @@ class DrumTVASection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper
-):
+        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+    ):
         """
         Initialize the DrumTVASection
 
@@ -96,58 +92,58 @@ class DrumTVASection(DrumBaseSection):
                 DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE,
                 DrumPartialParam.TVA_LEVEL_VELOCITY_CURVE.display_name,
                 options=DrumDisplayOptions.TVA_LEVEL_VELOCITY_CURVE,
-                values=DrumDisplayValues.TVA_LEVEL_VELOCITY_CURVE
-),
+                values=DrumDisplayValues.TVA_LEVEL_VELOCITY_CURVE,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_LEVEL_VELOCITY_SENS,
                 DrumPartialParam.TVA_LEVEL_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
                 DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
                 DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_1,
                 DrumPartialParam.TVA_ENV_TIME_1.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_2,
                 DrumPartialParam.TVA_ENV_TIME_2.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_3,
                 DrumPartialParam.TVA_ENV_TIME_3.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_TIME_4,
                 DrumPartialParam.TVA_ENV_TIME_4.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_LEVEL_1,
                 DrumPartialParam.TVA_ENV_LEVEL_1.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_LEVEL_2,
                 DrumPartialParam.TVA_ENV_LEVEL_2.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVA_ENV_LEVEL_3,
                 DrumPartialParam.TVA_ENV_LEVEL_3.display_name,
-                vertical=True
-),
+                vertical=True,
+            ),
         ]
         return LayoutSpec(controls=controls)
 
@@ -181,10 +177,8 @@ class DrumTVASection(DrumBaseSection):
         """TVA Group"""
         envelope_slider_layout = QGridLayout()
         tva_group, _ = create_group_with_layout(
-            label="TVA",
-            layout=envelope_slider_layout,
-            style_sheet=JDXi.UI.Style.ADSR
-)
+            label="TVA", layout=envelope_slider_layout, style_sheet=JDXi.UI.Style.ADSR
+        )
 
         # --- Add TVA Velocity Sensitivity controls - widgets from SLIDER_GROUPS["controls"]
         row = 0
@@ -200,8 +194,8 @@ class DrumTVASection(DrumBaseSection):
             lambda v: self._update_envelope(
                 EnvelopeParameter.T1_V_SENS,
                 v,
-                DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS
-)
+                DrumPartialParam.TVA_ENV_TIME_1_VELOCITY_SENS,
+            )
         )
 
         t4_v_sens_slider = self.controls[DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS]
@@ -211,8 +205,8 @@ class DrumTVASection(DrumBaseSection):
             lambda v: self._update_envelope(
                 EnvelopeParameter.T4_V_SENS,
                 v,
-                DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS
-)
+                DrumPartialParam.TVA_ENV_TIME_4_VELOCITY_SENS,
+            )
         )
 
         # --- TVA Time Row ---
@@ -288,8 +282,8 @@ class DrumTVASection(DrumBaseSection):
             width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
             height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
-)
+            parent=self,
+        )
         return plot
 
     def _update_envelope(

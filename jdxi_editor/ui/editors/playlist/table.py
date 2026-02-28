@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QTableWidget,
-    QTableWidgetItem
+    QTableWidgetItem,
 )
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
@@ -38,8 +38,8 @@ class PlaylistTable(QWidget):
     def __init__(
         self,
         parent: Optional[QWidget] = None,
-        on_playlist_changed: Optional[Callable[[], None]] = None
-):
+        on_playlist_changed: Optional[Callable[[], None]] = None,
+    ):
         """
         Initialize the PlaylistWidget.
 
@@ -75,22 +75,22 @@ class PlaylistTable(QWidget):
             "New Playlist",
             self.create_new_playlist,
             button_layout,
-            name="create_playlist"
-)
+            name="create_playlist",
+        )
         self._add_round_action_button(
             JDXi.UI.Icon.TRASH_FILL,
             "Delete Playlist",
             self.delete_selected_playlist,
             button_layout,
-            name="delete_playlist"
-)
+            name="delete_playlist",
+        )
         self._add_round_action_button(
             JDXi.UI.Icon.REFRESH,
             "Refresh Playlist",
             self.refresh_playlists,
             button_layout,
-            name="refresh_playlist"
-)
+            name="refresh_playlist",
+        )
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
@@ -147,8 +147,8 @@ class PlaylistTable(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False
-) -> QPushButton:
+        checkable: bool = False,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -189,8 +189,8 @@ class PlaylistTable(QWidget):
         except Exception as e:
             log.error(
                 scope="PlaylistWidget",
-                message=f"Error getting playlists from database: {e}"
-)
+                message=f"Error getting playlists from database: {e}",
+            )
             import traceback
 
             log.error(traceback.format_exc())
@@ -247,8 +247,8 @@ class PlaylistTable(QWidget):
 
         log.message(
             f"✅ Populated playlist table with {len(all_playlists)} playlists",
-            scope="PlaylistWidget"
-)
+            scope="PlaylistWidget",
+        )
 
     def create_new_playlist(self) -> None:
         """Create a new playlist."""
@@ -272,8 +272,8 @@ class PlaylistTable(QWidget):
                 QMessageBox.warning(
                     self,
                     "Error",
-                    f"Failed to create playlist '{name}'. It may already exist."
-)
+                    f"Failed to create playlist '{name}'. It may already exist.",
+                )
 
     def refresh_playlists(self) -> None:
         """Refresh the playlist table."""
@@ -307,8 +307,8 @@ class PlaylistTable(QWidget):
             self,
             "Delete Playlist",
             f"Are you sure you want to delete playlist '{playlist_name}'?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-)
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
 
         if reply == QMessageBox.StandardButton.Yes:
             from jdxi_editor.ui.programs.database import get_database
@@ -323,14 +323,14 @@ class PlaylistTable(QWidget):
             else:
                 log.error(
                     f"❌ Failed to delete playlist: {playlist_name}",
-                    scope="PlaylistWidget"
-)
+                    scope="PlaylistWidget",
+                )
                 QMessageBox.warning(
                     self,
                     "Error",
                     scope="PlaylistWidget",
-                    message=f"Failed to delete playlist '{playlist_name}'."
-)
+                    message=f"Failed to delete playlist '{playlist_name}'.",
+                )
 
     def _on_playlist_item_changed(self, item: QTableWidgetItem) -> None:
         """
@@ -365,8 +365,8 @@ class PlaylistTable(QWidget):
                 try:
                     log.message(
                         f"✅ Updated playlist {playlist_id} name to: {new_value}",
-                        scope="PlaylistWidget"
-)
+                        scope="PlaylistWidget",
+                    )
                     # Update stored playlist data
                     playlist["name"] = new_value
                     for c in range(4):
@@ -377,13 +377,13 @@ class PlaylistTable(QWidget):
                 except Exception as ex:
                     log.error(
                         scope="PlaylistWidget",
-                        message=f"Error {ex} occurred updating playlist"
-)
+                        message=f"Error {ex} occurred updating playlist",
+                    )
             else:
                 log.error(
                     f"❌Failed to update playlist {playlist_id} name",
-                    scope="PlaylistWidget"
-)
+                    scope="PlaylistWidget",
+                )
                 # Revert the change
                 self.playlist_table.blockSignals(True)
                 item.setText(playlist.get("name", ""))
@@ -393,8 +393,8 @@ class PlaylistTable(QWidget):
             if db.update_playlist(playlist_id, description=value):
                 log.message(
                     scope="PlaylistWidget",
-                    message=f"Updated playlist {playlist_id} description"
-)
+                    message=f"Updated playlist {playlist_id} description",
+                )
                 playlist["description"] = value
                 for c in range(4):
                     table_item = self.playlist_table.item(row, c)
@@ -404,8 +404,8 @@ class PlaylistTable(QWidget):
             else:
                 log.error(
                     scope="PlaylistWidget",
-                    message=f"Failed to update playlist {playlist_id} description"
-)
+                    message=f"Failed to update playlist {playlist_id} description",
+                )
                 self.playlist_table.blockSignals(True)
                 item.setText(playlist.get("description", "") or "")
                 self.playlist_table.blockSignals(False)
@@ -422,8 +422,8 @@ class PlaylistTable(QWidget):
         if playlist:
             log.message(
                 f"📋 Selected playlist: {playlist['name']} (ID: {playlist['id']})",
-                scope="PlaylistWidget"
-)
+                scope="PlaylistWidget",
+            )
 
     def _notify_playlist_changed(self, playlist_id: Optional[int] = None) -> None:
         """

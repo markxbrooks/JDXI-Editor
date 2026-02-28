@@ -18,17 +18,17 @@ from PySide6.QtWidgets import (
     QScrollArea,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
-    JDXiSysExOffsetTemporaryToneUMB
+    JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
 from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
 from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
@@ -49,8 +49,8 @@ class DrumKitMixerSection(SectionBaseWidget):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         create_parameter_slider: Callable = None,
-        parent: Optional[QWidget] = None
-):
+        parent: Optional[QWidget] = None,
+    ):
         """
         Initialize the Drum Kit Mixer.
 
@@ -69,8 +69,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB.COMMON,
-            0x00
-)
+            0x00,
+        )
 
         self.setup_ui()
 
@@ -147,11 +147,8 @@ class DrumKitMixerSection(SectionBaseWidget):
         main_layout.addWidget(scroll_area)
 
     def _send_drum_midi(
-        self,
-        param: AddressParameter,
-        value: int,
-        address: JDXiSysExAddress
-) -> bool:
+        self, param: AddressParameter, value: int, address: JDXiSysExAddress
+    ) -> bool:
         """Callback for ChannelStrip mute/send. Composes and sends SysEx."""
         if not self.midi_helper:
             return False
@@ -175,9 +172,8 @@ class DrumKitMixerSection(SectionBaseWidget):
     ) -> Optional[ChannelStrip]:
         if not (1 <= partial_index <= 36):
             log.warning(
-                f"Invalid partial index: {partial_index}",
-                scope=self.__class__.__name__
-)
+                f"Invalid partial index: {partial_index}", scope=self.__class__.__name__
+            )
             return None
 
         from jdxi_editor.midi.data.address.address import JDXiSysExOffsetDrumKitLMB
@@ -192,8 +188,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB(lmb_value),
-            0x00
-)
+            0x00,
+        )
         self.partial_addresses[partial_index] = address
         slider = Slider(
             partial_name,
@@ -203,8 +199,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             midi_helper=self.midi_helper,
             vertical=True,
             show_value_label=True,
-            tooltip=f"Level for {partial_name} (0 to 127)"
-)
+            tooltip=f"Level for {partial_name} (0 to 127)",
+        )
         slider.valueChanged.connect(
             lambda v, addr=address, pidx=partial_index: self._on_partial_level_changed(
                 v, addr, pidx
@@ -236,8 +232,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             icon=icon_label,
             param=DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
             address=address,
-            send_midi_callback=self._send_drum_midi
-)
+            send_midi_callback=self._send_drum_midi,
+        )
         strip.setFixedWidth(52)
         return strip
 
@@ -246,8 +242,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             JDXiSysExAddressStartMSB.TEMPORARY_TONE,
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSysExOffsetProgramLMB.COMMON,
-            0x00
-)
+            0x00,
+        )
 
         slider = Slider(
             "Master",
@@ -257,8 +253,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             midi_helper=self.midi_helper,
             vertical=True,
             show_value_label=True,
-            tooltip="Master level for the entire drum kit"
-)
+            tooltip="Master level for the entire drum kit",
+        )
         slider.valueChanged.connect(
             lambda v, addr=address: self._on_master_level_changed(v, addr)
         )
@@ -280,8 +276,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             icon=icon_label,
             param=DrumCommonParam.KIT_LEVEL,
             address=address,
-            send_midi_callback=self._send_drum_midi
-)
+            send_midi_callback=self._send_drum_midi,
+        )
         strip.setFixedWidth(52)
         return strip
 
@@ -298,10 +294,8 @@ class DrumKitMixerSection(SectionBaseWidget):
 
             composer = JDXiSysExComposer()
             message = composer.compose_message(
-                address=address,
-                param=DrumCommonParam.KIT_LEVEL,
-                value=value
-)
+                address=address, param=DrumCommonParam.KIT_LEVEL, value=value
+            )
             self.midi_helper.send_midi_message(message)
             log.message(f"Master level changed to {value}")
         except Exception as ex:
@@ -332,8 +326,8 @@ class DrumKitMixerSection(SectionBaseWidget):
             message = composer.compose_message(
                 address=partial_address,
                 param=DrumPartialParam.PARTIAL_OUTPUT_LEVEL,
-                value=value
-)
+                value=value,
+            )
             self.midi_helper.send_midi_message(message)
             log.message(f"Partial {partial_index} level changed to {value}")
         except Exception as ex:

@@ -17,13 +17,13 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.digital import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import OscillatorFeature
 from jdxi_editor.ui.editors.base.oscillator.layout_spec import OscillatorLayoutSpec
 from jdxi_editor.ui.editors.base.oscillator.widget import OscillatorWidgets

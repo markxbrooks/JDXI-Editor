@@ -17,12 +17,12 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.project import (
     __organization_name__,
     __package_name__,
     __program__,
 )
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 
 
 def log_settings() -> None:

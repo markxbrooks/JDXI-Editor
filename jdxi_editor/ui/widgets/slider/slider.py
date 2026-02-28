@@ -31,8 +31,8 @@ from PySide6.QtWidgets import (
     QSlider,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 
 
 class Slider(QWidget):

@@ -52,12 +52,7 @@ Usage Example:
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QTabWidget
-)
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QTabWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
@@ -78,8 +73,8 @@ class SimpleEditorHelper:
         base_widget: EditorBaseWidget,
         title: str,
         image_folder: str,
-        default_image: str
-):
+        default_image: str,
+    ):
         """
         Initialize the SimpleEditorHelper.
 

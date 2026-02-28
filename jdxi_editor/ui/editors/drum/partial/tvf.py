@@ -35,22 +35,20 @@ Example:
 """
 
 from PySide6.QtCore import Signal
-from PySide6.QtGui import (
-    QIcon
-)
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QFormLayout,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
-    QTabWidget
+    QTabWidget,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -58,7 +56,7 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
-    create_layout_with_items
+    create_layout_with_items,
 )
 from jdxi_editor.ui.widgets.plot.drum import DrumTVFEnvPlot
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
@@ -70,10 +68,8 @@ class DrumTVFSection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self,
-        controls: dict[DrumPartialParam, QWidget],
-        midi_helper: MidiIOHelper
-):
+        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+    ):
         """
         Initialize the DrumTVFSection
 
@@ -106,87 +102,87 @@ class DrumTVFSection(DrumBaseSection):
                 DrumPartialParam.TVF_FILTER_TYPE,
                 DrumDisplayName.TVF_FILTER_TYPE,
                 options=DrumDisplayOptions.TVF_FILTER_TYPE,
-                values=[0, 1, 2, 3, 4, 5, 6]
-),
+                values=[0, 1, 2, 3, 4, 5, 6],
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_CUTOFF_FREQUENCY,
-                DrumDisplayName.TVF_CUTOFF_FREQUENCY
-),
+                DrumDisplayName.TVF_CUTOFF_FREQUENCY,
+            ),
             ComboBoxSpec(
                 DrumPartialParam.TVF_CUTOFF_VELOCITY_CURVE,
                 DrumDisplayName.TVF_CUTOFF_VELOCITY_CURVE,
                 options=DrumDisplayOptions.TVF_CUTOFF_VELOCITY_CURVE,
-                values=[0, 1, 2, 3, 4, 5, 6, 7]
-),
+                values=[0, 1, 2, 3, 4, 5, 6, 7],
+            ),
             ComboBoxSpec(
                 DrumPartialParam.TVF_ENV_VELOCITY_CURVE_TYPE,
                 DrumDisplayName.TVF_ENV_VELOCITY_CURVE_TYPE,
                 options=DrumDisplayOptions.TVF_ENV_VELOCITY_CURVE_TYPE,
-                values=[0, 1, 2, 3, 4, 5, 6, 7]
-),
+                values=[0, 1, 2, 3, 4, 5, 6, 7],
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_DEPTH, DrumDisplayName.TVF_DEPTH, vertical=True
             ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_VELOCITY_SENS,
                 DrumDisplayName.TVF_V_SENS,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_1_VELOCITY_SENS,
                 DrumDisplayName.TVF_T1_V_SENS,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_4_VELOCITY_SENS,
                 DrumDisplayName.TVF_T4_V_SENS,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_1,
                 DrumDisplayName.TVF_TIME_1,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_2,
                 DrumDisplayName.TVF_TIME_2,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_3,
                 DrumDisplayName.TVF_TIME_3,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_TIME_4,
                 DrumDisplayName.TVF_TIME_4,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_0,
                 DrumDisplayName.TVF_LEVEL_0,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_1,
                 DrumDisplayName.TVF_LEVEL_1,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_2,
                 DrumDisplayName.TVF_LEVEL_2,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_3,
                 DrumDisplayName.TVF_LEVEL_3,
-                vertical=True
-),
+                vertical=True,
+            ),
             SliderSpec(
                 DrumPartialParam.TVF_ENV_LEVEL_4,
                 DrumDisplayName.TVF_LEVEL_4,
-                vertical=True
-),
+                vertical=True,
+            ),
         ]
         return LayoutSpec(controls=controls)
 
@@ -399,8 +395,8 @@ class DrumTVFSection(DrumBaseSection):
             width=JDXi.UI.Style.ADSR_PLOT_WIDTH,
             height=JDXi.UI.Style.ADSR_PLOT_HEIGHT,
             envelope=self.envelope,
-            parent=self
-)
+            parent=self,
+        )
 
     def _update_envelope(
         self, key: str, value: int, param: DrumPartialParam = None

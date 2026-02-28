@@ -27,22 +27,21 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QSlider
+    QSlider,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetProgramLMB,
-    JDXiSysExOffsetSystemUMB
+    JDXiSysExOffsetSystemUMB,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import (
     DelayParam,
     Effect1Param,
     Effect2Param,
-    ReverbParam
+    ReverbParam,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
@@ -50,17 +49,18 @@ from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
     create_jdxi_button_with_label_from_spec,
-    create_jdxi_row
+    create_jdxi_row,
 )
 from jdxi_editor.ui.editors.midi_player.midi_analyzer import MidiAnalyzer
 from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
 from jdxi_editor.ui.editors.midi_player.track.category import (
     CATEGORY_META,
     STR_TO_TRACK_CATEGORY,
-    TrackCategory
+    TrackCategory,
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
@@ -77,7 +77,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_icon_and_label,
     create_layout_with_items,
-    create_vertical_layout
+    create_vertical_layout,
 )
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
@@ -104,8 +104,8 @@ class MidiFilePlayer(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: QWidget = None,
-        preset_helper: JDXiPresetHelper = None
-):
+        preset_helper: JDXiPresetHelper = None,
+    ):
         """
         Initialize the MidiPlayer
 
@@ -191,8 +191,8 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0
-)
+            spacing=0,
+        )
         header_widget = create_widget_with_layout(header_layout)
         # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
@@ -208,8 +208,8 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0
-)
+            spacing=0,
+        )
         centered_widget = create_widget_with_layout(centered_layout)
         # Vertical stack: header, ruler, track viewer (stretch), controls.
         # So MidiTrackViewer and its MidiTrackWidgets get space and are visible.
@@ -252,8 +252,8 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0
-)
+            spacing=0,
+        )
         return layout
 
     def _create_classify_tracks_widget(self) -> QWidget:
@@ -264,14 +264,12 @@ class MidiFilePlayer(SynthEditor):
             spacing=5,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0)
-)
+            margins=QMargins(0, 0, 0, 0),
+        )
         classification_widget = QWidget()
         classification_vlayout = create_layout_with_inner_layouts(
-            inner_layouts=[classification_hlayout],
-            vertical=True,
-            stretch=False
-)
+            inner_layouts=[classification_hlayout], vertical=True, stretch=False
+        )
         classification_widget.setLayout(classification_vlayout)
         apply_all_label_row = self.create_apply_all_button_and_label()
         classification_vlayout.addWidget(apply_all_label_row)
@@ -282,8 +280,8 @@ class MidiFilePlayer(SynthEditor):
         right_panel_layout = create_layout_with_inner_layouts(
             inner_layouts=[self.init_automation_usb_grid(), self.init_mute_controls()],
             vertical=True,
-            stretch=False
-)
+            stretch=False,
+        )
         return right_panel_layout
 
     def _build_classify_tracks_widgets(self) -> list[QPushButton | QWidget]:
@@ -322,8 +320,8 @@ class MidiFilePlayer(SynthEditor):
             margins=QMargins(0, 0, 0, 0),
             spacing=0,
             start_stretch=False,
-            end_stretch=False
-)
+            end_stretch=False,
+        )
         ruler_container = create_widget_with_layout(layout=ruler_layout)
         return ruler_container
 
@@ -376,8 +374,8 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0
-)
+            spacing=0,
+        )
         group, _ = create_group_with_layout(
             label="MIDI Event Suppression", layout=layout
         )
@@ -406,8 +404,8 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0
-)
+            spacing=0,
+        )
 
         group = QGroupBox("MIDI File")
         group.setLayout(layout)
@@ -468,8 +466,8 @@ class MidiFilePlayer(SynthEditor):
             log.error(traceback.format_exc())
             show_message_box_from_spec(
                 self.specs["message_box"]["error_detect_drums"],
-                message=f"An error occurred while detecting drum tracks:\n\n{ex}"
-)
+                message=f"An error occurred while detecting drum tracks:\n\n{ex}",
+            )
 
     def classify_and_assign_tracks(self) -> None:
         """classify and assign tracks"""
@@ -499,8 +497,8 @@ class MidiFilePlayer(SynthEditor):
         if not self.midi_state.file:
             self._show_warning(
                 title="No MIDI File Loaded",
-                message="Please load a MIDI file first before classifying tracks."
-)
+                message="Please load a MIDI file first before classifying tracks.",
+            )
             return False
         return True
 
@@ -514,10 +512,8 @@ class MidiFilePlayer(SynthEditor):
     def _classify_tracks(self, drum_indices: list[int]):
         """Classify non-drum tracks into Bass, Keys/Guitars, Strings."""
         return self.midi_analyzer.get_classifications(
-            self.midi_state.file,
-            exclude_drum_indices=drum_indices,
-            min_score=30.0
-)
+            self.midi_state.file, exclude_drum_indices=drum_indices, min_score=30.0
+        )
 
     def _apply_channel_assignments(self, classifications) -> dict[str, list[str]]:
         """apply channel assignments"""
@@ -589,10 +585,7 @@ class MidiFilePlayer(SynthEditor):
         """Show the no-tracks-classified message box."""
         show_message_box_from_spec(self.specs["message_box"]["no_tracks_classified"])
 
-    def _build_classification_message(
-        self,
-        updated: dict[str, list[str]]
-) -> str:
+    def _build_classification_message(self, updated: dict[str, list[str]]) -> str:
         """build classification message"""
         total_classified = sum(
             len(v) for k, v in updated.items() if k != TrackCategory.UNCLASSIFIED
@@ -629,18 +622,14 @@ class MidiFilePlayer(SynthEditor):
     def _show_info_message(self, title: str, message: str) -> None:
         """show info dialog"""
         show_message_box_from_spec(
-            self.specs["message_box"]["info"],
-            title=title,
-            message=message
-)
+            self.specs["message_box"]["info"], title=title, message=message
+        )
 
     def _show_warning(self, title: str, message: str) -> None:
         """show warning"""
         show_message_box_from_spec(
-            self.specs["message_box"]["warning"],
-            title=title,
-            message=message
-)
+            self.specs["message_box"]["warning"], title=title, message=message
+        )
 
     def _handle_classification_error(self, ex: Exception) -> None:
         """handle classification error"""
@@ -651,8 +640,8 @@ class MidiFilePlayer(SynthEditor):
 
         show_message_box_from_spec(
             self.specs["message_box"]["error_classify_tracks"],
-            message=f"An error occurred while classifying tracks:\n\n{ex}"
-)
+            message=f"An error occurred while classifying tracks:\n\n{ex}",
+        )
 
     def init_automation_usb_grid(self) -> QGridLayout:
         """
@@ -851,18 +840,18 @@ class MidiFilePlayer(SynthEditor):
             self._build_message(
                 message_type=MidoMessageType.CONTROL_CHANGE.value,
                 channel=channel,
-                value=int(msb)
-),
+                value=int(msb),
+            ),
             self._build_message(
                 message_type=MidoMessageType.CONTROL_CHANGE.value,
                 channel=channel,
-                value=int(lsb)
-),
+                value=int(lsb),
+            ),
             self._build_message(
                 message_type=MidoMessageType.PROGRAM_CHANGE.value,
                 channel=channel,
-                program=max(0, int(pc) - 1)
-),
+                program=max(0, int(pc) - 1),
+            ),
         ]
 
         self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
@@ -933,8 +922,8 @@ class MidiFilePlayer(SynthEditor):
                             MidoMessageType.NOTE_ON.value,
                             note=0,
                             velocity=0,
-                            time=insert_delta
-)
+                            time=insert_delta,
+                        )
                     )
                     # Replace the placeholder with zero-time; we will discard it below
                     rebuilt.pop()
@@ -996,10 +985,8 @@ class MidiFilePlayer(SynthEditor):
             layout_widgets.append(btn)
 
         layout = create_layout_with_items(
-            layout_widgets,
-            start_stretch=False,
-            end_stretch=False
-)
+            layout_widgets, start_stretch=False, end_stretch=False
+        )
         return layout
 
     def create_apply_all_button_and_label(self) -> QWidget:
@@ -1018,8 +1005,8 @@ class MidiFilePlayer(SynthEditor):
         apply_all_label_layout = create_layout_with_items(
             items=[self.ui.apply_all_track_changes_button, row_widget],
             spacing=4,
-            margins=QMargins(0, 0, 0, 0)
-)
+            margins=QMargins(0, 0, 0, 0),
+        )
         apply_all_label_row.setLayout(apply_all_label_layout)
         return apply_all_label_row
 
@@ -1150,8 +1137,8 @@ class MidiFilePlayer(SynthEditor):
         self,
         spec: TransportSpec,
         layout: QHBoxLayout,
-        button_group: QButtonGroup | None
-) -> None:
+        button_group: QButtonGroup | None,
+    ) -> None:
         """Create a transport button + label row"""
 
         # ---- Button
@@ -1161,10 +1148,8 @@ class MidiFilePlayer(SynthEditor):
 
         # ---- Label row
         pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon,
-            color=JDXi.UI.Style.FOREGROUND,
-            size=20
-)
+            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
+        )
         label_row, text_label = create_jdxi_row(spec.text, icon_pixmap=pixmap)
         setattr(self.ui, f"{spec.name}_label", text_label)
         layout.addWidget(label_row)
@@ -1193,8 +1178,8 @@ class MidiFilePlayer(SynthEditor):
                 slot=self.midi_playback_start,
                 grouped=True,
                 name="play",
-                text="Play"
-),
+                text="Play",
+            ),
             TransportSpec(
                 label="Stop",
                 icon=JDXi.UI.Icon.STOP,
@@ -1202,8 +1187,8 @@ class MidiFilePlayer(SynthEditor):
                 slot=self.midi_playback_stop,
                 grouped=True,
                 name="stop",
-                text="Stop"
-),
+                text="Stop",
+            ),
             TransportSpec(
                 label="Pause",
                 icon=JDXi.UI.Icon.PAUSE,
@@ -1211,8 +1196,8 @@ class MidiFilePlayer(SynthEditor):
                 slot=self.midi_playback_pause_toggle,
                 grouped=False,
                 name="pause",
-                text="Pause"
-),
+                text="Pause",
+            ),
         ]
 
         for spec in controls:
@@ -1403,8 +1388,8 @@ class MidiFilePlayer(SynthEditor):
                 self.midi_state.file_duration_seconds,
                 self.ui.usb_file_output_name,
                 recording_rate,
-                selected_index
-)
+                selected_index,
+            )
         except Exception as ex:
             log.error(f"❌ Error {ex} occurred starting recording")
             import traceback
@@ -1412,8 +1397,8 @@ class MidiFilePlayer(SynthEditor):
             log.error(traceback.format_exc())
             show_message_box_from_spec(
                 self.specs["message_box"]["error_saving_file"],
-                message=f"Error {ex} occurred starting recording"
-)
+                message=f"Error {ex} occurred starting recording",
+            )
 
     def usb_select_recording_file(self):
         """Open a file picker dialog to select output .wav file."""
@@ -1685,8 +1670,8 @@ class MidiFilePlayer(SynthEditor):
                 JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
                 JDXiSysExOffsetSystemUMB.COMMON,
                 JDXiSysExOffsetProgramLMB.COMMON,
-                Midi.value.ZERO
-)
+                Midi.value.ZERO,
+            )
 
             # Turn off Effect 1: Set level to 0 and type to Thru (0)
             efx1_address = address.add_offset((0, 2, 0))
@@ -1861,8 +1846,8 @@ class MidiFilePlayer(SynthEditor):
             play_program_changes=not self.midi_state.suppress_program_changes,
             start_time=self.midi_state.playback_start_time,
             initial_tempo=self.midi_state.tempo_at_position,
-            playback_engine=self.playback_engine
-)
+            playback_engine=self.playback_engine,
+        )
 
     def start_playback_worker(self):
         """
@@ -1910,8 +1895,8 @@ class MidiFilePlayer(SynthEditor):
                 mido.second2tick(
                     second=elapsed_time_secs,
                     ticks_per_beat=self.midi_state.file.ticks_per_beat,
-                    tempo=self.midi_state.tempo_at_position
-)
+                    tempo=self.midi_state.tempo_at_position,
+                )
             )
         except Exception as ex:
             log.error(f"Error converting playback start time to ticks: {ex}")
@@ -2103,8 +2088,8 @@ class MidiFilePlayer(SynthEditor):
                     MidoMessageType.CONTROL_CHANGE.value,
                     control=123,
                     value=0,
-                    channel=ch
-).bytes()
+                    channel=ch,
+                ).bytes()
             )
 
             # Extra safety in case the synth ignores CC123
@@ -2114,8 +2099,8 @@ class MidiFilePlayer(SynthEditor):
                         MidoMessageType.NOTE_OFF.value,
                         note=note,
                         velocity=0,
-                        channel=ch
-).bytes()
+                        channel=ch,
+                    ).bytes()
                 )
 
     def prepare_for_playback(self) -> None:
@@ -2361,8 +2346,8 @@ class MidiFilePlayer(SynthEditor):
             current_tick = mido.second2tick(
                 second=elapsed_time,
                 ticks_per_beat=self.midi_state.file.ticks_per_beat,
-                tempo=self.midi_state.tempo_at_position
-)
+                tempo=self.midi_state.tempo_at_position,
+            )
 
             # Calculate bar number (assuming 4/4 time signature: 4 beats per measure)
             # Bar number is 1-based
@@ -2443,9 +2428,7 @@ class MidiFilePlayer(SynthEditor):
             return None
         if hasattr(self.parent, "get_existing_editor"):
             try:
-                from jdxi_editor.ui.editors.pattern.pattern import (
-                    PatternSequenceEditor
-)
+                from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 
                 return self.parent.get_existing_editor(PatternSequenceEditor)
             except Exception:
@@ -2517,44 +2500,44 @@ class MidiFilePlayer(SynthEditor):
                 label="Apply All Track Changes",
                 tooltip="Apply all Track Name and MIDI Channel changes",
                 icon=JDXi.UI.Icon.SAVE,
-                slot=self._apply_all_track_changes
-),
+                slot=self._apply_all_track_changes,
+            ),
             "automation_insert": ButtonSpec(
                 label="Insert Program Change Here",
                 tooltip="Insert Program Change at current position",
                 icon=JDXi.UI.Icon.ADD,
-                slot=self.insert_program_change_current_position
-),
+                slot=self.insert_program_change_current_position,
+            ),
             "classify_tracks": ButtonSpec(
                 label="Classify Tracks",
                 tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
                 icon=JDXi.UI.Icon.MUSIC_NOTES,
-                slot=self.classify_and_assign_tracks
-),
+                slot=self.classify_and_assign_tracks,
+            ),
             "detect_drums": ButtonSpec(
                 label="Detect Drums",
                 tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
                 icon=JDXi.UI.Icon.DRUM,
-                slot=self.detect_and_assign_drum_tracks
-),
+                slot=self.detect_and_assign_drum_tracks,
+            ),
             "load_midi_file": ButtonSpec(
                 label="Load MIDI File",
                 tooltip="Load MIDI File",
                 icon=JDXi.UI.Icon.FOLDER_OPENED,
-                slot=self.midi_load_file
-),
+                slot=self.midi_load_file,
+            ),
             "save_midi_file": ButtonSpec(
                 label="Save MIDI File",
                 tooltip="Save MIDI file",
                 icon=JDXi.UI.Icon.FLOPPY_DISK,
-                slot=self.midi_save_file
-),
+                slot=self.midi_save_file,
+            ),
             "usb_port_refresh": ButtonSpec(
                 label="Refresh USB Device List",
                 tooltip="Refresh USB devices",
                 icon=JDXi.UI.Icon.REFRESH,
-                slot=self.usb_populate_devices
-),
+                slot=self.usb_populate_devices,
+            ),
         }
 
     def _build_message_box_specs(self) -> dict[str, MessageBoxSpec]:
@@ -2563,71 +2546,53 @@ class MidiFilePlayer(SynthEditor):
             "no_midi_file": MessageBoxSpec(
                 title="No MIDI File Loaded",
                 message="Please load a MIDI file first before detecting drum tracks.",
-                type_attr="Warning"
-),
+                type_attr="Warning",
+            ),
             "no_midi_file_classify": MessageBoxSpec(
                 title="No MIDI File Loaded",
                 message="Please load a MIDI file first before classifying tracks.",
-                type_attr="Warning"
-),
+                type_attr="Warning",
+            ),
             "no_drum_tracks_found": MessageBoxSpec(
                 title="No Drum Tracks Found",
                 message=(
                     "No tracks were identified as drum tracks with high confidence (score >= 70).\n\n"
                     "Try lowering the threshold or manually assign channels."
                 ),
-                type_attr="Information"
-),
+                type_attr="Information",
+            ),
             "no_tracks_classified": MessageBoxSpec(
                 title="No Tracks Classified",
                 message=(
                     "No tracks were classified with sufficient confidence (score >= 30).\n\n"
                     "Tracks may need manual assignment."
                 ),
-                type_attr="Information"
-),
+                type_attr="Information",
+            ),
             "no_output_file": MessageBoxSpec(
                 title="No Output File",
                 message="Please select a WAV output file or enable auto-generate filename.",
-                type_attr="Warning"
-),
+                type_attr="Warning",
+            ),
             # Dynamic message (pass message= at call site):
             "drum_tracks_detected": MessageBoxSpec(
-                title="Drum Tracks Detected",
-                message="",
-                type_attr="Information"
-),
+                title="Drum Tracks Detected", message="", type_attr="Information"
+            ),
             "error_detect_drums": MessageBoxSpec(
-                title="Error",
-                message="",
-                type_attr="Critical"
-),
+                title="Error", message="", type_attr="Critical"
+            ),
             "error_classify_tracks": MessageBoxSpec(
-                title="Error",
-                message="",
-                type_attr="Critical"
-),
+                title="Error", message="", type_attr="Critical"
+            ),
             "tracks_classified": MessageBoxSpec(
-                title="Tracks Classified",
-                message="",
-                type_attr="Information"
-),
+                title="Tracks Classified", message="", type_attr="Information"
+            ),
             "error_saving_file": MessageBoxSpec(
-                title="Error Saving File",
-                message="",
-                type_attr="Critical"
-),
+                title="Error Saving File", message="", type_attr="Critical"
+            ),
             # Generic templates (pass title= and message= at call site):
-            "info": MessageBoxSpec(
-                title="",
-                message="",
-                type_attr="Information"
-),
-            "warning": MessageBoxSpec(
-                title="",
-                message="",
-                type_attr="Warning"
-),
+            "info": MessageBoxSpec(title="", message="", type_attr="Information"),
+            "warning": MessageBoxSpec(title="", message="", type_attr="Warning"),
         }
 
     def _build_checkbox_specs(self) -> dict[str, CheckBoxSpec]:
@@ -2637,12 +2602,12 @@ class MidiFilePlayer(SynthEditor):
                 label="Program Changes",
                 checked_state=self.midi_state.suppress_program_changes,
                 slot=self.on_suppress_program_changes_toggled,
-                style=JDXiUIStyle.PARTIAL_SWITCH
-),
+                style=JDXiUIStyle.PARTIAL_SWITCH,
+            ),
             "midi_suppress_cc_spec": CheckBoxSpec(
                 label="Control Changes",
                 checked_state=self.midi_state.suppress_control_changes,
                 slot=self.on_suppress_control_changes_toggled,
-                style=JDXiUIStyle.PARTIAL_SWITCH
-),
+                style=JDXiUIStyle.PARTIAL_SWITCH,
+            ),
         }

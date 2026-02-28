@@ -11,11 +11,11 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.editors.base.filter.definition import FilterDefinition
 from jdxi_editor.ui.editors.base.filter.factory import FilterWidgetFactory
 from jdxi_editor.ui.editors.base.filter.spec import FilterLayoutSpec

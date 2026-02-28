@@ -43,7 +43,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.sysex.parameter.map import map_range
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
-from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
+from jdxi_editor.midi.parameter.spec import RANGE_BIPOLAR_63, ParameterSpec
 
 
 class DigitalPartialParam(AddressParameter):
@@ -264,7 +264,9 @@ class DigitalPartialParam(AddressParameter):
     )
 
     # Amplitude parameters
-    AMP_LEVEL = ParameterSpec(0x15, 0, 127, description="Partial volume")  # Amplitude level
+    AMP_LEVEL = ParameterSpec(
+        0x15, 0, 127, description="Partial volume"
+    )  # Amplitude level
     AMP_VELOCITY = ParameterSpec(
         0x16,
         -63,

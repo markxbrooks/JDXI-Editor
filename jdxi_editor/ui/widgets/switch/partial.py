@@ -29,13 +29,10 @@ Usage Example:
 """
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QCheckBox,
-    QHBoxLayout
-)
+from PySide6.QtWidgets import QCheckBox, QHBoxLayout
 
-from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
+from jdxi_editor.ui.common import JDXi, QWidget
 
 
 class PartialSwitch(QWidget):

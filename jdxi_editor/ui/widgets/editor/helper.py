@@ -21,11 +21,11 @@ from PySide6.QtWidgets import (
     QLayout,
     QPushButton,
     QScrollArea,
-    QSizePolicy
+    QSizePolicy,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.dimensions import Dimensions
@@ -38,7 +38,7 @@ from picoui.helpers import (
     create_left_aligned_row,
     create_vertical_layout,
     group_from_definition,
-    group_with_layout
+    group_with_layout,
 )
 from picoui.specs.widgets import CheckBoxSpec
 
@@ -56,9 +56,8 @@ def create_filter_button(icon_type: str, mode: DigitalFilterMode) -> QPushButton
     btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     btn.setFixedSize(
-        JDXi.UI.Dimensions.WaveformIcon.WIDTH,
-        JDXi.UI.Dimensions.WaveformIcon.HEIGHT
-)
+        JDXi.UI.Dimensions.WaveformIcon.WIDTH, JDXi.UI.Dimensions.WaveformIcon.HEIGHT
+    )
     return btn
 
 
@@ -71,7 +70,7 @@ def create_button_with_icon(
     icon_name: str,
     icon: QIcon,
     button_dimensions: Dimensions,
-    icon_dimensions: Dimensions
+    icon_dimensions: Dimensions,
 ):
     """create button with icon"""
     btn = QPushButton(icon_name)
@@ -80,10 +79,7 @@ def create_button_with_icon(
     # Add icon
     btn.setIcon(icon)
     btn.setIconSize(QSize(icon_dimensions.WIDTH, icon_dimensions.HEIGHT))
-    btn.setFixedSize(
-        button_dimensions.WIDTH,
-        button_dimensions.HEIGHT
-)
+    btn.setFixedSize(button_dimensions.WIDTH, button_dimensions.HEIGHT)
     btn.setCheckable(True)
     btn.setStyleSheet(JDXi.UI.Style.BUTTON_RECT)
     return btn
@@ -124,7 +120,7 @@ def create_checkbox_from_spec(spec: CheckBoxSpec) -> QCheckBox:
 def create_layout_with_inner_layout_and_widgets(
     inner_layout: QHBoxLayout | QVBoxLayout | None = None,
     widgets: list = None,
-    vertical: bool = True
+    vertical: bool = True,
 ) -> QVBoxLayout:
     """create vbox layout with horizontal layout and widgets below it"""
     if inner_layout is None:
@@ -206,7 +202,7 @@ def create_envelope_group(
     name: str = "Envelope",
     icon_layout: QHBoxLayout = None,
     adsr_widget: QWidget = None,
-    analog: bool = False
+    analog: bool = False,
 ) -> QGroupBox:
     """
     Create a standardized envelope group with icon and ADSR widget.
@@ -302,8 +298,7 @@ def create_group_with_form_layout(
     return group, form_layout
 
 
-def create_centered_layout_with_child(
-    layout: QFormLayout | QHBoxLayout ) -> QHBoxLayout:
+def create_centered_layout_with_child(layout: QFormLayout | QHBoxLayout) -> QHBoxLayout:
     """create centered layout with a child layout"""
     centered_layout = QHBoxLayout()
     centered_layout.addStretch()
@@ -388,18 +383,15 @@ def set_button_style_and_dimensions(
     """Set button styling (Theme API) and dimensions. Used by Filter mode buttons etc."""
     btn.setIconSize(QSize(dimensions.WIDTH, dimensions.HEIGHT))
     JDXi.UI.Theme.apply_button_rect(btn, analog=analog)
-    btn.setFixedSize(
-        dimensions.WIDTH,
-        dimensions.HEIGHT
-)
+    btn.setFixedSize(dimensions.WIDTH, dimensions.HEIGHT)
 
 
 def create_icon_from_name(icon_name: str) -> Any:
     icon = qta.icon(
         icon_name,
         color=JDXi.UI.Style.WHITE,
-        icon_size=JDXi.UI.Dimensions.Icon.SCALE_SMALL
-)
+        icon_size=JDXi.UI.Dimensions.Icon.SCALE_SMALL,
+    )
     return icon
 
 

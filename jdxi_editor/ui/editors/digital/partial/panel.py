@@ -37,23 +37,21 @@ Dependencies:
 """
 
 from decologr import Decologr as log
-from PySide6.QtWidgets import (
-    QTabWidget
-)
+from PySide6.QtWidgets import QTabWidget
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.spec import JDXiMidiDigital as Digital
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.digital.partial.amp.section import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter.section import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.lfo.mod import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator.section import (
-    DigitalOscillatorSection
+    DigitalOscillatorSection,
 )
 from jdxi_editor.ui.editors.synth.partial import PartialPanel
 
@@ -85,8 +83,8 @@ class DigitalPartialPanel(PartialPanel):
         synth_number: int = 1,
         partial_number: int = 1,
         preset_type: JDXiSynth | None = None,
-        parent: QWidget | None = None
-):
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
 
         self.mod_lfo_shape_buttons = {}
@@ -120,10 +118,7 @@ class DigitalPartialPanel(PartialPanel):
                 f"Invalid synth_number: {synth_number}. Must be {list(self.SYNTH_MAP)}"
             )
 
-        self._init_synth_data(
-            synth_type=synth_type,
-            partial_number=self.partial_number
-)
+        self._init_synth_data(synth_type=synth_type, partial_number=self.partial_number)
 
         log.parameter(
             "Synth address:", self.synth_data.address, scope=self.__class__.__name__
@@ -170,36 +165,36 @@ class DigitalPartialPanel(PartialPanel):
             widget=DigitalOscillatorSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                address=self.synth_data.address
-)
-)
+                address=self.synth_data.address,
+            ),
+        )
 
         self._add_tab(
             key=Digital.Tab.FILTER,
             widget=DigitalFilterSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                address=self.synth_data.address
-)
-)
+                address=self.synth_data.address,
+            ),
+        )
 
         self._add_tab(
             key=Digital.Tab.AMP,
             widget=DigitalAmpSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                address=self.synth_data.address
-)
-)
+                address=self.synth_data.address,
+            ),
+        )
 
         self._add_tab(
             key=Digital.Tab.LFO,
             widget=DigitalLFOSection(
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                address=self.synth_data.address
-)
-)
+                address=self.synth_data.address,
+            ),
+        )
 
         self._add_tab(
             key=Digital.Tab.MODLFO,
@@ -207,9 +202,9 @@ class DigitalPartialPanel(PartialPanel):
                 on_parameter_changed=self._on_parameter_changed,
                 send_midi_parameter=self.send_midi_parameter,
                 midi_helper=self.midi_helper,
-                address=self.synth_data.address
-)
-)
+                address=self.synth_data.address,
+            ),
+        )
 
     @property
     def lfo_depth_controls(self) -> dict:
@@ -248,8 +243,8 @@ class DigitalPartialPanel(PartialPanel):
             Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
             Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
             Digital.Param.FILTER_ENV_DEPTH,
-            Digital.Param.FILTER_SLOPE
-)
+            Digital.Param.FILTER_SLOPE,
+        )
 
         for param in params:
             widget = self.controls.get(param)
@@ -273,8 +268,8 @@ class DigitalPartialPanel(PartialPanel):
         if not self.send_midi_parameter(Digital.Param.OSC_WAVEFORM, waveform.value):
             log.warning(
                 scope=self.__class__.__name__,
-                message=f"Failed to set waveform: {waveform.name}"
-)
+                message=f"Failed to set waveform: {waveform.name}",
+            )
 
     # ------------------------------------------------------------------
 

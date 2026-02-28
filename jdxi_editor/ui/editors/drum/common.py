@@ -24,14 +24,14 @@ from PySide6.QtWidgets import (
     QScrollArea,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
-    JDXiSysExOffsetProgramLMB
+    JDXiSysExOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.editor import IconType
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
@@ -46,8 +46,8 @@ class DrumCommonSection(SectionBaseWidget):
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
-        address: JDXiSysExAddress
-):
+        address: JDXiSysExAddress,
+    ):
         """
         Initialize the DrumCommonSection
 

@@ -23,12 +23,12 @@ from typing import Any, Callable, Optional
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from picomidi import MidiTempo
-from picomidi.messages.note import MidiNote
 from picomidi.core.tempo import (
     convert_absolute_time_to_delta_time,
     milliseconds_per_note,
 )
 from picomidi.message.type import MidoMessageType
+from picomidi.messages.note import MidiNote
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -1073,15 +1073,24 @@ class PatternSequenceEditor(PatternUI):
 
         for measure_index, measure in enumerate(self.measure_widgets):
             for step in range(self.measure_beats):
-                self._add_event_to_pattern(events, measure, measure_index, step, ticks_per_bar, ticks_per_step)
+                self._add_event_to_pattern(
+                    events, measure, measure_index, step, ticks_per_bar, ticks_per_step
+                )
 
         # Sort events by absolute time
         events.sort(key=lambda e: e[0])
 
         convert_absolute_time_to_delta_time(events, track)
 
-    def _add_event_to_pattern(self, events: list[Any], measure: PatternMeasureWidget, measure_index: int, step: int,
-                              ticks_per_bar: int, ticks_per_step: int):
+    def _add_event_to_pattern(
+        self,
+        events: list[Any],
+        measure: PatternMeasureWidget,
+        measure_index: int,
+        step: int,
+        ticks_per_bar: int,
+        ticks_per_step: int,
+    ):
         absolute_tick = measure_index * ticks_per_bar + step * ticks_per_step
 
         for row in range(self.sequencer_rows):

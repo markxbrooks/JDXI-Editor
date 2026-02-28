@@ -47,19 +47,19 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QPushButton
+    QPushButton,
 )
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
-    get_program_by_id
+    get_program_by_id,
 )
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.preset.type import PresetTitle
@@ -69,7 +69,7 @@ from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
-    create_layout_with_items
+    create_layout_with_items,
 )
 
 
@@ -82,8 +82,8 @@ class PresetEditor(BasicEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_helper: JDXiPresetHelper = None
-):
+        preset_helper: JDXiPresetHelper = None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
         Initialize the PresetEditor
@@ -292,8 +292,8 @@ class PresetEditor(BasicEditor):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False
-) -> QPushButton:
+        checkable: bool = False,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -368,8 +368,8 @@ class PresetEditor(BasicEditor):
             "Load Preset",
             self.load_preset_by_program_change,
             load_row,
-            name=None
-)
+            name=None,
+        )
         load_row.addStretch()
         preset_vlayout.addLayout(load_row)
         return preset_group
@@ -415,8 +415,8 @@ class PresetEditor(BasicEditor):
         """
         log.message(
             f"Update tone name triggered: tone_name {tone_name} {synth_type}",
-            scope=self.__class__.__name__
-)
+            scope=self.__class__.__name__,
+        )
 
         label = self.synth_label_map.get(synth_type)
         if label:
@@ -424,8 +424,8 @@ class PresetEditor(BasicEditor):
         else:
             log.warning(
                 f"synth type: {synth_type} not found in mapping. Cannot update tone name.",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
 
     def load_preset_by_program_change(
         self, preset_index: int
@@ -455,8 +455,8 @@ class PresetEditor(BasicEditor):
         if None in [msb, lsb, pc]:
             log.message(
                 f"Could not retrieve preset parameters for program {program_number}",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
             return
 
         log.message("retrieved msb, lsb, pc :", scope=self.__class__.__name__)
@@ -617,8 +617,8 @@ class PresetEditor(BasicEditor):
         except KeyError:
             log.message(
                 f"Program details missing required keys: {program_details}",
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")
             self.drum_kit_current_label.setText("Unknown")

@@ -60,12 +60,7 @@ Usage Example:
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QScrollArea,
-    QSizePolicy,
-    QTabWidget
-)
+from PySide6.QtWidgets import QHBoxLayout, QScrollArea, QSizePolicy, QTabWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.editor.helper import create_scroll_container
@@ -79,11 +74,7 @@ class EditorBaseWidget(QWidget):
     used across all editors, reducing boilerplate and ensuring consistency.
     """
 
-    def __init__(
-        self,
-        parent: Optional[QWidget] = None,
-        analog: bool = False
-):
+    def __init__(self, parent: Optional[QWidget] = None, analog: bool = False):
         """
         Initialize the EditorBaseWidget.
 
@@ -119,10 +110,8 @@ class EditorBaseWidget(QWidget):
         return self.main_layout
 
     def setup_scrollable_content(
-        self,
-        spacing: int = 5,
-        margins: tuple[int, int, int, int] = (5, 5, 5, 5)
-) -> tuple[QScrollArea, QVBoxLayout]:
+        self, spacing: int = 5, margins: tuple[int, int, int, int] = (5, 5, 5, 5)
+    ) -> tuple[QScrollArea, QVBoxLayout]:
         """
         Set up the standard scrollable content area.
 

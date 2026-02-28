@@ -10,18 +10,13 @@ Create a sequencer container
 from typing import Callable
 
 from PySide6.QtCore import QRect, Qt
-from PySide6.QtWidgets import (
-    QGridLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton
-)
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QLabel, QPushButton
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.style.factory import (
     generate_sequencer_button_style,
-    toggle_button_style
+    toggle_button_style,
 )
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 
@@ -40,8 +35,8 @@ def create_sequencer_buttons_row(
             1,
             1,
             JDXi.UI.Dimensions.SEQUENCER.GRID.WIDTH,
-            JDXi.UI.Dimensions.SEQUENCER.GRID.HEIGHT
-)
+            JDXi.UI.Dimensions.SEQUENCER.GRID.HEIGHT,
+        )
     )
     grid.setHorizontalSpacing(3)
 
@@ -49,8 +44,8 @@ def create_sequencer_buttons_row(
         button = SequencerSquare(i, midi_helper)
         button.setFixedSize(
             JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE,
-            JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE
-)
+            JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE,
+        )
         button.setCheckable(True)
         button.setChecked(False)
         button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
@@ -80,7 +75,7 @@ def add_sequencer_container(
     # --- create_favorite_button_row,
     midi_helper,
     on_context_menu,
-    on_save_favorite
+    on_save_favorite,
 ):
     # --- Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
@@ -88,8 +83,8 @@ def add_sequencer_container(
         JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X,
         JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
         JDXi.UI.Dimensions.SEQUENCER.CONTAINER.WIDTH,
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.HEIGHT
-)
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.HEIGHT,
+    )
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -99,8 +94,8 @@ def add_sequencer_container(
     sequencer, sequencer_buttons = create_sequencer_buttons_row(
         midi_helper=midi_helper,
         on_context_menu=on_context_menu,
-        on_save_favorite=on_save_favorite
-)
+        on_save_favorite=on_save_favorite,
+    )
     sequencer_layout.addLayout(sequencer)
     sequencer_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
     sequencer_container_layout.addLayout(sequencer_layout)
@@ -114,8 +109,8 @@ def add_favorite_button_container(central_widget):
         JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X - 50,
         JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
         100,
-        200
-)
+        200,
+    )
     text = "Fav."
     row = QHBoxLayout()
     row.setSpacing(1)

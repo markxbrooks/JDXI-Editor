@@ -24,13 +24,8 @@ Dependencies:
 from typing import Dict, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
-from PySide6.QtWidgets import (
-    QFormLayout,
-    QGroupBox,
-    QHBoxLayout
-)
+from PySide6.QtWidgets import QFormLayout, QGroupBox, QHBoxLayout
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.data.vocal_effects.vocal import (
@@ -41,9 +36,10 @@ from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalOctaveRange,
     VocalOutputAssign,
     VocoderEnvelope,
-    VocoderHPF
+    VocoderHPF,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -62,8 +58,8 @@ class VocalFXEditor(BasicEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         preset_helper: JDXiPresetHelper = None,
-        parent: Optional[QWidget] = None
-):
+        parent: Optional[QWidget] = None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Vocal FX")
         self.preset_helper = preset_helper
@@ -81,8 +77,8 @@ class VocalFXEditor(BasicEditor):
             base_widget=self.base_widget,
             title="Vocal Effects",
             image_folder="vocal_fx",
-            default_image="vocal_fx.png"
-)
+            default_image="vocal_fx.png",
+        )
 
         self.controls: Dict[AddressParameter, QWidget] = {}
 
@@ -120,8 +116,8 @@ class VocalFXEditor(BasicEditor):
         return WidgetGroups(
             switches=self._build_switches(spec.switches),
             sliders=self._build_sliders(spec.sliders),
-            combos=self._build_combo_boxes(spec.combos)
-)
+            combos=self._build_combo_boxes(spec.combos),
+        )
 
     def _build_common_layout_spec(self) -> WidgetLayoutSpec:
         """Build layout spec for Common tab."""
@@ -130,8 +126,8 @@ class VocalFXEditor(BasicEditor):
                 ProgramCommonParam.VOCAL_EFFECT,
                 "Vocal Effect",
                 ["OFF", "VOCODER", "AUTO - PITCH"],
-                [0, 1, 2]
-),
+                [0, 1, 2],
+            ),
         ]
         sliders = [
             SliderSpec(ProgramCommonParam.PROGRAM_TEMPO, "Tempo", vertical=False),
@@ -181,14 +177,14 @@ class VocalFXEditor(BasicEditor):
                 VocalFXParam.VOCODER_ENVELOPE,
                 "Envelope",
                 [env.display_name for env in VocoderEnvelope],
-                [env.value for env in VocoderEnvelope]
-),
+                [env.value for env in VocoderEnvelope],
+            ),
             ComboBoxSpec(
                 VocalFXParam.VOCODER_MIC_HPF,
                 "HPF",
                 [freq.display_name for freq in VocoderHPF],
-                [freq.value for freq in VocoderHPF]
-),
+                [freq.value for freq in VocoderHPF],
+            ),
         ]
         sliders = [
             SliderSpec(VocalFXParam.VOCODER_LEVEL, "Level", vertical=False),
@@ -235,8 +231,8 @@ class VocalFXEditor(BasicEditor):
                 VocalFXParam.OUTPUT_ASSIGN,
                 "Output",
                 [output.display_name for output in VocalOutputAssign],
-                [output.value for output in VocalOutputAssign]
-),
+                [output.value for output in VocalOutputAssign],
+            ),
         ]
         sliders = [
             SliderSpec(VocalFXParam.LEVEL, "Level", vertical=False),
@@ -275,39 +271,39 @@ class VocalFXEditor(BasicEditor):
             SwitchSpec(
                 VocalFXParam.AUTO_PITCH_SWITCH,
                 "Auto Pitch",
-                [switch.display_name for switch in VocalFxSwitch]
-),
+                [switch.display_name for switch in VocalFxSwitch],
+            ),
             SwitchSpec(
                 VocalFXParam.AUTO_PITCH_OCTAVE,
                 "Octave",
-                [rng.name for rng in VocalOctaveRange]
-),
+                [rng.name for rng in VocalOctaveRange],
+            ),
         ]
         combos = [
             ComboBoxSpec(
                 VocalFXParam.AUTO_PITCH_TYPE,
                 "Pitch Type",
                 [pitch_type.display_name for pitch_type in VocalAutoPitchType],
-                [pitch_type.value for pitch_type in VocalAutoPitchType]
-),
+                [pitch_type.value for pitch_type in VocalAutoPitchType],
+            ),
             ComboBoxSpec(
                 VocalFXParam.AUTO_PITCH_SCALE,
                 "Scale",
                 ["CHROMATIC", "Maj(Min)"],
-                [0, 1]
-),
+                [0, 1],
+            ),
             ComboBoxSpec(
                 VocalFXParam.AUTO_PITCH_KEY,
                 "Key",
                 [key.display_name for key in VocalAutoPitchKey],
-                [key.value for key in VocalAutoPitchKey]
-),
+                [key.value for key in VocalAutoPitchKey],
+            ),
             ComboBoxSpec(
                 VocalFXParam.AUTO_PITCH_NOTE,
                 "Note",
                 [note.display_name for note in VocalAutoPitchNote],
-                [note.value for note in VocalAutoPitchNote]
-),
+                [note.value for note in VocalAutoPitchNote],
+            ),
         ]
         sliders = [
             SliderSpec(VocalFXParam.AUTO_PITCH_GENDER, "Gender", vertical=False),

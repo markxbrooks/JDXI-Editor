@@ -32,18 +32,14 @@ This module requires PySide6 and proper integration with the JD-Xi Manager's sig
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import (
-    QGraphicsDropShadowEffect,
-    QHBoxLayout,
-    QLabel
-)
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QHBoxLayout, QLabel
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.piano.keyboard import (
     DRUM_LABELS,
     KEYBOARD_BLACK_NOTES,
-    KEYBOARD_WHITE_NOTES
+    KEYBOARD_WHITE_NOTES,
 )
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 
@@ -129,8 +125,8 @@ class PianoKeyboard(QWidget):
                 note,
                 is_black=False,
                 width=self.white_key_width,
-                height=self.white_key_height
-)
+                height=self.white_key_height,
+            )
             apply_shadow(key)
             keyboard_widget.layout().addWidget(key)
 
@@ -149,8 +145,8 @@ class PianoKeyboard(QWidget):
                 note,
                 is_black=True,
                 width=self.black_key_width,
-                height=self.black_key_height
-)
+                height=self.black_key_height,
+            )
             black_key.setParent(keyboard_widget)
             apply_shadow(black_key)
 

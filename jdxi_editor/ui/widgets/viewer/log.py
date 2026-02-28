@@ -28,15 +28,10 @@ Usage Example:
 from pathlib import Path
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QMainWindow,
-    QPushButton,
-    QTextEdit
-)
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTextEdit
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.project import __package_name__
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 
 
 class LogViewer(QMainWindow):

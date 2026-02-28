@@ -6,23 +6,18 @@ from typing import Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import (
-    QComboBox,
-    QHBoxLayout,
-    QLabel,
-    QPushButton
-)
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox
+    SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 
@@ -41,8 +36,8 @@ class PresetWidget(QWidget):
             JDXi.UI.Style.PADDING,
             JDXi.UI.Style.PADDING,
             JDXi.UI.Style.PADDING,
-            JDXi.UI.Style.PADDING
-)
+            JDXi.UI.Style.PADDING,
+        )
         preset_vlayout.setSpacing(JDXi.UI.Style.SPACING)
         self.setLayout(preset_vlayout)
 
@@ -86,8 +81,8 @@ class PresetWidget(QWidget):
             show_label=True,
             show_search=True,
             show_category=True,
-            search_placeholder="Search presets..."
-)
+            search_placeholder="Search presets...",
+        )
         preset_vlayout.addWidget(self.preset_combo_box)
 
         # Initialize the combo box with default preset type (Digital Synth 1)
@@ -102,8 +97,8 @@ class PresetWidget(QWidget):
             "Load Preset",
             lambda: self.load_preset_by_program_change(),
             load_preset_row,
-            name="load"
-)
+            name="load",
+        )
         load_preset_row.addStretch()
         preset_vlayout.addLayout(load_preset_row)
 
@@ -118,8 +113,8 @@ class PresetWidget(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False
-) -> QPushButton:
+        checkable: bool = False,
+    ) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -331,8 +326,8 @@ class PresetWidget(QWidget):
                 show_label=True,
                 show_search=True,
                 show_category=True,
-                search_placeholder="Search presets..."
-)
+                search_placeholder="Search presets...",
+            )
 
             # Insert after digital_preset_type_combo
             index = preset_vlayout.indexOf(self.digital_preset_type_combo)

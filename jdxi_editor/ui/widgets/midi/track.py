@@ -23,8 +23,8 @@ class MidiTrackWidget(QWidget):
         track: mido.MidiTrack,
         track_number: int,
         total_length: float,
-        parent: QWidget = None
-):
+        parent: QWidget = None,
+    ):
         """
         Initialize the MidiTrackWidget.
 

@@ -39,15 +39,8 @@ from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QButtonGroup,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QTabWidget
-)
+from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QLabel, QPushButton, QTabWidget
 
-from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
@@ -57,10 +50,11 @@ from jdxi_editor.midi.data.parameter.analog.spec import AnalogFilterMode
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.digital.spec import (
     JDXiMidiDigital,
-    TabDefinitionMixin
+    TabDefinitionMixin,
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.adsr.spec import ADSRSpec, ADSRStage
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -71,7 +65,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_child,
     create_layout_with_items,
     create_widget_with_layout,
-    transfer_layout_items
+    transfer_layout_items,
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -104,8 +98,8 @@ class SectionBaseWidget(SynthBase):
             IconType.ADSR, IconType.OSCILLATOR, IconType.GENERIC, IconType.NONE
         ] = "adsr",
         analog: bool = False,
-        controls=None
-):
+        controls=None,
+    ):
         """
         Initialize the SectionBaseWidget.
 
@@ -160,10 +154,8 @@ class SectionBaseWidget(SynthBase):
         layout.addWidget(self.tab_widget)
 
     def get_layout(
-        self,
-        margins: tuple[int, int, int, int] = None,
-        spacing: int = None
-) -> QVBoxLayout:
+        self, margins: tuple[int, int, int, int] = None, spacing: int = None
+    ) -> QVBoxLayout:
         """
         Get or create the main layout for this section.
 
@@ -343,8 +335,8 @@ class SectionBaseWidget(SynthBase):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
-            analog=self.analog
-)
+            analog=self.analog,
+        )
 
     def _add_centered_row(self, *widgets: QWidget) -> None:
         """add centered row"""
@@ -403,17 +395,16 @@ class SectionBaseWidget(SynthBase):
 
         btn.setFixedSize(
             JDXi.UI.Dimensions.WaveformIcon.WIDTH,
-            JDXi.UI.Dimensions.WaveformIcon.HEIGHT
-)
+            JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
+        )
 
         icon = self._resolve_icon(getattr(spec, "icon_name", None))
         if icon:
             btn.setIcon(icon)
             btn.setIconSize(
                 QSize(
-                    JDXi.UI.Dimensions.LFOIcon.WIDTH,
-                    JDXi.UI.Dimensions.LFOIcon.HEIGHT
-)
+                    JDXi.UI.Dimensions.LFOIcon.WIDTH, JDXi.UI.Dimensions.LFOIcon.HEIGHT
+                )
             )
 
         btn.clicked.connect(lambda _, p=spec.param: self._on_button_selected(p))
@@ -468,10 +459,8 @@ class SectionBaseWidget(SynthBase):
         """Create amp ADSR envelope using standardized helper"""
         self.adsr_widget = self.build_adsr_widget()
         self.adsr_group = create_envelope_group(
-            name="Envelope",
-            adsr_widget=self.adsr_widget,
-            analog=self.analog
-)
+            name="Envelope", adsr_widget=self.adsr_widget, analog=self.analog
+        )
 
     def build_adsr_widget(self) -> ADSR:
         """build ADSR widget"""
@@ -505,8 +494,8 @@ class SectionBaseWidget(SynthBase):
             create_parameter_slider=self._create_parameter_slider,
             address=self.address,
             controls=self.controls,
-            analog=self.analog
-)
+            analog=self.analog,
+        )
         return amp_env_adsr_widget
 
     def setup_ui(self) -> None:
@@ -580,19 +569,15 @@ class SectionBaseWidget(SynthBase):
             # --- Use regular icon from registry
             icon = JDXi.UI.Icon.get_icon(key.icon, color=JDXi.UI.Style.GREY)
         widget.setMaximumHeight(JDXi.UI.Dimensions.EDITOR.HEIGHT)
-        tab_widget.addTab(
-            widget,
-            icon,
-            key.label
-)
+        tab_widget.addTab(widget, icon, key.label)
         setattr(self, key.attr_name, widget)
 
     def create_layout(self):
         """create main rows layout"""
         layout = self.get_layout(
             margins=JDXi.UI.Dimensions.EDITOR_DIGITAL.MARGINS,
-            spacing=JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
-)
+            spacing=JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING,
+        )
         layout.addSpacing(JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING)
         return layout
 
@@ -641,9 +626,7 @@ class SectionBaseWidget(SynthBase):
 
             self._set_param(actual_param, param_value)
 
-    def _add_widget_rows(
-        self, layout: QHBoxLayout, rows: list[list[QWidget]]
-    ):
+    def _add_widget_rows(self, layout: QHBoxLayout, rows: list[list[QWidget]]):
         """add a list of rows of widgets to a layout"""
         for row in rows:
             layout.addLayout(create_layout_with_items(row))
@@ -673,8 +656,8 @@ class SectionBaseWidget(SynthBase):
                 icon_name=wave.shape.display_name,
                 icon=icon,
                 button_dimensions=JDXi.UI.Dimensions.WaveformIcon,
-                icon_dimensions=JDXi.UI.Dimensions.LFOIcon
-)
+                icon_dimensions=JDXi.UI.Dimensions.LFOIcon,
+            )
 
             btn.setCheckable(True)
 
@@ -704,8 +687,8 @@ class SectionBaseWidget(SynthBase):
             shape_value,
             checked,
             self.__class__.__name__,
-            scope=self.__class__.__name__
-)
+            scope=self.__class__.__name__,
+        )
         if not checked:
             return
         try:
@@ -715,8 +698,8 @@ class SectionBaseWidget(SynthBase):
             log.error(
                 "[SectionBaseWidget] [_on_shape_group_changed] error %s occurred",
                 ex,
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
 
     def _get_wave_shape_button(self, shape: DigitalLFOShape | AnalogLFOShape):
         """get wave shape button"""
@@ -726,8 +709,8 @@ class SectionBaseWidget(SynthBase):
                 "[LFO Shape] No button for %s (section=%s)",
                 shape,
                 self.__class__.__name__,
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
         return btn
 
     def set_wave_shape(
@@ -755,19 +738,19 @@ class SectionBaseWidget(SynthBase):
                 shape.value,
                 address,
                 self.__class__.__name__,
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
             if not self._set_param(self.wave_shape_param, shape.value, address):
                 log.warning(
                     f"Failed to set Mod LFO shape to {shape.name}",
-                    scope=self.__class__.__name__
-)
+                    scope=self.__class__.__name__,
+                )
         elif not self._set_param:
             log.warning(
                 "[LFO Shape] send_midi=True but send_midi_parameter is not set (section=%s)",
                 self.__class__.__name__,
-                scope=self.__class__.__name__
-)
+                scope=self.__class__.__name__,
+            )
 
     def _apply_wave_shape_ui(
         self, btn: Any | None, shape: DigitalLFOShape | AnalogLFOShape
@@ -795,10 +778,8 @@ class SectionBaseWidget(SynthBase):
         """build sliders"""
         return [
             self._create_parameter_slider(
-                spec.param,
-                spec.label,
-                vertical=spec.vertical
-)
+                spec.param, spec.label, vertical=spec.vertical
+            )
             for spec in specs
         ]
 
