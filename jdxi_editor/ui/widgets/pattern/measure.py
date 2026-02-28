@@ -9,6 +9,7 @@ class PatternMeasure:
     """Pattern Measure class"""
 
     def __init__(self, rows: int, steps_per_bar: int):
+        """constructor"""
         self.rows = rows
         self.steps_per_bar = steps_per_bar
         self.steps: list[list[StepData]] = [
