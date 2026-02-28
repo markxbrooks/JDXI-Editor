@@ -750,30 +750,12 @@ class PatternPlaybackController(QObject):
         """
         Get note specification from a button.
 
-        Extracts note, duration, and velocity from button attributes.
-
         :param button: SequencerButton instance
-        :return: Object with note, duration_ms, velocity, is_active properties
+        :return: NoteButtonSpec with note, duration_ms, velocity, is_active
         """
+        from jdxi_editor.ui.editors.pattern.helper import get_button_note_spec
 
-        class NoteSpec:
-            def __init__(self, note, duration_ms, velocity):
-                self.note = note
-                self.duration_ms = duration_ms or 120
-                self.velocity = velocity or 100
-                self.is_active = note is not None
-
-        # Try to get from NoteButtonSpec if available
-        if hasattr(button, "note_spec") and button.note_spec:
-            spec = button.note_spec
-            return NoteSpec(spec.note, spec.duration_ms, spec.velocity)
-
-        # Fallback to attributes
-        return NoteSpec(
-            note=getattr(button, "note", None),
-            duration_ms=getattr(button, "note_duration", 120),
-            velocity=getattr(button, "note_velocity", 100),
-        )
+        return get_button_note_spec(button)
 
     def _get_engine_tick(self) -> int:
         """

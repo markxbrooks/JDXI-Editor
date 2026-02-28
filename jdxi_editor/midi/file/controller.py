@@ -600,28 +600,12 @@ class MidiFileController:
         """
         Get note specification from a button.
 
-        Extracts note, duration, and velocity from button attributes.
-
         :param button: SequencerButton instance
-        :return: NoteButtonSpec-like object with note, duration_ms, velocity, is_active
+        :return: NoteButtonSpec with note, duration_ms, velocity, is_active
         """
-        from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs
+        from jdxi_editor.ui.editors.pattern.helper import get_button_note_spec
 
-        class NoteSpec:
-            def __init__(self, note, duration_ms, velocity):
-                self.note = note
-                self.duration_ms = duration_ms or 120
-                self.velocity = velocity or self.config.default_velocity
-                self.is_active = note is not None
-
-        return NoteSpec(
-            note=getattr(button, NoteButtonAttrs.NOTE, None),
-            duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
-            velocity=getattr(
-                button, NoteButtonAttrs.NOTE_VELOCITY, self.config.default_velocity
-            )
-            or self.config.default_velocity,
-        )
+        return get_button_note_spec(button)
 
     def set_config(self, config: MidiFileControllerConfig) -> None:
         """

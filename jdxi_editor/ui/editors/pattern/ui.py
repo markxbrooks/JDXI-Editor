@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
@@ -102,6 +103,12 @@ class PatternUI(SynthEditor):
         self.pause_button: QPushButton | None = None
         self.stop_button: QPushButton | None = None
         self.play_button: QPushButton | None = None
+        self.channel_to_row = {
+            MidiChannel.DIGITAL_SYNTH_1: 0,  # Channel 0
+            MidiChannel.DIGITAL_SYNTH_2: 1,  # Channel 1
+            MidiChannel.ANALOG_SYNTH: 2,  # Channel 2
+            MidiChannel.DRUM_KIT: 3,  # Channel 9
+        }
         self._build_row_specs()
         self.sequencer_rows: int = 4
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")

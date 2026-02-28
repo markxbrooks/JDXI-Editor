@@ -9,12 +9,6 @@ from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 def reset_button(button: SequencerButton):
     """reset the Sequencer button"""
-    button.row = button.row  # or keep as is if you really want to preserve
-    # If you want to reset the local column as well, assign explicitly
-    # button.column = button.column
-    button.note = None
-    button.note_duration = None
-    button.note_velocity = None
     button.note_spec = NoteButtonSpec()
     update_button_state(button, False)
 

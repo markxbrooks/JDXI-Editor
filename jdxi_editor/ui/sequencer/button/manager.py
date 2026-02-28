@@ -11,6 +11,7 @@ from decologr import Decologr as log
 from PySide6.QtWidgets import QComboBox
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
 
 
 class NoteButtonAttrs:
@@ -30,23 +31,40 @@ class ButtonState:
         note: Optional[int] = None,
         velocity: int = 100,
         duration_ms: float = 120.0,
+        *,
+        note_spec: Optional[NoteButtonSpec] = None,
     ):
         """
         Initialize button state.
 
         :param is_checked: Whether button is activated
-        :param note: MIDI note number
+        :param note: MIDI note number (used if note_spec not provided)
         :param velocity: Note velocity (0-127)
         :param duration_ms: Note duration in milliseconds
+        :param note_spec: Canonical note data; takes precedence over note/velocity/duration_ms
         """
         self.is_checked = is_checked
-        self.note = note
-        self.velocity = velocity
-        self.duration_ms = duration_ms
+        self.note_spec = note_spec or NoteButtonSpec(
+            note=note,
+            duration_ms=int(duration_ms or 120),
+            velocity=velocity or 100,
+        )
+
+    @property
+    def note(self) -> Optional[int]:
+        return self.note_spec.note
+
+    @property
+    def velocity(self) -> int:
+        return self.note_spec.velocity
+
+    @property
+    def duration_ms(self) -> float:
+        return float(self.note_spec.duration_ms)
 
     def is_active(self) -> bool:
-        """Check if button has an active note."""
-        return self.is_checked and self.note is not None
+        """Check if button has an active note (checked and has note)."""
+        return self.is_checked and self.note_spec.is_active
 
 
 class SequencerButtonManager:
@@ -329,12 +347,6 @@ class SequencerButtonManager:
         :param button: SequencerButton to reset
         """
         try:
-            button.row = button.row  # Preserve row/column
-            button.note = None
-            button.duration = None
-            button.velocity = None
-
-            # Clear note spec
             if hasattr(button, "note_spec"):
                 button.note_spec = self._create_empty_note_spec()
 
@@ -603,6 +615,9 @@ class SequencerButtonManager:
         :param button: SequencerButton
         :return: ButtonState object
         """
+        note_spec = getattr(button, "note_spec", None)
+        if note_spec is not None:
+            return ButtonState(is_checked=button.isChecked(), note_spec=note_spec)
         return ButtonState(
             is_checked=button.isChecked(),
             note=getattr(button, NoteButtonAttrs.NOTE, None),
@@ -647,30 +662,20 @@ class SequencerButtonManager:
         :param note: MIDI note number
         :param duration_ms: Duration in milliseconds
         :param velocity: Velocity (0-127)
-        :return: NoteButtonSpec-like object
+        :return: NoteButtonSpec
         """
-
-        class NoteSpec:
-            def __init__(self, note, duration_ms, velocity):
-                self.note = note
-                self.duration_ms = duration_ms or 120
-                self.velocity = velocity or 100
-                self.is_active = note is not None
-
-        return NoteSpec(note, duration_ms, velocity)
+        return NoteButtonSpec(
+            note=note,
+            duration_ms=int(duration_ms or 120),
+            velocity=velocity or 100,
+        )
 
     def _create_empty_note_spec(self):
         """Create an empty note spec."""
-        return self._create_note_spec(
-            None, self.default_duration_ms, self.default_velocity
-        )
+        return NoteButtonSpec()
 
     def _reset_button_internal(self, button) -> None:
         """Internal button reset (without logging)."""
-        button.note = None
-        button.duration = None
-        button.velocity = None
-
         if hasattr(button, "note_spec"):
             button.note_spec = self._create_empty_note_spec()
 
