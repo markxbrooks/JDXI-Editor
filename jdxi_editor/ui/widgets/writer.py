@@ -26,3 +26,11 @@ class WidgetWriter:
             return
 
         raise TypeError(f"Unsupported widget type: {type(widget)}")
+
+    @classmethod
+    def set_slider(cls, widget, display):
+        pass
+
+    @classmethod
+    def set_combo(cls, widget, value):
+        pass

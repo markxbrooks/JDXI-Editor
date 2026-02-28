@@ -1,3 +1,7 @@
+"""
+Profiling decorator
+"""
+
 import cProfile
 import io
 import logging

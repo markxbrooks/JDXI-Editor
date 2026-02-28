@@ -120,8 +120,8 @@ class EffectsCommonEditor(BasicEditor):
             controls=self.controls,
             param_registry=EffectParamRegistry(EFFECT_PARAM_TYPES),
             type_handler=EffectTypeHandler(
-                self._update_efx1_labels,
-                self._update_efx2_labels,
+                self.update_efx1_labels,
+                self.update_efx2_labels,
             ),
         )
         self.EFX1_PARAMETERS = [
@@ -329,12 +329,12 @@ class EffectsCommonEditor(BasicEditor):
         efx1_type_ctrl = self.controls.get(Effect1Param.EFX1_TYPE)
         if efx1_type_ctrl and hasattr(efx1_type_ctrl, "combo_box"):
             efx1_type_ctrl.combo_box.currentIndexChanged.connect(
-                self._update_efx1_labels
+                self.update_efx1_labels
             )
         efx2_type_ctrl = self.controls.get(Effect2Param.EFX2_TYPE)
         if efx2_type_ctrl and hasattr(efx2_type_ctrl, "combo_box"):
             efx2_type_ctrl.combo_box.currentIndexChanged.connect(
-                self._update_efx2_labels
+                self.update_efx2_labels
             )
         # self.efx2_type.combo_box.currentIndexChanged.connect(self.data_request)
 
@@ -436,7 +436,7 @@ class EffectsCommonEditor(BasicEditor):
                 message=f"Failed to update flanger rate/note controls: {ex}",
             )
 
-    def _update_efx1_labels(self, effect_type: int):
+    def update_efx1_labels(self, effect_type: int):
         """
         Update Effect 1 parameter labels based on selected effect type.
 
@@ -482,7 +482,7 @@ class EffectsCommonEditor(BasicEditor):
                 message=f"Error updating EFX1 labels: {ex}",
             )
 
-    def _update_efx2_labels(self, effect_type: int):
+    def update_efx2_labels(self, effect_type: int):
         """
         Update Effect 2 parameter labels based on selected effect type.
 

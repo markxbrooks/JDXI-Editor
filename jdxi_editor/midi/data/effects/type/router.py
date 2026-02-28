@@ -43,7 +43,7 @@ class EffectTypeRouter:
     def flush(self):
         for kind, value in self.pending_label_updates:
             if kind == "efx1":
-                self.editor._update_efx1_labels(value)
+                self.editor.update_efx1_labels(value)
             else:
-                self.editor._update_efx2_labels(value)
+                self.editor.update_efx2_labels(value)
         self.pending_label_updates.clear()
