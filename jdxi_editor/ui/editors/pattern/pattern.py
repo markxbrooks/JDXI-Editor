@@ -156,6 +156,7 @@ class PatternSequenceEditor(PatternUI):
             midi_file_editor=midi_file_editor,
         )
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Bar", "Measures" -> "Bars")
+
         self.ppq: int = 480
         self._state: TransportState | None = None
         self.timing = TimingConfig()
@@ -312,6 +313,7 @@ class PatternSequenceEditor(PatternUI):
         )
 
     def _init_playback_controller(self):
+        """init playback controller"""
         ms_per_step = int(self._calculate_step_duration())
         playback_config = PlaybackConfig(
             ticks_per_beat=self.ppq,
@@ -346,6 +348,7 @@ class PatternSequenceEditor(PatternUI):
             )
 
     def _init_midi_file_controller(self):
+        """init midi file controller"""
         midi_controller_config = MidiFileControllerConfig(
             ticks_per_beat=self.ppq,
             beats_per_measure=4,
@@ -361,6 +364,7 @@ class PatternSequenceEditor(PatternUI):
         self._sync_from_midi_file_controller()
 
     def _init_pattern_learner(self):
+        """init pattern learner"""
         learner_config = PatternLearnerConfig(
             total_steps=self.measure_beats,
             total_rows=4,
@@ -493,7 +497,7 @@ class PatternSequenceEditor(PatternUI):
         )
 
     def _sync_pattern_length(self):
-        # Update total measures (but keep total_steps at 16)
+        """Update total measures (but keep total_steps at 16)"""
         self.total_measures = len(self.measure_widgets)
         self._update_pattern_length()
 
@@ -504,12 +508,6 @@ class PatternSequenceEditor(PatternUI):
             self.midi_helper.midi_message_outgoing.connect(combo.process_outgoing_midi)
 
     def _init_model_structures(self):
-        self.row_labels = [
-            "Digital Synth 1",
-            "Digital Synth 2",
-            "Analog Synth",
-            "Drums",
-        ]
         self.mute_buttons = []
         self.specs = self._build_specs()
 
@@ -656,10 +654,18 @@ class PatternSequenceEditor(PatternUI):
         if bar_index < 0 or bar_index >= len(self.measure_widgets):
             return
 
-        # Update all sequencer buttons to show current step
-        self._for_each_button(self._highlight_step)
+        if self.pattern_widget:
+            current_step_in_bar = self.current_step % self.total_steps
+            self.pattern_widget.for_each_button(
+                lambda r, s, btn: self.pattern_widget.highlight_step(
+                    r, s, btn.isChecked(), current_step_in_bar == s
+                )
+            )
+        else:
+            self._for_each_button(self._highlight_step)
 
     def _highlight_step(self, row: int, step: int):
+        """Legacy: used when pattern_widget is None."""
         if step < len(self.buttons[row]):
             button = self.buttons[row][step]
             is_checked = button.isChecked()
@@ -681,10 +687,13 @@ class PatternSequenceEditor(PatternUI):
         log.message(message="Cleared learned pattern.", scope=self.__class__.__name__)
 
     def _clear_sequencer(self):
-        for row in range(self.sequencer_rows):
-            for button in self.buttons[row]:
-                reset_button(button)
-                set_sequencer_style(button)
+        if self.pattern_widget:
+            self.pattern_widget.clear_buttons(reset_button, set_sequencer_style)
+        else:
+            for row in range(self.sequencer_rows):
+                for button in self.buttons[row]:
+                    reset_button(button)
+                    set_sequencer_style(button)
 
     def _clear_pattern(self):
         """Clear the learned pattern and reset button states."""
@@ -823,9 +832,15 @@ class PatternSequenceEditor(PatternUI):
 
     def _for_each_button(self, func):
         """Apply func(row, step) to each sequencer position."""
-        for row in range(self.sequencer_rows):
-            for step in range(self.measure_beats):
-                func(row, step)
+        if self.pattern_widget:
+            self.pattern_widget.for_each_button(lambda r, s, _b: func(r, s))
+        else:
+            for row in range(self.sequencer_rows):
+                self._each_measure_beat_row(func, row)
+
+    def _each_measure_beat_row(self, func, row: int):
+        for step in range(self.measure_beats):
+            func(row, step)
 
     def _update_button_state(self, active_steps: int, row: int, step: int):
         button = self.buttons[row][step]
@@ -859,25 +874,29 @@ class PatternSequenceEditor(PatternUI):
         """Enable/disable sequencer buttons based on beats per measure setting"""
         # Steps 12-15 disabled when beats_per_measure is 12
         for row in range(self.sequencer_rows):
-            for step in range(self.measure_beats):
-                if step < len(self.buttons[row]):
-                    button = self.buttons[row][step]
-                    if self.measure_beats == MeasureBeats.PER_MEASURE_3_4:
-                        # Disable last 4 buttons (steps 12-15)
-                        button.setEnabled(step < MeasureBeats.PER_MEASURE_3_4)
-                        if step >= MeasureBeats.PER_MEASURE_3_4:
-                            button.setEnabled(False)
-                            button.setChecked(False)  # Uncheck disabled buttons
-                            for measure in self.measure_widgets:
-                                if step < len(measure.buttons[row]):
-                                    reset_button(measure.buttons[row][step])
-                    else:
-                        # Enable all 16 buttons
-                        update_button_state(button, button.isChecked())
+            func = self._update_button_states_measure
+            self._each_measure_beat_row(func=func, row=row)
 
         # Sync sequencer digital after updating button states
         if self.current_measure_index < len(self.measure_widgets):
             self._sync_sequencer_with_measure(self.current_measure_index)
+
+    def _update_button_states_measure(self, row: int, step: int):
+        """update button states measure"""
+        if step < len(self.buttons[row]):
+            button = self.buttons[row][step]
+            if self.measure_beats == MeasureBeats.PER_MEASURE_3_4:
+                # Disable last 4 buttons (steps 12-15)
+                button.setEnabled(step < MeasureBeats.PER_MEASURE_3_4)
+                if step >= MeasureBeats.PER_MEASURE_3_4:
+                    button.setEnabled(False)
+                    button.setChecked(False)  # Uncheck disabled buttons
+                    for measure in self.measure_widgets:
+                        if step < len(measure.buttons[row]):
+                            reset_button(measure.buttons[row][step])
+            else:
+                # Enable all 16 buttons
+                update_button_state(button, button.isChecked())
 
     def _get_step_buttons(self, row: int, step: int):
         """get step buttons"""
@@ -1054,45 +1073,49 @@ class PatternSequenceEditor(PatternUI):
         events = []
 
         for measure_index, measure in enumerate(self.measure_widgets):
-            for step in range(MeasureBeats.PER_MEASURE_4_4):
-                absolute_tick = measure_index * ticks_per_bar + step * ticks_per_step
-
-                for row in range(self.sequencer_rows):
-                    channel = self.get_channel_for_row(row)
-                    button = measure.buttons[row][step]
-                    spec = get_button_note_spec(button)
-
-                    if button.isChecked() and spec.is_active:
-                        events.append(
-                            (
-                                absolute_tick,
-                                Message(
-                                    MidoMessageType.NOTE_ON.value,
-                                    note=spec.note,
-                                    velocity=spec.velocity,
-                                    time=0,
-                                    channel=channel,
-                                ),
-                            )
-                        )
-
-                        events.append(
-                            (
-                                absolute_tick + ticks_per_step,
-                                Message(
-                                    MidoMessageType.NOTE_OFF.value,
-                                    note=spec.note,
-                                    velocity=spec.velocity,
-                                    time=0,
-                                    channel=channel,
-                                ),
-                            )
-                        )
+            for step in range(self.measure_beats):
+                self._add_event_to_pattern(events, measure, measure_index, step, ticks_per_bar, ticks_per_step)
 
         # Sort events by absolute time
         events.sort(key=lambda e: e[0])
 
         convert_absolute_time_to_delta_time(events, track)
+
+    def _add_event_to_pattern(self, events: list[Any], measure: PatternMeasureWidget, measure_index: int, step: int,
+                              ticks_per_bar: int, ticks_per_step: int):
+        absolute_tick = measure_index * ticks_per_bar + step * ticks_per_step
+
+        for row in range(self.sequencer_rows):
+            channel = self.get_channel_for_row(row)
+            button = measure.buttons[row][step]
+            spec = get_button_note_spec(button)
+
+            if button.isChecked() and spec.is_active:
+                events.append(
+                    (
+                        absolute_tick,
+                        Message(
+                            MidoMessageType.NOTE_ON.value,
+                            note=spec.note,
+                            velocity=spec.velocity,
+                            time=0,
+                            channel=channel,
+                        ),
+                    )
+                )
+
+                events.append(
+                    (
+                        absolute_tick + ticks_per_step,
+                        Message(
+                            MidoMessageType.NOTE_OFF.value,
+                            note=spec.note,
+                            velocity=spec.velocity,
+                            time=0,
+                            channel=channel,
+                        ),
+                    )
+                )
 
     def get_channel_for_row(self, row: int) -> int:
         """Get idi channel for each row"""

@@ -216,6 +216,41 @@ class PatternWidget(QWidget):
             return self.measure_widgets[self.current_measure_index]
         return None
 
+    def for_each_button(
+        self, callback: Callable[[int, int, SequencerButton], None]
+    ) -> None:
+        """Apply callback(row, step, button) to each button in the current measure."""
+        widget = self.get_current_measure_widget()
+        if not widget:
+            return
+        for row in range(self.config.rows):
+            if row >= len(widget.buttons):
+                continue
+            for step in range(len(widget.buttons[row])):
+                callback(row, step, widget.buttons[row][step])
+
+    def highlight_step(
+        self, row: int, step: int, is_checked: bool, is_current: bool
+    ) -> None:
+        """Apply sequencer style to the button at (row, step)."""
+        widget = self.get_current_measure_widget()
+        if not widget or row >= len(widget.buttons) or step >= len(widget.buttons[row]):
+            return
+        btn = widget.buttons[row][step]
+        set_sequencer_style(btn, is_current=is_current, checked=is_checked)
+
+    def clear_buttons(
+        self,
+        reset_fn: Callable[[SequencerButton], None],
+        style_fn: Callable[[SequencerButton], None],
+    ) -> None:
+        """Reset and restyle each button in the current measure."""
+        def apply(_r: int, _s: int, btn: SequencerButton) -> None:
+            reset_fn(btn)
+            style_fn(btn)
+
+        self.for_each_button(apply)
+
     def sync_ui_to_measure(self, measure_index: int) -> None:
         """
         Synchronize UI buttons with measure data.
