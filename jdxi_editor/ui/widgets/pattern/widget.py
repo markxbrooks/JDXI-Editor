@@ -499,6 +499,8 @@ class PatternWidget(QWidget):
         if 0 <= self.current_measure_index < len(self.measure_widgets):
             w = self.measure_widgets[self.current_measure_index]
             self.sequencer_display.addWidget(w)
+            # Refresh all button styles so checked state matches visual (fixes load/switch)
+            self._apply_sequencer_style(w)
 
     def _apply_sequencer_style(self, widget: PatternMeasureWidget) -> None:
         """Apply sequencer button styling to all buttons in the measure widget."""
