@@ -16,11 +16,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
@@ -30,19 +29,18 @@ if TYPE_CHECKING:
 
 from decologr import Decologr as log
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
-    get_program_by_id,
+    get_program_by_id
 )
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox,
+    SearchableFilterableComboBox
 )
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
@@ -95,8 +93,8 @@ class ProgramGroup(QGroupBox):
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
         log.message(
             f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})",
-            scope=self.__class__.__name__,
-        )
+            scope=self.__class__.__name__
+)
 
         # Edit Program Name (round button + icon + label, centered)
         edit_name_row = QHBoxLayout()
@@ -106,8 +104,8 @@ class ProgramGroup(QGroupBox):
             "Edit Program Name",
             self.edit_program_name,
             edit_name_row,
-            name="edit_program_name",
-        )
+            name="edit_program_name"
+)
         edit_name_row.addStretch()
         program_vlayout.addLayout(edit_name_row)
 
@@ -125,8 +123,8 @@ class ProgramGroup(QGroupBox):
             show_bank=True,
             search_placeholder="Search programs...",
             category_label="Genre:",
-            bank_label="Bank:",
-        )
+            bank_label="Bank:"
+)
         program_vlayout.addWidget(self.program_number_combo_box)
 
         # Store reference to actual program list for use in filtering
@@ -139,8 +137,8 @@ class ProgramGroup(QGroupBox):
             "Load Program",
             self.load_program,
             load_program_row,
-            name=None,
-        )
+            name=None
+)
         load_program_row.addStretch()
         program_vlayout.addLayout(load_program_row)
 
@@ -152,8 +150,8 @@ class ProgramGroup(QGroupBox):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False,
-    ) -> QPushButton:
+        checkable: bool = False
+) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)

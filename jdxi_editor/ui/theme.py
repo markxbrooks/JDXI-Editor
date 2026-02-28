@@ -734,30 +734,30 @@ class ThemeManager(QObject):
             padding: 4px;
         }}
 
-        QMenu::item {
+        QMenu::item {{
             padding: 6px 24px;
             border-radius: 4px;
-        }
+        }}
 
-        QMenu::item:selected {
+        QMenu::item:selected {{
             background-color: palette(highlight);
             color: palette(highlighted-text);
-        }
+        }}
 
-        QMenu::separator {
+        QMenu::separator {{
             height: 1px;
             background-color: palette(mid);
             margin: 4px 8px;
-        }
+        }}
 
         /* Enhanced table row alternation */
-        QTableView {
+        QTableView {{
             alternate-background-color: palette(alternate-base);
-        }
+        }}
 
-        QTableView::item:alternate {
+        QTableView::item:alternate {{
             background-color: palette(alternate-base);
-        }
+        }}
 
         QTableView::item:hover {{
             border-left: 3px solid palette(highlight);

@@ -30,7 +30,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_ADDRESS_MAP,
     DRUM_GROUP_MAP,
 )
-from jdxi_editor.midi.parameter.spec import ParameterSpec
+from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
 
 
 class DrumPartialParam(AddressParameter):
@@ -218,11 +218,8 @@ class DrumPartialParam(AddressParameter):
     # Partial Alternate Pan Depth
     PARTIAL_ALTERNATE_PAN_DEPTH = ParameterSpec(
         0x14,
-        1,
-        127,
-        -63,
-        63,
-        "Use this parameter when you want the stereo location to change randomly each time you press\na key.\nHigher settings will produce a greater amount of change.\nNOTE\nThis applies only to waves whose Wave Random Pan Sw parameter (p. 21) is ON.",
+        *RANGE_BIPOLAR_63,
+        description="Use this parameter when you want the stereo location to change randomly each time you press\na key.\nHigher settings will produce a greater amount of change.\nNOTE\nThis applies only to waves whose Wave Random Pan Sw parameter (p. 21) is ON.",
     )  # L63 - 63R
 
     # Partial Env Mode
@@ -1084,34 +1081,25 @@ class DrumPartialParam(AddressParameter):
     # Pitch Env Velocity Sens
     PITCH_ENV_VELOCITY_SENS = ParameterSpec(
         0x116,
-        1,
-        127,
-        -63,
-        63,
-        "Keyboard playing dynamics can be used to control the depth of the pitch envelope.\nSpecify a positive (“+”) setting if you want the pitch envelope to have a greater effect as you play\nthe key more strongly; specify a negative (“-”) setting if you want the pitch envelope to have less\neffect.",
-        "V-Sens",
+        *RANGE_BIPOLAR_63,
+        description="Keyboard playing dynamics can be used to control the depth of the pitch envelope.\nSpecify a positive (“+”) setting if you want the pitch envelope to have a greater effect as you play\nthe key more strongly; specify a negative (“-”) setting if you want the pitch envelope to have less\neffect.",
+        display_name="V-Sens",
     )  # -63 - +63
 
     # Pitch Env Time 1 Velocity Sens
     PITCH_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x117,
-        1,
-        127,
-        -63,
-        63,
-        "Allows keyboard dynamics to affect the Time 1 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 1 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 1 to become slower.",
-        "T1 V-Sens",
+        *RANGE_BIPOLAR_63,
+        description="Allows keyboard dynamics to affect the Time 1 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 1 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 1 to become slower.",
+        display_name="T1 V-Sens",
     )  # -63 - +63
 
     # Pitch Env Time 4 Velocity Sens
     PITCH_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x118,
-        1,
-        127,
-        -63,
-        63,
-        "Allows keyboard dynamics to affect the Time 4 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 4 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 4 to become slower.",
-        "T4 V-Sens",
+        *RANGE_BIPOLAR_63,
+        description="Allows keyboard dynamics to affect the Time 4 of the Pitch envelope.\nSpecify a positive (“+”) setting if you want Time 4 to become faster as you play the key more\nstrongly; specify a negative (“-”) setting if you want Time 4 to become slower.",
+        display_name="T4 V-Sens",
     )  # -63 - +63
 
     # Pitch Env Time 1
@@ -1153,56 +1141,41 @@ class DrumPartialParam(AddressParameter):
     # Pitch Env Level 0
     PITCH_ENV_LEVEL_0 = ParameterSpec(
         0x11D,
-        1,
-        127,
-        -63,
-        63,
-        "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
-        "Level 0",
+        *RANGE_BIPOLAR_63,
+        description="Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        display_name="Level 0",
     )
 
     # Pitch Env Level 1
     PITCH_ENV_LEVEL_1 = ParameterSpec(
         0x11E,
-        1,
-        127,
-        -63,
-        63,
-        "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
-        "Level 1",
+        *RANGE_BIPOLAR_63,
+        description="Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        display_name="Level 1",
     )  # -63 - +63
 
     # Pitch Env Level 2
     PITCH_ENV_LEVEL_2 = ParameterSpec(
         0x11F,
-        1,
-        127,
-        -63,
-        63,
-        "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
-        "Level 2",
+        *RANGE_BIPOLAR_63,
+        description="Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        display_name="Level 2",
     )  # -63 - +63
 
     # Pitch Env Level 3
     PITCH_ENV_LEVEL_3 = ParameterSpec(
         0x120,
-        1,
-        127,
-        -63,
-        63,
-        "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
-        "Level 3",
+        *RANGE_BIPOLAR_63,
+        description="Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        display_name="Level 3",
     )  # -63 - +63
 
     # Pitch Env Level 4
     PITCH_ENV_LEVEL_4 = ParameterSpec(
         0x121,
-        1,
-        127,
-        -63,
-        63,
-        "Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
-        "Level 4",
+        *RANGE_BIPOLAR_63,
+        description="Specify the pitch envelope levels (Level 0–Level 4).\nThese specify the amount of pitch change at each point relative to the standard pitch\n(Pitch screen) specified by coarse tune (and fine tune).\nPositive (“+”) settings make the pitch\nhigher than the standard pitch; negative (“-”) settings make the pitch lower.",
+        display_name="Level 4",
     )  # -63 - +63
 
     # TVF Filter Type
@@ -1236,11 +1209,8 @@ class DrumPartialParam(AddressParameter):
     # TVF Cutoff Velocity Sens
     TVF_CUTOFF_VELOCITY_SENS = ParameterSpec(
         0x125,
-        1,
-        127,
-        -63,
-        63,
-        "Use this parameter when changing the cutoff frequency to be applied as a result of changes in\nplaying velocity.\nSpecify a positive (“+”) setting if you want the cutoff frequency to become higher as you play\nmore strongly; specify a negative (“-”) setting if you want the cutoff frequency to become lower.",
+        *RANGE_BIPOLAR_63,
+        description="Use this parameter when changing the cutoff frequency to be applied as a result of changes in\nplaying velocity.\nSpecify a positive (“+”) setting if you want the cutoff frequency to become higher as you play\nmore strongly; specify a negative (“-”) setting if you want the cutoff frequency to become lower.",
     )  # -63 - +63
 
     # TVF Resonance
@@ -1254,21 +1224,15 @@ class DrumPartialParam(AddressParameter):
     # TVF Resonance Velocity Sens
     TVF_RESONANCE_VELOCITY_SENS = ParameterSpec(
         0x127,
-        1,
-        127,
-        -63,
-        63,
-        "This allows keyboard velocity to modify the amount of Resonance.\nSpecify a positive (“+”) setting if you want the resonance to increase as you play more strongly;\nspecify a negative (“-”) setting if you want the resonance to decrease.",
+        *RANGE_BIPOLAR_63,
+        description="This allows keyboard velocity to modify the amount of Resonance.\nSpecify a positive (“+”) setting if you want the resonance to increase as you play more strongly;\nspecify a negative (“-”) setting if you want the resonance to decrease.",
     )  # -63 - +63
 
     # TVF Env Depth
     TVF_ENV_DEPTH = ParameterSpec(
         0x128,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the depth of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        *RANGE_BIPOLAR_63,
+        description="Sets the depth of the envelope. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -63 - +63
 
     # TVF Env Velocity Curve Type
@@ -1284,31 +1248,22 @@ class DrumPartialParam(AddressParameter):
     # TVF Env Velocity Sens
     TVF_ENV_VELOCITY_SENS = ParameterSpec(
         0x137,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        *RANGE_BIPOLAR_63,
+        description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -63 - +63
 
     # TVF Env Time 1 Velocity Sens
     TVF_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x12B,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        *RANGE_BIPOLAR_63,
+        description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -63 - +63
 
     # TVF Env Time 4 Velocity Sens
     TVF_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x12C,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        *RANGE_BIPOLAR_63,
+        description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -63 - +63
 
     # TVF Env Time 1
@@ -1397,34 +1352,25 @@ class DrumPartialParam(AddressParameter):
     # TVA Level Velocity Sens
     TVA_LEVEL_VELOCITY_SENS = ParameterSpec(
         0x137,
-        1,
-        127,
-        -63,
-        63,
-        "Set this when you want the volume of the drum partial to change depending on the force with\nwhich you press the keys.\nSpecify a positive (“+”) setting if you want the volume of the drum partial to increase as you play\nmore strongly; specify a negative (“-”) setting if you want the volume to decrease.",
-        "Level Velocity Sens",
+        *RANGE_BIPOLAR_63,
+        description="Set this when you want the volume of the drum partial to change depending on the force with\nwhich you press the keys.\nSpecify a positive (“+”) setting if you want the volume of the drum partial to increase as you play\nmore strongly; specify a negative (“-”) setting if you want the volume to decrease.",
+        display_name="Level Velocity Sens",
     )
 
     # TVA Env Time 1 Velocity Sens
     TVA_ENV_TIME_1_VELOCITY_SENS = ParameterSpec(
         0x138,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
-        "Env Time 1 Velocity Sens",
+        *RANGE_BIPOLAR_63,
+        description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        display_name="Env Time 1 Velocity Sens",
     )  # -63 - +63
 
     # TVA Env Time 4 Velocity Sens
     TVA_ENV_TIME_4_VELOCITY_SENS = ParameterSpec(
         0x139,
-        1,
-        127,
-        -63,
-        63,
-        "Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
-        "T4 V-Sens",
+        *RANGE_BIPOLAR_63,
+        description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        display_name="T4 V-Sens",
     )  # -63 - +63
 
     # TVA Env Time 1

@@ -35,12 +35,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
     QMainWindow,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
+    QPushButton
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.project import __package_name__
@@ -65,8 +63,8 @@ class PatchManager(QMainWindow):
         midi_helper: Optional[MidiIOHelper] = None,
         parent=None,
         save_mode=False,
-        editors=None,
-    ):
+        editors=None
+):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode
@@ -115,15 +113,15 @@ class PatchManager(QMainWindow):
                     self,
                     "Save Patch File",
                     "",
-                    "Music Bundle (*.msz);Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)",
-                )
+                    "Music Bundle (*.msz);Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)"
+)
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Load Patch File",
                     "",
-                    "Music Bundle (*.msz);Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)",
-                )
+                    "Music Bundle (*.msz);Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)"
+)
             if file_path:
                 self.path_input.setText(file_path)
         except Exception as ex:
@@ -345,15 +343,15 @@ class PatchManager(QMainWindow):
                                     ):
                                         if hasattr(
                                             midi_file_editor.midi_playback_worker,
-                                            "stop",
-                                        ):
+                                            "stop"
+):
                                             midi_file_editor.midi_playback_worker.stop()
 
                                     # Reset playback state
                                     if hasattr(
                                         midi_file_editor.midi_state,
-                                        "playback_start_time",
-                                    ):
+                                        "playback_start_time"
+):
                                         midi_file_editor.midi_state.playback_start_time = (
                                             None
                                         )

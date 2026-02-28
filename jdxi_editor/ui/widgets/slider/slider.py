@@ -29,10 +29,9 @@ from PySide6.QtWidgets import (
     QLabel,
     QSizePolicy,
     QSlider,
-    QVBoxLayout,
-    QWidget,
 )
 
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 

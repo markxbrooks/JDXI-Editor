@@ -7,11 +7,8 @@ from decologr import Decologr as log
 from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import QRectF
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPixmap
-from PySide6.QtWidgets import (
-    QWidget,
-)
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
 from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
 
@@ -26,8 +23,8 @@ class MidiTrackWidget(QWidget):
         track: mido.MidiTrack,
         track_number: int,
         total_length: float,
-        parent: QWidget = None,
-    ):
+        parent: QWidget = None
+):
         """
         Initialize the MidiTrackWidget.
 

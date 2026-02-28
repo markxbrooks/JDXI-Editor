@@ -40,12 +40,10 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QSizePolicy,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
@@ -53,13 +51,13 @@ from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox,
+    SearchableFilterableComboBox
 )
 from jdxi_editor.ui.widgets.editor.helper import (
     create_adsr_icon,
     create_group_with_form_layout,
     create_scrolled_area_with_layout,
-    transfer_layout_items,
+    transfer_layout_items
 )
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.wmt.envelope import WMTEnvelopeWidget
@@ -73,8 +71,8 @@ class DrumWMTSection(SectionBaseWidget):
         controls: dict,
         midi_helper: MidiIOHelper,
         address: JDXiSysExAddress = None,
-        on_parameter_changed: Callable = None,
-    ):
+        on_parameter_changed: Callable = None
+):
         super().__init__()
         """
         Initialize the DrumWMTSection
@@ -132,8 +130,8 @@ class DrumWMTSection(SectionBaseWidget):
         wmt_velocity_control_combo = self._create_parameter_switch(
             DrumPartialParam.WMT_VELOCITY_CONTROL,
             DrumDisplayName.WMT_VELOCITY_CONTROL,
-            DrumDisplayOptions.WMT_VELOCITY_CONTROL,
-        )
+            DrumDisplayOptions.WMT_VELOCITY_CONTROL
+)
         wmt_velocity_control_combo_row_layout.addWidget(wmt_velocity_control_combo)
         wmt_velocity_control_combo_row_layout.addStretch()
 
@@ -217,16 +215,16 @@ class DrumWMTSection(SectionBaseWidget):
         self.wave_switch = self._create_parameter_switch(
             p("WAVE_SWITCH"),
             DrumDisplayName.WMT_WAVE_SWITCH,
-            values=DrumDisplayOptions.WMT_WAVE_SWITCH,
-        )
+            values=DrumDisplayOptions.WMT_WAVE_SWITCH
+)
         widgets = [
             self.wave_switch,
             self._create_parameter_combo_box(
                 p("WAVE_GAIN"),
                 DrumDisplayName.WMT_WAVE_GAIN,
                 options=DrumDisplayOptions.WMT_WAVE_GAIN,
-                values=[0, 1, 2, 3],
-            ),
+                values=[0, 1, 2, 3]
+),
             self._create_parameter_slider(
                 p("WAVE_TEMPO_SYNC"), DrumDisplayName.WMT_WAVE_TEMPO_SYNC
             ),
@@ -345,8 +343,8 @@ class DrumWMTSection(SectionBaseWidget):
             show_category=True,
             search_placeholder="Search L waves...",
             category_label="Group:",
-            search_label="Search:",
-        )
+            search_label="Search:"
+)
         # Connect to parameter change handler using the same pattern as _create_parameter_combo_box
         # The valueChanged signal emits the original value (not filtered index), which is correct
         l_wave_combo.valueChanged.connect(
@@ -368,8 +366,8 @@ class DrumWMTSection(SectionBaseWidget):
             show_category=True,
             search_placeholder="Search R waves...",
             category_label="Group:",
-            search_label="Search:",
-        )
+            search_label="Search:"
+)
         # Connect to parameter change handler using the same pattern as _create_parameter_combo_box
         r_wave_combo.valueChanged.connect(
             lambda v: self._on_wave_parameter_changed(r_wave_param, v)
@@ -401,14 +399,14 @@ class DrumWMTSection(SectionBaseWidget):
                 p("WAVE_RANDOM_PAN_SWITCH"),
                 "Wave Random Pan Switch",
                 ["OFF", "ON"],
-                [0, 1],
-            ),
+                [0, 1]
+),
             self._create_parameter_combo_box(
                 p("WAVE_ALTERNATE_PAN_SWITCH"),
                 "Wave Alternate Pan Switch",
                 ["OFF", "ON", "REVERSE"],
-                [0, 1, 2],
-            ),
+                [0, 1, 2]
+),
         ]
         group, _ = create_group_with_form_layout(widgets, label="Pan")
         return group
@@ -423,8 +421,8 @@ class DrumWMTSection(SectionBaseWidget):
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             midi_helper=self.midi_helper,
-            address=self.address,
-        )
+            address=self.address
+)
         adsr_widget.setStyleSheet(JDXi.UI.Style.ADSR)
         return adsr_widget
 

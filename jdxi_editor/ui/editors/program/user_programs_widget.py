@@ -20,12 +20,10 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QTableWidget,
-    QTableWidgetItem,
-    QVBoxLayout,
-    QWidget,
+    QTableWidgetItem
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
@@ -46,8 +44,8 @@ class UserProgramsWidget(QWidget):
         midi_helper: Optional[MidiIOHelper] = None,
         channel: int = 16,  # Default PROGRAM channel (0-based)
         parent: Optional[QWidget] = None,
-        on_program_loaded: Optional[Callable[[JDXiProgram], None]] = None,
-    ):
+        on_program_loaded: Optional[Callable[[JDXiProgram], None]] = None
+):
         """
         Initialize the UserProgramsWidget.
 
@@ -168,8 +166,8 @@ class UserProgramsWidget(QWidget):
             "Save Changes",
             self.save_changes,
             button_layout,
-            name="save_user_programs",
-        )
+            name="save_user_programs"
+)
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
@@ -181,8 +179,8 @@ class UserProgramsWidget(QWidget):
         except Exception as e:
             log.error(
                 f"❌ Error populating user programs table: {e}",
-                scope="UserProgramsWidget",
-            )
+                scope="UserProgramsWidget"
+)
             import traceback
 
             log.error(traceback.format_exc())
@@ -196,8 +194,8 @@ class UserProgramsWidget(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False,
-    ) -> QPushButton:
+        checkable: bool = False
+) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -293,18 +291,18 @@ class UserProgramsWidget(QWidget):
             self.user_programs_table.setItem(
                 row,
                 4,
-                QTableWidgetItem(str(program.pc) if program.pc is not None else ""),
-            )
+                QTableWidgetItem(str(program.pc) if program.pc is not None else "")
+)
             self.user_programs_table.setItem(
                 row,
                 5,
-                QTableWidgetItem(str(program.msb) if program.msb is not None else ""),
-            )
+                QTableWidgetItem(str(program.msb) if program.msb is not None else "")
+)
             self.user_programs_table.setItem(
                 row,
                 6,
-                QTableWidgetItem(str(program.lsb) if program.lsb is not None else ""),
-            )
+                QTableWidgetItem(str(program.lsb) if program.lsb is not None else "")
+)
             self.user_programs_table.setItem(
                 row, 7, QTableWidgetItem(program.digital_1 or "")
             )
@@ -326,8 +324,8 @@ class UserProgramsWidget(QWidget):
 
         log.message(
             f"✅Populated user programs table with {len(all_programs)} programs",
-            scope="UserProgramsWidget",
-        )
+            scope="UserProgramsWidget"
+)
 
     def save_changes(self) -> None:
         """Save changes made to the user programs table (e.g., genre edits) to the database."""
@@ -384,8 +382,8 @@ class UserProgramsWidget(QWidget):
                     analog=program.analog,
                     digital_1=program.digital_1,
                     digital_2=program.digital_2,
-                    drums=program.drums,
-                )
+                    drums=program.drums
+)
 
                 # Save to database
                 if add_or_replace_program_and_save(updated_program):
@@ -397,8 +395,8 @@ class UserProgramsWidget(QWidget):
                         changes.append(f"genre: '{program.genre}' -> '{new_genre}'")
                     log.message(
                         f"✅ Updated {program.id}: {', '.join(changes)}",
-                        scope="UserProgramsWidget",
-                    )
+                        scope="UserProgramsWidget"
+)
                     # Update the stored program object in item data
                     for col in range(11):
                         item = self.user_programs_table.item(row, col)
@@ -408,8 +406,8 @@ class UserProgramsWidget(QWidget):
                     error_count += 1
                     log.error(
                         f"❌Failed to save update for {program.id}",
-                        scope="UserProgramsWidget",
-                    )
+                        scope="UserProgramsWidget"
+)
 
         # Show summary message
         if saved_count > 0:
@@ -419,14 +417,14 @@ class UserProgramsWidget(QWidget):
             if error_count > 0:
                 log.warning(
                     f"⚠️ {error_count} program(s) failed to save",
-                    scope="UserProgramsWidget",
-                )
+                    scope="UserProgramsWidget"
+)
         else:
             if error_count > 0:
                 log.error(
                     f"❌Failed to save {error_count} program(s)",
-                    scope="UserProgramsWidget",
-                )
+                    scope="UserProgramsWidget"
+)
             else:
                 log.message("ℹ️No changes to save", scope="UserProgramsWidget")
 
@@ -495,14 +493,14 @@ class UserProgramsWidget(QWidget):
         except ValueError:
             log.warning(
                 f" Invalid program number in ID: {program_id}",
-                scope="UserProgramsWidget",
-            )
+                scope="UserProgramsWidget"
+)
             return
 
         log.message(
             f"🎹 Loading program from table: {program_id} - {program.name}",
-            scope="UserProgramsWidget",
-        )
+            scope="UserProgramsWidget"
+)
 
         # Calculate MIDI values
         try:
@@ -510,16 +508,16 @@ class UserProgramsWidget(QWidget):
         except (ValueError, TypeError) as e:
             log.error(
                 f" Error calculating MIDI values for {program_id}: {e}",
-                scope="UserProgramsWidget",
-            )
+                scope="UserProgramsWidget"
+)
             return
 
         # Send MIDI Program Change
         if self.midi_helper:
             log.message(
                 f" Sending Program Change: MSB={msb}, LSB={lsb}, PC={pc}",
-                scope="UserProgramsWidget",
-            )
+                scope="UserProgramsWidget"
+)
             self.midi_helper.send_bank_select_and_program_change(
                 self.channel, msb, lsb, pc
             )

@@ -56,12 +56,10 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -76,12 +74,12 @@ class SimpleEditorHelper:
 
     def __init__(
         self,
-        editor: QWidget,
+        editor: EditorBaseWidget,
         base_widget: EditorBaseWidget,
         title: str,
         image_folder: str,
-        default_image: str,
-    ):
+        default_image: str
+):
         """
         Initialize the SimpleEditorHelper.
 

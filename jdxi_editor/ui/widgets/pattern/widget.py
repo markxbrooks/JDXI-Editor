@@ -9,14 +9,9 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QHBoxLayout, QListWidget, QListWidgetItem
 
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
     set_sequencer_style,

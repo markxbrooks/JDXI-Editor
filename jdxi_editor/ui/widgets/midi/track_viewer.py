@@ -17,12 +17,10 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QScrollArea,
-    QSlider,
-    QVBoxLayout,
-    QWidget,
+    QSlider
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
@@ -305,8 +303,8 @@ class MidiTrackViewer(QWidget):
             self,
             "Delete Track?",
             f"Are you sure you want to delete '{track_name}'?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+)
 
         if reply == QMessageBox.StandardButton.Yes:
             del self.midi_file.tracks[track_index]
@@ -441,13 +439,13 @@ class MidiTrackViewer(QWidget):
             )  # Default color if not specified
             icon_name = icon_names.get(
                 first_channel,
-                "mdi.piano",
-            )  # Default icon if not specified
+                "mdi.piano"
+)  # Default icon if not specified
             # Add QLabel for track number and channel
             pixmap = qta.icon(icon_name, color=color).pixmap(
                 JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE,
-                JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE,
-            )
+                JDXi.UI.Style.TRACK_ICON_PIXMAP_SIZE
+)
 
             track_number_label = QLabel(f"{i + 1}")
             track_number_label.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)

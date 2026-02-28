@@ -10,7 +10,7 @@ import sys
 import time
 
 import rtmidi
-from picomidi import BitMask, Status
+from picomidi import BitMask, MidiStatus
 
 from jdxi_editor.midi.data.address.sysex import NOTE_OFF, NOTE_ON, START_OF_SYSEX
 
@@ -63,16 +63,16 @@ class LiveMIDIMonitor:
             note_name = self.get_note_name(note)
             return f"Note Off Ch{channel:2d} {note_name} (vel={velocity})"
 
-        elif message_type == Status.CONTROL_CHANGE:  # Control Change
+        elif message_type == MidiStatus.CONTROL_CHANGE:  # Control Change
             controller = data[1]
             value = data[2] if len(data) > 2 else 0
             return f"CC{controller:2d}    Ch{channel:2d} Value={value:3d} ({self.get_cc_name(controller)})"
 
-        elif message_type == Status.PROGRAM_CHANGE:  # Program Change
+        elif message_type == MidiStatus.PROGRAM_CHANGE:  # Program Change
             program = data[1]
             return f"Prog Chg Ch{channel:2d} Program={program}"
 
-        elif message_type == Status.CHANNEL_AFTERTOUCH:  # Channel Aftertouch
+        elif message_type == MidiStatus.CHANNEL_AFTERTOUCH:  # Channel Aftertouch
             pressure = data[1]
             return f"Aftertouch Ch{channel:2d} Pressure={pressure}"
 

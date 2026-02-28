@@ -57,18 +57,19 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 from decologr import Decologr as log
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QGroupBox,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
@@ -90,8 +91,8 @@ class DrumCommonEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         preset_helper: Optional[JDXiPresetHelper] = None,
-        parent: Optional["JDXiInstrument"] = None,
-    ):
+        parent: Optional["JDXiInstrument"] = None
+):
         super().__init__(midi_helper, parent)
         # Helpers
         self.instrument_image_group: QGroupBox | None = None
@@ -148,8 +149,8 @@ class DrumCommonEditor(SynthEditor):
         (
             self.instrument_image_group,
             self.instrument_image_label,
-            self.instrument_group_layout,
-        ) = self.instrument_preset.create_instrument_image_group()
+            self.instrument_group_layout
+) = self.instrument_preset.create_instrument_image_group()
         self.address.lmb = JDXiSysExOffsetProgramLMB.COMMON
         self.instrument_image_group.setMinimumWidth(
             JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
@@ -193,8 +194,8 @@ class DrumCommonEditor(SynthEditor):
             create_parameter_combo_box=self._create_parameter_combo_box,
             create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
-            address=self.address,
-        )
+            address=self.address
+)
         common_icon = JDXi.UI.Icon.get_icon("mdi.cog-outline", color=JDXi.UI.Style.GREY)
         self.partial_tab_widget.addTab(self.common_section, common_icon, "Common")
 
@@ -204,8 +205,8 @@ class DrumCommonEditor(SynthEditor):
         mixer_widget = DrumKitMixerSection(
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
-            parent=self,
-        )
+            parent=self
+)
         mixer_icon = JDXi.UI.Icon.get_icon("ei.adjust-alt", color=JDXi.UI.Style.GREY)
         if mixer_icon is None or mixer_icon.isNull():
             # Fallback icon if mixer icon not available
@@ -286,8 +287,8 @@ class DrumCommonEditor(SynthEditor):
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
                 partial_name=partial_name,
-                parent=self,
-            )
+                parent=self
+)
             self.partial_editors[partial_number] = editor
             self.partial_tab_widget.addTab(editor, partial_name)
 
@@ -315,8 +316,8 @@ class DrumCommonEditor(SynthEditor):
             self.partial_number = index
             log.message(
                 f"Updated to partial {partial_name} (index {index})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
         except IndexError:
             log.message(
                 f"Invalid partial index: {index}", scope=self.__class__.__name__
@@ -349,8 +350,8 @@ class DrumCommonEditor(SynthEditor):
         partial: int,  # pylint: disable=unused-argument
         sysex_data: Dict,
         successes: list = None,
-        failures: list = None,
-    ):
+        failures: list = None
+):
         """
         Update the UI components for tone common and modify parameters.
 
@@ -365,8 +366,8 @@ class DrumCommonEditor(SynthEditor):
             param = DrumCommonParam.get_by_name(param_name)
             log.message(
                 f"[DrumCommonEditor] Tone common: param_name: {param} {param_value}",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             try:
                 if param:
                     self._update_slider(param, param_value)

@@ -29,19 +29,17 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QTableWidget,
-    QTableWidgetItem,
-    QVBoxLayout,
-    QWidget,
+    QTableWidgetItem
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
-    create_jdxi_row,
+    create_jdxi_row
 )
 from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
@@ -64,8 +62,8 @@ class PlaylistEditor(QWidget):
         parent: Optional[QWidget] = None,
         on_program_loaded: Optional[Callable[[JDXiProgram], None]] = None,
         on_refresh_playlist_combo: Optional[Callable[[], None]] = None,
-        get_parent_instrument: Optional[Callable[[], Optional[QWidget]]] = None,
-    ):
+        get_parent_instrument: Optional[Callable[[], Optional[QWidget]]] = None
+):
         """
         Initialize the PlaylistEditorWidget.
 
@@ -123,8 +121,8 @@ class PlaylistEditor(QWidget):
             show_label=False,
             show_search=True,
             show_category=False,
-            search_placeholder="Search playlists...",
-        )
+            search_placeholder="Search playlists..."
+)
         # Connect to valueChanged signal (emits the value, not the index)
         self.playlist_editor_combo.valueChanged.connect(self._on_playlist_value_changed)
         self.playlist_select_layout.addWidget(self.playlist_editor_combo)
@@ -138,8 +136,8 @@ class PlaylistEditor(QWidget):
             "Add to Playlist",
             self.add_program_to_playlist,
             button_layout,
-            name="add_to_playlist",
-        )
+            name="add_to_playlist"
+)
         self.add_to_playlist_button.setEnabled(
             False
         )  # Disabled until playlist is selected
@@ -148,8 +146,8 @@ class PlaylistEditor(QWidget):
             "Delete from Playlist",
             self.delete_program_from_playlist,
             button_layout,
-            name="delete_from_playlist",
-        )
+            name="delete_from_playlist"
+)
         self.delete_from_playlist_button.setEnabled(
             False
         )  # Disabled until playlist is selected
@@ -188,8 +186,8 @@ class PlaylistEditor(QWidget):
         # Set delegates
         midi_file_delegate = MidiFileDelegate(
             table_widget=self.playlist_programs_table,
-            parent=self.playlist_programs_table,
-        )
+            parent=self.playlist_programs_table
+)
         self.playlist_programs_table.setItemDelegateForColumn(3, midi_file_delegate)
 
         play_button_delegate = PlayButtonDelegate(
@@ -233,8 +231,8 @@ class PlaylistEditor(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False,
-    ) -> QPushButton:
+        checkable: bool = False
+) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)
@@ -254,8 +252,8 @@ class PlaylistEditor(QWidget):
         self,
         spec: TransportSpec,
         layout: QHBoxLayout,
-        button_group: Optional[QButtonGroup],
-    ) -> None:
+        button_group: Optional[QButtonGroup]
+) -> None:
         """Create a transport button + label row (same pattern as Midi File Player)."""
         btn = create_jdxi_button_from_spec(spec, button_group)
         layout.addWidget(btn)
@@ -290,15 +288,15 @@ class PlaylistEditor(QWidget):
                 JDXi.UI.Icon.PAUSE,
                 "Pause",
                 self._playlist_transport_pause_toggle,
-                False,
-            ),
+                False
+),
             TransportSpec(
                 "shuffle",
                 JDXi.UI.Icon.SHUFFLE,
                 "Shuffle Play",
                 self._playlist_shuffle_play,
-                True,
-            ),
+                True
+),
         ]
         for spec in controls:
             self._create_transport_control(
@@ -420,8 +418,8 @@ class PlaylistEditor(QWidget):
                         show_label=False,
                         show_search=True,
                         show_category=False,
-                        search_placeholder="Search playlists...",
-                    )
+                        search_placeholder="Search playlists..."
+)
                     # Reconnect signal
                     self.playlist_editor_combo.valueChanged.connect(
                         self._on_playlist_value_changed
@@ -534,8 +532,8 @@ class PlaylistEditor(QWidget):
             # Store playlist_id and program_id for saving
             midi_file_item.setData(
                 Qt.ItemDataRole.UserRole + 1,
-                {"playlist_id": playlist_id, "program_id": program.id},
-            )
+                {"playlist_id": playlist_id, "program_id": program.id}
+)
             self.playlist_programs_table.setItem(row, 3, midi_file_item)
 
             # Cheat Preset ComboBox
@@ -711,8 +709,8 @@ class PlaylistEditor(QWidget):
             QMessageBox.information(
                 self,
                 "No Programs Available",
-                "All programs are already in this playlist.",
-            )
+                "All programs are already in this playlist."
+)
             return
 
         # Create combo box with all available programs
@@ -725,8 +723,8 @@ class PlaylistEditor(QWidget):
             show_label=False,
             show_search=True,
             show_category=False,
-            search_placeholder="Search programs...",
-        )
+            search_placeholder="Search programs..."
+)
         dialog_layout.addWidget(program_list)
 
         # Add buttons
@@ -805,8 +803,8 @@ class PlaylistEditor(QWidget):
             self,
             "Delete Programs",
             f"Are you sure you want to delete {len(selected_rows)} program(s) from the playlist?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+)
 
         if reply == QMessageBox.StandardButton.Yes:
             from jdxi_editor.ui.programs.database import get_database
@@ -952,7 +950,7 @@ class PlaylistEditor(QWidget):
                                     self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
                                         self._on_playlist_playback_finished
                                     )
-                                except:
+                                except Exception:
                                     pass
 
                         # Stop any current playback
@@ -1012,7 +1010,7 @@ class PlaylistEditor(QWidget):
                             try:
                                 # Disconnect any existing connection
                                 midi_file_editor.midi_playback_worker.finished.disconnect()
-                            except:
+                            except Exception:
                                 pass
                             # Connect to finished signal
                             midi_file_editor.midi_playback_worker.finished.connect(
@@ -1059,7 +1057,7 @@ class PlaylistEditor(QWidget):
                     self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
                         self._on_playlist_playback_finished
                     )
-            except:
+            except Exception:
                 pass
 
         # Advance to next row
@@ -1175,7 +1173,7 @@ class PlaylistEditor(QWidget):
                 try:
                     if hasattr(parent_instrument, "parent"):
                         next_parent = parent_instrument.parent()
-                except:
+                except Exception:
                     pass
 
             if not next_parent or next_parent == parent_instrument:

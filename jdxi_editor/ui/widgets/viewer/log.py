@@ -32,12 +32,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QMainWindow,
     QPushButton,
-    QTextEdit,
-    QVBoxLayout,
-    QWidget,
+    QTextEdit
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.project import __package_name__
 
 

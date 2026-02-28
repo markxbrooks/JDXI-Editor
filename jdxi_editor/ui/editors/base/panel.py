@@ -37,11 +37,8 @@ Dependencies:
 """
 
 from decologr import Decologr as log
-from PySide6.QtWidgets import (
-    QWidget,
-)
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.digital.oscillator import DigitalWaveOsc
@@ -80,8 +77,8 @@ class BasePartialPanel(PartialPanel):
         synth_number: int = 1,
         partial_number: int = 1,
         preset_type: JDXiSynth | None = None,
-        parent: QWidget | None = None,
-    ):
+        parent: QWidget | None = None
+):
         super().__init__(parent)
 
         self.lfo_shape_buttons = {}
@@ -115,8 +112,8 @@ class BasePartialPanel(PartialPanel):
 
         self._init_synth_data(
             synth_type=synth_type,
-            partial_number=self.partial_number,
-        )
+            partial_number=self.partial_number
+)
 
         log.parameter("Synth address:", self.synth_data.address)
 
@@ -169,8 +166,8 @@ class BasePartialPanel(PartialPanel):
             Digital.Param.FILTER_CUTOFF_KEYFOLLOW,
             Digital.Param.FILTER_ENV_VELOCITY_SENSITIVITY,
             Digital.Param.FILTER_ENV_DEPTH,
-            Digital.Param.FILTER_SLOPE,
-        )
+            Digital.Param.FILTER_SLOPE
+)
 
         for param in params:
             widget = self.controls.get(param)

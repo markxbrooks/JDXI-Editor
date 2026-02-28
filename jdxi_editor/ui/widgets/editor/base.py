@@ -64,12 +64,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QScrollArea,
     QSizePolicy,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.editor.helper import create_scroll_container
 
 
@@ -84,8 +82,8 @@ class EditorBaseWidget(QWidget):
     def __init__(
         self,
         parent: Optional[QWidget] = None,
-        analog: bool = False,
-    ):
+        analog: bool = False
+):
         """
         Initialize the EditorBaseWidget.
 
@@ -123,8 +121,8 @@ class EditorBaseWidget(QWidget):
     def setup_scrollable_content(
         self,
         spacing: int = 5,
-        margins: tuple[int, int, int, int] = (5, 5, 5, 5),
-    ) -> tuple[QScrollArea, QWidget, QVBoxLayout]:
+        margins: tuple[int, int, int, int] = (5, 5, 5, 5)
+) -> tuple[QScrollArea, QVBoxLayout]:
         """
         Set up the standard scrollable content area.
 

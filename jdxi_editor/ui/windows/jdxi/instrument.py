@@ -40,7 +40,7 @@ import os
 import platform
 import tempfile
 import threading
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import qtawesome as qta
 from decologr import Decologr as log
@@ -119,6 +119,9 @@ from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
 from picoui.specs.widgets import MessageBoxSpec
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 
 class JDXiInstrument(JDXiWindow):
@@ -1336,11 +1339,7 @@ class JDXiInstrument(JDXiWindow):
                 ):
                     continue
 
-                # Skip certain editor types
-                from jdxi_editor.ui.editors import ProgramEditor
-                from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
-                from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-
+                # Skip certain editor types (imported at module level)
                 if isinstance(
                     editor, (PatternSequenceEditor, ProgramEditor, MidiFilePlayer)
                 ):
@@ -1461,7 +1460,7 @@ class JDXiInstrument(JDXiWindow):
         # MidiIOHelper inherits from MidiInHandler, so we can connect directly
         try:
             self.midi_helper.update_program_name.disconnect()
-        except:
+        except Exception:
             pass
         # Connect to program name updates
         self.midi_helper.update_program_name.connect(self._on_program_name_received)
@@ -1469,7 +1468,7 @@ class JDXiInstrument(JDXiWindow):
         # Also connect to tone name updates to track when all data is received
         try:
             self.midi_helper.update_tone_name.disconnect()
-        except:
+        except Exception:
             pass
         self.midi_helper.update_tone_name.connect(self._on_tone_name_received)
 
@@ -1816,11 +1815,11 @@ class JDXiInstrument(JDXiWindow):
             self.midi_helper.update_program_name.disconnect(
                 self._on_program_name_received
             )
-        except:
+        except Exception:
             pass
         try:
             self.midi_helper.update_tone_name.disconnect(self._on_tone_name_received)
-        except:
+        except Exception:
             pass
 
         if hasattr(self, "_db_update_progress"):

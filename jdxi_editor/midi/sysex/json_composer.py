@@ -5,9 +5,12 @@ JDXiSysExComposer
 import json
 import os
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from decologr import Decologr as log
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,

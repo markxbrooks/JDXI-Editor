@@ -25,17 +25,16 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QSizePolicy,
-    QWidget,
+    QSizePolicy
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from picoui.widget.helper import (
     create_combo_row,
     create_form_layout,
     create_header_row,
     create_line_edit,
-    create_row_with_widgets,
+    create_row_with_widgets
 )
 
 
@@ -76,8 +75,8 @@ class SearchableFilterableComboBox(QWidget):
         bank_label: str = "Bank:",
         search_label: str = "Search:",
         use_analog_style: bool = False,
-        parent: Optional[QWidget] = None,
-    ):
+        parent: Optional[QWidget] = None
+):
         """
         Initialize the SearchableFilterableComboBox.
 
@@ -170,8 +169,8 @@ class SearchableFilterableComboBox(QWidget):
             label=category_label,
             all_items_label="All Categories",
             items=self._categories,
-            slot=self._on_category_changed,
-        )
+            slot=self._on_category_changed
+)
         self.set_combo_dimensions(self.category_combo)
         return category_bar
 
@@ -181,8 +180,8 @@ class SearchableFilterableComboBox(QWidget):
             label=bank_label,
             all_items_label="All Banks",
             items=self._banks,
-            slot=self._on_bank_changed,
-        )
+            slot=self._on_bank_changed
+)
         self.set_combo_dimensions(self.bank_combo)
         return bank_bar
 
@@ -204,8 +203,8 @@ class SearchableFilterableComboBox(QWidget):
         self.search_box = create_line_edit(
             style_sheet=line_edit_style,
             placeholder=search_placeholder,
-            slot=self._on_search_changed,
-        )
+            slot=self._on_search_changed
+)
         search_label_widget = QLabel(search_label)
         widgets = [search_label_widget, self.search_box]
         search_row = create_row_with_widgets(widgets)

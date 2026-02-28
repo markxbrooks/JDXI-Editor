@@ -27,19 +27,17 @@ from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtGui import (
     QAction,
-    QFontDatabase,
+    QFontDatabase
 )
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLayout,
     QMainWindow,
-    QMessageBox,
-    QVBoxLayout,
-    QWidget,
+    QMessageBox
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.core.synth.factory import create_synth_data
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -49,7 +47,7 @@ from jdxi_editor.project import __package_name__, __program__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import (
-    get_program_name_by_id,
+    get_program_name_by_id
 )
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.preset.manager import JDXiPresetManager
@@ -71,7 +69,7 @@ from jdxi_editor.ui.windows.jdxi.containers import (
     build_wheel_row,
     create_parts_container,
     create_program_buttons_row,
-    create_tone_buttons_row,
+    create_tone_buttons_row
 )
 
 
@@ -171,8 +169,8 @@ class JDXiWindow(QMainWindow):
             on_open_drums=lambda: self.show_editor("drums"),
             on_open_analog=lambda: self.show_editor("analog"),
             on_open_arp=lambda: self.show_editor("arpeggio"),
-            on_select_synth=self._select_synth,
-        )
+            on_select_synth=self._select_synth
+)
         self.synth_buttons = {
             JDXiSynth.DIGITAL_SYNTH_1: self.part_buttons["digital1"],
             JDXiSynth.DIGITAL_SYNTH_2: self.part_buttons["digital2"],
@@ -185,14 +183,14 @@ class JDXiWindow(QMainWindow):
             self.octave_down,
             self.octave_up,
             self.arpeggiator_button,
-            self.key_hold_button,
-        ) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
+            self.key_hold_button
+) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
 
         self.vocal_effects_button, self.effects_button = add_effects_container(
             container_widget,
             lambda: self.show_editor("vocal_fx"),
-            lambda: self.show_editor("effects"),
-        )
+            lambda: self.show_editor("effects")
+)
 
         (self.program_down_button, self.program_up_button) = add_program_container(
             container_widget, create_program_buttons_row
@@ -202,14 +200,14 @@ class JDXiWindow(QMainWindow):
             container_widget,
             create_tone_buttons_row,
             self._preset_previous,
-            self._preset_next,
-        )
+            self._preset_next
+)
         self.sequencer_buttons = add_sequencer_container(
             container_widget,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
-            on_save_favorite=self._save_favorite,
-        )
+            on_save_favorite=self._save_favorite
+)
         self.favorite_button = add_favorite_button_container(container_widget)
         add_slider_container(container_widget, self.midi_helper)
         layout.addWidget(container_widget)
@@ -240,8 +238,8 @@ class JDXiWindow(QMainWindow):
         load_program_action = QAction(
             JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED),
             "Load Program...",
-            self,
-        )
+            self
+)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
 
@@ -385,8 +383,8 @@ class JDXiWindow(QMainWindow):
         preferences_action = QAction(
             JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS),
             "Preferences",
-            self,
-        )
+            self
+)
         preferences_action.setStatusTip("Show the Preferences window")
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
@@ -394,8 +392,8 @@ class JDXiWindow(QMainWindow):
         documentation_action = QAction(
             JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS),
             "Documentation",
-            self,
-        )
+            self
+)
         documentation_action.setStatusTip(f"Show {__program__} documentation")
         documentation_action.triggered.connect(self.on_documentation)
 
@@ -451,8 +449,8 @@ class JDXiWindow(QMainWindow):
             synth_data = create_synth_data(self.current_synth_type)
             log.message(
                 f"Creating synth data for type: {self.current_synth_type}",
-                scope="JDXiWindow",
-            )
+                scope="JDXiWindow"
+)
             if not synth_data:
                 synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
 
@@ -461,8 +459,8 @@ class JDXiWindow(QMainWindow):
             )
             log.message(
                 f"Current preset name: {self.preset_manager.current_preset_name}",
-                scope="JDXiWindow",
-            )
+                scope="JDXiWindow"
+)
             # Update preset number
             # synth_data.preset_list might be a dict (PROGRAM_CHANGE) or a list
             # Use presets (ENUMERATED list) to find the index instead
@@ -477,8 +475,8 @@ class JDXiWindow(QMainWindow):
                             for i, p in enumerate(synth_data.presets)
                             if preset_name in p or p in preset_name
                         ),
-                        None,
-                    )
+                        None
+)
                     if preset_index is not None:
                         # Convert 0-based index to 1-based preset number
                         self.preset_manager.current_preset_number = preset_index + 1
@@ -496,8 +494,8 @@ class JDXiWindow(QMainWindow):
                 except Exception as ex:
                     log.warning(
                         f"Error finding preset number: {ex}, defaulting to 1",
-                        scope="JDXiWindow",
-                    )
+                        scope="JDXiWindow"
+)
                     self.preset_manager.current_preset_number = 1
             elif isinstance(synth_data.preset_list, list):
                 # preset_list is already a list, use the existing function
@@ -511,13 +509,13 @@ class JDXiWindow(QMainWindow):
                 log.warning(
                     f"preset_list is not a list (type: {type(synth_data.preset_list)}), ",
                     f"defaulting preset number to 1",
-                    scope="JDXiWindow",
-                )
+                    scope="JDXiWindow"
+)
                 self.preset_manager.current_preset_number = 1
             log.message(
                 f"Current preset number: {self.preset_manager.current_preset_number}",
-                scope="JDXiWindow",
-            )
+                scope="JDXiWindow"
+)
 
             self.digital_display.repaint_display(
                 current_octave=self.current_octave,
@@ -526,8 +524,8 @@ class JDXiWindow(QMainWindow):
                     self.current_synth_type
                 ),
                 program_name=self.current_program_name,
-                active_synth=synth_data.display_prefix,
-            )
+                active_synth=synth_data.display_prefix
+)
         except Exception as ex:
             log.error(f"Error updating digital: {ex}", scope="JDXiWindow")
 
@@ -549,26 +547,26 @@ class JDXiWindow(QMainWindow):
                     log.error(
                         f"Error loading {font_name} font",
                         level=logging.WARNING,
-                        scope="JDXiWindow",
-                    )
+                        scope="JDXiWindow"
+)
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
                     log.message(
                         f"Successfully loaded font family: \t{self.digital_font_family}",
-                        scope="JDXiWindow",
-                    )
+                        scope="JDXiWindow"
+)
                 else:
                     log.message(
                         "No font families found after loading font",
                         level=logging.WARNING,
-                        scope="JDXiWindow",
-                    )
+                        scope="JDXiWindow"
+)
             except Exception as ex:
                 log.error(
                     f"Error loading {font_name} font from {font_path}: {ex}",
-                    scope="JDXiWindow",
-                )
+                    scope="JDXiWindow"
+)
         else:
             log.message(f"File not found: {font_path}", scope="JDXiWindow")
 
@@ -584,8 +582,8 @@ class JDXiWindow(QMainWindow):
         """Update the digital with the new preset information."""
         log.message(
             f"Updating digital preset: # {preset_number}, name: {preset_name}, channel: {channel}",
-            scope="JDXiWindow",
-        )
+            scope="JDXiWindow"
+)
         self.current_preset_index = preset_number
         self.channel = channel
 
@@ -606,8 +604,8 @@ class JDXiWindow(QMainWindow):
 
             log.message(
                 f"Updated digital: {preset_number:03d}:{preset_name} (channel {channel})",
-                scope="JDXiWindow",
-            )
+                scope="JDXiWindow"
+)
 
         except Exception as ex:
             log.error(f"Error updating digital: {ex}", scope="JDXiWindow")

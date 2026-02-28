@@ -2,6 +2,8 @@
 Helpers for editors
 """
 
+from typing import Any
+
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -10,16 +12,15 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QSlider,
-    QSpinBox,
-    QWidget,
+    QSpinBox
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from picoui.specs.widgets import ButtonSpec
 
 
-def set_widget_value_safely(widget: QWidget, value: int) -> None:
+def set_widget_value_safely(widget: Any, value: int) -> None:
     """
     Block signals for the widget, set its value, then unblock signals.
 
@@ -47,13 +48,13 @@ def get_icon_pixmap(icon_name) -> QPixmap | None:
 
 def create_jdxi_button_with_label_from_spec(
     spec: ButtonSpec, checkable: bool = True
-) -> tuple[QWidget, QPushButton]:
+) -> tuple[QPushButton]:
     button = create_jdxi_button_from_spec(spec, checkable=checkable)
     classify_tracks_icon_pixmap = get_icon_pixmap(icon_name=spec.icon)
     row, _ = create_jdxi_row(
         spec.label,
-        icon_pixmap=classify_tracks_icon_pixmap,
-    )
+        icon_pixmap=classify_tracks_icon_pixmap
+)
     return row, button
 
 
@@ -89,7 +90,7 @@ def create_jdxi_button(tooltip: str = "") -> QPushButton:
 
 def create_jdxi_row(
     label: str = "", icon_pixmap: QPixmap | None = None
-) -> tuple[QWidget, QLabel]:
+) -> tuple[QLabel]:
     """Create Row"""
     label_row = QWidget()
     label_layout = QHBoxLayout(label_row)

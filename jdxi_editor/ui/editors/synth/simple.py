@@ -44,7 +44,6 @@ from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
-from jdxi_editor.midi.data.address.address_map import address
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor

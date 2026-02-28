@@ -46,18 +46,16 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddressStartMSB,
     JDXiSysExOffsetSuperNATURALLMB,
-    JDXiSysExOffsetTemporaryToneUMB,
+    JDXiSysExOffsetTemporaryToneUMB
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
@@ -84,7 +82,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.programs.programs import JDXiUIProgramList
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
-    SearchableFilterableComboBox,
+    SearchableFilterableComboBox
 )
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -98,8 +96,8 @@ class ProgramEditor(BasicEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_helper: JDXiPresetHelper = None,
-    ):
+        preset_helper: JDXiPresetHelper = None
+):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.title_right_vlayout = None
         self.program_list = None
@@ -194,7 +192,7 @@ class ProgramEditor(BasicEditor):
             )
             if programs_presets_icon is None or programs_presets_icon.isNull():
                 raise ValueError("Icon is null")
-        except:
+        except Exception:
             programs_presets_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
@@ -206,14 +204,14 @@ class ProgramEditor(BasicEditor):
         try:
             log.message(
                 "🔨Creating User Programs tab for main window...",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             self.user_programs_widget = UserProgramsWidget(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
                 parent=self,
-                on_program_loaded=self._on_user_program_loaded,
-            )
+                on_program_loaded=self._on_user_program_loaded
+)
             user_programs_icon = JDXi.UI.Icon.get_icon(
                 "mdi.account-music", color=JDXi.UI.Style.GREY
             )
@@ -222,53 +220,53 @@ class ProgramEditor(BasicEditor):
             )
             log.message(
                 f"✅ Added 'User Programs' tab to main window (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             # Log all tab names for debugging
             for i in range(self.main_tab_widget.count()):
                 log.message(
                     message=f"Main Tab {i}: '{self.main_tab_widget.tabText(i)}'",
-                    scope=self.__class__.__name__,
-                )
+                    scope=self.__class__.__name__
+)
         except Exception as e:
             log.error(
                 f"❌Error creating User Programs tab: {e}",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             import traceback
 
             log.error(traceback.format_exc())
             placeholder_widget, user_programs_icon = create_placeholder_icon(
                 e,
                 error_message="Error loading user programs:",
-                icon_name="mdi.account-music",
-            )
+                icon_name="mdi.account-music"
+)
             self.main_tab_widget.addTab(
                 placeholder_widget, user_programs_icon, "User Programs"
             )
             log.message(
                 f"✅ Added 'User Programs' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
 
         # --- Add Playlist tab to main tab widget
         try:
             log.message(
                 "🔨Creating Playlist tab for main window...",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             self.playlist_widget = PlaylistTable(
                 parent=self,
-                on_playlist_changed=self._on_playlist_changed,
-            )
+                on_playlist_changed=self._on_playlist_changed
+)
             playlist_icon = JDXi.UI.Icon.get_icon(
                 "mdi.playlist-music", color=JDXi.UI.Style.GREY
             )
             self.main_tab_widget.addTab(self.playlist_widget, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
         except Exception as e:
             log.error(
                 f"❌Error creating Playlist tab: {e}", scope=self.__class__.__name__
@@ -279,28 +277,28 @@ class ProgramEditor(BasicEditor):
             placeholder_widget, playlist_icon = create_placeholder_icon(
                 e,
                 error_message="Error loading playlists: ",
-                icon_name="mdi.playlist-music",
-            )
+                icon_name="mdi.playlist-music"
+)
             self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
 
         # Add Playlist Editor tab to main tab widget
         try:
             log.message(
                 "🔨Creating Playlist Editor tab for main window...",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             self.playlist_editor_widget = PlaylistEditor(
                 midi_helper=self.midi_helper,
                 channel=self.channel,
                 parent=self,
                 on_program_loaded=self._on_playlist_program_loaded,
                 on_refresh_playlist_combo=self._populate_playlist_editor_combo,
-                get_parent_instrument=lambda: self._get_parent_instrument(),
-            )
+                get_parent_instrument=lambda: self._get_parent_instrument()
+)
             playlist_editor_icon = JDXi.UI.Icon.get_icon(
                 "mdi.playlist-edit", color=JDXi.UI.Style.GREY
             )
@@ -309,13 +307,13 @@ class ProgramEditor(BasicEditor):
             )
             log.message(
                 f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
         except Exception as e:
             log.error(
                 f"❌Error creating Playlist Editor tab: {e}",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             import traceback
 
             log.error(traceback.format_exc())
@@ -323,15 +321,15 @@ class ProgramEditor(BasicEditor):
             placeholder_widget, playlist_editor_icon = create_placeholder_icon(
                 e,
                 error_message="Error loading playlist editor: ",
-                icon_name="mdi.playlist-edit",
-            )
+                icon_name="mdi.playlist-edit"
+)
             self.main_tab_widget.addTab(
                 placeholder_widget, playlist_editor_icon, "Playlist Editor"
             )
             log.message(
                 f"✅Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
 
         self.setLayout(main_vlayout)
         self.setStyleSheet(JDXi.UI.Style.EDITOR)
@@ -358,7 +356,7 @@ class ProgramEditor(BasicEditor):
             )
             if presets_icon.isNull():
                 raise ValueError("Icon is null")
-        except:
+        except Exception:
             presets_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
@@ -367,8 +365,8 @@ class ProgramEditor(BasicEditor):
         )
         log.message(
             f"📑Added 'Presets' tab to program_preset_tab_widget (total tabs: {self.program_group_widget.program_preset_tab_widget.count()})",
-            scope="ProgramEditor ",
-        )
+            scope="ProgramEditor "
+)
         program_preset_hlayout.addStretch()
 
         self.title_left_vlayout.addLayout(program_preset_hlayout)
@@ -488,8 +486,8 @@ class ProgramEditor(BasicEditor):
     def _init_synth_data(
         self,
         synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
-        partial_number: Optional[int] = 0,
-    ) -> None:
+        partial_number: Optional[int] = 0
+) -> None:
         """
 
         :param synth_type: JDXiSynth
@@ -654,8 +652,8 @@ class ProgramEditor(BasicEditor):
                     show_bank=True,
                     search_placeholder="Search programs...",
                     category_label="Genre:",
-                    bank_label="Bank:",
-                )
+                    bank_label="Bank:"
+)
             )
 
             # --- Insert after edit_program_name_button
@@ -869,8 +867,8 @@ class ProgramEditor(BasicEditor):
         if not self.mixer_widget:
             log.warning(
                 "Mixer widget not available, cannot update synth labels",
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             return
 
         try:
@@ -937,8 +935,8 @@ class ProgramEditor(BasicEditor):
 
         log.header_message(
             scope=self.__class__.__name__,
-            message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}",
-        )
+            message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}"
+)
 
         sysex_data = filter_sysex_keys(sysex_data)
 
@@ -971,8 +969,8 @@ class ProgramEditor(BasicEditor):
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
                 "PROGRAM_LEVEL": (
                     ProgramCommonParam.PROGRAM_LEVEL,
-                    master_slider,
-                )
+                    master_slider
+)
             },
             # Use (param_constant, slider) like Master/Drums so Analog is as reliable
             JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
@@ -984,14 +982,14 @@ class ProgramEditor(BasicEditor):
             JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
                 SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
-                    digital1_slider,
-                )
+                    digital1_slider
+)
             },
             JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
                 SysExSection.TONE_LEVEL: (
                     DigitalCommonParam.get_by_name,
-                    digital2_slider,
-                )
+                    digital2_slider
+)
             },
         }
 
@@ -1037,8 +1035,8 @@ class ProgramEditor(BasicEditor):
         partial_number: int,
         sysex_data: Dict,
         successes: list = None,
-        failures: list = None,
-    ) -> None:
+        failures: list = None
+) -> None:
         """
         Update the UI components for tone common and modify parameters.
 
@@ -1050,8 +1048,8 @@ class ProgramEditor(BasicEditor):
         """
         log.message(
             f"Updating controls for partial {partial_number}",
-            scope=self.__class__.__name__,
-        )
+            scope=self.__class__.__name__
+)
         log.parameter("self.controls", self.controls, scope=self.__class__.__name__)
         for control in self.controls:
             log.parameter(
@@ -1063,24 +1061,24 @@ class ProgramEditor(BasicEditor):
                 f"{param_name} {param_value}",
                 param_value,
                 silent=True,
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             param = DigitalCommonParam.get_by_name(param_name)
             if not param:
                 log.parameter(
                     f"param not found: {param_name} ",
                     param_value,
                     silent=True,
-                    scope=self.__class__.__name__,
-                )
+                    scope=self.__class__.__name__
+)
                 failures.append(param_name)
                 continue
             log.parameter(
                 f"found {param_name}",
                 param_name,
                 silent=True,
-                scope=self.__class__.__name__,
-            )
+                scope=self.__class__.__name__
+)
             try:
                 if param.name in [
                     PartialSwitchState.PARTIAL1_SWITCH,
@@ -1113,8 +1111,8 @@ class ProgramEditor(BasicEditor):
         midi_value: int,
         successes: list = None,
         failures: list = None,
-        slider: QWidget = None,
-    ) -> None:
+        slider: QWidget = None
+) -> None:
         """
         Update slider based on parameter and value.
 

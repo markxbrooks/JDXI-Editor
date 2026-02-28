@@ -86,7 +86,7 @@ def main():
             print(f"❌ Error testing {port_name}: {e}")
             try:
                 midi_in.closePort()
-            except:
+            except Exception:
                 pass
 
 

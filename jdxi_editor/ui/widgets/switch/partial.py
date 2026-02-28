@@ -31,11 +31,10 @@ Usage Example:
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QCheckBox,
-    QHBoxLayout,
-    QWidget,
+    QHBoxLayout
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 
 

@@ -43,7 +43,7 @@ from picomidi.sysex.parameter.address import AddressParameter
 from picomidi.sysex.parameter.map import map_range
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
-from jdxi_editor.midi.parameter.spec import ParameterSpec
+from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
 
 
 class DigitalPartialParam(AddressParameter):
@@ -217,12 +217,9 @@ class DigitalPartialParam(AddressParameter):
     )  # Key follow
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x0E,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how you can make the filter envelope depth vary, \naccording to the strength with which you play the key",
-        "Velocity sensitivity",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how you can make the filter envelope depth vary, \naccording to the strength with which you play the key",
+        display_name="Velocity sensitivity",
     )  # Velocity sensitivity
     FILTER_RESONANCE = ParameterSpec(
         0x0F,
@@ -261,12 +258,9 @@ class DigitalPartialParam(AddressParameter):
     )  #
     FILTER_ENV_DEPTH = ParameterSpec(
         0x14,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies the direction and depth to which the cutoff frequency will change",
-        "Filter envelope depth",
+        *RANGE_BIPOLAR_63,
+        description="Specifies the direction and depth to which the cutoff frequency will change",
+        display_name="Filter envelope depth",
     )
 
     # Amplitude parameters
@@ -373,35 +367,23 @@ class DigitalPartialParam(AddressParameter):
     )  # Key trigger
     LFO_PITCH_DEPTH = ParameterSpec(
         0x22,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the pitch, producing a vibrato effect",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the pitch, producing a vibrato effect",
     )  # Pitch mod depth
     LFO_FILTER_DEPTH = ParameterSpec(
         0x23,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect",
     )  # Filter mod depth
     LFO_AMP_DEPTH = ParameterSpec(
         0x24,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect",
     )  # Amp mod depth
     LFO_PAN_DEPTH = ParameterSpec(
         0x25,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the PAN (stereo position), producing an auto panning effect",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the PAN (stereo position), producing an auto panning effect",
     )  # Pan mod depth
 
     # Modulation LFO parameters
@@ -444,61 +426,40 @@ class DigitalPartialParam(AddressParameter):
     # 2B is reserved
     MOD_LFO_PITCH_DEPTH = ParameterSpec(
         0x2C,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the pitch, producing a vibrato effect.",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the pitch, producing a vibrato effect.",
     )  # Pitch mod depth
     MOD_LFO_FILTER_DEPTH = ParameterSpec(
         0x2D,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect.",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the FILTER CUTOFF (cutoff frequency), producing a wah effect.",
     )  # Filter mod depth
     MOD_LFO_AMP_DEPTH = ParameterSpec(
         0x2E,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect.",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the AMP LEVEL (volume), producing a tremolo effect.",
     )  # Amp mod depth
     MOD_LFO_PAN = ParameterSpec(
         0x2F,
-        1,
-        127,
-        -63,
-        63,
-        "Allows the LFO to modulate the pan (stereo position), producing an auto panning effect.",
+        *RANGE_BIPOLAR_63,
+        description="Allows the LFO to modulate the pan (stereo position), producing an auto panning effect.",
     )  # Pan mod depth
     MOD_LFO_RATE_CTRL = ParameterSpec(
         0x3B,
-        1,
-        127,
-        -63,
-        63,
-        "Make these settings if you want to change the Modulation LFO Rate when the modulation lever\nis operated.\n Specify a positive (“+”) setting if you want ModLFO Rate to become faster when you increase\nthe modulation controller (CC01) value; \nspecify a negative (“-”) setting if you want it to become slower.",
+        *RANGE_BIPOLAR_63,
+        description="Make these settings if you want to change the Modulation LFO Rate when the modulation lever\nis operated.\n Specify a positive (“+”) setting if you want ModLFO Rate to become faster when you increase\nthe modulation controller (CC01) value; \nspecify a negative (“-”) setting if you want it to become slower.",
     )  # Rate control
 
     # Additional parameters
     CUTOFF_AFTERTOUCH = ParameterSpec(
         0x30,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how aftertouch pressure will affect the cutoff frequency",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how aftertouch pressure will affect the cutoff frequency",
     )  # Cutoff aftertouch
     LEVEL_AFTERTOUCH = ParameterSpec(
         0x31,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how aftertouch pressure affects the volume",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how aftertouch pressure affects the volume",
     )  # Level aftertouch
     HPF_CUTOFF = ParameterSpec(
         0x39,

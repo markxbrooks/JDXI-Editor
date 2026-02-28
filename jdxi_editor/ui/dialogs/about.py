@@ -12,11 +12,9 @@ from PySide6.QtWidgets import (
     QDialogButtonBox,
     QGroupBox,
     QLabel,
-    QVBoxLayout,
-    QWidget,
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.project import __package_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 

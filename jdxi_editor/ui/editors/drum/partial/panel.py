@@ -13,12 +13,10 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QScrollArea,
     QSizePolicy,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
+    QTabWidget
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
@@ -43,8 +41,8 @@ class DrumPartialPanel(PartialPanel):
         midi_helper: Optional[MidiIOHelper] = None,
         partial_number: int = 0,
         partial_name: Optional[str] = None,
-        parent: Optional[QWidget] = None,
-    ):
+        parent: Optional[QWidget] = None
+):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
@@ -100,8 +98,8 @@ class DrumPartialPanel(PartialPanel):
 
         partial_group = DrumPartialSection(
             controls=self.controls,
-            midi_helper=self.midi_helper,
-        )
+            midi_helper=self.midi_helper
+)
         tab_partial_layout.addWidget(partial_group)
         tab_partial_layout.addStretch()
 
@@ -118,8 +116,8 @@ class DrumPartialPanel(PartialPanel):
             controls=self.controls,
             midi_helper=self.midi_helper,
             address=self.address,
-            on_parameter_changed=self._on_parameter_changed,
-        )
+            on_parameter_changed=self._on_parameter_changed
+)
         tab_wmt_layout.addWidget(wmt_group)
         tab_wmt_layout.addStretch()
 
@@ -133,8 +131,8 @@ class DrumPartialPanel(PartialPanel):
 
         pitch_env_group = DrumPitchEnvSection(
             controls=self.controls,
-            midi_helper=self.midi_helper,
-        )
+            midi_helper=self.midi_helper
+)
         tab_pitch_env_layout.addWidget(pitch_env_group)
         tab_pitch_env_layout.addStretch()
 
@@ -149,8 +147,8 @@ class DrumPartialPanel(PartialPanel):
 
         output_group = DrumOutputSection(
             controls=self.controls,
-            midi_helper=self.midi_helper,
-        )
+            midi_helper=self.midi_helper
+)
         tab_output_layout.addWidget(output_group)
         tab_output_layout.addStretch()
 
@@ -163,8 +161,8 @@ class DrumPartialPanel(PartialPanel):
 
         tvf_group = DrumTVFSection(
             controls=self.controls,
-            midi_helper=self.midi_helper,
-        )
+            midi_helper=self.midi_helper
+)
         tab_tvf_layout.addWidget(tvf_group)
         tab_tvf_layout.addStretch()
 
@@ -179,8 +177,8 @@ class DrumPartialPanel(PartialPanel):
 
         tva_group = DrumTVASection(
             controls=self.controls,
-            midi_helper=self.midi_helper,
-        )
+            midi_helper=self.midi_helper
+)
         tab_tva_layout.addWidget(tva_group)
         tab_tva_layout.addStretch()
 

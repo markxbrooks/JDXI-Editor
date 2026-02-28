@@ -39,7 +39,6 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 from typing import Optional, Tuple
 
-from isort.wrap_modes import vertical
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
@@ -223,12 +222,9 @@ class AnalogParam(AddressParameter):
     )  # 0-127
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x24,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how the filter envelope depth will vary according to the strength with which you play the key.",
-        "Velocity",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how the filter envelope depth will vary according to the strength with which you play the key.",
+        display_name="Velocity",
     )  # -63 - +63
     FILTER_ENV_ATTACK_TIME = ParameterSpec(
         0x25, 0, 127, 0, 127, "Attack time for filter envelope", "keyfollow"
@@ -244,12 +240,9 @@ class AnalogParam(AddressParameter):
     )  # 0-127
     FILTER_ENV_DEPTH = ParameterSpec(
         0x29,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies the direction and depth to which the cutoff frequency will change.",
-        "Depth",
+        *RANGE_BIPOLAR_63,
+        description="Specifies the direction and depth to which the cutoff frequency will change.",
+        display_name="Depth",
     )  # -63 - +63
 
     # Amplitude Parameters
@@ -271,12 +264,9 @@ class AnalogParam(AddressParameter):
     )  # -100 - +100
     AMP_LEVEL_VELOCITY_SENSITIVITY = ParameterSpec(
         0x2C,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how the volume will vary according to the strength with which you play the keyboard.",
-        "Velocity Sensitivity",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how the volume will vary according to the strength with which you play the keyboard.",
+        display_name="Velocity Sensitivity",
     )  # -63 - +63
     AMP_ENV_ATTACK_TIME = ParameterSpec(
         0x2D,
@@ -359,35 +349,23 @@ class AnalogParam(AddressParameter):
     # LFO Modulation Control
     LFO_PITCH_MODULATION_CONTROL = ParameterSpec(
         0x38,
-        1,
-        127,
-        -63,
-        63,
-        "Controls the modulation depth of the LFO on pitch.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Controls the modulation depth of the LFO on pitch.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_FILTER_MODULATION_CONTROL = ParameterSpec(
         0x39,
-        1,
-        127,
-        -63,
-        63,
-        "Controls the modulation depth of the LFO on filter cutoff.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Controls the modulation depth of the LFO on filter cutoff.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_AMP_MODULATION_CONTROL = ParameterSpec(
         0x3A,
-        1,
-        127,
-        -63,
-        63,
-        "Controls the modulation depth of the LFO on amplitude.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Controls the modulation depth of the LFO on amplitude.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_RATE_MODULATION_CONTROL = ParameterSpec(
         0x3B,
-        1,
-        127,
-        -63,
-        63,
-        "Controls the modulation depth of the LFO rate.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Controls the modulation depth of the LFO rate.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
 
     # Reserve

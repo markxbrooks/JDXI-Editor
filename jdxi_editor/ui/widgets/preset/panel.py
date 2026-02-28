@@ -9,11 +9,10 @@ from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
-    QWidget,
+    QPushButton
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
@@ -44,8 +43,8 @@ class PresetPanel(QWidget):
             "Load",
             self._on_load,
             load_row,
-            name="load",
-        )
+            name="load"
+)
         layout.addLayout(load_row)
 
         # Save (round button + label)
@@ -55,8 +54,8 @@ class PresetPanel(QWidget):
             "Save",
             self._on_save,
             save_row,
-            name="save",
-        )
+            name="save"
+)
         layout.addLayout(save_row)
 
         # Create preset editors for each preset_type
@@ -77,8 +76,8 @@ class PresetPanel(QWidget):
         layout: QHBoxLayout,
         *,
         name: Optional[str] = None,
-        checkable: bool = False,
-    ) -> QPushButton:
+        checkable: bool = False
+) -> QPushButton:
         """Create a round button with icon + text label (same style as Transport)."""
         btn = create_jdxi_button("")
         btn.setCheckable(checkable)

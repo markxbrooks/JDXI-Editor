@@ -53,7 +53,7 @@ if __name__ == "__main__" and __package__ is None:
     if str(_root) not in sys.path:
         sys.path.insert(0, str(_root))
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -63,9 +63,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.spec import JDXiMidiAnalog as Analog
 from jdxi_editor.ui.editors.base.editor import BaseSynthEditor
-
-if TYPE_CHECKING:
-    from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 
 from decologr import Decologr as log
 

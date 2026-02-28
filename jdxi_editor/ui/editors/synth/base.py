@@ -39,6 +39,7 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.controls.registry import ControlRegistry
 from jdxi_editor.ui.widgets.slider import Slider
+from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor

@@ -36,17 +36,18 @@ Dependencies:
 
 """
 
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 from picomidi.sysex.parameter.address import AddressParameter
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from PySide6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
-    QVBoxLayout,
-    QWidget,
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
     ArpeggioGrid,

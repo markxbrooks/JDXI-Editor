@@ -42,7 +42,6 @@ from typing import Optional
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
-from jdxi_editor.midi.data.address.address_map import address
 from jdxi_editor.midi.parameter.spec import ParameterSpec
 
 

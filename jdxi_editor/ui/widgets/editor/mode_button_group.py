@@ -19,11 +19,10 @@ from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QButtonGroup,
     QHBoxLayout,
-    QPushButton,
-    QWidget,
+    QPushButton
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.widgets.editor.helper import create_icon_from_qta
 
 
@@ -59,8 +58,8 @@ class ModeButtonGroup(QWidget):
         midi_param: Any | None = None,
         on_mode_changed: Callable[[Any], None] | None = None,
         icon_factory: Callable[[Any], QIcon | QPixmap | None] | None = None,
-        parent: QWidget | None = None,
-    ):
+        parent: QWidget | None = None
+):
         super().__init__(parent)
 
         self._analog = analog
@@ -120,8 +119,8 @@ class ModeButtonGroup(QWidget):
                         btn.setIconSize(
                             QSize(
                                 JDXi.UI.Dimensions.LFOIcon.WIDTH,
-                                JDXi.UI.Dimensions.LFOIcon.HEIGHT,
-                            )
+                                JDXi.UI.Dimensions.LFOIcon.HEIGHT
+)
                         )
             else:
                 icon = create_icon_from_qta(spec.icon_name)
@@ -130,15 +129,15 @@ class ModeButtonGroup(QWidget):
                     btn.setIconSize(
                         QSize(
                             JDXi.UI.Dimensions.LFOIcon.WIDTH,
-                            JDXi.UI.Dimensions.LFOIcon.HEIGHT,
-                        )
+                            JDXi.UI.Dimensions.LFOIcon.HEIGHT
+)
                     )
 
         # Fixed size (match Digital Filter mode buttons / waveform icon dimensions)
         btn.setFixedSize(
             JDXi.UI.Dimensions.WaveformIcon.WIDTH,
-            JDXi.UI.Dimensions.WaveformIcon.HEIGHT,
-        )
+            JDXi.UI.Dimensions.WaveformIcon.HEIGHT
+)
 
         # Base style (match Digital Filter section mode buttons)
         JDXi.UI.Theme.apply_button_rect(btn, analog=self._analog)

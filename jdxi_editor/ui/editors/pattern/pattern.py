@@ -23,6 +23,7 @@ from typing import Any, Callable, Optional
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from picomidi import MidiTempo
+from picomidi.messages.note import MidiNote
 from picomidi.core.tempo import (
     convert_absolute_time_to_delta_time,
     milliseconds_per_note,
@@ -228,8 +229,6 @@ class PatternSequenceEditor(PatternUI):
 
     def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
         """add note on off pair to track"""
-        from picomidi.messages.note import MidiNote
-
         midi_note = MidiNote(
             note=event.note, velocity=event.velocity, duration=duration_ticks
         )
@@ -1090,32 +1089,14 @@ class PatternSequenceEditor(PatternUI):
             button = measure.buttons[row][step]
             spec = get_button_note_spec(button)
 
-            if button.isChecked() and spec.is_active:
-                events.append(
-                    (
-                        absolute_tick,
-                        Message(
-                            MidoMessageType.NOTE_ON.value,
-                            note=spec.note,
-                            velocity=spec.velocity,
-                            time=0,
-                            channel=channel,
-                        ),
-                    )
-                )
-
-                events.append(
-                    (
-                        absolute_tick + ticks_per_step,
-                        Message(
-                            MidoMessageType.NOTE_OFF.value,
-                            note=spec.note,
-                            velocity=spec.velocity,
-                            time=0,
-                            channel=channel,
-                        ),
-                    )
-                )
+            if button.isChecked() and spec.is_active and spec.midi_note is not None:
+                on_msg, off_msg = spec.midi_note.to_on_off_pair()
+                on_msg.channel = channel
+                on_msg.time = 0
+                off_msg.channel = channel
+                off_msg.time = 0
+                events.append((absolute_tick, on_msg))
+                events.append((absolute_tick + ticks_per_step, off_msg))
 
     def get_channel_for_row(self, row: int) -> int:
         """Get idi channel for each row"""
@@ -1389,7 +1370,8 @@ class PatternSequenceEditor(PatternUI):
                     spec = get_button_note_spec(measure_button)
                     if measure_button.isChecked() and spec.is_active:
                         time = self._calculate_note_on_time(bar_index, step)
-                        self._append_note_on_and_off(spec, time, track)
+                        channel = self.get_channel_for_row(row)
+                        self._append_note_on_and_off(spec, time, channel, track)
 
     def _calculate_note_on_time(self, bar_index: int, step: int) -> int:
         """Calculate the time for the note_on event (across all bars)"""
@@ -1424,26 +1406,18 @@ class PatternSequenceEditor(PatternUI):
         )
 
     def _append_note_on_and_off(
-        self, spec: NoteButtonSpec, time: int, track: MidiTrack
+        self, spec: NoteButtonSpec, time: int, channel: int, track: MidiTrack
     ):
-        """Append Note on and Off"""
-        track.append(
-            Message(
-                MidoMessageType.NOTE_ON.value,
-                note=spec.note,
-                velocity=spec.velocity,
-                time=time,
-            )
-        )
-        # Add a note_off event after a short duration
-        track.append(
-            Message(
-                MidoMessageType.NOTE_OFF.value,
-                note=spec.note,
-                velocity=0,
-                time=time + 120,
-            )
-        )
+        """Append Note on and Off using spec.midi_note as canonical source."""
+        if spec.midi_note is None:
+            return
+        on_msg, off_msg = spec.midi_note.to_on_off_pair()
+        on_msg.channel = channel
+        on_msg.time = time
+        off_msg.channel = channel
+        off_msg.time = time + 120  # Fixed 16th-note grid duration in ticks
+        track.append(on_msg)
+        track.append(off_msg)
 
     def clear_pattern(self):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""

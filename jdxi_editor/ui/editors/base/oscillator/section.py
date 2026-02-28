@@ -15,10 +15,9 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QPushButton,
     QTabWidget,
-    QWidget,
 )
 
-from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.midi.data.analog.lfo import AnalogLFOShape
 from jdxi_editor.midi.data.analog.oscillator import AnalogWaveOsc
 from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
