@@ -151,37 +151,29 @@ class DigitalPartialParam(AddressParameter):
         0x05,
         0,
         127,
-        0,
-        127,
-        "Specifies the amount (depth) of LFO that is applied to PW (Pulse Width). \nIf the OSC Wave has selected (PW-SQR), you can use this slider to specify the amount of LFO modulation applied to PW (pulse width).",
-        "PWM Depth",
+        description="Specifies the amount (depth) of LFO that is applied to PW (Pulse Width). \nIf the OSC Wave has selected (PW-SQR), you can use this slider to specify the amount of LFO modulation applied to PW (pulse width).",
+        display_name="PWM Depth",
     )  # PWM Depth
     OSC_PULSE_WIDTH = ParameterSpec(
         0x06,
         0,
         127,
-        0,
-        127,
-        "Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone",
-        "Pulse Width",
+        description="Sets the pulse width when PW-SQR is selected. \nSmaller values narrow the waveform; higher values widen it, shaping the tone",
+        display_name="Pulse Width",
     )  # Pulse Width
     OSC_PITCH_ENV_ATTACK_TIME = ParameterSpec(
         0x07,
         0,
         127,
-        0,
-        127,
-        "Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point",
-        "Pitch Envelope Attack",
+        description="Specifies the attack time of the pitch envelope. \nThis specifies the time from the moment you press the key until the pitch reaches its highest (or lowest) point",
+        display_name="Pitch Envelope Attack",
     )  # Pitch Envelope Attack
     OSC_PITCH_ENV_DECAY_TIME = ParameterSpec(
         0x08,
         0,
         127,
-        0,
-        127,
-        "Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed",
-        "Oscillator Pitch Env Decay",
+        description="Specifies the decay time of the pitch envelope. \nThis specifies the time from the moment the pitch reaches its highest \n(or lowest) point until it returns to the pitch of the key you pressed",
+        display_name="Oscillator Pitch Env Decay",
     )  # Pitch Envelope Decay
     OSC_PITCH_ENV_DEPTH = ParameterSpec(
         0x09,
@@ -236,46 +228,36 @@ class DigitalPartialParam(AddressParameter):
         0x0F,
         0,
         127,
-        0,
-        127,
-        "Emphasizes the sound in the region of the filter cutoff frequency",
-        "Resonance",
+        description="Emphasizes the sound in the region of the filter cutoff frequency",
+        display_name="Resonance",
     )  # Resonance
     FILTER_ENV_ATTACK_TIME = ParameterSpec(
         0x10,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from the moment you press the key until\n the cutoff frequency reaches its highest (or lowest) point",
-        "Filter envelope attack",
+        description="Specifies the time from the moment you press the key until\n the cutoff frequency reaches its highest (or lowest) point",
+        display_name="Filter envelope attack",
     )  #
     FILTER_ENV_DECAY_TIME = ParameterSpec(
         0x11,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from when the cutoff frequency reaches its\n highest (or lowest) point, until it decays to the sustain level",
-        "Filter envelope decay",
+        description="Specifies the time from when the cutoff frequency reaches its\n highest (or lowest) point, until it decays to the sustain level",
+        display_name="Filter envelope decay",
     )  #
     FILTER_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x12,
         0,
         127,
-        0,
-        127,
-        "Specifies the cutoff frequency that will be maintained\n from when the decay time has elapsed until you release the key",
-        "Filter envelope sustain",
+        description="Specifies the cutoff frequency that will be maintained\n from when the decay time has elapsed until you release the key",
+        display_name="Filter envelope sustain",
     )  #
     FILTER_ENV_RELEASE_TIME = ParameterSpec(
         0x13,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from when you release the key until\n the cutoff frequency reaches its minimum value",
-        "Filter envelope release",
+        description="Specifies the time from when you release the key until\n the cutoff frequency reaches its minimum value",
+        display_name="Filter envelope release",
     )  #
     FILTER_ENV_DEPTH = ParameterSpec(
         0x14,
@@ -288,7 +270,7 @@ class DigitalPartialParam(AddressParameter):
     )
 
     # Amplitude parameters
-    AMP_LEVEL = ParameterSpec(0x15, 0, 127, 0, 127, "Partial volume")  # Amplitude level
+    AMP_LEVEL = ParameterSpec(0x15, 0, 127, description="Partial volume")  # Amplitude level
     AMP_VELOCITY = ParameterSpec(
         0x16,
         -63,
@@ -302,37 +284,29 @@ class DigitalPartialParam(AddressParameter):
         0x17,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from the \nmoment you press the key until \n the maximum volume is reached.",
-        "Amp Env Attack",
+        description="Specifies the time from the \nmoment you press the key until \n the maximum volume is reached.",
+        display_name="Amp Env Attack",
     )  # Amplitude envelope attack
     AMP_ENV_DECAY_TIME = ParameterSpec(
         0x18,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from when the\nmaximum volume is reached, until\nit decays to the sustain level.",
-        "Amp Env decay",
+        description="Specifies the time from when the\nmaximum volume is reached, until\nit decays to the sustain level.",
+        display_name="Amp Env decay",
     )  # Amplitude envelope decay
     AMP_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x19,
         0,
         127,
-        0,
-        127,
-        "Specifies the volume level that\nwill be maintained from when\nthe attack and decay times have\nelapsed until you release the key",
-        "Amp Env Sustain",
+        description="Specifies the volume level that\nwill be maintained from when\nthe attack and decay times have\nelapsed until you release the key",
+        display_name="Amp Env Sustain",
     )  # Amplitude envelope sustain
     AMP_ENV_RELEASE_TIME = ParameterSpec(
         0x1A,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from when you\nrelease the key until the volume\nreaches its minimum value.",
-        "Amp Env Release",
+        description="Specifies the time from when you\nrelease the key until the volume\nreaches its minimum value.",
+        display_name="Amp Env Release",
     )  # Amplitude envelope release
     AMP_PAN = ParameterSpec(
         0x1B,
@@ -365,9 +339,7 @@ class DigitalPartialParam(AddressParameter):
         0x1D,
         0,
         127,
-        0,
-        127,
-        "Specifies the LFO rate when LFO Tempo Sync Sw is OFF",
+        description="Specifies the LFO rate when LFO Tempo Sync Sw is OFF",
     )  # LFO rate
     LFO_TEMPO_SYNC_SWITCH = ParameterSpec(
         0x1E,
@@ -389,9 +361,7 @@ class DigitalPartialParam(AddressParameter):
         0x20,
         0,
         127,
-        0,
-        127,
-        "Specifies the time from when the partial sounds until the LFO reaches its maximum amplitude",
+        description="Specifies the time from when the partial sounds until the LFO reaches its maximum amplitude",
     )  # Fade time
     LFO_KEY_TRIGGER = ParameterSpec(
         0x21,
@@ -447,9 +417,7 @@ class DigitalPartialParam(AddressParameter):
         0x27,
         0,
         127,
-        0,
-        127,
-        "Specifies the LFO rate when ModLFO TempoSyncSw is OFF.",
+        description="Specifies the LFO rate when ModLFO TempoSyncSw is OFF.",
     )  # Mod LFO rate
     MOD_LFO_TEMPO_SYNC_SWITCH = ParameterSpec(
         0x28,
@@ -471,9 +439,7 @@ class DigitalPartialParam(AddressParameter):
         0x2A,
         0,
         127,
-        0,
-        127,
-        "Shifts the range of change. Normally, you can leave this at 127.\n * If the Ring Switch is on, this has no effect on partials 1 and 2.",
+        description="Shifts the range of change. Normally, you can leave this at 127.\n * If the Ring Switch is on, this has no effect on partials 1 and 2.",
     )  # OSC Pulse Width Shift
     # 2B is reserved
     MOD_LFO_PITCH_DEPTH = ParameterSpec(
@@ -538,17 +504,13 @@ class DigitalPartialParam(AddressParameter):
         0x39,
         0,
         127,
-        0,
-        127,
-        "Specifies the cutoff frequency of an independent -6 dB high-pass filter",
+        description="Specifies the cutoff frequency of an independent -6 dB high-pass filter",
     )  # HPF cutoff
     SUPER_SAW_DETUNE = ParameterSpec(
         0x3A,
         0,
         127,
-        0,
-        127,
-        "Specifies the amount of pitch difference between the seven sawtooth waves layered within a single oscillator.\n * Lower values will produce a more subtle detune effect, similar to a single sawtooth wave.\n* Higher values will increase the pitch difference",
+        description="Specifies the amount of pitch difference between the seven sawtooth waves layered within a single oscillator.\n * Lower values will produce a more subtle detune effect, similar to a single sawtooth wave.\n* Higher values will increase the pitch difference",
     )  # Super saw detune
 
     PCM_WAVE_GAIN = ParameterSpec(

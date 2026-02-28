@@ -138,24 +138,20 @@ class Effect1Param(AddressParameter):
         "Selects the type of effect to be applied:\n00: Thru\n01: Distortion\n02: Fuzz\n03: Compressor\n04: Bit Crusher ",
         "Effect 1 Type",
     )
-    EFX1_LEVEL = ParameterSpec(0x01, 0, 127, 0, 127, "Sets the level of the effect.")
+    EFX1_LEVEL = ParameterSpec(0x01, 0, 127, description="Sets the level of the effect.")
     EFX1_DELAY_SEND_LEVEL = ParameterSpec(
         0x02,
         0,
         127,
-        0,
-        127,
-        "Depth of delay applied to the sound from effect 1.",
-        "EFX1 Level (0-127)",
+        description="Depth of delay applied to the sound from effect 1.",
+        display_name="EFX1 Level (0-127)",
     )
     EFX1_REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
         0,
         127,
-        0,
-        127,
-        "Depth of reverb applied to the sound from effect 1.",
-        "EFX1 Reverb Send Level (0-127)",
+        description="Depth of reverb applied to the sound from effect 1.",
+        display_name="EFX1 Reverb Send Level (0-127)",
     )
     EFX1_OUTPUT_ASSIGN = ParameterSpec(
         0x04,
@@ -475,19 +471,15 @@ class Effect2Param(AddressParameter):
         0x02,
         0,
         127,
-        0,
-        127,
-        "EFX2 Delay Send Level (0-127)",
-        "EFX2 Delay Send Level (0-127)",
+        description="EFX2 Delay Send Level (0-127)",
+        display_name="EFX2 Delay Send Level (0-127)",
     )
     EFX2_REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
         0,
         127,
-        0,
-        127,
-        "EFX2 Reverb Send Level (0-127)",
-        "EFX2 Reverb Send Level (0-127)",
+        description="EFX2 Reverb Send Level (0-127)",
+        display_name="EFX2 Reverb Send Level (0-127)",
     )
     EFX2_PARAM_1 = ParameterSpec(0x11, 32768, 32895, 0, 127)
     EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH = ParameterSpec(
@@ -758,9 +750,7 @@ class DelayParam(AddressParameter):
         0x06,
         0,
         127,
-        0,
-        127,
-        "Depth of reverb applied to the sound from delay.",
+        description="Depth of reverb applied to the sound from delay.",
     )
 
     @classmethod

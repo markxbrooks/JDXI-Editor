@@ -101,10 +101,8 @@ next new sound is specified.""",
         0x05,
         0,
         127,
-        0,
-        127,
-        "Specifies the style of the arpeggio style.\n1 - 128",
-        "Style",
+        description="Specifies the style of the arpeggio style.\n1 - 128",
+        display_name="Style",
     )  # 1 - 128
 
     ARPEGGIO_MOTIF = ParameterSpec(
@@ -151,10 +149,8 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
         0x0A,
         0,
         127,
-        0,
-        127,
-        "Specifies the loudness of the notes that you play.\nREAL: If you want the velocity value of each note to depend on how strongly you play the keyboard, set this\nparameter to REAL.\n1–127: Notes sound at the velocity you specify here, regardless of how strongly you play the keys.",
-        "Velocity",
+        description="Specifies the loudness of the notes that you play.\nREAL: If you want the velocity value of each note to depend on how strongly you play the keyboard, set this\nparameter to REAL.\n1–127: Notes sound at the velocity you specify here, regardless of how strongly you play the keys.",
+        display_name="Velocity",
     )  # REAL, 1 - 127
 
     # Pattern parameters

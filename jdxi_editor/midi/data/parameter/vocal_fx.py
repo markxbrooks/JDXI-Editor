@@ -85,17 +85,13 @@ class VocalFXParam(AddressParameter):
         0x02,
         0,
         127,
-        0,
-        127,
-        "Sets the level of the delay send.",
+        description="Sets the level of the delay send.",
     )  # Delay send level (0-127)
     REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
         0,
         127,
-        0,
-        127,
-        "Sets the level of the reverb send.",
+        description="Sets the level of the reverb send.",
     )  # Reverb send level (0-127)
     OUTPUT_ASSIGN = ParameterSpec(
         0x04,
@@ -189,33 +185,25 @@ class VocalFXParam(AddressParameter):
         0x0F,
         0,
         127,
-        0,
-        127,
-        "Sets the vocoder level.",
+        description="Sets the vocoder level.",
     )  # Vocoder level (0-127)
     VOCODER_MIC_SENS = ParameterSpec(
         0x10,
         0,
         127,
-        0,
-        127,
-        "Sets the vocoder mic sensitivity.",
+        description="Sets the vocoder mic sensitivity.",
     )  # Vocoder mic sensitivity (0-127)
     VOCODER_SYNTH_LEVEL = ParameterSpec(
         0x11,
         0,
         127,
-        0,
-        127,
-        "Sets the vocoder synth level.",
+        description="Sets the vocoder synth level.",
     )  # Vocoder synth level (0-127)
     VOCODER_MIC_MIX = ParameterSpec(
         0x12,
         0,
         127,
-        0,
-        127,
-        "Sets the vocoder mic mix level.",
+        description="Sets the vocoder mic mix level.",
     )  # Vocoder mic mix level (0-127)
     VOCODER_MIC_HPF = ParameterSpec(
         0x13,

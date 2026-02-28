@@ -164,9 +164,7 @@ class DrumPartialParam(AddressParameter):
         0x0E,
         0,
         127,
-        0,
-        127,
-        "Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).",
+        description="Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).",
     )
 
     # Partial Coarse Tune
@@ -174,9 +172,7 @@ class DrumPartialParam(AddressParameter):
         0x0F,
         0,
         127,
-        0,
-        127,
-        "Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).",
+        description="Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).",
     )  # C-1 - G9
 
     # Partial Fine Tune
@@ -242,9 +238,7 @@ class DrumPartialParam(AddressParameter):
         0x16,
         0,
         127,
-        0,
-        127,
-        "Specifies the signal level of each partial.\nMEMO\nThe overall output level of the entire drum kit is specified by COMMON Kit Level (p. 20 of the manual).",
+        description="Specifies the signal level of each partial.\nMEMO\nThe overall output level of the entire drum kit is specified by COMMON Kit Level (p. 20 of the manual).",
     )
 
     # Partial Chorus Send Level
@@ -252,9 +246,7 @@ class DrumPartialParam(AddressParameter):
         0x19,
         0,
         127,
-        0,
-        127,
-        "Specifies the level of the signal sent to the chorus for each partial.",
+        description="Specifies the level of the signal sent to the chorus for each partial.",
     )
 
     # Partial Reverb Send Level
@@ -262,9 +254,7 @@ class DrumPartialParam(AddressParameter):
         0x1A,
         0,
         127,
-        0,
-        127,
-        "Specifies the level of the signal sent to the reverb for each partial.",
+        description="Specifies the level of the signal sent to the reverb for each partial.",
     )
 
     # Partial Output Assign
@@ -460,9 +450,7 @@ class DrumPartialParam(AddressParameter):
         0x39,
         0,
         127,
-        0,
-        127,
-        "Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).\nValues: 0 - 127",
+        description="Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).\nValues: 0 - 127",
     )  # 0 - 127
 
     # WMT1 Velocity Range Lower
@@ -490,18 +478,14 @@ class DrumPartialParam(AddressParameter):
         0x3C,
         0,
         127,
-        0,
-        127,
-        "Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
+        description="Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
     )
     # WMT1 Velocity Fade Width Upper
     WMT1_VELOCITY_FADE_WIDTH_UPPER = ParameterSpec(
         0x3D,
         0,
         127,
-        0,
-        127,
-        "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
+        description="This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
     )
 
     # WMT2 Wave Switch
@@ -659,9 +643,7 @@ class DrumPartialParam(AddressParameter):
         0x56,
         0,
         127,
-        0,
-        127,
-        "Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).",
+        description="Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).",
     )  # 0 - 127
 
     # WMT2 Velocity Range Lower
@@ -689,9 +671,7 @@ class DrumPartialParam(AddressParameter):
         0x59,
         0,
         127,
-        0,
-        127,
-        "Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
+        description="Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
     )
 
     # WMT2 Velocity Fade Width Upper
@@ -699,9 +679,7 @@ class DrumPartialParam(AddressParameter):
         0x5A,
         0,
         127,
-        0,
-        127,
-        "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
+        description="This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
     )
 
     # WMT3 Wave Switch
@@ -859,9 +837,7 @@ class DrumPartialParam(AddressParameter):
         0x73,
         0,
         127,
-        0,
-        127,
-        "Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).",
+        description="Sets the level of the waveform. The value will change in 6 dB (decibel) steps.\nEach 6 dB increase doubles the gain. The gain is specified in decibels (dB).",
     )  # 0 - 127
 
     # WMT3 Velocity Range Lower
@@ -889,9 +865,7 @@ class DrumPartialParam(AddressParameter):
         0x76,
         0,
         127,
-        0,
-        127,
-        "Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
+        description="Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
     )
 
     # WMT3 Velocity Fade Width Upper
@@ -899,9 +873,7 @@ class DrumPartialParam(AddressParameter):
         0x77,
         0,
         127,
-        0,
-        127,
-        "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
+        description="This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
     )
 
     # WMT4 Wave Switch
@@ -1059,9 +1031,7 @@ class DrumPartialParam(AddressParameter):
         0x110,
         0,
         127,
-        0,
-        127,
-        "Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).",
+        description="Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).",
     )
 
     # WMT4 Velocity Range Lower
@@ -1089,9 +1059,7 @@ class DrumPartialParam(AddressParameter):
         0x113,
         0,
         127,
-        0,
-        127,
-        "Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
+        description="Determines what will happen to the tone’s level when the tone is played at a velocity lower than\nits specified velocity range. Higher settings produce a more gradual change in volume. If you\nwant notes played outside the specified key velocity range to not be sounded at all, set this to 0",
     )
 
     # WMT4 Velocity Fade Width Upper
@@ -1099,9 +1067,7 @@ class DrumPartialParam(AddressParameter):
         0x114,
         0,
         127,
-        0,
-        127,
-        "This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
+        description="This determines what will happen to the tone’s level when the tone is played at a velocity greater\nthan its specified velocity range.\nHigher settings produce a more gradual change in volume.\nIf you want notes played outside the specified key velocity range to not be sounded at all, set\nthis to 0",
     )
 
     # Pitch Env Depth
@@ -1153,10 +1119,8 @@ class DrumPartialParam(AddressParameter):
         0x119,
         0,
         127,
-        0,
-        127,
-        "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
-        "Time 1",
+        description="Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        display_name="Time 1",
     )
 
     # Pitch Env Time 2
@@ -1164,10 +1128,8 @@ class DrumPartialParam(AddressParameter):
         0x11A,
         0,
         127,
-        0,
-        127,
-        "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
-        "Time 2",
+        description="Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        display_name="Time 2",
     )
 
     # Pitch Env Time 3
@@ -1175,10 +1137,8 @@ class DrumPartialParam(AddressParameter):
         0x11B,
         0,
         127,
-        0,
-        127,
-        "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
-        "Time 3",
+        description="Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        display_name="Time 3",
     )
 
     # Pitch Env Time 4
@@ -1186,10 +1146,8 @@ class DrumPartialParam(AddressParameter):
         0x11C,
         0,
         127,
-        0,
-        127,
-        "Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
-        "Time 4",
+        description="Specify the pitch envelope times (Time 1–Time 4).\nHigher settings will result in a longer time until the next pitch is reached. (For example, Time 2 is\nthe time over which the pitch changes from Level 1 to Level 2.)",
+        display_name="Time 4",
     )
 
     # Pitch Env Level 0
@@ -1262,9 +1220,7 @@ class DrumPartialParam(AddressParameter):
         0x123,
         0,
         127,
-        0,
-        127,
-        "Selects the frequency at which the filter begins to have an effect on the waveform’s frequency\ncomponents.\nWith “LPF/LPF2/LPF3” selected for the Filter Type parameter, lower cutoff frequency settings\nreduce a tone’s upper harmonics for a more rounded, warmer sound. Higher settings make it\nsound brighter.\nIf the Filter Type parameter is set to “BPF,” the cutoff frequency setting changes the region of\nharmonics that are allowed to sound. This can be useful when creating distinctive sounds.\nWith “HPF” selected, higher Cutoff Frequency settings will reduce lower harmonics to emphasize\njust the brighter components of the sound.\nWith “PKG” selected, the harmonics to be emphasized will vary depending on Cutoff Frequency\nsetting.",
+        description="Selects the frequency at which the filter begins to have an effect on the waveform’s frequency\ncomponents.\nWith “LPF/LPF2/LPF3” selected for the Filter Type parameter, lower cutoff frequency settings\nreduce a tone’s upper harmonics for a more rounded, warmer sound. Higher settings make it\nsound brighter.\nIf the Filter Type parameter is set to “BPF,” the cutoff frequency setting changes the region of\nharmonics that are allowed to sound. This can be useful when creating distinctive sounds.\nWith “HPF” selected, higher Cutoff Frequency settings will reduce lower harmonics to emphasize\njust the brighter components of the sound.\nWith “PKG” selected, the harmonics to be emphasized will vary depending on Cutoff Frequency\nsetting.",
     )
 
     # TVF Cutoff Velocity Curve
@@ -1292,9 +1248,7 @@ class DrumPartialParam(AddressParameter):
         0x126,
         0,
         127,
-        0,
-        127,
-        "Sets the resonance of the filter. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
+        description="Sets the resonance of the filter. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )
 
     # TVF Resonance Velocity Sens
@@ -1362,9 +1316,7 @@ class DrumPartialParam(AddressParameter):
         0x12D,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
+        description="Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
     )
 
     # TVF Env Time 2
@@ -1372,9 +1324,7 @@ class DrumPartialParam(AddressParameter):
         0x12E,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
+        description="Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
     )
 
     # TVF Env Time 3
@@ -1382,9 +1332,7 @@ class DrumPartialParam(AddressParameter):
         0x12F,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
+        description="Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
     )
 
     # TVF Env Time 4
@@ -1392,9 +1340,7 @@ class DrumPartialParam(AddressParameter):
         0x130,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
+        description="Specify the TVF envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext cutoff frequency level is reached. (For example, Time 2 is the time over which Level 1 will\nchange to Level 2.)",
     )
 
     # TVF Env Level 0
@@ -1402,9 +1348,7 @@ class DrumPartialParam(AddressParameter):
         0x131,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
+        description="Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
     )
 
     # TVF Env Level 1
@@ -1412,9 +1356,7 @@ class DrumPartialParam(AddressParameter):
         0x132,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
+        description="Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
     )
 
     # TVF Env Level 2
@@ -1422,9 +1364,7 @@ class DrumPartialParam(AddressParameter):
         0x133,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
+        description="Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
     )
 
     # TVF Env Level 3
@@ -1432,9 +1372,7 @@ class DrumPartialParam(AddressParameter):
         0x134,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
+        description="Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
     )
 
     # TVF Env Level 4
@@ -1442,9 +1380,7 @@ class DrumPartialParam(AddressParameter):
         0x135,
         0,
         127,
-        0,
-        127,
-        "Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
+        description="Specify the TVF envelope levels (Level 0–Level 4).\nThese settings specify how the cutoff frequency will change at each point, relative to the\nstandard cutoff frequency (the cutoff frequency value specified in the TVF screen).",
     )
 
     # TVA Level Velocity Curve
@@ -1496,10 +1432,8 @@ class DrumPartialParam(AddressParameter):
         0x13A,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
-        "Time 1",
+        description="Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        display_name="Time 1",
     )
 
     # TVA Env Time 2
@@ -1507,10 +1441,8 @@ class DrumPartialParam(AddressParameter):
         0x13B,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
-        "Time 2",
+        description="Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        display_name="Time 2",
     )
 
     # TVA Env Time 3
@@ -1518,10 +1450,8 @@ class DrumPartialParam(AddressParameter):
         0x13C,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
-        "Time 3",
+        description="Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        display_name="Time 3",
     )
 
     # TVA Env Time 4
@@ -1529,10 +1459,8 @@ class DrumPartialParam(AddressParameter):
         0x13D,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
-        "Time 4",
+        description="Specify the TVA envelope times (Time 1–Time 4).\nHigher settings will lengthen the time until the\nnext volume level is reached. (For example, Time 2 is the time over which Level 1 will change to\nLevel 2.)",
+        display_name="Time 4",
     )
 
     # TVA Env Level 1
@@ -1540,10 +1468,8 @@ class DrumPartialParam(AddressParameter):
         0x13E,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
-        "Level 1",
+        description="Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        display_name="Level 1",
     )
 
     # TVA Env Level 2
@@ -1551,10 +1477,8 @@ class DrumPartialParam(AddressParameter):
         0x13F,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
-        "Level 2",
+        description="Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        display_name="Level 2",
     )
 
     # TVA Env Level 3
@@ -1562,10 +1486,8 @@ class DrumPartialParam(AddressParameter):
         0x140,
         0,
         127,
-        0,
-        127,
-        "Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
-        "Level 3",
+        description="Specify the TVA envelope levels (Level 1–Level 3).\nThese settings specify how the volume will change at each point, relative to the standard volume\n(the Partial Level value specified in the TVA screen).",
+        display_name="Level 3",
     )
 
     # One Shot Mode

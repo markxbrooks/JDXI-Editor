@@ -77,9 +77,7 @@ class SystemCommonParam(AddressParameter):
         0x05,
         0,
         127,
-        0,
-        127,
-        "Volume of the program",
+        description="Volume of the program",
     )  # Program Level (0-127)
 
     def get_display_value(self) -> Tuple[int, int]:
@@ -204,9 +202,7 @@ class ProgramCommonParam(AddressParameter):
         0x10,
         0,
         127,
-        0,
-        127,
-        "Volume of the program",
+        description="Volume of the program",
     )  # Program Level (0-127)
     PROGRAM_TEMPO = ParameterSpec(
         0x11,

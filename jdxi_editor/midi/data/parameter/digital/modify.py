@@ -74,28 +74,22 @@ class DigitalModifyParam(AddressParameter):
         0x01,
         0,
         127,
-        0,
-        127,
-        "Shortens the FILTER and AMP Attack Time according to the spacing between note-on events.\nHigher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play rapid notes using a sound that has a slow attack\n(Attack Time).",
-        "Attack Time Interval Sens",
+        description="Shortens the FILTER and AMP Attack Time according to the spacing between note-on events.\nHigher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play rapid notes using a sound that has a slow attack\n(Attack Time).",
+        display_name="Attack Time Interval Sens",
     )
     RELEASE_TIME_INTERVAL_SENS = ParameterSpec(
         0x02,
         0,
         127,
-        0,
-        127,
-        "Shortens the FILTER and AMP Release Time if the interval between one note-on and the next\nnote-off is brief. Higher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play staccato notes using a sound that has a slow release",
-        "Release Time Interval Sens",
+        description="Shortens the FILTER and AMP Release Time if the interval between one note-on and the next\nnote-off is brief. Higher values produce a greater effect. With a setting of 0, there will be no effect.\nThis is effective when you want to play staccato notes using a sound that has a slow release",
+        display_name="Release Time Interval Sens",
     )
     PORTAMENTO_TIME_INTERVAL_SENS = ParameterSpec(
         0x03,
         0,
         127,
-        0,
-        127,
-        "Shortens the Portamento Time according to the spacing between note-on events. Higher values\nproduce a greater effect. With a setting of 0, there will be no effect.",
-        "Portamento Time Interval Sens",
+        description="Shortens the Portamento Time according to the spacing between note-on events. Higher values\nproduce a greater effect. With a setting of 0, there will be no effect.",
+        display_name="Portamento Time Interval Sens",
     )
     ENVELOPE_LOOP_MODE = ParameterSpec(
         0x04,

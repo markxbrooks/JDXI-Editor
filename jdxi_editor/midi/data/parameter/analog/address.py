@@ -43,7 +43,7 @@ from isort.wrap_modes import vertical
 from picomidi.sysex.parameter.address import AddressParameter
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
-from jdxi_editor.midi.parameter.spec import ParameterSpec
+from jdxi_editor.midi.parameter.spec import ParameterSpec, RANGE_BIPOLAR_63
 
 
 class AnalogParam(AddressParameter):
@@ -75,17 +75,13 @@ class AnalogParam(AddressParameter):
         0x0E,
         0,
         127,
-        0,
-        127,
-        "Sets the LFO rate in Hz.\n0: 0.01 Hz, 127: 10 Hz",
+        description="Sets the LFO rate in Hz.\n0: 0.01 Hz, 127: 10 Hz",
     )  # 0-127
     LFO_FADE_TIME = ParameterSpec(
         0x0F,
         0,
         127,
-        0,
-        127,
-        "Sets the fade time for the LFO.\n0: 0 ms, 127: 1000 ms",
+        description="Sets the fade time for the LFO.\n0: 0 ms, 127: 1000 ms",
     )  # 0-127
     LFO_TEMPO_SYNC_SWITCH = ParameterSpec(
         0x10,
@@ -105,27 +101,18 @@ class AnalogParam(AddressParameter):
     )
     LFO_PITCH_DEPTH = ParameterSpec(
         0x12,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how much the LFO will modulate the pitch.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how much the LFO will modulate the pitch.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_FILTER_DEPTH = ParameterSpec(
         0x13,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how much the LFO will modulate the filter cutoff.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how much the LFO will modulate the filter cutoff.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_AMP_DEPTH = ParameterSpec(
         0x14,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how much the LFO will modulate the amplitude.\n-63: -63, 0: 0, 63: +63",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how much the LFO will modulate the amplitude.\n-63: -63, 0: 0, 63: +63",
     )  # -63 - +63
     LFO_KEY_TRIGGER = ParameterSpec(
         0x15,
@@ -168,49 +155,35 @@ class AnalogParam(AddressParameter):
         0x19,
         0,
         127,
-        0,
-        127,
-        "Sets the pulse width of the square wave oscillator.\n0: 0%, 127: 100%",
+        description="Sets the pulse width of the square wave oscillator.\n0: 0%, 127: 100%",
     )  # 0-127
     OSC_PULSE_WIDTH_MOD_DEPTH = ParameterSpec(
         0x1A,
         0,
         127,
-        0,
-        127,
-        "Sets the modulation depth for the pulse width.\n0: 0%, 127: 100%",
+        description="Sets the modulation depth for the pulse width.\n0: 0%, 127: 100%",
     )  # 0-127
     OSC_PITCH_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x1B,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how the pitch envelope depth will vary according to the strength with which you play the key",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how the pitch envelope depth will vary according to the strength with which you play the key",
     )  # -63 - +63
     OSC_PITCH_ENV_ATTACK_TIME = ParameterSpec(
         0x1C,
         0,
         127,
-        0,
-        127,
-        "Attack time for pitch envelope",
+        description="Attack time for pitch envelope",
     )  # 0-127
     OSC_PITCH_ENV_DECAY_TIME = ParameterSpec(
         0x1D,
         0,
         127,
-        0,
-        127,
-        "Decay time for pitch envelope",
+        description="Decay time for pitch envelope",
     )  # 0-127
     OSC_PITCH_ENV_DEPTH = ParameterSpec(
         0x1E,
-        1,
-        127,
-        -63,
-        63,
-        "Specifies how much the pitch envelope will affect the pitch",
+        *RANGE_BIPOLAR_63,
+        description="Specifies how much the pitch envelope will affect the pitch",
     )  # -63 - +63
     SUB_OSCILLATOR_TYPE = ParameterSpec(
         0x1F,
@@ -245,10 +218,8 @@ class AnalogParam(AddressParameter):
         0x23,
         0,
         127,
-        0,
-        127,
-        "Specifies the resonance level of the filter.\n0: 0%, 127: 100%",
-        "Resonance",
+        description="Specifies the resonance level of the filter.\n0: 0%, 127: 100%",
+        display_name="Resonance",
     )  # 0-127
     FILTER_ENV_VELOCITY_SENSITIVITY = ParameterSpec(
         0x24,
@@ -286,10 +257,8 @@ class AnalogParam(AddressParameter):
         0x2A,
         0,
         127,
-        0,
-        127,
-        "Sets the overall amplitude level.\n0: 0%, 127: 100%",
-        "Level",
+        description="Sets the overall amplitude level.\n0: 0%, 127: 100%",
+        display_name="Level",
     )  # 0-127
     AMP_LEVEL_KEYFOLLOW = ParameterSpec(
         0x2B,
@@ -313,33 +282,25 @@ class AnalogParam(AddressParameter):
         0x2D,
         0,
         127,
-        0,
-        127,
-        "Attack time for amplitude envelope",
+        description="Attack time for amplitude envelope",
     )  # 0-127
     AMP_ENV_DECAY_TIME = ParameterSpec(
         0x2E,
         0,
         127,
-        0,
-        127,
-        "Decay time for amplitude envelope",
+        description="Decay time for amplitude envelope",
     )  # 0-127
     AMP_ENV_SUSTAIN_LEVEL = ParameterSpec(
         0x2F,
         0,
         127,
-        0,
-        127,
-        "Sustain level for amplitude envelope",
+        description="Sustain level for amplitude envelope",
     )  # 0-127
     AMP_ENV_RELEASE_TIME = ParameterSpec(
         0x30,
         0,
         127,
-        0,
-        127,
-        "Release time for amplitude envelope",
+        description="Release time for amplitude envelope",
     )  # 0-127
 
     # Portamento and Other Parameters
@@ -355,10 +316,8 @@ class AnalogParam(AddressParameter):
         0x32,
         0,
         127,
-        0,
-        127,
-        "Sets the portamento time in milliseconds.\n0: 0 ms, 127: 1000 ms",
-        "Portamento Time",
+        description="Sets the portamento time in milliseconds.\n0: 0 ms, 127: 1000 ms",
+        display_name="Portamento Time",
     )  # 0-127
     LEGATO_SWITCH = ParameterSpec(
         0x33,

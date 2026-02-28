@@ -118,10 +118,8 @@ class DigitalCommonParam(AddressParameter):
         0x13,
         0,
         127,
-        0,
-        127,
-        "Specifies the time taken for the pitch to change when playing portamento. Higher values \nlengthen the time over which the pitch will change to the next note.",
-        "Portamento Time",
+        description="Specifies the time taken for the pitch to change when playing portamento. Higher values \nlengthen the time over which the pitch will change to the next note.",
+        display_name="Portamento Time",
     )  # Portamento Time (CC# 5)
     MONO_SWITCH = ParameterSpec(
         0x14,
@@ -223,19 +221,15 @@ class DigitalCommonParam(AddressParameter):
         0x34,
         0,
         127,
-        0,
-        127,
-        "Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many\nnatural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by \nmany people.\nBy applying “1/f fluctuation” you can create the natural-sounding instability that is\ncharacteristic of an analog synthesizer.",
-        "Analog Feel",
+        description="Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many\nnatural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by \nmany people.\nBy applying “1/f fluctuation” you can create the natural-sounding instability that is\ncharacteristic of an analog synthesizer.",
+        display_name="Analog Feel",
     )  # Analog Feel amount
     WAVE_SHAPE = ParameterSpec(
         0x35,
         0,
         127,
-        0,
-        127,
-        "Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.",
-        "Wave Shape",
+        description="Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.",
+        display_name="Wave Shape",
     )  # Wave Shape amount
     TONE_CATEGORY = ParameterSpec(
         0x36, 0, 127, 0, 127, "Selects the tone’s category." "Tone Category"

@@ -218,7 +218,7 @@ def main():
         root = root.parent
 
     extensions = tuple(ext.strip() for ext in args.extensions.split(","))
-    exclude_dirs = {"__pycache__", ".git", "venv", ".venv", "node_modules"}
+    exclude_dirs = {"__pycache__", ".git", "venv", ".venv", "node_modules", "build", "doc"}
 
     duplicates = find_duplicates(
         root=root,

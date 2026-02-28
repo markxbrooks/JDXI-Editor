@@ -73,10 +73,8 @@ class DrumCommonParam(AddressParameter):
         0x0C,
         0,
         127,
-        0,
-        127,
-        "Sets the volume of the drum kit.\nMEMO\nThe volume of each partial in the drum kit is specified by the TVA Level parameter (p. 24).\nThe volume of each waveform within a partial is set by the Wave Level parameter (p. 21).",
-        "Kit Level:",
+        description="Sets the volume of the drum kit.\nMEMO\nThe volume of each partial in the drum kit is specified by the TVA Level parameter (p. 24).\nThe volume of each waveform within a partial is set by the Wave Level parameter (p. 21).",
+        display_name="Kit Level:",
     )  # Overall tone level
 
     @property
