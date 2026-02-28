@@ -31,11 +31,8 @@ from picomidi.message.type import MidoMessageType
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
-    QCheckBox,
-    QComboBox,
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QListWidgetItem,
     QMessageBox,
     QPushButton,
@@ -91,23 +88,18 @@ from jdxi_editor.ui.sequencer.button.manager import (
     NoteButtonAttrs,
     SequencerButtonManager,
 )
-from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.combo_box.synchronizer import (
     ComboBoxSynchronizer,
     ComboBoxUpdateConfig,
 )
-from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from picoui.helpers import create_layout_with_items, group_with_layout
-from picoui.helpers.spinbox import spinbox_with_label_from_spec
+from picoui.helpers import group_with_layout
 from picoui.specs.widgets import (
     ButtonSpec,
     FileSelectionSpec,
-    SpinBoxSpec,
 )
-from picoui.widget.helper import create_combo_box, get_file_path_from_spec
+from picoui.widget.helper import get_file_path_from_spec
 from picoui.widget.setters import set_spinbox_value
 
 
@@ -131,26 +123,20 @@ def copy_note_attrs_from_event(button: SequencerButton, event: PatternLearnerEve
     button.note_duration = event.duration_ms
 
 
-def update_button_from_learned_event(button: SequencerButton, event: PatternLearnerEvent):
+def update_button_from_learned_event(
+    button: SequencerButton, event: PatternLearnerEvent
+):
     """update button from learned event"""
     update_button_state(button, checked_state=True)
     copy_note_attrs_from_event(button, event)
     sync_button_note_spec(button)
 
 
-def copy_note_attrs(previous_button: SequencerButton, new_button: SequencerButton):
+def copy_note_attrs(prev: SequencerButton, new: SequencerButton):
     """copy note attrs"""
-    new_button.note = previous_button.note
-    # Copy duration if available
-    if hasattr(previous_button, NoteButtonAttrs.NOTE_DURATION):
-        new_button.note_duration = previous_button.note_duration
-    else:
-        new_button.note_duration = None
-    # Copy velocity if available
-    if hasattr(previous_button, NoteButtonAttrs.NOTE_VELOCITY):
-        new_button.note_velocity = previous_button.note_velocity
-    else:
-        new_button.note_velocity = None
+    new.note = prev.note
+    for a in NoteButtonAttrs.COPYABLE:
+        setattr(new, a, getattr(prev, a, None))
 
 
 class PatternSequenceEditor(PatternUI):
@@ -184,6 +170,7 @@ class PatternSequenceEditor(PatternUI):
             {}
         )  # Track active notes (midi_note -> row index)
         self._pattern_paused: bool = False
+        self._pattern_loop_enabled: bool = True  # Loop by default; toggle via future UI
         self.playback_engine: PlaybackEngine = PlaybackEngine()
         self._wire_pattern_widget()
         self._init_style()
@@ -241,7 +228,10 @@ class PatternSequenceEditor(PatternUI):
     def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
         """add note on off pair to track"""
         from picomidi.messages.note import MidiNote
-        midi_note = MidiNote(note=event.note, velocity=event.velocity, duration=duration_ticks)
+
+        midi_note = MidiNote(
+            note=event.note, velocity=event.velocity, duration=duration_ticks
+        )
         on_msg, off_msg = midi_note.to_on_off_pair()
         self.midi_track.extend([on_msg, off_msg])
 
@@ -644,7 +634,7 @@ class PatternSequenceEditor(PatternUI):
 
             # Sync checked state and note
             update_button_state(sequencer_button, measure_button.isChecked())
-            copy_note_attrs(new_button=sequencer_button, previous_button=measure_button)
+            copy_note_attrs(new=sequencer_button, prev=measure_button)
             sync_button_note_spec(sequencer_button)
 
             self._update_tooltip(row, sequencer_button)
@@ -815,8 +805,6 @@ class PatternSequenceEditor(PatternUI):
         # Update button states based on beats per bar
         self._update_button_states_for_beats_per_bar()
         log.message(f"Beats per bar changed to {self.measure_beats}")
-
-
 
     def _update_button_states_for_beats_per_bar(self) -> None:
         """Enable/disable sequencer buttons based on beats per bar setting."""
@@ -1363,7 +1351,9 @@ class PatternSequenceEditor(PatternUI):
             midi_file.tracks.append(track)
 
             # Add track name and program change
-            track.append(Message(MidoMessageType.PROGRAM_CHANGE.value, program=0, time=0))
+            track.append(
+                Message(MidoMessageType.PROGRAM_CHANGE.value, program=0, time=0)
+            )
 
             self._add_motes_from_all_bars_to_track(row, track)
 
@@ -1981,7 +1971,9 @@ class PatternSequenceEditor(PatternUI):
             # Only update step highlight when the current step changes (at most 2 columns)
             if step_in_bar != last_step:
                 for row in range(self.sequencer_rows):
-                    for btn in self._get_step_buttons(row, last_step) if 0 <= last_step else []:
+                    for btn in (
+                        self._get_step_buttons(row, last_step) if 0 <= last_step else []
+                    ):
                         set_sequencer_style(
                             btn=btn, is_current=False, checked=btn.isChecked()
                         )
@@ -1992,12 +1984,15 @@ class PatternSequenceEditor(PatternUI):
                 self._playback_last_step_in_bar = step_in_bar
 
         if self.playback_engine.state == TransportState.STOPPED:
-            self._apply_transport_state(TransportState.STOPPED)
             log.message(
                 message="Pattern playback finished", scope=self.__class__.__name__
             )
-            # restart playing because its a pattern unless otherwise indicated
-            self._apply_transport_state(TransportState.PLAYING)
+            if self._pattern_loop_enabled:
+                if self.timer:
+                    self.timer.stop()
+                self.play_pattern()
+            else:
+                self._apply_transport_state(TransportState.STOPPED)
 
     def _sync_sequencer_on_step_change(self, bar_index: int, last_bar: int | Any):
         """Only sync sequencer and bar list when the displayed bar changes"""
@@ -2206,7 +2201,9 @@ class PatternSequenceEditor(PatternUI):
 
                 # Add the note_off message to the MIDI track
                 self.midi_track.append(
-                    Message(MidoMessageType.NOTE_OFF.value, note=note, velocity=0, time=0)
+                    Message(
+                        MidoMessageType.NOTE_OFF.value, note=note, velocity=0, time=0
+                    )
                 )
                 # Advance step within current bar (0 to beats_per_bar-1)
                 self.current_step = (self.current_step + 1) % self.measure_beats

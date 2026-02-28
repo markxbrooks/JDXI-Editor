@@ -11,7 +11,7 @@ Classes:
 Features:
     - Inherits channel-based messaging from `ChannelMessage`.
     - Automatically assigns controller and value to data bytes.
-    - Uses status byte `0xB0` for Control Change messages.
+    - Uses status byte `Status.CONTROL_CHANGE` for Control Change messages.
 
 Usage Example:
     >>> msg = ControlChangeMessage(channel=1, controller=7, value=100)  # Volume control on channel 1
@@ -57,7 +57,7 @@ class ControlChangeMessage(MidiMessage):
         :return: list
         """
         status_byte = self.status | (
-            self.channel & 0x0F
+            self.channel & BitMask.LOW_4_BITS
         )  # Ensures correct channel encoding
         return [
             status_byte,

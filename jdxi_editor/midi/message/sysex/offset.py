@@ -32,7 +32,7 @@ class JDXIControlChangeOffset(IntEnum):
     Represents the offsets for JD-Xi Control Change messages.
     Byte   |	Description
     --------------------------------------------------------
-    Status |	0xB0 to 0xBF — Control Change on MIDI channels 1–16
+    Status |	Status.CONTROL_CHANGE to 0xBF — Control Change on MIDI channels 1–16
     Data 1 |	Control Number (0–127)
     Data 2 |	Control Value (0–127)
     """
@@ -50,7 +50,7 @@ class JDXIProgramChangeOffset(IntEnum):
 
     Byte   |	Description
     --------------------------------------------------------
-    Status |	0xC0 to 0xCF — Program Change on MIDI channels 1–16
+    Status |	Status.PROGRAM_CHANGE to 0xCF — Program Change on MIDI channels 1–16
     Data 1 |	Program Number (0–127)
     """
 

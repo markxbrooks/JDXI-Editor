@@ -160,7 +160,9 @@ class MidiFileController:
         if self.midi_file and self.midi_file.tracks:
             # Remove existing tempo messages
             track = self.midi_file.tracks[0]
-            track[:] = [msg for msg in track if msg.type != MidoMessageType.SET_TEMPO.value]
+            track[:] = [
+                msg for msg in track if msg.type != MidoMessageType.SET_TEMPO.value
+            ]
 
             # Add new tempo message
             self._add_tempo_to_track(track, bpm)

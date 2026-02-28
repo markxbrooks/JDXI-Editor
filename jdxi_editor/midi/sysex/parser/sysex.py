@@ -164,18 +164,18 @@ class JDXiSysExParser:
     def _is_identity_sysex(self) -> bool:
         data = self.sysex_data
         return (
-                len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
-                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == MidiSysExByte.START
-                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
-                in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
-                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
-                == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
-                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-                in (
+            len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == MidiSysExByte.START
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+            in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+            == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+            in (
                 JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
                 JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
             )
-                and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == MidiSysExByte.END
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == MidiSysExByte.END
         )
 
     def _is_valid_sysex(self) -> bool:
@@ -187,8 +187,8 @@ class JDXiSysExParser:
 
     def _is_sysex_frame(self) -> bool:
         return (
-                self.sysex_data[0] == MidiSysExByte.START
-                and self.sysex_data[-1] == MidiSysExByte.END
+            self.sysex_data[0] == MidiSysExByte.START
+            and self.sysex_data[-1] == MidiSysExByte.END
         )
 
     def _is_jdxi_sysex(self) -> bool:

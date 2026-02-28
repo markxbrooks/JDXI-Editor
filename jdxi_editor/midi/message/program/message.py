@@ -13,12 +13,12 @@ Features:
     - Provides automatic initialization of the `data1` field with the program value, with `data2` set to `None` (as Program Change messages only use one data byte).
 
 Constants:
-    - STATUS_BYTE (0xC0): The status byte for a Program Change message in the MIDI protocol.
+    - STATUS_BYTE (Status.PROGRAM_CHANGE): The status byte for a Program Change message in the MIDI protocol.
 
 Usage Example:
     >>> program_msg = ProgramChangeMessage(program=5)
     >>> program_msg.to_message_list()
-    [0xC0, 5]
+    [Status.PROGRAM_CHANGE, 5]
 
 """
 

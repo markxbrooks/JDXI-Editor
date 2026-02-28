@@ -6,34 +6,32 @@ NoteButtonSpec migration: midi_note is canonical.
 - Phase 3 (future): Collapse to midi_note-only.
 """
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from picomidi import MidiNote
+
 from picoui.specs.widgets import ButtonSpec
 
 
 @dataclass(slots=True)
 class TransportSpec(ButtonSpec):
     """TransportSpec"""
+
     name: str = ""
     text: str = ""
 
 
-@dataclass
 class NoteButtonSpec:
     """
     Note/spec for sequencer buttons. Canonical source is midi_note.
     Init args build midi_note; properties redirect reads to it.
     """
 
-    note: Optional[int] = None
-    duration_ms: int = 120
-    velocity: int = 100
-
-    midi_note: Optional[MidiNote] = field(init=False, default=None)
-
-    def __post_init__(self) -> None:
+    def __init__(self, note=None, duration_ms=None, velocity=None, time=0):
+        self.note = note
+        self.duration_ms = int(duration_ms) if duration_ms is not None else 120
+        self.velocity = velocity if velocity is not None else 100
+        self.time = time
         self._sync_midi_note()
 
     def _sync_midi_note(self) -> None:

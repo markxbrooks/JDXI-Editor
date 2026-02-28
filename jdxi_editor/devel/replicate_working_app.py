@@ -10,6 +10,7 @@ import sys
 import time
 
 import rtmidi
+from picomidi import BitMask, Status
 from PySide6.QtCore import QCoreApplication, QTimer
 from PySide6.QtWidgets import QApplication
 
@@ -39,8 +40,8 @@ class WorkingAppReplicator:
         # Decode the message
         if len(message_data) >= 3:
             status = message_data[0]
-            if status == 0xB0:  # Control Change
-                channel = (status & 0x0F) + 1
+            if status == Status.CONTROL_CHANGE:  # Control Change
+                channel = (status & BitMask.LOW_4_BITS) + 1
                 controller = message_data[1]
                 value = message_data[2]
 

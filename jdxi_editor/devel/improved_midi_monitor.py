@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import List, Optional
 
 import rtmidi
+from picomidi import Status
 
 
 class ImprovedMIDIMonitor:
@@ -41,7 +42,7 @@ class ImprovedMIDIMonitor:
         # Check for specific messages from your controller
         if len(message_data) >= 3:
             status = message_data[0]
-            if status == 0xB0:  # Control Change
+            if status == Status.CONTROL_CHANGE:  # Control Change
                 controller = message_data[1]
                 value = message_data[2]
                 if controller == 10:  # Pan (fine)
@@ -63,7 +64,7 @@ class ImprovedMIDIMonitor:
             return f"Raw: {data}"
 
         status = data[0]
-        channel = (status & 0x0F) + 1
+        channel = (status & BitMask.LOW_4_BITS) + 1
         message_type = status & 0xF0
 
         if message_type == 0x90:  # Note On
@@ -78,16 +79,16 @@ class ImprovedMIDIMonitor:
             note_name = self.get_note_name(note)
             return f"Note Off Ch{channel:2d} {note_name} (vel={velocity})"
 
-        elif message_type == 0xB0:  # Control Change
+        elif message_type == Status.CONTROL_CHANGE:  # Control Change
             controller = data[1]
             value = data[2] if len(data) > 2 else 0
             return f"CC{controller:2d}    Ch{channel:2d} Value={value:3d} ({self.get_cc_name(controller)})"
 
-        elif message_type == 0xC0:  # Program Change
+        elif message_type == Status.PROGRAM_CHANGE:  # Program Change
             program = data[1]
             return f"Prog Chg Ch{channel:2d} Program={program}"
 
-        elif message_type == 0xD0:  # Channel Aftertouch
+        elif message_type == Status.CHANNEL_AFTERTOUCH:  # Channel Aftertouch
             pressure = data[1]
             return f"Aftertouch Ch{channel:2d} Pressure={pressure}"
 

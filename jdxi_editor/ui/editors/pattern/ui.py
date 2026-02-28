@@ -31,12 +31,13 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QListWidget,
+    QListWidgetItem,
     QPushButton,
     QSizePolicy,
     QSpinBox,
     QSplitter,
     QVBoxLayout,
-    QWidget, QListWidgetItem,
+    QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi

@@ -2102,7 +2102,10 @@ class MidiFilePlayer(SynthEditor):
             # CC 123 = All Notes Off
             self.midi_helper.midi_out.send_message(
                 mido.Message(
-                    MidoMessageType.CONTROL_CHANGE.value, control=123, value=0, channel=ch
+                    MidoMessageType.CONTROL_CHANGE.value,
+                    control=123,
+                    value=0,
+                    channel=ch,
                 ).bytes()
             )
 
@@ -2110,7 +2113,10 @@ class MidiFilePlayer(SynthEditor):
             for note in range(128):
                 self.midi_helper.midi_out.send_message(
                     mido.Message(
-                        MidoMessageType.NOTE_OFF.value, note=note, velocity=0, channel=ch
+                        MidoMessageType.NOTE_OFF.value,
+                        note=note,
+                        velocity=0,
+                        channel=ch,
                     ).bytes()
                 )
 

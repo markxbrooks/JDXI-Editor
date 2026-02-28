@@ -5,25 +5,32 @@ Manages a collection of PatternMeasureWidgets and their underlying PatternMeasur
 Acts as the main container for the pattern sequencer grid.
 """
 
-from typing import List, Optional, Callable
 from dataclasses import dataclass
+from typing import Callable, List, Optional
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QListWidgetItem, QHBoxLayout
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
-from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
-from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
-from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from jdxi_editor.ui.editors.pattern.step.data import StepData
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
     set_sequencer_style,
 )
+from jdxi_editor.ui.editors.pattern.step.data import StepData
+from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
+from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
+from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 
 @dataclass
 class PatternConfig:
     """Configuration for PatternWidget"""
+
     rows: int = 4
     steps_per_measure: int = 16
     initial_measures: int = 1
@@ -41,9 +48,9 @@ class PatternWidget(QWidget):
     """
 
     def __init__(
-            self,
-            config: PatternConfig = None,
-            parent: Optional[QWidget] = None,
+        self,
+        config: PatternConfig = None,
+        parent: Optional[QWidget] = None,
     ):
         """
         Initialize the PatternWidget.
@@ -69,7 +76,9 @@ class PatternWidget(QWidget):
         self.on_measure_selected: Optional[Callable[[int], None]] = None
         self.on_measure_added: Optional[Callable[[int], None]] = None
         self.on_measure_removed: Optional[Callable[[int], None]] = None
-        self._button_click_handler: Optional[Callable[[SequencerButton, bool], None]] = None
+        self._button_click_handler: Optional[
+            Callable[[SequencerButton, bool], None]
+        ] = None
 
         self._setup_ui()
         self._initialize_measures(self.config.initial_measures)
@@ -119,8 +128,7 @@ class PatternWidget(QWidget):
 
         # Create data model
         measure = PatternMeasure(
-            rows=self.config.rows,
-            steps_per_bar=self.config.steps_per_measure
+            rows=self.config.rows, steps_per_bar=self.config.steps_per_measure
         )
         self.measures.append(measure)
 
@@ -135,7 +143,7 @@ class PatternWidget(QWidget):
                 self.measures[measure_index - 1],
                 measure,
                 self.measure_widgets[measure_index - 1],
-                widget
+                widget,
             )
 
         self.measure_widgets.append(widget)
@@ -275,16 +283,13 @@ class PatternWidget(QWidget):
             self.measures[from_index],
             self.measures[to_index],
             self.measure_widgets[from_index],
-            self.measure_widgets[to_index]
+            self.measure_widgets[to_index],
         )
 
         return True
 
     def copy_measure_section(
-            self,
-            measure_index: int,
-            start_step: int,
-            end_step: int
+        self, measure_index: int, start_step: int, end_step: int
     ) -> Optional[dict]:
         """
         Copy a section of steps from a measure. Reads from buttons (source of truth).
@@ -334,10 +339,7 @@ class PatternWidget(QWidget):
         return section_data
 
     def paste_measure_section(
-            self,
-            measure_index: int,
-            start_step: int,
-            clipboard: Optional[dict] = None
+        self, measure_index: int, start_step: int, clipboard: Optional[dict] = None
     ) -> bool:
         """
         Paste a section of steps into a measure. Accepts ClipboardData format
@@ -372,10 +374,14 @@ class PatternWidget(QWidget):
                     continue
 
                 button = widget.buttons[row][dest_step]
-                checked = step_data_dict.get("checked", step_data_dict.get("active", False))
+                checked = step_data_dict.get(
+                    "checked", step_data_dict.get("active", False)
+                )
                 note = step_data_dict.get("note")
                 velocity = step_data_dict.get("velocity", 100)
-                duration_ms = step_data_dict.get("duration_ms") or step_data_dict.get("duration")
+                duration_ms = step_data_dict.get("duration_ms") or step_data_dict.get(
+                    "duration"
+                )
 
                 button.setChecked(checked)
                 button.note = note
@@ -493,11 +499,11 @@ class PatternWidget(QWidget):
         return self.get_measure_count() * self.config.steps_per_measure
 
     def _copy_measure_data(
-            self,
-            source_measure: PatternMeasure,
-            dest_measure: PatternMeasure,
-            source_widget: PatternMeasureWidget,
-            dest_widget: PatternMeasureWidget
+        self,
+        source_measure: PatternMeasure,
+        dest_measure: PatternMeasure,
+        source_widget: PatternMeasureWidget,
+        dest_widget: PatternMeasureWidget,
     ) -> None:
         """Internal helper to copy measure data and UI state."""
         for row in range(self.config.rows):

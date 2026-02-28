@@ -10,9 +10,10 @@ from typing import Callable, Dict, List, Optional
 import mido
 from decologr import Decologr as log
 from mido import Message
+from picomidi import BitMask, MidiNote
 from picomidi.message.type import MidoMessageType
 from PySide6.QtWidgets import QComboBox
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_OFF, NOTE_ON
+from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
 
 from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -219,8 +220,8 @@ class ComboBoxSynchronizer:
                 # Extract message type and channel from status byte
                 msg_status = status_byte & MidiMessage.MIDI_STATUS_MASK
 
-                if msg_status in (NOTE_ON, NOTE_OFF):
-                    channel = status_byte & 0x0F
+                if msg_status in (MidiNote.ON, MidiNote.OFF):
+                    channel = status_byte & BitMask.LOW_4_BITS
                     msg_type = (
                         MidoMessageType.NOTE_ON.value
                         if msg_status == NOTE_ON and velocity > 0

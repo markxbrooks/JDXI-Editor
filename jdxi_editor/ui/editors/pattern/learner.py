@@ -439,9 +439,15 @@ if __name__ == "__main__":
     learner.process_midi_message(
         Message(MidoMessageType.NOTE_ON.value, note=60, velocity=100)
     )
-    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF.value, note=60, velocity=0))
-    learner.process_midi_message(Message(MidoMessageType.NOTE_ON.value, note=64, velocity=80))
-    learner.process_midi_message(Message(MidoMessageType.NOTE_OFF.value, note=64, velocity=0))
+    learner.process_midi_message(
+        Message(MidoMessageType.NOTE_OFF.value, note=60, velocity=0)
+    )
+    learner.process_midi_message(
+        Message(MidoMessageType.NOTE_ON.value, note=64, velocity=80)
+    )
+    learner.process_midi_message(
+        Message(MidoMessageType.NOTE_OFF.value, note=64, velocity=0)
+    )
 
     # Get results
     log.message("\nLearned pattern:", learner.get_learned_pattern())

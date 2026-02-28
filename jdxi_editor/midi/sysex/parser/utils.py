@@ -170,7 +170,7 @@ def address_to_index(msb: int, lsb: int) -> int:
     :return: int address index
     """
     if not (
-            0 <= msb <= Midi.value.max.EIGHT_BIT and 0 <= lsb <= Midi.value.max.EIGHT_BIT
+        0 <= msb <= Midi.value.max.EIGHT_BIT and 0 <= lsb <= Midi.value.max.EIGHT_BIT
     ):
         raise ValueError("MSB and LSB must be in the range 0x00 to 0xFF.")
     return (msb << 8) | lsb

@@ -21,6 +21,8 @@ class NoteButtonAttrs:
     NOTE_DURATION = "note_duration"
     NOTE_VELOCITY = "note_velocity"
 
+    COPYABLE = (NOTE_DURATION, NOTE_VELOCITY)
+
 
 class ButtonState:
     """Represents the state of a sequencer button."""

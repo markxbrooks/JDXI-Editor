@@ -241,10 +241,12 @@ class MIDIConfigDialog(QDialog):
         self.sf2_edit.setPlaceholderText("FluidR3_GM.sf2")  # default SoundFont
         sf_row.addWidget(self.sf2_edit)
         browse_btn_layout = QHBoxLayout()
-        browse_button_spec = ButtonSpec(icon=JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
-                                        label="Browse",
-                                        slot=self._browse_sf2,
-                                        layout=browse_btn_layout)
+        browse_button_spec = ButtonSpec(
+            icon=JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
+            label="Browse",
+            slot=self._browse_sf2,
+            layout=browse_btn_layout,
+        )
         add_round_button_from_spec(spec=browse_button_spec)
         sf_row.addLayout(browse_btn_layout)
         synth_layout.addLayout(sf_row)
@@ -391,9 +393,9 @@ class MIDIConfigDialog(QDialog):
             # Auto-start if a valid SoundFont is already set and synth not running
             try:
                 if (
-                        self.fs is None
-                        and self.sf2_edit.text().strip()
-                        and os.path.isfile(self.sf2_edit.text().strip())
+                    self.fs is None
+                    and self.sf2_edit.text().strip()
+                    and os.path.isfile(self.sf2_edit.text().strip())
                 ):
                     self._start_fluidsynth()
             except Exception:
@@ -432,8 +434,8 @@ class MIDIConfigDialog(QDialog):
                 self.fs = Synth()
                 device_name = self.hardware_interface_combo.currentText()
                 if device_name and device_name not in (
-                        "(Default)",
-                        "(sounddevice not installed)",
+                    "(Default)",
+                    "(sounddevice not installed)",
                 ):
                     if sys.platform == "darwin":
                         # macOS: use CoreAudio with specific device (accepts device name)
