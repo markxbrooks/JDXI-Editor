@@ -109,6 +109,12 @@ class PatternUI(SynthEditor):
             MidiChannel.ANALOG_SYNTH: 2,  # Channel 2
             MidiChannel.DRUM_KIT: 3,  # Channel 9
         }
+        self.row_labels = [
+            "Digital Synth 1",
+            "Digital Synth 2",
+            "Analog Synth",
+            "Drums",
+        ]
         self._build_row_specs()
         self.sequencer_rows: int = 4
         # Use Qt translations: add .ts/.qm for locale (e.g. en_GB "Measure" -> "Measure", "Measures" -> "Measures")
@@ -191,12 +197,6 @@ class PatternUI(SynthEditor):
         # Create content widget with main layout
         content_widget = QWidget()
         self.layout = QVBoxLayout(content_widget)
-        self.row_labels = [
-            "Digital Synth 1",
-            "Digital Synth 2",
-            "Analog Synth",
-            "Drums",
-        ]
         self.mute_buttons = []  # List to store mute buttons
 
         # Define synth options (from built-in or SoundFont via MIDI config)
@@ -235,7 +235,12 @@ class PatternUI(SynthEditor):
         # Create splitter for measures list and sequencer (builds measures group + sequencer widget)
         self._build_splitter_section()
 
-        self.row_map = self._build_row_map()
+        self.row_map = {
+            0: self.digital1_selector,
+            1: self.digital2_selector,
+            2: self.analog_selector,
+            3: self.drum_selector,
+        }
 
         # Transport at bottom, centered (stretch on both sides)
         transport_bottom_layout = create_layout_with_items(
@@ -638,15 +643,6 @@ class PatternUI(SynthEditor):
         if not ok:
             log.debug(msg, scope=self.__class__.__name__)
         return ok
-
-    def _build_row_map(self) -> dict[int, QComboBox]:
-        """build row map"""
-        return {
-            0: self.digital1_selector,
-            1: self.digital2_selector,
-            2: self.analog_selector,
-            3: self.drum_selector,
-        }
 
     def _reload_combo_options(self) -> None:
         """Reload combo box options from current digital/analog/drum_options."""

@@ -523,156 +523,6 @@ class PatternSequenceEditor(PatternUI):
         self.mute_buttons = []
         self.specs = self._build_specs()
 
-    def _create_spinbox_specs(self) -> dict[str, SpinBoxSpec]:
-        """create spin box specs"""
-        return {
-            "velocity": SpinBoxSpec(
-                label="Vel:",
-                min_val=1,
-                max_val=127,
-                value=100,
-                tooltip="Default velocity for new notes (1-127)",
-            ),
-            "tempo": SpinBoxSpec(
-                label="BPM:",
-                min_val=20,
-                max_val=300,
-                value=120,
-                tooltip=self.tr("Tempo in beats per minute (20–300)"),
-            ),
-            "start": SpinBoxSpec(
-                label=self.tr("Start"),
-                min_val=0,
-                max_val=15,
-                value=0,
-                tooltip=self.tr("Start step (0–15)"),
-            ),
-            "end": SpinBoxSpec(
-                label=self.tr("End"),
-                min_val=0,
-                max_val=15,
-                value=15,
-                tooltip=self.tr("End step (0–15)"),
-            ),
-        }
-
-    def _create_learn_group(self) -> QGroupBox:
-        """create learn group"""
-        learn_group = QGroupBox("Learn Pattern")
-        learn_layout = QHBoxLayout()
-
-        self._add_button_with_label_from_spec(
-            "learn",
-            self.specs["buttons"]["learn"],
-            learn_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "stop_learn",
-            self.specs["buttons"]["stop_learn"],
-            learn_layout,
-        )
-        learn_group.setLayout(learn_layout)
-        return learn_group
-
-    def _create_measure_group(self) -> QGroupBox:
-        """Bar management area (separate row for Add Measure button and checkbox)"""
-
-        # First row: Add Measure button and Copy checkbox
-        measure_controls_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "add_measure",
-            self.specs["buttons"]["add_measure"],
-            measure_controls_layout,
-        )
-        self.copy_previous_measure_checkbox = QCheckBox(
-            f"Copy previous {self.measure_name.lower()}"
-        )
-        self.copy_previous_measure_checkbox.setChecked(False)
-        JDXiUIThemeManager.apply_button_mini_style(self.copy_previous_measure_checkbox)
-
-        measure_controls_layout.addWidget(self.copy_previous_measure_checkbox)
-        measure_controls_layout.addStretch()  # Push controls to the left
-
-        # Copy/Paste controls (round buttons + icon labels)
-        copy_paste_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "copy",
-            self.specs["buttons"]["copy"],
-            copy_paste_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "paste",
-            self.specs["buttons"]["paste"],
-            copy_paste_layout,
-        )
-        self.paste_button.setEnabled(False)  # Disabled until something is copied
-
-        # Step range selection (use SpinBoxSpec for both start and end)
-        start_label, self.start_step_spinbox = spinbox_with_label_from_spec(
-            self.specs["spinboxes"]["start"]
-        )
-        end_label, self.end_step_spinbox = spinbox_with_label_from_spec(
-            self.specs["spinboxes"]["end"]
-        )
-        step_label = QLabel(self.tr("Steps:"))
-        to_label = QLabel(self.tr("to"))
-
-        step_layout_widgets = [
-            step_label,
-            start_label,
-            self.start_step_spinbox,
-            to_label,
-            end_label,
-            self.end_step_spinbox,
-        ]
-        step_range_layout = create_layout_with_items(
-            items=step_layout_widgets, start_stretch=False, end_stretch=False
-        )
-        measure_group, measure_layout = create_group_with_layout(
-            label=self.measure_name_plural, vertical=True
-        )
-        measure_group_layouts = [
-            measure_controls_layout,
-            copy_paste_layout,
-            step_range_layout,
-        ]
-        for layout in measure_group_layouts:
-            measure_layout.addLayout(layout)
-        measure_group.setLayout(measure_layout)
-        return measure_group
-
-    def _create_file_group(self) -> QGroupBox:
-        """File operations area (round buttons + icon labels, same style as Transport)"""
-        file_group = QGroupBox("Pattern")
-        file_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "load",
-            self.specs["buttons"]["load"],
-            file_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "save",
-            self.specs["buttons"]["save"],
-            file_layout,
-        )
-        self._add_button_with_label_from_spec(
-            "clear_learn",
-            self.specs["buttons"]["clear_learn"],
-            file_layout,
-        )
-
-        self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
-        self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
-
-        file_group.setLayout(file_layout)
-        return file_group
-
-    def _log_and_return(self, ok: bool, msg: str) -> bool:
-        """log and return"""
-        if not ok:
-            log.debug(msg, scope=self.__class__.__name__)
-        return ok
-
     def reset_all_measures(self):
         """reset all measures"""
         for measure in self.measure_widgets:
@@ -785,21 +635,20 @@ class PatternSequenceEditor(PatternUI):
             return
 
         measure = self.measure_widgets[bar_index]
+        self._for_each_button(lambda r, s: self._sync_measure(measure, r, s))
 
-        # Copy note data from the measure to the main sequencer buttons
-        for row in range(self.sequencer_rows):
-            for step in range(MeasureBeats.PER_MEASURE_4_4):
-                if step < len(self.buttons[row]) and step < len(measure.buttons[row]):
-                    sequencer_button = self.buttons[row][step]
-                    measure_button: SequencerButton = measure.buttons[row][step]
+    def _sync_measure(self, measure: PatternMeasureWidget, row: int, step: int):
+        if step < len(self.buttons[row]) and step < len(measure.buttons[row]):
+            sequencer_button = self.buttons[row][step]
+            measure_button: SequencerButton = measure.buttons[row][step]
 
-                    # Sync checked state and note
-                    update_button_state(sequencer_button, measure_button.isChecked())
-                    copy_note_attrs(new_button=sequencer_button, previous_button=measure_button)
-                    sync_button_note_spec(sequencer_button)
+            # Sync checked state and note
+            update_button_state(sequencer_button, measure_button.isChecked())
+            copy_note_attrs(new_button=sequencer_button, previous_button=measure_button)
+            sync_button_note_spec(sequencer_button)
 
-                    self._update_tooltip(row, sequencer_button)
-                    self._update_sequencer_button_style(sequencer_button, step)
+            self._update_tooltip(row, sequencer_button)
+            self._update_sequencer_button_style(sequencer_button, step)
 
     def _update_tooltip(self, row: int, sequencer_button):
         """Update tooltip"""
@@ -818,17 +667,18 @@ class PatternSequenceEditor(PatternUI):
             return
 
         # Update all sequencer buttons to show current step
-        for row in range(self.sequencer_rows):
-            for step in range(MeasureBeats.PER_MEASURE_4_4):
-                if step < len(self.buttons[row]):
-                    button = self.buttons[row][step]
-                    is_checked = button.isChecked()
-                    is_current = (self.current_step % self.total_steps) == step
-                    button.setStyleSheet(
-                        JDXi.UI.Style.generate_sequencer_button_style(
-                            is_checked, is_current, is_selected_bar=True
-                        )
-                    )
+        self._for_each_button(self._highlight_step)
+
+    def _highlight_step(self, row: int, step: int):
+        if step < len(self.buttons[row]):
+            button = self.buttons[row][step]
+            is_checked = button.isChecked()
+            is_current = (self.current_step % self.total_steps) == step
+            button.setStyleSheet(
+                JDXi.UI.Style.generate_sequencer_button_style(
+                    is_checked, is_current, is_selected_bar=True
+                )
+            )
 
     def _clear_learned_pattern(self):
         """Clear the learned pattern and reset button states."""
@@ -955,15 +805,6 @@ class PatternSequenceEditor(PatternUI):
             )
         )
 
-    def _build_row_map(self) -> dict[int, QComboBox]:
-        """build row map"""
-        return {
-            0: self.digital1_selector,
-            1: self.digital2_selector,
-            2: self.analog_selector,
-            3: self.drum_selector,
-        }
-
     def _on_beats_per_bar_changed(self, index: int):
         """Handle beats per bar changes from the combobox"""
         if index == 0:
@@ -975,6 +816,8 @@ class PatternSequenceEditor(PatternUI):
         self._update_button_states_for_beats_per_bar()
         log.message(f"Beats per bar changed to {self.measure_beats}")
 
+
+
     def _update_button_states_for_beats_per_bar(self) -> None:
         """Enable/disable sequencer buttons based on beats per bar setting."""
 
@@ -984,23 +827,31 @@ class PatternSequenceEditor(PatternUI):
             else MeasureBeats.PER_MEASURE_4_4
         )
 
+        def update_state(r, s):
+            if s < len(self.buttons[r]):
+                self._update_button_state(active_steps, r, s)
+
+        self._for_each_button(update_state)
+
+    def _for_each_button(self, func):
+        """Apply func(row, step) to each sequencer position."""
         for row in range(self.sequencer_rows):
-            for step in range(MeasureBeats.PER_MEASURE_4_4):
-                if step >= len(self.buttons[row]):
-                    continue
+            for step in range(self.measure_beats):
+                func(row, step)
 
-                button = self.buttons[row][step]
+    def _update_button_state(self, active_steps: int, row: int, step: int):
+        button = self.buttons[row][step]
 
-                is_active = step < active_steps
+        is_active = step < active_steps
 
-                button.setEnabled(is_active)
+        button.setEnabled(is_active)
 
-                if not is_active:
-                    button.setChecked(False)
+        if not is_active:
+            button.setChecked(False)
 
-                    for measure in self.measure_widgets:
-                        if step < len(measure.buttons[row]):
-                            reset_button(measure.buttons[row][step])
+            for measure in self.measure_widgets:
+                if step < len(measure.buttons[row]):
+                    reset_button(measure.buttons[row][step])
 
     def _on_beats_per_measure_changed(self, index: int):
         """Handle beats per measure changes from the combobox"""
@@ -1585,10 +1436,12 @@ class PatternSequenceEditor(PatternUI):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""
         if self.current_measure_index < len(self.measure_widgets):
             measure = self.measure_widgets[self.current_measure_index]
-            for row in range(self.sequencer_rows):
-                for step in range(MeasureBeats.PER_MEASURE_4_4):
-                    if step < len(measure.buttons[row]):
-                        reset_button(measure.buttons[row][step])
+
+            def reset_if_present(r, s):
+                if s < len(measure.buttons[r]):
+                    reset_button(measure.buttons[r][s])
+
+            self._for_each_button(reset_if_present)
 
             # Sync sequencer digital
             self._sync_sequencer_with_measure(self.current_measure_index)
@@ -2233,21 +2086,20 @@ class PatternSequenceEditor(PatternUI):
 
     def _update_ui_for_current_step(self, step_in_measure: int):
         """Update UI to show current step"""
-        for row in range(self.sequencer_rows):
-            for col in range(
-                MeasureBeats.PER_MEASURE_4_4
-            ):  # Always 16 steps in sequencer
-                if col < len(self.buttons[row]):
-                    button = self.buttons[row][col]
-                    is_checked = button.isChecked()
-                    is_current = (
-                        step_in_measure == col
-                    )  # Current step within the displayed bar
-                    button.setStyleSheet(
-                        JDXi.UI.Style.generate_sequencer_button_style(
-                            is_checked, is_current, is_selected_bar=True
-                        )
-                    )
+
+        def update_style(r, s):
+            if s >= len(self.buttons[r]):
+                return
+            button = self.buttons[r][s]
+            is_checked = button.isChecked()
+            is_current = step_in_measure == s
+            button.setStyleSheet(
+                JDXi.UI.Style.generate_sequencer_button_style(
+                    is_checked, is_current, is_selected_bar=True
+                )
+            )
+
+        self._for_each_button(update_style)
 
     def _advance_to_next_step(self):
         """Advance to next step (across all measures)"""
