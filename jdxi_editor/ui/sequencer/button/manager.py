@@ -180,9 +180,9 @@ class SequencerButtonManager:
                 # Set duration and velocity
                 if (
                     not hasattr(button, NoteButtonAttrs.NOTE_DURATION)
-                    or button.duration is None
+                    or button.duration_ms is None
                 ):
-                    button.duration = self._get_duration()
+                    button.duration_ms = self._get_duration()
                 if (
                     not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY)
                     or button.velocity is None
@@ -262,7 +262,7 @@ class SequencerButtonManager:
                         NoteButtonAttrs.NOTE,
                         None,
                     )
-                    sequencer_button.duration = getattr(
+                    sequencer_button.duration_ms = getattr(
                         measure_button,
                         NoteButtonAttrs.NOTE_DURATION,
                         None,
@@ -463,7 +463,7 @@ class SequencerButtonManager:
                 button = self.buttons[row][col]
                 button.note = note
                 button.velocity = velocity
-                button.duration = duration_ms
+                button.duration_ms = duration_ms
                 self._sync_button_note_spec(button)
                 self._update_button_tooltip(button)
                 return True
@@ -529,7 +529,7 @@ class SequencerButtonManager:
                     # Copy note data
                     measure_button.note = button.note
                     if hasattr(button, NoteButtonAttrs.NOTE_DURATION):
-                        measure_button.duration = button.duration
+                        measure_button.duration_ms = button.duration_ms
                     if hasattr(button, NoteButtonAttrs.NOTE_VELOCITY):
                         measure_button.velocity = button.velocity
                     self._sync_button_note_spec(measure_button)

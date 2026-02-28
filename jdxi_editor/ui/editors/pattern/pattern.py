@@ -230,7 +230,7 @@ class PatternSequenceEditor(PatternUI):
     def _add_note_on_off_pair(self, duration_ticks: int, event: PatternLearnerEvent):
         """add note on off pair to track"""
         midi_note = MidiNote(
-            note=event.note, velocity=event.velocity, duration=duration_ticks
+            note=event.note, velocity=event.velocity, duration_ms=duration_ticks
         )
         on_msg, off_msg = midi_note.to_on_off_pair()
         self.midi_track.extend([on_msg, off_msg])
@@ -731,9 +731,9 @@ class PatternSequenceEditor(PatternUI):
             # Set default duration for manually created notes
             if (
                 not hasattr(button, NoteButtonAttrs.NOTE_DURATION)
-                or button.duration is None
+                or button.duration_ms is None
             ):
-                button.duration = self._get_duration_ms()
+                button.duration_ms = self._get_duration_ms()
             # Set default velocity for manually created notes
             if (
                 not hasattr(button, NoteButtonAttrs.NOTE_VELOCITY)
@@ -768,7 +768,7 @@ class PatternSequenceEditor(PatternUI):
                 measure_button.note = button.note
                 # Copy duration if available
                 if hasattr(button, NoteButtonAttrs.NOTE_DURATION):
-                    measure_button.duration = button.note_duration
+                    measure_button.duration_ms = button.note_duration
                 # Copy velocity if available
                 if hasattr(button, NoteButtonAttrs.NOTE_VELOCITY):
                     measure_button.velocity = button.note_velocity
@@ -2168,7 +2168,7 @@ class PatternSequenceEditor(PatternUI):
                         update_button_state(btn, True)
                         btn.note = note
                         btn.velocity = message.velocity
-                        btn.duration = self._get_duration_ms()
+                        btn.duration_ms = self._get_duration_ms()
                         sync_button_note_spec(btn)
 
                     # Record the note in the learned pattern (for compatibility)
@@ -2221,7 +2221,7 @@ class PatternSequenceEditor(PatternUI):
                     update_button_state(button, True)
                     button.note = note
                     # Set default duration for learned pattern notes
-                    button.duration = self._get_duration_ms()
+                    button.duration_ms = self._get_duration_ms()
                     # Set default velocity for learned pattern notes
                     button.velocity = self.velocity_spinbox.value()
                     sync_button_note_spec(button)

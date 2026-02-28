@@ -40,7 +40,7 @@ class NoteButtonSpec:
             self.midi_note = MidiNote(
                 note=self.note,
                 velocity=self.velocity,
-                duration=self.duration_ms,
+                duration_ms=self.duration_ms,
             )
         else:
             self.midi_note = None
@@ -55,7 +55,7 @@ class NoteButtonSpec:
                 object.__setattr__(
                     self,
                     "midi_note",
-                    MidiNote(note=n, velocity=v, duration=d),
+                    MidiNote(note=n, velocity=v, duration_ms=d),
                 )
             else:
                 object.__setattr__(self, "midi_note", None)
