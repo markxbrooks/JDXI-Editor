@@ -295,14 +295,14 @@ class MIDIConfigDialog(QDialog):
         ok_btn_spec = ButtonSpec(
             label="OK", icon=JDXi.UI.Icon.SAVE, slot=self.accept, layout=dialog_btn_row
         )
-        self.accept = add_round_button_from_spec(ok_btn_spec)
+        self.ok_button = add_round_button_from_spec(ok_btn_spec)
         cancel_btn_spec = ButtonSpec(
             label="Cancel",
             icon=JDXi.UI.Icon.CANCEL,
             slot=self.reject,
             layout=dialog_btn_row,
         )
-        self.reject = add_round_button_from_spec(cancel_btn_spec)
+        self.cancel_button = add_round_button_from_spec(cancel_btn_spec)
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
 

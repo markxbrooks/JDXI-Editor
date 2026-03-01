@@ -249,7 +249,7 @@ class JDXiJSONComposer:
                         widget_value = widget.value()
                     elif hasattr(widget, "slider"):
                         # Direct QSlider access (fallback)
-                        widget_value = widget.slider.value()
+                        widget_value = widget.slider_vertical.value()
                     else:
                         # Fallback to controls_dict
                         widget_value = controls_dict.get(param_name)

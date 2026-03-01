@@ -8,7 +8,7 @@ Handles button clicks, note assignment, and UI updates.
 from typing import Callable, Dict, List, Optional, Tuple
 
 from decologr import Decologr as log
-from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.button.note import NoteButtonEvent
 from PySide6.QtWidgets import QComboBox
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
@@ -34,7 +34,7 @@ class ButtonState:
         velocity: int = 100,
         duration_ms: float = 120.0,
         *,
-        note_spec: Optional[NoteButtonSpec] = None,
+        note_spec: Optional[NoteButtonEvent] = None,
     ):
         """
         Initialize button state.
@@ -46,7 +46,7 @@ class ButtonState:
         :param note_spec: Canonical note data; takes precedence over note/velocity/duration_ms
         """
         self.is_checked = is_checked
-        self.note_spec = note_spec or NoteButtonSpec(
+        self.note_spec = note_spec or NoteButtonEvent(
             note=note,
             duration_ms=int(duration_ms or 120),
             velocity=velocity or 100,
@@ -666,7 +666,7 @@ class SequencerButtonManager:
         :param velocity: Velocity (0-127)
         :return: NoteButtonSpec
         """
-        return NoteButtonSpec(
+        return NoteButtonEvent(
             note=note,
             duration_ms=int(duration_ms or 120),
             velocity=velocity or 100,
@@ -674,7 +674,7 @@ class SequencerButtonManager:
 
     def _create_empty_note_spec(self):
         """Create an empty note spec."""
-        return NoteButtonSpec()
+        return NoteButtonEvent()
 
     def _reset_button_internal(self, button) -> None:
         """Internal button reset (without logging)."""

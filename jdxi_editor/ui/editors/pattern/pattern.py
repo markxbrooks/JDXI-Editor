@@ -22,7 +22,7 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
-from picomidi import MidiTempo, MidiChannel, ControlChange, Channel, ControlValue
+from picomidi import Channel, ControlChange, ControlValue, MidiChannel, MidiTempo
 from picomidi.core.tempo import (
     MeasureBeats,
     convert_absolute_time_to_delta_time,
@@ -31,13 +31,13 @@ from picomidi.core.tempo import (
     ticks_to_duration_ms,
 )
 from picomidi.message.type import MidoMessageType
-from picomidi.messages.note import MidiNote, note_off, note_on
+from picomidi.messages.note import MidiNote, build_midi_note, note_off, note_on
 from picomidi.playback.engine import (
     PlaybackEngine,
     TransportState,
 )
 from picomidi.sequencer.event import SequencerEvent
-from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.button.note import NoteButtonEvent
 from picomidi.ui.widget.transport.spec import TransportSpec
 from picoui.helpers import group_with_layout
 from picoui.specs.widgets import (
@@ -56,7 +56,6 @@ from PySide6.QtWidgets import (
     QPushButton,
     QWidget,
 )
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
@@ -1397,7 +1396,7 @@ class PatternSequenceEditor(PatternUI):
         )
 
     def _append_note_on_and_off(
-        self, spec: NoteButtonSpec, time: int, channel: int, track: MidiTrack
+        self, spec: NoteButtonEvent, time: int, channel: int, track: MidiTrack
     ):
         """Append Note on and Off using spec.midi_note as canonical source."""
         if spec.midi_note is None:
@@ -1607,7 +1606,9 @@ class PatternSequenceEditor(PatternUI):
     ) -> list[Any]:
         """First pass: collect all note events with their absolute times and tempos"""
         note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
-        current_tempo_us = MidiTempo.BPM_120_USEC  # Default tempo (120 BPM in microseconds)
+        current_tempo_us = (
+            MidiTempo.BPM_120_USEC
+        )  # Default tempo (120 BPM in microseconds)
 
         for track in midi_file.tracks:
             absolute_time = 0
@@ -1835,7 +1836,7 @@ class PatternSequenceEditor(PatternUI):
         self,
         channel: int,
         duration_ticks: int,
-        spec: NoteButtonSpec,
+        spec: NoteButtonEvent,
         tick: int,
         velocity: int,
     ) -> SequencerEvent:
@@ -1876,16 +1877,21 @@ class PatternSequenceEditor(PatternUI):
         midi_events = []
 
         for absolute_tick in events:
+            # midi_note = build_midi_note(absolute_tick, )
+            midi_note = build_midi_note(
+                event=absolute_tick, channel=absolute_tick.channel, bpm=self.timing_bpm
+            )
             midi_events.append(
                 (
                     absolute_tick.tick,
-                    note_on(absolute_tick),
+                    note_on(midi_note),
                 )
             )
             midi_events.append(
                 (
                     absolute_tick.tick + absolute_tick.duration_ticks,
-                    note_off(absolute_tick),
+
+                    note_off(midi_note),
                 )
             )
 
@@ -2044,9 +2050,11 @@ class PatternSequenceEditor(PatternUI):
     def _send_notes_off_for_channel(self, zero_indexed_channel: int):
         """send notes off for a given channel"""
         one_indexed_channel = zero_indexed_channel + 1
-        notes_off = ControlChange(channel=Channel.from_value(one_indexed_channel),
-                                  controller=ControlChange.ALL_NOTES_OFF,
-                                  control_value=ControlValue(0))
+        notes_off = ControlChange(
+            channel=Channel.from_value(one_indexed_channel),
+            controller=ControlChange.ALL_NOTES_OFF,
+            control_value=ControlValue(0),
+        )
         self.midi_helper.send_raw_message(notes_off.to_bytes())
 
     def _note_name_to_midi(self, note_name: str) -> int:
@@ -2130,46 +2138,33 @@ class PatternSequenceEditor(PatternUI):
         for row in range(self.sequencer_rows):
             if step_in_measure < len(measure.buttons[row]):
                 measure_button = measure.buttons[row][step_in_measure]
-                play_spec = get_button_note_spec(measure_button)
-                if measure_button.isChecked() and play_spec.is_active:
+                button_event: NoteButtonEvent = get_button_note_spec(measure_button)
+                if measure_button.isChecked() and button_event.is_active:
                     # Determine channel based on row
                     channel = get_channel_for_row(row)
-
+                    midi_note = build_midi_note(
+                        event=button_event, channel=channel, bpm=self.timing_bpm
+                    )
                     # Send Note On message using the stored note
-                    if self.midi_helper:
-                        if channel not in self.muted_channels:
-                            log.message(
-                                message=f"Row {row} active at step {step_in_measure} in bar {measure_index + 1}, sending note {play_spec.note} on channel {channel}",
-                                scope=self.__class__.__name__,
-                            )
-                            self.midi_helper.send_raw_message(
-                                [
-                                    NOTE_ON | channel,
-                                    play_spec.note,
-                                    play_spec.velocity,
-                                ]
-                            )
+                    self.play_midi_note(midi_note)
 
-                            # Note Off after stored duration (NoteButtonSpec.duration_ms) or step default
-                            note_duration_ms = play_spec.duration_ms or (
-                                (
-                                    float(MidiTempo.MILLISECONDS_PER_MINUTE)
-                                    / self.timing_bpm
-                                )
-                                / 4.0
-                            )
+    def play_midi_note(self, midi_note: MidiNote):
+        """Send NOTE_ON and NOTE_OFF for a MidiNote."""
 
-                            QTimer.singleShot(
-                                int(note_duration_ms),
-                                lambda ch=channel, n=play_spec.note: self.midi_helper.send_raw_message(
-                                    [NOTE_ON | ch, n, 0]
-                                ),
-                            )
-                    else:
-                        log.warning(
-                            message="MIDI helper not available",
-                            scope=self.__class__.__name__,
-                        )
+        if midi_note.channel in self.muted_channels:
+            return
+
+        if not self.midi_helper:
+            return
+
+        note_on_message, note_off_message = midi_note.to_on_off_pair()
+
+        self.midi_helper.send_mido_message(note_on_message)
+
+        QTimer.singleShot(
+            midi_note.duration_ms,
+            lambda: self.midi_helper.send_mido_message(note_off_message),
+        )
 
     def _learn_pattern(self, message):
         """Learn the pattern of incoming MIDI notes, preserving rests."""
@@ -2301,3 +2296,11 @@ class PatternSequenceEditor(PatternUI):
         self.drum_selector.currentText()
         # Ensure UI updates properly
         self.update()
+
+    def _build_row_map(self):
+        return {
+            0: self.digital1_selector,
+            1: self.digital2_selector,
+            2: self.analog_selector,
+            3: self.drum_selector,
+        }

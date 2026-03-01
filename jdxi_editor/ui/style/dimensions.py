@@ -46,6 +46,9 @@ class Dimensions:
     MIN_WIDTH: Optional[int] = None
     MIN_HEIGHT: Optional[int] = None
 
+    MAX_WIDTH: Optional[int] = None
+    MAX_HEIGHT: Optional[int] = None
+
     INIT_WIDTH: Optional[int] = None
     INIT_HEIGHT: Optional[int] = None
 
@@ -360,12 +363,42 @@ class MidiConfig(Dimensions):
     HEIGHT = 300
 
 
+class SliderValueLabelDimensions(Dimensions):
+    """Slider label dimensions"""
+
+    MIN_WIDTH = 20
+
+
+class VerticalSliderDimensions(Dimensions):
+    """Slider Dimensions"""
+
+    label = SliderValueLabelDimensions
+    HEIGHT = 180
+
+    MIN_WIDTH = 80
+    MAX_WIDTH = 100
+
+
+class HorizontalSliderDimensions(Dimensions):
+    """Slider Dimensions"""
+
+    label = SliderValueLabelDimensions
+    HEIGHT = 180
+    MIN_HEIGHT = 50
+    MAX_HEIGHT = 60
+
+    MIN_WIDTH = 80
+    MAX_WIDTH = 100
+
+
 class JDXiUIDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
 
     # --- Icons
+    slider_vertical = VerticalSliderDimensions
+    slider_horizontal = HorizontalSliderDimensions
     Icon: IconDimensions = IconDimensions
     Combo: ComboBoxDimensions = ComboBoxDimensions
     WaveformIcon: WaveformIconDimensions = WaveformIconDimensions

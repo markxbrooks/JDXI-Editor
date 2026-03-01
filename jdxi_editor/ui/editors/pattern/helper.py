@@ -1,4 +1,4 @@
-from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.button.note import NoteButtonEvent
 from PySide6.QtWidgets import QPushButton, QSpinBox
 
 from jdxi_editor.core.jdxi import JDXi
@@ -9,7 +9,7 @@ from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 def reset_button(button: SequencerButton):
     """reset the Sequencer button"""
-    button.note_spec = NoteButtonSpec()
+    button.note_spec = NoteButtonEvent()
     update_button_state(button, False)
 
 
@@ -19,16 +19,16 @@ def reset_measure(measure: PatternMeasureWidget):
             reset_button(btn)
 
 
-def _note_spec_from_button(button) -> NoteButtonSpec:
+def _note_spec_from_button(button) -> NoteButtonEvent:
     """Build NoteButtonSpec from button NOTE/NOTE_DURATION/NOTE_VELOCITY."""
-    return NoteButtonSpec(
+    return NoteButtonEvent(
         note=getattr(button, NoteButtonAttrs.NOTE, None),
         duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
         velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, 100) or 100,
     )
 
 
-def get_button_note_spec(button) -> NoteButtonSpec:
+def get_button_note_spec(button) -> NoteButtonEvent:
     """Return the effective NoteButtonSpec (from attribute or built from attrs)."""
     spec = getattr(button, "note_spec", None)
     if spec is not None:

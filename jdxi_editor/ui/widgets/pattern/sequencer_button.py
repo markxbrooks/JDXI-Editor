@@ -7,7 +7,7 @@ note_velocity are properties that read/write through it.
 
 from typing import Optional
 
-from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.button.note import NoteButtonEvent
 from PySide6.QtWidgets import QPushButton, QWidget
 
 from jdxi_editor.ui.style import JDXiUIDimensions
@@ -25,7 +25,7 @@ class SequencerButton(QPushButton):
         super().__init__(parent)
         self.row: int = row
         self.column: int = column
-        self.note_spec: NoteButtonSpec = NoteButtonSpec()
+        self.note_spec: NoteButtonEvent = NoteButtonEvent()
         self.setCheckable(True)
         self.setFixedSize(
             JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE,

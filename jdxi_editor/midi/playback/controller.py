@@ -16,14 +16,14 @@ from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 from picomidi.core.tempo import bpm_to_ticks
 from picomidi.message.type import MidoMessageType
-from picomidi.messages.note import note_off, note_on
+from picomidi.messages.note import note_off, note_on, build_midi_note
 from picomidi.playback.engine import (
     PlaybackEngine,
     TransportState,
 )
 from picomidi.playback.worker import MidiPlaybackWorker
 from picomidi.sequencer.event import SequencerEvent
-from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.button.note import NoteButtonEvent
 from PySide6.QtCore import QObject, Qt, QTimer
 
 
@@ -133,7 +133,7 @@ class PatternPlaybackController(QObject):
         self.on_step_changed: Optional[Callable[[int], None]] = None
 
         # Callback for MIDI event sending
-        self.on_midi_event: Optional[Callable[[Message], None]] = None
+        self.on_midi_event: Optional[Callable[[Message], Any]] = None
 
     def start_playback(
         self,
@@ -600,10 +600,11 @@ class PatternPlaybackController(QObject):
         midi_events = []
 
         for e in events:
+            note = build_midi_note(event=e, channel=e.channel, bpm=self.current_bpm)
             midi_events.extend(
                 [
-                    (e.tick, note_on(e)),
-                    (e.tick + e.duration_ticks, note_off(e)),
+                    (e.tick, note_on(note)),
+                    (e.tick + e.duration_ticks, note_off(note)),
                 ]
             )
 
@@ -674,7 +675,7 @@ class PatternPlaybackController(QObject):
         self,
         channel: int,
         duration_ticks: int,
-        spec: NoteButtonSpec,
+        spec: NoteButtonEvent,
         tick: int,
         velocity: int,
     ) -> SequencerEvent:

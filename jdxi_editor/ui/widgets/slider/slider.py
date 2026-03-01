@@ -33,6 +33,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
+from jdxi_editor.ui.style import JDXiUIDimensions
 
 
 class Slider(QWidget):
@@ -100,20 +101,24 @@ class Slider(QWidget):
         # Set size policy for vertical sliders
         if vertical:
             layout.addWidget(self.label)  # Label is added over the slider
-            layout.addWidget(self.slider)
+            layout.addWidget(
+                self.slider, 1
+            )  # Stretch 1 so groove fills available height
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
             )
-            self.setMinimumHeight(125)  # 50% of 250px ADSR area height
+            self.setFixedHeight(
+                JDXiUIDimensions.slider_vertical.HEIGHT
+            )  # Constant height for consistent layout
             layout.setAlignment(self.label, Qt.AlignmentFlag.AlignLeft)
             layout.setAlignment(self.slider, Qt.AlignmentFlag.AlignLeft)
             self.slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
             self.slider.setTickInterval(20)
-            self.setMinimumWidth(80)
-            self.setMaximumWidth(100)
+            self.setMinimumWidth(JDXiUIDimensions.slider_vertical.MIN_WIDTH)
+            self.setMaximumWidth(JDXiUIDimensions.slider_vertical.MAX_WIDTH)
         else:
-            self.setMinimumHeight(50)
-            self.setMaximumHeight(60)
+            self.setMinimumHeight(JDXiUIDimensions.slider_horizontal.MIN_HEIGHT)
+            self.setMaximumHeight(JDXiUIDimensions.slider_horizontal.MAX_HEIGHT)
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
             )
@@ -123,7 +128,9 @@ class Slider(QWidget):
         # Create value digital
 
         self.value_label = QLabel(str(min_value))
-        self.value_label.setMinimumWidth(20)
+        self.value_label.setMinimumWidth(
+            JDXiUIDimensions.slider_horizontal.label.MIN_WIDTH
+        )
         if show_value_label:  # Add value label if needed
             self.value_label.setAlignment(
                 Qt.AlignmentFlag.AlignCenter if vertical else Qt.AlignmentFlag.AlignLeft

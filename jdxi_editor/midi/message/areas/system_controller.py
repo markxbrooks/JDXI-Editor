@@ -3,24 +3,11 @@ SystemControllerMessage
 =======================
 # Example usage:
 # Enable program change transmission
->>> msg = SystemControllerMessage(
->>>     param=SystemController.TX_PROGRAM_CHANGE.STATUS, value=1  # ON
->>> )
-
-# Set keyboard velocity to REAL
->>> msg = SystemControllerMessage(
->>>     param=SystemController.KEYBOARD_VELOCITY.STATUS, value=0  # REAL
->>> )
-
-# Set velocity curve to MEDIUM
->>> msg = SystemControllerMessage(
->>>     param=SystemController.VELOCITY_CURVE.STATUS, value=1  # MEDIUM
->>> )
-
-# Set velocity offset to +5
->>> msg = SystemControllerMessage(
->>>     param=SystemController.VELOCITY_OFFSET.STATUS, value=69  # Convert +5 to 69 (64+5)
->>> )
+>>> msg = SystemControllerMessage()
+>>> msg.to_bytes().hex()
+'f041100000000e1202000300007bf7'
+>>> msg.to_list()
+[240, 65, <RolandID.DEVICE_ID: 16>, 0, 0, 0, 14, <CommandID.DT1: 18>, <JDXiSysExAddressStartMSB.SETUP: 2>, <JDXiSysExOffsetTemporaryToneUMB.COMMON: 0>, <JDXiSysExOffsetSystemLMB.CONTROLLER: 3>, 0, 0, 123, 247]
 """
 
 from dataclasses import dataclass
