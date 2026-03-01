@@ -9,6 +9,18 @@ and re-exports picoui helpers under the names used by the rest of the app.
 from typing import Any
 
 import qtawesome as qta
+from picoui.helpers import (
+    build_group,
+    create_form_layout,
+    create_layout,
+    create_layout_with_inner_layouts,
+    create_layout_with_items,
+    create_left_aligned_row,
+    create_vertical_layout,
+    group_from_definition,
+    group_with_layout,
+)
+from picoui.specs.widgets import CheckBoxSpec
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
@@ -29,18 +41,6 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style.dimensions import Dimensions
-from picoui.helpers import (
-    build_group,
-    create_form_layout,
-    create_layout,
-    create_layout_with_inner_layouts,
-    create_layout_with_items,
-    create_left_aligned_row,
-    create_vertical_layout,
-    group_from_definition,
-    group_with_layout,
-)
-from picoui.specs.widgets import CheckBoxSpec
 
 # Backward-compatible names (used across jdxi_editor)
 create_group = build_group

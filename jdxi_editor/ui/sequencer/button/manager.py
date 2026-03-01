@@ -8,10 +8,10 @@ Handles button clicks, note assignment, and UI updates.
 from typing import Callable, Dict, List, Optional, Tuple
 
 from decologr import Decologr as log
+from picomidi.ui.widget.button.note import NoteButtonSpec
 from PySide6.QtWidgets import QComboBox
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
-from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
 
 
 class NoteButtonAttrs:

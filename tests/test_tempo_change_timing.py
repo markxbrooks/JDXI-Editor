@@ -15,7 +15,7 @@ from picomidi import MidiTempo
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+from picomidi.playback.worker import MidiPlaybackWorker
 
 
 def test_tempo_change_processing():

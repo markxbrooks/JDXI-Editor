@@ -14,30 +14,29 @@ from typing import Callable, Dict, List, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
-
-from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
-from picomidi.core.tempo import bpm_to_tempo_us, ticks_to_duration_ms, bpm_to_ticks
-from picomidi import MidiNote
+from picomidi.core.tempo import bpm_to_ticks
 from picomidi.message.type import MidoMessageType
-from PySide6.QtCore import QObject, Qt, QTimer
-
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
-from jdxi_editor.ui.editors.midi_player.playback.engine import (
+from picomidi.messages.note import note_off, note_on
+from picomidi.playback.engine import (
     PlaybackEngine,
     TransportState,
 )
+from picomidi.playback.worker import MidiPlaybackWorker
+from picomidi.sequencer.event import SequencerEvent
+from picomidi.ui.widget.button.note import NoteButtonSpec
+from PySide6.QtCore import QObject, Qt, QTimer
 
 
 class PlaybackConfig:
     """Configuration for playback controller."""
 
     def __init__(
-            self,
-            ticks_per_beat: int = 480,
-            beats_per_measure: int = 4,
-            measure_beats: int = 16,
-            default_bpm: int = 120,
-            playback_interval_ms: int = 20,
+        self,
+        ticks_per_beat: int = 480,
+        beats_per_measure: int = 4,
+        measure_beats: int = 16,
+        default_bpm: int = 120,
+        playback_interval_ms: int = 20,
     ):
         """
         Initialize playback configuration.
@@ -76,72 +75,6 @@ class PlaybackPosition:
         self.step_in_bar = step_in_bar
 
 
-class SequencerEvent:
-    """Non-dataclass SequencerEvent with on-demand MidiNote creation"""
-    __slots__ = ("tick", "note", "velocity", "channel", "duration_ticks", "_midi_note")
-
-    def __init__(self, tick: int, note: int, velocity: int, channel: int, duration_ticks: int):
-        self.tick = int(tick)
-        self.note = int(note)
-        self.velocity = int(velocity)
-        self.channel = int(channel)
-        self.duration_ticks = int(duration_ticks)
-        self._midi_note = None  # lazy; created on demand
-
-    def ensure_midi_note(self, tempo_bpm: float = None, ppq: int = None):
-        """
-        Create or return a cached MidiNote payload.
-        If you need duration_ms based on tempo, you can compute on demand here
-        and pass it through to MidiNote.duration_ms.
-
-        This method is deliberately lightweight; avoid CPU-heavy tempo lookups in hot paths.
-        """
-        if self._midi_note is None:
-            tempo_us = bpm_to_tempo_us(tempo_bpm)
-            duration_ms = ticks_to_duration_ms(ticks=self.duration_ticks,
-                                               tempo=tempo_us,
-                                               ppq=ppq)
-            self._midi_note = MidiNote(
-                note=self.note,
-                duration_ms=duration_ms,  # defer or compute later if tempo is known
-                velocity=self.velocity,
-                time=0,
-            )
-        return self._midi_note
-
-    @property
-    def midi_note(self) -> MidiNote:
-        return self.ensure_midi_note()
-
-    def __repr__(self):
-        return (
-            f"SequencerEvent(tick={self.tick}, note={self.note}, vel={self.velocity}, "
-            f"ch={self.channel}, dur_ticks={self.duration_ticks})"
-        )
-
-
-def note_on(event: SequencerEvent) -> Message:
-    """create_note_off_from_sequencer_event"""
-    return Message(
-        MidoMessageType.NOTE_ON.value,
-        note=event.note,
-        velocity=event.velocity,
-        channel=event.channel,
-        time=0,
-    )
-
-
-def note_off(event: SequencerEvent) -> Message:
-    """create note off from sequencer event"""
-    return Message(
-        MidoMessageType.NOTE_OFF.value,
-        note=event.note,
-        velocity=0,
-        channel=event.channel,
-        time=0,
-    )
-
-
 class PatternPlaybackController(QObject):
     """
     Controls pattern playback and synchronization.
@@ -155,10 +88,10 @@ class PatternPlaybackController(QObject):
     """
 
     def __init__(
-            self,
-            config: Optional[PlaybackConfig] = None,
-            playback_engine: Optional[PlaybackEngine] = None,
-            scope: str = "PatternPlaybackController",
+        self,
+        config: Optional[PlaybackConfig] = None,
+        playback_engine: Optional[PlaybackEngine] = None,
+        scope: str = "PatternPlaybackController",
     ):
         """
         Initialize playback controller.
@@ -203,9 +136,9 @@ class PatternPlaybackController(QObject):
         self.on_midi_event: Optional[Callable[[Message], None]] = None
 
     def start_playback(
-            self,
-            measures: List,
-            bpm: Optional[int] = None,
+        self,
+        measures: List,
+        bpm: Optional[int] = None,
     ) -> bool:
         """
         Start pattern playback.
@@ -402,9 +335,9 @@ class PatternPlaybackController(QObject):
             self.pause_playback()
 
     def shuffle_play(
-            self,
-            measures: List,
-            bpm: Optional[int] = None,
+        self,
+        measures: List,
+        bpm: Optional[int] = None,
     ) -> bool:
         """
         Select a random bar and start playback.
@@ -726,19 +659,25 @@ class PatternPlaybackController(QObject):
 
                     # Calculate duration
                     duration_ticks = (
-                            self._ms_to_ticks(spec.duration_ms) or ticks_per_step
+                        self._ms_to_ticks(spec.duration_ms) or ticks_per_step
                     )
 
                     events.append(
-                        self._sequencer_event(channel, duration_ticks, spec, tick, velocity)
+                        self._sequencer_event(
+                            channel, duration_ticks, spec, tick, velocity
+                        )
                     )
 
         return events
 
-    def _sequencer_event(self, channel: int,
-                         duration_ticks: int,
-                         spec: NoteButtonSpec,
-                         tick: int, velocity: int) -> SequencerEvent:
+    def _sequencer_event(
+        self,
+        channel: int,
+        duration_ticks: int,
+        spec: NoteButtonSpec,
+        tick: int,
+        velocity: int,
+    ) -> SequencerEvent:
         """add sequencer event"""
         return SequencerEvent(
             tick=tick,

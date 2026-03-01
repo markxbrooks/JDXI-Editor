@@ -10,7 +10,6 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import mido
 from mido import MidiFile, MidiTrack, Message, MetaMessage
 from unittest.mock import patch
 
@@ -32,7 +31,7 @@ def _make_simple_midi():
 
 def test_engine_load_file_builds_events_and_tempo():
     """load_file() builds event list and tempo map; reset() is applied."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -50,7 +49,7 @@ def test_engine_load_file_builds_events_and_tempo():
 
 def test_engine_start_sets_position_and_playing():
     """start(0) sets event index and playing flag."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -68,7 +67,7 @@ def test_engine_start_sets_position_and_playing():
 
 def test_engine_process_until_now_calls_on_event_at_correct_times():
     """process_until_now() invokes on_event for due events only; timing is segment-wise."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -118,7 +117,7 @@ def test_engine_process_until_now_calls_on_event_at_correct_times():
 
 def test_engine_stop_clears_playing():
     """stop() sets _is_playing False; position is unchanged."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -134,7 +133,7 @@ def test_engine_stop_clears_playing():
 
 def test_engine_mute_track_filters_events():
     """Events from a muted track are not sent via on_event."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -154,7 +153,7 @@ def test_engine_mute_track_filters_events():
 
 def test_engine_mute_channel_filters_events():
     """Events on a muted channel are not sent."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -173,7 +172,7 @@ def test_engine_mute_channel_filters_events():
 
 def test_engine_scrub_to_tick_repositions():
     """scrub_to_tick() updates event index and start position."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -186,7 +185,7 @@ def test_engine_scrub_to_tick_repositions():
 
 def test_engine_reset_clears_position_not_mute():
     """reset() clears position and playing; mute/suppress are unchanged."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     mid = _make_simple_midi()
     engine = PlaybackEngine()
@@ -202,7 +201,7 @@ def test_engine_reset_clears_position_not_mute():
 
 def test_engine_tick_to_seconds_segment_wise():
     """_tick_to_seconds uses segment-wise tempo (variable tempo)."""
-    from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+    from picomidi.playback.engine import PlaybackEngine
 
     # Two tempos: 500000 (120 BPM) for 0–480, then 250000 (240 BPM) for 480+
     mid = MidiFile(type=1, ticks_per_beat=480)

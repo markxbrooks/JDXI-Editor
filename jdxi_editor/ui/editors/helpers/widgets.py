@@ -4,6 +4,7 @@ Helpers for editors
 
 from typing import Any
 
+from picoui.specs.widgets import ButtonSpec
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -18,7 +19,6 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
-from picoui.specs.widgets import ButtonSpec
 
 
 def set_widget_value_safely(widget: Any, value: int) -> None:

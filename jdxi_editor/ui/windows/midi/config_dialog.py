@@ -30,6 +30,7 @@ import sys
 
 import qtawesome as qta
 from decologr import Decologr as log
+from picoui.specs.widgets import ButtonSpec
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -56,7 +57,6 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
 from jdxi_editor.ui.layout.helper import add_round_button_from_spec
 from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
-from picoui.specs.widgets import ButtonSpec
 
 # In-app FluidSynth defaults
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs

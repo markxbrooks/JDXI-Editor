@@ -45,6 +45,7 @@ from typing import TYPE_CHECKING, Optional, Union
 import qtawesome as qta
 from decologr import Decologr as log
 from picomidi.constant import Midi
+from picoui.specs.widgets import MessageBoxSpec
 from PySide6.QtCore import QSettings, Qt, QTimer, QUrl
 from PySide6.QtGui import (
     QAction,
@@ -118,7 +119,6 @@ from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
-from picoui.specs.widgets import MessageBoxSpec
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor

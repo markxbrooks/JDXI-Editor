@@ -7,9 +7,9 @@ note_velocity are properties that read/write through it.
 
 from typing import Optional
 
+from picomidi.ui.widget.button.note import NoteButtonSpec
 from PySide6.QtWidgets import QPushButton, QWidget
 
-from jdxi_editor.ui.editors.midi_player.transport.spec import NoteButtonSpec
 from jdxi_editor.ui.style import JDXiUIDimensions
 
 

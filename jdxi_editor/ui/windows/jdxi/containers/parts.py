@@ -1,10 +1,10 @@
+from picoui.specs.widgets import ButtonSpec
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QButtonGroup, QLabel, QVBoxLayout, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
-from picoui.specs.widgets import ButtonSpec
 
 
 def create_parts_container(

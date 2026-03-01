@@ -6,10 +6,10 @@ and manage MIDI input/output ports.
 """
 
 from decologr import Decologr as log
+from picoui.specs.widgets import MessageBoxSpec
 from PySide6.QtWidgets import QMessageBox
 
 from jdxi_editor.ui.style import JDXiUIStyle
-from picoui.specs.widgets import MessageBoxSpec
 
 _ICON_MAP = {
     "Information": QMessageBox.Icon.Information,

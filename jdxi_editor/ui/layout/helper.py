@@ -1,8 +1,8 @@
+from picoui.specs.widgets import ButtonSpec
 from PySide6.QtWidgets import QHBoxLayout, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
-from picoui.specs.widgets import ButtonSpec
 
 
 def add_round_button(icon_enum, text: str, slot, layout: QHBoxLayout):

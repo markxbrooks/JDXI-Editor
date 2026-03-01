@@ -24,11 +24,28 @@ from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from picomidi import MidiTempo
 from picomidi.core.tempo import (
+    MeasureBeats,
     convert_absolute_time_to_delta_time,
-    milliseconds_per_note, MeasureBeats, ms_to_ticks, ticks_to_duration_ms,
+    milliseconds_per_note,
+    ms_to_ticks,
+    ticks_to_duration_ms,
 )
 from picomidi.message.type import MidoMessageType
-from picomidi.messages.note import MidiNote, note_on, note_off
+from picomidi.messages.note import MidiNote, note_off, note_on
+from picomidi.playback.engine import (
+    PlaybackEngine,
+    TransportState,
+)
+from picomidi.sequencer.event import SequencerEvent
+from picomidi.ui.widget.button.note import NoteButtonSpec
+from picomidi.ui.widget.transport.spec import TransportSpec
+from picoui.helpers import group_with_layout
+from picoui.specs.widgets import (
+    ButtonSpec,
+    FileSelectionSpec,
+)
+from picoui.widget.helper import get_file_path_from_spec
+from picoui.widget.setters import set_spinbox_value
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -51,21 +68,12 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.controller import (
     PatternPlaybackController,
     PlaybackConfig,
-    SequencerEvent,
 )
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_button_from_spec,
     create_jdxi_button_with_label_from_spec,
     create_jdxi_row,
-)
-from jdxi_editor.ui.editors.midi_player.playback.engine import (
-    PlaybackEngine,
-    TransportState,
-)
-from jdxi_editor.ui.editors.midi_player.transport.spec import (
-    NoteButtonSpec,
-    TransportSpec,
 )
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
@@ -94,13 +102,6 @@ from jdxi_editor.ui.widgets.combo_box.synchronizer import (
 )
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
-from picoui.helpers import group_with_layout
-from picoui.specs.widgets import (
-    ButtonSpec,
-    FileSelectionSpec,
-)
-from picoui.widget.helper import get_file_path_from_spec
-from picoui.widget.setters import set_spinbox_value
 
 
 def copy_note_attrs_from_event(button: SequencerButton, event: PatternLearnerEvent):
@@ -1555,7 +1556,9 @@ class PatternSequenceEditor(PatternUI):
                             # Default to step duration if no note_off found
                             # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
                             ticks = ticks_per_bar / 16.0
-                            step_duration_ms = ticks_to_duration_ms(ticks=ticks, tempo=tempo, ppq=ppq)
+                            step_duration_ms = ticks_to_duration_ms(
+                                ticks=ticks, tempo=tempo, ppq=ppq
+                            )
                             button.note_duration = step_duration_ms
 
                         sync_button_note_spec(button)
@@ -1591,7 +1594,9 @@ class PatternSequenceEditor(PatternUI):
                     # Convert ticks to milliseconds using the tempo at note_on time
                     # tempo is in microseconds per quarter note
                     # duration_ms = (duration_ticks / ticks_per_beat) * (tempo / 1000)
-                    duration_ms = ticks_to_duration_ms(ticks=duration_ticks, tempo=on_tempo, ppq=ppq)
+                    duration_ms = ticks_to_duration_ms(
+                        ticks=duration_ticks, tempo=on_tempo, ppq=ppq
+                    )
 
                     note_durations[(channel, msg.note, on_time)] = duration_ms
                     del active_notes[note_key]
@@ -1618,7 +1623,9 @@ class PatternSequenceEditor(PatternUI):
                     msg.type == MidoMessageType.NOTE_ON.value
                     or msg.type == MidoMessageType.NOTE_OFF.value
                 ):
-                    note_events.append((absolute_time, msg, msg.channel, current_tempo_us))
+                    note_events.append(
+                        (absolute_time, msg, msg.channel, current_tempo_us)
+                    )
         return note_events
 
     def _add_button_with_label_from_spec(
@@ -1817,15 +1824,21 @@ class PatternSequenceEditor(PatternUI):
                     )
 
                     events.append(
-                        self._sequencer_event(channel, duration_ticks, spec, tick, velocity)
+                        self._sequencer_event(
+                            channel, duration_ticks, spec, tick, velocity
+                        )
                     )
 
         return events
 
-    def _sequencer_event(self, channel: int,
-                         duration_ticks: int,
-                         spec: NoteButtonSpec,
-                         tick: int, velocity: int) -> SequencerEvent:
+    def _sequencer_event(
+        self,
+        channel: int,
+        duration_ticks: int,
+        spec: NoteButtonSpec,
+        tick: int,
+        velocity: int,
+    ) -> SequencerEvent:
         """sequencer Event"""
         return SequencerEvent(
             tick=tick,

@@ -12,7 +12,7 @@ import os
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+from picomidi.playback.worker import MidiPlaybackWorker
 
 
 class TestInitialTempoFix(unittest.TestCase):

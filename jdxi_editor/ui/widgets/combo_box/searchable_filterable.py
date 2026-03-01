@@ -20,10 +20,6 @@ import re
 from typing import Any, Callable, List, Optional
 
 from decologr import Decologr as log
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QSizePolicy
-
-from jdxi_editor.ui.common import JDXi, QWidget
 from picoui.widget.helper import (
     create_combo_row,
     create_form_layout,
@@ -31,6 +27,10 @@ from picoui.widget.helper import (
     create_line_edit,
     create_row_with_widgets,
 )
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QSizePolicy
+
+from jdxi_editor.ui.common import JDXi, QWidget
 
 
 class SearchableFilterableComboBox(QWidget):

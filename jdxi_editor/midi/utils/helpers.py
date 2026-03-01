@@ -5,11 +5,11 @@ Helper functions
 import os.path
 
 from decologr import Decologr as log
+from picoui.specs.widgets import MessageBoxSpec
 
 from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
-from picoui.specs.widgets import MessageBoxSpec
 
 
 def on_usb_recording_finished(output_file: str):

@@ -14,7 +14,7 @@ from picomidi import MidiTempo
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+from picomidi.playback.worker import MidiPlaybackWorker
 import mido
 
 try:
@@ -242,7 +242,7 @@ class TestSheepPlayback(unittest.TestCase):
 
     def test_realtime_playback_timing_simulation(self):
         """Test that tempo changes would occur at correct times during simulated playback"""
-        from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+        from picomidi.playback.worker import MidiPlaybackWorker
         from unittest.mock import Mock, patch
         import time
         
@@ -432,7 +432,7 @@ class TestPatternPlaybackControllerTempo(unittest.TestCase):
             PatternPlaybackController,
             PlaybackConfig,
         )
-        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+        from picomidi.playback.engine import PlaybackEngine
         from mido import bpm2tempo
 
         for bpm in [60, 120, 126]:
@@ -502,7 +502,7 @@ class TestPatternPlaybackControllerTempo(unittest.TestCase):
             PatternPlaybackController,
             PlaybackConfig,
         )
-        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+        from picomidi.playback.engine import PlaybackEngine
 
         config = PlaybackConfig(default_bpm=120)
         controller = PatternPlaybackController(config=config)
@@ -520,7 +520,7 @@ class TestPatternPlaybackControllerTempo(unittest.TestCase):
 
     def test_sheep_midi_engine_tempo_map(self):
         """PlaybackEngine loads sheep.mid with correct tempo map (matches sheep test)"""
-        from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
+        from picomidi.playback.engine import PlaybackEngine
 
         midi_file_path = os.path.join(os.path.dirname(__file__), 'sheep.mid')
         self.assertTrue(os.path.exists(midi_file_path), "sheep.mid test file not found")

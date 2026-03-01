@@ -1,9 +1,9 @@
 from typing import Union
 
+from picoui.specs.widgets import ButtonSpec
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from jdxi_editor.core.jdxi import JDXi
-from picoui.specs.widgets import ButtonSpec
 
 # Fallback tooltips when not using ButtonSpec
 _TOOLTIP_MAP = {

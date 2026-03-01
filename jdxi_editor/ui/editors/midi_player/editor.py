@@ -15,6 +15,18 @@ from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
+from picomidi.playback.engine import PlaybackEngine
+from picomidi.playback.worker import MidiPlaybackWorker
+from picomidi.ui.widget.transport.spec import TransportSpec
+from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
+from picoui.specs.widgets import (
+    ButtonSpec,
+    CheckBoxSpec,
+    FileSelectionMode,
+    FileSelectionSpec,
+    MessageBoxSpec,
+    get_file_save_from_spec,
+)
 from PySide6.QtCore import QMargins, Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -43,7 +55,6 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
@@ -55,13 +66,11 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_small_sequencer_square_for_channel,
 )
 from jdxi_editor.ui.editors.midi_player.midi_analyzer import MidiAnalyzer
-from jdxi_editor.ui.editors.midi_player.playback.engine import PlaybackEngine
 from jdxi_editor.ui.editors.midi_player.track.category import (
     CATEGORY_META,
     STR_TO_TRACK_CATEGORY,
     TrackCategory,
 )
-from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -81,15 +90,6 @@ from jdxi_editor.ui.widgets.editor.helper import (
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
-from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
-from picoui.specs.widgets import (
-    ButtonSpec,
-    CheckBoxSpec,
-    FileSelectionMode,
-    FileSelectionSpec,
-    MessageBoxSpec,
-    get_file_save_from_spec,
-)
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level

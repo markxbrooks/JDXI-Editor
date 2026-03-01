@@ -21,6 +21,11 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import MidiFile, MidiTrack
+from picomidi.ui.widget.transport.spec import TransportSpec
+from picoui.helpers import create_layout_with_items, group_with_layout
+from picoui.helpers.spinbox import spinbox_with_label_from_spec
+from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
+from picoui.widget.helper import create_combo_box
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtWidgets import (
     QAbstractButton,
@@ -47,7 +52,6 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_with_label_from_spec,
     create_jdxi_row,
 )
-from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.editors.pattern.models import ClipboardData, SequencerStyle
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
@@ -64,10 +68,6 @@ from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
-from picoui.helpers import create_layout_with_items, group_with_layout
-from picoui.helpers.spinbox import spinbox_with_label_from_spec
-from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
-from picoui.widget.helper import create_combo_box
 
 
 def _combo_spec(items, tooltip: str = "") -> ComboBoxSpec:

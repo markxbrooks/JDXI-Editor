@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
+from picomidi.ui.widget.transport.spec import TransportSpec
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -41,7 +42,6 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
     create_jdxi_row,
 )
-from jdxi_editor.ui.editors.midi_player.transport.spec import TransportSpec
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate

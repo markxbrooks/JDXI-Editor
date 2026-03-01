@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import mido
-from jdxi_editor.midi.playback.worker import MidiPlaybackWorker
+from picomidi.playback.worker import MidiPlaybackWorker
 
 
 def test_emitting_timing():
