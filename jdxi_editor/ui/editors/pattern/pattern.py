@@ -2046,7 +2046,7 @@ class PatternSequenceEditor(PatternUI):
         one_indexed_channel = zero_indexed_channel + 1
         notes_off = ControlChange(channel=Channel.from_value(one_indexed_channel),
                                   controller=ControlChange.ALL_NOTES_OFF,
-                                  value=ControlValue(0))
+                                  control_value=ControlValue(0))
         self.midi_helper.send_raw_message(notes_off.to_bytes())
 
     def _note_name_to_midi(self, note_name: str) -> int:
