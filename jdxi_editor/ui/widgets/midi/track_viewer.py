@@ -337,7 +337,7 @@ class MidiTrackViewer(QWidget):
             if msg.type == "track_name":
                 msg.name = new_name
         # If not found, insert it at the beginning
-        track.insert(0, mido.MetaMessage("track_name", name=new_name, time=0))
+        track.insert(0, mido.MetaMessage(MidoMetaMessageType.TRACK_NAME.value, name=new_name, time=0))
         return track
 
     def change_track_channel(self, track_index: int, new_channel: int) -> None:
@@ -639,7 +639,7 @@ class MidiTrackViewer(QWidget):
                 ]
                 new_track.clear()
                 # Insert a track_name at the very beginning
-                new_track.append(mido.MetaMessage("track_name", name=new_name, time=0))
+                new_track.append(mido.MetaMessage(MidoMetaMessageType.TRACK_NAME.value, name=new_name, time=0))
                 for m in filtered:
                     new_track.append(m)
 
