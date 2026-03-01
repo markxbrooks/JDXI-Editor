@@ -40,7 +40,7 @@ class SequencerEvent:
         self.duration_ticks = int(duration_ticks)
         self._midi_note = None  # lazy; created on demand
 
-    def ensure_midi_note(self, tempo_bpm: float = None, ppq: int = None):
+    def ensure_midi_note(self, tempo_bpm: float = 120.0, ppq: int = 480):
         """
         Create or return a cached MidiNote payload.
         If you need duration_ms based on tempo, you can compute on demand here
