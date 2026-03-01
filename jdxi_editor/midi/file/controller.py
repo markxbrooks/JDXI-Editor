@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from picomidi import MidiTempo
-from picomidi.message.type import MidoMessageType
+from picomidi.message.type import MidoMessageType, MidoMetaMessageType
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
@@ -222,14 +222,14 @@ class MidiFileController:
             self._add_tempo_to_track(track, self.current_bpm)
             track.append(
                 MetaMessage(
-                    "time_signature",
+                    MidoMetaMessageType.TIME_SIGNATURE.value,
                     numerator=self.config.beats_per_measure,
                     denominator=4,
                 )
             )
 
             if pattern_name:
-                track.append(MetaMessage("sequence_name", text=pattern_name))
+                track.append(MetaMessage(MidoMetaMessageType.SEQUENCE_NAME.value, text=pattern_name))
 
             # Convert pattern to MIDI events
             notes_saved = 0
