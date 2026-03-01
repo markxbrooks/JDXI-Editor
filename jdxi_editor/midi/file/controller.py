@@ -500,7 +500,7 @@ class MidiFileController:
 
         # First pass: collect all note events with timing
         note_events = []
-        current_tempo = 500000  # Default 120 BPM in microseconds
+        current_tempo = MidiTempo.BPM_120_USEC  # Default 120 BPM in microseconds
 
         for track in midi_file.tracks:
             absolute_time = 0

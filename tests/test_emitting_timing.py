@@ -9,6 +9,8 @@ import sys
 import time
 from unittest.mock import Mock, patch
 
+from picomidi import MidiTempo
+
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -45,7 +47,7 @@ def test_emitting_timing():
         return (tempo / float(MidiTempo.MICROSECONDS_PER_SECOND)) * (ticks / ticks_per_beat)
     
     # Calculate expected timing for tempo changes
-    current_tempo = 500000  # Default 120 BPM
+    current_tempo = MidiTempo.BPM_120_USEC  # Default 120 BPM
     expected_times = []
     
     for abs_tick, tempo in tempo_changes:

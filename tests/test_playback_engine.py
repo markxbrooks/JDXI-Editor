@@ -8,6 +8,8 @@ Lock tempo, ScheduledEvent behavior, and on_event timing without GUI.
 import sys
 import os
 
+from picomidi import MidiTempo
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from mido import MidiFile, MidiTrack, Message, MetaMessage
@@ -40,7 +42,7 @@ def test_engine_load_file_builds_events_and_tempo():
     assert engine.midi_file is mid
     assert engine.ticks_per_beat == 480
     assert 0 in engine._tempo_map
-    assert engine._tempo_map[0] == 500000
+    assert engine._tempo_map[0] == MidiTempo.BPM_120_USEC
     # 4 note events (no set_tempo in event list)
     assert len(engine.events) == 4
     assert engine.event_index == 0

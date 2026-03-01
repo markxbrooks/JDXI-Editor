@@ -1607,7 +1607,7 @@ class PatternSequenceEditor(PatternUI):
     ) -> list[Any]:
         """First pass: collect all note events with their absolute times and tempos"""
         note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
-        current_tempo_us = 500000  # Default tempo (120 BPM in microseconds)
+        current_tempo_us = MidiTempo.BPM_120_USEC  # Default tempo (120 BPM in microseconds)
 
         for track in midi_file.tracks:
             absolute_time = 0

@@ -198,7 +198,7 @@ class TestSheepPlayback(unittest.TestCase):
         tempo_changes.sort(key=lambda x: x[0])
         
         # Calculate timing for each tempo change
-        current_tempo = 500000  # Default 120 BPM
+        current_tempo = MidiTempo.BPM_120_USEC  # Default 120 BPM
         times = []
         
         for abs_tick, tempo in tempo_changes:
