@@ -209,8 +209,8 @@ def test_engine_tick_to_seconds_segment_wise():
     mid = MidiFile(type=1, ticks_per_beat=480)
     track = MidiTrack()
     mid.tracks.append(track)
-    track.append(MetaMessage("set_tempo", tempo=500000, time=0))
-    track.append(MetaMessage("set_tempo", tempo=250000, time=480))
+    track.append(MetaMessage(MidoMetaMessageType.SET_TEMPO.value, tempo=500000, time=0))
+    track.append(MetaMessage(MidoMetaMessageType.SET_TEMPO.value, tempo=250000, time=480))
     track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
     track.append(Message("note_off", note=60, velocity=0, channel=0, time=960))
 
