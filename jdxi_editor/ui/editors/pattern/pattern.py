@@ -28,7 +28,7 @@ from picomidi.core.tempo import (
     milliseconds_per_note, MeasureBeats, ms_to_ticks, ticks_to_duration_ms,
 )
 from picomidi.message.type import MidoMessageType
-from picomidi.messages.note import MidiNote
+from picomidi.messages.note import MidiNote, note_on, note_off
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -42,7 +42,6 @@ from PySide6.QtWidgets import (
 from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
 from jdxi_editor.midi.file.controller import (
     MidiFileController,
@@ -1246,12 +1245,6 @@ class PatternSequenceEditor(PatternUI):
         # Channel mapping: 0 -> Digital Synth 1 (row 0), 1 -> Digital Synth 2 (row 1),
         #                  2 -> Analog Synth (row 2), 9 -> Drums (row 3)
         notes_loaded = 0
-        channel_to_row = {
-            0: 0,  # Channel 0 -> Digital Synth 1 (row 0)
-            1: 1,  # Channel 1 -> Digital Synth 2 (row 1)
-            2: 2,  # Channel 2 -> Analog Synth (row 2)
-            9: 3,  # Channel 9 -> Drums (row 3)
-        }
 
         for track in midi_file.tracks:
             absolute_time = 0
@@ -1263,9 +1256,9 @@ class PatternSequenceEditor(PatternUI):
                     if not hasattr(msg, "channel"):
                         continue
                     channel = msg.channel
-                    if channel not in channel_to_row:
+                    if channel not in self.channel_to_row:
                         continue
-                    row = channel_to_row[channel]
+                    row = self.channel_to_row[channel]
                     bar_index = int(absolute_time / ticks_per_bar)
                     step_in_bar = int(
                         (absolute_time % ticks_per_bar) / (ticks_per_bar / 16)
@@ -1483,7 +1476,6 @@ class PatternSequenceEditor(PatternUI):
             )
 
             self._assign_notes_and_durations_to_buttons(
-                self.channel_to_row,
                 note_durations,
                 note_events,
                 notes_loaded,
@@ -1513,7 +1505,6 @@ class PatternSequenceEditor(PatternUI):
 
     def _assign_notes_and_durations_to_buttons(
         self,
-        channel_to_row: dict[MidiChannel, int],
         note_durations: dict[Any, Any],
         note_events: list[Any],
         notes_loaded: int,
@@ -1524,10 +1515,10 @@ class PatternSequenceEditor(PatternUI):
         for abs_time, msg, channel, tempo in note_events:
             if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 # --- Map channel to row (skip channels we don't support)
-                if channel not in channel_to_row:
+                if channel not in self.channel_to_row:
                     continue
 
-                row = channel_to_row[channel]
+                row = self.channel_to_row[channel]
 
                 # Calculate which bar and step this note belongs to
                 bar_index = int(abs_time / ticks_per_bar)
@@ -1826,27 +1817,36 @@ class PatternSequenceEditor(PatternUI):
                     )
 
                     events.append(
-                        SequencerEvent(
-                            tick=tick,
-                            note=spec.note,
-                            velocity=velocity,
-                            channel=channel,
-                            duration_ticks=duration_ticks,
-                        )
+                        self._sequencer_event(channel, duration_ticks, spec, tick, velocity)
                     )
 
         return events
 
+    def _sequencer_event(self, channel: int,
+                         duration_ticks: int,
+                         spec: NoteButtonSpec,
+                         tick: int, velocity: int) -> SequencerEvent:
+        """sequencer Event"""
+        return SequencerEvent(
+            tick=tick,
+            note=spec.note,
+            velocity=velocity,
+            channel=channel,
+            duration_ticks=duration_ticks,
+        )
+
     def _build_midi_file_for_playback(self) -> MidiFile:
         """Build a MidiFile from the current pattern for PlaybackEngine."""
         ticks_per_beat = self.ppq
-        tempo_us = int(MidiTempo.MICROSECONDS_PER_MINUTE / self.timing_bpm)
 
-        seq_events: list[SequencerEvent] = self._collect_sequencer_events(ticks_per_beat)
+        # Add tempo (use mido.bpm2tempo to match Playback Worker / MIDI editor)
+        tempo_us = bpm2tempo(self.timing_bpm)
 
-        mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
+        events: list[SequencerEvent] = self._collect_sequencer_events(ticks_per_beat)
+
+        midi_file = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
         track = MidiTrack()
-        mid.tracks.append(track)
+        midi_file.tracks.append(track)
 
         track.append(
             MetaMessage(
@@ -1856,55 +1856,35 @@ class PatternSequenceEditor(PatternUI):
             )
         )
 
-        if not seq_events:
-            return mid
+        if not events:
+            return midi_file
 
         # Expand note_on / note_off
-        events = []
+        midi_events = []
 
-        for absolute_tick in seq_events:
-            events.append(
+        for absolute_tick in events:
+            midi_events.append(
                 (
                     absolute_tick.tick,
-                    Message(
-                        MidoMessageType.NOTE_ON.value,
-                        note=absolute_tick.note,
-                        velocity=absolute_tick.velocity,
-                        channel=absolute_tick.channel,
-                        time=0,
-                    ),
+                    note_on(absolute_tick),
                 )
             )
-            events.append(
+            midi_events.append(
                 (
                     absolute_tick.tick + absolute_tick.duration_ticks,
-                    Message(
-                        MidoMessageType.NOTE_OFF.value,
-                        note=absolute_tick.note,
-                        velocity=0,
-                        channel=absolute_tick.channel,
-                        time=0,
-                    ),
+                    note_off(absolute_tick),
                 )
             )
 
-        events.sort(key=lambda x: x[0])
+        midi_events.sort(key=lambda x: x[0])
 
         prev_tick = 0
-        for tick, msg in events:
-            delta = tick - prev_tick
-            track.append(
-                Message(
-                    msg.type,
-                    note=msg.note,
-                    velocity=msg.velocity,
-                    channel=msg.channel,
-                    time=delta,
-                )
-            )
+        for tick, msg in midi_events:
+            msg.time = tick - prev_tick
+            track.append(msg)
             prev_tick = tick
 
-        return mid
+        return midi_file
 
     def play_pattern(self):
         """Start playing the pattern via PlaybackEngine."""

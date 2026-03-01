@@ -120,6 +120,28 @@ class SequencerEvent:
         )
 
 
+def note_on(event: SequencerEvent) -> Message:
+    """create_note_off_from_sequencer_event"""
+    return Message(
+        MidoMessageType.NOTE_ON.value,
+        note=event.note,
+        velocity=event.velocity,
+        channel=event.channel,
+        time=0,
+    )
+
+
+def note_off(event: SequencerEvent) -> Message:
+    """create note off from sequencer event"""
+    return Message(
+        MidoMessageType.NOTE_OFF.value,
+        note=event.note,
+        velocity=0,
+        channel=event.channel,
+        time=0,
+    )
+
+
 class PatternPlaybackController(QObject):
     """
     Controls pattern playback and synchronization.
@@ -647,8 +669,8 @@ class PatternPlaybackController(QObject):
         for e in events:
             midi_events.extend(
                 [
-                    (e.tick, self._note_on(e)),
-                    (e.tick + e.duration_ticks, self._note_off(e)),
+                    (e.tick, note_on(e)),
+                    (e.tick + e.duration_ticks, note_off(e)),
                 ]
             )
 
@@ -662,26 +684,6 @@ class PatternPlaybackController(QObject):
             prev_tick = tick
 
         return midi_file
-
-    def _note_on(self, event: SequencerEvent) -> Message:
-        """create_note_off_from_sequencer_event"""
-        return Message(
-            MidoMessageType.NOTE_ON.value,
-            note=event.note,
-            velocity=event.velocity,
-            channel=event.channel,
-            time=0,
-        )
-
-    def _note_off(self, event: SequencerEvent) -> Message:
-        """create note off from sequencer event"""
-        return Message(
-            MidoMessageType.NOTE_OFF.value,
-            note=event.note,
-            velocity=0,
-            channel=event.channel,
-            time=0,
-        )
 
     def _collect_sequencer_events(self, measures: List) -> List[SequencerEvent]:
         """
