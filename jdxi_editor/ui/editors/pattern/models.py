@@ -37,6 +37,11 @@ class SequencerEvent:
     velocity: int
     channel: int
     duration_ticks: int
+    midi_note: MidiNote = None
+    
+    def __post__init(self):
+        """post init"""
+        self.midi_note = MidiNote(note=self.note, velocity=self.velocity, duration_ms=self.duration_ticks)
 
 
 class SequencerStyle:
