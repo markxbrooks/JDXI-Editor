@@ -110,7 +110,10 @@ class MeasureBeats:
     PER_MEASURE_4_4 = 16
     PER_MEASURE_3_4 = 12
 
-
+def bpm_to_tempo_us(bpm: float) -> int:
+    """bpm to tempo in us"""
+    return int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
+    
 def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
     """ms to ticks"""
     ms_per_beat = MidiTempo.MILLISECONDS_PER_MINUTE / bpm
