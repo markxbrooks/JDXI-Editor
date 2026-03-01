@@ -25,7 +25,7 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
 from picomidi import MidiTempo
 from picomidi.core.tempo import (
     convert_absolute_time_to_delta_time,
-    milliseconds_per_note,
+    milliseconds_per_note, MeasureBeats, ms_to_ticks, ticks_to_duration_ms,
 )
 from picomidi.message.type import MidoMessageType
 from picomidi.messages.note import MidiNote
@@ -104,22 +104,6 @@ from picoui.widget.helper import get_file_path_from_spec
 from picoui.widget.setters import set_spinbox_value
 
 
-class MeasureBeats:
-    """Measure Beats"""
-
-    PER_MEASURE_4_4 = 16
-    PER_MEASURE_3_4 = 12
-
-def bpm_to_tempo_us(bpm: float) -> int:
-    """bpm to tempo in us"""
-    return int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
-    
-def ms_to_ticks(duration_ms: int, bpm: float, ppq: int) -> int:
-    """ms to ticks"""
-    ms_per_beat = MidiTempo.MILLISECONDS_PER_MINUTE / bpm
-    return int((duration_ms / ms_per_beat) * ppq)
-
-
 def copy_note_attrs_from_event(button: SequencerButton, event: PatternLearnerEvent):
     """copy note attributes"""
     button.note = event.note
@@ -141,6 +125,12 @@ def copy_note_attrs(prev: SequencerButton, new: SequencerButton):
     new.note = prev.note
     for a in NoteButtonAttrs.COPYABLE:
         setattr(new, a, getattr(prev, a, None))
+
+
+def get_channel_for_row(row: int) -> int:
+    """Get idi channel for each row"""
+    channel = row if row < 3 else 9
+    return channel
 
 
 class PatternSequenceEditor(PatternUI):
@@ -1097,7 +1087,7 @@ class PatternSequenceEditor(PatternUI):
         absolute_tick = measure_index * ticks_per_bar + step * ticks_per_step
 
         for row in range(self.sequencer_rows):
-            channel = self.get_channel_for_row(row)
+            channel = get_channel_for_row(row)
             button = measure.buttons[row][step]
             spec = get_button_note_spec(button)
 
@@ -1109,11 +1099,6 @@ class PatternSequenceEditor(PatternUI):
                 off_msg.time = 0
                 events.append((absolute_tick, on_msg))
                 events.append((absolute_tick + ticks_per_step, off_msg))
-
-    def get_channel_for_row(self, row: int) -> int:
-        """Get idi channel for each row"""
-        channel = row if row < 3 else 9
-        return channel
 
     def set_midi_file_editor(self, midi_file_editor: Any) -> str | None:
         """
@@ -1382,7 +1367,7 @@ class PatternSequenceEditor(PatternUI):
                     spec = get_button_note_spec(measure_button)
                     if measure_button.isChecked() and spec.is_active:
                         time = self._calculate_note_on_time(bar_index, step)
-                        channel = self.get_channel_for_row(row)
+                        channel = get_channel_for_row(row)
                         self._append_note_on_and_off(spec, time, channel, track)
 
     def _calculate_note_on_time(self, bar_index: int, step: int) -> int:
@@ -1578,9 +1563,8 @@ class PatternSequenceEditor(PatternUI):
                         else:
                             # Default to step duration if no note_off found
                             # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
-                            step_duration_ms = (ticks_per_bar / 16.0 / ppq) * (
-                                tempo / 1000.0
-                            )
+                            ticks = ticks_per_bar / 16.0
+                            step_duration_ms = ticks_to_duration_ms(ticks=ticks, tempo=tempo, ppq=ppq)
                             button.note_duration = step_duration_ms
 
                         sync_button_note_spec(button)
@@ -1616,7 +1600,7 @@ class PatternSequenceEditor(PatternUI):
                     # Convert ticks to milliseconds using the tempo at note_on time
                     # tempo is in microseconds per quarter note
                     # duration_ms = (duration_ticks / ticks_per_beat) * (tempo / 1000)
-                    duration_ms = (duration_ticks / ppq) * (on_tempo / 1000.0)
+                    duration_ms = ticks_to_duration_ms(ticks=duration_ticks, tempo=on_tempo, ppq=ppq)
 
                     note_durations[(channel, msg.note, on_time)] = duration_ms
                     del active_notes[note_key]
@@ -1627,7 +1611,7 @@ class PatternSequenceEditor(PatternUI):
     ) -> list[Any]:
         """First pass: collect all note events with their absolute times and tempos"""
         note_events = []  # List of (absolute_time, msg, channel, tempo_at_time)
-        current_tempo = 500000  # Default tempo (120 BPM in microseconds)
+        current_tempo_us = 500000  # Default tempo (120 BPM in microseconds)
 
         for track in midi_file.tracks:
             absolute_time = 0
@@ -1636,14 +1620,14 @@ class PatternSequenceEditor(PatternUI):
 
                 # Track tempo changes
                 if msg.type == MidoMessageType.SET_TEMPO.value:
-                    current_tempo = msg.tempo
+                    current_tempo_us = msg.tempo
 
                 # Collect note_on and note_off events
                 if hasattr(msg, "channel") and (
                     msg.type == MidoMessageType.NOTE_ON.value
                     or msg.type == MidoMessageType.NOTE_OFF.value
                 ):
-                    note_events.append((absolute_time, msg, msg.channel, current_tempo))
+                    note_events.append((absolute_time, msg, msg.channel, current_tempo_us))
         return note_events
 
     def _add_button_with_label_from_spec(
@@ -1834,7 +1818,7 @@ class PatternSequenceEditor(PatternUI):
                     if not spec.is_active:
                         continue
 
-                    channel = self.get_channel_for_row(row)
+                    channel = get_channel_for_row(row)
                     velocity = max(0, min(127, spec.velocity))
                     duration_ticks = (
                         self._ms_to_ticks(spec.duration_ms, ticks_per_beat)
@@ -1858,7 +1842,7 @@ class PatternSequenceEditor(PatternUI):
         ticks_per_beat = self.ppq
         tempo_us = int(MidiTempo.MICROSECONDS_PER_MINUTE / self.timing_bpm)
 
-        seq_events = self._collect_sequencer_events(ticks_per_beat)
+        seq_events: list[SequencerEvent] = self._collect_sequencer_events(ticks_per_beat)
 
         mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
         track = MidiTrack()
@@ -2144,7 +2128,7 @@ class PatternSequenceEditor(PatternUI):
                 play_spec = get_button_note_spec(measure_button)
                 if measure_button.isChecked() and play_spec.is_active:
                     # Determine channel based on row
-                    channel = self.get_channel_for_row(row)
+                    channel = get_channel_for_row(row)
 
                     # Send Note On message using the stored note
                     if self.midi_helper:
@@ -2294,7 +2278,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _toggle_mute(self, row, checked):
         """Toggle mute for a specific row."""
-        channel = self.get_channel_for_row(row)
+        channel = get_channel_for_row(row)
         if checked:
             log.message(message=f"Row {row} muted", scope=self.__class__.__name__)
             self.muted_channels.append(channel)
