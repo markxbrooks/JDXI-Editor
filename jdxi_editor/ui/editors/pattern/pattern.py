@@ -22,7 +22,7 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
-from picomidi import MidiTempo
+from picomidi import MidiTempo, MidiChannel, ControlChange, Channel, ControlValue
 from picomidi.core.tempo import (
     MeasureBeats,
     convert_absolute_time_to_delta_time,
@@ -2032,10 +2032,22 @@ class PatternSequenceEditor(PatternUI):
 
         # Send all notes off
         if self.midi_helper:
-            for channel in range(MeasureBeats.PER_MEASURE_4_4):
-                self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
+            self._send_notes_off_for_all_channels()
 
         log.message(message="Pattern playback stopped", scope=self.__class__.__name__)
+
+    def _send_notes_off_for_all_channels(self):
+        """send notes off for all channels"""
+        for channel in range(MidiChannel.NUMBER):
+            self._send_notes_off_for_channel(channel)
+
+    def _send_notes_off_for_channel(self, zero_indexed_channel: int):
+        """send notes off for a given channel"""
+        one_indexed_channel = zero_indexed_channel + 1
+        notes_off = ControlChange(channel=Channel.from_value(one_indexed_channel),
+                                  controller=ControlChange.ALL_NOTES_OFF,
+                                  value=ControlValue(0))
+        self.midi_helper.send_raw_message(notes_off.to_bytes())
 
     def _note_name_to_midi(self, note_name: str) -> int:
         """Convert note name (e.g., 'C4') to MIDI note number."""
