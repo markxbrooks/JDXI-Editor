@@ -46,13 +46,19 @@ from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QFormLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QMainWindow,
     QPlainTextEdit,
     QPushButton,
+    QSpinBox,
     QSplitter,
+    QTabWidget,
     QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
 
 from jdxi_editor.midi.data.address.address import CommandID, SysExOffsetByte
@@ -169,6 +175,13 @@ class MIDIDebugger(QMainWindow):
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
 
+        # Tab widget: SysEx and CC/PC
+        self.tab_widget = QTabWidget()
+
+        # --- SysEx tab ---
+        sysex_tab = QWidget()
+        sysex_layout = QVBoxLayout(sysex_tab)
+
         # Create splitter for hex and decoded views
         splitter = QSplitter(Qt.Vertical)
 
@@ -228,10 +241,172 @@ class MIDIDebugger(QMainWindow):
         # Add widgets to splitter
         splitter.addWidget(top_widget)
         splitter.addWidget(bottom_widget)
+        sysex_layout.addWidget(splitter)
 
-        # Add splitter to main layout
-        layout.addWidget(splitter)
+        self.tab_widget.addTab(sysex_tab, "SysEx")
+
+        # --- CC/PC tab ---
+        cc_pc_tab = self._build_cc_pc_panel()
+        self.tab_widget.addTab(cc_pc_tab, "CC / PC")
+
+        layout.addWidget(self.tab_widget)
         self.sysex_parser = JDXiSysExParser()
+
+    def _build_cc_pc_panel(self) -> QWidget:
+        """Build the CC/PC tab with channel, CC, PC, and Bank+PC controls."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+
+        # Channel (1–16)
+        channel_group = QGroupBox("Channel")
+        channel_form = QFormLayout()
+        self.cc_pc_channel = QSpinBox()
+        self.cc_pc_channel.setRange(1, 16)
+        self.cc_pc_channel.setValue(1)
+        channel_form.addRow("Channel:", self.cc_pc_channel)
+        channel_group.setLayout(channel_form)
+        layout.addWidget(channel_group)
+
+        # Control Change
+        cc_group = QGroupBox("Control Change")
+        cc_layout = QVBoxLayout()
+        cc_form = QFormLayout()
+        self.cc_controller = QSpinBox()
+        self.cc_controller.setRange(0, 127)
+        self.cc_controller.setValue(7)
+        self.cc_value = QSpinBox()
+        self.cc_value.setRange(0, 127)
+        self.cc_value.setValue(100)
+        cc_form.addRow("Controller:", self.cc_controller)
+        cc_form.addRow("Value:", self.cc_value)
+        send_cc_btn = QPushButton("Send CC")
+        send_cc_btn.clicked.connect(self._send_cc)
+        cc_form.addRow("", send_cc_btn)
+        cc_layout.addLayout(cc_form)
+        cc_ref = QPlainTextEdit()
+        cc_ref.setReadOnly(True)
+        cc_ref.setMaximumHeight(140)
+        cc_ref.setStyleSheet("font-family: monospace; font-size: 10px;")
+        cc_ref.setPlainText(
+            "CC#  | Name\n"
+            "-----+----------------------\n"
+            "  1  | Modulation Wheel\n"
+            "  7  | Volume\n"
+            " 10  | Pan\n"
+            " 64  | Sustain Pedal\n"
+            " 91  | Reverb\n"
+            " 93  | Chorus\n"
+            "123  | All Notes Off / All Sound Off"
+        )
+        cc_layout.addWidget(QLabel("Reference:"))
+        cc_layout.addWidget(cc_ref)
+        cc_group.setLayout(cc_layout)
+        layout.addWidget(cc_group)
+
+        # Program Change
+        pc_group = QGroupBox("Program Change")
+        pc_form = QFormLayout()
+        self.pc_program = QSpinBox()
+        self.pc_program.setRange(0, 127)
+        self.pc_program.setValue(0)
+        pc_form.addRow("Program:", self.pc_program)
+        send_pc_btn = QPushButton("Send PC")
+        send_pc_btn.clicked.connect(self._send_pc)
+        pc_form.addRow("", send_pc_btn)
+        pc_group.setLayout(pc_form)
+        layout.addWidget(pc_group)
+
+        # Bank Select + Program Change
+        bank_group = QGroupBox("Bank Select + Program Change")
+        bank_layout = QVBoxLayout()
+        bank_form = QFormLayout()
+        self.bank_msb = QSpinBox()
+        self.bank_msb.setRange(0, 127)
+        self.bank_msb.setValue(0)
+        self.bank_lsb = QSpinBox()
+        self.bank_lsb.setRange(0, 127)
+        self.bank_lsb.setValue(0)
+        self.bank_program = QSpinBox()
+        self.bank_program.setRange(0, 127)
+        self.bank_program.setValue(0)
+        bank_form.addRow("Bank MSB:", self.bank_msb)
+        bank_form.addRow("Bank LSB:", self.bank_lsb)
+        bank_form.addRow("Program:", self.bank_program)
+        send_bank_btn = QPushButton("Send Bank+PC")
+        send_bank_btn.clicked.connect(self._send_bank_pc)
+        bank_form.addRow("", send_bank_btn)
+        bank_layout.addLayout(bank_form)
+
+        # Quick reference: Bank Select (CC#0, CC#32) + JD-Xi bank mapping
+        bank_ref = QPlainTextEdit()
+        bank_ref.setReadOnly(True)
+        bank_ref.setMaximumHeight(240)
+        bank_ref.setStyleSheet("font-family: monospace; font-size: 10px;")
+        bank_ref.setPlainText(
+            "Bank Select (CC#0, CC#32)\n"
+            "Status  2nd byte  3rd byte\n"
+            "BnH     00H       mmH     (Bank MSB)\n"
+            "BnH     20H       llH     (Bank LSB)\n"
+            "n = channel 0-F (ch.1-16), mm/ll = 00-7F (bank 1-16384)\n"
+            "* Not received when Receive Bank Select (SysEx) is OFF.\n\n"
+            "JD-Xi Bank → Program mapping:\n"
+            "MSB LSB   PC       GROUP                    NUMBER\n"
+            "----+-----+--------+-------------------------+------\n"
+            " 85   0   0-63     User Bank (E)             E01-E64\n"
+            " 85   0   64-127   User Bank (F)              F01-F64\n"
+            " 85   1   0-63     User Bank (G)              G01-G64\n"
+            " 85   1   64-127   User Bank (H)              H01-H64\n"
+            "----+-----+--------+-------------------------+------\n"
+            " 85  64   0-63     Preset Bank (A)           A01-A64\n"
+            " 85  64   64-127   Preset Bank (B)           B01-B64\n"
+            " 85  65   0-63     Preset Bank (C)           C01-C64\n"
+            " 85  65   64-127   Preset Bank (D)           D01-D64\n"
+            "----+-----+--------+-------------------------+------\n"
+            " 85  96   0-63    Extra Bank (S)            S01-S64\n"
+            " 85  97-103 ...   Extra Banks T-Z            T01-Z64"
+        )
+        bank_layout.addWidget(QLabel("Reference:"))
+        bank_layout.addWidget(bank_ref)
+        bank_group.setLayout(bank_layout)
+        layout.addWidget(bank_group)
+
+        layout.addStretch()
+        return tab
+
+    def _send_cc(self) -> None:
+        """Send Control Change from CC/PC tab."""
+        if not self.midi_helper or not self.midi_helper.midi_out:
+            return
+        channel = self.cc_pc_channel.value() - 1  # 1–16 → 0–15
+        controller = self.cc_controller.value()
+        value = self.cc_value.value()
+        success = self.midi_helper.send_control_change(controller, value, channel)
+        self._log_cc_pc_result("CC", success, f"ch={channel + 1} cc#{controller}={value}")
+
+    def _send_pc(self) -> None:
+        """Send Program Change from CC/PC tab."""
+        if not self.midi_helper or not self.midi_helper.midi_out:
+            return
+        channel = self.cc_pc_channel.value() - 1  # 1–16 → 0–15
+        program = self.pc_program.value()
+        success = self.midi_helper.send_program_change(program, channel)
+        self._log_cc_pc_result("PC", success, f"ch={channel + 1} prog={program}")
+
+    def _send_bank_pc(self) -> None:
+        """Send Bank Select + Program Change from CC/PC tab."""
+        if not self.midi_helper or not self.midi_helper.midi_out:
+            return
+        channel = self.cc_pc_channel.value() - 1  # 1–16 → 0–15
+        msb = self.bank_msb.value()
+        lsb = self.bank_lsb.value()
+        program = self.bank_program.value()
+        success = self.midi_helper.send_bank_select_and_program_change(channel, msb, lsb, program)
+        self._log_cc_pc_result("Bank+PC", success, f"ch={channel + 1} bank={msb}/{lsb} prog={program}")
+
+    def _log_cc_pc_result(self, label: str, success: bool, detail: str) -> None:
+        """Log CC/PC send result to the SysEx tab's response log."""
+        msg = f"{label} {'OK' if success else 'Failed'}: {detail}"
+        self.log_response(msg)
 
     def _decode_current(self):
         """Decode the currently entered SysEx message(s)"""
