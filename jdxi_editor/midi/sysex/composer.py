@@ -13,6 +13,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
     JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSuperNATURALLMB,
+    JDXiSysExOffsetSystemLMB,
 )
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.digital import (
@@ -21,6 +22,8 @@ from jdxi_editor.midi.data.parameter.digital import (
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
+from jdxi_editor.midi.data.parameter.system.controller import SystemControllerParam
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
@@ -43,6 +46,10 @@ def apply_lmb_offset(
     elif isinstance(param, ProgramCommonParam):
         # Program Common params (VOCAL_EFFECT, VOCAL_EFFECT_PART, etc.) use LMB=COMMON
         address.lmb = JDXiSysExOffsetProgramLMB.COMMON
+    elif isinstance(param, SystemCommonParam):
+        address.lmb = JDXiSysExOffsetSystemLMB.COMMON
+    elif isinstance(param, SystemControllerParam):
+        address.lmb = JDXiSysExOffsetSystemLMB.CONTROLLER
     return address
 
 

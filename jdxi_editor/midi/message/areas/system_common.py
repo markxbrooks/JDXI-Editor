@@ -42,7 +42,7 @@ class SystemCommonMessage(JDXiSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = JDXiSysExAddressStartMSB.SYSTEM  # 0x02: System area
+    msb: int = JDXiSysExAddressStartMSB.SETUP  # 0x02: System area (02 00 00 00)
     umb: int = JDXiSysExOffsetProgramLMB.COMMON  # 0x00: Common section
     lmb: int = Midi.value.ZERO  # Always 0x00
     lsb: int = Midi.value.ZERO  # Parameter number

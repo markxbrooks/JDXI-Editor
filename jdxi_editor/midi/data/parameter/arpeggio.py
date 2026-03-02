@@ -178,5 +178,13 @@ Phrase Pressing just one key will play a phrase based on the pitch of that key. 
             return self._display_name
         return self.name.replace("_", " ").title()
 
+    @classmethod
+    def get_by_name(cls, param_name: str) -> Optional["ArpeggioParam"]:
+        """Get the parameter by name."""
+        members = getattr(cls, "__members__", None)
+        if members is not None:
+            return members.get(param_name, None)
+        return getattr(cls, param_name, None)
+
     def get_address_for_partial(self, partial_number: int = 0):
         return ARP_GROUP, 0x00

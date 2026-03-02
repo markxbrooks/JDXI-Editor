@@ -12,6 +12,28 @@ The Arpeggiator Editor is a specialized interface that provides deep, granular c
 
 The editor represents a dedicated workspace optimized for pattern creation and sequencing, from basic arpeggio patterns to complex step sequences. The editor automatically synchronizes with your JD-Xi hardware, ensuring that every change is instantly reflected in your synthesizer's sound.
 
+JD-Xi Implementation
+=====================
+
+The Arpeggiator Editor targets the **Program Controller** SysEx block (address 18 00 40 00, 12 bytes), providing bidirectional sync with the JD-Xi hardware.
+
+**Parameters**
+   - **Grid** (0–8): 1/4, 1/8, 1/8 L, 1/8 H, 1/12, 1/16, 1/16 L, 1/16 H, 1/24
+   - **Duration** (0–9): 30%–120%, Full
+   - **Switch** (0–1): OFF, ON
+   - **Style** (0–127): 128 arpeggio styles
+   - **Motif** (0–11): Up, Down, Up/Down, Random, Phrase
+   - **Octave Range** (61–67): -3 to +3
+   - **Accent Rate** (0–100)
+   - **Velocity** (0–127): REAL or fixed 1–127
+
+**SysEx Sync**
+   - **Request on show**: When the Arpeggio Editor is opened, it sends an RQ1 (Data Request) for the Program Controller block to fetch current settings from the device.
+   - **Receive**: Incoming SysEx (DT1) for Program Controller is parsed and used to update the editor's sliders, combo boxes, and switches.
+   - **Send**: Changes made in the editor are sent to the device via SysEx.
+
+**Note**: The **Program Zone** block (per-zone Arpeggio Switch and Zone Octave Shift for Digital Synth 1/2, Analog, Drum) is a separate SysEx area and is not yet synced in this editor.
+
 Core Architecture & Design
 ===========================
 

@@ -88,3 +88,11 @@ class ParameterSpec(tuple):
         # Keyword args override when passed (e.g. ParameterSpec(0x01, 0, 127, description="..."))
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def get_offset(self) -> tuple:
+        """Return (0, 0, address) for apply_address_offset to add param address to LSB."""
+        return (0, 0, self.address)
+
+    def get_display_value(self) -> tuple:
+        """Return (min_display, max_display) for slider/UI range."""
+        return (self.min_display, self.max_display)

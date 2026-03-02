@@ -38,7 +38,9 @@ Dependencies:
 
 from typing import TYPE_CHECKING, Dict, Optional
 
+from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
+from PySide6.QtGui import QShowEvent
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
@@ -61,6 +63,8 @@ from jdxi_editor.midi.data.arpeggio.data import (
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
@@ -124,7 +128,16 @@ class ArpeggioEditor(BasicEditor):
             default_image="arpeggiator2.png",
         )
 
+        self.midi_requests = [MidiRequests.PROGRAM_CONTROLLER]
+
         self.setup_ui()
+
+        if self.midi_helper:
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            log.message(
+                "Arpeggio: Connected to midi_sysex_json signal",
+                scope=self.__class__.__name__,
+            )
 
     def setup_ui(self):
         # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
@@ -154,6 +167,67 @@ class ArpeggioEditor(BasicEditor):
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """Request current settings from the instrument when the editor is shown."""
+        super().showEvent(event)
+        if self.midi_helper:
+            log.message(
+                "Arpeggio shown - requesting current settings from instrument",
+                scope=self.__class__.__name__,
+            )
+        self.data_request()
+
+    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """Parse SysEx JSON and update Arpeggio controls."""
+        try:
+            import json
+
+            from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
+
+            sysex_data = json.loads(json_sysex_data)
+            temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA, "")
+            synth_tone = sysex_data.get(SysExSection.SYNTH_TONE, "")
+
+            if temporary_area != "TEMPORARY_PROGRAM" or synth_tone != "CONTROLLER":
+                return
+
+            filtered = filter_sysex_keys(sysex_data)
+
+            for param_name, raw_value in filtered.items():
+                if param_name in (SysExSection.TEMPORARY_AREA, SysExSection.SYNTH_TONE):
+                    continue
+                param = ArpeggioParam.get_by_name(param_name)
+                if not param:
+                    continue
+                widget = self.controls.get(param)
+                if not widget:
+                    continue
+                try:
+                    value = int(raw_value) if not isinstance(raw_value, int) else raw_value
+                    display = (
+                        param.convert_from_midi(value)
+                        if hasattr(param, "convert_from_midi")
+                        else value
+                    )
+                    if hasattr(widget, "combo_box"):
+                        # ComboBox: setValue expects raw MIDI value for index lookup
+                        widget.blockSignals(True)
+                        widget.setValue(value)
+                        widget.blockSignals(False)
+                    elif hasattr(widget, "setValue"):
+                        # Slider or Switch: use display value (sliders) or value (switches)
+                        widget.blockSignals(True)
+                        widget.setValue(display)
+                        widget.blockSignals(False)
+                    elif hasattr(widget, "setChecked"):
+                        widget.blockSignals(True)
+                        widget.setChecked(bool(value))
+                        widget.blockSignals(False)
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
     def _build_widgets(self):
         """Build widgets"""

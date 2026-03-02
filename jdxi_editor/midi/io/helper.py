@@ -34,6 +34,7 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
@@ -148,6 +149,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 # Program common parameters
                 if synth_tone == "COMMON":
                     param_class = ProgramCommonParam
+                elif synth_tone == "CONTROLLER":
+                    param_class = ArpeggioParam
                 else:
                     log.warning(
                         f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}"

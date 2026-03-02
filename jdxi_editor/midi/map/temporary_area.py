@@ -2,8 +2,15 @@ from __future__ import annotations
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.data.address.address import (
+    JDXiSysExOffsetSystemLMB,
     JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
+
+# System area (0x02): use (MSB, UMB, LMB) to distinguish Common vs Controller
+SYSTEM_AREA_MAP = {
+    (0x02, 0x00, JDXiSysExOffsetSystemLMB.COMMON): "SYSTEM_COMMON",
+    (0x02, 0x00, JDXiSysExOffsetSystemLMB.CONTROLLER): "SYSTEM_CONTROLLER",
+}
 
 TEMPORARY_AREA_MAP = {
     (

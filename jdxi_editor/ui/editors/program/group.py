@@ -33,6 +33,9 @@ from jdxi_editor.ui.editors.helpers.program import (
 )
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer
+from jdxi_editor.ui.editors.program.system_settings.section import (
+    SystemSettingsWidget,
+)
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -85,6 +88,28 @@ class ProgramGroup(QGroupBox):
                 JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
             )
         self.program_preset_tab_widget.addTab(program_widget, programs_icon, "Programs")
+
+        # System Settings tab (System Common + System Controller)
+        prog_editor = self.parent if hasattr(self, "parent") else parent
+        system_settings = SystemSettingsWidget(
+            midi_helper=getattr(prog_editor, "midi_helper", None) if prog_editor else None,
+            send_midi_callback=getattr(prog_editor, "send_midi_parameter", None)
+            if prog_editor
+            else None,
+            parent=self,
+        )
+        settings_icon = JDXi.UI.Icon.get_icon(
+            "mdi.cog", color=JDXi.UI.Style.GREY
+        )
+        if settings_icon is None:
+            settings_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
+            )
+        self.program_preset_tab_widget.addTab(
+            system_settings, settings_icon, "System Settings"
+        )
+        self.system_settings_widget = system_settings
+
         log.message(
             f"📑Created nested tab widget, added 'Programs' tab (total tabs: {self.program_preset_tab_widget.count()})",
             scope=self.__class__.__name__,

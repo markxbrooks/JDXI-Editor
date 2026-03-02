@@ -27,7 +27,10 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
+from jdxi_editor.midi.data.parameter.system.controller import SystemControllerParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 
 PARAMETER_ADDRESS_NAME_MAP = {
@@ -37,6 +40,7 @@ PARAMETER_ADDRESS_NAME_MAP = {
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_2.name): Effect2Param,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.DELAY.name): DelayParam,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.REVERB.name): ReverbParam,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.CONTROLLER.name): ArpeggioParam,
     (
         TemporaryToneUMB.DIGITAL_SYNTH_1.name,
         SuperNATURALLMB.COMMON.name,
@@ -82,6 +86,8 @@ PARAMETER_ADDRESS_NAME_MAP = {
         TemporaryToneUMB.DRUM_KIT.name,
         ProgramLMB.COMMON.name,
     ): DrumCommonParam,  # Default to Drums
+    ("SYSTEM_COMMON", "COMMON"): SystemCommonParam,
+    ("SYSTEM_CONTROLLER", "COMMON"): SystemControllerParam,
     # since there are 36 partials
     (
         TemporaryToneUMB.DRUM_KIT.name,

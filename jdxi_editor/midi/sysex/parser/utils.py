@@ -34,6 +34,7 @@ from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_drum_tone,
+    get_program_section,
     get_synth_tone,
     get_temporary_area,
 )
@@ -193,7 +194,12 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
         }
 
     temporary_area = get_temporary_area(data) or UNKNOWN
-    tone_handlers = {JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: get_drum_tone}
+    tone_handlers = {
+        JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: get_drum_tone,
+        "TEMPORARY_PROGRAM": get_program_section,
+        "SYSTEM_COMMON": lambda _: ("COMMON", 0),
+        "SYSTEM_CONTROLLER": lambda _: ("COMMON", 0),
+    }
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
 
     # Try extracting synth tone safely
@@ -264,13 +270,16 @@ def _get_tone_from_data(data: bytes, temporary_area: str) -> tuple[str, int]:
     :param temporary_area: str
     :return: tuple[str, int] tone type and byte offset
     """
-
     if len(data) <= JDXiSysExMessageLayout.ADDRESS.LMB:
         return UNKNOWN, 0
 
     byte_value = data[JDXiSysExMessageLayout.ADDRESS.LMB]
     if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         return get_drum_tone(byte_value)
+    if temporary_area == "TEMPORARY_PROGRAM":
+        return get_program_section(byte_value)
+    if temporary_area in ("SYSTEM_COMMON", "SYSTEM_CONTROLLER"):
+        return ("COMMON", 0)
     return get_synth_tone(byte_value)
 
 

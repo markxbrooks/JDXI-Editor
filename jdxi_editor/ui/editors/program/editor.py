@@ -924,9 +924,18 @@ class ProgramEditor(BasicEditor):
         if not sysex_data:
             return
 
-        # current_synth = get_area([self.address.msb, self.address.umb])
         temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
         synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
+
+        # Forward System Common/Controller to System Settings tab
+        if temporary_area in ("SYSTEM_COMMON", "SYSTEM_CONTROLLER"):
+            if self.program_group_widget and getattr(
+                self.program_group_widget, "system_settings_widget", None
+            ):
+                self.program_group_widget.system_settings_widget._dispatch_sysex_to_area(
+                    json_sysex_data
+                )
+            return
 
         log.header_message(
             scope=self.__class__.__name__,

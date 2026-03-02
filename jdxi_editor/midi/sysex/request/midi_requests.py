@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from jdxi_editor.midi.sysex.request.data import (
+    SYSTEM_RQ11_HEADER,
     TEMPORARY_PROGRAM_RQ11_HEADER,
     TEMPORARY_TONE_RQ11_HEADER,
 )
@@ -23,6 +24,24 @@ class MidiRequests:
         TEMPORARY_PROGRAM_RQ11_HEADER,
         JDXISysExHex.PROGRAM_VOCAL_EFFECT_AREA,
         "00 00 00 00 00 18",
+    )
+
+    PROGRAM_CONTROLLER = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_CONTROLLER_AREA,
+        "00 00 00 0C",
+    )
+
+    SYSTEM_COMMON = create_request(
+        SYSTEM_RQ11_HEADER,
+        JDXISysExHex.SYSTEM_COMMON_AREA.split()[0],
+        " ".join(JDXISysExHex.SYSTEM_COMMON_AREA.split()[1:]),
+    )
+
+    SYSTEM_CONTROLLER = create_request(
+        SYSTEM_RQ11_HEADER,
+        JDXISysExHex.SYSTEM_CONTROLLER_AREA.split()[0],
+        " ".join(JDXISysExHex.SYSTEM_CONTROLLER_AREA.split()[1:]),
     )
 
     DIGITAL1_COMMON = create_request(

@@ -11,12 +11,15 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
+from jdxi_editor.midi.data.parameter.system.controller import SystemControllerParam
 from jdxi_editor.midi.map.parameter_address import (
     JDXiMapParameterAddress,
 )
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
 from jdxi_editor.midi.sysex.parser.tone_mapper import (
     get_drum_tone,
+    get_program_section,
     get_synth_tone,
     get_temporary_area,
 )
@@ -40,14 +43,17 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
         # Extract temporary area
         temporary_area = get_temporary_area(data)
 
-        # Handle drum tones dynamically
+        # Handle drum tones, program sections, and system areas dynamically
+        address_lmb = data[JDXiSysExMessageLayout.ADDRESS.LMB]
         if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
-            address_lmb = data[JDXiSysExMessageLayout.ADDRESS.LMB]
             synth_tone, offset = get_drum_tone(address_lmb)
+        elif temporary_area == "TEMPORARY_PROGRAM":
+            synth_tone, offset = get_program_section(address_lmb)
+        elif temporary_area in ("SYSTEM_COMMON", "SYSTEM_CONTROLLER"):
+            synth_tone = "COMMON"
+            offset = 0
         else:
-            synth_tone, offset = get_synth_tone(
-                data[JDXiSysExMessageLayout.ADDRESS.LMB]
-            )
+            synth_tone, offset = get_synth_tone(address_lmb)
 
         # Resolve parameter class dynamically
         parameter_cls = JDXiMapParameterAddress.MAP.get(

@@ -4,6 +4,7 @@ from jdxi_editor.midi.sysex.request.hex import JDXISysExHex
 from jdxi_editor.midi.sysex.sections import SysExSection
 
 RQ11_COMMAND_HEADER = f"{JDXISysExHex.JDXI_HEADER} {JDXISysExHex.RQ1_COMMAND_11}"
+SYSTEM_RQ11_HEADER = f"{RQ11_COMMAND_HEADER} {JDXISysExHex.SYSTEM_AREA}"
 TEMPORARY_PROGRAM_RQ11_HEADER = (
     f"{RQ11_COMMAND_HEADER} {JDXISysExHex.TEMPORARY_PROGRAM_AREA}"
 )

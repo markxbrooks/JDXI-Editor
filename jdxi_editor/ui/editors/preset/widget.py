@@ -102,6 +102,8 @@ class PresetWidget(QWidget):
         load_preset_row.addStretch()
         preset_vlayout.addLayout(load_preset_row)
 
+        preset_vlayout.addStretch()  # Squish content upwards
+
         # Connect combo box valueChanged to load preset directly (optional)
         # self.preset_combo_box.valueChanged.connect(self.load_preset_by_program_change)
 
