@@ -12,6 +12,38 @@ The Effects Editor is a specialized interface that provides deep, granular contr
 
 The editor represents a dedicated workspace optimized for effects processing, from basic time-based effects to complex multi-effects chains. The editor automatically synchronizes with your JD-Xi hardware, ensuring that every change is instantly reflected in your synthesizer's sound.
 
+JD-Xi Implementation
+=====================
+
+The Effects Editor uses **two tabs** with 2-column grids:
+
+- **Effects 1 & 2**: Effect 1 and Effect 2 side by side
+- **Delay & Reverb**: Delay and Reverb side by side
+
+Each section is displayed in a labeled group box. This keeps Delay and Reverb visible without scrolling past the effect sections.
+
+**Polymorphic Effect Sections**
+   Effect 1 and Effect 2 use polymorphic UI: when you change the effect type, the controls below update to show only the parameters relevant to that type. No more show/hide of unrelated controls.
+
+   **Effect 1** (Thru, Distortion, Fuzz, Compressor, Bit Crusher):
+      - **Thru**: Bypass; no additional parameters
+      - **Distortion / Fuzz**: Type (0–5), Level, Drive, Presence
+      - **Compressor**: Threshold, Ratio, Attack, Release, Level, Side Chain (On/Off, Side Level, Side Note, Side Time, Side Release, Side Sync)
+      - **Bit Crusher**: Level, Sample Rate, Bit Depth, Filter
+
+   **Effect 2** (Off, Flanger, Phaser, Ring Mod, Slicer):
+      - **Off**: Bypass; no additional parameters
+      - **Flanger**: Rate/Note switch, Rate, Note, Depth, Feedback, Manual, Balance [dry->wet], Level
+      - **Phaser**: Rate/Note switch, Rate, Note, Depth, Resonance, Effect Level
+      - **Ring Mod**: Frequency, Sensitivity, Balance [dry->wet], Level
+      - **Slicer**: Timing pattern, Rate [Note], Attack Time, Trigger Level, Level
+
+**Delay**
+   On/Off, Type (SINGLE/PAN), Time/Note mode, Note dropdown (when in Note mode), HF Damp, Level, Reverb send, Time [ms], Tap Time [%], Feedback [%].
+
+**Reverb**
+   On/Off, Type (Room 1/2, Stage 1/2, Hall 1/2), HF Damp, Time, Level.
+
 Core Architecture & Design
 ===========================
 

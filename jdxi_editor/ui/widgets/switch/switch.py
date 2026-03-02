@@ -62,8 +62,6 @@ class Switch(QWidget):
 
     def setValue(self, value: int) -> None:
         """Set current value"""
-        if not value:
-            return
         if 0 <= value < len(self.values):
             self.current_index = value
             self.button.setText(self.values[value])

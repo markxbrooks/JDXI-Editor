@@ -263,6 +263,15 @@ class Effect1Param(AddressParameter):
     EFX1_PARAM_6 = ParameterSpec(
         0x25, 32768, 32895, 0, 127, "EFX1 param 6", "EFX1 Param 6"
     )
+    EFX1_PARAM_6_COMPRESSOR_SIDE_CHAIN = ParameterSpec(
+        0x25,
+        32768,
+        32869,
+        0,
+        1,
+        "Compressor side chain on/off.",
+        "Side Chain",
+    )
     EFX1_PARAM_7 = ParameterSpec(
         0x29, 32768, 32895, 0, 127, "EFX1 param 7", "EFX1 Param 7"
     )
@@ -313,7 +322,16 @@ class Effect1Param(AddressParameter):
     )
     EFX1_PARAM_11 = ParameterSpec(
         0x39, 32768, 32895, 0, 127, "EFX1 param 11", "EFX1 Param 11"
-    )  # for posterity 12768, 52768, @@ -20000, 20000
+    )
+    EFX1_PARAM_11_COMPRESSOR_SIDE_SYNC = ParameterSpec(
+        0x39,
+        32768,
+        32869,
+        0,
+        1,
+        "Compressor side sync on/off.",
+        "Side Sync",
+    )
     EFX1_PARAM_12 = ParameterSpec(0x3D, 32768, 32895, 0, 127)
     EFX1_PARAM_13 = ParameterSpec(0x41, 32768, 32895, 0, 127)
     EFX1_PARAM_14 = ParameterSpec(0x45, 32768, 32895, 0, 127)
@@ -720,25 +738,103 @@ class DelayParam(AddressParameter):
             return self._display_name
         return self.name.replace("_", " ").title()
 
-    # Delay Parameters
+    # Delay Parameters (addresses per Roland JD-Xi Parameter Guide)
+    DELAY_ON_OFF = ParameterSpec(
+        0x00,
+        0,
+        1,
+        0,
+        1,
+        "Delay effect on/off.",
+        "Delay On/Off",
+    )
     DELAY_LEVEL = ParameterSpec(
         0x01, 0, 127, 0, 127, "Sets the level of the delay effect."
     )
+    DELAY_REVERB_SEND_LEVEL = ParameterSpec(
+        0x03,
+        0,
+        127,
+        description="Depth of reverb applied to the sound from delay.",
+    )
+    DELAY_TYPE = ParameterSpec(
+        0x04,
+        32768,
+        32869,
+        0,
+        1,
+        "Delay type: SINGLE or PAN.",
+        "Delay Type",
+    )
     DELAY_PARAM_1 = ParameterSpec(
+        0x04,
+        32768,
+        32895,
+        0,
+        127,
+        "Delay Parameter 1 (4-byte signed).",
+    )
+    DELAY_TIME_NOTE_MODE = ParameterSpec(
+        0x08,
+        32768,
+        32869,
+        0,
+        1,
+        "Time or Note mode for delay sync.",
+        "Time/Note Mode",
+    )
+    DELAY_PARAM_2 = ParameterSpec(
         0x08,
         32768,
         32895,
         0,
         127,
-        "Sets the first parameter of the delay effect.",
+        "Delay Parameter 2 (4-byte signed).",
     )
-    DELAY_PARAM_2 = ParameterSpec(
+    DELAY_TIME_MS = ParameterSpec(
         0x0C,
+        32768,
+        35467,
+        0,
+        2600,
+        "Delay time in milliseconds (0-2600).",
+        "Time [ms]",
+    )
+    DELAY_NOTE = ParameterSpec(
+        0x10,
         32768,
         32895,
         0,
         127,
-        "Sets the second parameter of the delay effect.",
+        "Delay note for sync (uses flanger_notes / delay_notes).",
+        "Note",
+    )
+    DELAY_TAP_TIME = ParameterSpec(
+        0x14,
+        32768,
+        32868,
+        0,
+        100,
+        "Tap time percentage (0-100).",
+        "Tap Time [%]",
+    )
+    DELAY_FEEDBACK = ParameterSpec(
+        0x18,
+        32768,
+        32866,
+        0,
+        98,
+        "Delay feedback percentage (0-98).",
+        "Feedback [%]",
+    )
+    DELAY_HF_DAMP = ParameterSpec(
+        0x1C,
+        32768,
+        32895,
+        0,
+        17,
+        "High-frequency damp (200Hz … BYPASS).",
+        "HF Damp",
     )
     DELAY_PARAM_24 = ParameterSpec(
         0x60,
@@ -746,13 +842,7 @@ class DelayParam(AddressParameter):
         32895,
         0,
         127,
-        "Sets the third parameter of the delay effect.",
-    )
-    DELAY_REVERB_SEND_LEVEL = ParameterSpec(
-        0x06,
-        0,
-        127,
-        description="Depth of reverb applied to the sound from delay.",
+        "Delay Parameter 24 (4-byte signed).",
     )
 
     @classmethod
@@ -788,15 +878,14 @@ class DelayParam(AddressParameter):
         :param display_value: int The digital value
         :return: int The MIDI value
         """
-        # Handle special bipolar cases first
-        if self == DelayParam.DELAY_PARAM_1:
-            return display_value + 32768  #
-        elif self == DelayParam.DELAY_PARAM_2:
-            return display_value + 32768  #
-        elif self == DelayParam.DELAY_PARAM_24:
-            return display_value + 32768  #
-        else:
+        if self in (
+            DelayParam.DELAY_ON_OFF,
+            DelayParam.DELAY_LEVEL,
+            DelayParam.DELAY_REVERB_SEND_LEVEL,
+        ):
             return display_value
+        # DELAY_TYPE and DELAY_TIME_NOTE_MODE are 0/1 but use 4-byte encoding
+        return display_value + Midi.value.min.SIGNED_SIXTEEN_BIT
 
     convert_from_display = convert_to_midi
 
@@ -809,7 +898,7 @@ class DelayParam(AddressParameter):
         :param value: int The value
         :return: Optional[int] The MIDI value
         """
-        param = ReverbParam.get_by_name(param_name)
+        param = DelayParam.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
@@ -826,15 +915,18 @@ class DelayParam(AddressParameter):
         """
         param_mapping = {
             AddressParameterEffectCommon.PROGRAM_DELAY: {
+                "DELAY_ON_OFF",
+                "DELAY_LEVEL",
+                "DELAY_REVERB_SEND_LEVEL",
                 "DELAY_TYPE",
-                "DELAY_TIME",
+                "DELAY_PARAM_1",
+                "DELAY_TIME_NOTE_MODE",
+                "DELAY_PARAM_2",
+                "DELAY_TIME_MS",
+                "DELAY_NOTE",
                 "DELAY_TAP_TIME",
                 "DELAY_FEEDBACK",
                 "DELAY_HF_DAMP",
-                "DELAY_LEVEL",
-                "DELAY_REVERB_SEND_LEVEL",
-                "DELAY_PARAM_1",
-                "DELAY_PARAM_2",
                 "DELAY_PARAM_24",
             },
         }
@@ -880,25 +972,69 @@ class ReverbParam(AddressParameter):
             return self._display_name
         return self.name.replace("_", " ").title()
 
-    # Reverb Parameters
+    # Reverb Parameters (addresses per Roland JD-Xi Parameter Guide)
+    REVERB_ON_OFF = ParameterSpec(
+        0x00,
+        0,
+        1,
+        0,
+        1,
+        "Reverb effect on/off.",
+        "Reverb On/Off",
+    )
     REVERB_LEVEL = ParameterSpec(
-        0x03, 0, 127, 0, 127, "Sets the level of the reverb effect."
+        0x01, 0, 127, 0, 127, "Sets the level of the reverb effect."
+    )
+    REVERB_TYPE = ParameterSpec(
+        0x03,
+        32768,
+        32873,
+        0,
+        5,
+        "Reverb type (Room 1/2, Stage 1/2, Hall 1/2).",
+        "Reverb Type",
     )
     REVERB_PARAM_1 = ParameterSpec(
+        0x03,
+        32768,
+        32895,
+        0,
+        127,
+        "Reverb Parameter 1 (4-byte signed).",
+    )
+    REVERB_TIME = ParameterSpec(
         0x07,
         32768,
         32895,
         0,
         127,
-        "Sets the first parameter of the reverb effect.",
+        "Reverb time (0-127).",
+        "Reverb Time",
     )
     REVERB_PARAM_2 = ParameterSpec(
+        0x07,
+        32768,
+        32895,
+        0,
+        127,
+        "Reverb Parameter 2 (4-byte signed).",
+    )
+    REVERB_HF_DAMP = ParameterSpec(
+        0x0B,
+        32768,
+        32895,
+        0,
+        17,
+        "High-frequency damp (200Hz … BYPASS).",
+        "HF Damp",
+    )
+    REVERB_PARAM_3 = ParameterSpec(
         0x0B,
         32768,
         32895,
         0,
         127,
-        "Sets the second parameter of the reverb effect.",
+        "Reverb Parameter 3 (4-byte signed).",
     )
     REVERB_PARAM_24 = ParameterSpec(
         0x5F,
@@ -906,7 +1042,7 @@ class ReverbParam(AddressParameter):
         32895,
         0,
         127,
-        "Sets the third parameter of the reverb effect.",
+        "Reverb Parameter 24 (4-byte signed).",
     )
 
     @classmethod
@@ -942,15 +1078,12 @@ class ReverbParam(AddressParameter):
         :param display_value: int The digital value
         :return: int The MIDI value
         """
-        # Handle special bipolar cases first
-        if self == ReverbParam.REVERB_PARAM_1:
-            return display_value + 32768  #
-        elif self == ReverbParam.REVERB_PARAM_2:
-            return display_value + 32768  #
-        elif self == ReverbParam.REVERB_PARAM_24:
-            return display_value + 32768  #
-        else:
+        if self in (
+            ReverbParam.REVERB_ON_OFF,
+            ReverbParam.REVERB_LEVEL,
+        ):
             return display_value
+        return display_value + Midi.value.min.SIGNED_SIXTEEN_BIT
 
     convert_from_display = convert_to_midi
 
@@ -980,13 +1113,14 @@ class ReverbParam(AddressParameter):
         """
         param_mapping = {
             AddressParameterEffectCommon.PROGRAM_REVERB: {
-                "REVERB_OFF_ON",
-                "REVERB_TYPE",
-                "REVERB_TIME",
-                "REVERB_HF_DAMP",
+                "REVERB_ON_OFF",
                 "REVERB_LEVEL",
+                "REVERB_TYPE",
                 "REVERB_PARAM_1",
+                "REVERB_TIME",
                 "REVERB_PARAM_2",
+                "REVERB_HF_DAMP",
+                "REVERB_PARAM_3",
                 "REVERB_PARAM_24",
             },
         }

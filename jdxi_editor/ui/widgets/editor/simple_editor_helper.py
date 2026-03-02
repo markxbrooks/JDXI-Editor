@@ -49,10 +49,10 @@ Usage Example:
 
 """
 
-from typing import Optional
+from typing import Literal, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QTabWidget
+from PySide6.QtWidgets import QGroupBox, QGridLayout, QHBoxLayout, QLabel, QTabWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
@@ -74,6 +74,7 @@ class SimpleEditorHelper:
         title: str,
         image_folder: str,
         default_image: str,
+        layout_mode: Literal["tabs", "grid"] = "tabs",
     ):
         """
         Initialize the SimpleEditorHelper.
@@ -83,22 +84,25 @@ class SimpleEditorHelper:
         :param title: Title text for the editor
         :param image_folder: Folder name for instrument images
         :param default_image: Default image filename
+        :param layout_mode: "tabs" for tabbed layout, "grid" for 2x2 grid (EFX1|EFX2, DLY|REV)
         """
         self.editor = editor
         self.base_widget = base_widget
         self.title_text = title
         self.image_folder = image_folder
         self.default_image = default_image
+        self.layout_mode = layout_mode
 
         # Store references
         self.title_label: Optional[DigitalTitle] = None
         self.image_label: Optional[QLabel] = None
         self.tab_widget: Optional[QTabWidget] = None
+        self.grid_layout: Optional[QGridLayout] = None
         self.rows_layout: Optional[QVBoxLayout] = None
 
-        # Setup title/image and tabbed content
+        # Setup title/image and content layout
         self._setup_title_and_image()
-        self._setup_tabbed_content()
+        self._setup_content_layout()
 
     def _setup_title_and_image(self) -> None:
         """Setup title label and image label"""
@@ -127,8 +131,8 @@ class SimpleEditorHelper:
         if hasattr(self.editor, "update_instrument_image"):
             self.editor.update_instrument_image()
 
-    def _setup_tabbed_content(self) -> None:
-        """Setup centered content with title/image and tab widget"""
+    def _setup_content_layout(self) -> None:
+        """Setup centered content with title/image and tab or grid widget"""
         # Create title group box
         title_group_box = QGroupBox()
         title_group_layout = QHBoxLayout()
@@ -144,21 +148,35 @@ class SimpleEditorHelper:
         main_row_hlayout.addLayout(self.rows_layout)
         self.rows_layout.addWidget(title_group_box)
 
-        # Create tab widget
-        self.tab_widget = QTabWidget()
-        JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
-        self.rows_layout.addWidget(self.tab_widget)
+        if self.layout_mode == "grid":
+            # 2x2 grid: row0 = EFX1|EFX2, row1 = Delay|Reverb
+            grid_widget = QWidget()
+            self.grid_layout = QGridLayout(grid_widget)
+            self.rows_layout.addWidget(grid_widget)
+        else:
+            # Tabbed layout (default)
+            self.tab_widget = QTabWidget()
+            JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
+            self.rows_layout.addWidget(self.tab_widget)
 
         main_row_hlayout.addStretch()
 
         # Add centered content to base widget
         self.base_widget.add_centered_content(centered_content)
 
-    def get_tab_widget(self) -> QTabWidget:
+    def get_grid_layout(self) -> Optional[QGridLayout]:
         """
-        Get the tab widget for adding tabs.
+        Get the grid layout when layout_mode is "grid".
 
-        :return: The QTabWidget instance
+        :return: QGridLayout or None if in tabs mode
+        """
+        return self.grid_layout
+
+    def get_tab_widget(self) -> Optional[QTabWidget]:
+        """
+        Get the tab widget for adding tabs (when layout_mode is "tabs").
+
+        :return: The QTabWidget instance or None if in grid mode
         """
         return self.tab_widget
 
