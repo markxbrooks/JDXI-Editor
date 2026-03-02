@@ -8,6 +8,7 @@ import mido
 import qtawesome as qta
 from decologr import Decologr as log
 from picomidi.constant import Midi
+from picomidi.message.type import MidoMetaMessageType
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,

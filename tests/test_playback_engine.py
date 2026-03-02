@@ -9,13 +9,14 @@ import sys
 import os
 
 from picomidi import MidiTempo
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from picomidi.message.type import MidoMetaMessageType
 
 from mido import MidiFile, MidiTrack, Message, MetaMessage
 from unittest.mock import patch
 
 import pytest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 def _make_simple_midi():
