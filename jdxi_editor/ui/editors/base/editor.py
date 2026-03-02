@@ -399,7 +399,7 @@ class BaseSynthEditor(SynthEditor):
             for waveform, btn in self.wave_buttons.items():
                 if btn.isChecked():
                     controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = (
-                        waveform.STATUS
+                        waveform.value
                     )
                     break
             # --- If no button is checked, use default (SAW = 0)

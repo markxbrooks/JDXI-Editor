@@ -76,7 +76,16 @@ $ python -m jdxi_editor.main
 ```
 
 # 📖 Documentation
-Access JD-Xi documentation in the format that works best for you:
+
+## Features and Usage
+
+See **[Features and Usage](doc/features-and-usage.md)** for:
+
+- **Recent changes** — Arpeggiator SysEx sync, Effects Editor, Vocal Effects
+- **Patch loading and saving** — .jsz, .msz, .json, .syx formats; save/load flow
+- **SoundFont usage** — FluidSynth for playback, preset list from .sf2/.sf3
+
+---
 
 ## ℹ Available Formats:
 ### 📃 HTML Documentation:

@@ -13,6 +13,7 @@ enumerated modes.
 
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Optional
+from decologr import Decologr as log
 
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -202,3 +203,8 @@ class ModeButtonGroup(QWidget):
     def buttons(self) -> dict[Any, QPushButton]:
         """Read-only mapping of mode -> QPushButton."""
         return dict(self._buttons)
+
+    def value(self) -> Any:
+        """Get the current mode value (the mode object)."""
+        log.debug(f"ModeButtonGroup.value: {self._group.checkedId()}")
+        return self._group.checkedId()

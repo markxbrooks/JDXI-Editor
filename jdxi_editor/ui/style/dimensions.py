@@ -391,12 +391,19 @@ class HorizontalSliderDimensions(Dimensions):
     MAX_WIDTH = 100
 
 
+class PatchManagerDimensions(Dimensions):
+    """Patch manager Dimensions"""
+    WIDTH = 400
+    HEIGHT = 300
+
+
 class JDXiUIDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
 
     # --- Icons
+    patch = PatchManagerDimensions
     slider_vertical = VerticalSliderDimensions
     slider_horizontal = HorizontalSliderDimensions
     Icon: IconDimensions = IconDimensions

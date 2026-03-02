@@ -181,7 +181,7 @@ class JDXiJSONComposer:
                 common_address = JDXiSysExAddress(
                     msb=editor.address.msb,  # 0x19 (TEMPORARY_TONE)
                     umb=editor.address.umb,  # 0x01 for DS1, 0x21 for DS2 (includes SuperNATURAL offset)
-                    lmb=JDXiSysExOffsetSuperNATURALLMB.COMMON.STATUS,  # 0x00 (COMMON)
+                    lmb=JDXiSysExOffsetSuperNATURALLMB.COMMON,  # 0x00 (COMMON)
                     lsb=Midi.value.ZERO,  # 0x00
                 )
                 self._save_editor_section(

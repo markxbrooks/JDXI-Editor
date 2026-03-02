@@ -267,7 +267,8 @@ class SynthEditor(SynthBase):
                 # ---- Get value from widget - all custom widgets have a value() method
                 # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, "value"):
-                    controls_data[param.name] = widget.value()
+                    val = getattr(widget, "value")
+                    controls_data[param.name] = val() if callable(val) else val
                 else:
                     # --- Fallback for unexpected widget types
                     log.warning(

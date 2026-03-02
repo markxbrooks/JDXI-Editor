@@ -488,12 +488,15 @@ class SynthBase(QWidget):
                 # --- Get value from widget - all custom widgets have a value() method
                 # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, "value"):
-                    controls_data[param.name] = widget.value()
+                    val = getattr(widget, "value")
+                    controls_data[param.name] = val() if callable(val) else val
                 elif hasattr(widget, "isChecked") and hasattr(widget, "waveform"):
                     # --- Handle waveform buttons (AnalogWaveformButton, etc.)
                     # --- Check if this button is checked, and if so, use its waveform value
                     if widget.isChecked():
-                        controls_data[param.name] = widget.waveform.STATUS
+                        controls_data[param.name] = getattr(
+                            widget.waveform, "value", widget.waveform
+                        )
                     # --- If not checked, don't add it - the checked button will be found by the editor's override
                 elif hasattr(widget, "isChecked"):
                     # --- QPushButton or other checkable widgets
