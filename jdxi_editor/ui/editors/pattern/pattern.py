@@ -30,7 +30,7 @@ from picomidi.core.tempo import (
     ms_to_ticks,
     ticks_to_duration_ms,
 )
-from picomidi.message.type import MidoMessageType
+from picomidi.message.type import MidoMessageType, MidoMetaMessageType
 from picomidi.messages.note import MidiNote, build_midi_note, note_off, note_on
 from picomidi.playback.engine import (
     PlaybackEngine,
@@ -1058,8 +1058,8 @@ class PatternSequenceEditor(PatternUI):
         ticks_per_bar = ppq * beats_per_bar
         ticks_per_step = ppq // 4  # 16th notes
 
-        track.append(MetaMessage("set_tempo", tempo=bpm2tempo(self.timing_bpm)))
-        track.append(MetaMessage("time_signature", numerator=4, denominator=4))
+        track.append(MetaMessage(MidoMetaMessageType.SET_TEMPO, tempo=bpm2tempo(self.timing_bpm)))
+        track.append(MetaMessage(MidoMetaMessageType.TIME_SIGNATURE, numerator=4, denominator=4))
 
         events = []
 
@@ -1261,7 +1261,7 @@ class PatternSequenceEditor(PatternUI):
                     row = self.channel_to_row[channel]
                     bar_index = int(absolute_time / ticks_per_bar)
                     step_in_bar = int(
-                        (absolute_time % ticks_per_bar) / (ticks_per_bar / 16)
+                        (absolute_time % ticks_per_bar) / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
                     )
 
                     while bar_index >= len(self.measure_widgets):
@@ -1276,7 +1276,7 @@ class PatternSequenceEditor(PatternUI):
                         )
                         self.measures_list.addItem(item)
 
-                    if bar_index < len(self.measure_widgets) and step_in_bar < 16:
+                    if bar_index < len(self.measure_widgets) and step_in_bar < MeasureBeats.PER_MEASURE_4_4:
                         measure = self.measure_widgets[bar_index]
                         if step_in_bar < len(measure.buttons[row]):
                             button = measure.buttons[row][step_in_bar]
@@ -1522,7 +1522,7 @@ class PatternSequenceEditor(PatternUI):
 
                 # Calculate which bar and step this note belongs to
                 bar_index = int(abs_time / ticks_per_bar)
-                step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / 16))
+                step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4))
 
                 # Ensure we have enough bars (safety check)
                 while bar_index >= len(self.measure_widgets):
@@ -1537,7 +1537,7 @@ class PatternSequenceEditor(PatternUI):
                     )
                     self.measures_list.addItem(item)
 
-                if bar_index < len(self.measure_widgets) and step_in_bar < 16:
+                if bar_index < len(self.measure_widgets) and step_in_bar < MeasureBeats.PER_MEASURE_4_4:
                     measure = self.measure_widgets[bar_index]
                     if step_in_bar < len(measure.buttons[row]):
                         button = measure.buttons[row][step_in_bar]
@@ -1554,7 +1554,7 @@ class PatternSequenceEditor(PatternUI):
                         else:
                             # Default to step duration if no note_off found
                             # Step duration = (ticks_per_bar / 16) / ppq * tempo / 1000
-                            ticks = ticks_per_bar / 16.0
+                            ticks = ticks_per_bar / self.measure_beats
                             step_duration_ms = ticks_to_duration_ms(
                                 ticks=ticks, tempo=tempo, ppq=ppq
                             )
@@ -1798,7 +1798,7 @@ class PatternSequenceEditor(PatternUI):
         events: list[SequencerEvent] = []
 
         for bar_index, measure in enumerate(self.measure_widgets):
-            for step in range(min(self.measure_beats, 16)):
+            for step in range(min(self.measure_beats, MeasureBeats.PER_MEASURE_4_4)):
 
                 tick = (bar_index * self.measure_beats + step) * ticks_per_step
 
@@ -1877,7 +1877,6 @@ class PatternSequenceEditor(PatternUI):
         midi_events = []
 
         for absolute_tick in events:
-            # midi_note = build_midi_note(absolute_tick, )
             midi_note = build_midi_note(
                 event=absolute_tick, channel=absolute_tick.channel, bpm=self.timing_bpm
             )
