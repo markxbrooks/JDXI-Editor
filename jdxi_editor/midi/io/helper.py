@@ -30,11 +30,11 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
-from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler

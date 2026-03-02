@@ -52,12 +52,12 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
+from jdxi_editor.ui.editors.effects.data import VocalEffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
-from jdxi_editor.ui.editors.effects.data import VocalEffectsData
 from jdxi_editor.ui.widgets.group import WidgetGroups
 from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -119,9 +119,7 @@ class VocalFXEditor(BasicEditor):
             vocal_effect_ctrl.combo_box.currentIndexChanged.connect(
                 self._update_vocal_effect_stack
             )
-            self._update_vocal_effect_stack(
-                vocal_effect_ctrl.combo_box.currentIndex()
-            )
+            self._update_vocal_effect_stack(vocal_effect_ctrl.combo_box.currentIndex())
 
         # Add base widget to editor's layout
         if not hasattr(self, "main_layout") or self.main_layout is None:
@@ -175,9 +173,9 @@ class VocalFXEditor(BasicEditor):
             for param_name, raw_value in filtered.items():
                 if param_name in (SysExSection.TEMPORARY_AREA, SysExSection.SYNTH_TONE):
                     continue
-                param = ProgramCommonParam.get_by_name(param_name) or VocalFXParam.get_by_name(
+                param = ProgramCommonParam.get_by_name(
                     param_name
-                )
+                ) or VocalFXParam.get_by_name(param_name)
                 if not param:
                     continue
                 widget = self.controls.get(param)
@@ -185,7 +183,9 @@ class VocalFXEditor(BasicEditor):
                     failed.append(param_name)
                     continue
                 try:
-                    value = int(raw_value) if not isinstance(raw_value, int) else raw_value
+                    value = (
+                        int(raw_value) if not isinstance(raw_value, int) else raw_value
+                    )
                     display = (
                         param.convert_from_midi(value)
                         if hasattr(param, "convert_from_midi")
@@ -312,7 +312,9 @@ class VocalFXEditor(BasicEditor):
         # Page 0: OFF (Vocal Effect disabled — no additional params)
         off_page = QWidget()
         off_layout = QVBoxLayout(off_page)
-        off_label = QLabel("Vocal Effect is OFF. Select VOCODER or AUTO-PITCH in Common to configure.")
+        off_label = QLabel(
+            "Vocal Effect is OFF. Select VOCODER or AUTO-PITCH in Common to configure."
+        )
         off_label.setWordWrap(True)
         off_layout.addWidget(off_label)
         off_layout.addStretch()

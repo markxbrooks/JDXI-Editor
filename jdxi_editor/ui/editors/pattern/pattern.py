@@ -1890,7 +1890,6 @@ class PatternSequenceEditor(PatternUI):
             midi_events.append(
                 (
                     absolute_tick.tick + absolute_tick.duration_ticks,
-
                     note_off(midi_note),
                 )
             )

@@ -36,11 +36,13 @@ Dependencies:
 
 """
 
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
+
+from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
@@ -52,12 +54,12 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
-    ArpeggioGrid,
-    ArpeggioMotif,
     ArpeggioOctaveRange,
     ArpeggioSwitch,
 )
 from jdxi_editor.midi.data.arpeggio.data import (
+    ARPEGGIO_GRID,
+    ARPEGGIO_MOTIF,
     ARPEGGIO_STYLE,
 )
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
@@ -103,6 +105,8 @@ class ArpeggioEditor(BasicEditor):
         self.address = create_arp_address()
         self.partial_number = 0
         self.controls: Dict[AddressParameter, QWidget] = {}
+        # Zone name -> switch widget (for Program Zone Arpeggio Switch per zone)
+        self.zone_switches: Dict[str, QWidget] = {}
 
         if parent:
             if parent.current_synth_type:
@@ -128,7 +132,13 @@ class ArpeggioEditor(BasicEditor):
             default_image="arpeggiator2.png",
         )
 
-        self.midi_requests = [MidiRequests.PROGRAM_CONTROLLER]
+        self.midi_requests = [
+            MidiRequests.PROGRAM_CONTROLLER,
+            MidiRequests.PROGRAM_ZONE_DIGITAL1,
+            MidiRequests.PROGRAM_ZONE_DIGITAL2,
+            MidiRequests.PROGRAM_ZONE_ANALOG,
+            MidiRequests.PROGRAM_ZONE_DRUMS,
+        ]
 
         self.setup_ui()
 
@@ -189,10 +199,40 @@ class ArpeggioEditor(BasicEditor):
             temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA, "")
             synth_tone = sysex_data.get(SysExSection.SYNTH_TONE, "")
 
-            if temporary_area != "TEMPORARY_PROGRAM" or synth_tone != "CONTROLLER":
+            if temporary_area != "TEMPORARY_PROGRAM":
                 return
 
             filtered = filter_sysex_keys(sysex_data)
+
+            # Handle Program Zone (per-zone Arpeggio Switch)
+            if synth_tone in (
+                "ZONE_DIGITAL_SYNTH_1",
+                "ZONE_DIGITAL_SYNTH_2",
+                "ZONE_ANALOG",
+                "ZONE_DRUM",
+            ):
+                raw_val = filtered.get("ARPEGGIO_SWITCH")
+                if raw_val is not None:
+                    switch_widget = self.zone_switches.get(synth_tone)
+                    if switch_widget:
+                        try:
+                            value = (
+                                int(raw_val)
+                                if not isinstance(raw_val, int)
+                                else raw_val
+                            )
+                            switch_widget.blockSignals(True)
+                            if hasattr(switch_widget, "setValue"):
+                                switch_widget.setValue(value)
+                            elif hasattr(switch_widget, "setChecked"):
+                                switch_widget.setChecked(bool(value))
+                            switch_widget.blockSignals(False)
+                        except Exception:
+                            pass
+                return
+
+            if synth_tone != "CONTROLLER":
+                return
 
             for param_name, raw_value in filtered.items():
                 if param_name in (SysExSection.TEMPORARY_AREA, SysExSection.SYNTH_TONE):
@@ -204,7 +244,9 @@ class ArpeggioEditor(BasicEditor):
                 if not widget:
                     continue
                 try:
-                    value = int(raw_value) if not isinstance(raw_value, int) else raw_value
+                    value = (
+                        int(raw_value) if not isinstance(raw_value, int) else raw_value
+                    )
                     display = (
                         param.convert_from_midi(value)
                         if hasattr(param, "convert_from_midi")
@@ -232,21 +274,53 @@ class ArpeggioEditor(BasicEditor):
     def _build_widgets(self):
         """Build widgets"""
         spec = self._build_layout_spec()
+        zone_switches = self._build_zone_switches()
         return WidgetGroups(
-            switches=self._build_switches(spec.switches),
+            switches=zone_switches + self._build_switches(spec.switches),
             sliders=self._build_sliders(spec.sliders),
             combos=self._build_combo_boxes(spec.combos),
         )
+
+    def _build_zone_switches(self) -> List[QWidget]:
+        """Build per-zone Arpeggio Switch controls (enables arpeggiator per zone)."""
+        from jdxi_editor.ui.widgets.switch.switch import Switch
+
+        param = ProgramZoneParam.ARPEGGIO_SWITCH
+        values = [s.display_name for s in ArpeggioSwitch]
+        zone_config: List[Tuple[str, str, JDXiSysExAddress]] = [
+            (
+                "ZONE_DIGITAL_SYNTH_1",
+                "Digital 1",
+                JDXiSysExAddress(0x18, 0x00, 0x30, 0x00),
+            ),
+            (
+                "ZONE_DIGITAL_SYNTH_2",
+                "Digital 2",
+                JDXiSysExAddress(0x18, 0x00, 0x31, 0x00),
+            ),
+            ("ZONE_ANALOG", "Analog", JDXiSysExAddress(0x18, 0x00, 0x32, 0x00)),
+            ("ZONE_DRUM", "Drums", JDXiSysExAddress(0x18, 0x00, 0x33, 0x00)),
+        ]
+        switches = []
+        for zone_name, label, zone_addr in zone_config:
+            switch = Switch(
+                label=f"{label} Arpeggio",
+                values=values,
+                tooltip=f"Enable arpeggiator for {label} zone",
+            )
+            switch.valueChanged.connect(
+                lambda v, p=param, addr=zone_addr: self._on_parameter_changed(
+                    p, v, addr
+                )
+            )
+            self.zone_switches[zone_name] = switch
+            switches.append(switch)
+        return switches
 
     def _build_layout_spec(self):
         P = self.EDITOR_PARAM
 
         switches = [
-            SwitchSpec(
-                ProgramZoneParam.ARPEGGIO_SWITCH,
-                ProgramZoneParam.ARPEGGIO_SWITCH.display_name,
-                [switch_setting.display_name for switch_setting in ArpeggioSwitch],
-            ),
             SwitchSpec(
                 P.ARPEGGIO_SWITCH,
                 P.ARPEGGIO_SWITCH.display_name,
@@ -261,7 +335,7 @@ class ArpeggioEditor(BasicEditor):
             ComboBoxSpec(
                 P.ARPEGGIO_GRID,
                 P.ARPEGGIO_GRID.display_name,
-                [grid.display_name for grid in ArpeggioGrid],
+                ARPEGGIO_GRID,
             ),
             ComboBoxSpec(
                 P.ARPEGGIO_DURATION,
@@ -277,7 +351,7 @@ class ArpeggioEditor(BasicEditor):
             ComboBoxSpec(
                 P.ARPEGGIO_MOTIF,
                 P.ARPEGGIO_MOTIF.display_name,
-                [motif.name for motif in ArpeggioMotif],
+                ARPEGGIO_MOTIF,
             ),
         ]
         sliders = [

@@ -16,6 +16,7 @@ from jdxi_editor.midi.data.address.address import (
     JDXiSysExOffsetTemporaryToneUMB as TemporaryToneUMB,
 )
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
@@ -27,8 +28,8 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     Effect2Param,
     ReverbParam,
 )
-from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParam
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.data.parameter.system.common import SystemCommonParam
 from jdxi_editor.midi.data.parameter.system.controller import SystemControllerParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
@@ -41,6 +42,16 @@ PARAMETER_ADDRESS_NAME_MAP = {
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.DELAY.name): DelayParam,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.REVERB.name): ReverbParam,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.CONTROLLER.name): ArpeggioParam,
+    (
+        AreaMSB.TEMPORARY_PROGRAM.name,
+        ProgramLMB.ZONE_DIGITAL_SYNTH_1.name,
+    ): ProgramZoneParam,
+    (
+        AreaMSB.TEMPORARY_PROGRAM.name,
+        ProgramLMB.ZONE_DIGITAL_SYNTH_2.name,
+    ): ProgramZoneParam,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.ZONE_ANALOG.name): ProgramZoneParam,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.ZONE_DRUM.name): ProgramZoneParam,
     (
         TemporaryToneUMB.DIGITAL_SYNTH_1.name,
         SuperNATURALLMB.COMMON.name,

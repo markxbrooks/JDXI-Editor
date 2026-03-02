@@ -92,15 +92,17 @@ class ProgramGroup(QGroupBox):
         # System Settings tab (System Common + System Controller)
         prog_editor = self.parent if hasattr(self, "parent") else parent
         system_settings = SystemSettingsWidget(
-            midi_helper=getattr(prog_editor, "midi_helper", None) if prog_editor else None,
-            send_midi_callback=getattr(prog_editor, "send_midi_parameter", None)
-            if prog_editor
-            else None,
+            midi_helper=(
+                getattr(prog_editor, "midi_helper", None) if prog_editor else None
+            ),
+            send_midi_callback=(
+                getattr(prog_editor, "send_midi_parameter", None)
+                if prog_editor
+                else None
+            ),
             parent=self,
         )
-        settings_icon = JDXi.UI.Icon.get_icon(
-            "mdi.cog", color=JDXi.UI.Style.GREY
-        )
+        settings_icon = JDXi.UI.Icon.get_icon("mdi.cog", color=JDXi.UI.Style.GREY)
         if settings_icon is None:
             settings_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.MUSIC, color=JDXi.UI.Style.GREY
@@ -160,6 +162,7 @@ class ProgramGroup(QGroupBox):
         )
         load_program_row.addStretch()
         program_vlayout.addLayout(load_program_row)
+        program_vlayout.addStretch()
 
     def _add_round_action_button(
         self,

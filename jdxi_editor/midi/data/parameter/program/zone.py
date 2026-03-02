@@ -68,6 +68,12 @@ class ProgramZoneParam(AddressParameter):
     )  # Arpeggio OFF, ON
     ZONAL_OCTAVE_SHIFT = ParameterSpec(0x19, 61, 67, -3, +3)  # Octave shift
 
+    @classmethod
+    def __iter__(cls):
+        """Iterate over zone parameters for parser."""
+        for name in ("ARPEGGIO_SWITCH", "ZONAL_OCTAVE_SHIFT"):
+            yield getattr(cls, name)
+
     @property
     def display_name(self) -> str:
         """Get digital name for the parameter (from ParameterSpec or fallback)."""
@@ -165,4 +171,8 @@ class ProgramZoneParam(AddressParameter):
         :return: Optional[object] The parameter
         Return the parameter member by name, or None if not found
         """
-        return ProgramZoneParam.__members__.get(param_name, None)
+        name_to_param = {
+            "ARPEGGIO_SWITCH": ProgramZoneParam.ARPEGGIO_SWITCH,
+            "ZONAL_OCTAVE_SHIFT": ProgramZoneParam.ZONAL_OCTAVE_SHIFT,
+        }
+        return name_to_param.get(param_name)

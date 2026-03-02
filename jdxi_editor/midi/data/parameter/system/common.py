@@ -52,7 +52,10 @@ class SystemCommonParam(AddressParameter):
     def get_display_value(self) -> tuple:
         """Return (min_display, max_display) for slider/UI range."""
         val = getattr(self, "value", self)
-        return (getattr(val, "min_display", getattr(self, "min_val", 0)), getattr(val, "max_display", getattr(self, "max_val", 127)))
+        return (
+            getattr(val, "min_display", getattr(self, "min_val", 0)),
+            getattr(val, "max_display", getattr(self, "max_val", 127)),
+        )
 
     @staticmethod
     def format_value_for_display(param, value: int) -> str:
@@ -94,8 +97,12 @@ class SystemCommonParam(AddressParameter):
 
 
 # Attach conversion helpers after class is defined (avoids Enum __init__ issues)
-SystemCommonParam.MASTER_TUNE.convert_to_midi = lambda v: max(24, min(2024, 1024 + int(v * 10)))
+SystemCommonParam.MASTER_TUNE.convert_to_midi = lambda v: max(
+    24, min(2024, 1024 + int(v * 10))
+)
 SystemCommonParam.MASTER_TUNE.convert_from_midi = lambda v: (v - 1024) / 10
 SystemCommonParam.MASTER_TUNE.get_nibbled_size = lambda: 4
-SystemCommonParam.MASTER_KEY_SHIFT.convert_to_midi = lambda v: max(40, min(88, 64 + int(v)))
+SystemCommonParam.MASTER_KEY_SHIFT.convert_to_midi = lambda v: max(
+    40, min(88, 64 + int(v))
+)
 SystemCommonParam.MASTER_KEY_SHIFT.convert_from_midi = lambda v: v - 64

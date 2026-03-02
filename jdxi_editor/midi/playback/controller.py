@@ -10,13 +10,13 @@ Manages MIDI pattern playback using the PlaybackEngine. Handles:
 """
 
 import random
-from typing import Callable, Dict, List, Optional, Any
+from typing import Any, Callable, Dict, List, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 from picomidi.core.tempo import bpm_to_ticks
 from picomidi.message.type import MidoMetaMessageType
-from picomidi.messages.note import note_off, note_on, build_midi_note
+from picomidi.messages.note import build_midi_note, note_off, note_on
 from picomidi.playback.engine import (
     PlaybackEngine,
     TransportState,

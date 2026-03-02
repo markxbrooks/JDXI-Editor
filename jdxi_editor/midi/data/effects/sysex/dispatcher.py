@@ -39,8 +39,8 @@ class EffectsSysExDispatcher:
 
             value = int(raw_value) if not isinstance(raw_value, int) else raw_value
 
-            # --- type-specific handling ---
-            if self.type_handler.try_handle(name, value):
+            # --- type-specific handling (EFX1_TYPE, EFX2_TYPE defer label updates) ---
+            if self.type_handler.handle(param, value):
                 stats.record_applied(name)
                 continue
 

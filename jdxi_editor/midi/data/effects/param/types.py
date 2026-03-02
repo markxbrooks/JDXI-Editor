@@ -7,9 +7,5 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
     ReverbParam,
 )
 
-EFFECT_PARAM_TYPES = (
-    *list(Effect1Param),
-    *list(Effect2Param),
-    *list(DelayParam),
-    *list(ReverbParam),
-)
+# EffectParamRegistry expects classes (iterables with __members__), not instances
+EFFECT_PARAM_TYPES = (Effect1Param, Effect2Param, DelayParam, ReverbParam)

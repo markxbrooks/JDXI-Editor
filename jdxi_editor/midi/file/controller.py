@@ -229,7 +229,11 @@ class MidiFileController:
             )
 
             if pattern_name:
-                track.append(MetaMessage(MidoMetaMessageType.SEQUENCE_NAME.value, text=pattern_name))
+                track.append(
+                    MetaMessage(
+                        MidoMetaMessageType.SEQUENCE_NAME.value, text=pattern_name
+                    )
+                )
 
             # Convert pattern to MIDI events
             notes_saved = 0

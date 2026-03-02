@@ -32,6 +32,50 @@ class MidiRequests:
         "00 00 00 0C",
     )
 
+    # Program Effects (Perl: Effect 1, Effect 2, Delay, Reverb)
+    PROGRAM_EFFECT1 = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_EFFECT1_AREA,
+        "00 00 01 11",
+    )
+    PROGRAM_EFFECT2 = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_EFFECT2_AREA,
+        "00 00 01 11",
+    )
+    PROGRAM_DELAY = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_DELAY_AREA,
+        "00 00 00 64",
+    )
+    PROGRAM_REVERB = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_REVERB_AREA,
+        "00 00 00 63",
+    )
+
+    # Program Zone (per-zone Arpeggio Switch, Zone Octave Shift) - 35 bytes each
+    PROGRAM_ZONE_DIGITAL1 = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_ZONE_DIGITAL1_AREA,
+        "00 00 00 23",
+    )
+    PROGRAM_ZONE_DIGITAL2 = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_ZONE_DIGITAL2_AREA,
+        "00 00 00 23",
+    )
+    PROGRAM_ZONE_ANALOG = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_ZONE_ANALOG_AREA,
+        "00 00 00 23",
+    )
+    PROGRAM_ZONE_DRUMS = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_ZONE_DRUMS_AREA,
+        "00 00 00 23",
+    )
+
     SYSTEM_COMMON = create_request(
         SYSTEM_RQ11_HEADER,
         JDXISysExHex.SYSTEM_COMMON_AREA.split()[0],

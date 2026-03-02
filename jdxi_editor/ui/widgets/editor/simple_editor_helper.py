@@ -52,7 +52,7 @@ Usage Example:
 from typing import Literal, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QGridLayout, QHBoxLayout, QLabel, QTabWidget
+from PySide6.QtWidgets import QGridLayout, QGroupBox, QHBoxLayout, QLabel, QTabWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle

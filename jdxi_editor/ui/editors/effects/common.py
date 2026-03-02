@@ -89,6 +89,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 )
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.effects.data import EffectsData
@@ -198,7 +199,12 @@ class EffectsCommonEditor(BasicEditor):
             "F0 41 10 00 00 00 0E 12 18 00 02 00 01 7F 32 32 01 00 40 00 40 00 40 00 40 00 00 00 00 08 00 05 00 08 00 06 0E 08 00 00 02 08 00 07 0F 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 08 00 00 00 50 F7"
         ]
 
-        self.midi_requests = []
+        self.midi_requests = [
+            MidiRequests.PROGRAM_EFFECT1,
+            MidiRequests.PROGRAM_EFFECT2,
+            MidiRequests.PROGRAM_DELAY,
+            MidiRequests.PROGRAM_REVERB,
+        ]
         self.delay_params = None
         self.efx2_additional_params = [
             Effect2Param.EFX2_PARAM_1,
@@ -228,11 +234,13 @@ class EffectsCommonEditor(BasicEditor):
             efx12_grid = QGridLayout(efx12_widget)
             efx12_grid.addWidget(
                 self._wrap_section("Effect 1", self._create_effect1_section()),
-                0, 0,
+                0,
+                0,
             )
             efx12_grid.addWidget(
                 self._wrap_section("Effect 2", self._create_effect2_section()),
-                0, 1,
+                0,
+                1,
             )
             effect12_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.DISTORTION, color=JDXi.UI.Style.GREY
@@ -244,11 +252,13 @@ class EffectsCommonEditor(BasicEditor):
             dlyrev_grid = QGridLayout(dlyrev_widget)
             dlyrev_grid.addWidget(
                 self._wrap_section("Delay", self._create_delay_tab()),
-                0, 0,
+                0,
+                0,
             )
             dlyrev_grid.addWidget(
                 self._wrap_section("Reverb", self._create_reverb_section()),
-                0, 1,
+                0,
+                1,
             )
             delay_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.DELAY, color=JDXi.UI.Style.GREY
@@ -281,12 +291,22 @@ class EffectsCommonEditor(BasicEditor):
             )
             # Pass combo value (0,5,6,7,8) for initial stack index; use currentIndex to get value
             idx = efx2_type_ctrl.combo_box.currentIndex()
-            val = EffectsData.efx2_type_values[idx] if idx < len(EffectsData.efx2_type_values) else idx
+            val = (
+                EffectsData.efx2_type_values[idx]
+                if idx < len(EffectsData.efx2_type_values)
+                else idx
+            )
             self.update_efx2_labels(val)
         # Connect Flanger/Phaser rate-note switches to enable/disable Rate vs Note
         for switch_param, handler in [
-            (Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH, self.update_flanger_rate_note_controls),
-            (Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH, self.update_phaser_rate_note_controls),
+            (
+                Effect2Param.EFX2_PARAM_1_FLANGER_RATE_NOTE_SWITCH,
+                self.update_flanger_rate_note_controls,
+            ),
+            (
+                Effect2Param.EFX2_PARAM_1_PHASER_RATE_NOTE_SWITCH,
+                self.update_phaser_rate_note_controls,
+            ),
         ]:
             sw = self.controls.get(switch_param)
             if sw and hasattr(sw, "valueChanged"):
@@ -497,9 +517,21 @@ class EffectsCommonEditor(BasicEditor):
                     ),
                 ],
                 sliders=[
-                    SliderSpec(Effect1Param.EFX1_PARAM_1_DISTORTION_LEVEL, "Level", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_2_DISTORTION_DRIVE, "Drive", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_32_DISTORTION_PRESENCE, "Presence", vertical=False),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_1_DISTORTION_LEVEL,
+                        "Level",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_2_DISTORTION_DRIVE,
+                        "Drive",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_32_DISTORTION_PRESENCE,
+                        "Presence",
+                        vertical=False,
+                    ),
                 ],
                 combos=[],
             )
@@ -513,9 +545,17 @@ class EffectsCommonEditor(BasicEditor):
                     ),
                 ],
                 sliders=[
-                    SliderSpec(Effect1Param.EFX1_PARAM_1_FUZZ_LEVEL, "Level", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_2_FUZZ_DRIVE, "Drive", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_32_FUZZ_PRESENCE, "Presence", vertical=False),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_1_FUZZ_LEVEL, "Level", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_2_FUZZ_DRIVE, "Drive", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_32_FUZZ_PRESENCE,
+                        "Presence",
+                        vertical=False,
+                    ),
                 ],
                 combos=[],
             )
@@ -549,11 +589,31 @@ class EffectsCommonEditor(BasicEditor):
                     ),
                 ],
                 sliders=[
-                    SliderSpec(Effect1Param.EFX1_PARAM_1_COMPRESSOR_THRESHOLD, "Threshold", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_5_COMPRESSOR_LEVEL, "Level", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL, "Side Level", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME, "Side Time", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE, "Side Release", vertical=False),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_1_COMPRESSOR_THRESHOLD,
+                        "Threshold",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_5_COMPRESSOR_LEVEL,
+                        "Level",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_7_COMPRESSOR_SIDE_LEVEL,
+                        "Side Level",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_9_COMPRESSOR_SIDE_TIME,
+                        "Side Time",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_10_COMPRESSOR_SIDE_RELEASE,
+                        "Side Release",
+                        vertical=False,
+                    ),
                 ],
                 combos=[
                     ComboBoxSpec(
@@ -568,15 +628,30 @@ class EffectsCommonEditor(BasicEditor):
             return WidgetLayoutSpec(
                 switches=[],
                 sliders=[
-                    SliderSpec(Effect1Param.EFX1_PARAM_1_BITCRUSHER_LEVEL, "Level", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_2_BITCRUSHER_RATE, "Sample Rate", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_3_BITCRUSHER_DEPTH, "Bit Depth", vertical=False),
-                    SliderSpec(Effect1Param.EFX1_PARAM_4_BITCRUSHER_FILTER, "Filter", vertical=False),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_1_BITCRUSHER_LEVEL,
+                        "Level",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_2_BITCRUSHER_RATE,
+                        "Sample Rate",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_3_BITCRUSHER_DEPTH,
+                        "Bit Depth",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect1Param.EFX1_PARAM_4_BITCRUSHER_FILTER,
+                        "Filter",
+                        vertical=False,
+                    ),
                 ],
                 combos=[],
             )
         return WidgetLayoutSpec(switches=[], sliders=[], combos=[])
-
 
     def _build_widgets_from_spec(self, spec: WidgetLayoutSpec) -> WidgetGroups:
         """Build WidgetGroups from a layout spec (same paradigm as Arpeggiator)."""
@@ -675,13 +750,31 @@ class EffectsCommonEditor(BasicEditor):
                     ),
                 ],
                 sliders=[
-                    SliderSpec(Effect2Param.EFX2_PARAM_2_FLANGER_RATE, "Rate", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_3_FLANGER_NOTE, "Note", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_4_FLANGER_DEPTH, "Depth", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_5_FLANGER_FEEDBACK, "Feedback (0=Chorus)", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_6_FLANGER_MANUAL, "Manual", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_7, "Balance [dry->wet]", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_8_FLANGER_LEVEL, "Level", vertical=False),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_2_FLANGER_RATE, "Rate", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_3_FLANGER_NOTE, "Note", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_4_FLANGER_DEPTH, "Depth", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_5_FLANGER_FEEDBACK,
+                        "Feedback (0=Chorus)",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_6_FLANGER_MANUAL,
+                        "Manual",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_7, "Balance [dry->wet]", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_8_FLANGER_LEVEL, "Level", vertical=False
+                    ),
                 ],
                 combos=[],
             )
@@ -695,11 +788,25 @@ class EffectsCommonEditor(BasicEditor):
                     ),
                 ],
                 sliders=[
-                    SliderSpec(Effect2Param.EFX2_PARAM_2_PHASER_RATE, "Rate", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_3_PHASER_NOTE, "Note", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_4_PHASER_DEPTH, "Depth", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_5_PHASER_CENTER_FREQ, "Resonance", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_32_PHASER_EFFECT_LEVEL, "Effect Level", vertical=False),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_2_PHASER_RATE, "Rate", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_3_PHASER_NOTE, "Note", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_4_PHASER_DEPTH, "Depth", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_5_PHASER_CENTER_FREQ,
+                        "Resonance",
+                        vertical=False,
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_32_PHASER_EFFECT_LEVEL,
+                        "Effect Level",
+                        vertical=False,
+                    ),
                 ],
                 combos=[],
             )
@@ -708,8 +815,12 @@ class EffectsCommonEditor(BasicEditor):
                 switches=[],
                 sliders=[
                     SliderSpec(Effect2Param.EFX2_PARAM_1, "Frequency", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_2, "Sensitivity", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_3, "Balance [dry->wet]", vertical=False),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_2, "Sensitivity", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_3, "Balance [dry->wet]", vertical=False
+                    ),
                     SliderSpec(Effect2Param.EFX2_PARAM_4, "Level", vertical=False),
                 ],
                 combos=[],
@@ -718,10 +829,18 @@ class EffectsCommonEditor(BasicEditor):
             return WidgetLayoutSpec(
                 switches=[],
                 sliders=[
-                    SliderSpec(Effect2Param.EFX2_PARAM_1, "Timing pattern", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_2, "Rate [Note]", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_3, "Attack Time", vertical=False),
-                    SliderSpec(Effect2Param.EFX2_PARAM_4, "Trigger Level", vertical=False),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_1, "Timing pattern", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_2, "Rate [Note]", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_3, "Attack Time", vertical=False
+                    ),
+                    SliderSpec(
+                        Effect2Param.EFX2_PARAM_4, "Trigger Level", vertical=False
+                    ),
                     SliderSpec(Effect2Param.EFX2_PARAM_5, "Level", vertical=False),
                 ],
                 combos=[],
