@@ -154,7 +154,7 @@ class EffectsData:
         "EFX2_PARAM_5_PHASER_CENTER_FREQ": "Phaser resonance (0–127)",
     }
 
-    # Compression release times
+    # Compression release times (matches Perl @comp_release)
     compression_release_times = [
         "0.05",
         "0.07",
@@ -181,3 +181,37 @@ class EffectsData:
         "1500",
         "2000",
     ]
+
+
+class VocalEffectsData:
+    """Collection of labels and tooltips for Vocal Effects (Phase 1)."""
+
+    # Tooltips for vocal effect controls
+    vocal_effect_tooltips = {
+        "VOCAL_EFFECT": "Vocal effect type: OFF, VOCODER, or AUTO-PITCH",
+        "VOCAL_EFFECT_NUMBER": "Vocal effect preset (1–21). Address unverified in JD-Xi guide.",
+        "VOCAL_EFFECT_PART": "Vocal effect part: Part 1 or Part 2",
+        "AUTO_NOTE_SWITCH": "Enable or bypass auto note correction",
+        "PROGRAM_LEVEL": "Program output level (0–127)",
+        "PROGRAM_TEMPO": "Program tempo (5.00–300.00 BPM)",
+        "LEVEL": "Vocal FX output level (0–127)",
+        "PAN": "Stereo pan (L64–63R, center 0)",
+        "DELAY_SEND_LEVEL": "Delay send level (0–127)",
+        "REVERB_SEND_LEVEL": "Reverb send level (0–127)",
+        "OUTPUT_ASSIGN": "Output routing: EFX1, EFX2, DLY, REV, or DIR",
+        "AUTO_PITCH_SWITCH": "Enable or bypass auto pitch",
+        "AUTO_PITCH_TYPE": "Auto pitch character: SOFT, HARD, ELECTRIC1, ELECTRIC2",
+        "AUTO_PITCH_SCALE": "Scale: CHROMATIC or Maj(Min)",
+        "AUTO_PITCH_KEY": "Key (C, Db, D, … Bm)",
+        "AUTO_PITCH_NOTE": "Root note (C, C#, D, … B)",
+        "AUTO_PITCH_GENDER": "Formant shift (-10 to +10)",
+        "AUTO_PITCH_OCTAVE": "Octave shift (-1 to +1)",
+        "AUTO_PITCH_BALANCE": "Balance [dry→wet] (D100:0W – D0:100W)",
+        "VOCODER_SWITCH": "Enable or bypass vocoder",
+        "VOCODER_ENVELOPE": "Vocoder envelope: SHARP, SOFT, or LONG",
+        "VOCODER_LEVEL": "Vocoder output level (0–127)",
+        "VOCODER_MIC_SENS": "Vocoder mic sensitivity (0–127)",
+        "VOCODER_SYNTH_LEVEL": "Vocoder synth level (0–127)",
+        "VOCODER_MIC_MIX": "Vocoder mic mix level (0–127)",
+        "VOCODER_MIC_HPF": "Vocoder mic HPF: BYPASS or 1000–16000 Hz",
+    }

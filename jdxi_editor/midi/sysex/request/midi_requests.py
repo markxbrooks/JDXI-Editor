@@ -19,6 +19,12 @@ class MidiRequests:
         "00 00 00 00 00 40",
     )
 
+    PROGRAM_VOCAL_EFFECT = create_request(
+        TEMPORARY_PROGRAM_RQ11_HEADER,
+        JDXISysExHex.PROGRAM_VOCAL_EFFECT_AREA,
+        "00 00 00 00 00 18",
+    )
+
     DIGITAL1_COMMON = create_request(
         TEMPORARY_TONE_RQ11_HEADER,
         JDXISysExHex.DIGITAL1_COMMON,

@@ -238,24 +238,29 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 32 - 127 [ASCII]  |                                                          |
 | 00 02 | 0aaa aaaa | Program Name 3 (32 - 127) |                              |
 |  32 - 127 [ASCII] |                                                          |
-| 00 04 | 0aaa aaaa | Program Name 4 (32 - 127) |                              |
+| 00 03 | 0aaa aaaa | Program Name 4 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 06 | 0aaa aaaa | Program Name 5 (32 - 127) |                              |
+| 00 04 | 0aaa aaaa | Program Name 5 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 08 | 0aaa aaaa | Program Name 6 (32 - 127) |                              |
+| 00 05 | 0aaa aaaa | Program Name 6 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 0A | 0aaa aaaa | Program Name 7 (32 - 127) |                              |
+| 00 06 | 0aaa aaaa | Program Name 7 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 0C | 0aaa aaaa | Program Name 8 (32 - 127) |                              |
+| 00 07 | 0aaa aaaa | Program Name 8 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 0E | 0aaa aaaa | Program Name 9 (32 - 127) |                              |
+| 00 08 | 0aaa aaaa | Program Name 9 (32 - 127) |                              |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 10 | 0aaa aaaa | Program Name 10 (32 - 127)                               |
+| 00 09 | 0aaa aaaa | Program Name 10 (32 - 127)                               |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 12 | 0aaa aaaa | Program Name 11 (32 - 127)                               |
+| 00 0A | 0aaa aaaa | Program Name 11 (32 - 127)                               |
 | 32 - 127 [ASCII]  |                                                          |
-| 00 14 | 0aaa aaaa | Program Name 12 (32 - 127)                               |
+| 00 0B | 0aaa aaaa | Program Name 12 (32 - 127)                               |
 | 32 - 127 [ASCII]  |                                                          |
+|-------------+-----------+----------------------------------------------------|
+| 00 0C | 0aaa aaaa | (reserve) <*> |                                          |
+| 00 0D | 0aaa aaaa | (reserve) <*> |                                          |
+| 00 0E | 0aaa aaaa | (reserve) <*> |                                          |
+| 00 0F | 0aaa aaaa | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
 | 00 16 | 0000 aaaa | Program Level (0 - 127) |                                |
 |# 00 17 | 0000 aaaa |                                                         |

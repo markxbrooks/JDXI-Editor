@@ -227,6 +227,11 @@ class VocalFXParam(AddressParameter):
         return value
 
     @staticmethod
+    def get_by_name(param_name: str) -> Optional["VocalFXParam"]:
+        """Get the parameter by name."""
+        return VocalFXParam.__members__.get(param_name, None)
+
+    @staticmethod
     def get_name_by_address(address: int) -> Optional[str]:
         """Return the parameter name for address given address.
         :param address: int The address
@@ -308,15 +313,8 @@ class VocalFXParam(AddressParameter):
         :param display_value: int The digital value
         :return: int The MIDI value
         """
-        # Handle bipolar parameters
-        if self in [
-            self.AUTO_PITCH_GENDER,
-            self.PAN,
-            self.AUTO_PITCH_BALANCE,
-        ]:
-            return display_value + 64  # -63 to +63 -> 0 to 127
-        else:
-            return display_value  # -63 to +63 -> 0 to 126
+        # Delegate to convert_to_midi for consistency
+        return self.convert_to_midi(display_value)
 
     @staticmethod
     def convert_to_display(
@@ -346,9 +344,11 @@ class VocalFXParam(AddressParameter):
         """
         # Handle special bipolar cases first
         if self == VocalFXParam.PAN:
-            return display_value + 64  # -63 to +63 -> 0 to 127
+            return display_value + 64  # -64..+63 -> 0..127 (center 64)
         elif self == VocalFXParam.AUTO_PITCH_GENDER:
-            return display_value + 10  # -63 to +63 -> 0 to 127
+            return display_value + 10  # -10..+10 -> 0..20 (center 10)
+        elif self == VocalFXParam.AUTO_PITCH_OCTAVE:
+            return display_value + 1  # -1..+1 -> 0..2 (center 1)
 
         # For parameters with simple linear scaling
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
@@ -369,9 +369,11 @@ class VocalFXParam(AddressParameter):
         """
         # Handle special bipolar cases first
         if self == VocalFXParam.PAN:
-            return midi_value - 64  # 0 to 127 -> -63 to +63
+            return midi_value - 64  # 0..127 -> -64..+63
         elif self == VocalFXParam.AUTO_PITCH_GENDER:
-            return midi_value - 10  # 0 to 127 -> -63 to +63
+            return midi_value - 10  # 0..20 -> -10..+10
+        elif self == VocalFXParam.AUTO_PITCH_OCTAVE:
+            return midi_value - 1  # 0..2 -> -1..+1
 
         # For parameters with simple linear scaling
         if hasattr(self, "display_min") and hasattr(self, "display_max"):

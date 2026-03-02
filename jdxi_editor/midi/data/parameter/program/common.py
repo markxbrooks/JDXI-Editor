@@ -198,14 +198,15 @@ class ProgramCommonParam(AddressParameter):
     TONE_NAME_11 = ParameterSpec(0x0A, 32, 127)  # ASCII character 11
     TONE_NAME_12 = ParameterSpec(0x0B, 32, 127)  # ASCII character 12
 
+    # Per Roland Parameter Address Map (midi_parameters.txt): 0x16 Program Level, 0x17-0x1A Program Tempo
     PROGRAM_LEVEL = ParameterSpec(
-        0x10,
+        0x16,
         0,
         127,
         description="Volume of the program",
     )  # Program Level (0-127)
     PROGRAM_TEMPO = ParameterSpec(
-        0x11,
+        0x17,
         500,
         30000,
         500,
@@ -217,14 +218,16 @@ If the SYSTEM parameter Sync Mode is set to SLAVE, only “MIDI” can be select
 from the JD-Xi.)""",
     )  # Program Tempo (500-30000: 5.00-300.00 BPM)
     VOCAL_EFFECT = ParameterSpec(
-        0x16,
+        0x1C,
         0,
         2,
         0,
         2,
-    )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
+    )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH) — JD-Xi offset 0x1C
+    # UNVERIFIED: JD-Xi guide does not document Vocal Effect preset (1–21).
+    # Address 0x1B is reserve; placeholder until correct offset is found.
     VOCAL_EFFECT_NUMBER = ParameterSpec(
-        0x1C, 0, 20, 0, 20
+        0x1B, 0, 20, 0, 20
     )  # Vocal Effect Number (0-20: 1-21)
     VOCAL_EFFECT_PART = ParameterSpec(
         0x1D, 0, 1, 0, 1

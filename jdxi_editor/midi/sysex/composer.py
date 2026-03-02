@@ -11,6 +11,7 @@ from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
+    JDXiSysExOffsetProgramLMB,
     JDXiSysExOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
@@ -19,6 +20,7 @@ from jdxi_editor.midi.data.parameter.digital import (
     DigitalModifyParam,
 )
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
@@ -38,6 +40,9 @@ def apply_lmb_offset(
         address.lmb = JDXiSysExOffsetSuperNATURALLMB.COMMON
     elif isinstance(param, DigitalModifyParam):
         address.lmb = JDXiSysExOffsetSuperNATURALLMB.MODIFY
+    elif isinstance(param, ProgramCommonParam):
+        # Program Common params (VOCAL_EFFECT, VOCAL_EFFECT_PART, etc.) use LMB=COMMON
+        address.lmb = JDXiSysExOffsetProgramLMB.COMMON
     return address
 
 
