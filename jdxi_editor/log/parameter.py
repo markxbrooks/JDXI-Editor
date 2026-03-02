@@ -22,7 +22,8 @@ def log_parameter(
     silent: bool = False,
 ):
     """
-    Log a structured representation of a parameter with type, formatted value, and optional emoji context.
+    Log a structured representation of a parameter with type,
+    formatted value, and optional emoji context.
 
     :param silent: bool suppress the log or not
     :param message: str The message to log.
