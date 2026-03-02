@@ -35,7 +35,14 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParam
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParam
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
+from jdxi_editor.midi.data.parameter.effects.effects import (
+    DelayParam,
+    Effect1Param,
+    Effect2Param,
+    ReverbParam,
+)
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
+from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -146,11 +153,21 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             # Map to parameter class
             param_class = None
             if temporary_area == "TEMPORARY_PROGRAM":
-                # Program common parameters
+                # Program common parameters and effects
                 if synth_tone == "COMMON":
                     param_class = ProgramCommonParam
                 elif synth_tone == "CONTROLLER":
                     param_class = ArpeggioParam
+                elif synth_tone == "EFFECT_1":
+                    param_class = Effect1Param
+                elif synth_tone == "EFFECT_2":
+                    param_class = Effect2Param
+                elif synth_tone == "DELAY":
+                    param_class = DelayParam
+                elif synth_tone == "REVERB":
+                    param_class = ReverbParam
+                elif synth_tone == "VOCAL_EFFECT":
+                    param_class = VocalFXParam
                 else:
                     log.warning(
                         f"Unsupported synth_tone for TEMPORARY_PROGRAM: {synth_tone}"
@@ -328,15 +345,173 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         except Exception as ex:
             log.error(f"Error sending patch to instrument: {ex}", scope="MidiIOHelper")
 
+    def json_patch_to_sysex_bytes(self, json_string: str) -> list[bytes]:
+        """
+        Convert a JSON patch to a list of SysEx message bytes (for export to .syx).
+        Uses the same param resolution and composition logic as send_json_patch_to_instrument.
+
+        :param json_string: str JSON string containing patch data
+        :return: list[bytes] List of SysEx message bytes, one per parameter
+        """
+        result: list[bytes] = []
+        try:
+            from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
+
+            parser = JDXiJsonSysexParser(json_string)
+            patch_data = parser.parse()
+            if not patch_data:
+                return result
+
+            metadata_fields = {
+                SysExSection.JD_XI_HEADER,
+                SysExSection.ADDRESS,
+                SysExSection.TEMPORARY_AREA,
+                SysExSection.SYNTH_TONE,
+            }
+            address_hex = patch_data.get(SysExSection.ADDRESS, "")
+            if not address_hex or len(address_hex) < 8:
+                return result
+            address_bytes = bytes(
+                int(address_hex[i : i + 2], 16) for i in range(0, len(address_hex), 2)
+            )
+            if len(address_bytes) < 4:
+                return result
+            address = JDXiSysExAddress(
+                msb=address_bytes[0],
+                umb=address_bytes[1],
+                lmb=address_bytes[2],
+                lsb=address_bytes[3],
+            )
+            temporary_area = patch_data.get(SysExSection.TEMPORARY_AREA, "")
+            synth_tone = patch_data.get(SysExSection.SYNTH_TONE, "")
+
+            param_class = None
+            if temporary_area == "TEMPORARY_PROGRAM":
+                if synth_tone == "COMMON":
+                    param_class = ProgramCommonParam
+                elif synth_tone == "CONTROLLER":
+                    param_class = ArpeggioParam
+                elif synth_tone == "EFFECT_1":
+                    param_class = Effect1Param
+                elif synth_tone == "EFFECT_2":
+                    param_class = Effect2Param
+                elif synth_tone == "DELAY":
+                    param_class = DelayParam
+                elif synth_tone == "REVERB":
+                    param_class = ReverbParam
+                elif synth_tone == "VOCAL_EFFECT":
+                    param_class = VocalFXParam
+            elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
+                param_class = AnalogParam
+            elif temporary_area in (
+                JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
+                JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,
+            ):
+                param_class = (
+                    DigitalPartialParam
+                    if synth_tone
+                    in ["PARTIAL_1", "PARTIAL_2", "PARTIAL_3", "PARTIAL_1.name", "PARTIAL_2.name", "PARTIAL_3.name"]
+                    else DigitalCommonParam
+                )
+            elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
+                param_class = (
+                    DrumCommonParam
+                    if (address.lmb == 0x00 or synth_tone == "COMMON")
+                    else DrumPartialParam
+                )
+            if not param_class:
+                return result
+
+            composer = JDXiSysExComposer()
+            for param_name, param_value in patch_data.items():
+                if param_name in metadata_fields:
+                    continue
+                param = (
+                    param_class.get_by_name(param_name)
+                    if hasattr(param_class, "get_by_name")
+                    else None
+                )
+                if not param:
+                    continue
+                try:
+                    raw_value = int(param_value) if not isinstance(param_value, int) else param_value
+                except (ValueError, TypeError):
+                    continue
+                value = raw_value
+                param_max = getattr(param, "max_val", None) or 127
+                if raw_value > 127:
+                    if hasattr(param, "convert_from_midi"):
+                        try:
+                            value = param.convert_from_midi(raw_value)
+                        except Exception:
+                            if param_max <= 127:
+                                continue
+                            value = raw_value
+                    elif param_max <= 127:
+                        continue
+                    if raw_value > 65535:
+                        continue
+                get_nibbled_size = getattr(param, "get_nibbled_size", None)
+                param_size = get_nibbled_size() if callable(get_nibbled_size) else 1
+                if param_size == 1 and value > 127:
+                    continue
+                try:
+                    sysex_message = composer.compose_message(
+                        address=address, param=param, value=value
+                    )
+                    if sysex_message:
+                        result.append(sysex_message.to_bytes())
+                except (ValueError, TypeError):
+                    pass
+        except Exception as ex:
+            log.warning(f"Error converting JSON patch to SysEx: {ex}")
+        return result
+
+    def save_patch_as_syx(self, file_path: str, temp_folder) -> bool:
+        """
+        Save patch as raw Roland SysEx (.syx) from JSON files in temp folder.
+        Reads each JSON file, converts to SysEx bytes, concatenates, and writes.
+
+        :param file_path: str Output .syx file path
+        :param temp_folder: Path-like Folder containing JSON patch files (from json_composer.process_editor)
+        :return: bool True on success
+        """
+        try:
+            json_files = sorted(temp_folder.glob("*.json"))
+            if not json_files:
+                log.warning("No JSON files found for .syx export")
+                return False
+            all_bytes: list[bytes] = []
+            for jf in json_files:
+                with open(jf, "r", encoding="utf-8") as f:
+                    json_str = f.read()
+                msg_bytes = self.json_patch_to_sysex_bytes(json_str)
+                all_bytes.extend(msg_bytes)
+            if not all_bytes:
+                log.warning("No SysEx messages produced from JSON patches")
+                return False
+            with open(file_path, "wb") as f:
+                f.write(b"".join(all_bytes))
+            log.message(f"Saved {len(all_bytes)} SysEx messages to {file_path}")
+            return True
+        except Exception as ex:
+            log.error(f"Error saving .syx file: {ex}")
+            return False
+
     def load_patch(self, file_path: str):
         """
-        Load the JSON patch as a string and emit it.
-        Also handles .msz bundles which may contain MIDI files.
-        Automatically sends all loaded parameters to the instrument.
+        Load the patch file and send to the instrument.
+        Handles .jsz/.msz (JSON bundles), .json, and .syx (binary SysEx).
+        .msz bundles may contain MIDI files (handled by PatchManager).
 
         :param file_path: str
         :return: None
         """
+        if file_path.lower().endswith(".syx"):
+            log.message("Loading SysEx file (.syx)", scope="MidiIOHelper")
+            self.load_sysx_patch(file_path)
+            return
+
         if file_path.endswith((".jsz", ".msz")):
             log.message(
                 f"Loading {'MSZ' if file_path.endswith('.msz') else 'JSZ'} file"
@@ -399,7 +574,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
     def load_sysx_patch(self, file_path: str):
         """
-        Load the SysEx patch from a file and emit it.
+        Load the SysEx patch from a file and send to the instrument.
+        Supports single messages and concatenated messages (e.g. Perl .syx format).
+        Each F0...F7 block is sent as a separate message.
 
         :param file_path: str File path as a string
         :return: None
@@ -407,22 +584,43 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             with open(file_path, "rb") as file:
                 sysex_data = file.read()
-
-            if not sysex_data.startswith(b"\xf0") or not sysex_data.endswith(b"\xf7"):
-                log.message("Invalid SysEx file format", scope="MidiIOHelper")
-                return
         except Exception as ex:
             log.error(f"Error {ex} occurred opening file", scope="MidiIOHelper")
+            return
 
-        self.midi_messages.append(sysex_data)
-        try:
-            log.message(
-                f"attempting to send message: {sysex_data}", scope="MidiIOHelper"
-            )
-            sysex_list = list(sysex_data)
-            self.send_raw_message(sysex_list)
-        except Exception as ex:
-            log.error(f"Error {ex} sending sysex list", scope="MidiIOHelper")
+        if not sysex_data.startswith(b"\xf0"):
+            log.message("Invalid SysEx file format: does not start with F0", scope="MidiIOHelper")
+            return
+
+        # Split concatenated SysEx messages (each F0...F7)
+        messages = []
+        pos = 0
+        while pos < len(sysex_data):
+            if sysex_data[pos : pos + 1] != b"\xf0":
+                pos += 1
+                continue
+            start = pos
+            end = sysex_data.find(b"\xf7", pos)
+            if end == -1:
+                log.message("Invalid SysEx: unmatched F0, no F7", scope="MidiIOHelper")
+                break
+            end += 1  # include F7
+            messages.append(sysex_data[start:end])
+            pos = end
+
+        if not messages:
+            log.message("No valid SysEx messages in file", scope="MidiIOHelper")
+            return
+
+        self.midi_messages.extend(messages)
+        sent = 0
+        for msg in messages:
+            try:
+                self.send_raw_message(list(msg))
+                sent += 1
+            except Exception as ex:
+                log.error(f"Error sending SysEx message: {ex}", scope="MidiIOHelper")
+        log.message(f"Sent {sent} SysEx message(s) from {file_path}", scope="MidiIOHelper")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """

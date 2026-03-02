@@ -60,8 +60,15 @@ def roland_checksum(data: str) -> str:
 def create_request(header: str, temp_area: Union[str, JDXISysExHex], part: str) -> str:
     """
     Create a SysEx request string using header, area, parameter, and Roland checksum.
+
+    The Roland RQ1 checksum must cover all bytes from the first byte after the
+    command (0x11) through the last data byte. The header's final token is the
+    first address byte (e.g. 18 for TEMPORARY_PROGRAM), so it must be included
+    in the checksum input.
     """
     temp_area_str = temp_area.value if isinstance(temp_area, Enum) else temp_area
     data = f"{temp_area_str} {part}"
-    checksum = roland_checksum(data)
+    # Include header's last token (first address byte) in checksum per Roland spec
+    checksum_data = f"{header.split()[-1]} {data}"
+    checksum = roland_checksum(checksum_data)
     return f"{header} {data} {checksum} {JDXISysExHex.END}"

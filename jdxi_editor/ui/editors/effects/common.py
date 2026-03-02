@@ -330,6 +330,16 @@ class EffectsCommonEditor(BasicEditor):
 
         # Note: data_request() is called in showEvent() when editor is displayed
 
+    def showEvent(self, event: QShowEvent) -> None:
+        """Request current settings from the instrument when the editor is shown."""
+        super().showEvent(event)
+        if self.midi_helper:
+            log.message(
+                "Effects shown - requesting current settings from instrument",
+                scope=self.__class__.__name__,
+            )
+        self.data_request()
+
     def _apply_effect_tooltips(self) -> None:
         """Set tooltips for effect controls from EffectsData.effect_tooltips."""
         for param, widget in self.controls.items():
@@ -1094,6 +1104,10 @@ class EffectsCommonEditor(BasicEditor):
             synth_tone = sysex_data.get(SysExSection.SYNTH_TONE, "")
 
             if temporary_area != "TEMPORARY_PROGRAM":
+                return
+
+            # Only process Effects blocks (ignore COMMON, VOCAL_EFFECT, etc.)
+            if synth_tone not in ("EFFECT_1", "EFFECT_2", "DELAY", "REVERB"):
                 return
 
             log.header_message(

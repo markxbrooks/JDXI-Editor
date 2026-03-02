@@ -191,10 +191,17 @@ class PatchManager(QMainWindow):
                             except Exception as ex:
                                 log.warning(f"Could not save MIDI file to bundle: {ex}")
 
-                # zip up contents of temp folder
+                # Save as .syx (raw SysEx) or zip as .jsz/.msz
                 temporary_files = list(temp_folder.glob("*"))
                 if len(temporary_files) == 0:
-                    log.warning("No temporary files found to zip.")
+                    log.warning("No temporary files found to save.")
+                    return
+
+                if file_path.lower().endswith(".syx"):
+                    if self.midi_helper.save_patch_as_syx(file_path, temp_folder):
+                        log.message(f"SysEx patch saved to {file_path}")
+                    else:
+                        log.warning("Failed to save .syx file")
                     return
 
                 json_files = [f for f in temporary_files if f.suffix == ".json"]

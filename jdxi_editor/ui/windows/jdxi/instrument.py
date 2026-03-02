@@ -283,9 +283,29 @@ class JDXiInstrument(JDXiWindow):
             ),
         )
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
+        # Route COMMON and VOCAL_EFFECT SysEx to Vocal Effects Editor sliders
+        self.midi_helper.midi_sysex_json.connect(
+            self._forward_sysex_to_vocal_effects_editor
+        )
         # ctrl-R for data request
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+
+    def _forward_sysex_to_vocal_effects_editor(self, json_sysex_data: str) -> None:
+        """Forward COMMON and VOCAL_EFFECT SysEx to Vocal Effects Editor."""
+        import json
+
+        try:
+            data = json.loads(json_sysex_data)
+            if data.get(SysExSection.TEMPORARY_AREA) != "TEMPORARY_PROGRAM":
+                return
+            if data.get(SysExSection.SYNTH_TONE) not in ("COMMON", "VOCAL_EFFECT"):
+                return
+            vocal_editor = self.get_existing_editor(VocalFXEditor)
+            if vocal_editor and hasattr(vocal_editor, "_dispatch_sysex_to_area"):
+                vocal_editor._dispatch_sysex_to_area(json_sysex_data)
+        except (json.JSONDecodeError, TypeError):
+            pass
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """
