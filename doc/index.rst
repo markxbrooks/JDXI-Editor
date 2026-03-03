@@ -17,27 +17,11 @@ Welcome to JD-Xi Editor's documentation!
    troubleshooting
    legal
 
-.. automodule:: jdxi_editor
-   :members:
-   :undoc-members:
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-.. automodule:: jdxi_editor
-   :members:
-   :undoc-members:
-
 .. toctree::
    :maxdepth: 6
    :caption: API Reference:
 
    modules
-
 
 
 Indices and tables
