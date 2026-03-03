@@ -48,10 +48,11 @@ class ProgramGroup(QGroupBox):
 
     def __init__(self, title: str = None, parent: Optional["ProgramEditor"] = None):
         super().__init__("Load a program")
+        self.edit_program_name_button: QPushButton | None = None
         self.mixer_widget: Optional[ProgramMixer] = None
         self.parent = parent
         self.preset: PresetWidget = PresetWidget(parent=self)
-        self.program_name = ""
+        self.program_name: str = ""
         self.channel = (
             MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
@@ -61,7 +62,7 @@ class ProgramGroup(QGroupBox):
 
         self.setLayout(program_layout)
 
-        self.file_label = DigitalTitle("No file loaded")
+        self.file_label: DigitalTitle = DigitalTitle("No file loaded")
         program_layout.addWidget(self.file_label)
 
         # program and presets tab widget (nested inside group box)

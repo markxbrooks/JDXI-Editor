@@ -5,6 +5,8 @@ Sysex parser
 >>> sysex_data = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x01, 0x00, 0x00, 0x10, 0x7F, 0x57, 0xF7])
 >>> parser = JDXiSysExParser(sysex_data)
 >>> result = parser.parse()
+>>> print(result)
+{'JD_XI_HEADER': 'f041100000000e', 'ADDRESS': '12190100', 'TEMPORARY_AREA': 'DIGITAL_SYNTH_1', 'SYNTH_TONE': 'COMMON', 'TONE_NAME': 'Unknown', 'TONE_NAME_1': 16, 'TONE_NAME_2': 127, 'TONE_NAME_3': 87, 'TONE_NAME_4': 247, 'TONE_NAME_5': 0, 'TONE_NAME_6': 0, 'TONE_NAME_7': 0, 'TONE_NAME_8': 0, 'TONE_NAME_9': 0, 'TONE_NAME_10': 0, 'TONE_NAME_11': 0, 'TONE_NAME_12': 0, 'TONE_LEVEL': 0, 'PORTAMENTO_SWITCH': 0, 'PORTAMENTO_TIME': 0, 'MONO_SWITCH': 0, 'OCTAVE_SHIFT': 0, 'PITCH_BEND_UP': 0, 'PITCH_BEND_DOWN': 0, 'PARTIAL1_SWITCH': 0, 'PARTIAL1_SELECT': 0, 'PARTIAL2_SWITCH': 0, 'PARTIAL2_SELECT': 0, 'PARTIAL3_SWITCH': 0, 'PARTIAL3_SELECT': 0, 'RING_SWITCH': 0, 'UNISON_SWITCH': 0, 'PORTAMENTO_MODE': 0, 'LEGATO_SWITCH': 0, 'ANALOG_FEEL': 0, 'WAVE_SHAPE': 0, 'TONE_CATEGORY': 0, 'UNISON_SIZE': 0}
 >>> isinstance(result, dict)
 True
 
@@ -48,7 +50,9 @@ class JDXiSysExParser:
     structured parsing of SysEx messages. Use get_structured_fields() to extract parsed field data.
 
     Example:
-        >>> parser = JDXiSysExParser(sysex_bytes)
+        >>> msg_hex = "F0 41 10 00 00 00 0E 12 19 42 00 00 48 6F 75 73 65 20 42 61 73 73 20 31 00 01 37 00 00 11 40 40 40 01 02 40 40 00 7F 40 7F 7F 40 01 01 7F 40 00 40 00 0A 1E 00 7F 5C 40 5E 00 7F 00 00 00 14 00 40 00 02 00 50 40 40 52 00 00 00 00 05 F7"
+        >>> msg = bytes.fromhex(msg_hex.replace(' ', ''))
+        >>> parser = JDXiSysExParser(msg)
         >>> fields = parser.get_structured_fields()
         >>> roland_id = fields['roland_id']  # RolandID enum member
         >>> address = fields['address']      # ParameterAddress or bytes
@@ -399,10 +403,14 @@ class JDXiSysExParser:
         from SysEx messages using the field specifications.
 
         Example:
-            >>> parser = JDXiSysExParser(sysex_bytes)
+            >>> msg_hex = "F0 41 10 00 00 00 0E 12 19 42 00 00 48 6F 75 73 65 20 42 61 73 73 20 31 00 01 37 00 00 11 40 40 40 01 02 40 40 00 7F 40 7F 7F 40 01 01 7F 40 00 40 00 0A 1E 00 7F 5C 40 5E 00 7F 00 00 00 14 00 40 00 02 00 50 40 40 52 00 00 00 00 05 F7"
+            >>> msg = bytes.fromhex(msg_hex.replace(' ', ''))
+            >>> parser = JDXiSysExParser(msg)
             >>> fields = parser.get_structured_fields()
             >>> print(fields['roland_id'])  # RolandID.ROLAND_ID
-            >>> print(fields['address'])    # ParameterAddress object
+            RolandID.ROLAND_ID
+            >>> print(fields['address'])
+            b'\\x19B\\x00\\x00'
 
         :return: dict Parsed field data
         """

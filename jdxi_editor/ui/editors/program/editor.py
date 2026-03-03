@@ -87,16 +87,29 @@ class ProgramEditor(BasicEditor):
     """Program Editor Window"""
 
     TEMPORARY_AREA_HANDLERS = {
-        JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
-            SysExSection.PROGRAM_LEVEL: ProgramCommonParam.PROGRAM_LEVEL,
-        },
-        JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-            SysExSection.AMP_LEVEL: AnalogParam.AMP_LEVEL,
-        },
-        JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
-            SysExSection.KIT_LEVEL: DrumCommonParam.KIT_LEVEL,
-        },
-    }
+            JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
+                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, "master_level_slider")
+            },
+            # Use (param_constant, slider) like Master/Drums so Analog is as reliable
+            JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
+                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, "analog_level_slider"),
+            },
+            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
+                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, "drums_level_slider")
+            },
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
+                SysExSection.TONE_LEVEL: (
+                    DigitalCommonParam.get_by_name,
+                    "digital1_level_slider",
+                )
+            },
+            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
+                SysExSection.TONE_LEVEL: (
+                    DigitalCommonParam.get_by_name,
+                    "digital2_level_slider",
+                )
+            },
+        }
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
 
@@ -154,7 +167,6 @@ class ProgramEditor(BasicEditor):
         self.playlist_widget: Optional[PlaylistTable] = None
         self.playlist_editor_widget: Optional[PlaylistEditor] = None
         self.setup_ui()
-        self.temporary_area_handlers = self.get_temporary_handlers()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
 
@@ -438,16 +450,14 @@ class ProgramEditor(BasicEditor):
         :param preset_type:
         :return: None
         """
-        if preset_type == PresetTitle.DIGITAL_SYNTH1:
-            self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
+        if preset_type in [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2]:
             self.program_group_widget.preset.preset_list = (
                 JDXiUIPreset.Digital.PROGRAM_CHANGE
             )
-        elif preset_type == PresetTitle.DIGITAL_SYNTH2:
-            self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
-            self.program_group_widget.preset.preset_list = (
-                JDXiUIPreset.Digital.PROGRAM_CHANGE
-            )
+            if preset_type == PresetTitle.DIGITAL_SYNTH1:
+                self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
+            elif preset_type == PresetTitle.DIGITAL_SYNTH2:
+                self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
         elif preset_type == PresetTitle.DRUMS:
             self.midi_channel = MidiChannel.DRUM_KIT
             self.program_group_widget.preset.preset_list = (
@@ -972,40 +982,6 @@ class ProgramEditor(BasicEditor):
             return DRUM_PARTIAL_MAP
         return SYNTH_PARTIAL_MAP
 
-    def get_temporary_handlers(self) -> dict:
-        """get temporary handlers"""
-        # Define a mapping between temporary_area and their corresponding handlers
-        # Get sliders from mixer_widget if available
-        master_slider = self.get_mixer_slider("master_level_slider")
-        analog_slider = self.get_mixer_slider("analog_level_slider")
-        drums_slider = self.get_mixer_slider("drums_level_slider")
-        digital1_slider = self.get_mixer_slider("digital1_level_slider")
-        digital2_slider = self.get_mixer_slider("digital2_level_slider")
-        return {
-            JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
-                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, master_slider)
-            },
-            # Use (param_constant, slider) like Master/Drums so Analog is as reliable
-            JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, analog_slider),
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
-                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, drums_slider)
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
-                SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.get_by_name,
-                    digital1_slider,
-                )
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
-                SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.get_by_name,
-                    digital2_slider,
-                )
-            },
-        }
-
     def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
         Dispatch SysEx data to the appropriate area for processing.
@@ -1056,13 +1032,14 @@ class ProgramEditor(BasicEditor):
 
     def _handle_sliders(self, sysex_data: dict, temporary_area: str | None, successes: list[Any], failures: list[Any]):
         """Slider handling"""
-        handler = self.temporary_area_handlers.get(temporary_area)
+        handler = self.TEMPORARY_AREA_HANDLERS.get(temporary_area)
         if not handler:
             return
         for param_name, param_value in sysex_data.items():
             if param_name in handler:
                 try:
-                    param_resolver, slider = handler.get(param_name)
+                    param_resolver, slider_attr = handler.get(param_name)
+                    slider = self.get_mixer_slider(slider_attr)
                     param = (
                         param_resolver(param_name)
                         if callable(param_resolver)
@@ -1077,10 +1054,10 @@ class ProgramEditor(BasicEditor):
                         scope=self.__class__.__name__,
                     )
 
-    def get_mixer_slider(self, slider) -> QWidget | None:
+    def get_mixer_slider(self, slider_name: str) -> QWidget | None:
         """get mixer slider"""
         if self.mixer_widget:
-            slider = getattr(self.mixer_widget, slider)
+            slider = getattr(self.mixer_widget, slider_name)
             if slider is not None:
                 return slider if self.mixer_widget else None
         return None
