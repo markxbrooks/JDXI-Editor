@@ -52,6 +52,15 @@ class MixerTrackSpec:
     analog: TrackSpec = None
 
 
+class MixerAttrs:
+    """Mixer Attributes"""
+    MASTER = "master_level_slider"
+    ANALOG = "analog_level_slider"
+    DRUMS = "drums_level_slider"
+    DIGITAL1 = "digital1_level_slider"
+    DIGITAL2 = "digital2_level_slider"
+
+
 class ProgramMixer(SynthBase):
     """Widget for managing mixer level controls."""
 

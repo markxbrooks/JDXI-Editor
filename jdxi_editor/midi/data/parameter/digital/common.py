@@ -102,7 +102,6 @@ class DigitalCommonParam(AddressParameter):
     TONE_LEVEL = ParameterSpec(
         0x0C, 0, 127, "Adjusts the overall volume of the tone", "Tone Level"
     )  # Overall tone level
-
     # Performance parameters
     PORTAMENTO_SWITCH = ParameterSpec(
         0x12,

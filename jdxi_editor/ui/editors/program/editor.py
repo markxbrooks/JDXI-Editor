@@ -36,10 +36,11 @@ Dependencies:
 - JDXiProgramList.PROGRAM_LIST for predefined program data
 
 """
-
+from dataclasses import dataclass
 from typing import Dict, Optional, Any
 
 from decologr import Decologr as log
+from jdxi_editor.ui.style.dimensions import Dimensions
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
@@ -71,7 +72,7 @@ from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer
+from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer, MixerAttrs
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -83,30 +84,45 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 
+class ProgramEditorDimensions(Dimensions):
+    """ProgramEditor Dimensions"""
+    WIDTH = 400
+    HEIGHT = 400
+
+
+@dataclass
+class EditorSpec:
+    """Editor Spec"""
+    title: str = ""
+    default_image: str = ""
+    instrument_icon_folder: str = ""
+    dimensions: Dimensions = None
+
+
 class ProgramEditor(BasicEditor):
     """Program Editor Window"""
 
     TEMPORARY_AREA_HANDLERS = {
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
-                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, "master_level_slider")
+                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, MixerAttrs.MASTER)
             },
             # Use (param_constant, slider) like Master/Drums so Analog is as reliable
             JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, "analog_level_slider"),
+                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, MixerAttrs.ANALOG),
             },
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
-                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, "drums_level_slider")
+                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, MixerAttrs.DRUMS)
             },
             JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
                 SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.get_by_name,
-                    "digital1_level_slider",
+                    DigitalCommonParam.TONE_LEVEL,
+                    MixerAttrs.DIGITAL1,
                 )
             },
             JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
                 SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.get_by_name,
-                    "digital2_level_slider",
+                    DigitalCommonParam.TONE_LEVEL,
+                    MixerAttrs.DIGITAL2,
                 )
             },
         }
@@ -136,8 +152,12 @@ class ProgramEditor(BasicEditor):
             MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
-        self.default_image = "programs.png"
-        self.instrument_icon_folder = "programs"
+        self.spec = EditorSpec(default_image="programs.png",
+                               instrument_icon_folder="programs",
+                               title="Program Editor",
+                               dimensions=ProgramEditorDimensions())
+        self.default_image = self.spec.default_image
+        self.instrument_icon_folder = self.spec.instrument_icon_folder
         self.instrument_title_label = QLabel()  # Just to stop error messages for now
         self.layout = None
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
@@ -172,8 +192,8 @@ class ProgramEditor(BasicEditor):
 
     def setup_ui(self):
         """set up ui elements"""
-        self.setWindowTitle("Program Editor")
-        self.setMinimumSize(400, 400)
+        self.setWindowTitle(self.spec.title)
+        self.setMinimumSize(self.spec.dimensions.WIDTH, self.spec.dimensions.HEIGHT)
         main_vlayout = QVBoxLayout()
 
         # Create main tab widget for top-level tabs
