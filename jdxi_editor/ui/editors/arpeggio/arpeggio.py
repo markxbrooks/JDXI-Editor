@@ -143,7 +143,7 @@ class ArpeggioEditor(BasicEditor):
         self.setup_ui()
 
         if self.midi_helper:
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
             log.message(
                 "Arpeggio: Connected to midi_sysex_json signal",
                 scope=self.__class__.__name__,
@@ -188,7 +188,7 @@ class ArpeggioEditor(BasicEditor):
             )
         self.data_request()
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+    def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """Parse SysEx JSON and update Arpeggio controls."""
         try:
             import json

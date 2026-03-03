@@ -303,7 +303,7 @@ class JDXiInstrument(JDXiWindow):
                 return
             vocal_editor = self.get_existing_editor(VocalFXEditor)
             if vocal_editor and hasattr(vocal_editor, "_dispatch_sysex_to_area"):
-                vocal_editor._dispatch_sysex_to_area(json_sysex_data)
+                vocal_editor.dispatch_sysex_to_area(json_sysex_data)
         except (json.JSONDecodeError, TypeError):
             pass
 

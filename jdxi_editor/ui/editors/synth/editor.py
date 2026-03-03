@@ -294,7 +294,7 @@ class SynthEditor(SynthBase):
             return self.preset_helpers[JDXi.Synth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+    def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
         Dispatch SysEx data to the appropriate area for processing.
 

@@ -134,7 +134,7 @@ class TestVocalFXEditor(unittest.TestCase):
             "VOCAL_EFFECT": 1,
             "VOCAL_EFFECT_PART": 0,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(common_data))
+        self.editor.dispatch_sysex_to_area(json.dumps(common_data))
 
         vocal_data = {
             "TEMPORARY_AREA": "TEMPORARY_PROGRAM",
@@ -142,7 +142,7 @@ class TestVocalFXEditor(unittest.TestCase):
             "LEVEL": 64,
             "PAN": 64,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(vocal_data))
+        self.editor.dispatch_sysex_to_area(json.dumps(vocal_data))
 
     def test_vocal_effect_stack_switches(self):
         """Test that _update_vocal_effect_stack switches stack page by index."""

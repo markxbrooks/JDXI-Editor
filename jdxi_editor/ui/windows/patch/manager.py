@@ -21,6 +21,7 @@ Dependencies:
 
 """
 
+import json
 import logging
 import os
 import random
@@ -30,6 +31,8 @@ from pathlib import Path
 from typing import Optional
 
 from decologr import Decologr as log
+
+from jdxi_editor.midi.sysex.sections import SysExSection
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -139,6 +142,38 @@ class PatchManager(QMainWindow):
         except Exception as ex:
             log.error(f"Error browsing for file: {str(ex)}")
 
+    def _save_program_common(self, temp_folder: Path) -> None:
+        """
+        Save Program Common (PROGRAM_LEVEL) from the mixer.
+        ProgramEditor is skipped in the main save loop, but the Master level
+        must be included so patch load restores it correctly.
+        """
+        program_editor = next(
+            (e for e in (self.editors or []) if isinstance(e, ProgramEditor)),
+            None,
+        )
+        if not program_editor or not getattr(program_editor, "mixer_widget", None):
+            return
+        mixer = program_editor.mixer_widget
+        master_slider = getattr(mixer, "master_level_slider", None)
+        if not master_slider or not hasattr(master_slider, "value"):
+            return
+        program_level = master_slider.value()
+        program_common = {
+            SysExSection.JD_XI_HEADER: "f041100000000e",
+            SysExSection.ADDRESS: "18000000",
+            SysExSection.TEMPORARY_AREA: "TEMPORARY_PROGRAM",
+            SysExSection.SYNTH_TONE: "COMMON",
+            SysExSection.PROGRAM_LEVEL: program_level,
+        }
+        out_path = temp_folder / "jdxi_tone_data_18000000.json"
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(program_common, f, indent=2)
+        log.message(
+            f"Saved Program Common PROGRAM_LEVEL={program_level} to {out_path.name}",
+            scope=self.__class__.__name__,
+        )
+
     def _handle_action(self):
         """Handle save/load action"""
         try:
@@ -181,6 +216,9 @@ class PatchManager(QMainWindow):
                         )
                         continue
                     self.json_composer.process_editor(editor, temp_folder)
+
+                # Save Program Common (PROGRAM_LEVEL) from mixer - ProgramEditor is skipped above
+                self._save_program_common(temp_folder)
 
                 # Save MIDI file if available
                 midi_file_saved = False

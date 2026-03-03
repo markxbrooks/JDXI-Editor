@@ -37,13 +37,13 @@ Dependencies:
 
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 from decologr import Decologr as log
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QTabWidget
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QTabWidget, QSlider
 
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -85,6 +85,18 @@ from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
 class ProgramEditor(BasicEditor):
     """Program Editor Window"""
+
+    TEMPORARY_AREA_HANDLERS = {
+        JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
+            SysExSection.PROGRAM_LEVEL: ProgramCommonParam.PROGRAM_LEVEL,
+        },
+        JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
+            SysExSection.AMP_LEVEL: AnalogParam.AMP_LEVEL,
+        },
+        JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
+            SysExSection.KIT_LEVEL: DrumCommonParam.KIT_LEVEL,
+        },
+    }
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
 
@@ -142,8 +154,9 @@ class ProgramEditor(BasicEditor):
         self.playlist_widget: Optional[PlaylistTable] = None
         self.playlist_editor_widget: Optional[PlaylistEditor] = None
         self.setup_ui()
+        self.temporary_area_handlers = self.get_temporary_handlers()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
-        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
 
     def setup_ui(self):
         """set up ui elements"""
@@ -725,15 +738,19 @@ class ProgramEditor(BasicEditor):
                     program_name = existing_program.name
                     if search_text and search_text.lower() not in program_name.lower():
                         continue
-                    index = len(self.programs)
-                    if (
-                        self.program_group_widget
-                        and self.program_group_widget.program_number_combo_box
-                    ):
-                        self.program_group_widget.program_number_combo_box.addItem(
-                            f"{program_id} - {program_name}", index
-                        )
-                    self.programs[program_name] = index
+                    self._add_program_to_database(program_id, program_name)
+
+    def _add_program_to_database(self, program_id: str, program_name: str):
+        """add program to database"""
+        index = len(self.programs)
+        if (
+                self.program_group_widget
+                and self.program_group_widget.program_number_combo_box
+        ):
+            self.program_group_widget.program_number_combo_box.addItem(
+                f"{program_id} - {program_name}", index
+            )
+        self.programs[program_name] = index
 
     def _get_table_style(self) -> str:
         """
@@ -892,15 +909,30 @@ class ProgramEditor(BasicEditor):
 
     def load_preset(self, program_number: int) -> None:
         """
-        load_preset
+        Load preset by program change and refresh UI.
 
-        :param program_number: int
+        :param program_number: Preset ID (e.g., 1 for "001")
         :return: None
-        Load preset data and update UI
         """
         if not self.preset_helper:
             return
-        self.preset_helper.load_preset(program_number)
+        preset_type = PresetTitle.DIGITAL_SYNTH1
+        if self.program_group_widget and hasattr(
+            self.program_group_widget.preset, "digital_preset_type_combo"
+        ):
+            preset_type = (
+                self.program_group_widget.preset.digital_preset_type_combo.currentText()
+            )
+        preset_type_to_synth = {
+            PresetTitle.DIGITAL_SYNTH1: JDXiSynth.DIGITAL_SYNTH_1,
+            PresetTitle.DIGITAL_SYNTH2: JDXiSynth.DIGITAL_SYNTH_2,
+            PresetTitle.DRUMS: JDXiSynth.DRUM_KIT,
+            PresetTitle.ANALOG_SYNTH: JDXiSynth.ANALOG_SYNTH,
+        }
+        synth_type = preset_type_to_synth.get(
+            preset_type, JDXiSynth.DIGITAL_SYNTH_1
+        )
+        self.preset_helper.load_preset_by_program_change(program_number, synth_type)
         self.data_request()
 
     def _update_program_list(self) -> None:
@@ -913,72 +945,52 @@ class ProgramEditor(BasicEditor):
         """
         pass
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
-        """
-        Dispatch SysEx data to the appropriate area for processing.
+    def _normalize_program_common(self, sysex_data: dict) -> dict:
+        """Normalize special Program Common address case."""
 
-        :param json_sysex_data:
-        :return: None
-        """
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data:
-            return
-
+        address_hex = sysex_data.get(SysExSection.ADDRESS, "")
         temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
         synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
 
-        # Forward System Common/Controller to System Settings tab
-        if temporary_area in ("SYSTEM_COMMON", "SYSTEM_CONTROLLER"):
-            if self.program_group_widget and getattr(
-                self.program_group_widget, "system_settings_widget", None
-            ):
-                self.program_group_widget.system_settings_widget._dispatch_sysex_to_area(
-                    json_sysex_data
-                )
-            return
+        if (
+                address_hex == "18000000"
+                and SysExSection.PROGRAM_LEVEL in sysex_data
+                and temporary_area != JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
+        ):
+            sysex_data[SysExSection.TEMPORARY_AREA] = (
+                JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
+            )
+            sysex_data[SysExSection.SYNTH_TONE] = (
+                JDXiSysExOffsetSuperNATURALLMB.COMMON.name
+            )
 
-        log.header_message(
-            scope=self.__class__.__name__,
-            message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}",
-        )
+        return sysex_data
 
-        sysex_data = filter_sysex_keys(sysex_data)
-
-        successes, failures = [], []
-
+    def _get_partial_map(self, temporary_area: str):
+        """get partial map"""
         if temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
-            partial_map = DRUM_PARTIAL_MAP
-        else:
-            partial_map = SYNTH_PARTIAL_MAP
+            return DRUM_PARTIAL_MAP
+        return SYNTH_PARTIAL_MAP
 
+    def get_temporary_handlers(self) -> dict:
+        """get temporary handlers"""
         # Define a mapping between temporary_area and their corresponding handlers
         # Get sliders from mixer_widget if available
-        master_slider = (
-            self.mixer_widget.master_level_slider if self.mixer_widget else None
-        )
-        analog_slider = (
-            self.mixer_widget.analog_level_slider if self.mixer_widget else None
-        )
-        drums_slider = (
-            self.mixer_widget.drums_level_slider if self.mixer_widget else None
-        )
-        digital1_slider = (
-            self.mixer_widget.digital1_level_slider if self.mixer_widget else None
-        )
-        digital2_slider = (
-            self.mixer_widget.digital2_level_slider if self.mixer_widget else None
-        )
-
-        temporary_area_handlers = {
+        master_slider = self.get_mixer_slider("master_level_slider")
+        analog_slider = self.get_mixer_slider("analog_level_slider")
+        drums_slider = self.get_mixer_slider("drums_level_slider")
+        digital1_slider = self.get_mixer_slider("digital1_level_slider")
+        digital2_slider = self.get_mixer_slider("digital2_level_slider")
+        return {
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
-                "PROGRAM_LEVEL": (ProgramCommonParam.PROGRAM_LEVEL, master_slider)
+                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, master_slider)
             },
             # Use (param_constant, slider) like Master/Drums so Analog is as reliable
             JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                "AMP_LEVEL": (AnalogParam.AMP_LEVEL, analog_slider),
+                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, analog_slider),
             },
             JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
-                "KIT_LEVEL": (DrumCommonParam.KIT_LEVEL, drums_slider)
+                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, drums_slider)
             },
             JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
                 SysExSection.TONE_LEVEL: (
@@ -994,42 +1006,93 @@ class ProgramEditor(BasicEditor):
             },
         }
 
+    def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """
+        Dispatch SysEx data to the appropriate area for processing.
+
+        :param json_sysex_data:
+        :return: None
+        """
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+        sysex_data = self._normalize_program_common(sysex_data)
+
+        temporary_area = sysex_data.get(SysExSection.TEMPORARY_AREA)
+        synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
+
+        log.header_message(
+            scope=self.__class__.__name__,
+            message=f"Updating UI components from SysEx data for {temporary_area} {synth_tone}",
+        )
+
+        sysex_data = filter_sysex_keys(sysex_data)
+
+        successes, failures = [], []
+
+        partial_map = self._get_partial_map(temporary_area)
+
+        self._handle_sliders(sysex_data, temporary_area, successes, failures)
+
+        # ---- Partial routing ----
+        if synth_tone in partial_map:
+            pass
+
+        # ---- Common routing ----
+        elif synth_tone == JDXiSysExOffsetSuperNATURALLMB.COMMON.name:
+            partial_number = get_partial_number(
+                synth_tone,
+                partial_map=partial_map,
+            )
+            self._update_common_controls(
+                partial_number,
+                sysex_data,
+                successes,
+                failures,
+                temporary_area,
+            )
+
+        log.debug_info(successes, failures, scope=self.__class__.__name__)
+
+    def _handle_sliders(self, sysex_data: dict, temporary_area: str | None, successes: list[Any], failures: list[Any]):
+        """Slider handling"""
+        handler = self.temporary_area_handlers.get(temporary_area)
+        if not handler:
+            return
+        for param_name, param_value in sysex_data.items():
+            if param_name in handler:
+                try:
+                    param_resolver, slider = handler.get(param_name)
+                    param = (
+                        param_resolver(param_name)
+                        if callable(param_resolver)
+                        else param_resolver
+                    )
+                    self._update_slider(
+                        param, param_value, successes, failures, slider
+                    )
+                except Exception as ex:
+                    log.error(
+                        f"Error handling temporary area {ex}",
+                        scope=self.__class__.__name__,
+                    )
+
+    def get_mixer_slider(self, slider) -> QWidget | None:
+        """get mixer slider"""
+        if self.mixer_widget:
+            slider = getattr(self.mixer_widget, slider)
+            if slider is not None:
+                return slider if self.mixer_widget else None
+        return None
+
+    def _get_partial_tone_names(self) -> list[str]:
+        """get partial tone names"""
         partial_tone_names = [
             JDXiSysExOffsetSuperNATURALLMB.PARTIAL_1.name,
             JDXiSysExOffsetSuperNATURALLMB.PARTIAL_2.name,
             JDXiSysExOffsetSuperNATURALLMB.PARTIAL_3.name,
         ]
-
-        # Get the partial number
-        partial_number = get_partial_number(synth_tone, partial_map=partial_map)
-
-        # Handle the temporary_area cases
-        if temporary_area in temporary_area_handlers:
-            handler = temporary_area_handlers[temporary_area]
-            for param_name, param_value in sysex_data.items():
-                if param_name in handler:
-                    param_info = handler[param_name]
-                    param = (
-                        param_info[0](param_name)
-                        if callable(param_info[0])
-                        else param_info[0]
-                    )
-                    self._update_slider(
-                        param, param_value, successes, failures, param_info[1]
-                    )
-
-        # Partial tone data (PARTIAL_1/2/3) is updated by SynthEditor, not here.
-        # This widget's self.controls only has mixer sliders (PROGRAM_LEVEL, TONE_LEVEL,
-        # KIT_LEVEL, AMP_LEVEL). Do not call _update_common_controls for partial tones,
-        # or every partial param (OSC_*, FILTER_*, etc.) would be reported as failure.
-        if synth_tone in partial_tone_names:
-            pass  # SynthEditor handles partial updates via editor._update_controls()
-        elif synth_tone == JDXiSysExOffsetSuperNATURALLMB.COMMON.name:
-            self._update_common_controls(
-                partial_number, sysex_data, successes, failures
-            )
-
-        log.debug_info(successes, failures, scope=self.__class__.__name__)
+        return partial_tone_names
 
     def _update_common_controls(
         self,
@@ -1037,6 +1100,7 @@ class ProgramEditor(BasicEditor):
         sysex_data: Dict,
         successes: list = None,
         failures: list = None,
+        temporary_area: str = None,
     ) -> None:
         """
         Update the UI components for tone common and modify parameters.
@@ -1045,6 +1109,7 @@ class ProgramEditor(BasicEditor):
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
         :param failures: List of failed parameters
+        :param temporary_area: str TEMPORARY_PROGRAM, DIGITAL_SYNTH_1, etc.
         :return: None
         """
         log.message(
@@ -1057,6 +1122,12 @@ class ProgramEditor(BasicEditor):
                 "control", control, silent=False, scope=self.__class__.__name__
             )
         sysex_data.pop(SysExSection.SYNTH_TONE, None)
+        # Program Common (TEMPORARY_PROGRAM) uses ProgramCommonParam; Digital uses DigitalCommonParam
+        param_cls = (
+            ProgramCommonParam
+            if temporary_area == JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
+            else DigitalCommonParam
+        )
         for param_name, param_value in sysex_data.items():
             log.parameter(
                 f"{param_name} {param_value}",
@@ -1064,7 +1135,7 @@ class ProgramEditor(BasicEditor):
                 silent=True,
                 scope=self.__class__.__name__,
             )
-            param = DigitalCommonParam.get_by_name(param_name)
+            param = param_cls.get_by_name(param_name)
             if not param:
                 log.parameter(
                     f"param not found: {param_name} ",
@@ -1112,7 +1183,7 @@ class ProgramEditor(BasicEditor):
         midi_value: int,
         successes: list = None,
         failures: list = None,
-        slider: QWidget = None,
+        slider: QSlider = None,
     ) -> None:
         """
         Update slider based on parameter and value.

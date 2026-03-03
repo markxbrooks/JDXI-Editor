@@ -135,7 +135,7 @@ class VocalFXEditor(BasicEditor):
         ]
 
         if self.midi_helper:
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
             log.message(
                 "🎛️: Connected to midi_sysex_json signal",
                 scope=self.__class__.__name__,
@@ -151,7 +151,7 @@ class VocalFXEditor(BasicEditor):
             )
         self.data_request()
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+    def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """Parse SysEx JSON and update Vocal FX controls."""
         try:
             import json

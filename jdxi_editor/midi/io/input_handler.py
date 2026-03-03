@@ -350,6 +350,7 @@ class MidiInHandler(MidiIOController):
                     scope=self.__class__.__name__,
                 )
                 self._emit_program_or_tone_name(parsed_data)
+                log.message(f"json sysex: {json.dumps(parsed_data)}")
                 self.midi_sysex_json.emit(json.dumps(parsed_data))
                 log.json(parsed_data, silent=True)
             except Exception as parse_ex:

@@ -315,7 +315,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Connect to MIDI helper signals to receive SysEx data
         if self.midi_helper:
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
             log.message(
                 "🎛️: Connected to midi_sysex_json signal", scope=self.__class__.__name__
             )
@@ -1087,7 +1087,7 @@ class EffectsCommonEditor(BasicEditor):
             )
             return False
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+    def dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """Thin adapter: parse → validate → dispatch"""
 
         log.message("🎛️ _dispatch_sysex_to_area called", scope="EffectsCommonEditor")

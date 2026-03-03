@@ -147,7 +147,7 @@ class BaseSynthEditor(SynthEditor):
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
             log.message(scope="BaseSynthEditor", message="MIDI signals connected")
         else:
             log.message(scope="BaseSynthEditor", message="MIDI signals not connected")

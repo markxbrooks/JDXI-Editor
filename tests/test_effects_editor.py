@@ -164,7 +164,7 @@ class TestEffectsCommonEditor(unittest.TestCase):
             "EFX1_TYPE": 1,
             "EFX1_LEVEL": 64,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(data))
+        self.editor.dispatch_sysex_to_area(json.dumps(data))
 
     def test_dispatch_sysex_effect2_no_exception(self):
         """Test that _dispatch_sysex_to_area handles EFFECT_2 data without crashing."""
@@ -176,7 +176,7 @@ class TestEffectsCommonEditor(unittest.TestCase):
             "EFX2_TYPE": 1,
             "EFX2_LEVEL": 64,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(data))
+        self.editor.dispatch_sysex_to_area(json.dumps(data))
 
     def test_dispatch_sysex_delay_reverb_no_exception(self):
         """Test that _dispatch_sysex_to_area handles DELAY and REVERB data without crashing."""
@@ -188,7 +188,7 @@ class TestEffectsCommonEditor(unittest.TestCase):
             "DELAY_LEVEL": 64,
             "DELAY_ON_OFF": 1,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(data_delay))
+        self.editor.dispatch_sysex_to_area(json.dumps(data_delay))
 
         data_reverb = {
             "TEMPORARY_AREA": "TEMPORARY_PROGRAM",
@@ -196,7 +196,7 @@ class TestEffectsCommonEditor(unittest.TestCase):
             "REVERB_LEVEL": 64,
             "REVERB_ON_OFF": 1,
         }
-        self.editor._dispatch_sysex_to_area(json.dumps(data_reverb))
+        self.editor.dispatch_sysex_to_area(json.dumps(data_reverb))
 
     def test_dispatch_sysex_records_applied(self):
         """Test that dispatching SysEx records applied params when registry and controls resolve."""

@@ -115,7 +115,7 @@ class DrumCommonEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         # Note: data_request() is called in showEvent() when editor is displayed
@@ -215,7 +215,7 @@ class DrumCommonEditor(SynthEditor):
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
-        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
         # Note: data_request() is called in showEvent() when editor is displayed
 
     def _handle_program_change(self, channel: int, program: int):
