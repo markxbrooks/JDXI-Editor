@@ -8,14 +8,14 @@ Classes:
     ProgramMixerWidget(SynthBase)
         A widget for displaying and controlling mixer levels.
 """
-
+from dataclasses import dataclass
 from typing import Dict, Optional
 
 from decologr import Decologr as log
 from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget
+from PySide6.QtWidgets import QGridLayout, QGroupBox, QLabel, QWidget, QSlider
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.factory import create_synth_data
@@ -33,13 +33,32 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 
 
+@dataclass
+class TrackSpec:
+    """Track Spec"""
+    label: str = ""
+    synth: str = ""
+    icon: QIcon = ""
+    param: AddressParameter = None
+
+
+@dataclass
+class MixerTrackSpec:
+    """Track specs for the Mixer"""
+    master: TrackSpec = None
+    digital1: TrackSpec = None
+    digital2: TrackSpec = None
+    drums: TrackSpec = None
+    analog: TrackSpec = None
+
+
 class ProgramMixer(SynthBase):
     """Widget for managing mixer level controls."""
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        parent: Optional[QWidget] = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            parent: Optional[QWidget] = None,
     ):
         """
         Initialize the ProgramMixerWidget.
@@ -55,6 +74,7 @@ class ProgramMixer(SynthBase):
         self.label_widgets = LabelWidgetRegistry()
 
         # Sliders
+        self.controls: dict[AddressParameter, QWidget] = {}
         self.master_level_slider: QWidget | None = None
         self.digital1_level_slider: QWidget | None = None
         self.digital2_level_slider: QWidget | None = None
@@ -67,15 +87,16 @@ class ProgramMixer(SynthBase):
         self.digital2_level_address: Optional[JDXiSysExAddress] = None
         self.drums_level_address: Optional[JDXiSysExAddress] = None
         self.analog_level_address: Optional[JDXiSysExAddress] = None
+        self.mixer_spec = self.build_mixer_spec()
 
     def _make_track(
-        self,
-        entity: MixerTrackEntity,
-        param: AddressParameter,
-        synth_type: str | None,
-        label_text: str,
-        icon: QIcon,
-        address: JDXiSysExAddress | ProgramCommonAddress,
+            self,
+            entity: MixerTrackEntity,
+            param: AddressParameter,
+            synth_type: str | None,
+            label_text: str,
+            icon: QIcon,
+            address: JDXiSysExAddress | ProgramCommonAddress,
     ) -> MixerTrack:
 
         slider = self._create_parameter_slider(
@@ -122,35 +143,62 @@ class ProgramMixer(SynthBase):
         self.tracks = [
             self._make_track(
                 MixerTrackEntity.MASTER,
-                ProgramCommonParam.PROGRAM_LEVEL,
-                JDXiSynth.MASTER,
-                "Master",
-                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
+                self.mixer_spec.master.param,
+                self.mixer_spec.master.synth,
+                self.mixer_spec.master.label,
+                self.mixer_spec.master.icon,
                 pc_addr,
             ),
-            self._track_for_synth(
-                JDXiSynth.DIGITAL_SYNTH_1, "Digital 1", DigitalCommonParam.TONE_LEVEL
-            ),
-            self._track_for_synth(
-                JDXiSynth.DIGITAL_SYNTH_2, "Digital 2", DigitalCommonParam.TONE_LEVEL
-            ),
-            self._track_for_synth(
-                JDXiSynth.DRUM_KIT, "Drums", DrumCommonParam.KIT_LEVEL
-            ),
-            self._track_for_synth(
-                JDXiSynth.ANALOG_SYNTH, "Analog", AnalogParam.AMP_LEVEL
-            ),
+            self._track_from_synth_from_spec(self.mixer_spec.digital1),
+            self._track_from_synth_from_spec(self.mixer_spec.digital2),
+            self._track_from_synth_from_spec(self.mixer_spec.drums),
+            self._track_from_synth_from_spec(self.mixer_spec.analog),
         ]
         # Assign level sliders so the program editor can pass them to _update_slider for
         # incoming MIDI (self.controls has only one TONE_LEVEL key, so Digital 1 would
         # otherwise get Digital 2’s slider when using controls.get(param))
-        self.master_level_slider = self.tracks[0].slider
-        self.digital1_level_slider = self.tracks[1].slider
-        self.digital2_level_slider = self.tracks[2].slider
-        self.drums_level_slider = self.tracks[3].slider
-        self.analog_level_slider = self.tracks[
+        self.controls[self.mixer_spec.master.param] = self.master_level_slider = self.tracks[0].slider
+        self.controls[self.mixer_spec.digital1.param] = self.digital1_level_slider = self.tracks[1].slider
+        self.controls[self.mixer_spec.digital2.param] = self.digital2_level_slider = self.tracks[2].slider
+        self.controls[self.mixer_spec.drums.param] = self.drums_level_slider = self.tracks[3].slider
+        self.controls[self.mixer_spec.analog.param] = self.analog_level_slider = self.tracks[
             4
         ].slider  # index 4 = Analog; same pattern as others
+
+    def build_mixer_spec(self) -> MixerTrackSpec:
+        """build mixer track specs"""
+        master_track_spec = TrackSpec(label="Master",
+                                      synth=JDXiSynth.MASTER,
+                                      icon=JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
+                                      param=ProgramCommonParam.PROGRAM_LEVEL)
+        digital1_track_spec = TrackSpec(label="Digital 1",
+                                        synth=JDXiSynth.DIGITAL_SYNTH_1,
+                                        icon=JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
+                                        param=DigitalCommonParam.TONE_LEVEL)
+        digital2_track_spec = TrackSpec(label="Digital 2",
+                                        synth=JDXiSynth.DIGITAL_SYNTH_2,
+                                        icon=JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
+                                        param=DigitalCommonParam.TONE_LEVEL)
+        drums_track_spec = TrackSpec(label="Drums",
+                                     synth=JDXiSynth.DRUM_KIT,
+                                     icon=JDXi.UI.Icon.get_icon(JDXi.UI.Icon.DRUM),
+                                     param=DrumCommonParam.KIT_LEVEL)
+        analog_track_spec = TrackSpec(label="Analog",
+                                      synth=JDXiSynth.ANALOG_SYNTH,
+                                      icon=JDXi.UI.Icon.get_icon(JDXi.UI.Icon.KEYBOARD),
+                                      param=AnalogParam.AMP_LEVEL)
+        mixer = MixerTrackSpec(master=master_track_spec,
+                               digital1=digital1_track_spec,
+                               digital2=digital2_track_spec,
+                               drums=drums_track_spec,
+                               analog=analog_track_spec)
+        return mixer
+
+    def _track_from_synth_from_spec(self, spec: TrackSpec) -> MixerTrack:
+        """Make a track from a tack spec"""
+        return self._track_for_synth(
+            spec.synth, spec.label, spec.param
+        )
 
     def _track_for_synth(self, synth: str, name: str, param: AddressParameter):
         """track for synth"""
@@ -211,9 +259,9 @@ class ProgramMixer(SynthBase):
         return self.mixer_group
 
     def _init_synth_data(
-        self,
-        synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
-        partial_number: Optional[int] = 0,
+            self,
+            synth_type: str = JDXiSynth.DIGITAL_SYNTH_1,
+            partial_number: Optional[int] = 0,
     ) -> None:
         """
         Initialize synth-specific data for slider creation.

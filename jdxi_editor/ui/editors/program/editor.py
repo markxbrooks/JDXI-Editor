@@ -1039,12 +1039,15 @@ class ProgramEditor(BasicEditor):
             if param_name in handler:
                 try:
                     param_resolver, slider_attr = handler.get(param_name)
-                    slider = self.get_mixer_slider(slider_attr)
+
                     param = (
                         param_resolver(param_name)
                         if callable(param_resolver)
                         else param_resolver
                     )
+                    # Use slider_attr for lookup: digital1 and digital2 both use TONE_LEVEL,
+                    # so controls.get(param) would always return digital2's slider
+                    slider = self.get_mixer_slider(slider_attr)
                     self._update_slider(
                         param, param_value, successes, failures, slider
                     )
@@ -1053,6 +1056,14 @@ class ProgramEditor(BasicEditor):
                         f"Error handling temporary area {ex}",
                         scope=self.__class__.__name__,
                     )
+
+    def get_mixer_slider_by_param(self, slider_param: AddressParameter) -> QWidget | None:
+        """get mixer slider"""
+        if self.mixer_widget:
+            slider = self.mixer_widget.controls[slider_param]
+            if slider is not None:
+                return slider if self.mixer_widget else None
+        return None
 
     def get_mixer_slider(self, slider_name: str) -> QWidget | None:
         """get mixer slider"""
