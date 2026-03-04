@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "jdxi_manager"
-version = "0.9.7"
+version = "0.9.6"
 description = "A MIDI manager and editor for the Roland JD-Xi synthesizer"
 readme = "README.md"
 requires-python = ">=3.10"
