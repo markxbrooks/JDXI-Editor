@@ -62,6 +62,20 @@ from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
+# Top-level imports so py2app/modulegraph includes these in the bundle
+# (lazy imports inside functions are not traced by the dependency analyzer)
+_fluidsynth_err_msg = ""
+try:
+    import fluidsynth as _fluidsynth_module
+except Exception as _fluidsynth_err:
+    _fluidsynth_module = None
+    _fluidsynth_err_msg = str(_fluidsynth_err)
+
+try:
+    import sounddevice as _sounddevice_module
+except Exception:
+    _sounddevice_module = None
+
 
 def _get_output_devices() -> list[tuple[str, str]]:
     """
@@ -71,11 +85,11 @@ def _get_output_devices() -> list[tuple[str, str]]:
     On Windows/Linux: device_spec is "index:HostApi:Name" (for PortAudio).
     Requires sounddevice.
     """
+    if _sounddevice_module is None:
+        return []
     try:
-        import sounddevice as sd
-
-        devices = sd.query_devices()
-        hostapis = sd.query_hostapis()
+        devices = _sounddevice_module.query_devices()
+        hostapis = _sounddevice_module.query_hostapis()
         output_devices = [
             (i, d) for i, d in enumerate(devices) if d["max_output_channels"] > 0
         ]
@@ -417,12 +431,14 @@ class MIDIConfigDialog(QDialog):
             self._select_sf2_in_combo(file_path)
 
     def _start_fluidsynth(self) -> None:
-        try:
-            from fluidsynth import Synth
-        except Exception as ex:
-            self.fs_status.setText("FluidSynth not installed: pip install pyfluidsynth")
-            log.warning(f"FluidSynth import failed: {ex}")
+        if _fluidsynth_module is None:
+            if "Couldn't find" in _fluidsynth_err_msg:
+                msg = "FluidSynth library not found (install libfluidsynth, e.g. brew install fluid-synth)"
+            else:
+                msg = "FluidSynth not installed: pip install pyfluidsynth"
+            self.fs_status.setText(msg)
             return
+        Synth = _fluidsynth_module.Synth
 
         try:
             sf_path = self.sf2_edit.text().strip()

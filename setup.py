@@ -1,4 +1,9 @@
 import glob
+import sys
+
+# modulegraph uses recursive AST traversal; deeply nested code (e.g. long if/elif chains)
+# in jdxi_editor or dependencies can exceed Python's default recursion limit
+sys.setrecursionlimit(5000)
 
 from setuptools import setup, find_packages
 
@@ -19,7 +24,8 @@ DATA_FILES = [
     ("resources/vocal_fx", glob.glob("resources/vocal_fx/*.png")),
 ]  # Include any additional files your app needs
 OPTIONS = {
-    'packages': ['jdxi_editor', 'rtmidi', 'decologr', 'picomidi', 'qtawesome'],
+    'packages': ['jdxi_editor', 'rtmidi', 'decologr', 'picomidi', 'qtawesome',
+                 '_sounddevice_data'],
     'argv_emulation': False,
     'iconfile': 'jdxi_icon_512.icns',  # Path to the .icns file
     'includes': ['PySide6',
@@ -37,7 +43,10 @@ OPTIONS = {
                  'decologr',      # Logging library
                  'picomidi',      # MIDI library
                  'qtawesome',     # Icon library
-                 'qtawesome.iconic_font'],  # Ensure PySide6 is bundled
+                 'qtawesome.iconic_font',  # Ensure PySide6 is bundled
+                 'fluidsynth',  # pyfluidsynth: FluidSynth MIDI synth (use includes; fluidsynth pkg shadows .py)
+                 'sounddevice',  # FluidSynth audio output device selection
+                 '_sounddevice'],  # sounddevice CFFI extension
     "excludes": [
                  'Image',
                  "Carbon",
@@ -72,5 +81,7 @@ setup(
         "Pillow",
         "decologr",
         "picomidi",
+        "pyfluidsynth",  # provides fluidsynth module; fluidsynth 0.2 pkg conflicts
+        "sounddevice"
     ],
 )

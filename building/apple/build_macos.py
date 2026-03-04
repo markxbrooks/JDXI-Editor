@@ -141,6 +141,13 @@ def check_dependencies():
     else:
         print("  ⚠ pip install of setuptools/py2app failed; ensure setuptools<75 and py2app<0.28.9 for pkg_resources")
 
+    # fluidsynth 0.2 (package) shadows pyfluidsynth's fluidsynth.py; uninstall it so py2app bundles the correct module
+    run_command(
+        [str(PYTHON_PATH), "-m", "pip", "uninstall", "-y", "fluidsynth"],
+        check=False,
+        capture_output=True,
+    )
+
     print("  ✓ Dependencies validated")
 
 
