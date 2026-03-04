@@ -345,14 +345,20 @@ class InstrumentPresetWidget(QWidget):
         layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
 
         # Build preset options, values, and categories
+        # Support both "category" and "Category" (LIST has mixed formats)
+        def _preset_category(p: dict) -> str:
+            return p.get("category") or p.get("Category") or ""
+
         preset_options = [
-            f"{preset['id']} - {preset['name']}"
+            f"{preset.get('id', '')} - {preset.get('name', preset.get('Name', ''))}"
             for preset in JDXi.UI.Preset.Digital.LIST
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [int(preset["id"]) for preset in JDXi.UI.Preset.Digital.LIST]
+        preset_values = [
+            int(p.get("id", "000")) for p in JDXi.UI.Preset.Digital.LIST
+        ]
         preset_categories = sorted(
-            set(preset["category"] for preset in JDXi.UI.Preset.Digital.LIST)
+            set(_preset_category(p) for p in JDXi.UI.Preset.Digital.LIST if _preset_category(p))
         )
 
         # Category filter function for presets
@@ -367,8 +373,8 @@ class InstrumentPresetWidget(QWidget):
             if preset_id_str:
                 # Find the preset in the list and check its category
                 for preset in JDXi.UI.Preset.Digital.LIST:
-                    if preset["id"] == preset_id_str:
-                        return preset["category"] == category
+                    if preset.get("id") == preset_id_str:
+                        return _preset_category(preset) == category
             return False
 
         # Create SearchableFilterableComboBox for cheat preset selection

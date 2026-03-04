@@ -33,7 +33,7 @@ from PySide6.QtWidgets import (
     QLayout,
     QPushButton,
     QScrollArea,
-    QSizePolicy,
+    QSizePolicy, QWidget, QVBoxLayout,
 )
 
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode
@@ -316,7 +316,7 @@ def create_scroll_area() -> QScrollArea:
     return scroll
 
 
-def create_scroll_container() -> tuple[QVBoxLayout]:
+def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
     """create scroll container"""
     container = QWidget()
     container_layout = QVBoxLayout(container)
