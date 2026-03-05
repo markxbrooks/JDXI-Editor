@@ -15,10 +15,6 @@ class MidiPlayerWidgets:
     def __init__(self):
         """constructor"""
         self.pause_label = None
-        self.automation_channel_combo = None
-        self.automation_type_combo = None
-        self.automation_program_combo = None
-        self.file_auto_generate_checkbox = None
         self.digital_title_file_name = DigitalTitle("No file loaded")
         self.load_button = QPushButton()
         self.save_button = QPushButton()

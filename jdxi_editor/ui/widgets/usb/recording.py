@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pyaudio
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QMargins
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QCheckBox, QComboBox, QGridLayout, QHBoxLayout
 
 from decologr import Decologr as log
@@ -46,6 +46,7 @@ class USBFileRecordingWidget(QWidget):
         """Set up UI"""
         row = 0
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(QMargins(0, 0, 0, 0))
         group, grid = create_group_and_grid_layout("USB Recording")
         layout.addWidget(group)
         self._build_layout(grid, row)

@@ -13,6 +13,7 @@ import pyaudio
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
 
+from jdxi_editor.ui.editors.midi_player.automation import AutomationWidget
 from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec, build_panel
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
@@ -147,6 +148,7 @@ class MidiFilePlayer(SynthEditor):
         }  # MIDI channels 1, 2, 3, 10 (zero-based)
         # Initialize UI attributes
         self.usb_recorder = USBFileRecordingWidget(self.midi_state)
+        self.automation = AutomationWidget(self.midi_state, parent=self)
         self.ui = MidiPlayerWidgets()
         self.specs = self._build_specs()
         self.ui_init()
@@ -286,6 +288,7 @@ class MidiFilePlayer(SynthEditor):
             vertical=True,
             stretch=False,
         )
+        right_panel_layout.setContentsMargins(QMargins(0, 0, 0, 0))
         return right_panel_layout
 
     def _build_classify_tracks_widgets(self) -> list[QPushButton | QWidget]:
@@ -648,90 +651,15 @@ class MidiFilePlayer(SynthEditor):
         Create a grid layout containing Automation, USB Port, and USB File controls.
         """
         grid = QGridLayout()
+        grid.setContentsMargins(QMargins(0, 0, 0, 0))
         row = 0
-
-        automation_layout, automation_label = create_icon_and_label(
-            label="Automation:", icon=JDXi.UI.Icon.MAGIC
-        )
-        grid.addLayout(automation_layout, row, 0)
-        self.ui.automation_channel_combo = QComboBox()
-        for ch in range(1, 17):
-            self.ui.automation_channel_combo.addItem(f"Ch {ch}", ch)
-        grid.addWidget(self.ui.automation_channel_combo, row, 1)
-        self.ui.automation_type_combo = QComboBox()
-        self.ui.automation_type_combo.addItems(["Digital", "Analog", "Drums"])
-        self.ui.automation_type_combo.currentIndexChanged.connect(
-            self.on_automation_type_changed
-        )
-        grid.addWidget(self.ui.automation_type_combo, row, 2)
-        self.ui.automation_program_combo = QComboBox()
-        grid.addWidget(self.ui.automation_program_combo, row, 3)
-        spec = self.specs["buttons"]["automation_insert"]
-        self.ui.automation_insert_button = create_jdxi_button_from_spec(
-            spec, checkable=False
-        )
-        insert_cell, self.ui.automation_insert_label = (
-            create_widget_cell_with_button_spec(
-                spec, self.ui.automation_insert_button
-            )
-        )
-        grid.addWidget(insert_cell, row, 4)
+        grid.addWidget(self.automation, row, 0, 1, 5)
         row += 1
+
         grid.addWidget(self.usb_recorder, row, 0, 1, 5)
 
-        self.populate_automation_programs(PresetSource.DIGITAL)
+        self.automation.populate_automation_programs(PresetSource.DIGITAL)
         return grid
-
-    def populate_automation_programs(self, source: PresetSource) -> None:
-        """
-        Populate the program combo based on source list.
-        source: "Digital" | "Analog" | "Drums"
-        """
-        self.ui.automation_program_combo.clear()
-
-        # Helper function to convert dictionary format to list format
-        def convert_preset_dict_to_list(preset_dict):
-            """Convert PROGRAM_CHANGE dictionary to list format."""
-            if isinstance(preset_dict, dict):
-                return [
-                    {
-                        "id": f"{preset_id:03d}",
-                        "name": preset_data.get("Name", ""),
-                        "category": preset_data.get("Category", ""),
-                        "msb": preset_data.get("MSB", 0),
-                        "lsb": preset_data.get("LSB", 0),
-                        "pc": preset_data.get("PC", preset_id),
-                    }
-                    for preset_id, preset_data in sorted(preset_dict.items())
-                ]
-            else:
-                # Already a list (Drum format)
-                return preset_dict
-
-        preset_list_sources = {
-            PresetSource.DIGITAL: JDXi.UI.Preset.Digital.PROGRAM_CHANGE,
-            PresetSource.ANALOG: JDXi.UI.Preset.Analog.PROGRAM_CHANGE,
-            PresetSource.DRUMS: JDXi.UI.Preset.Drum.PROGRAM_CHANGE,
-        }
-        preset_list_source = preset_list_sources.get(
-            source, JDXi.UI.Preset.Drum.PROGRAM_CHANGE
-        )
-        preset_list = convert_preset_dict_to_list(preset_list_source)
-        self._add_items_items_combo(preset_list)
-
-    def _add_items_items_combo(self, preset_list: list[dict[str, str | Any]] | Any):
-        """items to combo box"""
-        for item in preset_list:
-            label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
-            msb = int(item.get("msb"))
-            lsb = int(item.get("lsb"))
-            pc = int(item.get("pc"))
-            self.ui.automation_program_combo.addItem(label, (msb, lsb, pc))
-
-    def on_automation_type_changed(self, _: int) -> None:
-        """Handle automation type selection change."""
-        source = self.ui.automation_type_combo.currentText()
-        self.populate_automation_programs(source)
 
     def insert_program_change_current_position(self) -> None:
         """
@@ -743,11 +671,11 @@ class MidiFilePlayer(SynthEditor):
         # Time in seconds from slider
         current_seconds = float(self.ui.midi_file_position_slider.value())
         # Channel (digital is 1-16, convert to 0-based)
-        display_channel = int(self.ui.automation_channel_combo.currentData())
+        display_channel = int(self.automation.automation_channel_combo.currentData())
         channel = display_channel - 1
 
         # Selected program triple (msb, lsb, pc)
-        data = self.ui.automation_program_combo.currentData()
+        data = self.automation.automation_program_combo.currentData()
         if not data:
             return
         msb, lsb, pc = data
@@ -798,7 +726,7 @@ class MidiFilePlayer(SynthEditor):
 
         # Add a visual marker to the time ruler
         try:
-            preset_label = self.ui.automation_program_combo.currentText()
+            preset_label = self.automation.automation_program_combo.currentText()
             short_label = (
                 preset_label.split("  ")[1] if "  " in preset_label else preset_label
             )
@@ -1819,15 +1747,13 @@ class MidiFilePlayer(SynthEditor):
                 return
         self.midi_state.event_index = 0  # Default to the start if no match
 
-    def update_playback_start_time(
-        self, target_time: float
-    ) -> None:  # pylint: disable=unused-argument
+    def update_playback_start_time(self, target_time: float) -> None:
         """
         Adjusts the playback start time based on the scrub position.
+        Uses target_time (slider value in seconds) directly so elapsed_time
+        matches the scrubbed position and advances correctly during playback.
         """
-        scrub_tick = self.midi_state.events[self.midi_state.event_index][0]
-        scrub_time = scrub_tick * self.tick_duration
-        self.midi_state.playback_start_time = time.time() - scrub_time
+        self.midi_state.playback_start_time = time.time() - target_time
 
     def stop_all_notes(self) -> None:
         """
