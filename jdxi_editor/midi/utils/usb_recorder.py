@@ -28,7 +28,7 @@ class USBRecorder:
         self.channels = channels
         self.rate = rate
         self.frames_per_buffer = frames_per_buffer
-        self.file_save_recording = False  # Default to false
+        self.file_save_recording: bool = False  # Default to false
         self.usb_port_input_device_index = None
         self.usb_recording_rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
 

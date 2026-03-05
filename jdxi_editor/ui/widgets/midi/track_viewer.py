@@ -49,7 +49,7 @@ class MidiTrackViewer(QWidget):
         self.muted_channels: set[int] = set()
         # Per-track editors for batch apply
         self._track_name_edits: dict[int, QLineEdit] = {}
-        self._track_channel_spins: dict[int, MidiSpinBox] = {}
+        self.track_channel_spins: dict[int, MidiSpinBox] = {}
 
         # Main layout
         main_layout = QVBoxLayout(self)
@@ -133,7 +133,7 @@ class MidiTrackViewer(QWidget):
         self.muted_channels.clear()
         self.muted_tracks.clear()
         self._track_name_edits.clear()
-        self._track_channel_spins.clear()
+        self.track_channel_spins.clear()
         self._draggable_rows.clear()
 
         # Remove track widgets
@@ -496,7 +496,7 @@ class MidiTrackViewer(QWidget):
             spin.setFixedWidth(JDXi.UI.Style.TRACK_SPINBOX_WIDTH)
             spin.setPrefix("Ch")
             line_label_row.addWidget(spin)
-            self._track_channel_spins[i] = spin
+            self.track_channel_spins[i] = spin
 
             button_hlayout = QHBoxLayout()
             label_vlayout.addLayout(button_hlayout)
@@ -613,8 +613,8 @@ class MidiTrackViewer(QWidget):
 
         for i, t in enumerate(self.midi_file.tracks):
             desired_display_channel = (
-                self._track_channel_spins.get(i).value()
-                if i in self._track_channel_spins
+                self.track_channel_spins.get(i).value()
+                if i in self.track_channel_spins
                 else None
             )
             desired_channel = (
@@ -702,12 +702,12 @@ class MidiTrackViewer(QWidget):
         # Rebuild the track mappings to reflect new order
         # We need to preserve the track name edits and channel spins, but remap them
         old_name_edits = self._track_name_edits.copy()
-        old_channel_spins = self._track_channel_spins.copy()
+        old_channel_spins = self.track_channel_spins.copy()
         old_track_widgets = self.midi_track_widgets.copy()
 
         # Clear current mappings
         self._track_name_edits.clear()
-        self._track_channel_spins.clear()
+        self.track_channel_spins.clear()
         self.midi_track_widgets.clear()
         self._draggable_rows.clear()
 
@@ -734,7 +734,7 @@ class MidiTrackViewer(QWidget):
             if old_idx in old_name_edits:
                 self._track_name_edits[i] = old_name_edits[old_idx]
             if old_idx in old_channel_spins:
-                self._track_channel_spins[i] = old_channel_spins[old_idx]
+                self.track_channel_spins[i] = old_channel_spins[old_idx]
             if old_idx in old_track_widgets:
                 self.midi_track_widgets[i] = old_track_widgets[old_idx]
 

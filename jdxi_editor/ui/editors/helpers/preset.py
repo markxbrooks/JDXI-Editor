@@ -9,9 +9,32 @@ Example:
 """
 
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from jdxi_editor.core.jdxi import JDXi
+
+# JD-Xi SuperNATURAL Synth Tones (MSB 95) bank structure:
+# LSB 64: Tones 001-128, LSB 65: Tones 129-256
+# MIDI Program Change is 0-127, so presets 129+ require LSB 65 and PC = (preset - 129)
+
+
+def preset_to_jdxi_bank_pc(msb: int, lsb: int, pc: int) -> Tuple[int, int, int]:
+    """
+    Convert preset (msb, lsb, pc) to JD-Xi bank select + program change format.
+
+    The JD-Xi uses LSB 64 for presets 1-128 and LSB 65 for presets 129-256.
+    MIDI Program Change is 0-127, so presets 129+ must use the second bank.
+
+    :param msb: Bank MSB from preset (e.g. 95 for Digital Synth)
+    :param lsb: Bank LSB from preset (typically 64 in preset data)
+    :param pc: Preset number 1-based (1-256 for Digital Synth)
+    :return: (msb, lsb, midi_pc) where midi_pc is 0-127
+    """
+    if msb == 95 and pc > 128:
+        # SuperNATURAL Synth Tones: use LSB 65 for presets 129-256
+        return (msb, 65, pc - 129)  # 0-based: preset 129 -> 0, 131 -> 2
+    # Presets 1-128: use LSB 64, PC 0-127
+    return (msb, lsb, pc - 1)
 
 
 def get_preset_list_number_by_name(

@@ -4,7 +4,7 @@ MIDI playback state management.
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Literal
 
 from mido import MidiFile
 from picomidi.constant import Midi
@@ -20,7 +20,10 @@ class MidiPlaybackState:
     active_notes: dict = field(default_factory=lambda: defaultdict(set))
     buffered_msgs: list = field(default_factory=list)
     buffer_end_time: float = 0.0
-    channel_selected: MidiChannel = MidiChannel.DIGITAL_SYNTH_1
+    channel_selected: Literal[MidiChannel.DIGITAL_SYNTH_1,
+                              MidiChannel.DIGITAL_SYNTH_2,
+                              MidiChannel.ANALOG_SYNTH,
+                              MidiChannel.DRUM_KIT] = MidiChannel.DIGITAL_SYNTH_1
     events: list = field(default_factory=list)
     event_index_current: int = 0
     event_index: Optional[int] = None

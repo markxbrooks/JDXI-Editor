@@ -87,8 +87,16 @@ def start_recording(
             recording_rate=recording_rate,
             # --- e.g. pyaudio.paInt16
         )
+        def _on_finished_then_wait(output_file: str) -> None:
+            on_usb_recording_finished(output_file)
+            # Always wait for thread to fully terminate before returning - prevents
+            # "QThread: Destroyed while thread is still running" when WAV is saved
+            thread = usb_recorder.usb_recording_thread
+            if thread is not None:
+                thread.wait(5000)
+
         usb_recorder.usb_recording_thread.recording_finished.connect(
-            on_usb_recording_finished
+            _on_finished_then_wait
         )
         usb_recorder.usb_recording_thread.recording_error.connect(
             on_usb_recording_error

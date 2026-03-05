@@ -1299,17 +1299,19 @@ class PlaylistEditor(QWidget):
         log.message(f"📊 Cheat preset parameters: MSB={msb}, LSB={lsb}, PC={pc}")
         log_midi_info(msb, lsb, pc)
 
-        # Send bank select and program change on ANALOG_SYNTH channel (Ch3)
-        # Note: PC is 0-based in MIDI, so subtract 1
+        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
+        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
+
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
         try:
             self.midi_helper.send_bank_select_and_program_change(
-                MidiChannel.ANALOG_SYNTH,  # Send to Analog Synth channel (Ch3)
-                msb,  # MSB (typically 95 for Digital Synth presets)
-                lsb,  # LSB (typically 64)
-                pc - 1,  # Convert 1-based PC to 0-based
+                MidiChannel.ANALOG_SYNTH,
+                bank_msb,
+                bank_lsb,
+                midi_pc,
             )
             log.message(
-                f"✅ Sent cheat preset Program Change: Ch3, MSB={msb}, LSB={lsb}, PC={pc - 1} (0-based)"
+                f"✅ Sent cheat preset Program Change: Ch3, MSB={bank_msb}, LSB={bank_lsb}, PC={midi_pc} (0-based)"
             )
         except Exception as e:
             log.error(f"❌ Error sending cheat preset Program Change: {e}")

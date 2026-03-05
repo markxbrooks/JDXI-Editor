@@ -11,7 +11,10 @@ from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.preset import (
+    get_preset_parameter_value,
+    preset_to_jdxi_bank_pc,
+)
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
@@ -181,8 +184,9 @@ class PresetWidget(QWidget):
         log.parameter("[PresetWidget] combo box pc", pc)
         log_midi_info(msb, lsb, pc)
 
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
+        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
+
         # Use PresetWidget's midi_channel if set, otherwise fall back to parent's
         # Access ProgramEditor through ProgramGroupWidget.parent
         program_editor = getattr(self.parent, "parent", None) if self.parent else None
@@ -198,10 +202,10 @@ class PresetWidget(QWidget):
             else getattr(self.parent, "midi_channel", None)
         )
         program_editor.midi_helper.send_bank_select_and_program_change(
-            midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1,  # Convert 1-based PC to 0-based
+            midi_channel,
+            bank_msb,
+            bank_lsb,
+            midi_pc,  # Already 0-127
         )
         if hasattr(program_editor, "data_request"):
             program_editor.data_request()

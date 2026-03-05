@@ -4,7 +4,6 @@ MIDI Player for JDXI Editor
 
 import re
 import time
-from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
@@ -13,6 +12,8 @@ import mido
 import pyaudio
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
+
+from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec, build_panel
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
 from picomidi.playback.engine import PlaybackEngine
@@ -37,8 +38,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QSlider,
-)
+    QSlider, )
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -57,7 +57,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.helpers import start_recording
-from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
@@ -73,6 +72,7 @@ from jdxi_editor.ui.editors.midi_player.track.category import (
 )
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
+from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.source import PresetSource
@@ -97,6 +97,11 @@ QApplication = None  # alias placeholder for patching
 QObject = None
 Signal = None
 Slot = None
+
+
+class MidiFileAttrs:
+    """Midi File Attributes"""
+    TICKS_PER_BEAT = "ticks_per_beat"
 
 
 class MidiFilePlayer(SynthEditor):
@@ -140,9 +145,8 @@ class MidiFilePlayer(SynthEditor):
             MidiChannel.ANALOG_SYNTH,
             MidiChannel.DRUM_KIT,
         }  # MIDI channels 1, 2, 3, 10 (zero-based)
-        # self.usb_recording_thread = None
-        self.usb_recorder = USBRecorder(channels=1)
         # Initialize UI attributes
+        self.usb_recorder = USBFileRecordingWidget(self.midi_state)
         self.ui = MidiPlayerWidgets()
         self.specs = self._build_specs()
         self.ui_init()
@@ -188,8 +192,8 @@ class MidiFilePlayer(SynthEditor):
         Initialize the UI for the MidiPlayer.
         """
         panel_widgets = [
-            self.build_panel(self._build_left_panel),
-            self.build_panel(self._build_right_panel),
+            build_panel(self._build_left_panel),
+            build_panel(self._build_right_panel),
         ]
         # --- Top horizontal layout: file title and right-hand controls
         header_layout = create_layout_with_items(
@@ -231,12 +235,6 @@ class MidiFilePlayer(SynthEditor):
         content_widget = create_widget_with_layout(main_layout)
         container_layout.addWidget(content_widget)
         self._add_base_widget_to_editor()
-
-    def build_panel(self, builder: Callable) -> QWidget:
-        """build the appropriate panel"""
-        panel_layout = builder()
-        panel_widget = create_widget_with_layout(panel_layout)
-        return panel_widget
 
     def _add_base_widget_to_editor(self):
         """Add base widget to editor's layout"""
@@ -360,12 +358,8 @@ class MidiFilePlayer(SynthEditor):
         self.ui.midi_suppress_control_changes_checkbox = create_checkbox_from_spec(
             spec=self.specs["check_box"]["midi_suppress_cc_spec"]
         )
-        pc_label = QLabel("Program Change")
-        cc_label = QLabel("Control Change")
         widgets = [
-            pc_label,
             self.ui.midi_suppress_program_changes_checkbox,
-            cc_label,
             self.ui.midi_suppress_control_changes_checkbox,
         ]
         JDXi.UI.Theme.apply_button_mini_style(
@@ -445,8 +439,8 @@ class MidiFilePlayer(SynthEditor):
 
             updated_tracks = []
             for track_index, analysis in drum_tracks:
-                if track_index in self.ui.midi_track_viewer._track_channel_spins:
-                    spin = self.ui.midi_track_viewer._track_channel_spins[track_index]
+                if track_index in self.ui.midi_track_viewer.track_channel_spins:
+                    spin = self.ui.midi_track_viewer.track_channel_spins[track_index]
                     spin.setValue(drum_channel_display)
                     track_name = (
                         analysis.get("track_name") or f"Track {track_index + 1}"
@@ -541,7 +535,7 @@ class MidiFilePlayer(SynthEditor):
             meta = CATEGORY_META[category]
 
             for track_index, analysis in tracks:
-                spin = self.ui.midi_track_viewer._track_channel_spins.get(track_index)
+                spin = self.ui.midi_track_viewer.track_channel_spins.get(track_index)
                 if not spin:
                     continue
 
@@ -677,84 +671,16 @@ class MidiFilePlayer(SynthEditor):
             spec, checkable=False
         )
         insert_cell, self.ui.automation_insert_label = (
-            self.create_widget_cell_with_button_spec(
+            create_widget_cell_with_button_spec(
                 spec, self.ui.automation_insert_button
             )
         )
         grid.addWidget(insert_cell, row, 4)
         row += 1
-
-        # --- Row 1: USB Port
-        usb_port_layout, usb_port_label = create_icon_and_label(
-            label="USB Port for recording", icon=JDXi.UI.Icon.USB
-        )
-        grid.addLayout(usb_port_layout, row, 0)
-        self.ui.usb_port_select_combo = QComboBox()
-        self.usb_populate_devices()
-        grid.addWidget(self.ui.usb_port_select_combo, row, 1, 1, 2)
-        spec = self.specs["buttons"]["usb_port_refresh"]
-        self.ui.usb_port_refresh_devices_button = create_jdxi_button_from_spec(
-            spec, checkable=False
-        )
-        refresh_usb_cell, self.ui.usb_port_refresh_devices_label = (
-            self.create_widget_cell_with_button_spec(
-                spec, self.ui.usb_port_refresh_devices_button
-            )
-        )
-        grid.addWidget(refresh_usb_cell, row, 3)
-        row += 1
-
-        # --- Row 2: File to save recording
-        file_layout, file_label = create_icon_and_label(
-            label="File to save recording", icon=JDXi.UI.Icon.SAVE
-        )
-        grid.addLayout(file_layout, row, 0)
-        self.ui.usb_file_select = QPushButton("No File Selected")
-        self.ui.usb_file_select.clicked.connect(self.usb_select_recording_file)
-        grid.addWidget(self.ui.usb_file_select, row, 1, 1, 2)  # 2 = colspan I guess
-        # row += 1
-
-        # --- Row 2 still: Save USB recording checkbox
-        self.ui.usb_file_record_checkbox = QCheckBox("Save USB recording to file")
-        JDXi.UI.Theme.apply_button_mini_style(self.ui.usb_file_record_checkbox)
-        self.ui.usb_file_record_checkbox.setChecked(
-            self.usb_recorder.file_save_recording
-        )
-        self.ui.usb_file_record_checkbox.stateChanged.connect(
-            self.on_usb_save_recording_toggled
-        )
-        grid.addWidget(self.ui.usb_file_record_checkbox, row, 3)
-        # row += 1
-
-        # --- Row 3: Auto-generate WAV filename checkbox
-        self.ui.usb_file_auto_generate_checkbox = QCheckBox(
-            "Generate .Wav filename based on date, time and Midi file"
-        )
-        JDXi.UI.Theme.apply_button_mini_style(self.ui.usb_file_auto_generate_checkbox)
-        self.ui.usb_file_auto_generate_checkbox.setChecked(False)
-        self.ui.usb_file_auto_generate_checkbox.stateChanged.connect(
-            self.on_usb_file_auto_generate_toggled
-        )
-        grid.addWidget(self.ui.usb_file_auto_generate_checkbox, row, 4)
+        grid.addWidget(self.usb_recorder, row, 0, 1, 5)
 
         self.populate_automation_programs(PresetSource.DIGITAL)
         return grid
-
-    def create_widget_cell_with_button_spec(
-        self, spec: ButtonSpec, button
-    ) -> tuple[QLabel]:
-        """Create Widget With Button Spec"""
-        widget = QWidget()
-        layout = QHBoxLayout(widget)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(4)
-        layout.addWidget(button)
-        icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        row_widget, label = create_jdxi_row(spec.label, icon_pixmap=icon_pixmap)
-        layout.addWidget(row_widget)
-        return widget, label
 
     def populate_automation_programs(self, source: PresetSource) -> None:
         """
@@ -1058,83 +984,6 @@ class MidiFilePlayer(SynthEditor):
         if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
             self.ui.midi_track_viewer.apply_all_track_changes()
 
-    def generate_auto_wav_filename(self) -> Optional[str]:
-        """
-        Generate an automatic WAV filename based on current date/time and MIDI file name.
-
-        :return: Generated filename path or None if no MIDI file is loaded
-        """
-        if (
-            not self.midi_state.file
-            or not hasattr(self.midi_state.file, "filename")
-            or not self.midi_state.file.filename
-        ):
-            return None
-
-        # Get MIDI file path
-        midi_path = Path(self.midi_state.file.filename)
-        midi_stem = midi_path.stem  # filename without extension
-
-        # Generate timestamp: YYYYMMDD_HHMMSS
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        # Create WAV filename: YYYYMMDD_HHMMSS_<midi_filename>.wav
-        wav_filename = f"{timestamp}_{midi_stem}.wav"
-
-        # Use the same directory as the MIDI file, or current directory if no path
-        if midi_path.parent:
-            wav_path = midi_path.parent / wav_filename
-        else:
-            wav_path = Path(wav_filename)
-
-        return str(wav_path)
-
-    def update_auto_wav_filename(self) -> None:
-        """
-        Update the WAV filename automatically if auto-generate is enabled.
-        """
-        if self.ui.usb_file_auto_generate_checkbox.isChecked():
-            auto_filename = self.generate_auto_wav_filename()
-            if auto_filename:
-                self.ui.usb_file_output_name = auto_filename
-                self.ui.usb_file_select.setText(Path(auto_filename).name)
-                log.message(f"Auto-generated WAV filename: {auto_filename}")
-            else:
-                log.warning("⚠️ Cannot auto-generate filename: No MIDI file loaded")
-
-    def on_usb_file_auto_generate_toggled(self, state: Qt.CheckState):
-        """
-        on_usb_file_auto_generate_toggled
-
-        :param state: Qt.CheckState
-        :return:
-        """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXi.UI.Constants.CHECKED
-        )
-        is_enabled = self.ui.usb_file_auto_generate_checkbox.isChecked()
-        log.message(
-            f"Auto generate filename based on current date and time and Midi file = {is_enabled}"
-        )
-
-        # If enabled, generate filename immediately
-        if is_enabled:
-            self.update_auto_wav_filename()
-
-    def on_usb_file_output_name_changed(self, state: Qt.CheckState):
-        """
-        on_usb_file_output_name_changed
-
-        :param state: Qt.CheckState
-        :return:
-        """
-        self.ui.usb_file_auto_generate_checkbox.setChecked(
-            state == JDXi.UI.Constants.CHECKED
-        )
-        log.message(
-            f"Auto generate filename based on current date and time and Midi file = {self.ui.usb_file_auto_generate_checkbox.isChecked()}"
-        )
-
     def _create_transport_control(
         self,
         spec: TransportSpec,
@@ -1316,106 +1165,6 @@ class MidiFilePlayer(SynthEditor):
             f"Suppress MIDI Control Changes = {self.midi_state.suppress_control_changes}"
         )
 
-    def on_usb_save_recording_toggled(self, state: Qt.CheckState):
-        """
-        on_usb_save_recording_toggled
-
-        :param state: Qt.CheckState
-        :return:
-        """
-        self.usb_recorder.file_save_recording = state == JDXi.UI.Constants.CHECKED
-        log.message(f"save USB recording = {self.usb_recorder.file_save_recording}")
-
-    def usb_populate_devices(self) -> list:
-        """
-        usb_populate_devices
-
-        usb port selection
-
-        :return: list List of USB devices
-        """
-        usb_devices = self.usb_recorder.list_devices()
-        self.ui.usb_port_select_combo.clear()
-        self.ui.usb_port_select_combo.addItems(usb_devices)
-        self.usb_port_jdxi_auto_connect(usb_devices)
-        return usb_devices
-
-    def usb_port_jdxi_auto_connect(self, usb_devices: list) -> None:
-        """
-        usb_port_jdxi_auto_connect
-
-        :param usb_devices: list
-        :return: None
-
-        Auto-select the first matching device
-        """
-        pattern = re.compile(r"jd-?xi", re.IGNORECASE)
-        for i, item in enumerate(usb_devices):
-            if pattern.search(item):
-                self.ui.usb_port_select_combo.setCurrentIndex(i)
-                self.usb_recorder.usb_port_input_device_index = i
-                log.message(f"Auto-selected {item}")
-                break
-
-    def usb_start_recording(self, recording_rate: int = pyaudio.paInt16):
-        """
-        usb_start_recording
-
-        :param recording_rate: int
-        :return: None
-        Start recording in a separate thread
-        """
-        try:
-            # If auto-generate is enabled, regenerate filename with fresh timestamp
-            if self.ui.usb_file_auto_generate_checkbox.isChecked():
-                self.update_auto_wav_filename()
-
-            if not self.ui.usb_file_output_name:
-                log.warning(
-                    "⚠️ No output file selected for WAV recording. Please select a file or enable auto-generate."
-                )
-                show_message_box_from_spec(self.specs["message_box"]["no_output_file"])
-                return
-
-            log.message(f"🎙️ Starting WAV recording to: {self.ui.usb_file_output_name}")
-            log.message(
-                f"🎙️ Recording duration: {self.midi_state.file_duration_seconds} seconds"
-            )
-
-            selected_index = self.ui.usb_port_select_combo.currentIndex()
-            log.message(f"🎙️ Using USB input device index: {selected_index}")
-
-            start_recording(
-                self.usb_recorder,
-                self.midi_state.file_duration_seconds,
-                self.ui.usb_file_output_name,
-                recording_rate,
-                selected_index,
-            )
-        except Exception as ex:
-            log.error(f"❌ Error {ex} occurred starting recording")
-            import traceback
-
-            log.error(traceback.format_exc())
-            show_message_box_from_spec(
-                self.specs["message_box"]["error_saving_file"],
-                message=f"Error {ex} occurred starting recording",
-            )
-
-    def usb_select_recording_file(self):
-        """Open a file picker dialog to select output .wav file."""
-        file_name_spec = FileSelectionSpec(
-            mode=FileSelectionMode.SAVE,
-            filter="WAV files (*.wav)",
-            caption="Save Recording As",
-        )
-        file_name = get_file_save_from_spec(file_name_spec, parent=self)
-        if file_name:
-            self.ui.usb_file_select.setText(file_name)
-            self.ui.usb_file_output_name = file_name
-        else:
-            self.ui.usb_file_output_name = ""
-
     def midi_save_file(self) -> None:
         """
         midi_save_file
@@ -1478,8 +1227,8 @@ class MidiFilePlayer(SynthEditor):
         self._sync_mute_buttons_from_track_viewer()
 
         # Auto-generate WAV filename if checkbox is enabled
-        if self.ui.usb_file_auto_generate_checkbox.isChecked():
-            self.update_auto_wav_filename()
+        if self.usb_recorder.file_auto_generate_checkbox.isChecked():
+            self.usb_recorder.update_auto_wav_filename()
 
         # Ensure ticks_per_beat is available early
         self.ticks_per_beat = self.midi_state.file.ticks_per_beat
@@ -1530,11 +1279,11 @@ class MidiFilePlayer(SynthEditor):
         Calculate the duration of a single MIDI tick in seconds.
         """
         # Guard: ensure ticks_per_beat is set
-        if not hasattr(self, "ticks_per_beat") or self.ticks_per_beat is None:
+        if not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT) or self.ticks_per_beat is None:
             # Fallback to current file's ticks_per_beat if available
             if self.midi_state.file is not None:
                 self.ticks_per_beat = getattr(
-                    self.midi_state.file, "ticks_per_beat", 480
+                    self.midi_state.file, MidiFileAttrs.TICKS_PER_BEAT, 480
                 )
             else:
                 self.ticks_per_beat = 480
@@ -1568,7 +1317,7 @@ class MidiFilePlayer(SynthEditor):
             self.midi_state.file, self.midi_preferred_channels
         )
         if selected_channel is None:
-            selected_channel = 0
+            selected_channel = MidiChannel.DIGITAL_SYNTH_1
             log.warning("No suitable channel found; defaulting to channel 1")
         self.midi_state.channel_selected = selected_channel
 
@@ -1586,8 +1335,8 @@ class MidiFilePlayer(SynthEditor):
                 abs_time += msg.time
                 events.append((abs_time, msg, track_index))
         # Ensure ticks_per_beat is set before calculations
-        if not hasattr(self, "ticks_per_beat") or self.ticks_per_beat is None:
-            self.ticks_per_beat = getattr(self.midi_state.file, "ticks_per_beat", 480)
+        if not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT) or self.ticks_per_beat is None:
+            self.ticks_per_beat = getattr(self.midi_state.file, MidiFileAttrs.TICKS_PER_BEAT, 480)
         self.calculate_tick_duration()
         self.midi_state.events = sorted(events, key=lambda x: x[0])
 
@@ -1750,13 +1499,7 @@ class MidiFilePlayer(SynthEditor):
         if not self.midi_state.file or not self.midi_state.events:
             return
 
-        # If not paused, reset everything to start from beginning
-        if not self.midi_state.playback_paused:
-            # Clear buffer and reset playback position to beginning
-            self.midi_state.event_buffer.clear()
-            self.midi_state.buffer_end_time = 0
-            self.midi_state.event_index = 0
-            self.midi_state.playback_start_time = time.time()
+        self._test_paused_state_then_rewind()
         # If paused, resume from current position (pause logic handles this)
 
         # Ensure worker is properly set up before connecting
@@ -1768,13 +1511,43 @@ class MidiFilePlayer(SynthEditor):
                 start_tick = 0
             self.playback_engine.start(start_tick)
 
-        # Disconnect all existing connections first
+        self._disconnect_ui()
+        self._connect_worker()
+        self._connect_ui()
+        self.usb_recorder.start_recording()
+        try:
+            # Start the playback worker (already set up above)
+            self.start_playback_worker()
+
+        except Exception as ex:
+            log.error(f"Error {ex} occurred starting playback")
+
+    def _test_paused_state_then_rewind(self):
+        # If not paused, reset everything to start from beginning
+        if not self.midi_state.playback_paused:
+            # Clear buffer and reset playback position to beginning
+            self.midi_state.event_buffer.clear()
+            self.midi_state.buffer_end_time = 0
+            self.midi_state.event_index = 0
+            self.midi_state.playback_start_time = time.time()
+
+    def _connect_ui(self):
+        """Connect UI update"""
+        try:
+            self.midi_state.timer.timeout.connect(self.midi_play_next_event)
+            log.message("Success: Connected midi_play_next_event to timeout")
+        except Exception as ex:
+            log.error(f"Error {ex} connecting midi_play_next_event to timeout")
+
+    def _disconnect_ui(self):
+        """Disconnect all existing connections first"""
         try:
             self.midi_state.timer.timeout.disconnect()  # Disconnect all
             log.debug("Disconnected all timeout signals")
         except Exception as ex:
             log.debug(f"Disconnecting all timeout signals: {ex}")
 
+    def _connect_worker(self):
         # Connect worker if available
         try:
             if self.midi_playback_worker is not None:
@@ -1786,30 +1559,6 @@ class MidiFilePlayer(SynthEditor):
                 log.warning("⚠️ midi_playback_worker is None, skipping connection")
         except Exception as ex:
             log.error(f"Error {ex} connecting worker to timeout")
-
-        # Connect UI update
-        try:
-            self.midi_state.timer.timeout.connect(self.midi_play_next_event)
-            log.message("Success: Connected midi_play_next_event to timeout")
-        except Exception as ex:
-            log.error(f"Error {ex} connecting midi_play_next_event to timeout")
-
-        if self.usb_recorder.file_save_recording:
-            recording_rate = "32bit"  # Default to 32-bit recording
-            try:
-                rate = self.usb_recorder.usb_recording_rates.get(
-                    recording_rate, pyaudio.paInt16
-                )
-                self.usb_start_recording(recording_rate=rate)
-            except Exception as ex:
-                log.error(f"Error {ex} occurred starting USB recording")
-
-        try:
-            # Start the playback worker (already set up above)
-            self.start_playback_worker()
-
-        except Exception as ex:
-            log.error(f"Error {ex} occurred starting playback")
 
     def setup_playback_worker(self):
         """
@@ -2184,7 +1933,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_state.buffer_end_time = 0
 
         # Stop USB recording if active
-        self.usb_recorder.stop_recording()
+        self.usb_recorder.recorder.stop_recording()
 
         # Update digital to show tempo only (no bar when stopped)
         if self.current_tempo_bpm is not None:
@@ -2537,12 +2286,6 @@ class MidiFilePlayer(SynthEditor):
                 tooltip="Save MIDI file",
                 icon=JDXi.UI.Icon.FLOPPY_DISK,
                 slot=self.midi_save_file,
-            ),
-            "usb_port_refresh": ButtonSpec(
-                label="Refresh USB Device List",
-                tooltip="Refresh USB devices",
-                icon=JDXi.UI.Icon.REFRESH,
-                slot=self.usb_populate_devices,
             ),
         }
 

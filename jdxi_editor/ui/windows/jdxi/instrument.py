@@ -315,6 +315,8 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         try:
+            # Wait for any USB recording threads to avoid "Destroyed while still running"
+            self._wait_for_usb_recording_threads()
             self.midi_helper.close_ports()
             self._save_settings()
             event.accept()
@@ -323,6 +325,23 @@ class JDXiInstrument(JDXiWindow):
                 scope="JDXiInstrument", message=f" Error during close event: {str(ex)}"
             )
             event.ignore()
+
+    def _wait_for_usb_recording_threads(self) -> None:
+        """Wait for any active USB recording threads before exit."""
+        for editor in getattr(self, "editors", []):
+            usb_recorder = getattr(editor, "usb_recorder", None)
+            if usb_recorder is None:
+                continue
+            recorder = getattr(usb_recorder, "recorder", None)
+            if recorder is None:
+                continue
+            thread = getattr(recorder, "usb_recording_thread", None)
+            if thread is not None and thread.isRunning():
+                log.message(
+                    scope="JDXiInstrument",
+                    message="Waiting for USB recording to finish before exit...",
+                )
+                thread.wait(5000)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """

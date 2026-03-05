@@ -56,7 +56,10 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.preset import (
+    get_preset_parameter_value,
+    preset_to_jdxi_bank_pc,
+)
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_id,
@@ -465,13 +468,13 @@ class PresetEditor(BasicEditor):
         log.parameter("combo box pc", pc, scope=self.__class__.__name__)
         log_midi_info(msb, lsb, pc)
 
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
+        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1,  # Convert 1-based PC to 0-based
+            self.midi_channel,
+            bank_msb,
+            bank_lsb,
+            midi_pc,  # Already 0-127
         )
         self.data_request()
 

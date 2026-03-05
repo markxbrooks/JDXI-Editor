@@ -21,6 +21,9 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import MidiFile, MidiTrack
+
+from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from picomidi.ui.widget.transport.spec import TransportSpec
 from picoui.helpers import create_layout_with_items, group_with_layout
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
@@ -63,6 +66,7 @@ from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.style import JDXiUIThemeManager
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
@@ -141,6 +145,8 @@ class PatternUI(SynthEditor):
             None  # Store copied notes: {source_measure, rows, start_step, end_step, notes_data}
         )
         self._pattern_paused: bool = False
+        self.midi_state: MidiPlaybackState = MidiPlaybackState()
+        self.usb_recorder = USBFileRecordingWidget(self.midi_state)
         self._setup_ui()
 
         JDXi.UI.Theme.apply_editor_style(self)
@@ -208,17 +214,20 @@ class PatternUI(SynthEditor):
         learn_group = self._create_learn_group()
         # not adding this for now
 
+        # --- Group 1 : Tempo and Beats
         tempo_group = self._create_tempo_group()
-        control_panel.addWidget(tempo_group)
-
         beats_group = self._create_beats_group()
-        control_panel.addWidget(beats_group)
+        tempo_beats_layout = create_layout_with_items([tempo_group, beats_group], vertical=True)
+        control_panel.addLayout(tempo_beats_layout)
 
+        # --- Group 2: Velocity and duration
         velocity_group = self._create_velocity_group()
-        control_panel.addWidget(velocity_group)
-
         duration_group = self._create_duration_group()
-        control_panel.addWidget(duration_group)
+        velocity_duration_layout = create_layout_with_items([velocity_group, duration_group], vertical=True)
+        control_panel.addLayout(velocity_duration_layout)
+
+        # --- add usb recorder
+        control_panel.addWidget(self.usb_recorder)
 
         self.layout.addLayout(control_panel)
 
@@ -275,6 +284,10 @@ class PatternUI(SynthEditor):
             mute_btn_layout,
             checkable=True,
             append_to=self.mute_buttons,
+        )
+        # Synth-style: unmuted=lit, muted=dark (checked_means_inactive)
+        mute_btn.setStyleSheet(
+            generate_sequencer_button_style(True, checked_means_inactive=True)
         )
         mute_btn.toggled.connect(
             lambda checked, row=row_idx: self._toggle_mute(row, checked)
@@ -830,3 +843,6 @@ class PatternUI(SynthEditor):
 
     def _on_button_clicked(self, btn, checked):
         raise NotImplementedError("To be implemented in subclass")
+
+    def _toggle_mute(self, row, checked):
+        pass

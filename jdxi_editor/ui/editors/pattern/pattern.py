@@ -22,6 +22,9 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
+
+from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from picomidi import Channel, ControlChange, ControlValue, MidiChannel, MidiTempo
 from picomidi.core.tempo import (
     MeasureBeats,
@@ -90,6 +93,7 @@ from jdxi_editor.ui.editors.pattern.learner import (
 from jdxi_editor.ui.editors.pattern.sequencer.row import SequencerRow
 from jdxi_editor.ui.editors.pattern.timing.config import TimingConfig
 from jdxi_editor.ui.editors.pattern.ui import PatternUI
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.sequencer.button.manager import (
     NoteButtonAttrs,
@@ -165,6 +169,7 @@ class PatternSequenceEditor(PatternUI):
         )  # Track active notes (midi_note -> row index)
         self._pattern_paused: bool = False
         self._pattern_loop_enabled: bool = True  # Loop by default; toggle via future UI
+        self._pattern_file_path: Optional[str] = None  # Last saved/loaded path for USB auto-filename
         self.playback_engine: PlaybackEngine = PlaybackEngine()
         self._wire_pattern_widget()
         self._init_style()
@@ -688,6 +693,7 @@ class PatternSequenceEditor(PatternUI):
 
     def _clear_pattern(self):
         """Clear the learned pattern and reset button states."""
+        self._pattern_file_path = None
         self._init_midi_file()
         if self.pattern_widget:
             self.pattern_widget.clear_and_reset(1)
@@ -1335,6 +1341,7 @@ class PatternSequenceEditor(PatternUI):
         self._create_tracks_per_row(midi_file)
 
         self._save_midi_file(filename, midi_file)
+        self._pattern_file_path = filename
 
         self._update_midi_file_editor_with_file(filename)
 
@@ -1444,6 +1451,7 @@ class PatternSequenceEditor(PatternUI):
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
         try:
+            self._pattern_file_path = filename
             midi_file = MidiFile(filename)
             ppq = midi_file.ticks_per_beat
             beats_per_bar = 4
@@ -1903,8 +1911,12 @@ class PatternSequenceEditor(PatternUI):
 
         return midi_file
 
-    def play_pattern(self):
-        """Start playing the pattern via PlaybackEngine."""
+    def play_pattern(self, *, restart_loop: bool = False):
+        """Start playing the pattern via PlaybackEngine.
+
+        :param restart_loop: If True, we're restarting after a loop; skip USB recording
+            (recording continues from initial Play).
+        """
         if hasattr(self, "timer") and self.timer and self.timer.isActive():
             return  # Already playing
         if not self.measure_widgets:
@@ -1917,6 +1929,16 @@ class PatternSequenceEditor(PatternUI):
                 message="Pattern has no notes to play", scope=self.__class__.__name__
             )
             return
+
+        # Start USB recording only on initial Play, not when looping
+        if not restart_loop:
+            self.midi_state.file = mid
+            self.midi_state.file.filename = self._pattern_file_path or "pattern"
+            # Use 1 hour max; user stops recording manually via Stop button
+            self.midi_state.file_duration_seconds = 3600.0
+            if self.usb_recorder.file_auto_generate_checkbox.isChecked():
+                self.usb_recorder.update_auto_wav_filename()
+            self.usb_recorder.start_recording()
 
         self.playback_engine.load_file(mid)
         for ch in range(MeasureBeats.PER_MEASURE_4_4):
@@ -1998,7 +2020,7 @@ class PatternSequenceEditor(PatternUI):
             if self._pattern_loop_enabled:
                 if self.timer:
                     self.timer.stop()
-                self.play_pattern()
+                self.play_pattern(restart_loop=True)
             else:
                 self._apply_transport_state(TransportState.STOPPED)
 
@@ -2030,6 +2052,12 @@ class PatternSequenceEditor(PatternUI):
         """Stop playing the pattern"""
         self.playback_engine.stop()
         self._sync_ui_to_stopped()
+
+        # Stop USB recording (pattern records until user stops manually)
+        if hasattr(self.usb_recorder, "recorder") and hasattr(
+            self.usb_recorder.recorder, "stop_recording"
+        ):
+            self.usb_recorder.recorder.stop_recording()
 
         # Reset step counter
         self.current_step = 0
@@ -2284,8 +2312,15 @@ class PatternSequenceEditor(PatternUI):
             log.message(message=f"Row {row} unmuted", scope=self.__class__.__name__)
             self.muted_channels.remove(channel)
 
+        # Synth-style: unmuted=lit, muted=dark
+        if row < len(self.mute_buttons):
+            self.mute_buttons[row].setStyleSheet(
+                generate_sequencer_button_style(
+                    not checked, checked_means_inactive=True
+                )
+            )
+
         # Update the UI or internal state to reflect the mute status
-        # For example, you might want to disable the buttons in the row
         for button in self.buttons[row]:
             button.setEnabled(not checked)
 
