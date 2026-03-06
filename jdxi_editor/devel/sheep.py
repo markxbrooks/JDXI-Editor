@@ -6,6 +6,7 @@ import time
 import fluidsynth
 import mido
 from mido import MidiFile
+
 from picomidi.message.type import MidoMessageType
 
 # Configuration

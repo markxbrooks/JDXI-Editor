@@ -10,9 +10,10 @@ import sys
 import time
 
 import rtmidi
-from picomidi import BitMask, MidiStatus
 from PySide6.QtCore import QCoreApplication, QTimer
 from PySide6.QtWidgets import QApplication
+
+from picomidi import BitMask, MidiStatus
 
 # Add the project root to the path
 sys.path.insert(0, "/Users/brooks/projects/JDXI-Editor")

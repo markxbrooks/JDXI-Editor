@@ -14,6 +14,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
+from PySide6.QtCore import QObject, Qt, QTimer
+
 from picomidi.core.tempo import bpm_to_ticks
 from picomidi.message.type import MidoMetaMessageType
 from picomidi.messages.note import build_midi_note, note_off, note_on
@@ -24,7 +26,6 @@ from picomidi.playback.engine import (
 from picomidi.playback.worker import MidiPlaybackWorker
 from picomidi.sequencer.event import SequencerEvent
 from picomidi.ui.widget.button.note import NoteButtonEvent
-from PySide6.QtCore import QObject, Qt, QTimer
 
 
 class PlaybackConfig:

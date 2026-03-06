@@ -4,13 +4,13 @@ MIDI playback state management.
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 from mido import MidiFile
-from picomidi.constant import Midi
 from PySide6.QtCore import QThread, QTimer
 
 from jdxi_editor.midi.channel.channel import MidiChannel
+from picomidi.constant import Midi
 
 
 @dataclass
@@ -20,10 +20,12 @@ class MidiPlaybackState:
     active_notes: dict = field(default_factory=lambda: defaultdict(set))
     buffered_msgs: list = field(default_factory=list)
     buffer_end_time: float = 0.0
-    channel_selected: Literal[MidiChannel.DIGITAL_SYNTH_1,
-                              MidiChannel.DIGITAL_SYNTH_2,
-                              MidiChannel.ANALOG_SYNTH,
-                              MidiChannel.DRUM_KIT] = MidiChannel.DIGITAL_SYNTH_1
+    channel_selected: Literal[
+        MidiChannel.DIGITAL_SYNTH_1,
+        MidiChannel.DIGITAL_SYNTH_2,
+        MidiChannel.ANALOG_SYNTH,
+        MidiChannel.DRUM_KIT,
+    ] = MidiChannel.DIGITAL_SYNTH_1
     events: list = field(default_factory=list)
     event_index_current: int = 0
     event_index: Optional[int] = None

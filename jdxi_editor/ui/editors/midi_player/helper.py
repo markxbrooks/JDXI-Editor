@@ -1,6 +1,6 @@
 from typing import Callable
 
-from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_row
@@ -9,7 +9,7 @@ from picoui.specs.widgets import ButtonSpec
 
 
 def create_widget_cell_with_button_spec(
-        spec: ButtonSpec, button
+    spec: ButtonSpec, button
 ) -> tuple[QWidget, QLabel]:
     """Create Widget With Button Spec"""
     widget = QWidget()

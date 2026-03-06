@@ -354,11 +354,13 @@ class InstrumentPresetWidget(QWidget):
             for preset in JDXi.UI.Preset.Digital.LIST
         ]
         # Convert preset IDs to integers for SearchableFilterableComboBox (e.g., "001" -> 1)
-        preset_values = [
-            int(p.get("id", "000")) for p in JDXi.UI.Preset.Digital.LIST
-        ]
+        preset_values = [int(p.get("id", "000")) for p in JDXi.UI.Preset.Digital.LIST]
         preset_categories = sorted(
-            set(_preset_category(p) for p in JDXi.UI.Preset.Digital.LIST if _preset_category(p))
+            set(
+                _preset_category(p)
+                for p in JDXi.UI.Preset.Digital.LIST
+                if _preset_category(p)
+            )
         )
 
         # Category filter function for presets

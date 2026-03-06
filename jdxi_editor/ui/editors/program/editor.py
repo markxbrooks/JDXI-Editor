@@ -36,15 +36,13 @@ Dependencies:
 - JDXiProgramList.PROGRAM_LIST for predefined program data
 
 """
+
 from dataclasses import dataclass
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
 
 from decologr import Decologr as log
-from jdxi_editor.ui.style.dimensions import Dimensions
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QTabWidget, QSlider
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QSlider, QTabWidget
 
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -72,20 +70,24 @@ from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
-from jdxi_editor.ui.editors.program.mixer.section import ProgramMixer, MixerAttrs
+from jdxi_editor.ui.editors.program.mixer.section import MixerAttrs, ProgramMixer
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.programs.programs import JDXiUIProgramList
+from jdxi_editor.ui.style.dimensions import Dimensions
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ProgramEditorDimensions(Dimensions):
     """ProgramEditor Dimensions"""
+
     WIDTH = 400
     HEIGHT = 400
 
@@ -93,6 +95,7 @@ class ProgramEditorDimensions(Dimensions):
 @dataclass
 class EditorSpec:
     """Editor Spec"""
+
     title: str = ""
     default_image: str = ""
     instrument_icon_folder: str = ""
@@ -103,29 +106,32 @@ class ProgramEditor(BasicEditor):
     """Program Editor Window"""
 
     TEMPORARY_AREA_HANDLERS = {
-            JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
-                SysExSection.PROGRAM_LEVEL: (ProgramCommonParam.PROGRAM_LEVEL, MixerAttrs.MASTER)
-            },
-            # Use (param_constant, slider) like Master/Drums so Analog is as reliable
-            JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
-                SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, MixerAttrs.ANALOG),
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
-                SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, MixerAttrs.DRUMS)
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
-                SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.TONE_LEVEL,
-                    MixerAttrs.DIGITAL1,
-                )
-            },
-            JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
-                SysExSection.TONE_LEVEL: (
-                    DigitalCommonParam.TONE_LEVEL,
-                    MixerAttrs.DIGITAL2,
-                )
-            },
-        }
+        JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name: {
+            SysExSection.PROGRAM_LEVEL: (
+                ProgramCommonParam.PROGRAM_LEVEL,
+                MixerAttrs.MASTER,
+            )
+        },
+        # Use (param_constant, slider) like Master/Drums so Analog is as reliable
+        JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH.name: {
+            SysExSection.AMP_LEVEL: (AnalogParam.AMP_LEVEL, MixerAttrs.ANALOG),
+        },
+        JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name: {
+            SysExSection.KIT_LEVEL: (DrumCommonParam.KIT_LEVEL, MixerAttrs.DRUMS)
+        },
+        JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name: {
+            SysExSection.TONE_LEVEL: (
+                DigitalCommonParam.TONE_LEVEL,
+                MixerAttrs.DIGITAL1,
+            )
+        },
+        JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name: {
+            SysExSection.TONE_LEVEL: (
+                DigitalCommonParam.TONE_LEVEL,
+                MixerAttrs.DIGITAL2,
+            )
+        },
+    }
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
 
@@ -152,10 +158,12 @@ class ProgramEditor(BasicEditor):
             MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
-        self.spec = EditorSpec(default_image="programs.png",
-                               instrument_icon_folder="programs",
-                               title="Program Editor",
-                               dimensions=ProgramEditorDimensions())
+        self.spec = EditorSpec(
+            default_image="programs.png",
+            instrument_icon_folder="programs",
+            title="Program Editor",
+            dimensions=ProgramEditorDimensions(),
+        )
         self.default_image = self.spec.default_image
         self.instrument_icon_folder = self.spec.instrument_icon_folder
         self.instrument_title_label = QLabel()  # Just to stop error messages for now
@@ -774,8 +782,8 @@ class ProgramEditor(BasicEditor):
         """add program to database"""
         index = len(self.programs)
         if (
-                self.program_group_widget
-                and self.program_group_widget.program_number_combo_box
+            self.program_group_widget
+            and self.program_group_widget.program_number_combo_box
         ):
             self.program_group_widget.program_number_combo_box.addItem(
                 f"{program_id} - {program_name}", index
@@ -959,9 +967,7 @@ class ProgramEditor(BasicEditor):
             PresetTitle.DRUMS: JDXiSynth.DRUM_KIT,
             PresetTitle.ANALOG_SYNTH: JDXiSynth.ANALOG_SYNTH,
         }
-        synth_type = preset_type_to_synth.get(
-            preset_type, JDXiSynth.DIGITAL_SYNTH_1
-        )
+        synth_type = preset_type_to_synth.get(preset_type, JDXiSynth.DIGITAL_SYNTH_1)
         self.preset_helper.load_preset_by_program_change(program_number, synth_type)
         self.data_request()
 
@@ -983,9 +989,9 @@ class ProgramEditor(BasicEditor):
         synth_tone = sysex_data.get(SysExSection.SYNTH_TONE)
 
         if (
-                address_hex == "18000000"
-                and SysExSection.PROGRAM_LEVEL in sysex_data
-                and temporary_area != JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
+            address_hex == "18000000"
+            and SysExSection.PROGRAM_LEVEL in sysex_data
+            and temporary_area != JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
         ):
             sysex_data[SysExSection.TEMPORARY_AREA] = (
                 JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM.name
@@ -1050,7 +1056,13 @@ class ProgramEditor(BasicEditor):
 
         log.debug_info(successes, failures, scope=self.__class__.__name__)
 
-    def _handle_sliders(self, sysex_data: dict, temporary_area: str | None, successes: list[Any], failures: list[Any]):
+    def _handle_sliders(
+        self,
+        sysex_data: dict,
+        temporary_area: str | None,
+        successes: list[Any],
+        failures: list[Any],
+    ):
         """Slider handling"""
         handler = self.TEMPORARY_AREA_HANDLERS.get(temporary_area)
         if not handler:
@@ -1068,16 +1080,16 @@ class ProgramEditor(BasicEditor):
                     # Use slider_attr for lookup: digital1 and digital2 both use TONE_LEVEL,
                     # so controls.get(param) would always return digital2's slider
                     slider = self.get_mixer_slider(slider_attr)
-                    self._update_slider(
-                        param, param_value, successes, failures, slider
-                    )
+                    self._update_slider(param, param_value, successes, failures, slider)
                 except Exception as ex:
                     log.error(
                         f"Error handling temporary area {ex}",
                         scope=self.__class__.__name__,
                     )
 
-    def get_mixer_slider_by_param(self, slider_param: AddressParameter) -> QWidget | None:
+    def get_mixer_slider_by_param(
+        self, slider_param: AddressParameter
+    ) -> QWidget | None:
         """get mixer slider"""
         if self.mixer_widget:
             slider = self.mixer_widget.controls[slider_param]

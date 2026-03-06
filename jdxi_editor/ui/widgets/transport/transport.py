@@ -2,41 +2,50 @@
 UI components for Transport widget.
 """
 
-from PySide6.QtWidgets import QLabel, QPushButton, QButtonGroup, QHBoxLayout, QWidget, QGroupBox, QVBoxLayout
+from PySide6.QtWidgets import QButtonGroup, QGroupBox, QHBoxLayout, QLabel, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec, create_jdxi_row
+from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.editors.helpers.widgets import (
+    create_jdxi_button_from_spec,
+    create_jdxi_row,
+)
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
+from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from picomidi.ui.widget.transport.spec import TransportSpec
 
 
-class TransportWidget(QWidget):
+class TransportWidget(JDXiMidiGroup):
     """UI class for Transport Widget."""
 
-    def __init__(self, parent: "MidiFilePlayer"):
+    def __init__(self, parent: "MidiFilePlayer", midi_state: MidiPlaybackState = None):
         """constructor"""
-        super().__init__()
-        self.parent = parent
+        super().__init__(parent=parent, midi_state=midi_state)
         self.pause_label: QLabel | None = None
         self.play_button = QPushButton()
         self.stop_button = QPushButton()
         self.pause_button = QPushButton()
         self.setup_ui()
 
-    def setup_ui(self):
-        """set up ui"""
-        layout = QVBoxLayout(self)
-        group = self.init_transport_controls()
-        layout.addWidget(group)
-
-    def init_transport_controls(self) -> QGroupBox:
+    def _build_group(self) -> QGroupBox:
         """init transport controls"""
         group, transport_layout = create_group_with_layout("Transport", vertical=False)
         transport_button_group = QButtonGroup(self)
         transport_button_group.setExclusive(True)
 
-        controls = [
-            TransportSpec(
+        for spec in self.specs["transport"].values():
+            self._create_transport_control(
+                spec, transport_layout, transport_button_group
+            )
+
+        return group
+
+    def _build_button_specs(self) -> dict[str, TransportSpec]:
+        pass
+
+    def _build_transport_specs(self) -> dict[str, TransportSpec]:
+        return {
+            "play": TransportSpec(
                 label="Play",
                 icon=JDXi.UI.Icon.PLAY,
                 tooltip="Play",
@@ -45,7 +54,7 @@ class TransportWidget(QWidget):
                 name="play",
                 text="Play",
             ),
-            TransportSpec(
+            "stop": TransportSpec(
                 label="Stop",
                 icon=JDXi.UI.Icon.STOP,
                 tooltip="Stop",
@@ -54,7 +63,7 @@ class TransportWidget(QWidget):
                 name="stop",
                 text="Stop",
             ),
-            TransportSpec(
+            "pause": TransportSpec(
                 label="Pause",
                 icon=JDXi.UI.Icon.PAUSE,
                 tooltip="Pause",
@@ -63,14 +72,7 @@ class TransportWidget(QWidget):
                 name="pause",
                 text="Pause",
             ),
-        ]
-
-        for spec in controls:
-            self._create_transport_control(
-                spec, transport_layout, transport_button_group
-            )
-
-        return group
+        }
 
     def set_state(self, state: str):
         """set state"""

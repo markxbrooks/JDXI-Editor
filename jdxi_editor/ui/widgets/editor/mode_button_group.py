@@ -13,8 +13,8 @@ enumerated modes.
 
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Optional
-from decologr import Decologr as log
 
+from decologr import Decologr as log
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QPushButton

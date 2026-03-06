@@ -40,10 +40,9 @@ Usage example:
 
 from typing import Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.midi.data.address.arpeggio import ARP_GROUP
 from jdxi_editor.midi.parameter.spec import ParameterSpec
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class ArpeggioParam(AddressParameter):

@@ -2,9 +2,8 @@
 Parameter Offset Table
 """
 
-from picomidi.core.parameter.factory import AddressFactory
-
 from jdxi_editor.midi.data.parameter.offset.name import ParameterOffsetName
+from picomidi.core.parameter.factory import AddressFactory
 
 parameter_offset_table = [  # must be 3-byte offsets
     (ParameterOffsetName.SYSTEM_COMMON, "00 00 00"),

@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 @dataclass

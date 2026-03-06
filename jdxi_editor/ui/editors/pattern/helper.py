@@ -1,10 +1,10 @@
-from picomidi.ui.widget.button.note import NoteButtonEvent
 from PySide6.QtWidgets import QPushButton, QSpinBox
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
+from picomidi.ui.widget.button.note import NoteButtonEvent
 
 
 def reset_button(button: SequencerButton):

@@ -21,11 +21,6 @@ import logging
 from typing import Iterable, Optional
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-from picomidi.utils.formatting import (
-    format_message_to_hex_string as format_midi_message_to_hex_string,
-)
 from PySide6.QtCore import Signal
 
 from jdxi_editor.globals import silence_midi_note_logging
@@ -41,6 +36,11 @@ from jdxi_editor.midi.message.channel.message import ChannelMessage
 from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.validation import validate_midi_message
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
+from picomidi.utils.formatting import (
+    format_message_to_hex_string as format_midi_message_to_hex_string,
+)
 
 
 class MidiOutHandler(MidiIOController):

@@ -28,12 +28,12 @@ Customization:
 """
 
 import numpy as np
-from picomidi.constant import Midi
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotConfig, PlotContext
+from picomidi.constant import Midi
 
 
 def midi_value_to_float(value: int) -> float:

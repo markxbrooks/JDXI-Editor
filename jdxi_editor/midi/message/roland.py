@@ -27,10 +27,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
 from decologr import Decologr as log
-from picomidi import RolandSysExMessage
-from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import (
@@ -46,6 +42,10 @@ from jdxi_editor.midi.data.address.sysex import (
     RolandID,
 )
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExMessageLayout
+from picomidi import RolandSysExMessage
+from picomidi.constant import Midi
+from picomidi.core.bitmask import BitMask
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 @dataclass

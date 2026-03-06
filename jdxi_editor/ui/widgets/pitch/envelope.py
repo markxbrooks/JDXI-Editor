@@ -16,12 +16,6 @@ from dataclasses import dataclass
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import (
-    midi_value_to_ms,
-    ms_to_midi_value,
-)
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QGridLayout, QWidget
 
@@ -32,6 +26,12 @@ from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import (
+    midi_value_to_ms,
+    ms_to_midi_value,
+)
 
 
 @dataclass

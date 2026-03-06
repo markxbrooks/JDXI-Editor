@@ -5,11 +5,11 @@ Helper functions
 import os.path
 
 from decologr import Decologr as log
-from picoui.specs.widgets import MessageBoxSpec
 
 from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from picoui.specs.widgets import MessageBoxSpec
 
 
 def on_usb_recording_finished(output_file: str):
@@ -87,6 +87,7 @@ def start_recording(
             recording_rate=recording_rate,
             # --- e.g. pyaudio.paInt16
         )
+
         def _on_finished_then_wait(output_file: str) -> None:
             on_usb_recording_finished(output_file)
             # Always wait for thread to fully terminate before returning - prevents

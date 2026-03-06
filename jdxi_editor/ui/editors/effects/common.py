@@ -58,8 +58,6 @@ Features:
 from __future__ import annotations
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -104,6 +102,8 @@ from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelpe
 from jdxi_editor.ui.widgets.group import WidgetGroups
 from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class EffectsCommonEditor(BasicEditor):

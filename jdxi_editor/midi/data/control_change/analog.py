@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Tuple
 
-from picomidi.constant import Midi
 from shiboken6.Shiboken import Object
 
 from jdxi_editor.midi.data.control_change.base import ControlChange
+from picomidi.constant import Midi
 
 
 class AnalogControlChange(ControlChange):

@@ -1,9 +1,8 @@
 import re
 
+from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
 from picomidi.core.parameter.factory import AddressFactory
 from picomidi.core.parameter.kind import ByteGroupKind
-
-from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
 
 # Simplified token matchers
 TOKENS = {

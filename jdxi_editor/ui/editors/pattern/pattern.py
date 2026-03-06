@@ -22,8 +22,63 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QGroupBox,
+    QHBoxLayout,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QWidget,
+)
 
+from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from jdxi_editor.midi.file.controller import (
+    MidiFileController,
+    MidiFileControllerConfig,
+)
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.playback.controller import (
+    PatternPlaybackController,
+    PlaybackConfig,
+)
 from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.editors.helpers.widgets import (
+    create_jdxi_button,
+    create_jdxi_button_from_spec,
+    create_jdxi_button_with_label_from_spec,
+    create_jdxi_row,
+)
+from jdxi_editor.ui.editors.pattern.helper import (
+    get_button_note_spec,
+    reset_button,
+    reset_measure,
+    set_sequencer_style,
+    sync_button_note_spec,
+    update_button_state,
+)
+from jdxi_editor.ui.editors.pattern.learner import (
+    PatternLearner,
+    PatternLearnerConfig,
+    PatternLearnerEvent,
+)
+from jdxi_editor.ui.editors.pattern.sequencer.row import SequencerRow
+from jdxi_editor.ui.editors.pattern.timing.config import TimingConfig
+from jdxi_editor.ui.editors.pattern.ui import PatternUI
+from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.sequencer.button.manager import (
+    NoteButtonAttrs,
+    SequencerButtonManager,
+)
+from jdxi_editor.ui.style.factory import generate_sequencer_button_style
+from jdxi_editor.ui.widgets.combo_box.synchronizer import (
+    ComboBoxSynchronizer,
+    ComboBoxUpdateConfig,
+)
+from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
+from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from picomidi import Channel, ControlChange, ControlValue, MidiChannel, MidiTempo
 from picomidi.core.tempo import (
@@ -49,62 +104,6 @@ from picoui.specs.widgets import (
 )
 from picoui.widget.helper import get_file_path_from_spec
 from picoui.widget.setters import set_spinbox_value
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import (
-    QButtonGroup,
-    QGroupBox,
-    QHBoxLayout,
-    QListWidgetItem,
-    QMessageBox,
-    QPushButton,
-    QWidget,
-)
-
-from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.conversion.note import MidiNoteConverter
-from jdxi_editor.midi.file.controller import (
-    MidiFileController,
-    MidiFileControllerConfig,
-)
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.playback.controller import (
-    PatternPlaybackController,
-    PlaybackConfig,
-)
-from jdxi_editor.ui.editors.helpers.widgets import (
-    create_jdxi_button,
-    create_jdxi_button_from_spec,
-    create_jdxi_button_with_label_from_spec,
-    create_jdxi_row,
-)
-from jdxi_editor.ui.editors.pattern.helper import (
-    get_button_note_spec,
-    reset_button,
-    reset_measure,
-    set_sequencer_style,
-    sync_button_note_spec,
-    update_button_state,
-)
-from jdxi_editor.ui.editors.pattern.learner import (
-    PatternLearner,
-    PatternLearnerConfig,
-    PatternLearnerEvent,
-)
-from jdxi_editor.ui.editors.pattern.sequencer.row import SequencerRow
-from jdxi_editor.ui.editors.pattern.timing.config import TimingConfig
-from jdxi_editor.ui.editors.pattern.ui import PatternUI
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
-from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.sequencer.button.manager import (
-    NoteButtonAttrs,
-    SequencerButtonManager,
-)
-from jdxi_editor.ui.widgets.combo_box.synchronizer import (
-    ComboBoxSynchronizer,
-    ComboBoxUpdateConfig,
-)
-from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
-from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 
 
 def copy_note_attrs_from_event(button: SequencerButton, event: PatternLearnerEvent):
@@ -169,7 +168,9 @@ class PatternSequenceEditor(PatternUI):
         )  # Track active notes (midi_note -> row index)
         self._pattern_paused: bool = False
         self._pattern_loop_enabled: bool = True  # Loop by default; toggle via future UI
-        self._pattern_file_path: Optional[str] = None  # Last saved/loaded path for USB auto-filename
+        self._pattern_file_path: Optional[str] = (
+            None  # Last saved/loaded path for USB auto-filename
+        )
         self.playback_engine: PlaybackEngine = PlaybackEngine()
         self._wire_pattern_widget()
         self._init_style()
@@ -1064,8 +1065,12 @@ class PatternSequenceEditor(PatternUI):
         ticks_per_bar = ppq * beats_per_bar
         ticks_per_step = ppq // 4  # 16th notes
 
-        track.append(MetaMessage(MidoMetaMessageType.SET_TEMPO, tempo=bpm2tempo(self.timing_bpm)))
-        track.append(MetaMessage(MidoMetaMessageType.TIME_SIGNATURE, numerator=4, denominator=4))
+        track.append(
+            MetaMessage(MidoMetaMessageType.SET_TEMPO, tempo=bpm2tempo(self.timing_bpm))
+        )
+        track.append(
+            MetaMessage(MidoMetaMessageType.TIME_SIGNATURE, numerator=4, denominator=4)
+        )
 
         events = []
 
@@ -1267,7 +1272,8 @@ class PatternSequenceEditor(PatternUI):
                     row = self.channel_to_row[channel]
                     bar_index = int(absolute_time / ticks_per_bar)
                     step_in_bar = int(
-                        (absolute_time % ticks_per_bar) / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
+                        (absolute_time % ticks_per_bar)
+                        / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
                     )
 
                     while bar_index >= len(self.measure_widgets):
@@ -1282,7 +1288,10 @@ class PatternSequenceEditor(PatternUI):
                         )
                         self.measures_list.addItem(item)
 
-                    if bar_index < len(self.measure_widgets) and step_in_bar < MeasureBeats.PER_MEASURE_4_4:
+                    if (
+                        bar_index < len(self.measure_widgets)
+                        and step_in_bar < MeasureBeats.PER_MEASURE_4_4
+                    ):
                         measure = self.measure_widgets[bar_index]
                         if step_in_bar < len(measure.buttons[row]):
                             button = measure.buttons[row][step_in_bar]
@@ -1530,7 +1539,10 @@ class PatternSequenceEditor(PatternUI):
 
                 # Calculate which bar and step this note belongs to
                 bar_index = int(abs_time / ticks_per_bar)
-                step_in_bar = int((abs_time % ticks_per_bar) / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4))
+                step_in_bar = int(
+                    (abs_time % ticks_per_bar)
+                    / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
+                )
 
                 # Ensure we have enough bars (safety check)
                 while bar_index >= len(self.measure_widgets):
@@ -1545,7 +1557,10 @@ class PatternSequenceEditor(PatternUI):
                     )
                     self.measures_list.addItem(item)
 
-                if bar_index < len(self.measure_widgets) and step_in_bar < MeasureBeats.PER_MEASURE_4_4:
+                if (
+                    bar_index < len(self.measure_widgets)
+                    and step_in_bar < MeasureBeats.PER_MEASURE_4_4
+                ):
                     measure = self.measure_widgets[bar_index]
                     if step_in_bar < len(measure.buttons[row]):
                         button = measure.buttons[row][step_in_bar]

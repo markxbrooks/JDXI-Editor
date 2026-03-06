@@ -9,25 +9,6 @@ from typing import Any, Optional
 import mido
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
-
-from jdxi_editor.ui.editors.midi_player.automation import AutomationWidget
-from jdxi_editor.ui.editors.midi_player.helper import build_panel
-from jdxi_editor.ui.widgets.midi.file.viewer import MidiFileViewer
-from jdxi_editor.ui.widgets.transport.transport import TransportWidget
-from picomidi.constant import Midi
-from picomidi.message.type import MidoMessageType
-from picomidi.playback.engine import PlaybackEngine
-from picomidi.playback.worker import MidiPlaybackWorker
-from picomidi.ui.widget.transport.spec import TransportSpec
-from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
-from picoui.specs.widgets import (
-    ButtonSpec,
-    CheckBoxSpec,
-    FileSelectionMode,
-    FileSelectionSpec,
-    MessageBoxSpec,
-    get_file_save_from_spec,
-)
 from PySide6.QtCore import QMargins, Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -61,6 +42,8 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_row,
     create_small_sequencer_square_for_channel,
 )
+from jdxi_editor.ui.editors.midi_player.automation import AutomationWidget
+from jdxi_editor.ui.editors.midi_player.helper import build_panel
 from jdxi_editor.ui.editors.midi_player.midi_analyzer import MidiAnalyzer
 from jdxi_editor.ui.editors.midi_player.track.category import (
     CATEGORY_META,
@@ -69,7 +52,6 @@ from jdxi_editor.ui.editors.midi_player.track.category import (
 )
 from jdxi_editor.ui.editors.midi_player.utils import format_time, tempo2bpm
 from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
-from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.source import PresetSource
@@ -83,8 +65,25 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_items,
     create_vertical_layout,
 )
+from jdxi_editor.ui.widgets.midi.file.viewer import MidiFileViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
+from jdxi_editor.ui.widgets.transport.transport import TransportWidget
+from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from picomidi.constant import Midi
+from picomidi.message.type import MidoMessageType
+from picomidi.playback.engine import PlaybackEngine
+from picomidi.playback.worker import MidiPlaybackWorker
+from picomidi.ui.widget.transport.spec import TransportSpec
+from picoui.helpers import create_layout_with_inner_layouts, create_widget_with_layout
+from picoui.specs.widgets import (
+    ButtonSpec,
+    CheckBoxSpec,
+    FileSelectionMode,
+    FileSelectionSpec,
+    MessageBoxSpec,
+    get_file_save_from_spec,
+)
 
 # Expose Qt symbols for tests that patch via jdxi_editor.ui.editors.io.player
 # Tests expect these names to exist at module level
@@ -96,6 +95,7 @@ Slot = None
 
 class MidiFileAttrs:
     """Midi File Attributes"""
+
     TICKS_PER_BEAT = "ticks_per_beat"
 
 
@@ -405,7 +405,9 @@ class MidiFilePlayer(SynthEditor):
             updated_tracks = []
             for track_index, analysis in drum_tracks:
                 if track_index in self.midi_file.midi_track_viewer.track_channel_spins:
-                    spin = self.midi_file.midi_track_viewer.track_channel_spins[track_index]
+                    spin = self.midi_file.midi_track_viewer.track_channel_spins[
+                        track_index
+                    ]
                     spin.setValue(drum_channel_display)
                     track_name = (
                         analysis.get("track_name") or f"Track {track_index + 1}"
@@ -500,7 +502,9 @@ class MidiFilePlayer(SynthEditor):
             meta = CATEGORY_META[category]
 
             for track_index, analysis in tracks:
-                spin = self.midi_file.midi_track_viewer.track_channel_spins.get(track_index)
+                spin = self.midi_file.midi_track_viewer.track_channel_spins.get(
+                    track_index
+                )
                 if not spin:
                     continue
 
@@ -841,7 +845,9 @@ class MidiFilePlayer(SynthEditor):
             self.midi_file.midi_track_viewer.toggle_channel_mute(channel, is_muted)
             # Sync the track viewer's mute buttons
             if channel in self.midi_file.midi_track_viewer.mute_buttons:
-                self.midi_file.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
+                self.midi_file.midi_track_viewer.mute_buttons[channel].setChecked(
+                    is_muted
+                )
                 self.midi_file.midi_track_viewer.mute_buttons[channel].setStyleSheet(
                     generate_sequencer_button_style(
                         not is_muted, checked_means_inactive=True
@@ -1116,7 +1122,10 @@ class MidiFilePlayer(SynthEditor):
         Calculate the duration of a single MIDI tick in seconds.
         """
         # Guard: ensure ticks_per_beat is set
-        if not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT) or self.ticks_per_beat is None:
+        if (
+            not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT)
+            or self.ticks_per_beat is None
+        ):
             # Fallback to current file's ticks_per_beat if available
             if self.midi_state.file is not None:
                 self.ticks_per_beat = getattr(
@@ -1172,8 +1181,13 @@ class MidiFilePlayer(SynthEditor):
                 abs_time += msg.time
                 events.append((abs_time, msg, track_index))
         # Ensure ticks_per_beat is set before calculations
-        if not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT) or self.ticks_per_beat is None:
-            self.ticks_per_beat = getattr(self.midi_state.file, MidiFileAttrs.TICKS_PER_BEAT, 480)
+        if (
+            not hasattr(self, MidiFileAttrs.TICKS_PER_BEAT)
+            or self.ticks_per_beat is None
+        ):
+            self.ticks_per_beat = getattr(
+                self.midi_state.file, MidiFileAttrs.TICKS_PER_BEAT, 480
+            )
         self.calculate_tick_duration()
         self.midi_state.events = sorted(events, key=lambda x: x[0])
 
@@ -2111,13 +2125,13 @@ class MidiFilePlayer(SynthEditor):
                 slot=self.detect_and_assign_drum_tracks,
             ),
             "load_midi_file": ButtonSpec(
-                label="Load MIDI File",
+                label="Load",
                 tooltip="Load MIDI File",
                 icon=JDXi.UI.Icon.FOLDER_OPENED,
                 slot=self.midi_load_file,
             ),
             "save_midi_file": ButtonSpec(
-                label="Save MIDI File",
+                label="Save",
                 tooltip="Save MIDI file",
                 icon=JDXi.UI.Icon.FLOPPY_DISK,
                 slot=self.midi_save_file,

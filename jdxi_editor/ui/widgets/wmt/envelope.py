@@ -14,8 +14,6 @@ through an animated envelope curve.
 
 from typing import Callable, Optional
 
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
@@ -27,6 +25,8 @@ from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.wmt.envelope_plot import WMTEnvPlot
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class WMTEnvelopeWidget(EnvelopeWidgetBase):

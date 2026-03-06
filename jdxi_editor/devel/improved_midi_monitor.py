@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import List, Optional
 
 import rtmidi
+
 from picomidi import BitMask, MidiStatus
 
 

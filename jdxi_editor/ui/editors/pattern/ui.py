@@ -21,14 +21,6 @@ from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
 from mido import MidiFile, MidiTrack
-
-from jdxi_editor.midi.playback.state import MidiPlaybackState
-from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
-from picomidi.ui.widget.transport.spec import TransportSpec
-from picoui.helpers import create_layout_with_items, group_with_layout
-from picoui.helpers.spinbox import spinbox_with_label_from_spec
-from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
-from picoui.widget.helper import create_combo_box
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtWidgets import (
     QAbstractButton,
@@ -48,6 +40,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
@@ -72,6 +65,12 @@ from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
+from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
+from picomidi.ui.widget.transport.spec import TransportSpec
+from picoui.helpers import create_layout_with_items, group_with_layout
+from picoui.helpers.spinbox import spinbox_with_label_from_spec
+from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
+from picoui.widget.helper import create_combo_box
 
 
 def _combo_spec(items, tooltip: str = "") -> ComboBoxSpec:
@@ -217,13 +216,17 @@ class PatternUI(SynthEditor):
         # --- Group 1 : Tempo and Beats
         tempo_group = self._create_tempo_group()
         beats_group = self._create_beats_group()
-        tempo_beats_layout = create_layout_with_items([tempo_group, beats_group], vertical=True)
+        tempo_beats_layout = create_layout_with_items(
+            [tempo_group, beats_group], vertical=True
+        )
         control_panel.addLayout(tempo_beats_layout)
 
         # --- Group 2: Velocity and duration
         velocity_group = self._create_velocity_group()
         duration_group = self._create_duration_group()
-        velocity_duration_layout = create_layout_with_items([velocity_group, duration_group], vertical=True)
+        velocity_duration_layout = create_layout_with_items(
+            [velocity_group, duration_group], vertical=True
+        )
         control_panel.addLayout(velocity_duration_layout)
 
         # --- add usb recorder

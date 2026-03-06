@@ -10,10 +10,10 @@ from typing import Callable, Dict, List, Optional
 
 from decologr import Decologr as log
 from mido import Message
-from picomidi.message.type import MidoMessageType
-from picomidi.messages.note import MidiNote
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from picomidi.message.type import MidoMessageType
+from picomidi.messages.note import MidiNote
 
 
 class PatternLearnerState:

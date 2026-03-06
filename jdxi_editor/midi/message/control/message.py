@@ -22,10 +22,9 @@ Usage Example:
 from dataclasses import dataclass, field
 from typing import List
 
+from jdxi_editor.midi.message.midi import MidiMessage
 from picomidi.constant import Midi
 from picomidi.core.bitmask import BitMask
-
-from jdxi_editor.midi.message.midi import MidiMessage
 
 
 @dataclass

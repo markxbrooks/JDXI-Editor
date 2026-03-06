@@ -3,6 +3,7 @@ Editor IO Utils
 """
 
 from mido import MidiFile
+
 from picomidi import MidiTempo
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType

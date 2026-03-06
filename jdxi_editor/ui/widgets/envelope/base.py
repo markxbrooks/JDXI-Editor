@@ -5,8 +5,6 @@ Base Envelope Widget
 from typing import Callable, Optional
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import midi_value_to_ms
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QGridLayout, QWidget
@@ -18,6 +16,8 @@ from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from jdxi_editor.ui.widgets.envelope.slider_spec import EnvControlSpec
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
 from jdxi_editor.ui.widgets.slider import Slider
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_ms
 
 TOOLTIPS = {
     EnvelopeParameter.ATTACK_TIME: "Time taken for the pitch to reach peak after note-on.",

@@ -10,9 +10,9 @@ import sys
 import time
 
 import rtmidi
-from picomidi import BitMask, MidiStatus
 
 from jdxi_editor.midi.message import MidiMessage
+from picomidi import BitMask, MidiStatus
 
 
 class AllPortScanner:

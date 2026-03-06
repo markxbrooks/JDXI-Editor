@@ -2,6 +2,7 @@ import time
 
 import mido
 import rtmidi
+
 from picomidi.message.type import MidoMessageType
 
 print("rtmidi:", rtmidi)

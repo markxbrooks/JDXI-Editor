@@ -8,7 +8,6 @@ Acts as the main container for the pattern sequencer grid.
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
-from picomidi.pattern.measure import PatternMeasure
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -24,6 +23,7 @@ from jdxi_editor.ui.editors.pattern.helper import (
 )
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
+from picomidi.pattern.measure import PatternMeasure
 
 
 @dataclass

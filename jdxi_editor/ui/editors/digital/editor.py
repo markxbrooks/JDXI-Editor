@@ -36,8 +36,6 @@ from decologr import Decologr as log
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QSizePolicy, QTabWidget
@@ -74,6 +72,8 @@ from jdxi_editor.ui.preset.widget import InstrumentPresetWidget
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import midi_value_to_fraction, midi_value_to_ms
 
 
 class DigitalSynthEditor(BaseSynthEditor):

@@ -31,8 +31,6 @@ from pathlib import Path
 from typing import Optional
 
 from decologr import Decologr as log
-
-from jdxi_editor.midi.sysex.sections import SysExSection
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -43,13 +41,14 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.style import JDXiUIDimensions
-from picoui.specs.widgets import FileSelectionSpec, FileSelectionMode
+from picoui.specs.widgets import FileSelectionMode, FileSelectionSpec
 
 
 def zip_directory(folder_path, zip_path):
@@ -64,11 +63,11 @@ def zip_directory(folder_path, zip_path):
 
 class PatchManager(QMainWindow):
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            parent=None,
-            save_mode=False,
-            editors=None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent=None,
+        save_mode=False,
+        editors=None,
     ):
         super().__init__(parent)
         self.load_file_name = str(Path.home() / "patch.msz")
@@ -115,16 +114,18 @@ class PatchManager(QMainWindow):
         """Open file dialog for selecting patch file"""
         try:
             patch_file_filter = "Music Bundle (*.msz);Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)"
-            save_file_spec = FileSelectionSpec(mode=FileSelectionMode.SAVE,
-                                               caption="Save Patch File",
-                                               dir=self.load_file_name,
-                                               filter=patch_file_filter
-                                               )
-            load_file_spec = FileSelectionSpec(mode=FileSelectionMode.LOAD,
-                                               caption="Load Patch File",
-                                               dir=self.load_file_name,
-                                               filter=patch_file_filter,
-                                               )
+            save_file_spec = FileSelectionSpec(
+                mode=FileSelectionMode.SAVE,
+                caption="Save Patch File",
+                dir=self.load_file_name,
+                filter=patch_file_filter,
+            )
+            load_file_spec = FileSelectionSpec(
+                mode=FileSelectionMode.LOAD,
+                caption="Load Patch File",
+                dir=self.load_file_name,
+                filter=patch_file_filter,
+            )
             if self.save_mode:
                 spec = save_file_spec
                 func = QFileDialog.getSaveFileName
@@ -132,11 +133,11 @@ class PatchManager(QMainWindow):
                 spec = load_file_spec
                 func = QFileDialog.getOpenFileName
             file_path, _ = func(
-                    self,
-                    spec.caption,
-                    spec.dir,
-                    spec.filter,
-                )
+                self,
+                spec.caption,
+                spec.dir,
+                spec.filter,
+            )
             if file_path:
                 self.path_input.setText(file_path)
         except Exception as ex:
@@ -189,10 +190,10 @@ class PatchManager(QMainWindow):
             today = datetime.today()
             date_str = today.strftime("%Y-%m-%d")
             temp_folder = (
-                    Path.home()
-                    / f".{__package_name__}"
-                    / "temp"
-                    / f"{date_str}_{random_int}/"
+                Path.home()
+                / f".{__package_name__}"
+                / "temp"
+                / f"{date_str}_{random_int}/"
             )
             if not temp_folder.exists():
                 temp_folder.mkdir(parents=True, exist_ok=True)
@@ -226,8 +227,8 @@ class PatchManager(QMainWindow):
                     midi_file_editor = self.parent.get_existing_editor(MidiFilePlayer)
                     if midi_file_editor and hasattr(midi_file_editor, "midi_state"):
                         if (
-                                hasattr(midi_file_editor.midi_state, "file")
-                                and midi_file_editor.midi_state.file is not None
+                            hasattr(midi_file_editor.midi_state, "file")
+                            and midi_file_editor.midi_state.file is not None
                         ):
                             try:
                                 midi_file_path = temp_folder / "song.mid"
@@ -276,9 +277,9 @@ class PatchManager(QMainWindow):
                                 f for f in zip_ref.namelist() if f.endswith(".mid")
                             ]
                             if (
-                                    midi_files
-                                    and self.parent
-                                    and hasattr(self.parent, "get_existing_editor")
+                                midi_files
+                                and self.parent
+                                and hasattr(self.parent, "get_existing_editor")
                             ):
                                 # Extract MIDI file to temp location
                                 midi_file_name = midi_files[0]  # Use first MIDI file
@@ -295,7 +296,7 @@ class PatchManager(QMainWindow):
                                     MidiFilePlayer
                                 )
                                 if not midi_file_editor and hasattr(
-                                        self.parent, "show_editor"
+                                    self.parent, "show_editor"
                                 ):
                                     # Create editor if it doesn't exist (but don't show it yet)
                                     self.parent.show_editor("midi_player")
@@ -311,7 +312,7 @@ class PatchManager(QMainWindow):
                                     if hasattr(midi_file_editor, "midi_stop_playback"):
                                         midi_file_editor.midi_playback_stop()
                                     if hasattr(
-                                            midi_file_editor, "midi_playback_worker_stop"
+                                        midi_file_editor, "midi_playback_worker_stop"
                                     ):
                                         midi_file_editor.midi_playback_worker_stop()
 
@@ -337,7 +338,7 @@ class PatchManager(QMainWindow):
 
                                     # Detect initial tempo
                                     if hasattr(
-                                            midi_file_editor, "detect_initial_tempo"
+                                        midi_file_editor, "detect_initial_tempo"
                                     ):
                                         initial_track_tempos = (
                                             midi_file_editor.detect_initial_tempo()
@@ -345,7 +346,7 @@ class PatchManager(QMainWindow):
 
                                     # Set tempo digital
                                     if hasattr(
-                                            midi_file_editor, "ui_display_set_tempo_usecs"
+                                        midi_file_editor, "ui_display_set_tempo_usecs"
                                     ):
                                         midi_file_editor.ui_display_set_tempo_usecs(
                                             midi_file_editor.midi_state.tempo_initial
@@ -372,20 +373,20 @@ class PatchManager(QMainWindow):
                                     if hasattr(midi_file_editor, "calculate_duration"):
                                         midi_file_editor.calculate_duration()
                                     if hasattr(
-                                            midi_file_editor, "calculate_tick_duration"
+                                        midi_file_editor, "calculate_tick_duration"
                                     ):
                                         midi_file_editor.calculate_tick_duration()
 
                                     # Reset position slider
                                     if hasattr(
-                                            midi_file_editor, "ui_position_slider_reset"
+                                        midi_file_editor, "ui_position_slider_reset"
                                     ):
                                         midi_file_editor.ui_position_slider_reset()
 
                                     # Ensure playback is NOT started - stop timer and worker
                                     if (
-                                            hasattr(midi_file_editor.midi_state, "timer")
-                                            and midi_file_editor.midi_state.timer
+                                        hasattr(midi_file_editor.midi_state, "timer")
+                                        and midi_file_editor.midi_state.timer
                                     ):
                                         if midi_file_editor.midi_state.timer.isActive():
                                             midi_file_editor.midi_state.timer.stop()
@@ -393,27 +394,27 @@ class PatchManager(QMainWindow):
 
                                     # Ensure worker is stopped
                                     if (
-                                            hasattr(
-                                                midi_file_editor, "midi_playback_worker"
-                                            )
-                                            and midi_file_editor.midi_playback_worker
+                                        hasattr(
+                                            midi_file_editor, "midi_playback_worker"
+                                        )
+                                        and midi_file_editor.midi_playback_worker
                                     ):
                                         if hasattr(
-                                                midi_file_editor.midi_playback_worker,
-                                                "stop",
+                                            midi_file_editor.midi_playback_worker,
+                                            "stop",
                                         ):
                                             midi_file_editor.midi_playback_worker.stop()
 
                                     # Reset playback state
                                     if hasattr(
-                                            midi_file_editor.midi_state,
-                                            "playback_start_time",
+                                        midi_file_editor.midi_state,
+                                        "playback_start_time",
                                     ):
                                         midi_file_editor.midi_state.playback_start_time = (
                                             None
                                         )
                                     if hasattr(
-                                            midi_file_editor.midi_state, "event_index"
+                                        midi_file_editor.midi_state, "event_index"
                                     ):
                                         midi_file_editor.midi_state.event_index = None
 

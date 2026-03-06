@@ -9,11 +9,11 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from decologr import Decologr as log
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo, tempo2bpm
-from picomidi import MidiTempo
-from picomidi.message.type import MidoMessageType, MidoMetaMessageType
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from picomidi import MidiTempo
+from picomidi.message.type import MidoMessageType, MidoMetaMessageType
 
 
 class MidiFileControllerConfig:

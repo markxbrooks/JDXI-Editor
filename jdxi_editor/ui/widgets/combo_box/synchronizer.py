@@ -10,8 +10,6 @@ from typing import Callable, Dict, List, Optional
 import mido
 from decologr import Decologr as log
 from mido import Message
-from picomidi import BitMask, MidiNote
-from picomidi.message.type import MidoMessageType
 from PySide6.QtWidgets import QComboBox
 from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
 
@@ -19,6 +17,8 @@ from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
 from jdxi_editor.midi.message import MidiMessage
+from picomidi import BitMask, MidiNote
+from picomidi.message.type import MidoMessageType
 
 
 class ComboBoxUpdateConfig:

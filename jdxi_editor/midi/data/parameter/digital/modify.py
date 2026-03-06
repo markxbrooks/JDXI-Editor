@@ -29,10 +29,9 @@ if param:
 
 from typing import Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
-
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.parameter.spec import ParameterSpec
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DigitalModifyParam(AddressParameter):

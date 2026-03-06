@@ -1,41 +1,36 @@
 """
 Automation Widget class
 """
+
 from typing import Any
 
-from PySide6.QtCore import QMargins
-from PySide6.QtWidgets import QWidget, QGridLayout, QComboBox, QVBoxLayout
+from PySide6.QtWidgets import QComboBox, QGridLayout, QGroupBox
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec
-from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec
+from jdxi_editor.ui.editors.midi_player.helper import (
+    create_widget_cell_with_button_spec,
+)
 from jdxi_editor.ui.preset.source import PresetSource
-from jdxi_editor.ui.widgets.editor.helper import create_icon_and_label, create_group_and_grid_layout
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_and_grid_layout,
+    create_icon_and_label,
+)
+from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from picoui.specs.widgets import ButtonSpec
 
 
-class AutomationWidget(QWidget):
+class AutomationWidget(JDXiMidiGroup):
     """Automation Widget class"""
 
     def __init__(self, midi_state: MidiPlaybackState, parent: "MidiFilePlayer"):
-        super().__init__()
-        self.parent = parent
-        self.layout: QVBoxLayout | None = None
-        self.midi_state = midi_state
+        super().__init__(midi_state=midi_state, parent=parent)
+        self.group_title = "Automation"
         self.automation_channel_combo: QComboBox | None = None
         self.automation_type_combo: QComboBox | None = None
         self.automation_program_combo: QComboBox | None = None
-        self.specs = self._build_specs()
         self.setup_ui()
-
-    def _build_specs(self) -> dict[str, Any]:
-        """build specs for the Midi file player"""
-        return {
-            "buttons": self._build_button_specs(),
-            "message_box": None,
-            "check_box": None,
-        }
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
         """Build button specs"""
@@ -48,15 +43,10 @@ class AutomationWidget(QWidget):
             )
         }
 
-    def setup_ui(self):
-        """set up ui"""
-        self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(QMargins(0, 0, 0, 0))
-        group, grid = create_group_and_grid_layout("Automation")
-        self.layout.addWidget(group)
-        self._build(grid=grid, row=0)
-
-    def _build(self, grid: QGridLayout, row: int):
+    def _build_group(self) -> QGroupBox:
+        """_build group"""
+        row = 0
+        group, grid = create_group_and_grid_layout(self.group_title)
         automation_layout, automation_label = create_icon_and_label(
             label="Automation:", icon=JDXi.UI.Icon.MAGIC
         )
@@ -77,12 +67,11 @@ class AutomationWidget(QWidget):
         self.automation_insert_button = create_jdxi_button_from_spec(
             spec, checkable=False
         )
-        insert_cell, self.automation_insert_label = (
-            create_widget_cell_with_button_spec(
-                spec, self.automation_insert_button
-            )
+        insert_cell, self.automation_insert_label = create_widget_cell_with_button_spec(
+            spec, self.automation_insert_button
         )
         grid.addWidget(insert_cell, row, 4)
+        return group
 
     def populate_automation_programs(self, source: PresetSource) -> None:
         """
@@ -121,7 +110,9 @@ class AutomationWidget(QWidget):
         preset_list = convert_preset_dict_to_list(preset_list_source)
         self._add_items_to_automation_combo(preset_list)
 
-    def _add_items_to_automation_combo(self, preset_list: list[dict[str, str | Any]] | Any):
+    def _add_items_to_automation_combo(
+        self, preset_list: list[dict[str, str | Any]] | Any
+    ):
         """items to combo box"""
         for item in preset_list:
             label = f"{str(item.get('id')).zfill(3)}  {item.get('name')}"
@@ -142,4 +133,3 @@ class AutomationWidget(QWidget):
         if not self.parent:
             return
         self.parent.insert_program_change_current_position()
-

@@ -5,9 +5,6 @@ JDXiSysExComposer
 from typing import Optional
 
 from decologr import Decologr as log
-from picomidi.constant import Midi
-from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
@@ -31,6 +28,9 @@ from jdxi_editor.midi.sysex.validation import (
     validate_raw_midi_message,
     validate_raw_sysex_message,
 )
+from picomidi.constant import Midi
+from picomidi.sysex.parameter.address import AddressParameter
+from picomidi.utils.conversion import split_16bit_value_to_nibbles
 
 
 def apply_lmb_offset(

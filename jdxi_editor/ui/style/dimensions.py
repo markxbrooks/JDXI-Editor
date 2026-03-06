@@ -393,6 +393,7 @@ class HorizontalSliderDimensions(Dimensions):
 
 class PatchManagerDimensions(Dimensions):
     """Patch manager Dimensions"""
+
     WIDTH = 400
     HEIGHT = 300
 

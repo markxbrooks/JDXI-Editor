@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Optional
 
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtWidgets import QLabel, QWidget
 
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
 from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class MixerTrackEntity(Enum):

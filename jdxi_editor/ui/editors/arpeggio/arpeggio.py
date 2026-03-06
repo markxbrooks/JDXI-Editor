@@ -39,10 +39,10 @@ Dependencies:
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtGui import QShowEvent
 
 from jdxi_editor.midi.data.address.address import JDXiSysExAddress
+from picomidi.sysex.parameter.address import AddressParameter
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument

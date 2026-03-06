@@ -6,11 +6,10 @@ Pure domain logic — no Qt, no UI. The editor calls these methods and applies r
 
 from typing import Optional
 
-from picomidi.constant import Midi
-from picomidi.message.type import MidoMessageType
-
 from jdxi_editor.midi.track.classification import classify_tracks
 from jdxi_editor.midi.utils.drum_detection import detect_drum_tracks
+from picomidi.constant import Midi
+from picomidi.message.type import MidoMessageType
 
 
 class MidiAnalyzer:

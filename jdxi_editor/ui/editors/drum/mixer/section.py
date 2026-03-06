@@ -9,7 +9,6 @@ for consistency with the program mixer.
 from typing import Callable, Dict, Optional
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -35,6 +34,7 @@ from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.slider import Slider
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class DrumKitMixerSection(SectionBaseWidget):

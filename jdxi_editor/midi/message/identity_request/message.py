@@ -27,9 +27,8 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
-from picomidi.constant import Midi
-
 from jdxi_editor.midi.message.midi import MidiMessage
+from picomidi.constant import Midi
 
 
 @dataclass

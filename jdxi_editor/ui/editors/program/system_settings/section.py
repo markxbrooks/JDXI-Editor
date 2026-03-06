@@ -11,7 +11,6 @@ Provides UI controls for System Common and System Controller parameters:
 from typing import Callable, Dict, Optional
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFormLayout, QGroupBox, QScrollArea, QWidget
@@ -26,6 +25,7 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
+from picomidi.sysex.parameter.address import AddressParameter
 
 # System Common: 02 00 00 xx
 SYSTEM_COMMON_ADDRESS = JDXiSysExAddress(0x02, 0x00, 0x00, 0x00)

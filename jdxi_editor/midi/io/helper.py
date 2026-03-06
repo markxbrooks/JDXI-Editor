@@ -410,7 +410,14 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 param_class = (
                     DigitalPartialParam
                     if synth_tone
-                    in ["PARTIAL_1", "PARTIAL_2", "PARTIAL_3", "PARTIAL_1.name", "PARTIAL_2.name", "PARTIAL_3.name"]
+                    in [
+                        "PARTIAL_1",
+                        "PARTIAL_2",
+                        "PARTIAL_3",
+                        "PARTIAL_1.name",
+                        "PARTIAL_2.name",
+                        "PARTIAL_3.name",
+                    ]
                     else DigitalCommonParam
                 )
             elif temporary_area == JDXiSysExOffsetTemporaryToneUMB.DRUM_KIT.name:
@@ -434,7 +441,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 if not param:
                     continue
                 try:
-                    raw_value = int(param_value) if not isinstance(param_value, int) else param_value
+                    raw_value = (
+                        int(param_value)
+                        if not isinstance(param_value, int)
+                        else param_value
+                    )
                 except (ValueError, TypeError):
                     continue
                 value = raw_value
@@ -589,7 +600,10 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return
 
         if not sysex_data.startswith(b"\xf0"):
-            log.message("Invalid SysEx file format: does not start with F0", scope="MidiIOHelper")
+            log.message(
+                "Invalid SysEx file format: does not start with F0",
+                scope="MidiIOHelper",
+            )
             return
 
         # Split concatenated SysEx messages (each F0...F7)
@@ -620,7 +634,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 sent += 1
             except Exception as ex:
                 log.error(f"Error sending SysEx message: {ex}", scope="MidiIOHelper")
-        log.message(f"Sent {sent} SysEx message(s) from {file_path}", scope="MidiIOHelper")
+        log.message(
+            f"Sent {sent} SysEx message(s) from {file_path}", scope="MidiIOHelper"
+        )
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """

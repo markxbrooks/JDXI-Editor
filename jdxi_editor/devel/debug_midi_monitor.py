@@ -11,11 +11,11 @@ from datetime import datetime
 from typing import List, Optional
 
 import rtmidi
-from picomidi import BitMask, MidiStatus
 
 from jdxi_editor.midi.constant import JDXiMidi
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX
 from jdxi_editor.ui.jdxiui import JDXiUI
+from picomidi import BitMask, MidiStatus
 
 
 class DebugMIDIMonitor:

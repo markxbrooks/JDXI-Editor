@@ -36,7 +36,6 @@ Usage Example:
 from typing import Any, Callable, Literal, Optional
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QLabel, QPushButton, QTabWidget
@@ -69,6 +68,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.editor.icon_type import IconType
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
+from picomidi.sysex.parameter.address import AddressParameter
 
 
 class SectionBaseWidget(SynthBase):

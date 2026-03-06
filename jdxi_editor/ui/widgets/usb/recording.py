@@ -8,29 +8,39 @@ from pathlib import Path
 from typing import Optional
 
 import pyaudio
-from PySide6.QtCore import Qt, QMargins
-from PySide6.QtWidgets import QLabel, QPushButton, QCheckBox, QComboBox, QGridLayout, QHBoxLayout
-
 from decologr import Decologr as log
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QPushButton
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec
-from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec
-from jdxi_editor.ui.widgets.editor.helper import create_icon_and_label
-from jdxi_editor.ui.widgets.jdxi.widget import JDXiMidiGrid
+from jdxi_editor.ui.editors.midi_player.helper import (
+    create_widget_cell_with_button_spec,
+)
+from jdxi_editor.ui.widgets.editor.helper import (
+    create_group_and_grid_layout,
+    create_icon_and_label,
+)
+from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
-from picoui.specs.widgets import ButtonSpec, FileSelectionSpec, FileSelectionMode, get_file_save_from_spec
+from picoui.specs.widgets import (
+    ButtonSpec,
+    FileSelectionMode,
+    FileSelectionSpec,
+    get_file_save_from_spec,
+)
 
 
-class USBFileRecordingWidget(JDXiMidiGrid):
+class USBFileRecordingWidget(JDXiMidiGroup):
     """USB File Recording Widget"""
 
     def __init__(self, midi_state: MidiPlaybackState, parent=None):
         super().__init__(midi_state=midi_state, parent=parent)
         """constructor"""
-        self.grid_title: str = "USB Recorder"
+        self.group_title: str = "USB Recorder"
         self.recorder: USBRecorder = USBRecorder(channels=1)
         self.file_select: QPushButton = QPushButton()
         self.file_output_name: str = ""
@@ -51,9 +61,11 @@ class USBFileRecordingWidget(JDXiMidiGrid):
             ),
         }
 
-    def _build_layout(self, grid: QGridLayout, row: int):
+    def _build_group(self) -> QGroupBox:
         """build layout"""
         # --- Row 1: USB Port
+        row = 0
+        group, grid = create_group_and_grid_layout(self.group_title)
         usb_port_layout, usb_port_label = create_icon_and_label(
             label="Port", icon=JDXi.UI.Icon.USB
         )
@@ -66,9 +78,7 @@ class USBFileRecordingWidget(JDXiMidiGrid):
             spec, checkable=False
         )
         refresh_usb_cell, self.port_refresh_devices_label = (
-            create_widget_cell_with_button_spec(
-                spec, self.port_refresh_devices_button
-            )
+            create_widget_cell_with_button_spec(spec, self.port_refresh_devices_button)
         )
         grid.addWidget(refresh_usb_cell, row, 3)
         row += 1
@@ -86,9 +96,7 @@ class USBFileRecordingWidget(JDXiMidiGrid):
         # --- Row 2 still: Save USB recording checkbox
         self.file_record_checkbox = QCheckBox("Save")
         JDXi.UI.Theme.apply_button_mini_style(self.file_record_checkbox)
-        self.file_record_checkbox.setChecked(
-            self.recorder.file_save_recording
-        )
+        self.file_record_checkbox.setChecked(self.recorder.file_save_recording)
         self.file_record_checkbox.stateChanged.connect(
             self.on_usb_save_recording_toggled
         )
@@ -96,15 +104,14 @@ class USBFileRecordingWidget(JDXiMidiGrid):
         # row += 1
 
         # --- Row 3: Auto-generate WAV filename checkbox
-        self.file_auto_generate_checkbox = QCheckBox(
-            "Auto-filename"
-        )
+        self.file_auto_generate_checkbox = QCheckBox("Auto-filename")
         JDXi.UI.Theme.apply_button_mini_style(self.file_auto_generate_checkbox)
         self.file_auto_generate_checkbox.setChecked(False)
         self.file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
         )
         grid.addWidget(self.file_auto_generate_checkbox, row, 4)
+        return group
 
     def start_recording(self):
         """start usb recording"""
@@ -135,9 +142,7 @@ class USBFileRecordingWidget(JDXiMidiGrid):
         :param state: Qt.CheckState
         :return:
         """
-        self.file_auto_generate_checkbox.setChecked(
-            state == JDXi.UI.Constants.CHECKED
-        )
+        self.file_auto_generate_checkbox.setChecked(state == JDXi.UI.Constants.CHECKED)
         is_enabled = self.file_auto_generate_checkbox.isChecked()
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {is_enabled}"
@@ -182,9 +187,7 @@ class USBFileRecordingWidget(JDXiMidiGrid):
         :param state: Qt.CheckState
         :return:
         """
-        self.file_auto_generate_checkbox.setChecked(
-            state == JDXi.UI.Constants.CHECKED
-        )
+        self.file_auto_generate_checkbox.setChecked(state == JDXi.UI.Constants.CHECKED)
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {self.file_auto_generate_checkbox.isChecked()}"
         )

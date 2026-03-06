@@ -43,7 +43,6 @@ import re
 from typing import Optional, Protocol, Tuple, Type, TypeVar, runtime_checkable
 
 from decologr import Decologr as log
-from picomidi.sysex.parameter.address import AddressParameter
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -69,6 +68,7 @@ from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
+from picomidi.sysex.parameter.address import AddressParameter
 
 T = TypeVar("T", bound="EnumWithAddress")
 
@@ -381,7 +381,9 @@ class MIDIDebugger(QMainWindow):
         controller = self.cc_controller.value()
         value = self.cc_value.value()
         success = self.midi_helper.send_control_change(controller, value, channel)
-        self._log_cc_pc_result("CC", success, f"ch={channel + 1} cc#{controller}={value}")
+        self._log_cc_pc_result(
+            "CC", success, f"ch={channel + 1} cc#{controller}={value}"
+        )
 
     def _send_pc(self) -> None:
         """Send Program Change from CC/PC tab."""
@@ -400,8 +402,12 @@ class MIDIDebugger(QMainWindow):
         msb = self.bank_msb.value()
         lsb = self.bank_lsb.value()
         program = self.bank_program.value()
-        success = self.midi_helper.send_bank_select_and_program_change(channel, msb, lsb, program)
-        self._log_cc_pc_result("Bank+PC", success, f"ch={channel + 1} bank={msb}/{lsb} prog={program}")
+        success = self.midi_helper.send_bank_select_and_program_change(
+            channel, msb, lsb, program
+        )
+        self._log_cc_pc_result(
+            "Bank+PC", success, f"ch={channel + 1} bank={msb}/{lsb} prog={program}"
+        )
 
     def _log_cc_pc_result(self, label: str, success: bool, detail: str) -> None:
         """Log CC/PC send result to the SysEx tab's response log."""

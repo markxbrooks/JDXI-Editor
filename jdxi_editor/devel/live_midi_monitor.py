@@ -10,9 +10,9 @@ import sys
 import time
 
 import rtmidi
-from picomidi import BitMask, MidiStatus
 
 from jdxi_editor.midi.data.address.sysex import NOTE_OFF, NOTE_ON, START_OF_SYSEX
+from picomidi import BitMask, MidiStatus
 
 
 class LiveMIDIMonitor:
