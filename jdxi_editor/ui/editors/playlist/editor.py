@@ -248,7 +248,7 @@ class PlaylistEditor(QWidget):
         layout.addWidget(label_row)
         return btn
 
-    def _playlist_transport_play(self) -> None:
+    def playlist_transport_play(self) -> None:
         """Play first playlist row that has a MIDI file, or selected row if one is selected."""
         if not self.playlist_programs_table:
             return
@@ -268,7 +268,7 @@ class PlaylistEditor(QWidget):
                 index = model.index(row, 5)
                 self._play_playlist_program(index)
 
-    def _playlist_transport_stop(self) -> None:
+    def playlist_transport_stop(self) -> None:
         """Stop current playlist playback."""
         if self._playlist_midi_editor and hasattr(
             self._playlist_midi_editor, "midi_playback_stop"
@@ -277,14 +277,14 @@ class PlaylistEditor(QWidget):
         self._current_playlist_row = None
         self._playlist_midi_editor = None
 
-    def _playlist_transport_pause_toggle(self) -> None:
+    def playlist_transport_pause_toggle(self) -> None:
         """Pause or resume current playlist playback."""
         if self._playlist_midi_editor and hasattr(
             self._playlist_midi_editor, "midi_playback_pause_toggle"
         ):
             self._playlist_midi_editor.midi_playback_pause_toggle()
 
-    def _playlist_shuffle_play(self) -> None:
+    def playlist_shuffle_play(self) -> None:
         """Pick a random row that has a MIDI file and play it."""
         if not self.playlist_programs_table:
             return

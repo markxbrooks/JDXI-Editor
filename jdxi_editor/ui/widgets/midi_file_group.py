@@ -52,10 +52,10 @@ class MidiFileGroup(JDXiMidiGroup):
                 self.save_button,
             ],
             vertical=False,
-            start_stretch=False,
-            end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            start_stretch=True,
+            end_stretch=True,
+            margins=self.margins,
+            spacing=self.spacing,
         )
         group, _ = create_group_with_layout("MIDI File", layout=layout)
         return group

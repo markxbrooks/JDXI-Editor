@@ -88,6 +88,7 @@ class FilterWidget(EnvelopeWidgetBase):
             ),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
+            show_spinbox=False
         )
         self.controls[cutoff_param] = self.cutoff_param_control
         self._control_widgets = [

@@ -116,6 +116,7 @@ def create_checkbox_from_spec(spec: CheckBoxSpec) -> QCheckBox:
     checkbox = QCheckBox(spec.label)
     checkbox.setChecked(spec.checked_state)
     checkbox.stateChanged.connect(spec.slot)
+    checkbox.setToolTip(spec.tooltip)
     return checkbox
 
 

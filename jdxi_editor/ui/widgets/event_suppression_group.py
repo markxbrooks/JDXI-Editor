@@ -35,6 +35,7 @@ class EventSuppressionGroup(JDXiMidiGroup):
         super().__init__(parent=parent, midi_state=midi_state)
         self.midi_suppress_program_changes_checkbox: QCheckBox | None = None
         self.midi_suppress_control_changes_checkbox: QCheckBox | None = None
+        self.spacing = 30
         self.setup_ui()
 
     def _build_group(self) -> QGroupBox:
@@ -58,10 +59,10 @@ class EventSuppressionGroup(JDXiMidiGroup):
         layout = create_layout_with_items(
             items=widgets,
             vertical=False,
-            start_stretch=False,
-            end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            start_stretch=True,
+            end_stretch=True,
+            margins=self.margins,
+            spacing=self.spacing,
         )
         group, _ = create_group_with_layout(
             label="MIDI Event Suppression", layout=layout
@@ -78,13 +79,15 @@ class EventSuppressionGroup(JDXiMidiGroup):
             raise ValueError("EventSuppressionGroup requires midi_state")
         return {
             "midi_suppress_pc_spec": CheckBoxSpec(
-                label="Program Changes",
+                label="PC",
+                tooltip="Suppress MIDI Program Changes",
                 checked_state=self.midi_state.suppress_program_changes,
                 slot=self.parent.on_suppress_program_changes_toggled,
                 style=JDXiUIStyle.PARTIAL_SWITCH,
             ),
             "midi_suppress_cc_spec": CheckBoxSpec(
-                label="Control Changes",
+                label="CC",
+                tooltip="Suppress MIDI Control Changes",
                 checked_state=self.midi_state.suppress_control_changes,
                 slot=self.parent.on_suppress_control_changes_toggled,
                 style=JDXiUIStyle.PARTIAL_SWITCH,

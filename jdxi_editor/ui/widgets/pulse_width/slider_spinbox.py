@@ -66,6 +66,7 @@ class PWMSliderSpinbox(QWidget):
         value: int = None,
         create_parameter_slider: Callable = None,
         parent: QWidget = None,
+        show_spinbox: bool = False
     ):
         """
         Initialize the ADSR slider and spinbox widget.
@@ -105,7 +106,8 @@ class PWMSliderSpinbox(QWidget):
         self.factor = Midi.value.max.SEVEN_BIT
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
-        layout.addWidget(self.spinbox)
+        if show_spinbox:
+            layout.addWidget(self.spinbox)
         self.setLayout(layout)
 
         # Connect both ways

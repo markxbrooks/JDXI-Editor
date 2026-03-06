@@ -49,7 +49,7 @@ class PatternFileGroup(JDXiMidiGroup):
         )
         self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
         self.drum_selector.currentIndexChanged.connect(
-            self.parent._update_drum_rows
+            self.parent.update_drum_rows
         )
         layout = create_layout_with_items(
             items=[
@@ -64,8 +64,8 @@ class PatternFileGroup(JDXiMidiGroup):
             vertical=False,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            margins=self.margins,
+            spacing=self.spacing
         )
         group, _ = create_group_with_layout("Pattern", layout=layout)
         return group
@@ -77,19 +77,19 @@ class PatternFileGroup(JDXiMidiGroup):
                 label="Load",
                 icon=JDXi.UI.Icon.MUSIC,
                 tooltip="Load pattern from file",
-                slot=self.parent._load_pattern_dialog,
+                slot=self.parent.load_pattern_dialog,
             ),
             "save": ButtonSpec(
                 label="Save",
                 icon=JDXi.UI.Icon.SAVE,
                 tooltip="Save pattern to file",
-                slot=self.parent._save_pattern_dialog,
+                slot=self.parent.save_pattern_dialog,
             ),
             "clear_learn": ButtonSpec(
                 label="Clear",
                 icon=JDXi.UI.Icon.CLEAR,
                 tooltip="Clear pattern",
-                slot=self.parent._clear_pattern,
+                slot=self.parent.clear_pattern,
             ),
         }
 

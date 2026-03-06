@@ -14,6 +14,8 @@ Class to store dimensions of a Roland JDXi instrument
 from dataclasses import dataclass
 from typing import Optional
 
+from PySide6.QtCore import QMargins
+
 
 class ControlMetrics:
     MIN_WIDTH: int = 20
@@ -398,10 +400,18 @@ class PatchManagerDimensions(Dimensions):
     HEIGHT = 300
 
 
+class GroupBoxDimensions(Dimensions):
+    """group box dimensions"""
+    MARGINS = QMargins(0, 0, 0, 0)
+    SPACING = 5
+
+
 class JDXiUIDimensions(Dimensions):
     """
     A class to store dimensions for the JD-Xi editor UI.
     """
+
+    group = GroupBoxDimensions
 
     # --- Icons
     patch = PatchManagerDimensions

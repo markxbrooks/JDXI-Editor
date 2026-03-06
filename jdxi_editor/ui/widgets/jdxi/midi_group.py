@@ -7,6 +7,7 @@ from typing import Any, Optional
 from PySide6.QtCore import QMargins
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from picoui.specs.widgets import ButtonSpec
 
@@ -21,6 +22,8 @@ class JDXiMidiGroup(QWidget):
     ):
         super().__init__()
         self.parent = parent
+        self.margins: QMargins = JDXi.UI.Dimensions.group.MARGINS
+        self.spacing: int = JDXi.UI.Dimensions.group.SPACING
         self.midi_state = midi_state
         self.group_title: Optional[str] = None
         self.specs: dict = self._build_specs()
@@ -28,7 +31,8 @@ class JDXiMidiGroup(QWidget):
     def setup_ui(self):
         """Set up UI"""
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(QMargins(0, 0, 0, 0))
+        layout.setContentsMargins(self.margins)
+        layout.setSpacing(self.spacing)
         group = self._build_group()
         layout.addWidget(group)
 

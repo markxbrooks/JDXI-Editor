@@ -63,8 +63,8 @@ class ClassificationGroup(JDXiMidiGroup):
             vertical=False,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=5,
+            margins=self.margins,
+            spacing=self.spacing,
         )
         apply_all_spec = self.specs["buttons"]["apply_all_track_changes"]
         self.apply_all_track_changes_button = create_jdxi_button_from_spec(
@@ -98,8 +98,8 @@ class ClassificationGroup(JDXiMidiGroup):
             vertical=False,
             start_stretch=False,
             end_stretch=False,
-            spacing=4,
-            margins=QMargins(0, 0, 0, 0),
+            spacing=self.spacing,
+            margins=self.margins,
         )
         apply_all_row = QWidget()
         apply_all_row.setLayout(apply_all_layout)
@@ -133,23 +133,27 @@ class ClassificationGroup(JDXiMidiGroup):
                 tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
                 icon=JDXi.UI.Icon.DRUM,
                 slot=self.parent.detect_and_assign_drum_tracks,
+                checkable=False
             ),
             "classify_tracks": ButtonSpec(
                 label="Classify Tracks",
                 tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
                 icon=JDXi.UI.Icon.MUSIC_NOTES,
                 slot=self.parent.classify_and_assign_tracks,
+                checkable=False
             ),
             "apply_all_track_changes": ButtonSpec(
                 label="Apply Changes",
                 tooltip="Apply all track name and channel changes to the MIDI file",
                 icon=JDXi.UI.Icon.SAVE,
                 slot=self.parent.apply_all_track_changes,
+                checkable=False
             ),
             "apply_presets": ButtonSpec(
                 label="Apply Presets",
                 tooltip="Insert JD-Xi presets per channel: Ch 1→Picked Bass, Ch 2→Piano, Ch 3→JP8 Strings",
                 icon=JDXi.UI.Icon.MUSIC_NOTES,
                 slot=self._on_apply_presets_clicked,
+                checkable=False
             ),
         }

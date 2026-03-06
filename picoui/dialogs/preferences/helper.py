@@ -23,7 +23,7 @@ from PySide6.QtWidgets import QCheckBox, QLineEdit, QPushButton
 
 def create_checkbox_from_spec(spec: SettingsFieldSpec) -> QCheckBox:
     """Create a checkbox from a SettingsFieldSpec"""
-    check_box = create_checkbox(label=spec.label, value=spec.value)
+    check_box = create_checkbox(label=spec.label, value=spec.value, tooltip=spec.tooltip)
     return check_box
 
 

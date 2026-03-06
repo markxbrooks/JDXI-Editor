@@ -692,7 +692,7 @@ class PatternSequenceEditor(PatternUI):
                     reset_button(button)
                     set_sequencer_style(button)
 
-    def _clear_pattern(self):
+    def clear_pattern(self):
         """Clear the learned pattern and reset button states."""
         self._pattern_file_path = None
         self._init_midi_file()
@@ -969,7 +969,7 @@ class PatternSequenceEditor(PatternUI):
             bpm = max(20, min(300, bpm))
             self.tempo_spinbox.setValue(bpm)
 
-    def _save_pattern_dialog(self):
+    def save_pattern_dialog(self):
         """Open save file dialog and save pattern"""
         spec = FileSelectionSpec(
             mode="save",
@@ -996,7 +996,7 @@ class PatternSequenceEditor(PatternUI):
                     self, "Error", f"Could not save pattern: {str(ex)}"
                 )
 
-    def _load_pattern_dialog(self):
+    def load_pattern_dialog(self):
         """Open load file dialog and load pattern"""
         spec = FileSelectionSpec(
             mode="open",
@@ -1748,15 +1748,15 @@ class PatternSequenceEditor(PatternUI):
             )
         return group
 
-    def _pattern_transport_play(self) -> None:
+    def pattern_transport_play(self) -> None:
         """Start pattern playback (delegate to play_pattern)."""
         self.play_pattern()
 
-    def _pattern_transport_stop(self) -> None:
+    def pattern_transport_stop(self) -> None:
         """Stop pattern playback (delegate to stop_pattern)."""
         self.stop_pattern()
 
-    def _pattern_transport_pause_toggle(self) -> None:
+    def pattern_transport_pause_toggle(self) -> None:
         """Pause or resume pattern playback."""
         if self._pattern_paused:
             # Resume: restart engine from current position, then restart timer.
@@ -1788,7 +1788,7 @@ class PatternSequenceEditor(PatternUI):
                 message="Pattern playback paused", scope=self.__class__.__name__
             )
 
-    def _pattern_shuffle_play(self) -> None:
+    def pattern_shuffle_play(self) -> None:
         """Select a random bar and start playback."""
         if not self.measure_widgets:
             return
@@ -2339,7 +2339,7 @@ class PatternSequenceEditor(PatternUI):
         for button in self.buttons[row]:
             button.setEnabled(not checked)
 
-    def _update_drum_rows(self):
+    def update_drum_rows(self):
         """Update displayed buttons based on the selected drum option."""
         self.drum_selector.currentText()
         # Ensure UI updates properly

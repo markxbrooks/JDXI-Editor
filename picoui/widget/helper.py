@@ -60,11 +60,12 @@ def create_row(
     return layout
 
 
-def create_checkbox(label: str = None, value: bool = False) -> QCheckBox:
+def create_checkbox(label: str = None, value: bool = False, tooltip: str = "") -> QCheckBox:
     """Create a checkbox from label and value, or from a CheckBoxSpec."""
     check_box = QCheckBox(label or "")
     check_box.setLayoutDirection(QtCore.Qt.RightToLeft)
     check_box.setChecked(bool(value))
+    check_box.setToolTip(tooltip)
     return check_box
 
 
