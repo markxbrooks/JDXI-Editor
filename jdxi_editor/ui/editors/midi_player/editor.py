@@ -2,19 +2,18 @@
 MIDI Player for JDXI Editor
 """
 
-import re
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
 import mido
-import pyaudio
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
 
 from jdxi_editor.ui.editors.midi_player.automation import AutomationWidget
-from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec, build_panel
+from jdxi_editor.ui.editors.midi_player.helper import build_panel
+from jdxi_editor.ui.widgets.midi.file.viewer import MidiFileViewer
+from jdxi_editor.ui.widgets.transport.transport import TransportWidget
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
 from picomidi.playback.engine import PlaybackEngine
@@ -32,14 +31,12 @@ from picoui.specs.widgets import (
 from PySide6.QtCore import QMargins, Qt, QThread, QTimer
 from PySide6.QtWidgets import (
     QButtonGroup,
-    QCheckBox,
-    QComboBox,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QSlider, )
+)
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
@@ -57,7 +54,6 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
@@ -84,11 +80,9 @@ from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
     create_checkbox_from_spec,
     create_group_with_layout,
-    create_icon_and_label,
     create_layout_with_items,
     create_vertical_layout,
 )
-from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 
@@ -126,6 +120,7 @@ class MidiFilePlayer(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
+        self.tick_duration = None
         self.specs: dict | None = None
         self._last_position_label: QLabel | None = None
         self.parent: QWidget = parent
@@ -150,6 +145,8 @@ class MidiFilePlayer(SynthEditor):
         self.usb_recorder = USBFileRecordingWidget(self.midi_state)
         self.automation = AutomationWidget(self.midi_state, parent=self)
         self.ui = MidiPlayerWidgets()
+        self.transport: TransportWidget = TransportWidget(parent=self)
+        self.midi_file = MidiFileViewer(midi_state=self.midi_state, parent=self)
         self.specs = self._build_specs()
         self.ui_init()
 
@@ -212,7 +209,7 @@ class MidiFilePlayer(SynthEditor):
         # --- Create content widget
         centered_layout = create_layout_with_items(
             items=[
-                self.init_transport_controls(),
+                self.transport,
                 self.init_midi_file_controls(),
                 self.init_event_suppression_controls(),
             ],
@@ -227,9 +224,9 @@ class MidiFilePlayer(SynthEditor):
         # So MidiTrackViewer and its MidiTrackWidgets get space and are visible.
         main_layout = create_vertical_layout(margins=QMargins(0, 0, 0, 0), spacing=0)
         main_layout.addWidget(header_widget)
-        main_layout.addWidget(self.init_ruler())
+        main_layout.addWidget(self.midi_file)
         main_layout.addWidget(
-            self.ui.midi_track_viewer, 1
+            self.midi_file.midi_track_viewer, 1
         )  # stretch so track viewer gets remaining space
         main_layout.addWidget(centered_widget)
         # Add content to base widget
@@ -312,41 +309,6 @@ class MidiFilePlayer(SynthEditor):
             classify_tracks_label_row,
         ]
         return widgets
-
-    def init_ruler(self) -> QWidget:
-        """
-        init_ruler
-
-        :return: QWidget
-        """
-        self.init_midi_file_position_label()
-        self.init_midi_file_position_slider()
-        widgets = [self.ui.position_label, self.ui.midi_file_position_slider]
-        ruler_layout = create_layout_with_items(
-            items=widgets,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
-            start_stretch=False,
-            end_stretch=False,
-        )
-        ruler_container = create_widget_with_layout(layout=ruler_layout)
-        return ruler_container
-
-    def init_midi_file_position_label(self):
-        """Midi File position label"""
-        self.ui.position_label = QLabel("Playback Position: 0:00 / 0:00")
-        self.ui.midi_track_viewer = MidiTrackViewer()
-        self.ui.position_label.setFixedWidth(
-            self.ui.midi_track_viewer.get_track_controls_width()
-        )
-
-    def init_midi_file_position_slider(self):
-        """Midi File position slider"""
-        self.ui.midi_file_position_slider = QSlider(Qt.Horizontal)
-        self.ui.midi_file_position_slider.setEnabled(False)
-        self.ui.midi_file_position_slider.sliderReleased.connect(
-            self.midi_scrub_position
-        )
 
     def init_event_suppression_controls(self) -> QGroupBox:
         """
@@ -442,8 +404,8 @@ class MidiFilePlayer(SynthEditor):
 
             updated_tracks = []
             for track_index, analysis in drum_tracks:
-                if track_index in self.ui.midi_track_viewer.track_channel_spins:
-                    spin = self.ui.midi_track_viewer.track_channel_spins[track_index]
+                if track_index in self.midi_file.midi_track_viewer.track_channel_spins:
+                    spin = self.midi_file.midi_track_viewer.track_channel_spins[track_index]
                     spin.setValue(drum_channel_display)
                     track_name = (
                         analysis.get("track_name") or f"Track {track_index + 1}"
@@ -538,7 +500,7 @@ class MidiFilePlayer(SynthEditor):
             meta = CATEGORY_META[category]
 
             for track_index, analysis in tracks:
-                spin = self.ui.midi_track_viewer.track_channel_spins.get(track_index)
+                spin = self.midi_file.midi_track_viewer.track_channel_spins.get(track_index)
                 if not spin:
                     continue
 
@@ -669,7 +631,7 @@ class MidiFilePlayer(SynthEditor):
             return
 
         # Time in seconds from slider
-        current_seconds = float(self.ui.midi_file_position_slider.value())
+        current_seconds = float(self.midi_file.position_slider.value())
         # Channel (digital is 1-16, convert to 0-based)
         display_channel = int(self.automation.automation_channel_combo.currentData())
         channel = display_channel - 1
@@ -717,7 +679,7 @@ class MidiFilePlayer(SynthEditor):
         self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
 
         # Refresh viewer and internal state
-        self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
         # Sync mute buttons after setting MIDI file
         self._sync_mute_buttons_from_track_viewer()
         self.midi_extract_events()
@@ -730,12 +692,12 @@ class MidiFilePlayer(SynthEditor):
             short_label = (
                 preset_label.split("  ")[1] if "  " in preset_label else preset_label
             )
-            self.ui.midi_track_viewer.ruler.add_marker(
+            self.midi_file.midi_track_viewer.ruler.add_marker(
                 current_seconds, label=short_label
             )
         except Exception:
             # Fail-safe: add without label
-            self.ui.midi_track_viewer.ruler.add_marker(current_seconds)
+            self.midi_file.midi_track_viewer.ruler.add_marker(current_seconds)
 
     def _build_message(
         self, message_type: str, channel: int, value: int = None, program: int = None
@@ -875,12 +837,12 @@ class MidiFilePlayer(SynthEditor):
         :param is_muted: bool is the channel muted?
         """
         # Update track viewer's mute state (this will also update track viewer's buttons)
-        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
-            self.ui.midi_track_viewer.toggle_channel_mute(channel, is_muted)
+        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+            self.midi_file.midi_track_viewer.toggle_channel_mute(channel, is_muted)
             # Sync the track viewer's mute buttons
-            if channel in self.ui.midi_track_viewer.mute_buttons:
-                self.ui.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
-                self.ui.midi_track_viewer.mute_buttons[channel].setStyleSheet(
+            if channel in self.midi_file.midi_track_viewer.mute_buttons:
+                self.midi_file.midi_track_viewer.mute_buttons[channel].setChecked(is_muted)
+                self.midi_file.midi_track_viewer.mute_buttons[channel].setStyleSheet(
                     generate_sequencer_button_style(
                         not is_muted, checked_means_inactive=True
                     )
@@ -897,8 +859,8 @@ class MidiFilePlayer(SynthEditor):
         if not hasattr(self, "mute_channel_buttons"):
             return
 
-        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
-            muted_channels = self.ui.midi_track_viewer.get_muted_channels()
+        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+            muted_channels = self.midi_file.midi_track_viewer.get_muted_channels()
             for channel, btn in self.mute_channel_buttons.items():
                 btn.blockSignals(True)
                 btn.setChecked(channel in muted_channels)
@@ -909,8 +871,8 @@ class MidiFilePlayer(SynthEditor):
         Apply all Track Name and MIDI Channel changes.
         Calls the track viewer's apply_all_track_changes method.
         """
-        if hasattr(self.ui, "midi_track_viewer") and self.ui.midi_track_viewer:
-            self.ui.midi_track_viewer.apply_all_track_changes()
+        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+            self.midi_file.midi_track_viewer.apply_all_track_changes()
 
     def _create_transport_control(
         self,
@@ -932,59 +894,6 @@ class MidiFilePlayer(SynthEditor):
         label_row, text_label = create_jdxi_row(spec.text, icon_pixmap=pixmap)
         setattr(self.ui, f"{spec.name}_label", text_label)
         layout.addWidget(label_row)
-
-    def transport_set_state(self, state: str):
-        self.ui.play_button.blockSignals(True)
-        self.ui.stop_button.blockSignals(True)
-
-        self.ui.play_button.setChecked(state == "play")
-        self.ui.stop_button.setChecked(state == "stop")
-
-        self.ui.play_button.blockSignals(False)
-        self.ui.stop_button.blockSignals(False)
-
-    def init_transport_controls(self) -> QGroupBox:
-        """init transport controls"""
-        group, transport_layout = create_group_with_layout("Transport", vertical=False)
-        transport_button_group = QButtonGroup(self)
-        transport_button_group.setExclusive(True)
-
-        controls = [
-            TransportSpec(
-                label="Play",
-                icon=JDXi.UI.Icon.PLAY,
-                tooltip="Play",
-                slot=self.midi_playback_start,
-                grouped=True,
-                name="play",
-                text="Play",
-            ),
-            TransportSpec(
-                label="Stop",
-                icon=JDXi.UI.Icon.STOP,
-                tooltip="Stop",
-                slot=self.midi_playback_stop,
-                grouped=True,
-                name="stop",
-                text="Stop",
-            ),
-            TransportSpec(
-                label="Pause",
-                icon=JDXi.UI.Icon.PAUSE,
-                tooltip="Pause",
-                slot=self.midi_playback_pause_toggle,
-                grouped=False,
-                name="pause",
-                text="Pause",
-            ),
-        ]
-
-        for spec in controls:
-            self._create_transport_control(
-                spec, transport_layout, transport_button_group
-            )
-
-        return group
 
     def update_tempo_us_from_worker(self, tempo_us: int) -> None:
         """
@@ -1105,7 +1014,7 @@ class MidiFilePlayer(SynthEditor):
         )
         file_path = get_file_save_from_spec(save_file_spec, parent=self)
         if file_path:
-            self.ui.midi_track_viewer.midi_file.save(file_path)
+            self.midi_file.midi_track_viewer.midi_file.save(file_path)
             file_name = f"Saved: {Path(file_path).name}"
             self.ui.digital_title_file_name.setText(file_name)
             # Update digital to show tempo only (no bar when not playing)
@@ -1149,8 +1058,8 @@ class MidiFilePlayer(SynthEditor):
             self.ui.digital_title_file_name.set_upper_display_text(
                 f"Tempo: {round(self.current_tempo_bpm)} BPM"
             )
-        self.ui.midi_track_viewer.clear()
-        self.ui.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_file.midi_track_viewer.clear()
+        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
         # Sync mute buttons after loading MIDI file
         self._sync_mute_buttons_from_track_viewer()
 
@@ -1417,7 +1326,7 @@ class MidiFilePlayer(SynthEditor):
         Start playback of the MIDI file from the beginning (or resume if paused).
         """
         # Reset position slider to beginning
-        self.transport_set_state("play")
+        self.transport.set_state("play")
         self.ui_position_slider_reset()
 
         # Turn off all effects when starting playback (prevents accidental distortion)
@@ -1617,7 +1526,7 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         Get the muted tracks from the MIDI track viewer.
         """
-        muted_tracks_raw = self.ui.midi_track_viewer.get_muted_tracks()
+        muted_tracks_raw = self.midi_file.midi_track_viewer.get_muted_tracks()
         muted_tracks = {int(t) for t in muted_tracks_raw if not isinstance(t, set)}
         for track in muted_tracks:
             log.parameter("Muted track", track)
@@ -1630,7 +1539,7 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         Get the muted channels from the MIDI track viewer.
         """
-        muted_channels_raw = self.ui.midi_track_viewer.get_muted_channels()
+        muted_channels_raw = self.midi_file.midi_track_viewer.get_muted_channels()
         muted_channels = {int(c) for c in muted_channels_raw if not isinstance(c, set)}
         log.parameter("Muted channels", muted_channels)
         for channel in muted_channels:
@@ -1671,20 +1580,20 @@ class MidiFilePlayer(SynthEditor):
 
     def ui_midi_file_position_slider_set_position(self, elapsed_time: float) -> None:
         """
-        ui.midi_file_position_slider_set_position
+        ui_midi_file.position_slider_set_position
 
         :param elapsed_time: float
         :return: None
         Update the slider position and label based on elapsed time.
         """
-        if self.ui.midi_file_position_slider.isSliderDown():
+        if self.midi_file.position_slider.isSliderDown():
             return  # Don't update while user is dragging
 
         new_value = int(elapsed_time)
-        current_value = self.ui.midi_file_position_slider.value()
+        current_value = self.midi_file.position_slider.value()
 
         if abs(new_value - current_value) >= 1:  # Only update if full second has passed
-            self.ui.midi_file_position_slider.setValue(new_value)
+            self.midi_file.position_slider.setValue(new_value)
             self.ui_position_label_set_time(elapsed_time)
 
     def midi_scrub_position(self):
@@ -1730,7 +1639,7 @@ class MidiFilePlayer(SynthEditor):
         """
         Retrieves the target time from the slider and logs it.
         """
-        target_time = self.ui.midi_file_position_slider.value()
+        target_time = self.midi_file.position_slider.value()
         log.parameter("target_time", target_time)
         return target_time
 
@@ -1832,7 +1741,7 @@ class MidiFilePlayer(SynthEditor):
         """
         Stops playback and resets everything to the beginning.
         """
-        self.transport_set_state("stop")
+        self.transport.set_state("stop")
         self.playback_engine.stop()
         self.playback_engine.scrub_to_tick(0)
         # Reset the worker's index before stopping (if it exists)
@@ -1971,10 +1880,10 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         Reset the position slider and label to initial state.
         """
-        self.ui.midi_file_position_slider.setEnabled(False)
-        self.ui.midi_file_position_slider.setValue(0)
-        self.ui.midi_file_position_slider.setEnabled(True)
-        self.ui.midi_file_position_slider.setRange(
+        self.midi_file.position_slider.setEnabled(False)
+        self.midi_file.position_slider.setValue(0)
+        self.midi_file.position_slider.setEnabled(True)
+        self.midi_file.position_slider.setRange(
             0, int(self.midi_state.file_duration_seconds)
         )
         self.ui_position_label_set_time()
@@ -1994,7 +1903,7 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         """
         if time_seconds is None:
-            self.ui.position_label.setText(
+            self.midi_file.position_label.setText(
                 f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}"
             )
 
@@ -2055,7 +1964,7 @@ class MidiFilePlayer(SynthEditor):
         total_str = format_time(total)
         label_text = f"Playback Position: {elapsed_str} / {total_str}"
         if getattr(self, "_last_position_label", "") != label_text:
-            self.ui.position_label.setText(label_text)
+            self.midi_file.position_label.setText(label_text)
             self._last_position_label = label_text
 
         # Update upper digital with tempo and bar number during active playback or when paused
@@ -2086,14 +1995,14 @@ class MidiFilePlayer(SynthEditor):
             self.midi_state.playback_start_time += pause_duration  # Adjust start time
         self.midi_state.timer.start()
         self.midi_state.playback_paused = False
-        self.ui.pause_label.setText("Pause")
+        self.transport.pause_label.setText("Pause")
 
     def _pause_playback(self):
         """Pausing playback"""
         self.midi_state.playback_paused_time = time.time()
         self.midi_state.timer.stop()
         self.midi_state.playback_paused = True
-        self.ui.pause_label.setText("Resume")
+        self.transport.pause_label.setText("Resume")
 
     def midi_playback_worker_handle_result(self, result=None):
         """

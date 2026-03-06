@@ -2,7 +2,7 @@
 UI components for MIDI file player.
 """
 
-from PySide6.QtWidgets import QCheckBox, QLabel, QPushButton, QSlider
+from PySide6.QtWidgets import QCheckBox, QLabel, QSlider
 
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 
@@ -14,15 +14,6 @@ class MidiPlayerWidgets:
 
     def __init__(self):
         """constructor"""
-        self.pause_label = None
         self.digital_title_file_name = DigitalTitle("No file loaded")
-        self.load_button = QPushButton()
-        self.save_button = QPushButton()
-        self.play_button = QPushButton()
-        self.stop_button = QPushButton()
-        self.pause_button = QPushButton()
-        self.midi_file_position_slider = QSlider()
         self.midi_suppress_program_changes_checkbox = QCheckBox()
         self.midi_suppress_control_changes_checkbox = QCheckBox()
-        self.position_label = QLabel()
-        self.midi_track_viewer = MidiTrackViewer()

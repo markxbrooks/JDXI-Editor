@@ -5,11 +5,11 @@ USB Recording Widget
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 import pyaudio
 from PySide6.QtCore import Qt, QMargins
-from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QCheckBox, QComboBox, QGridLayout, QHBoxLayout
+from PySide6.QtWidgets import QLabel, QPushButton, QCheckBox, QComboBox, QGridLayout, QHBoxLayout
 
 from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
@@ -18,56 +18,28 @@ from jdxi_editor.midi.utils.helpers import start_recording
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec
 from jdxi_editor.ui.editors.midi_player.helper import create_widget_cell_with_button_spec
-from jdxi_editor.ui.widgets.editor.helper import create_icon_and_label, create_group_and_grid_layout
+from jdxi_editor.ui.widgets.editor.helper import create_icon_and_label
+from jdxi_editor.ui.widgets.jdxi.widget import JDXiMidiGrid
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 from picoui.specs.widgets import ButtonSpec, FileSelectionSpec, FileSelectionMode, get_file_save_from_spec
 
 
-class USBFileRecordingWidget(QWidget):
+class USBFileRecordingWidget(JDXiMidiGrid):
     """USB File Recording Widget"""
 
-    def __init__(self, midi_state: MidiPlaybackState):
-        super().__init__()
+    def __init__(self, midi_state: MidiPlaybackState, parent=None):
+        super().__init__(midi_state=midi_state, parent=parent)
         """constructor"""
-        self.layout: QGridLayout | None = None
+        self.grid_title: str = "USB Recorder"
+        self.recorder: USBRecorder = USBRecorder(channels=1)
+        self.file_select: QPushButton = QPushButton()
+        self.file_output_name: str = ""
+        self.file_record_checkbox: QCheckBox = QCheckBox()
         self.port_refresh_devices_label: QLabel | None = None
-        self.midi_state = midi_state
-        self.recorder = USBRecorder(channels=1)
-        self.file_select = QPushButton()
-        self.file_output_name = ""
-        self.file_record_checkbox = QCheckBox()
-        self.file_auto_generate_checkbox = None
-        self.port_select_combo = QComboBox()
-        self.port_refresh_devices_button = QPushButton()
-        self.specs = self._build_specs()
+        self.file_auto_generate_checkbox: QCheckBox | None = None
+        self.port_select_combo: QComboBox = QComboBox()
+        self.port_refresh_devices_button: QPushButton = QPushButton()
         self.setup_ui()
-
-    def setup_ui(self):
-        """Set up UI"""
-        row = 0
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(QMargins(0, 0, 0, 0))
-        group, grid = create_group_and_grid_layout("USB Recording")
-        layout.addWidget(group)
-        self._build_layout(grid, row)
-
-    def _build_specs(self) -> dict[str, Any]:
-        """build specs for the Midi file player"""
-        return {
-            "buttons": self._build_button_specs(),
-        }
-
-    def start_recording(self):
-        """start usb recording"""
-        if self.recorder.file_save_recording:
-            recording_rate = "32bit"  # Default to 32-bit recording
-            try:
-                rate = self.recorder.usb_recording_rates.get(
-                    recording_rate, pyaudio.paInt16
-                )
-                self._start_recording(recording_rate=rate)
-            except Exception as ex:
-                log.error(f"Error {ex} occurred starting USB recording")
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
         return {
@@ -133,6 +105,18 @@ class USBFileRecordingWidget(QWidget):
             self.on_usb_file_auto_generate_toggled
         )
         grid.addWidget(self.file_auto_generate_checkbox, row, 4)
+
+    def start_recording(self):
+        """start usb recording"""
+        if self.recorder.file_save_recording:
+            recording_rate = "32bit"  # Default to 32-bit recording
+            try:
+                rate = self.recorder.usb_recording_rates.get(
+                    recording_rate, pyaudio.paInt16
+                )
+                self._start_recording(recording_rate=rate)
+            except Exception as ex:
+                log.error(f"Error {ex} occurred starting USB recording")
 
     def on_usb_save_recording_toggled(self, state: Qt.CheckState):
         """
