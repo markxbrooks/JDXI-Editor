@@ -1,11 +1,13 @@
 """
 UI components for MIDI file player.
 """
+from typing import Optional
 
 from PySide6.QtCore import QMargins, Qt
 from PySide6.QtWidgets import QLabel, QSlider, QVBoxLayout, QWidget
 
 from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.editors.midi_player.utils import format_time
 from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
 from picoui.helpers.layout import create_layout_with_items, create_widget_with_layout
 
@@ -60,3 +62,17 @@ class MidiFileViewer(QWidget):
         self.position_label.setFixedWidth(
             self.midi_track_viewer.get_track_controls_width()
         )
+
+    def position_label_update_time(
+        self, time_seconds: Optional[float] = None
+    ) -> None:
+        """
+        midi_file_position_label_update_time
+
+        :param time_seconds: float, optional
+        :return: None
+        """
+        if time_seconds is None:
+            self.position_label.setText(
+                f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}"
+            )

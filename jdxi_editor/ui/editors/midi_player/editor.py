@@ -688,7 +688,7 @@ class MidiFilePlayer(SynthEditor):
         self._sync_mute_buttons_from_track_viewer()
         self.midi_extract_events()
         self.calculate_duration()
-        self.ui_position_label_update_time()
+        self.midi_file_position_label_update_time()
 
         # Add a visual marker to the time ruler
         try:
@@ -1907,19 +1907,16 @@ class MidiFilePlayer(SynthEditor):
                 f"Tempo: {round(self.current_tempo_bpm)} BPM"
             )
 
-    def ui_position_label_update_time(
+    def midi_file_position_label_update_time(
         self, time_seconds: Optional[float] = None
     ) -> None:
         """
-        ui_position_label_update_time
+        midi_file_position_label_update_time
 
         :param time_seconds: float, optional
         :return: None
         """
-        if time_seconds is None:
-            self.midi_file.position_label.setText(
-                f"Playback Position: 0:00 / {format_time(self.midi_state.file_duration_seconds)}"
-            )
+        self.midi_file.position_label_update_time(time_seconds)
 
     def calculate_current_bar(
         self, elapsed_time: Optional[float] = None
@@ -2037,8 +2034,6 @@ class MidiFilePlayer(SynthEditor):
                 return self.parent.get_existing_editor(PatternSequenceEditor)
             except Exception:
                 return None
-        if hasattr(self.parent, "patternsequenceeditor_instance"):
-            return self.parent.patternsequenceeditor_instance
         return None
 
     def _push_tempo_to_pattern_sequencer(self, tempo_bpm: float) -> None:

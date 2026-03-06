@@ -968,8 +968,8 @@ class PlaylistEditor(QWidget):
                         midi_file_editor.ui.digital_title_file_name.setText(
                             f"Loaded: {Path(midi_file_path).name}"
                         )
-                        midi_file_editor.ui.midi_track_viewer.clear()
-                        midi_file_editor.ui.midi_track_viewer.set_midi_file(
+                        midi_file_editor.midi_file.midi_track_viewer.clear()
+                        midi_file_editor.midi_file.midi_track_viewer.set_midi_file(
                             midi_file_editor.midi_state.file
                         )
 
