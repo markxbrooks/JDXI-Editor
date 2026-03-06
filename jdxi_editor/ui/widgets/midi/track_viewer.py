@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
+from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
@@ -27,7 +28,7 @@ from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
 from jdxi_editor.ui.widgets.midi.utils import get_first_channel
 from picomidi.constant import Midi
-from picomidi.message.type import MidoMetaMessageType
+from picomidi.message.type import MidoMetaMessageType, MidoMessageType
 
 
 class MidiTrackViewer(QWidget):
@@ -559,15 +560,15 @@ class MidiTrackViewer(QWidget):
             self._draggable_rows[i] = draggable_row
             self.channel_controls_vlayout.addWidget(draggable_row)
 
-        # Global Apply button
+        # Global Apply button (Apply Presets is in Track Classification group)
         apply_all_layout = QHBoxLayout()
         apply_all_layout.addStretch()
-        apply_all_btn = QPushButton("Apply All Track Changes")
+        apply_all_btn = QPushButton("Apply Changes")
         apply_all_btn.setToolTip("Apply all Track Name and MIDI Channel changes")
         apply_all_btn.clicked.connect(self.apply_all_track_changes)
         apply_all_layout.addWidget(apply_all_btn)
-        # self.channel_controls_vlayout.addLayout(apply_all_layout)
 
+        self.channel_controls_vlayout.addLayout(apply_all_layout)
         self.channel_controls_vlayout.addStretch()
         self.update_track_zoom(self.track_zoom_slider.value())
 
@@ -655,6 +656,101 @@ class MidiTrackViewer(QWidget):
 
             new_midi.tracks.append(new_track)
 
+        self.set_midi_file(new_midi)
+
+    # Channel (1-16) → JD-Xi preset number (e.g. 159 Picked Bass, 162 Piano, 1 JP8 Strings)
+    _CHANNEL_PRESET_MAP = {
+        1: 159,  # Picked Bass
+        2: 162,  # JD Piano 1
+        3: 1,    # JP8 Strings1 (Cheat Preset #1)
+    }
+
+    def apply_channel_presets(self) -> None:
+        """Insert Bank Select and Program Change at the start of each track based on channel."""
+        log.message(
+            scope=self.__class__.__name__,
+            message="apply_channel_presets (file update) called",
+        )
+        if not self.midi_file:
+            log.message(
+                scope=self.__class__.__name__,
+                message="Early return: no midi_file",
+            )
+            return
+
+        pc_map = JDXiPresetToneListDigital.PROGRAM_CHANGE
+        new_midi = mido.MidiFile()
+        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
+
+        for i, track in enumerate(self.midi_file.tracks):
+            desired_display_ch = (
+                self.track_channel_spins.get(i).value()
+                if i in self.track_channel_spins
+                else None
+            )
+            if desired_display_ch is None:
+                new_track = mido.MidiTrack()
+                for msg in track:
+                    new_track.append(msg.copy())
+                new_midi.tracks.append(new_track)
+                continue
+
+            preset_num = self._CHANNEL_PRESET_MAP.get(desired_display_ch)
+            channel = desired_display_ch + Midi.channel.DISPLAY_TO_BINARY
+            if preset_num is None or preset_num not in pc_map:
+                new_track = mido.MidiTrack()
+                for msg in track:
+                    msg_copy = msg.copy()
+                    if hasattr(msg_copy, "channel"):
+                        msg_copy.channel = channel
+                    new_track.append(msg_copy)
+                new_midi.tracks.append(new_track)
+                continue
+
+            spec = pc_map[preset_num]
+            msb = spec["MSB"]
+            lsb = spec["LSB"]
+            pc = spec["PC"]
+
+            msgs = [
+                mido.Message(
+                    MidoMessageType.CONTROL_CHANGE.value,
+                    control=0,
+                    value=msb,
+                    channel=channel,
+                    time=0,
+                ),
+                mido.Message(
+                    MidoMessageType.CONTROL_CHANGE.value,
+                    control=32,
+                    value=lsb,
+                    channel=channel,
+                    time=0,
+                ),
+                mido.Message(
+                    MidoMessageType.PROGRAM_CHANGE.value,
+                    program=max(0, pc - 1),
+                    channel=channel,
+                    time=0,
+                ),
+            ]
+
+            new_track = mido.MidiTrack()
+            for m in msgs:
+                new_track.append(m)
+            for msg in track:
+                msg_copy = msg.copy()
+                if hasattr(msg_copy, "channel"):
+                    msg_copy.channel = channel
+                new_track.append(msg_copy)
+
+            new_midi.tracks.append(new_track)
+
+        log.parameter(
+            scope=self.__class__.__name__,
+            message="Tracks with presets inserted",
+            parameter=len(new_midi.tracks),
+        )
         self.set_midi_file(new_midi)
 
     def get_muted_channels(self):

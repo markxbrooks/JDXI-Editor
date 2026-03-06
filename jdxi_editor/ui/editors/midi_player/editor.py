@@ -38,9 +38,7 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button_from_spec,
-    create_jdxi_button_with_label_from_spec,
     create_jdxi_row,
-    create_small_sequencer_square_for_channel,
 )
 from jdxi_editor.ui.editors.midi_player.automation import AutomationWidget
 from jdxi_editor.ui.editors.midi_player.helper import build_panel
@@ -55,18 +53,21 @@ from jdxi_editor.ui.editors.midi_player.widgets import MidiPlayerWidgets
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.source import PresetSource
-from jdxi_editor.ui.style import JDXiUIStyle
+from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
-    create_checkbox_from_spec,
     create_group_with_layout,
     create_layout_with_items,
     create_vertical_layout,
 )
 from jdxi_editor.ui.widgets.midi.file.viewer import MidiFileViewer
 from jdxi_editor.ui.widgets.midi.utils import get_total_duration_in_seconds
+from jdxi_editor.ui.widgets.classification_group import ClassificationGroup
+from jdxi_editor.ui.widgets.event_suppression_group import EventSuppressionGroup
+from jdxi_editor.ui.widgets.midi_file_group import MidiFileGroup
+from jdxi_editor.ui.widgets.mute_channels_group import MuteChannelsGroup
 from jdxi_editor.ui.widgets.transport.transport import TransportWidget
 from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
@@ -120,6 +121,7 @@ class MidiFilePlayer(SynthEditor):
         :param preset_helper: Optional[JDXIPresetHelper]
         """
         super().__init__()
+        self.midi_helper = midi_helper
         self.tick_duration = None
         self.specs: dict | None = None
         self._last_position_label: QLabel | None = None
@@ -146,6 +148,18 @@ class MidiFilePlayer(SynthEditor):
         self.automation = AutomationWidget(self.midi_state, parent=self)
         self.ui = MidiPlayerWidgets()
         self.transport: TransportWidget = TransportWidget(parent=self)
+        self.midi_file_group: MidiFileGroup = MidiFileGroup(
+            parent=self, midi_state=self.midi_state
+        )
+        self.event_suppression_group: EventSuppressionGroup = EventSuppressionGroup(
+            parent=self, midi_state=self.midi_state
+        )
+        self.classification_group: ClassificationGroup = ClassificationGroup(
+            parent=self, midi_state=self.midi_state
+        )
+        self.mute_channels_group: MuteChannelsGroup = MuteChannelsGroup(
+            parent=self, midi_state=self.midi_state
+        )
         self.midi_file = MidiFileViewer(midi_state=self.midi_state, parent=self)
         self.specs = self._build_specs()
         self.ui_init()
@@ -210,8 +224,8 @@ class MidiFilePlayer(SynthEditor):
         centered_layout = create_layout_with_items(
             items=[
                 self.transport,
-                self.init_midi_file_controls(),
-                self.init_event_suppression_controls(),
+                self.midi_file_group,
+                self.event_suppression_group,
             ],
             vertical=False,
             start_stretch=False,
@@ -248,9 +262,8 @@ class MidiFilePlayer(SynthEditor):
         self.ui.digital_title_file_name = DigitalTitle(
             tone_name="No file loaded", show_upper_text=True
         )
-        classification_widget = self._create_classify_tracks_widget()
         layout = create_layout_with_items(
-            items=[self.ui.digital_title_file_name, classification_widget],
+            items=[self.ui.digital_title_file_name, self.classification_group],
             vertical=True,
             start_stretch=False,
             end_stretch=False,
@@ -259,122 +272,16 @@ class MidiFilePlayer(SynthEditor):
         )
         return layout
 
-    def _create_classify_tracks_widget(self) -> QWidget:
-        """Create classify tracks widget"""
-        classify_tracks_widgets = self._build_classify_tracks_widgets()
-        classification_hlayout = create_layout_with_items(
-            items=classify_tracks_widgets,
-            spacing=5,
-            start_stretch=False,
-            end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-        )
-        classification_widget = QWidget()
-        classification_vlayout = create_layout_with_inner_layouts(
-            inner_layouts=[classification_hlayout], vertical=True, stretch=False
-        )
-        classification_widget.setLayout(classification_vlayout)
-        apply_all_label_row = self.create_apply_all_button_and_label()
-        classification_vlayout.addWidget(apply_all_label_row)
-        return classification_widget
-
     def _build_right_panel(self):
         """Build right panel"""
         right_panel_layout = create_layout_with_inner_layouts(
-            inner_layouts=[self.init_automation_usb_grid(), self.init_mute_controls()],
+            inner_layouts=[self.init_automation_usb_grid()],
             vertical=True,
             stretch=False,
         )
+        right_panel_layout.addWidget(self.mute_channels_group)
         right_panel_layout.setContentsMargins(QMargins(0, 0, 0, 0))
         return right_panel_layout
-
-    def _build_classify_tracks_widgets(self) -> list[QPushButton | QWidget]:
-        """build classify tracks widgets"""
-        # ---- Drum detection button
-        detect_drums_label_row, self.ui.detect_drums_button = (
-            create_jdxi_button_with_label_from_spec(
-                self.specs["buttons"]["detect_drums"]
-            )
-        )
-        # --- Classify Tracks Button
-        classify_tracks_label_row, self.ui.classify_tracks_button = (
-            create_jdxi_button_with_label_from_spec(
-                self.specs["buttons"]["classify_tracks"]
-            )
-        )
-        widgets = [
-            self.ui.detect_drums_button,
-            detect_drums_label_row,
-            self.ui.classify_tracks_button,
-            classify_tracks_label_row,
-        ]
-        return widgets
-
-    def init_event_suppression_controls(self) -> QGroupBox:
-        """
-        init_midi_file_controls
-
-        :return: QHBoxLayout
-        """
-        # Use the spec-created checkboxes (they have callbacks); replace UI refs so layout and theme use them
-        self.ui.midi_suppress_program_changes_checkbox = create_checkbox_from_spec(
-            spec=self.specs["check_box"]["midi_suppress_pc_spec"]
-        )
-        self.ui.midi_suppress_control_changes_checkbox = create_checkbox_from_spec(
-            spec=self.specs["check_box"]["midi_suppress_cc_spec"]
-        )
-        widgets = [
-            self.ui.midi_suppress_program_changes_checkbox,
-            self.ui.midi_suppress_control_changes_checkbox,
-        ]
-        JDXi.UI.Theme.apply_button_mini_style(
-            self.ui.midi_suppress_program_changes_checkbox
-        )
-        JDXi.UI.Theme.apply_button_mini_style(
-            self.ui.midi_suppress_control_changes_checkbox
-        )
-        layout = create_layout_with_items(
-            items=widgets,
-            vertical=False,
-            start_stretch=False,
-            end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
-        )
-        group, _ = create_group_with_layout(
-            label="MIDI Event Suppression", layout=layout
-        )
-        return group
-
-    def init_midi_file_controls(self) -> QGroupBox:
-        """
-        init_midi_file_controls
-
-        :return: QHBoxLayout
-        """
-        self.ui.load_button, load_label_row = create_jdxi_button_with_label_from_spec(
-            self.specs["buttons"]["load_midi_file"], checkable=False
-        )
-        self.ui.save_button, save_label_row = create_jdxi_button_with_label_from_spec(
-            self.specs["buttons"]["save_midi_file"], checkable=False
-        )
-        layout = create_layout_with_items(
-            items=[
-                self.ui.load_button,
-                load_label_row,
-                self.ui.save_button,
-                save_label_row,
-            ],
-            vertical=False,
-            start_stretch=False,
-            end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
-            spacing=0,
-        )
-
-        group = QGroupBox("MIDI File")
-        group.setLayout(layout)
-        return group
 
     def detect_and_assign_drum_tracks(self) -> None:
         """
@@ -782,56 +689,6 @@ class MidiFilePlayer(SynthEditor):
         for m in rebuilt:
             track.append(m)
 
-    def init_mute_controls(self) -> QHBoxLayout:
-        """
-        init_mute_controls
-
-        :return: QHBoxLayout
-        """
-        layout_widgets: list[QWidget] = [QLabel("Mute Channels:")]
-        # --- Create mute buttons for channels 1-16
-        self.mute_channel_buttons = {}
-        for ch in range(1, 17):
-            btn = create_small_sequencer_square_for_channel(ch)
-            btn.toggled.connect(
-                lambda checked, c=ch: self._toggle_channel_mute(c, checked, btn)
-            )
-            btn.setCheckable(True)
-            btn.setChecked(False)
-            btn.setStyleSheet(
-                generate_sequencer_button_style(
-                    not btn.isChecked(), checked_means_inactive=True
-                )
-            )
-            self.mute_channel_buttons[ch] = btn
-            layout_widgets.append(btn)
-
-        layout = create_layout_with_items(
-            layout_widgets, start_stretch=False, end_stretch=False
-        )
-        return layout
-
-    def create_apply_all_button_and_label(self) -> QWidget:
-        """Add "Apply All Track Changes" button"""
-        spec = self.specs["buttons"]["apply_all_track_changes"]
-        self.ui.apply_all_track_changes_button = create_jdxi_button_from_spec(
-            spec, checkable=False
-        )
-        apply_all_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        apply_all_label_row = QWidget()
-        row_widget, self.ui.apply_all_track_changes_label = create_jdxi_row(
-            spec.label, icon_pixmap=apply_all_icon_pixmap
-        )
-        apply_all_label_layout = create_layout_with_items(
-            items=[self.ui.apply_all_track_changes_button, row_widget],
-            spacing=4,
-            margins=QMargins(0, 0, 0, 0),
-        )
-        apply_all_label_row.setLayout(apply_all_label_layout)
-        return apply_all_label_row
-
     def _toggle_channel_mute(self, channel: int, is_muted: bool, btn) -> None:
         """
         Toggle mute state for a specific MIDI channel.
@@ -841,7 +698,7 @@ class MidiFilePlayer(SynthEditor):
         :param is_muted: bool is the channel muted?
         """
         # Update track viewer's mute state (this will also update track viewer's buttons)
-        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+        if self.midi_file and self.midi_file.midi_track_viewer:
             self.midi_file.midi_track_viewer.toggle_channel_mute(channel, is_muted)
             # Sync the track viewer's mute buttons
             if channel in self.midi_file.midi_track_viewer.mute_buttons:
@@ -862,23 +719,113 @@ class MidiFilePlayer(SynthEditor):
         Sync mute channel buttons in the USB file controls with the track viewer's state.
         Called when MIDI file is loaded or track viewer's mute state changes.
         """
-        if not hasattr(self, "mute_channel_buttons"):
+        if not hasattr(self, "mute_channels_group") or not self.mute_channels_group:
             return
 
-        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+        mute_channel_buttons = self.mute_channels_group.mute_channel_buttons
+        if self.midi_file and self.midi_file.midi_track_viewer:
             muted_channels = self.midi_file.midi_track_viewer.get_muted_channels()
-            for channel, btn in self.mute_channel_buttons.items():
+            for channel, btn in mute_channel_buttons.items():
                 btn.blockSignals(True)
                 btn.setChecked(channel in muted_channels)
                 btn.blockSignals(False)
 
-    def _apply_all_track_changes(self) -> None:
+    def apply_all_track_changes(self) -> None:
         """
         Apply all Track Name and MIDI Channel changes.
         Calls the track viewer's apply_all_track_changes method.
         """
-        if hasattr(self.ui, "midi_track_viewer") and self.midi_file.midi_track_viewer:
+        if self.midi_file and self.midi_file.midi_track_viewer:
             self.midi_file.midi_track_viewer.apply_all_track_changes()
+
+    def apply_channel_presets(self) -> None:
+        """
+        Send live MIDI Program Changes to the synth and insert presets into the MIDI file.
+        Ch 1→Picked Bass, Ch 2→Piano, Ch 3→JP8 Strings.
+        """
+        log.message(
+            scope=self.__class__.__name__,
+            message="apply_channel_presets called (Apply Presets button)",
+        )
+
+        if not self.midi_file or not self.midi_file.midi_track_viewer:
+            log.message(
+                scope=self.__class__.__name__,
+                message="Early return: no midi_file or midi_track_viewer",
+            )
+            return
+
+        tv = self.midi_file.midi_track_viewer
+        channel_preset_map = tv._CHANNEL_PRESET_MAP
+        pc_map = JDXiPresetToneListDigital.PROGRAM_CHANGE
+
+        log.parameter(
+            scope=self.__class__.__name__,
+            message="midi_helper",
+            parameter=self.midi_helper,
+        )
+        log.parameter(
+            scope=self.__class__.__name__,
+            message="track_channel_spins count",
+            parameter=len(tv.track_channel_spins) if tv.track_channel_spins else 0,
+        )
+        if tv.track_channel_spins:
+            ch_values = {
+                i: tv.track_channel_spins[i].value()
+                for i in sorted(tv.track_channel_spins)
+            }
+            log.parameter(
+                scope=self.__class__.__name__,
+                message="track_channel_spins (track_idx -> display_ch)",
+                parameter=ch_values,
+            )
+
+        # Send live MIDI to synth for each channel with a preset mapping
+        if self.midi_helper:
+            seen_channels: set[int] = set()
+            sent_count = 0
+            for i in tv.track_channel_spins:
+                display_ch = tv.track_channel_spins[i].value()
+                if display_ch in seen_channels:
+                    continue
+                preset_num = channel_preset_map.get(display_ch)
+                if preset_num is None or preset_num not in pc_map:
+                    log.parameter(
+                        scope=self.__class__.__name__,
+                        message=f"Skip Ch {display_ch}: preset_num={preset_num}",
+                        parameter=preset_num,
+                    )
+                    continue
+                seen_channels.add(display_ch)
+                spec = pc_map[preset_num]
+                channel = display_ch + Midi.channel.DISPLAY_TO_BINARY  # 0-based
+                log.message(
+                    scope=self.__class__.__name__,
+                    message=f"Sending live MIDI: Ch {display_ch} -> preset {preset_num} ({spec.get('Name', '?')})",
+                )
+                self.midi_helper.send_bank_select_and_program_change(
+                    channel=channel,
+                    bank_msb=spec["MSB"],
+                    bank_lsb=spec["LSB"],
+                    program=max(0, spec["PC"] - 1),
+                )
+                sent_count += 1
+            log.parameter(
+                scope=self.__class__.__name__,
+                message="Live MIDI presets sent",
+                parameter=sent_count,
+            )
+        else:
+            log.message(
+                scope=self.__class__.__name__,
+                message="No midi_helper: skipping live MIDI send",
+            )
+
+        log.message(
+            scope=self.__class__.__name__,
+            message="Calling track_viewer.apply_channel_presets (file update)",
+        )
+        tv.apply_channel_presets()
 
     def _create_transport_control(
         self,
@@ -1973,16 +1920,19 @@ class MidiFilePlayer(SynthEditor):
             elapsed_str = format_time(elapsed_capped)
 
         total_str = format_time(total)
-        label_text = f"Playback Position: {elapsed_str} / {total_str}"
-        if getattr(self, "_last_position_label", "") != label_text:
-            self.midi_file.position_label.setText(label_text)
-            self._last_position_label = label_text
+        self.update_position_text(elapsed_str, total_str)
 
         # Update upper digital with tempo and bar number during active playback or when paused
         if elapsed_time is not None and self.midi_state.file and self.midi_state.timer:
             # Update digital with tempo and bar if timer was active (playing or paused)
             if self.midi_state.timer.isActive() or self.midi_state.playback_paused:
                 self.update_upper_display_with_tempo_and_bar(elapsed_time)
+
+    def update_position_text(self, elapsed_str: str, total_str: str):
+        """update position text"""
+        label_text = f"Playback Position: {elapsed_str} / {total_str}"
+        if getattr(self.midi_file, "position_label", "") != label_text:
+            self.midi_file.position_label.setText(label_text)
 
     def midi_playback_pause_toggle(self):
         """
@@ -2095,41 +2045,11 @@ class MidiFilePlayer(SynthEditor):
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
         return {
-            "apply_all_track_changes": ButtonSpec(
-                label="Apply All Track Changes",
-                tooltip="Apply all Track Name and MIDI Channel changes",
-                icon=JDXi.UI.Icon.SAVE,
-                slot=self._apply_all_track_changes,
-            ),
             "automation_insert": ButtonSpec(
                 label="Insert Program Change Here",
                 tooltip="Insert Program Change at current position",
                 icon=JDXi.UI.Icon.ADD,
                 slot=self.insert_program_change_current_position,
-            ),
-            "classify_tracks": ButtonSpec(
-                label="Classify Tracks",
-                tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
-                icon=JDXi.UI.Icon.MUSIC_NOTES,
-                slot=self.classify_and_assign_tracks,
-            ),
-            "detect_drums": ButtonSpec(
-                label="Detect Drums",
-                tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
-                icon=JDXi.UI.Icon.DRUM,
-                slot=self.detect_and_assign_drum_tracks,
-            ),
-            "load_midi_file": ButtonSpec(
-                label="Load",
-                tooltip="Load MIDI File",
-                icon=JDXi.UI.Icon.FOLDER_OPENED,
-                slot=self.midi_load_file,
-            ),
-            "save_midi_file": ButtonSpec(
-                label="Save",
-                tooltip="Save MIDI file",
-                icon=JDXi.UI.Icon.FLOPPY_DISK,
-                slot=self.midi_save_file,
             ),
         }
 
@@ -2189,18 +2109,5 @@ class MidiFilePlayer(SynthEditor):
         }
 
     def _build_checkbox_specs(self) -> dict[str, CheckBoxSpec]:
-        """build check box specs"""
-        return {
-            "midi_suppress_pc_spec": CheckBoxSpec(
-                label="Program Changes",
-                checked_state=self.midi_state.suppress_program_changes,
-                slot=self.on_suppress_program_changes_toggled,
-                style=JDXiUIStyle.PARTIAL_SWITCH,
-            ),
-            "midi_suppress_cc_spec": CheckBoxSpec(
-                label="Control Changes",
-                checked_state=self.midi_state.suppress_control_changes,
-                slot=self.on_suppress_control_changes_toggled,
-                style=JDXiUIStyle.PARTIAL_SWITCH,
-            ),
-        }
+        """build check box specs (event suppression moved to EventSuppressionGroup)"""
+        return {}

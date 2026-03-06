@@ -18,7 +18,6 @@ from typing import Any, Callable, Optional
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
-    QButtonGroup,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -38,7 +37,6 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
-    create_jdxi_button_from_spec,
     create_jdxi_row,
 )
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
@@ -46,7 +44,6 @@ from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
-from picomidi.ui.widget.transport.spec import TransportSpec
 
 
 class PlaylistEditor(QWidget):
@@ -155,7 +152,10 @@ class PlaylistEditor(QWidget):
         layout.addLayout(button_layout)
 
         # Transport group (Play, Stop, Pause, Shuffle Play)
-        layout.addWidget(self._init_transport_controls())
+        from jdxi_editor.ui.widgets.transport.transport import PlaylistTransportWidget
+
+        self.playlist_transport = PlaylistTransportWidget(parent=self)
+        layout.addWidget(self.playlist_transport)
 
         # Create playlist programs table
         self.playlist_programs_table = QTableWidget()
@@ -247,62 +247,6 @@ class PlaylistEditor(QWidget):
         label_row, _ = create_jdxi_row(text, icon_pixmap=pixmap)
         layout.addWidget(label_row)
         return btn
-
-    def _create_transport_control(
-        self,
-        spec: TransportSpec,
-        layout: QHBoxLayout,
-        button_group: Optional[QButtonGroup],
-    ) -> None:
-        """Create a transport button + label row (same pattern as Midi File Player)."""
-        btn = create_jdxi_button_from_spec(spec, button_group)
-        layout.addWidget(btn)
-
-        pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        label_row, _ = create_jdxi_row(spec.text, icon_pixmap=pixmap)
-        layout.addWidget(label_row)
-
-    def _init_transport_controls(self) -> QGroupBox:
-        """Build Transport group with Play, Stop, Pause, Shuffle Play (same style as Midi File Player)."""
-        group = QGroupBox("Transport")
-        centered_layout = QHBoxLayout(group)
-        transport_layout = QHBoxLayout()
-        centered_layout.addStretch()
-        centered_layout.addLayout(transport_layout)
-        centered_layout.addStretch()
-
-        transport_button_group = QButtonGroup(self)
-        transport_button_group.setExclusive(True)
-
-        controls = [
-            TransportSpec(
-                "play", JDXi.UI.Icon.PLAY, "Play", self._playlist_transport_play, True
-            ),
-            TransportSpec(
-                "stop", JDXi.UI.Icon.STOP, "Stop", self._playlist_transport_stop, True
-            ),
-            TransportSpec(
-                "pause",
-                JDXi.UI.Icon.PAUSE,
-                "Pause",
-                self._playlist_transport_pause_toggle,
-                False,
-            ),
-            TransportSpec(
-                "shuffle",
-                JDXi.UI.Icon.SHUFFLE,
-                "Shuffle Play",
-                self._playlist_shuffle_play,
-                True,
-            ),
-        ]
-        for spec in controls:
-            self._create_transport_control(
-                spec, transport_layout, transport_button_group
-            )
-        return group
 
     def _playlist_transport_play(self) -> None:
         """Play first playlist row that has a MIDI file, or selected row if one is selected."""

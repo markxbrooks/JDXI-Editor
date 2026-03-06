@@ -25,7 +25,7 @@ class AutomationWidget(JDXiMidiGroup):
     """Automation Widget class"""
 
     def __init__(self, midi_state: MidiPlaybackState, parent: "MidiFilePlayer"):
-        super().__init__(midi_state=midi_state, parent=parent)
+        super().__init__(parent=parent, midi_state=midi_state)
         self.group_title = "Automation"
         self.automation_channel_combo: QComboBox | None = None
         self.automation_type_combo: QComboBox | None = None

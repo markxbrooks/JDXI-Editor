@@ -38,7 +38,7 @@ class USBFileRecordingWidget(JDXiMidiGroup):
     """USB File Recording Widget"""
 
     def __init__(self, midi_state: MidiPlaybackState, parent=None):
-        super().__init__(midi_state=midi_state, parent=parent)
+        super().__init__(parent=parent, midi_state=midi_state)
         """constructor"""
         self.group_title: str = "USB Recorder"
         self.recorder: USBRecorder = USBRecorder(channels=1)

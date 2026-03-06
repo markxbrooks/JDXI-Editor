@@ -24,7 +24,6 @@ from mido import MidiFile, MidiTrack
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtWidgets import (
     QAbstractButton,
-    QButtonGroup,
     QCheckBox,
     QComboBox,
     QGroupBox,
@@ -62,12 +61,13 @@ from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
+from jdxi_editor.ui.widgets.pattern_file_group import PatternFileGroup
+from jdxi_editor.ui.widgets.transport.transport import PatternTransportWidget
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
 from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
-from picomidi.ui.widget.transport.spec import TransportSpec
-from picoui.helpers import create_layout_with_items, group_with_layout
+from picoui.helpers import create_layout_with_items
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
 from picoui.specs.widgets import ButtonSpec, ComboBoxSpec, SpinBoxSpec
 from picoui.widget.helper import create_combo_box
@@ -205,7 +205,8 @@ class PatternUI(SynthEditor):
         # Add transport and file controls at the top
         control_panel = QHBoxLayout()
 
-        file_group = self._create_file_group()
+        self.pattern_file_group = PatternFileGroup(parent=self)
+        self.drum_selector = self.pattern_file_group.drum_selector
 
         measure_group = self._create_measure_group()
         control_panel.addWidget(measure_group)
@@ -245,10 +246,15 @@ class PatternUI(SynthEditor):
         }
 
         # Transport at bottom, centered (stretch on both sides)
+        self.pattern_transport = PatternTransportWidget(parent=self)
+        self.play_button = self.pattern_transport.play_button
+        self.stop_button = self.pattern_transport.stop_button
+        self.pause_button = self.pattern_transport.pause_button
+        self.shuffle_button = self.pattern_transport.shuffle_button
         transport_bottom_layout = create_layout_with_items(
             [
-                self._init_transport_controls(),
-                file_group,
+                self.pattern_transport,
+                self.pattern_file_group,
             ]
         )
         self.layout.addLayout(transport_bottom_layout)
@@ -601,26 +607,6 @@ class PatternUI(SynthEditor):
         measure_group.setLayout(measure_layout)
         return measure_group
 
-    def _create_file_group(self) -> QGroupBox:
-        """File operations area (round buttons + icon labels, same style as Transport)"""
-        file_group = QGroupBox("Pattern")
-        file_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "load", self.specs["buttons"]["load"], file_layout
-        )
-        self._add_button_with_label_from_spec(
-            "save", self.specs["buttons"]["save"], file_layout
-        )
-        self._add_button_with_label_from_spec(
-            "clear_learn", self.specs["buttons"]["clear_learn"], file_layout
-        )
-
-        self.drum_selector = create_combo_box(spec=self.specs["combos"]["drum"])
-        self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
-
-        file_group.setLayout(file_layout)
-        return file_group
-
     def _log_and_return(self, ok: bool, msg: str) -> bool:
         """log and return"""
         if not ok:
@@ -693,62 +679,10 @@ class PatternUI(SynthEditor):
         layout.addWidget(label_row)
         return btn
 
-    def _create_transport_control(
-        self,
-        spec: TransportSpec,
-        layout: QHBoxLayout,
-        button_group: Optional[QButtonGroup],
-    ) -> None:
-        """Create a transport button + label row (same pattern as Midi File Player)."""
-        btn = create_jdxi_button_from_spec(spec, button_group)
-        setattr(self, f"{spec.name}_button", btn)
-        layout.addWidget(btn)
-
-        pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            spec.icon, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        label_row, _ = create_jdxi_row(spec.text, icon_pixmap=pixmap)
-        layout.addWidget(label_row)
-
-    def _init_transport_controls(self) -> QGroupBox:
-        """Build Transport group with Play, Stop, Pause, Shuffle Play (same style as Midi File Player)."""
-        group, layout = group_with_layout(label="Transport")
-        transport_layout = QHBoxLayout()
-        layout.addStretch()
-        layout.addLayout(transport_layout)
-        layout.addStretch()
-
-        transport_button_group = QButtonGroup(self)
-        transport_button_group.setExclusive(True)
-
-        for spec in self.specs["transport"]:
-            self._create_transport_control(
-                spec, transport_layout, transport_button_group
-            )
-        return group
-
     def _build_specs(self) -> dict[str, Any]:
         """Assemble all pattern editor button and combo specs for use in _setup_ui."""
         return {
             "buttons": {
-                "load": ButtonSpec(
-                    label="Load",
-                    icon=JDXi.UI.Icon.MUSIC,
-                    tooltip="Load pattern from file",
-                    slot=self._load_pattern_dialog,
-                ),
-                "save": ButtonSpec(
-                    label="Save",
-                    icon=JDXi.UI.Icon.SAVE,
-                    tooltip="Save pattern to file",
-                    slot=self._save_pattern_dialog,
-                ),
-                "clear_learn": ButtonSpec(
-                    label="Clear",
-                    icon=JDXi.UI.Icon.CLEAR,
-                    tooltip="Clear pattern",
-                    slot=self._clear_pattern,
-                ),
                 "add_measure": ButtonSpec(
                     label="Add Measure",
                     icon=JDXi.UI.Icon.ADD,
@@ -812,36 +746,6 @@ class PatternUI(SynthEditor):
                 "analog": _combo_spec(self.analog_options),
             },
             "spinboxes": self._create_spinbox_specs(),
-            "transport": [
-                TransportSpec(
-                    name="play",
-                    icon=JDXi.UI.Icon.PLAY,
-                    text="Play",
-                    slot=self._pattern_transport_play,
-                    grouped=True,
-                ),
-                TransportSpec(
-                    name="stop",
-                    icon=JDXi.UI.Icon.STOP,
-                    text="Stop",
-                    slot=self._pattern_transport_stop,
-                    grouped=True,
-                ),
-                TransportSpec(
-                    name="pause",
-                    icon=JDXi.UI.Icon.PAUSE,
-                    text="Pause",
-                    slot=self._pattern_transport_pause_toggle,
-                    grouped=False,
-                ),
-                TransportSpec(
-                    name="shuffle",
-                    icon=JDXi.UI.Icon.SHUFFLE,
-                    text="Shuffle Play",
-                    slot=self._pattern_shuffle_play,
-                    grouped=True,
-                ),
-            ],
         }
 
     def _on_button_clicked(self, btn, checked):

@@ -2,7 +2,18 @@
 UI components for Transport widget.
 """
 
-from PySide6.QtWidgets import QButtonGroup, QGroupBox, QHBoxLayout, QLabel, QPushButton
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
@@ -13,6 +24,11 @@ from jdxi_editor.ui.editors.helpers.widgets import (
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from picomidi.ui.widget.transport.spec import TransportSpec
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
+    from jdxi_editor.ui.editors.pattern.ui import PatternUI
+    from jdxi_editor.ui.editors.playlist.editor import PlaylistEditor
 
 
 class TransportWidget(JDXiMidiGroup):
@@ -105,3 +121,97 @@ class TransportWidget(JDXiMidiGroup):
         label_row, text_label = create_jdxi_row(spec.text, icon_pixmap=pixmap)
         setattr(self, f"{spec.name}_label", text_label)
         layout.addWidget(label_row)
+
+
+class PatternTransportWidget(TransportWidget):
+    """Transport for Pattern editor: Play, Stop, Pause, Shuffle Play."""
+
+    def __init__(self, parent: "PatternUI"):
+        super().__init__(parent=parent, midi_state=None)
+
+    def _build_transport_specs(self) -> dict[str, TransportSpec]:
+        return {
+            "play": TransportSpec(
+                label="Play",
+                icon=JDXi.UI.Icon.PLAY,
+                tooltip="Play",
+                slot=self.parent._pattern_transport_play,
+                grouped=True,
+                name="play",
+                text="Play",
+            ),
+            "stop": TransportSpec(
+                label="Stop",
+                icon=JDXi.UI.Icon.STOP,
+                tooltip="Stop",
+                slot=self.parent._pattern_transport_stop,
+                grouped=True,
+                name="stop",
+                text="Stop",
+            ),
+            "pause": TransportSpec(
+                label="Pause",
+                icon=JDXi.UI.Icon.PAUSE,
+                tooltip="Pause",
+                slot=self.parent._pattern_transport_pause_toggle,
+                grouped=False,
+                name="pause",
+                text="Pause",
+            ),
+            "shuffle": TransportSpec(
+                label="Shuffle Play",
+                icon=JDXi.UI.Icon.SHUFFLE,
+                tooltip="Shuffle Play",
+                slot=self.parent._pattern_shuffle_play,
+                grouped=True,
+                name="shuffle",
+                text="Shuffle Play",
+            ),
+        }
+
+
+class PlaylistTransportWidget(TransportWidget):
+    """Transport for Playlist editor: Play, Stop, Pause, Shuffle Play."""
+
+    def __init__(self, parent: "PlaylistEditor"):
+        super().__init__(parent=parent, midi_state=None)
+
+    def _build_transport_specs(self) -> dict[str, TransportSpec]:
+        return {
+            "play": TransportSpec(
+                label="Play",
+                icon=JDXi.UI.Icon.PLAY,
+                tooltip="Play",
+                slot=self.parent._playlist_transport_play,
+                grouped=True,
+                name="play",
+                text="Play",
+            ),
+            "stop": TransportSpec(
+                label="Stop",
+                icon=JDXi.UI.Icon.STOP,
+                tooltip="Stop",
+                slot=self.parent._playlist_transport_stop,
+                grouped=True,
+                name="stop",
+                text="Stop",
+            ),
+            "pause": TransportSpec(
+                label="Pause",
+                icon=JDXi.UI.Icon.PAUSE,
+                tooltip="Pause",
+                slot=self.parent._playlist_transport_pause_toggle,
+                grouped=False,
+                name="pause",
+                text="Pause",
+            ),
+            "shuffle": TransportSpec(
+                label="Shuffle Play",
+                icon=JDXi.UI.Icon.SHUFFLE,
+                tooltip="Shuffle Play",
+                slot=self.parent._playlist_shuffle_play,
+                grouped=True,
+                name="shuffle",
+                text="Shuffle Play",
+            ),
+        }
