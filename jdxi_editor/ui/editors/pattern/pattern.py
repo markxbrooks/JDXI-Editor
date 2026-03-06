@@ -176,7 +176,7 @@ class PatternSequenceEditor(PatternUI):
         self._init_style()
         self._init_playing_controllers()
         self._connect_midi_signals()
-        self._clear_pattern()
+        self.clear_pattern()
         # --- Load file
         self._load_from_midi_file_editor_if_available()
         # If MidiFileEditor is provided and has a loaded file, load it
