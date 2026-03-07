@@ -1,0 +1,491 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter {\sphinxsymbolsname}
+  \item \spxentry{\_\_eq\_\_()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{\_\_hash\_\_()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{\_\_init\_\_()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{21}
+  \item \spxentry{\_\_repr\_\_()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{\_\_str\_\_()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+
+  \indexspace
+  \bigletter A
+  \item \spxentry{ACK}\spxextra{jdxi\_editor.midi.data.address.address.ResponseID attribute}, 
+		\hyperpage{21}
+  \item \spxentry{add\_offset()}\spxextra{jdxi\_editor.midi.data.address.address.Address method}, 
+		\hyperpage{21}
+  \item \spxentry{add\_offset()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{Address}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{21}
+  \item \spxentry{address\_to\_hex\_string()}\spxextra{in module jdxi\_editor.midi.data.address.helpers}, 
+		\hyperpage{28}
+  \item \spxentry{ANALOG\_SYNTH}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+  \item \spxentry{ANALOG\_SYNTH}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetTemporaryToneUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{apply\_address\_offset()}\spxextra{in module jdxi\_editor.midi.data.address.helpers}, 
+		\hyperpage{28}
+  \item \spxentry{ARP\_GROUP}\spxextra{jdxi\_editor.midi.data.address.arpeggio.ArpeggioAddress attribute}, 
+		\hyperpage{28}
+  \item \spxentry{ARP\_PART}\spxextra{jdxi\_editor.midi.data.address.arpeggio.ArpeggioAddress attribute}, 
+		\hyperpage{28}
+  \item \spxentry{ArpeggioAddress}\spxextra{class in jdxi\_editor.midi.data.address.arpeggio}, 
+		\hyperpage{28}
+  \item \spxentry{as\_int()}\spxextra{jdxi\_editor.midi.data.address.address.SysExOffsetByte class method}, 
+		\hyperpage{20}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{CommandID}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetAnalogLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSystemLMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSystemUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{COMMON}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetTemporaryToneUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{CONTROLLER}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{CONTROLLER}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSystemLMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{copy()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{DELAY}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DEVICE\_ID}\spxextra{jdxi\_editor.midi.data.address.address.RolandID attribute}, 
+		\hyperpage{21}
+  \item \spxentry{DIGITAL\_DEFAULT\_PARTIAL}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DIGITAL\_DEFAULT\_PARTIAL}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{digital\_partial\_offset()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB class method}, 
+		\hyperpage{24}
+  \item \spxentry{DIGITAL\_SYNTH\_1}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+  \item \spxentry{DIGITAL\_SYNTH\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetTemporaryToneUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{DIGITAL\_SYNTH\_2}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+  \item \spxentry{DIGITAL\_SYNTH\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetTemporaryToneUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{DRUM\_DEFAULT\_PARTIAL}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_DEFAULT\_PARTIAL}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+  \item \spxentry{DRUM\_KIT}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetTemporaryToneUMB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{DRUM\_KIT\_PART\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT\_PART\_10}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_10}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_11}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_11}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_12}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_12}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_13}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_13}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_14}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_14}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_15}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_15}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_16}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_16}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_17}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_17}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_18}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_18}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_19}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_19}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT\_PART\_20}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_20}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_21}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_21}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_22}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_22}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_23}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_23}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_24}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_24}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_25}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_25}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_26}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_26}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_27}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_27}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_28}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_28}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_29}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_29}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_3}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_3}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT\_PART\_30}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_30}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_31}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_31}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_32}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_32}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_33}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_33}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_34}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_34}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_35}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_35}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_36}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_36}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_37}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{27}
+  \item \spxentry{DRUM\_KIT\_PART\_37}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_4}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_4}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT\_PART\_5}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_5}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{DRUM\_KIT\_PART\_6}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_6}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_7}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_7}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_8}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_8}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{DRUM\_KIT\_PART\_9}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB attribute}, 
+		\hyperpage{26}
+  \item \spxentry{DRUM\_KIT\_PART\_9}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{25}
+  \item \spxentry{drum\_partial\_offset()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetDrumKitLMB class method}, 
+		\hyperpage{27}
+  \item \spxentry{drum\_partial\_offset()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB class method}, 
+		\hyperpage{25}
+  \item \spxentry{DT1}\spxextra{jdxi\_editor.midi.data.address.address.CommandID attribute}, 
+		\hyperpage{23}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{EFFECT\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{EFFECT\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{ERR}\spxextra{jdxi\_editor.midi.data.address.address.ResponseID attribute}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{find\_matching\_symbol()}\spxextra{in module jdxi\_editor.midi.data.address.helpers}, 
+		\hyperpage{29}
+  \item \spxentry{from\_byte()}\spxextra{jdxi\_editor.midi.data.address.address.SysExOffsetByte class method}, 
+		\hyperpage{20}
+  \item \spxentry{from\_bytes()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress class method}, 
+		\hyperpage{22}
+  \item \spxentry{from\_midi\_channel()}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel class method}, 
+		\hyperpage{19}
+  \item \spxentry{from\_sysex\_bytes()}\spxextra{jdxi\_editor.midi.data.address.address.Address class method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_parameter\_by\_address()}\spxextra{jdxi\_editor.midi.data.address.address.Address class method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter J
+  \item \spxentry{jdxi\_editor.log}
+    \subitem \spxentry{module}, \hyperpage{19}
+  \item \spxentry{jdxi\_editor.log.adsr}
+    \subitem \spxentry{module}, \hyperpage{16}
+  \item \spxentry{jdxi\_editor.log.debug\_info}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{jdxi\_editor.log.message}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{jdxi\_editor.log.midi\_info}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{jdxi\_editor.log.parameter}
+    \subitem \spxentry{module}, \hyperpage{18}
+  \item \spxentry{jdxi\_editor.log.slider\_parameter}
+    \subitem \spxentry{module}, \hyperpage{18}
+  \item \spxentry{jdxi\_editor.midi.channel}
+    \subitem \spxentry{module}, \hyperpage{19}
+  \item \spxentry{jdxi\_editor.midi.channel.channel}
+    \subitem \spxentry{module}, \hyperpage{19}
+  \item \spxentry{jdxi\_editor.midi.data.address.address}
+    \subitem \spxentry{module}, \hyperpage{19}
+  \item \spxentry{jdxi\_editor.midi.data.address.address\_map}
+    \subitem \spxentry{module}, \hyperpage{27}
+  \item \spxentry{jdxi\_editor.midi.data.address.arpeggio}
+    \subitem \spxentry{module}, \hyperpage{28}
+  \item \spxentry{jdxi\_editor.midi.data.address.helpers}
+    \subitem \spxentry{module}, \hyperpage{28}
+  \item \spxentry{jdxi\_editor.midi.data.address.jdxi\_addresses}
+    \subitem \spxentry{module}, \hyperpage{29}
+  \item \spxentry{JDXiAddress}\spxextra{class in jdxi\_editor.midi.data.address.jdxi\_addresses}, 
+		\hyperpage{29}
+  \item \spxentry{JDXiSysExAddress}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{21}
+  \item \spxentry{JDXiSysExAddressStartMSB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+  \item \spxentry{JDXiSysExOffsetAnalogLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{24}
+  \item \spxentry{JDXiSysExOffsetDrumKitLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{26}
+  \item \spxentry{JDXiSysExOffsetProgramLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{24}
+  \item \spxentry{JDXiSysExOffsetSuperNATURALLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+  \item \spxentry{JDXiSysExOffsetSystemLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+  \item \spxentry{JDXiSysExOffsetSystemUMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+  \item \spxentry{JDXiSysExOffsetTemporaryToneUMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{23}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{log\_adsr\_parameter()}\spxextra{in module jdxi\_editor.log.adsr}, \hyperpage{16}
+  \item \spxentry{log\_debug\_info()}\spxextra{in module jdxi\_editor.log.debug\_info}, 
+		\hyperpage{17}
+  \item \spxentry{log\_message()}\spxextra{in module jdxi\_editor.log.message}, \hyperpage{17}
+  \item \spxentry{log\_midi\_info()}\spxextra{in module jdxi\_editor.log.midi\_info}, 
+		\hyperpage{17}
+  \item \spxentry{log\_parameter()}\spxextra{in module jdxi\_editor.log.parameter}, \hyperpage{18}
+  \item \spxentry{log\_slider\_parameters()}\spxextra{in module jdxi\_editor.log.slider\_parameter}, 
+		\hyperpage{18}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{message\_position()}\spxextra{jdxi\_editor.midi.data.address.address.CommandID class method}, 
+		\hyperpage{23}
+  \item \spxentry{message\_position()}\spxextra{jdxi\_editor.midi.data.address.address.SysExLMB class method}, 
+		\hyperpage{20}
+  \item \spxentry{message\_position()}\spxextra{jdxi\_editor.midi.data.address.address.SysExMSB class method}, 
+		\hyperpage{20}
+  \item \spxentry{message\_position()}\spxextra{jdxi\_editor.midi.data.address.address.SysExOffsetByte class method}, 
+		\hyperpage{20}
+  \item \spxentry{message\_position()}\spxextra{jdxi\_editor.midi.data.address.address.SysExUMB class method}, 
+		\hyperpage{20}
+  \item \spxentry{midi\_channel\_number}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel property}, 
+		\hyperpage{19}
+  \item \spxentry{MidiChannel}\spxextra{class in jdxi\_editor.midi.channel.channel}, \hyperpage{19}
+  \item \spxentry{MODEL\_ID\_1}\spxextra{jdxi\_editor.midi.data.address.address.ModelID attribute}, 
+		\hyperpage{22}
+  \item \spxentry{MODEL\_ID\_2}\spxextra{jdxi\_editor.midi.data.address.address.ModelID attribute}, 
+		\hyperpage{22}
+  \item \spxentry{MODEL\_ID\_3}\spxextra{jdxi\_editor.midi.data.address.address.ModelID attribute}, 
+		\hyperpage{22}
+  \item \spxentry{MODEL\_ID\_4}\spxextra{jdxi\_editor.midi.data.address.address.ModelID attribute}, 
+		\hyperpage{23}
+  \item \spxentry{ModelID}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{22}
+  \item \spxentry{MODIFY}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{module}
+    \subitem \spxentry{jdxi\_editor.log}, \hyperpage{19}
+    \subitem \spxentry{jdxi\_editor.log.adsr}, \hyperpage{16}
+    \subitem \spxentry{jdxi\_editor.log.debug\_info}, \hyperpage{17}
+    \subitem \spxentry{jdxi\_editor.log.message}, \hyperpage{17}
+    \subitem \spxentry{jdxi\_editor.log.midi\_info}, \hyperpage{17}
+    \subitem \spxentry{jdxi\_editor.log.parameter}, \hyperpage{18}
+    \subitem \spxentry{jdxi\_editor.log.slider\_parameter}, \hyperpage{18}
+    \subitem \spxentry{jdxi\_editor.midi.channel}, \hyperpage{19}
+    \subitem \spxentry{jdxi\_editor.midi.channel.channel}, \hyperpage{19}
+    \subitem \spxentry{jdxi\_editor.midi.data.address.address}, \hyperpage{19}
+    \subitem \spxentry{jdxi\_editor.midi.data.address.address\_map}, \hyperpage{27}
+    \subitem \spxentry{jdxi\_editor.midi.data.address.arpeggio}, \hyperpage{28}
+    \subitem \spxentry{jdxi\_editor.midi.data.address.helpers}, \hyperpage{28}
+    \subitem \spxentry{jdxi\_editor.midi.data.address.jdxi\_addresses}, \hyperpage{29}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{parse\_sysex\_address\_json()}\spxextra{in module jdxi\_editor.midi.data.address.helpers}, 
+		\hyperpage{29}
+  \item \spxentry{PART\_ANALOG}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PART\_DIGITAL\_SYNTH\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PART\_DIGITAL\_SYNTH\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PART\_DRUM}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PARTIAL\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PARTIAL\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PARTIAL\_3}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetSuperNATURALLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{PROGRAM}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+  \item \spxentry{PROGRAM}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{ResponseID}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{21}
+  \item \spxentry{REVERB}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{ROLAND\_ID}\spxextra{jdxi\_editor.midi.data.address.address.RolandID attribute}, 
+		\hyperpage{21}
+  \item \spxentry{RolandID}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{20}
+  \item \spxentry{RQ1}\spxextra{jdxi\_editor.midi.data.address.address.CommandID attribute}, 
+		\hyperpage{23}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{SETUP}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddressStartMSB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{SETUP}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{SysExLMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{20}
+  \item \spxentry{SysExMSB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{20}
+  \item \spxentry{SysExOffsetByte}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{20}
+  \item \spxentry{SysExUMB}\spxextra{class in jdxi\_editor.midi.data.address.address}, 
+		\hyperpage{20}
+  \item \spxentry{SYSTEM}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddressStartMSB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{SYSTEM}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{TEMP\_PROGRAM}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMP\_TONE\_ANALOG}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMP\_TONE\_BASE}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMP\_TONE\_DRUMS}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMP\_TONE\_PART1}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMP\_TONE\_PART2}\spxextra{jdxi\_editor.midi.data.address.jdxi\_addresses.JDXiAddress attribute}, 
+		\hyperpage{29}
+  \item \spxentry{TEMPORARY\_PROGRAM}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddressStartMSB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{TEMPORARY\_PROGRAM}\spxextra{jdxi\_editor.midi.data.address.arpeggio.ArpeggioAddress attribute}, 
+		\hyperpage{28}
+  \item \spxentry{TEMPORARY\_TONE}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddressStartMSB attribute}, 
+		\hyperpage{23}
+  \item \spxentry{to\_bytes()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{to\_list()}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExAddress method}, 
+		\hyperpage{22}
+  \item \spxentry{to\_list()}\spxextra{jdxi\_editor.midi.data.address.address.ModelID class method}, 
+		\hyperpage{23}
+  \item \spxentry{to\_list()}\spxextra{jdxi\_editor.midi.data.address.address.RolandID class method}, 
+		\hyperpage{21}
+  \item \spxentry{to\_sysex\_address()}\spxextra{jdxi\_editor.midi.data.address.address.Address method}, 
+		\hyperpage{21}
+
+  \indexspace
+  \bigletter V
+  \item \spxentry{VOCAL\_EFFECT}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{VOCAL\_FX}\spxextra{jdxi\_editor.midi.channel.channel.MidiChannel attribute}, 
+		\hyperpage{19}
+
+  \indexspace
+  \bigletter Z
+  \item \spxentry{ZONE\_ANALOG}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{ZONE\_DIGITAL\_SYNTH\_1}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{ZONE\_DIGITAL\_SYNTH\_2}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+  \item \spxentry{ZONE\_DRUM}\spxextra{jdxi\_editor.midi.data.address.address.JDXiSysExOffsetProgramLMB attribute}, 
+		\hyperpage{24}
+
+\end{sphinxtheindex}

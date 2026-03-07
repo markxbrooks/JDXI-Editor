@@ -86,6 +86,7 @@ latex_elements = {
             showstringspaces=false,
             tabsize=2
         }
+        \sloppy
     ''',
     'figure_align': 'H',
     'extraclassoptions': 'openany,oneside',
@@ -166,3 +167,13 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 napoleon_preprocess_types = True
+
+
+def _skip_autoapi_for_latex(app):
+    """Disable autoapi for LaTeX/PDF builds to avoid label truncation issues."""
+    if app.builder.name == 'latex':
+        app.config.autoapi_generate_api_docs = False
+
+
+def setup(app):
+    app.connect('builder-inited', _skip_autoapi_for_latex)

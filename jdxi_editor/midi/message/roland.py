@@ -15,7 +15,7 @@ message_bytes = message.to_bytes()
 print("Generated SysEx Message (bytes):", message_bytes)
 
 # Parsing a SysEx message from bytes
-received_bytes = b'\xf0\x41\x10\x12\x00\x01\x02\x03\x04\x05\xf7'  # Example received SysEx message
+received_bytes = bytes.fromhex('f0411012000102030405f7')  # Example received SysEx message
 parsed_message = RolandSysEx.from_bytes(received_bytes)
 print("Parsed Command:", parsed_message.command)
 print("Parsed Address:", parsed_message.address)

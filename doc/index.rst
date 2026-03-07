@@ -17,11 +17,12 @@ Welcome to JD-Xi Editor's documentation!
    troubleshooting
    legal
 
-.. toctree::
-   :maxdepth: 6
-   :caption: API Reference:
+.. only:: html
+   .. toctree::
+      :maxdepth: 6
+      :caption: API Reference:
 
-   modules
+      modules
 
 
 Indices and tables

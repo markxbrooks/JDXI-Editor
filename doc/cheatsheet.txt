@@ -1,0 +1,12 @@
+
+# Documentation
+cd doc && sphinx-build -b html . _build/html
+cd doc && sphinx-build -b . latex JD-Xi_Editor-0.9.pdf
+cd doc
+sphinx-build -b latex . _build/latex
+cd _build/latex
+make
+
+# PDF One liner
+cd doc && sphinx-build -b latex . _build/latex && cd _build/latex && make clean && latexmk -C && make
+

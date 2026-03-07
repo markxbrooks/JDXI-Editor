@@ -6,7 +6,7 @@ class ProgramAddress(Address):
     COMMON = 0x18
     DIGITAL_1 = 0x19
 
-sysex_addr = b'\x18\x00\x20\x00'
+sysex_addr = bytes([0x18, 0x00, 0x20, 0x00])
 parsed = parse_sysex_address(sysex_addr, ProgramAddress)
 
 if parsed:

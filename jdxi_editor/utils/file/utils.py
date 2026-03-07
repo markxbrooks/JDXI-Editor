@@ -19,7 +19,7 @@ def documentation_file_path(file_name: str) -> str:
     :param file_name: str The file name to return a path for the documentation file
     :return: str The file path
     """
-    return resource_path(os.path.join("doc", "build", "html", file_name))
+    return resource_path(os.path.join("doc", "_build", "html", file_name))
 
 
 def os_file_open(file_name: str) -> None:

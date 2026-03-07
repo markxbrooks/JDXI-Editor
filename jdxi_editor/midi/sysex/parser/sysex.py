@@ -409,8 +409,8 @@ class JDXiSysExParser:
             >>> fields = parser.get_structured_fields()
             >>> print(fields['roland_id'])  # RolandID.ROLAND_ID
             RolandID.ROLAND_ID
-            >>> print(fields['address'])
-            b'\\x19B\\x00\\x00'
+            >>> print(fields['address'].hex())
+            19420000
 
         :return: dict Parsed field data
         """

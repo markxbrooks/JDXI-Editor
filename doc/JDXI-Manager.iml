@@ -25,6 +25,8 @@
       <excludeFolder url="file://$MODULE_DIR$/../snap" />
       <excludeFolder url="file://$MODULE_DIR$/../building/apple/jdxi_dmg" />
       <excludeFolder url="file://$MODULE_DIR$/../building/apple/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/_build" />
+      <excludeFolder url="file://$MODULE_DIR$/_static" />
     </content>
     <content url="file://$MODULE_DIR$/../../PicoMidi">
       <excludeFolder url="file://$MODULE_DIR$/../../PicoMidi/.idea" />

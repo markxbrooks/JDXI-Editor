@@ -90,13 +90,10 @@ See **[Features and Usage](doc/features-and-usage.md)** for:
 
 ---
 
-## ℹ Available Formats:
+## ℹ Available Documentation:
 ### 📃 HTML Documentation:
 
 https://markxbrooks.github.io/JDXI-Editor/
-
-### 📃 PDF Documentation:
-[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/JD-Xi_Editor-0.9.pdf)
 
 ### 🎹 UI Previews
 

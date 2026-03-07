@@ -17,13 +17,13 @@ Features:
 Usage Example:
     >>> class NoteOnMessage(MidiMessage):
     ...     def to_list(self):
-    ...         return [0x90, 60, 127]  # Note On for Middle C with velocity 127
+    ...         return [0x90, 60, 100]  # Note On for Middle C with velocity 100
     ...
     >>> msg = NoteOnMessage()
-    >>> msg.to_bytes()
-    b'\x90<\x7f'
+    >>> msg.to_bytes().hex()
+    '903c64'
     >>> msg.to_hex_string()
-    '90 3C 7F'
+    '90 3C 64'
 """
 
 from dataclasses import dataclass
