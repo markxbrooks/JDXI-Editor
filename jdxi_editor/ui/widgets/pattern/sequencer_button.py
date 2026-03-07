@@ -42,7 +42,9 @@ class SequencerButton(QPushButton):
 
     @property
     def note_duration(self) -> Optional[float]:
-        return float(self.note_spec.duration_ms) if self.note_spec.is_active else None
+        if not self.note_spec.is_active or self.note_spec.duration_ms is None:
+            return None
+        return float(self.note_spec.duration_ms)
 
     @note_duration.setter
     def note_duration(self, value: Optional[float]) -> None:
@@ -56,13 +58,22 @@ class SequencerButton(QPushButton):
     def note_velocity(self, value: Optional[int]) -> None:
         self.note_spec.velocity = value if value is not None else 100
 
-    # Aliases for manager compatibility (duration/velocity)
+    # Aliases for manager compatibility (duration/velocity/duration_ms)
     @property
     def duration(self) -> Optional[float]:
         return self.note_duration
 
     @duration.setter
     def duration(self, value: Optional[float]) -> None:
+        self.note_duration = value
+
+    @property
+    def duration_ms(self) -> Optional[float]:
+        """Alias for note_duration (ms) for pattern/manager compatibility."""
+        return self.note_duration
+
+    @duration_ms.setter
+    def duration_ms(self, value: Optional[float]) -> None:
         self.note_duration = value
 
     @property

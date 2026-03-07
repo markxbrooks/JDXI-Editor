@@ -9,6 +9,22 @@ from typing import Dict, List, Optional
 
 from decologr import Decologr as log
 
+# Fallback for JD-Xi drum names (same order as pattern options.DRUM_OPTIONS)
+_JDXI_DRUM_NAMES = [
+    "BD1", "RIM", "BD2", "CLAP", "BD3", "SD1", "CHH", "SD2", "PHH", "SD3",
+    "OHH", "SD4", "TOM1", "PRC1", "TOM2", "PRC2", "TOM3", "PRC3",
+    "CYM1", "PRC4", "CYM2", "PRC5", "CYM3", "HIT", "OTH1", "OTH2",
+]
+
+
+def _jdxi_drum_index(note_name: str) -> Optional[int]:
+    """Return drum index for JD-Xi drum name, or None if not found."""
+    note_upper = note_name.upper()
+    for i, name in enumerate(_JDXI_DRUM_NAMES):
+        if name == note_upper:
+            return i
+    return None
+
 
 class MidiNoteConverter:
     """Convert between MIDI note numbers, note names, and combo box indices."""
@@ -68,18 +84,33 @@ class MidiNoteConverter:
 
     def note_name_to_midi(self, note_name: str) -> int:
         """
-        Convert note name (e.g., 'C4') to MIDI note number.
+        Convert note name (e.g., 'C4') or drum name (e.g., 'CLAP') to MIDI note number.
 
         Examples:
             'C4' -> 60 (Middle C)
             'A4' -> 69
             'C#4' -> 61
+            'CLAP' -> 39 (if CLAP is at index 3 in drum_options; drums map to 36-59)
 
-        :param note_name: Note name in format "NOTE[OCTAVE]" where NOTE is A-G with optional # or b
+        :param note_name: Note name in format "NOTE[OCTAVE]" or drum name from drum_options
         :return: MIDI note number (0-127)
         :raises ValueError: If note name is invalid
         """
-        if not note_name or len(note_name) < 2:
+        if not note_name:
+            raise ValueError(f"Invalid note name: {note_name}")
+
+        # Check if it's a drum name (e.g., 'CLAP', 'Kick', 'Snare')
+        note_stripped = note_name.strip()
+        if self.drum_options and note_stripped in self.drum_options:
+            drum_index = self.drum_options.index(note_stripped)
+            return min(127, 36 + drum_index)
+
+        # Fallback: built-in JD-Xi drum names (handles empty drum_options or mismatch)
+        drum_index = _jdxi_drum_index(note_stripped)
+        if drum_index is not None:
+            return min(127, 36 + drum_index)
+
+        if len(note_name) < 2:
             raise ValueError(f"Invalid note name: {note_name}")
 
         # Extract octave (last character)

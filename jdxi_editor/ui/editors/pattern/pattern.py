@@ -752,6 +752,9 @@ class PatternSequenceEditor(PatternUI):
             self.measure_widgets
         ):
             self._store_note_in_measures(button, checked)
+            # Sync UI to PatternMeasure for data consistency (Phase 2)
+            if self.pattern_widget:
+                self.pattern_widget.sync_measure_to_ui(self.current_measure_index)
 
         self._update_button_style(button, checked)
 
@@ -970,14 +973,18 @@ class PatternSequenceEditor(PatternUI):
             self.tempo_spinbox.setValue(bpm)
 
     def save_pattern_dialog(self):
-        """Open save file dialog and save pattern"""
+        """Open save file dialog and save pattern.
+        When a file was previously loaded (from MidiFileEditor or Load), the dialog
+        opens with that path pre-filled so the user can save back to the same file.
+        """
         spec = FileSelectionSpec(
             mode="save",
             caption="Save Pattern",
             default_name="",
             filter="MIDI Files (*.mid);;All Files (*.*)",
         )
-        filename = get_file_path_from_spec(self, spec)
+        start_path = self._pattern_file_path or ""
+        filename = get_file_path_from_spec(self, spec, start_dir=start_path)
 
         if filename:
             if not filename.lower().endswith(".mid"):
@@ -1209,6 +1216,10 @@ class PatternSequenceEditor(PatternUI):
     def _load_from_midi_file_object(self, midi_file: MidiFile) -> None:
         """Load pattern from a MidiFile object (internal method)."""
         try:
+            log.message(
+                message="[Phase1] _load_from_midi_file_object: start",
+                scope=self.__class__.__name__,
+            )
             ppq = midi_file.ticks_per_beat
             beats_per_bar = 4
             ticks_per_bar = ppq * beats_per_bar
@@ -1223,6 +1234,11 @@ class PatternSequenceEditor(PatternUI):
             self._clear_measures_and_measures_list()
 
             self._create_new_measures(num_bars)
+            log.parameter(
+                scope=self.__class__.__name__,
+                message="[Phase1] measure count after create",
+                parameter=len(self.measure_widgets),
+            )
 
             self.total_measures = len(self.measure_widgets)
             self._update_pattern_length()
@@ -1231,9 +1247,30 @@ class PatternSequenceEditor(PatternUI):
                 midi_file, ticks_per_bar
             )
 
+            self._sync_loaded_buttons_to_measure_data()
+
+            self._update_tooltips_for_loaded_notes()
+
+            self._sync_midi_state_from_loaded_file(midi_file)
+
             self._update_spinbox_from_file_tempo(midi_file)
 
             self._select_first_measure_and_sync(notes_loaded)
+            self._update_button_states_for_beats_per_measure()
+
+            # Set path for save-back when loaded from MidiFileEditor (Phase 4 T9)
+            if hasattr(midi_file, "filename") and midi_file.filename:
+                self._pattern_file_path = midi_file.filename
+
+            if self.measure_widgets and self.buttons:
+                enabled_count = sum(
+                    1 for row in self.buttons for btn in row if btn.isEnabled()
+                )
+                log.parameter(
+                    scope=self.__class__.__name__,
+                    message="[Phase1] buttons enabled after load",
+                    parameter=enabled_count,
+                )
         except Exception as ex:
             log.error(
                 message=f"Error loading from MidiFileEditor: {ex}",
@@ -1276,17 +1313,8 @@ class PatternSequenceEditor(PatternUI):
                         / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
                     )
 
-                    while bar_index >= len(self.measure_widgets):
-                        measure = PatternMeasureWidget()
-                        reset_measure(measure)
-                        self.measure_widgets.append(measure)
-                        item = QListWidgetItem(
-                            f"{self.measure_name} {len(self.measure_widgets)}"
-                        )
-                        item.setData(
-                            Qt.ItemDataRole.UserRole, len(self.measure_widgets) - 1
-                        )
-                        self.measures_list.addItem(item)
+                    if bar_index >= len(self.measure_widgets) and self.pattern_widget:
+                        self.pattern_widget.ensure_measure_count(bar_index + 1)
 
                     if (
                         bar_index < len(self.measure_widgets)
@@ -1309,8 +1337,39 @@ class PatternSequenceEditor(PatternUI):
                             notes_loaded += 1
         return notes_loaded
 
+    def _sync_midi_state_from_loaded_file(self, midi_file: MidiFile) -> None:
+        """Sync PPQ from loaded file for correct save/playback timing (Phase 3).
+        Uses loaded file's ticks_per_beat; keeps midi_file/midi_track for learner compatibility.
+        """
+        self.ppq = midi_file.ticks_per_beat
+        log.message(
+            message=f"[Phase3] Synced PPQ from loaded file: {self.ppq} ticks/beat",
+            scope=self.__class__.__name__,
+        )
+
+    def _sync_loaded_buttons_to_measure_data(self) -> None:
+        """Sync button state to PatternMeasure.steps after load (Phase 2 data consistency)."""
+        if not self.pattern_widget:
+            return
+        count = self.pattern_widget.get_measure_count()
+        for i in range(count):
+            self.pattern_widget.sync_measure_to_ui(i)
+        log.message(
+            message=f"[Phase2] Synced {count} measures to PatternMeasure data",
+            scope=self.__class__.__name__,
+        )
+
+    def _update_tooltips_for_loaded_notes(self) -> None:
+        """Set tooltips on all measure buttons so active notes show their note names."""
+        for measure in self.measure_widgets:
+            for row in range(self.sequencer_rows):
+                if row >= len(measure.buttons):
+                    continue
+                for button in measure.buttons[row]:
+                    self._update_tooltip(row, button)
+
     def _select_first_measure_and_sync(self, notes_loaded: int):
-        """Select first bar and sync"""
+        """Select first bar and sync button manager after measures exist."""
         if self.pattern_widget and self.pattern_widget.get_measure_count() > 0:
             self.pattern_widget.select_measure(0)
             self._button_manager.set_buttons(self.buttons)
@@ -1346,6 +1405,7 @@ class PatternSequenceEditor(PatternUI):
     def save_pattern(self, filename: str):
         """Save the current pattern to a MIDI file using mido."""
         midi_file = MidiFile()
+        midi_file.ticks_per_beat = self.ppq
 
         self._create_tracks_per_row(midi_file)
 
@@ -1380,8 +1440,10 @@ class PatternSequenceEditor(PatternUI):
                         self._append_note_on_and_off(spec, time, channel, track)
 
     def _calculate_note_on_time(self, bar_index: int, step: int) -> int:
-        """Calculate the time for the note_on event (across all bars)"""
-        ppq = self.midi_file.ticks_per_beat
+        """Calculate the time for the note_on event (across all bars).
+        Uses self.ppq (from loaded file when applicable) for correct timing.
+        """
+        ppq = self.ppq
         ticks_per_step = ppq // 4  # 16th note
         steps_per_bar = self.measure_beats
 
@@ -1460,6 +1522,10 @@ class PatternSequenceEditor(PatternUI):
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
         try:
+            log.message(
+                message=f"[Phase1] load_pattern: start filename={filename}",
+                scope=self.__class__.__name__,
+            )
             self._pattern_file_path = filename
             midi_file = MidiFile(filename)
             ppq = midi_file.ticks_per_beat
@@ -1500,9 +1566,25 @@ class PatternSequenceEditor(PatternUI):
                 ticks_per_bar,
             )
 
+            self._sync_loaded_buttons_to_measure_data()
+
+            self._update_tooltips_for_loaded_notes()
+
+            self._sync_midi_state_from_loaded_file(midi_file)
+
             self._update_spinbox_from_file_tempo(midi_file)
 
             self._set_to_first_measure(num_measures)
+            self._update_button_states_for_beats_per_measure()
+            if self.measure_widgets and self.buttons:
+                enabled_count = sum(
+                    1 for row in self.buttons for btn in row if btn.isEnabled()
+                )
+                log.parameter(
+                    scope=self.__class__.__name__,
+                    message="[Phase1] buttons enabled after load_pattern",
+                    parameter=enabled_count,
+                )
 
         except Exception as ex:
             log.error(
@@ -1544,18 +1626,8 @@ class PatternSequenceEditor(PatternUI):
                     / (ticks_per_bar / MeasureBeats.PER_MEASURE_4_4)
                 )
 
-                # Ensure we have enough bars (safety check)
-                while bar_index >= len(self.measure_widgets):
-                    measure = PatternMeasureWidget()
-                    reset_measure(measure)
-                    self.measure_widgets.append(measure)
-                    item = QListWidgetItem(
-                        f"[{self.measure_name} {len(self.measure_widgets)}"
-                    )
-                    item.setData(
-                        Qt.ItemDataRole.UserRole, len(self.measure_widgets) - 1
-                    )
-                    self.measures_list.addItem(item)
+                if bar_index >= len(self.measure_widgets) and self.pattern_widget:
+                    self.pattern_widget.ensure_measure_count(bar_index + 1)
 
                 if (
                     bar_index < len(self.measure_widgets)

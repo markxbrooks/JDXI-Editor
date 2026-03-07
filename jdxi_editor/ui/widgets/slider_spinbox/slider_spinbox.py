@@ -68,6 +68,7 @@ class AdsrSliderSpinbox(QWidget):
         value: int | None | float = None,
         create_parameter_slider: Callable = None,
         parent: QWidget = None,
+        show_spinbox: bool = False
     ):
         """
         Initialize the ADSR slider and spinbox widget.
@@ -80,6 +81,7 @@ class AdsrSliderSpinbox(QWidget):
         :param value: int
         :param create_parameter_slider: Callable
         :param parent: QWidget
+        :param show_spinbox: bool
         """
         super().__init__(parent)
 
@@ -112,7 +114,8 @@ class AdsrSliderSpinbox(QWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
-        layout.addWidget(self.spinbox)
+        if show_spinbox:
+            layout.addWidget(self.spinbox)
         self.setLayout(layout)
 
         # Connect both ways

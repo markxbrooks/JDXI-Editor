@@ -299,7 +299,8 @@ class PatternWidget(QWidget):
                 step_data.active = button.isChecked()
                 step_data.note = button.note or 60
                 step_data.velocity = button.note_velocity or 100
-                step_data.duration_steps = button.note_duration
+                # note_duration is ms (float); duration_steps accepts int/float (0 when inactive)
+                step_data.duration_steps = button.note_duration if button.note_duration is not None else 0
 
     def copy_measure(self, from_index: int, to_index: int) -> bool:
         """
