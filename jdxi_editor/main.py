@@ -99,9 +99,8 @@ def main() -> None:
         app.setOrganizationDomain("com.mabsoft")
         app.setStyleSheet(
             """
-            QLabel {
-                color: red;
-                font-weight: bold;
+            QTabWidget::tab-bar {
+                alignment: center;
             }
         """
         )

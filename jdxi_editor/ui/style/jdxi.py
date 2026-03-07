@@ -1503,6 +1503,9 @@ class JDXiUIStyle:
             font-weight: bold;
             color: {GREY};
         }}
+        QTabWidget::tab-bar {{
+            alignment: center;
+        }}
         """
 
     TAB_TITLE_ANALOG = f"""
@@ -1523,6 +1526,9 @@ class JDXiUIStyle:
         font-size: 13px;
         font-weight: bold;
         color: {ACCENT_ANALOG};
+    }}
+    QTabWidget::tab-bar {{
+        alignment: center;
     }}
     """
 

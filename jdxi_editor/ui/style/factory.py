@@ -231,7 +231,6 @@ def generate_tab_style(
             
             QTabBar {{
                 qproperty-drawBase: 0;
-                alignment: center;
             }}
 
             QTabBar::tab:hover {{
@@ -242,10 +241,13 @@ def generate_tab_style(
             }}
             QTabWidget {{
                 font-family: {FONT_FAMILY};
-                border: none
+                border: none;
             }}
             QTabWidget::pane {{
                 border: none;
+            }}
+            QTabWidget::tab-bar {{
+                alignment: center;
             }}
         """
 
