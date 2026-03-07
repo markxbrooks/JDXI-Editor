@@ -279,12 +279,12 @@ class SearchableFilterableComboBox(QWidget):
         for option in filtered_options:
             self.combo_box.addItem(option)
 
+        # --- Select first item by default to avoid -1 index
+        if filtered_options:
+            self.combo_box.setCurrentIndex(0)
+
         # --- Restore signals
         self.combo_box.blockSignals(False)
-
-        # --- Log for debugging
-        if filtered_options:
-            pass  # logging here is way too noisy
 
     def _on_combo_index_changed(self, filtered_index: int) -> None:
         """

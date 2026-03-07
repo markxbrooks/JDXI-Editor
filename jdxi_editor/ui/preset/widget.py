@@ -71,7 +71,7 @@ class InstrumentPresetWidget(QWidget):
             return
         
         # Get updated preset list
-        preset_list = get_preset_list_for_synth_type(self._synth_type)
+        preset_list = til(self._synth_type)
         log.info(
             scope="InstrumentPresetWidget",
             message=f"Got {len(preset_list) if preset_list else 0} presets for {self._synth_type}"
@@ -105,6 +105,9 @@ class InstrumentPresetWidget(QWidget):
         preset_categories = sorted(
             set(preset["category"] for preset in converted_preset_list)
         )
+        log.message(f"preset_options: {preset_options}")
+        log.message(f"preset_values: {preset_values}")
+        log.message(f"preset_categories: {preset_categories}")
         
         # Create new category filter function with the updated preset list
         def preset_category_filter(preset_display: str, category: str) -> bool:

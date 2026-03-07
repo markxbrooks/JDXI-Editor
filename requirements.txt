@@ -69,6 +69,7 @@ requests==2.32.4
 scikit-image==0.25.2
 scipy==1.15.3
 shiboken6==6.9.1
+sf2utils
 six==1.17.0
 snowballstemmer==3.0.1
 Sphinx==8.1.3

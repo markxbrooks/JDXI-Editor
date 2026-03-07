@@ -111,7 +111,7 @@ def _get_output_devices() -> list[tuple[str, str]]:
 class MIDIConfigDialog(QDialog):
     def __init__(self, midi_helper=MidiIOHelper, parent=None):
         super().__init__(parent)
-        self.undesireable_midi_port_prefixes = ["Midi Through:Midi Through"]
+        self.undesirable_midi_port_prefixes = ["Midi Through:Midi Through", "MIDI Monitor"]
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(
             JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT
@@ -321,14 +321,14 @@ class MIDIConfigDialog(QDialog):
     def _update_midi_port_combo(self, midi_port_combo: QComboBox, midi_ports: list, current_port: str) -> None:
         """_update_midi_port_combo"""
         midi_ports = [port for port in midi_ports if
-                      not any(prefix in port for prefix in self.undesireable_midi_port_prefixes)]
+                      not any(prefix in port for prefix in self.undesirable_midi_port_prefixes)]
         midi_port_combo.addItems(midi_ports)
         if current_port and current_port in midi_ports:
             midi_port_combo.setCurrentText(current_port)
 
     def _update_output_port_combo(self):
         self.output_ports = [port for port in self.output_ports if
-                             not any(prefix in port for prefix in self.undesireable_midi_port_prefixes)]
+                             not any(prefix in port for prefix in self.undesirable_midi_port_prefixes)]
         self.output_combo.addItems(self.output_ports)
         if self.current_out and self.current_out in self.output_ports:
             self.output_combo.setCurrentText(self.current_out)
@@ -592,7 +592,7 @@ class MIDIConfigDialog(QDialog):
         output_port_text = self.get_output_port()
         input_port_text = self.get_undesirable_midi_port(input_port_text)
         output_port_text = self.get_undesirable_midi_port(output_port_text)
-        if any(prefix in output_port_text for prefix in self.undesireable_midi_port_prefixes):
+        if any(prefix in output_port_text for prefix in self.undesirable_midi_port_prefixes):
             log.warning("Detected undesirable MIDI port prefix in output port. Ignoring.")
             output_port_text = ""
         log.message(f"Reconnecting to: Midi In:\t'{input_port_text}'")
@@ -604,7 +604,7 @@ class MIDIConfigDialog(QDialog):
             log.warning("Failed to reopen both MIDI ports")
 
     def get_undesirable_midi_port(self, midi_port_text: str) -> str:
-        if any(prefix in midi_port_text for prefix in self.undesireable_midi_port_prefixes):
+        if any(prefix in midi_port_text for prefix in self.undesirable_midi_port_prefixes):
             log.warning("Detected undesirable MIDI port prefix in input port. Ignoring.")
             midi_port_text = ""
         return midi_port_text

@@ -89,11 +89,12 @@ def get_drum_options() -> List[str]:
 
 
 def _use_soundfont_list() -> bool:
+    from decologr import Decologr as log
     settings = QSettings(__organization_name__, __program__)
-    val = settings.value(USE_SOUNDFONT_LIST_KEY, False)
-    if isinstance(val, bool):
-        return val
-    return str(val).lower() in ("true", "1", "yes")
+    # Explicitly request bool type - helps with cross-platform consistency
+    val = settings.value(USE_SOUNDFONT_LIST_KEY, False, type=bool)
+    log.debug(f"_use_soundfont_list: value={val!r}, type={type(val).__name__}")
+    return bool(val)
 
 
 def _sf2_path() -> str:
@@ -144,13 +145,20 @@ def set_hardware_interface(name: str) -> None:
 
 def _load_sf2_presets(sf2_path: str) -> List[tuple]:
     """Load (bank, preset, name) from .sf2 using sf2utils. Skips EOP."""
+    from decologr import Decologr as log
     try:
         from sf2utils.sf2parse import Sf2File
 
         with open(sf2_path, "rb") as f:
             sf2 = Sf2File(f)
-            return [(p.bank, p.preset, p.name) for p in sf2.presets if p.name != "EOP"]
-    except Exception:
+            presets = [(p.bank, p.preset, p.name) for p in sf2.presets if p.name != "EOP"]
+            log.debug(f"Loaded {len(presets)} presets from {sf2_path}")
+            return presets
+    except ImportError as e:
+        log.warning(f"sf2utils not installed: {e}. Install with: pip install sf2utils")
+        return []
+    except Exception as e:
+        log.error(f"Failed to load SF2 file {sf2_path}: {e}")
         return []
 
 
@@ -166,14 +174,23 @@ def get_preset_list_for_synth_type(
     :param synth_type: "Analog", "Digital", or "Drums"
     :return: Preset list in dict format (Digital) or list format (Analog/Drums)
     """
-    if not _use_soundfont_list():
+    from decologr import Decologr as log
+    
+    use_sf = _use_soundfont_list()
+    log.debug(f"get_preset_list_for_synth_type({synth_type}): use_soundfont_list={use_sf}")
+    
+    if not use_sf:
+        log.debug(f"Using JD-Xi preset list for {synth_type}")
         return _get_jdxi_preset_list(synth_type)
 
     path = _sf2_path()
+    log.debug(f"SF2 path: {path!r}, exists: {os.path.isfile(path) if path else False}")
     if not path or not os.path.isfile(path):
+        log.debug(f"SF2 path invalid, falling back to JD-Xi presets")
         return _get_jdxi_preset_list(synth_type)
 
     presets = _load_sf2_presets(path)
+    log.debug(f"Loaded {len(presets)} presets from SF2")
     if not presets:
         return _get_jdxi_preset_list(synth_type)
 
