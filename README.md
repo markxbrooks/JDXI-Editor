@@ -14,7 +14,11 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 - **Octave Shifting**: Adjust octave ranges for precise sound control.
 - **Digital & Analog Synth Editors**: Edit JD-Xi's digital and analog synths directly.
 - **Drum Part Editor**: Customize drum sounds and patterns 🥁.
-- **Effects Editor**: Edit reverb, delay, vocoder, and arpeggiator settings.
+- **Effects Editor**: Edit reverb, delay, compressor, phaser, and arpeggiator settings.
+- **Vocal Effects Editor**: Vocoder and Auto-Pitch with polymorphic UI.
+- **Pattern Editor**: 4×16 step sequencer with MIDI load/save, part muting, and USB recording.
+- **MIDI File Player**: Load MIDI files, classify tracks, assign channels, play with JD-Xi or FluidSynth.
+- **SoundFont Support**: Use .sf2/.sf3 for playback without hardware.
 - **MIDI Debugger**: Monitor and debug MIDI messages efficiently.
 
 ---
@@ -53,14 +57,13 @@ Lady Gaga – *Telephone* performed on the Roland JD-Xi
 
 
 ### MacOS 🖥️
-There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9)
+There is a new build for MacOS Sequoia. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
 
 ### Windows 📦
-There is a new build for Windows See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9)
+There is a new build for Windows. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
 
-### Linux 📦 
-
-There is a new build for Linux See the See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9)
+### Linux 📦
+There is a new build for Linux. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
 
 
 ### Python 🐍
@@ -93,7 +96,7 @@ See **[Features and Usage](doc/features-and-usage.md)** for:
 https://markxbrooks.github.io/JDXI-Editor/
 
 ### 📃 PDF Documentation:
-[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/JD-Xi_Editor-0.8.pdf)
+[PDF Documentation](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/JD-Xi_Editor-0.9.pdf)
 
 ### 🎹 UI Previews
 
@@ -158,8 +161,12 @@ https://markxbrooks.github.io/JDXI-Editor/
 - Digital Synth Parts 1 & 2 (including 3 partials per part)
 - Analog Synth Editor
 - Drum Part Editor 🥁
-- Effects: Reverb, Delay, Vocoder
+- Effects: Reverb, Delay, Compressor, Phaser, Vocoder
+- Vocal Effects Editor (Vocoder, Auto-Pitch)
 - Arpeggiator Editor
+- Pattern Editor (4×16 step sequencer, MIDI load/save)
+- MIDI File Player (track classification, channel assignment)
+- SoundFont (.sf2/.sf3) playback without hardware
 
 ---
 
@@ -197,7 +204,7 @@ Project root: /home/brooks/PycharmProjects/JDXI-Editor
 │  linux builder Application Starting  │
 ╰──────────────────────────────────────╯
 [02/10/26 23:12:10] INFO                        ℹ️ linux builder starting up with log file /home/brooks/.linux builder/logs/linux builder-10Feb2026-23-12-10.log...                                                         
-                    INFO                        ℹ️ 🎹 JD-Xi Editor v0.9.5 - Linux Build System                                                                                                                              
+                    INFO                        ℹ️ 🎹 JD-Xi Editor v0.9.6 - Linux Build System                                                                                                                              
                     INFO                        ℹ️ ==================================================                                                                                                                       
                     INFO                        ℹ️                                                                                                                                                                          
                              🧹 Cleaning previous builds...                                                                                                                                                                

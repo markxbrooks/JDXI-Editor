@@ -77,8 +77,8 @@ Software Launch
       # Linux: Run the AppImage or use command line
 
    **Alternative Launch Methods:**
-   - **Command Line**: ``jdxi_manager`` (if installed via pip)
-   - **Python Module**: ``python -m jdxi_editor.main`` (source installation)
+   - **Python Module** (recommended for source install): ``python -m jdxi_editor.main``
+   - **Command Line**: ``jdxi_manager`` (if installed via pip and entry point is configured)
 
 **Step 2: Initial Configuration**
    The software will attempt to auto-connect to your JD-Xi:
@@ -88,6 +88,9 @@ Software Launch
       # Auto-connection should detect your JD-Xi
       # If successful, you'll see MIDI indicators active
       # If not, a MIDI configuration window will open
+
+   **SoundFont Mode (No Hardware):**
+   You can run JDXI-Editor without a connected JD-Xi by enabling **Enable FluidSynth for local playback** in MIDI Configuration. This uses a SoundFont (.sf2/.sf3) for MIDI playback. See :doc:`features-and-usage` for SoundFont setup.
 
    **Manual MIDI Configuration:**
    If auto-connection fails, manually configure MIDI ports:

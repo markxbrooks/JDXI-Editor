@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'JD-Xi Editor'
 copyright = '2025, Mark Mrooks'
 author = 'JD-Xi Contributors'
-release = '0.8.0'
-version = '0.8.0'
+release = '0.9.6'
+version = '0.9.6'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

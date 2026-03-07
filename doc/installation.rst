@@ -58,8 +58,8 @@ The simplest way to install JDXI-Editor is using our pre-built packages. These i
       # Download the DMG file from the releases page
       # https://github.com/markxbrooks/JDXI-Editor/releases
       
-      # Mount the DMG file
-      $ open JD-Xi-Editor-0.8.dmg
+      # Mount the DMG file (version may vary; check releases page)
+      $ open JD-Xi-Editor-0.9.dmg
       
       # Drag JD-Xi Editor.app to your Applications folder
       # The application will appear in your Applications folder
@@ -82,8 +82,8 @@ The simplest way to install JDXI-Editor is using our pre-built packages. These i
       # Download the NSIS installer from the releases page
       # https://github.com/markxbrooks/JDXI-Editor/releases
       
-      # Run the installer as Administrator
-      $ jdxi-editor-0.8_windows_setup.exe
+      # Run the installer as Administrator (version may vary; check releases page)
+      $ jdxi-editor-0.9_windows_setup.exe
       
       # Follow the installation wizard
       # The application will be installed in your chosen directory
@@ -106,8 +106,8 @@ The simplest way to install JDXI-Editor is using our pre-built packages. These i
       # Download the AppImage from the releases page
       # https://github.com/markxbrooks/JDXI-Editor/releases
       
-      # Make the AppImage executable
-      $ chmod +x JD-Xi-Editor-0.8-x86_64.AppImage
+      # Make the AppImage executable (version may vary; check releases page)
+      $ chmod +x JD-Xi-Editor-0.9-x86_64.AppImage
       
       # Run the application
       $ ./JD-Xi-Editor-0.8-x86_64.AppImage
@@ -175,6 +175,11 @@ For users who prefer pip-based installation or want to integrate JDXI-Editor int
    - Pillow (image processing)
    - QtAwesome (icons)
    - Additional dependencies as needed
+
+   **Optional (SoundFont playback):**
+   - pyfluidsynth (FluidSynth for playback without hardware)
+   - sf2utils (SoundFont preset list extraction)
+   - sounddevice (hardware interface selection for FluidSynth)
 
 Method 3: Source Code Installation
 ==================================

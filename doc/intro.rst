@@ -40,9 +40,13 @@ Key Features & Capabilities
 
 ** Advanced Effects Processing**
    - **Reverb & Delay**: Professional-quality time-based effects
-   - **Vocal Effects**: Vocoder and voice processing capabilities
+   - **Vocal Effects**: Vocoder and Auto-Pitch with polymorphic UI
    - **Arpeggiator**: Sophisticated pattern generation and sequencing
    - **Multi-effects Chain**: Layer multiple effects for complex sound design
+
+** Pattern & MIDI Tools**
+   - **Pattern Sequencer**: 4×16 step grid with MIDI load/save, part muting, USB recording
+   - **MIDI File Player**: Track classification, channel assignment, FluidSynth/SoundFont playback
 
 ** Performance Features**
    - **On-Screen Keyboard**: Play and test sounds directly from your computer
@@ -104,9 +108,12 @@ The application consists of two main windows that work together:
    - Digital Synth Parts 1 & 2 (with partial editing)
    - Analog Synthesizer
    - Drum Kit
-   - Effects (Reverb, Delay, Vocoder)
+   - Effects (Reverb, Delay, Compressor, Phaser)
+   - Vocal Effects (Vocoder, Auto-Pitch)
    - Arpeggiator
-   - Program Management
+   - Pattern Sequencer
+   - MIDI File Player
+   - Program Management (including System Settings)
 
 **Instrument Window**
    A specialized interface providing:

@@ -31,6 +31,17 @@ This document covers recent changes, patch loading/saving, and SoundFont usage.
 - **Data on show**: Requests PROGRAM_COMMON and PROGRAM_VOCAL_EFFECT; receives COMMON and VOCAL_EFFECT SysEx
 - **Polymorphic UI**: QStackedWidget for OFF/VOCODER/AUTO-PITCH; 3 tabs — Common, Vocoder & Auto Pitch, Mixer
 
+### Pattern Editor — MIDI Load/Save (Phases 1–4)
+
+- **4×16 step grid**: Four parts (Digital 1, Digital 2, Analog, Drums), 16 steps per measure, multiple measures
+- **Load from file**: File → Load MIDI… or Load button; loads notes into steps with correct note/velocity/duration
+- **Load from MidiFileEditor**: "Load into Pattern Editor" loads the current MIDI file into the Pattern Editor
+- **Save**: File → Save Pattern… or Save button; pre-fills with loaded file path when available; preserves PPQ from loaded file
+- **Tooltips**: Active notes show note names (e.g. C4, CLAP) in tooltips after load and on edit
+- **Part muting**: Mute/unmute each of the four parts
+- **USB File Recording**: Widget for recording patterns to USB (when JD-Xi is connected)
+- **Data consistency**: Steps stay in sync with measure data for copy/paste; PPQ synced from loaded file
+
 ---
 
 ## 2. Patch Loading and Saving
