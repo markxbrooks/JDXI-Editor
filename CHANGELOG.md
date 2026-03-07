@@ -2,7 +2,7 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
-## [Unreleased]
+# [0.9.6] — 2026-03
 
 ### Arpeggiator SysEx Sync
 
@@ -43,3 +43,177 @@ All notable changes to JDXI-Editor are documented in this file.
 - **Polymorphic UI**: QStackedWidget for OFF/VOCODER/AUTO-PITCH; Vocal Effect combo switches stack page
 - **Tab structure**: 3 tabs — Common, Vocoder & Auto Pitch, Mixer (replaces 4-tab layout)
 - **Effect Part**: VOCAL_EFFECT_PART (Part 1/Part 2) in Common; removed VOCODER_SWITCH from Common
+
+---
+
+🎹 **SoundFonts & Pattern Editor Refinement Release**
+
+This release introduces major improvements to the **SoundFont playback system**, continued development of the **Pattern Editor**, and extensive internal UI and codebase refinements.
+
+## Added
+
+### SoundFont Integration
+- Added **SoundFont (.sf2 / .sf3) support**
+- Ability to **load and browse SoundFont instruments**
+- Use SoundFonts as a **virtual instrument backend**
+- Enables MIDI playback and sequencing **without requiring a physical JD-Xi**
+- Integration with **FluidSynth for audio playback**
+- SoundFont preset list extraction and instrument selection
+
+### Pattern Editor
+- Expanded **Pattern Sequencer / Pattern Editor**
+- Improved step editing workflow
+- Better pattern playback behavior
+- Continued development of **grid-based sequencing tools**
+- Foundations for future advanced sequencing features
+
+### UI Enhancements
+- Added **parameter plot widgets** for visual feedback
+- Improved splash screen
+- New instrument image handling for presets and parts
+- Automatic instrument image loading
+- Visual distinction between synth parts and drum kits
+
+---
+
+## Changed
+
+### UI Improvements
+- Improved spacing, margins, and layout consistency
+- Updated section grouping and visual organization
+- Switched application font to **Segoe UI**
+- More consistent control panel styling
+
+### Editor Components
+- Refined slider and switch widget behavior
+- Improvements to Program Editor sliders
+- Improvements to Drum Editor layout and controls
+- Updated UI margins and spacing across several windows
+
+### MIDI Player
+- Improved **MIDI channel detection**
+- Automatic drum channel assignment to **Channel 10**
+- Detection of:
+  - bass instruments
+  - guitars
+  - keyboards
+  - strings
+- Automatic assignment to synth parts (channels 1–3)
+
+---
+
+## Refactored
+
+### Core Architecture
+Major internal refactoring was performed to improve maintainability.
+
+- Expanded **ControlsRegistry** system for tracking UI controls
+- Cleaner separation between:
+  - UI layout
+  - widget construction
+  - MIDI / SysEx logic
+- Adoption of **table-driven and data-model based patterns**
+- Reduced duplication across synth editor components
+
+### Codebase Improvements
+- Improved handling of:
+  - sliders
+  - switches
+  - parameter widgets
+- Additional type hints and docstrings
+- Continued restructuring of UI code in `picoui`
+- Improved internal module organization
+
+---
+
+## Fixed
+
+- Various UI inconsistencies across editor panels
+- Improved preset loading reliability
+- Reduced errors when switching programs rapidly
+- Improved UI synchronization with JD-Xi state
+- Fixes related to Program Editor slider behavior
+- General stability improvements
+
+---
+
+# [0.9.5]
+🎛️ **Editor and MIDI System Improvements**
+
+## Added
+- Improved **Arpeggiator SysEx synchronization**
+- Effects editor enhancements
+- Vocal effects editing improvements
+- Improved patch loading and saving
+
+## Supported Patch Formats
+- `.jsz`
+- `.msz`
+- `.json`
+- `.syx`
+
+## Improvements
+- MIDI debugging tools
+- Parameter visualization
+- Editor UI improvements
+
+---
+
+# Core Features
+
+JDXI-Editor provides a software editing environment for the **Roland JD-Xi synthesizer**, allowing deeper control than the hardware interface alone.
+
+### Synth Editing
+- Digital Synth Parts 1 & 2
+- Three partials per digital synth
+- Analog Synth Editor
+- Drum Part Editor
+
+### Effects
+- Reverb
+- Delay
+- Vocoder
+- Arpeggiator
+
+### MIDI Tools
+- MIDI debugger
+- MIDI file player
+- MIDI playlist support
+- Pattern sequencing tools
+
+### Interface
+- JD-Xi style LCD display
+- On-screen keyboard
+- Preset browser with search
+- Envelope visualizations (ADSR, pitch)
+
+---
+
+# Changelog
+
+All notable changes to **JDXI-Editor** will be documented in this file.
+
+The format loosely follows **Keep a Changelog**, and the project adheres to **semantic-ish versioning** while still in the 0.x development phase.
+
+---
+
+# Project
+
+**JDXI-Editor** is a cross-platform MIDI editor built using:
+
+- **Python**
+- **Qt / PySide**
+- **RtMidi**
+- **Mido**
+
+It aims to implement as much of the **Roland JD-Xi MIDI implementation** as possible, providing a modern graphical interface for sound editing, sequencing, and MIDI experimentation.
+
+---
+
+# Links
+
+Repository  
+https://github.com/markxbrooks/JDXI-Editor
+
+Documentation  
+https://markxbrooks.github.io/JDXI-Editor/
