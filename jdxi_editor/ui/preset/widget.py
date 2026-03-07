@@ -71,7 +71,7 @@ class InstrumentPresetWidget(QWidget):
             return
         
         # Get updated preset list
-        preset_list = til(self._synth_type)
+        preset_list = get_preset_list_for_synth_type(self._synth_type)
         log.info(
             scope="InstrumentPresetWidget",
             message=f"Got {len(preset_list) if preset_list else 0} presets for {self._synth_type}"
