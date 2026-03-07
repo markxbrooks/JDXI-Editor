@@ -389,6 +389,57 @@ class SearchableFilterableComboBox(QWidget):
         """Set the main label text."""
         self.label_widget.setText(label)
 
+    def set_options(
+        self,
+        options: List[str],
+        values: Optional[List[int]] = None,
+        categories: Optional[List[str]] = None,
+        category_filter_func: Optional[Callable[[str, str], bool]] = None,
+    ) -> None:
+        """
+        Update the combo box with new options, values, and optionally categories.
+        
+        :param options: New list of option strings
+        :param values: New list of corresponding integer values (if None, uses indices)
+        :param categories: New list of category strings for filtering (optional)
+        :param category_filter_func: New category filter function (optional)
+        """
+        self._full_options = options.copy() if options else []
+        self._full_values = (
+            values.copy() if values else list(range(len(self._full_options)))
+        )
+        
+        # Update category filter function if provided
+        if category_filter_func is not None:
+            self._category_filter_func = category_filter_func
+        
+        if categories is not None:
+            self._categories = categories
+            # Update category combo if it exists
+            if self.category_combo:
+                self.category_combo.blockSignals(True)
+                self.category_combo.clear()
+                self.category_combo.addItem("All Categories")
+                for cat in self._categories:
+                    self.category_combo.addItem(cat)
+                self.category_combo.setCurrentIndex(0)
+                self.category_combo.blockSignals(False)
+                self._current_category = ""
+        
+        # Clear search and repopulate
+        if self.search_box:
+            self.search_box.clear()
+        self._current_search_text = ""
+        self._populate_combo()
+        
+        # Force UI update
+        self.combo_box.update()
+        self.update()
+
+    def set_value(self, value: int) -> None:
+        """Alias for setValue for consistency."""
+        self.setValue(value)
+
     # --- Compatibility methods for ComboBox interface
     @property
     def options(self) -> List[str]:

@@ -9,11 +9,30 @@ JD-Xi options are used.
 import os
 from typing import Any, Dict, List, Optional, Union
 
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QObject, QSettings, Signal
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.project import __organization_name__, __program__
 from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
+
+
+class PresetListSignals(QObject):
+    """Singleton signal emitter for preset list changes."""
+    
+    soundfont_list_changed = Signal()
+    
+    _instance = None
+    
+    @classmethod
+    def instance(cls) -> "PresetListSignals":
+        if cls._instance is None:
+            cls._instance = PresetListSignals()
+        return cls._instance
+
+
+def get_preset_signals() -> PresetListSignals:
+    """Get the singleton signal emitter for preset list changes."""
+    return PresetListSignals.instance()
 
 # QSettings keys for MIDI config preferences
 USE_SOUNDFONT_LIST_KEY = "midi_config/use_soundfont_list"
@@ -93,10 +112,14 @@ def get_use_soundfont_list() -> bool:
 
 
 def set_use_soundfont_list(enabled: bool) -> None:
-    """Set the Use SoundFont List preference."""
+    """Set the Use SoundFont List preference and notify listeners."""
+    from decologr import Decologr as log
     settings = QSettings(__organization_name__, __program__)
     settings.setValue(USE_SOUNDFONT_LIST_KEY, enabled)
     settings.sync()
+    # Notify any connected widgets to refresh their preset lists
+    log.info(scope="preset_list_provider", message=f"Emitting soundfont_list_changed signal (enabled={enabled})")
+    get_preset_signals().soundfont_list_changed.emit()
 
 
 def set_sf2_path(path: str) -> None:

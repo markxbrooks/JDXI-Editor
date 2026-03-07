@@ -111,6 +111,7 @@ def _get_output_devices() -> list[tuple[str, str]]:
 class MIDIConfigDialog(QDialog):
     def __init__(self, midi_helper=MidiIOHelper, parent=None):
         super().__init__(parent)
+        self.undesireable_midi_port_prefixes = ["Midi Through:Midi Through"]
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(
             JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT
@@ -181,9 +182,7 @@ class MIDIConfigDialog(QDialog):
         input_layout.addLayout(icons_hlayout)
 
         self.input_combo = QComboBox()
-        self.input_combo.addItems(self.input_ports)
-        if self.current_in and self.current_in in self.input_ports:
-            self.input_combo.setCurrentText(self.current_in)
+        self._update_midi_port_combo(self.input_combo, self.input_ports, self.current_in)
         self.input_combo.currentIndexChanged.connect(self._on_input_combo_changed)
 
         input_layout.addWidget(self.input_combo)
@@ -211,9 +210,7 @@ class MIDIConfigDialog(QDialog):
         output_layout.addLayout(icons_hlayout)
 
         self.output_combo = QComboBox()
-        self.output_combo.addItems(self.output_ports)
-        if self.current_out and self.current_out in self.output_ports:
-            self.output_combo.setCurrentText(self.current_out)
+        self._update_midi_port_combo(self.output_combo, self.output_ports, self.current_out)
         self.output_combo.currentIndexChanged.connect(self._on_output_combo_changed)
 
         output_layout.addWidget(self.output_combo)
@@ -235,6 +232,7 @@ class MIDIConfigDialog(QDialog):
             "in the Pattern editor instead of built-in JD-Xi names"
         )
         self.use_soundfont_list.setChecked(get_use_soundfont_list())
+        self.use_soundfont_list.toggled.connect(self._on_soundfont_list_toggled)
         synth_layout.addWidget(self.use_soundfont_list)
 
         # Hardware Interface (audio output device for FluidSynth)
@@ -320,6 +318,21 @@ class MIDIConfigDialog(QDialog):
         dialog_btn_row.addStretch()
         layout.addLayout(dialog_btn_row)
 
+    def _update_midi_port_combo(self, midi_port_combo: QComboBox, midi_ports: list, current_port: str) -> None:
+        """_update_midi_port_combo"""
+        midi_ports = [port for port in midi_ports if
+                      not any(prefix in port for prefix in self.undesireable_midi_port_prefixes)]
+        midi_port_combo.addItems(midi_ports)
+        if current_port and current_port in midi_ports:
+            midi_port_combo.setCurrentText(current_port)
+
+    def _update_output_port_combo(self):
+        self.output_ports = [port for port in self.output_ports if
+                             not any(prefix in port for prefix in self.undesireable_midi_port_prefixes)]
+        self.output_combo.addItems(self.output_ports)
+        if self.current_out and self.current_out in self.output_ports:
+            self.output_combo.setCurrentText(self.current_out)
+
     def _create_button_row_specs(self, btn_row: QHBoxLayout) -> list[ButtonSpec]:
         """create button row specs"""
         fs_start_btn_spec = ButtonSpec(
@@ -383,9 +396,9 @@ class MIDIConfigDialog(QDialog):
 
         # Update the combo boxes
         self.input_combo.clear()
-        self.input_combo.addItems(self.input_ports)
+        self._update_midi_port_combo(self.input_combo, self.input_ports, self.current_in)
         self.output_combo.clear()
-        self.output_combo.addItems(self.output_ports)
+        self._update_midi_port_combo(self.output_combo, self.output_ports, self.current_out)
 
         # Keep DigitalTitle in sync with current selection
         self._on_input_combo_changed()
@@ -414,6 +427,10 @@ class MIDIConfigDialog(QDialog):
                     self._start_fluidsynth()
             except Exception:
                 pass
+
+    def _on_soundfont_list_toggled(self, checked: bool) -> None:
+        """Handle SoundFont list checkbox toggle - save immediately and notify listeners."""
+        set_use_soundfont_list(checked)
 
     def _browse_sf2(self) -> None:
         start_dir = os.path.expanduser("~/SoundFonts")
@@ -573,6 +590,11 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()
         output_port_text = self.get_output_port()
+        input_port_text = self.get_undesirable_midi_port(input_port_text)
+        output_port_text = self.get_undesirable_midi_port(output_port_text)
+        if any(prefix in output_port_text for prefix in self.undesireable_midi_port_prefixes):
+            log.warning("Detected undesirable MIDI port prefix in output port. Ignoring.")
+            output_port_text = ""
         log.message(f"Reconnecting to: Midi In:\t'{input_port_text}'")
         log.message(f"Reconnecting to: Midi Out:\t'{output_port_text}'")
         success = self.midi_helper.reconnect_port_names(
@@ -580,6 +602,12 @@ class MIDIConfigDialog(QDialog):
         )
         if not success:
             log.warning("Failed to reopen both MIDI ports")
+
+    def get_undesirable_midi_port(self, midi_port_text: str) -> str:
+        if any(prefix in midi_port_text for prefix in self.undesireable_midi_port_prefixes):
+            log.warning("Detected undesirable MIDI port prefix in input port. Ignoring.")
+            midi_port_text = ""
+        return midi_port_text
 
     def get_input_port(self) -> str:
         """Get selected input port name

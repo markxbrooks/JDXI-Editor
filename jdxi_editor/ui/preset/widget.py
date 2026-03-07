@@ -13,6 +13,7 @@ from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_preset_list_for_synth_type,
+    get_preset_signals,
 )
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
@@ -48,6 +49,90 @@ class InstrumentPresetWidget(QWidget):
         self.widget: QWidget | None = None
         self.hlayout: QHBoxLayout | None = None
         self.parent = parent
+        self._synth_type: str = ""
+        self._preset_list: list = []
+        self.instrument_selection_combo: Optional["SearchableFilterableComboBox"] = None
+        
+        # Connect to preset list change signal for dynamic refresh
+        get_preset_signals().soundfont_list_changed.connect(self._refresh_preset_list)
+        log.info(scope="InstrumentPresetWidget", message="Connected to soundfont_list_changed signal")
+
+    def _refresh_preset_list(self) -> None:
+        """Refresh the preset combo box when SoundFont list setting changes."""
+        log.info(
+            scope="InstrumentPresetWidget",
+            message=f"_refresh_preset_list called, synth_type={self._synth_type}"
+        )
+        if not self._synth_type:
+            log.info(scope="InstrumentPresetWidget", message="No synth_type set, skipping refresh")
+            return
+        if not hasattr(self, "instrument_selection_combo") or self.instrument_selection_combo is None:
+            log.info(scope="InstrumentPresetWidget", message="No instrument_selection_combo, skipping refresh")
+            return
+        
+        # Get updated preset list
+        preset_list = get_preset_list_for_synth_type(self._synth_type)
+        log.info(
+            scope="InstrumentPresetWidget",
+            message=f"Got {len(preset_list) if preset_list else 0} presets for {self._synth_type}"
+        )
+        
+        # Convert dictionary format to list format if needed
+        if isinstance(preset_list, dict):
+            converted_preset_list = [
+                {
+                    "id": f"{preset_id:03d}",
+                    "name": preset_data.get("Name", ""),
+                    "category": preset_data.get("Category", ""),
+                    "msb": str(preset_data.get("MSB", 0)),
+                    "lsb": str(preset_data.get("LSB", 0)),
+                    "pc": str(preset_data.get("PC", preset_id)),
+                }
+                for preset_id, preset_data in sorted(preset_list.items())
+            ]
+        else:
+            converted_preset_list = preset_list
+        
+        # Update parent's preset list
+        self.parent.preset_preset_list = converted_preset_list
+        self._preset_list = converted_preset_list
+        
+        # Build new options and values
+        preset_options = [
+            f"{preset['id']} - {preset['name']}" for preset in converted_preset_list
+        ]
+        preset_values = [int(preset["id"]) for preset in converted_preset_list]
+        preset_categories = sorted(
+            set(preset["category"] for preset in converted_preset_list)
+        )
+        
+        # Create new category filter function with the updated preset list
+        def preset_category_filter(preset_display: str, category: str) -> bool:
+            """Check if a preset matches a category."""
+            if not category:
+                return True
+            preset_id_str = (
+                preset_display.split(" - ")[0] if " - " in preset_display else None
+            )
+            if preset_id_str:
+                for preset in converted_preset_list:
+                    if preset["id"] == preset_id_str:
+                        return preset["category"] == category
+            return False
+        
+        # Update the combo box with new options and filter function
+        current_value = self.instrument_selection_combo.value()
+        self.instrument_selection_combo.set_options(
+            preset_options, preset_values, preset_categories, preset_category_filter
+        )
+        log.info(
+            scope="InstrumentPresetWidget",
+            message=f"Updated combo with {len(preset_options)} options"
+        )
+        
+        # Try to restore the previous selection
+        if current_value in preset_values:
+            self.instrument_selection_combo.set_value(current_value)
 
     def add_image_group(self, group: QGroupBox):
         """add image group"""
@@ -141,6 +226,7 @@ class InstrumentPresetWidget(QWidget):
         :param synth_type: str
         :return: QGroupBox
         """
+        self._synth_type = synth_type  # Store for refresh
         instrument_preset_group = QGroupBox(f"{synth_type} Synth")
         instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
         instrument_title_group_layout.setSpacing(3)  # Reduced spacing
