@@ -53,9 +53,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from building.apple.venv.src.picomidi.picomidi.sysex.parameter.address import (
-    AddressParameter,
-)
+from picomidi.sysex.parameter.address import AddressParameter
+
 from jdxi_editor.midi.control_change.parameter import CCParameter
 from jdxi_editor.midi.data.base.oscillator import OscillatorWidgetTypes
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
