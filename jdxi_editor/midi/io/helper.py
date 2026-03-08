@@ -50,10 +50,6 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 
 
-# Name shown in MIDI output list when FluidSynth is running (software synth)
-FLUIDSYNTH_PORT_NAME = "FluidSynth (software synth)"
-
-
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
     """
     MidiIOHelper
@@ -93,9 +89,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         self.current_in = None
         self.current_out = None
         self.initialized = True
-        # Optional FluidSynth sink for software synth playback (set by MIDI Config when started)
-        self._fluidsynth_sink = None
-        self._output_is_fluidsynth = False
 
     def send_mido_message(self, msg: mido.Message):
         """
@@ -644,41 +637,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         log.message(
             f"Sent {sent} SysEx message(s) from {file_path}", scope="MidiIOHelper"
         )
-
-    def set_fluidsynth_sink(self, fs) -> None:
-        """Register the FluidSynth instance for software synth playback. Called by MIDI Config when FluidSynth is started."""
-        self._fluidsynth_sink = fs
-        log.debug("FluidSynth sink registered for MIDI output", scope="MidiIOHelper")
-
-    def clear_fluidsynth_sink(self) -> None:
-        """Unregister the FluidSynth instance. Called by MIDI Config when FluidSynth is stopped."""
-        self._fluidsynth_sink = None
-        if getattr(self, "_output_is_fluidsynth", False):
-            self._output_is_fluidsynth = False
-        log.debug("FluidSynth sink cleared", scope="MidiIOHelper")
-
-    def get_output_ports(self):
-        """Return hardware output ports plus FluidSynth (software synth) when it is running."""
-        ports = super().get_output_ports()
-        if getattr(self, "_fluidsynth_sink", None) is not None:
-            if FLUIDSYNTH_PORT_NAME not in ports:
-                ports = list(ports) + [FLUIDSYNTH_PORT_NAME]
-        return ports
-
-    def open_output_port(self, port_name_or_index) -> bool:
-        """Open output port; if FluidSynth (software synth) is selected, route output to it instead of hardware."""
-        if port_name_or_index == FLUIDSYNTH_PORT_NAME:
-            if getattr(self, "_fluidsynth_sink", None) is None:
-                log.warning("FluidSynth not running; start it in MIDI Config first.", scope="MidiIOHelper")
-                return False
-            if self.midi_out.is_port_open():
-                self.midi_out.close_port()
-            self._output_is_fluidsynth = True
-            self.out_port_name = FLUIDSYNTH_PORT_NAME
-            log.message("MIDI output set to FluidSynth (software synth)", scope="MidiIOHelper")
-            return True
-        self._output_is_fluidsynth = False
-        return super().open_output_port(port_name_or_index)
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """

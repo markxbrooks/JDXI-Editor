@@ -83,8 +83,6 @@ class EditorBaseWidget(QWidget):
         """
         super().__init__(parent)
         self.analog = analog
-        # Apply dark theme editor style to the base editor widget
-        JDXi.UI.Theme.apply_editor_style(self, analog=analog)
         self.scroll_area: Optional[QScrollArea] = None
         self.container: Optional[QWidget] = None
         self.container_layout: Optional[QVBoxLayout] = None
