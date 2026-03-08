@@ -94,6 +94,9 @@ class JDXiWindow(QMainWindow):
             JDXi.UI.Dimensions.INSTRUMENT.WIDTH, JDXi.UI.Dimensions.INSTRUMENT.HEIGHT
         )
 
+        # Apply dark theme styling to the Instrument window
+        JDXi.UI.Theme.apply_instrument_background(self)
+
         # --- Initialize MIDI helper
         self.midi_helper = MidiIOHelper()
         #  --- Initialize MIDI connectivity

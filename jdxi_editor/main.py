@@ -46,6 +46,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXiUIDimensions
+from jdxi_editor.ui.theme import ThemeManager
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_icon_label_with_pixmap,
@@ -92,13 +93,21 @@ def main() -> None:
         # --- Load translations for current locale (e.g. en_GB -> "Bar" / "Bars")
         load_translations(app)
 
+        # --- Set application theme to Dark (Instrument Window and all editors)
+        ThemeManager.initialize(
+            theme="dark",
+            apply_custom=True,
+            apply_qdarktheme=True,
+        )
+
         # --- Set application metadata
         app.setApplicationName(__program__)
         app.setApplicationVersion(__version__)
         app.setOrganizationName("mabsoft")
         app.setOrganizationDomain("com.mabsoft")
         app.setStyleSheet(
-            """
+            app.styleSheet()
+            + """
             QTabWidget::tab-bar {
                 alignment: center;
             }
