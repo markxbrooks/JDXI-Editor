@@ -402,7 +402,7 @@ class JDXiWindow(QMainWindow):
         # --- Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        status_bar.setStyleSheet('background: "black";')
+        status_bar.setStyleSheet("background-color: black;")
 
     def _build_status_layout(self) -> None:
         layout = QVBoxLayout()

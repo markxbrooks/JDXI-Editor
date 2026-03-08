@@ -269,13 +269,14 @@ class ThemeManager(QObject):
         :return: Additional CSS stylesheet string
         """
         bg_gradient = JDXiUIStyle.BACKGROUND_GRADIENT
-        font_family = JDXiUIStyle.FONT_FAMILY
+        # Cross-platform font fallbacks (Segoe UI is Windows-only)
+        font_family = "Segoe UI, Helvetica Neue, Arial, sans-serif"
         return f"""
-        /* Custom JD-Xi Editor styles with rounded corners and improved spacing */
+        /* Custom JD-Xi Editor styles - complements qdarktheme */
         QMainWindow {{
             background: {bg_gradient};
         }}
-        
+
         QWidget {{
             font-family: {font_family};
         }}
@@ -411,8 +412,8 @@ class ThemeManager(QObject):
             border: 1px solid palette(mid);
             border-radius: 6px;
             padding: 6px 10px;
-            background-color: #1a1a1a;
-            color: #ffffff;
+            background-color: palette(base);
+            color: palette(text);
             selection-background-color: palette(highlight);
             selection-color: palette(highlighted-text);
         }}
