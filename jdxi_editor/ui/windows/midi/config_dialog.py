@@ -62,14 +62,29 @@ from picoui.specs.widgets import ButtonSpec
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
+# Example SoundFont for beginners (Musical Artifacts)
+SOUNDFONT_EXAMPLE_URL = "https://www.musical-artifacts.com/artifacts/738"
+SOUNDFONT_EXAMPLE_NAME = "FluidR3_GM.sf2"
+
 # Top-level imports so py2app/modulegraph includes these in the bundle
 # (lazy imports inside functions are not traced by the dependency analyzer)
+# Prefer pyfluidsynth (pip install pyfluidsynth); a different package named
+# "fluidsynth" on PyPI exists and has no Synth class.
 _fluidsynth_err_msg = ""
+_fluidsynth_module = None
 try:
-    import fluidsynth as _fluidsynth_module
-except Exception as _fluidsynth_err:
+    import pyfluidsynth as _fluidsynth_module
+except Exception:
+    try:
+        import fluidsynth as _fluidsynth_module
+    except Exception as _fluidsynth_err:
+        _fluidsynth_err_msg = str(_fluidsynth_err)
+if _fluidsynth_module is not None and not hasattr(_fluidsynth_module, "Synth"):
+    _fluidsynth_err_msg = (
+        "Wrong package: use 'pip uninstall fluidsynth' then 'pip install pyfluidsynth'. "
+        "The 'fluidsynth' package on PyPI does not provide the Synth class."
+    )
     _fluidsynth_module = None
-    _fluidsynth_err_msg = str(_fluidsynth_err)
 
 try:
     import sounddevice as _sounddevice_module
@@ -263,6 +278,15 @@ class MIDIConfigDialog(QDialog):
         sf_row.addLayout(browse_btn_layout)
         synth_layout.addLayout(sf_row)
 
+        # Link to example SoundFont for beginners
+        sf_link_label = QLabel(
+            f'Example for beginners: <a href="{SOUNDFONT_EXAMPLE_URL}">{SOUNDFONT_EXAMPLE_NAME}</a>'
+        )
+        sf_link_label.setOpenExternalLinks(True)
+        sf_link_label.setTextFormat(Qt.TextFormat.RichText)
+        sf_link_label.setStyleSheet("color: palette(link);")
+        synth_layout.addWidget(sf_link_label)
+
         # Available SoundFonts selector
         combo_row = QHBoxLayout()
         combo_row.addWidget(QLabel("Available:"))
@@ -449,10 +473,11 @@ class MIDIConfigDialog(QDialog):
 
     def _start_fluidsynth(self) -> None:
         if _fluidsynth_module is None:
-            if "Couldn't find" in _fluidsynth_err_msg:
-                msg = "FluidSynth library not found (install libfluidsynth, e.g. brew install fluid-synth)"
-            else:
-                msg = "FluidSynth not installed: pip install pyfluidsynth"
+            msg = (
+                _fluidsynth_err_msg
+                if _fluidsynth_err_msg
+                else "FluidSynth not installed: pip install pyfluidsynth"
+            )
             self.fs_status.setText(msg)
             return
         Synth = _fluidsynth_module.Synth
