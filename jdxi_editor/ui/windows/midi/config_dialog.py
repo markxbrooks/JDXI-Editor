@@ -27,6 +27,7 @@ Methods:
 
 import os
 import sys
+from pathlib import Path
 
 import qtawesome as qta
 from decologr import Decologr as log
@@ -62,6 +63,12 @@ from picoui.specs.widgets import ButtonSpec
 HW_PORT_HINT = "Roland JDXi"  # adjust if your port name differs
 SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
+# Project-root paths for bundled FluidSynth (optional)
+# If you add fluidsynth/ to the project root, you can put a SoundFont here:
+_PROJECT_ROOT = Path(__file__).resolve().parents[4]  # jdxi_editor/ui/windows/midi -> project root
+SF2_PATH_PROJECT = _PROJECT_ROOT / "fluidsynth" / "FluidR3_GM.sf2"
+SF2_PATH_PROJECT_SOUNDFONTS = _PROJECT_ROOT / "soundfonts" / "FluidR3_GM.sf2"
+
 # Example SoundFont for beginners (Musical Artifacts)
 SOUNDFONT_EXAMPLE_URL = "https://www.musical-artifacts.com/artifacts/738"
 SOUNDFONT_EXAMPLE_NAME = "FluidR3_GM.sf2"
@@ -74,17 +81,24 @@ _fluidsynth_err_msg = ""
 _fluidsynth_module = None
 try:
     import pyfluidsynth as _fluidsynth_module
-except Exception:
+    log.debug("FluidSynth: imported pyfluidsynth")
+except Exception as _e1:
+    log.debug(f"FluidSynth: pyfluidsynth import failed: {_e1}")
     try:
         import fluidsynth as _fluidsynth_module
+        log.debug("FluidSynth: imported fluidsynth")
     except Exception as _fluidsynth_err:
         _fluidsynth_err_msg = str(_fluidsynth_err)
+        log.debug(f"FluidSynth: fluidsynth import failed: {_fluidsynth_err_msg}")
 if _fluidsynth_module is not None and not hasattr(_fluidsynth_module, "Synth"):
     _fluidsynth_err_msg = (
         "Wrong package: use 'pip uninstall fluidsynth' then 'pip install pyfluidsynth'. "
         "The 'fluidsynth' package on PyPI does not provide the Synth class."
     )
+    log.debug(f"FluidSynth: module has no Synth attribute, treating as unavailable: {_fluidsynth_err_msg}")
     _fluidsynth_module = None
+if _fluidsynth_module is not None:
+    log.debug("FluidSynth: module loaded and has Synth; ready for use")
 
 try:
     import sounddevice as _sounddevice_module
@@ -142,7 +156,7 @@ class MIDIConfigDialog(QDialog):
         self.sfid = None
         self.sf2_path = ""
         self._create_ui()
-        # Prefill SoundFont path: prefer saved path, else default if file exists
+        # Prefill SoundFont path: prefer saved path, else project-root or user default
         try:
             saved_path = get_sf2_path()
             if saved_path and os.path.isfile(saved_path):
@@ -151,6 +165,12 @@ class MIDIConfigDialog(QDialog):
             elif os.path.isfile(SF2_PATH):
                 self.sf2_edit.setText(SF2_PATH)
                 self.sf2_path = SF2_PATH
+            elif SF2_PATH_PROJECT.is_file():
+                self.sf2_edit.setText(str(SF2_PATH_PROJECT))
+                self.sf2_path = str(SF2_PATH_PROJECT)
+            elif SF2_PATH_PROJECT_SOUNDFONTS.is_file():
+                self.sf2_edit.setText(str(SF2_PATH_PROJECT_SOUNDFONTS))
+                self.sf2_path = str(SF2_PATH_PROJECT_SOUNDFONTS)
         except Exception:
             pass
         # Default to enabling in-app synth option
@@ -448,9 +468,17 @@ class MIDIConfigDialog(QDialog):
                     and self.sf2_edit.text().strip()
                     and os.path.isfile(self.sf2_edit.text().strip())
                 ):
+                    log.debug("FluidSynth: auto-starting (controls enabled, path set, fs is None)")
                     self._start_fluidsynth()
-            except Exception:
-                pass
+                else:
+                    log.debug(
+                        "FluidSynth: skipping auto-start (fs=%s, path=%s, path_exists=%s)",
+                        self.fs is not None,
+                        bool(self.sf2_edit.text().strip()),
+                        os.path.isfile(self.sf2_edit.text().strip()) if self.sf2_edit.text().strip() else False,
+                    )
+            except Exception as ex:
+                log.debug("FluidSynth: auto-start exception: %s", ex)
 
     def _on_soundfont_list_toggled(self, checked: bool) -> None:
         """Handle SoundFont list checkbox toggle - save immediately and notify listeners."""
@@ -472,87 +500,117 @@ class MIDIConfigDialog(QDialog):
             self._select_sf2_in_combo(file_path)
 
     def _start_fluidsynth(self) -> None:
+        log.debug("FluidSynth: _start_fluidsynth called")
         if _fluidsynth_module is None:
             msg = (
                 _fluidsynth_err_msg
                 if _fluidsynth_err_msg
                 else "FluidSynth not installed: pip install pyfluidsynth"
             )
+            log.info("FluidSynth: not starting (module unavailable): %s", msg)
             self.fs_status.setText(msg)
             return
         Synth = _fluidsynth_module.Synth
 
         try:
             sf_path = self.sf2_edit.text().strip()
+            log.debug("FluidSynth: SoundFont path from UI: %r", sf_path)
             if not sf_path:
+                log.debug("FluidSynth: no path set, aborting start")
                 self.fs_status.setText("Please select a SoundFont first.")
+                return
+            if not os.path.isfile(sf_path):
+                log.warning("FluidSynth: path is not a file: %s", sf_path)
+                self.fs_status.setText(f"SoundFont file not found: {sf_path}")
                 return
 
             if self.fs is None:
+                log.debug("FluidSynth: creating Synth() instance")
                 self.fs = Synth()
+                log.debug("FluidSynth: Synth() created")
                 device_name = self.hardware_interface_combo.currentText()
+                device_spec = self.hardware_interface_combo.currentData()
+                log.debug("FluidSynth: device_name=%r, device_spec=%r", device_name, device_spec)
                 if device_name and device_name not in (
                     "(Default)",
                     "(sounddevice not installed)",
                 ):
                     if sys.platform == "darwin":
-                        # macOS: use CoreAudio with specific device (accepts device name)
+                        log.debug("FluidSynth: setting CoreAudio device %r and starting", device_name)
                         try:
                             self.fs.setting("audio.coreaudio.device", device_name)
                             self.fs.start(driver="coreaudio")
+                            log.debug("FluidSynth: started with coreaudio device")
                         except Exception as ex:
                             log.warning(
-                                f"Could not set CoreAudio device '{device_name}': {ex}"
+                                "FluidSynth: CoreAudio device failed, using default: %s", ex
                             )
-                            self.fs.start(driver="coreaudio")  # fallback to default
+                            self.fs.start(driver="coreaudio")
                     else:
-                        # Windows/Linux: use PortAudio with "index:HostApi:Name" format
-                        device_spec = self.hardware_interface_combo.currentData()
+                        log.debug("FluidSynth: Windows/Linux audio start (portaudio or default)")
                         try:
                             if isinstance(device_spec, str) and ":" in device_spec:
                                 self.fs.setting("audio.driver", "portaudio")
                                 self.fs.setting("audio.portaudio.device", device_spec)
                                 self.fs.start(driver="portaudio")
+                                log.debug("FluidSynth: started with portaudio device %r", device_spec)
                             else:
                                 self.fs.start()
+                                log.debug("FluidSynth: started with default driver")
                         except Exception as ex:
-                            log.warning(f"Could not set PortAudio device: {ex}")
+                            log.warning("FluidSynth: PortAudio/default start failed: %s", ex)
                             self.fs.start()
+                            log.debug("FluidSynth: started with fallback driver")
                 else:
-                    self.fs.start(
-                        driver="coreaudio" if sys.platform == "darwin" else None
-                    )
+                    driver = "coreaudio" if sys.platform == "darwin" else None
+                    log.debug("FluidSynth: starting with driver=%s", driver)
+                    self.fs.start(driver=driver)
+                    log.debug("FluidSynth: started (default device)")
 
+            log.debug("FluidSynth: loading SoundFont: %s", sf_path)
             self.sfid = self.fs.sfload(sf_path)
+            log.debug("FluidSynth: sfload returned sfid=%s", self.sfid)
+            if self.sfid == -1:
+                log.warning("FluidSynth: sfload failed (returned -1) for %s", sf_path)
+                self.fs_status.setText(f"FluidSynth: failed to load SoundFont: {sf_path}")
+                return
             self.fs.program_select(0, self.sfid, 0, 0)
+            log.info("FluidSynth: started successfully (sfid=%s, path=%s)", self.sfid, sf_path)
             self.fs_status.setText("FluidSynth: started")
 
         except Exception as ex:
             self.fs_status.setText(f"FluidSynth error: {ex}")
-            log.error(f"FluidSynth error: {ex}")
+            log.error("FluidSynth error: %s", ex, exception=ex)
 
     def _stop_fluidsynth(self) -> None:
+        log.debug("FluidSynth: _stop_fluidsynth called (fs=%s)", self.fs is not None)
         try:
             if self.fs is not None:
                 self.fs.delete()
                 self.fs = None
+                log.debug("FluidSynth: stopped and deleted")
                 self.fs_status.setText("FluidSynth: stopped")
+            else:
+                log.debug("FluidSynth: stop no-op (fs already None)")
         except Exception as ex:
             self.fs_status.setText(f"Stop error: {ex}")
-            log.error(f"FluidSynth stop error: {ex}")
+            log.error("FluidSynth stop error: %s", ex, exception=ex)
 
     def _test_fluidsynth(self) -> None:
+        log.debug("FluidSynth: _test_fluidsynth called")
         try:
             if self.fs is None:
+                log.debug("FluidSynth: test skipped (fs is None)")
                 self.fs_status.setText("Start FluidSynth first.")
                 return
-            # Middle C test
+            log.debug("FluidSynth: triggering test note (channel=0, note=60)")
             self.fs.noteon(0, 60, 110)
             self.fs.noteoff(0, 60)
+            log.debug("FluidSynth: test note done")
             self.fs_status.setText("Test note triggered.")
         except Exception as ex:
             self.fs_status.setText(f"Test error: {ex}")
-            log.error(f"FluidSynth test error: {ex}")
+            log.error("FluidSynth test error: %s", ex, exception=ex)
 
     def _populate_sf2_combo(self) -> None:
         """Scan ~/SoundFonts for .sf2/.sf3 files and populate the combo box."""

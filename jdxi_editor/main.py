@@ -28,6 +28,35 @@ import pstats
 import sys
 from pathlib import Path
 
+# Add FluidSynth bin to DLL search path before any fluidsynth import.
+# 1) FLUIDSYNTH_BIN env var (e.g. C:\tools\fluidsynth\bin) - checked first.
+# 2) Project-root fluidsynth/bin if present.
+_project_root = Path(__file__).resolve().parent.parent
+
+
+def _add_fluidsynth_bin_to_path(bin_dir: Path) -> None:
+    bin_str = str(bin_dir.resolve())
+    path_env = os.environ.get("PATH", "")
+    if bin_str not in path_env:
+        os.environ["PATH"] = bin_str + os.pathsep + path_env
+    if sys.platform == "win32" and hasattr(os, "add_dll_directory"):
+        try:
+            os.add_dll_directory(bin_str)
+        except OSError:
+            pass
+
+
+_fluidsynth_bin_env = os.environ.get("FLUIDSYNTH_BIN")
+if _fluidsynth_bin_env:
+    _fluidsynth_bin_from_env = Path(_fluidsynth_bin_env).expanduser().resolve()
+    if _fluidsynth_bin_from_env.is_dir():
+        _add_fluidsynth_bin_to_path(_fluidsynth_bin_from_env)
+    # else: path missing or not a dir; pyfluidsynth may still find DLL via system PATH
+
+_fluidsynth_bin = _project_root / "fluidsynth" / "bin"
+if _fluidsynth_bin.is_dir():
+    _add_fluidsynth_bin_to_path(_fluidsynth_bin)
+
 from decologr import setup_logging
 from PySide6.QtCore import QLocale, QSettings, QTranslator
 from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
