@@ -40,6 +40,7 @@ import os
 import platform
 import tempfile
 import threading
+import webbrowser
 from typing import TYPE_CHECKING, Optional, Union
 
 import qtawesome as qta
@@ -750,6 +751,8 @@ class JDXiInstrument(JDXiWindow):
         try:
             os_file_open(html_file)
         except Exception as ex:
+            # open browser https://markxbrooks.github.io/JDXI-Editor/
+            webbrowser.open("https://markxbrooks.github.io/JDXI-Editor/")
             log.exception(
                 scope="JDXiInstrument",
                 message=f" Error {ex} occurred opening documentation",

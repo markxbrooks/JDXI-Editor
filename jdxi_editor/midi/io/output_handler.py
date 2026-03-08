@@ -59,6 +59,33 @@ class MidiOutHandler(MidiIOController):
     # Global lock for all MIDI output operations
     _midi_send_lock = threading.RLock()
 
+    def _forward_to_fluidsynth(self, message_list: list) -> bool:
+        """Send a single MIDI message to the FluidSynth sink (when output is FluidSynth). Returns True if sent."""
+        fs = getattr(self, "_fluidsynth_sink", None)
+        if fs is None or len(message_list) < 1:
+            return False
+        try:
+            status = message_list[0] & 0xF0
+            ch = message_list[0] & 0x0F
+            if status == 0x90:  # note on
+                vel = message_list[2] if len(message_list) > 2 else 0
+                if vel > 0:
+                    fs.noteon(ch, message_list[1], vel)
+                else:
+                    fs.noteoff(ch, message_list[1])
+            elif status == 0x80:  # note off
+                fs.noteoff(ch, message_list[1])
+            elif status == 0xB0 and len(message_list) >= 3:  # control change
+                fs.cc(ch, message_list[1], message_list[2])
+            elif status == 0xC0 and len(message_list) >= 2:  # program change
+                fs.program_change(ch, message_list[1])
+            # SysEx and other messages are skipped for FluidSynth
+            self.midi_message_outgoing.emit(message_list)
+            return True
+        except Exception as ex:
+            log.debug("FluidSynth forward failed: %s", ex)
+            return False
+
     def send_raw_message(self, message: Iterable[int]) -> bool:
         """
         Thread-safe version of sending a raw MIDI message.
@@ -69,6 +96,15 @@ class MidiOutHandler(MidiIOController):
                 if not validate_midi_message(message):
                     log.message("[MidiOutHandler] MIDI message validation failed.")
                     return False
+
+                message_list = list(message)
+                # When output is FluidSynth (software synth), route here instead of hardware
+                if getattr(self, "_output_is_fluidsynth", False) and getattr(
+                    self, "_fluidsynth_sink", None
+                ):
+                    if self._forward_to_fluidsynth(message_list):
+                        return True
+                    # fall through if forward failed (e.g. unsupported message)
 
                 # Ensure message is a list of integers before formatting
                 def safe_int(val):
@@ -105,7 +141,6 @@ class MidiOutHandler(MidiIOController):
 
                 # Parse SysEx safely - only attempt if message is actually SysEx (starts with 0xF0)
                 filtered_data = {}
-                message_list = list(message)
                 if message_list and message_list[0] == Midi.sysex.START:
                     # This is a SysEx message, try to parse it
                     try:

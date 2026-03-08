@@ -577,6 +577,13 @@ class MIDIConfigDialog(QDialog):
             self.fs.program_select(0, self.sfid, 0, 0)
             log.info("FluidSynth: started successfully (sfid=%s, path=%s)", self.sfid, sf_path)
             self.fs_status.setText("FluidSynth: started")
+            # Register as MIDI output so "FluidSynth (software synth)" appears in the output port list
+            self.midi_helper.set_fluidsynth_sink(self.fs)
+            # Refresh output combo so the new port appears
+            self.output_ports = self.midi_helper.get_output_ports()
+            self.output_combo.clear()
+            self._update_midi_port_combo(self.output_combo, self.output_ports, self.current_out)
+            self._on_output_combo_changed()
 
         except Exception as ex:
             self.fs_status.setText(f"FluidSynth error: {ex}")
@@ -586,10 +593,16 @@ class MIDIConfigDialog(QDialog):
         log.debug("FluidSynth: _stop_fluidsynth called (fs=%s)", self.fs is not None)
         try:
             if self.fs is not None:
+                self.midi_helper.clear_fluidsynth_sink()
                 self.fs.delete()
                 self.fs = None
                 log.debug("FluidSynth: stopped and deleted")
                 self.fs_status.setText("FluidSynth: stopped")
+                # Refresh output combo so FluidSynth port is removed from the list
+                self.output_ports = self.midi_helper.get_output_ports()
+                self.output_combo.clear()
+                self._update_midi_port_combo(self.output_combo, self.output_ports, self.current_out)
+                self._on_output_combo_changed()
             else:
                 log.debug("FluidSynth: stop no-op (fs already None)")
         except Exception as ex:
