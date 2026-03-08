@@ -7,6 +7,8 @@ and ensuring consistent styling across the application.
 
 from typing import Optional
 
+import qdarktheme
+import qtawesome
 from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
@@ -32,6 +34,16 @@ class JDXiUIThemeManager(QObject):
             return
         super().__init__()
         self._initialized = True
+
+    @staticmethod
+    def apply_theme(theme: str  = "auto"):
+        """apply theme"""
+        qdarktheme.setup_theme(theme)
+
+    @staticmethod
+    def apply_dark_theme(theme: str  = "dark"):
+        """apply theme"""
+        JDXiUIThemeManager.apply_theme(theme)
 
     @staticmethod
     def apply_style(widget: QWidget, style: str) -> None:

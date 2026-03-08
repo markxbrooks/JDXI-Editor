@@ -40,6 +40,7 @@ from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import get_program_name_by_id
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.preset.manager import JDXiPresetManager
+from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
@@ -74,6 +75,7 @@ class JDXiWindow(QMainWindow):
         self.midi_debugger = None
         self.midi_message_monitor = None
         self.old_pos = None
+        JDXi.UI.Theme.apply_dark_theme()
         self.preset_helpers = None
         self.slot_number = None
         self.sequencer_buttons = []
