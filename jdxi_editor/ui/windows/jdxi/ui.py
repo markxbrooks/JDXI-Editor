@@ -75,7 +75,7 @@ class JDXiWindow(QMainWindow):
         self.midi_debugger = None
         self.midi_message_monitor = None
         self.old_pos = None
-        JDXi.UI.Theme.apply_dark_theme()
+        # JDXi.UI.Theme.apply_dark_theme()
         self.preset_helpers = None
         self.slot_number = None
         self.sequencer_buttons = []
