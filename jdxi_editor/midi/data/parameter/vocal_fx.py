@@ -1,6 +1,6 @@
 """
-Module: VocalFXParameter
-========================
+Module: VocalFXParam
+====================
 
 This module defines the VocalFXParameter class, which represents various vocal effects parameters
 in a synthesizer. These parameters control different aspects of vocal processing, including
