@@ -30,14 +30,18 @@ and to convert between MIDI values and digital values.
 
 Usage example:
     >>> #Initialize a VocalFXParameter object for the LEVEL parameter
-    >>> param = VocalFXParameter(address=0x00, min_val=0, max_val=127)
+    >>> param = VocalFXParameter.LEVEL
 
     >>> # Access digital range values
     >>> print(param.display_min)  # Output: 0
+    0
     >>> print(param.display_max)  # Output: 127
+    127
 
     >>> # Validate a MIDI value
-    >>> midi_value = param.convert_to_midi(64)
+    >>> midi_value = param.convert_to_midi(64) # Simple linear scaling, not bipolar
+    >>> print(midi_value)
+    63
 """
 
 from typing import Optional, Tuple
