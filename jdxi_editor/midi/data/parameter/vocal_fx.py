@@ -29,15 +29,15 @@ The class also includes utility functions to get a parameter's address, range, d
 and to convert between MIDI values and digital values.
 
 Usage example:
-    # Initialize a VocalFXParameter object for the LEVEL parameter
-    param = VocalFXParameter(address=0x00, min_val=0, max_val=127)
+    >>> #Initialize a VocalFXParameter object for the LEVEL parameter
+    >>> param = VocalFXParameter(address=0x00, min_val=0, max_val=127)
 
-    # Access digital range values
-    print(param.display_min)  # Output: 0
-    print(param.display_max)  # Output: 127
+    >>> # Access digital range values
+    >>> print(param.display_min)  # Output: 0
+    >>> print(param.display_max)  # Output: 127
 
-    # Validate a MIDI value
-    midi_value = param.convert_to_midi(64)
+    >>> # Validate a MIDI value
+    >>> midi_value = param.convert_to_midi(64)
 """
 
 from typing import Optional, Tuple
