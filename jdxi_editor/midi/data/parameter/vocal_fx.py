@@ -41,7 +41,7 @@ Usage example:
     >>> # Validate a MIDI value
     >>> midi_value = param.convert_to_midi(64) # Simple linear scaling, not bipolar
     >>> print(midi_value)
-    63
+    64
 """
 
 from typing import Optional, Tuple
