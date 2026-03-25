@@ -29,7 +29,8 @@ The class also includes utility functions to get a parameter's address, range, d
 and to convert between MIDI values and digital values.
 
 Usage example:
-    >>> #Initialize a VocalFXParam object for the LEVEL parameter
+==============
+    >>> # Initialize a VocalFXParam object for the LEVEL parameter
     >>> param = VocalFXParam.LEVEL
 
     >>> # Access digital range values
