@@ -4,7 +4,7 @@
 
 **JDXi-Editor**: A the missing MIDI editor for the **Roland JD-Xi synthesizer**
 
-##Unleash the hidden power of your Roland JD-Xi. 
+## Unleash the hidden power of your Roland JD-Xi. 
 - Stop fighting menus and start creating. 
 - JDXi-Editor puts every sound, control, and performance tool right at your fingertips—fast, visual, and effortless. 
 - Shape your tones, browse and save presets, build playlists, and take full command of your synth without breaking your creative flow. 
