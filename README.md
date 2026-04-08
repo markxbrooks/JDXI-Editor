@@ -30,7 +30,7 @@
 
 Designed for musicians, sound designers, and MIDI enthusiasts looking to unlock the full potential of the Roland JD-Xi synthesizer!
 
-### 🖥️ Current 'Keyboard Window' Screenshot
+### 🖥️ 'Keyboard Window' Screenshot
 
 <a href="./resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
   <img src="./resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
