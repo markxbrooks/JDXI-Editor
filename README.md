@@ -9,8 +9,7 @@
 - JDXi-Editor puts every sound, control, and performance tool right at your fingertips—fast, visual, and effortless. 
 - Shape your tones, browse and save presets, build playlists, and take full command of your synth without breaking your creative flow. 
 - Wherever you create—from your home studio to late-night sessions—this is the editor your JD-Xi has always deserved.
-
-It’s designed to implement as many features as possible from Roland’s MIDI implementation—without the need to dive through hardware menus. 🎛️
+- Designed to implement as many features as possible from Roland’s MIDI implementation—without the need to dive through hardware menus. 🎛️
 
 ---
 
