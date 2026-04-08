@@ -1,6 +1,6 @@
 # JDXi-Editor
 
-![Roland JD-Xi Cartoon](./resources/jdxi_cartoon_600.png)
+![Roland JD-Xi Cartoon](./resources/JDXI-Editor_logo_640.png)
 
 **JDXi-Editor**: A the missing MIDI editor for the **Roland JD-Xi synthesizer**
 
