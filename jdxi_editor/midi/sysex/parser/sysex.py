@@ -311,6 +311,8 @@ class JDXiSysExParser:
         if self.log_sink is None:
             return
         self.log_sink(parsed)
+        if getattr(self, "json_logging", False):
+            JsonSysExLogSink(self.log_folder).write(parsed)
 
     def _is_identity_sysex(self) -> bool:
         return self._is_identity_request() or self._is_identity_reply()
