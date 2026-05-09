@@ -109,6 +109,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         self.current_data = None
         self.preset_helper = preset_helper
         self.main_window = parent
+        self._ui_setup = False
         # self.controls from SynthBase (ControlRegistry) used for common/misc; partials use get_control_registry()
         synth_map = {1: JDXi.Synth.DIGITAL_SYNTH_1, 2: JDXi.Synth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
@@ -161,6 +162,8 @@ class DigitalSynthEditor(BaseSynthEditor):
 
     def setup_ui(self):
         """set up user interface"""
+        if self._ui_setup:
+            return
         self.set_dimensions()
         self.set_style()
 
@@ -243,6 +246,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         self._add_tab(key=Digital.Tab.PRESETS, widget=instrument_widget)
         self._setup_tabs(container_layout, self.midi_helper)
+        self._ui_setup = True
 
     def set_style(self):
         """Set style"""

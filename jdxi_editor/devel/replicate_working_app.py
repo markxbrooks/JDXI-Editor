@@ -9,7 +9,6 @@ that successfully captured your controller's messages.
 import sys
 import time
 
-import rtmidi
 from PySide6.QtCore import QCoreApplication, QTimer
 from PySide6.QtWidgets import QApplication
 
@@ -19,7 +18,12 @@ from picomidi import BitMask, MidiStatus
 sys.path.insert(0, "/Users/brooks/projects/JDXI-Editor")
 
 # Import compatibility module first
-import rtmidi_compat
+if __package__:
+    from . import rtmidi_compat
+else:
+    import rtmidi_compat
+
+import rtmidi
 
 
 class WorkingAppReplicator:

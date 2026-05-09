@@ -1,9 +1,9 @@
 """
 Preset list provider for Digital, Analog, and Drums rows.
 
-When "Use SoundFont List" is enabled in MIDI configuration, preset names
-are loaded from the configured SoundFont (.sf2) file. Otherwise, built-in
-JD-Xi options are used.
+Digital and Analog always use built-in JD-Xi presets. When "Use SoundFont
+List" is enabled in MIDI configuration, Drum preset names can be loaded from
+the configured SoundFont (.sf2) file.
 """
 
 import os
@@ -168,7 +168,8 @@ def get_preset_list_for_synth_type(
     """
     Get the preset list for the instrument preset widget.
 
-    When "Use SoundFont List" is enabled and SF2 path is valid, returns presets
+    Digital and Analog always return built-in JD-Xi presets. When "Use
+    SoundFont List" is enabled and SF2 path is valid, Drums can return presets
     from the SoundFont. Otherwise returns built-in JD-Xi presets.
 
     :param synth_type: "Analog", "Digital", or "Drums"
@@ -176,6 +177,10 @@ def get_preset_list_for_synth_type(
     """
     from decologr import Decologr as log
     
+    if synth_type != "Drums":
+        log.debug(f"Using JD-Xi preset list for {synth_type}")
+        return _get_jdxi_preset_list(synth_type)
+
     use_sf = _use_soundfont_list()
     log.debug(f"get_preset_list_for_synth_type({synth_type}): use_soundfont_list={use_sf}")
     

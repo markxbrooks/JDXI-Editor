@@ -119,6 +119,17 @@ class SynthBase(QWidget):
         """
         self._midi_helper = helper
 
+    @property
+    def lfo_depth_controls(self) -> dict:
+        """
+        Backward-compatible editable control map.
+
+        Older save/load tests and helpers used this name as the editor's control
+        registry. Editors with true partial LFO depth controls can override it
+        with a narrower mapping.
+        """
+        return self.controls
+
     def get_control_registry(
         self, synth_type: str, partial_no: int = 1
     ) -> ControlRegistry:

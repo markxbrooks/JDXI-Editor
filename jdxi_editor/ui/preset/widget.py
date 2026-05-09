@@ -306,7 +306,7 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         layout.addWidget(self.instrument_selection_label)
 
-        # Determine the correct preset list (SoundFont when enabled, else JD-Xi)
+        # Determine the correct preset list for this synth type.
         preset_list = get_preset_list_for_synth_type(synth_type)
 
         # Convert dictionary format (Digital/Analog) to list format if needed

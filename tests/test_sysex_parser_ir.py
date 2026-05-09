@@ -17,6 +17,7 @@ from jdxi_editor.midi.sysex.parser.sysex import (
     ParameterSpec,
     ParseResult,
     ParsedSysExMessage,
+    StructuredFieldParser,
 )
 from jdxi_editor.midi.message.sysex.offset import (
     FieldSpec,
@@ -92,6 +93,24 @@ def test_field_validator_fails_clearly_in_strict_mode():
         assert "Validation failed for field validated_start" in str(ex)
     else:
         raise AssertionError("strict field validation should raise")
+
+
+def test_structured_field_parser_extracts_and_parses_fields():
+    parser = StructuredFieldParser(PARAMETER_SYSEX, JDXiSysExMessageLayout.FIELDS)
+
+    fields = parser.parse_fields()
+
+    assert fields["roland_id"] == RolandID.ROLAND_ID
+    assert fields["model_id"] == bytes([0x00, 0x00, 0x00, 0x0E])
+    assert fields["checksum"] == bytes([0x57])
+
+
+def test_parser_field_methods_delegate_to_structured_field_parser():
+    parser = JDXiSysExParser(PARAMETER_SYSEX)
+    address_field = JDXiSysExMessageLayout.FIELDS[5]
+
+    assert parser._extract_field_bytes(address_field) == bytes([0x19, 0x01, 0x00, 0x00])
+    assert parser._parse_field(JDXiSysExMessageLayout.FIELDS[1]) == RolandID.ROLAND_ID
 
 
 def test_permissive_structured_fields_skip_unavailable_fields():

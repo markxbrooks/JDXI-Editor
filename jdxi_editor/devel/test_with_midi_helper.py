@@ -8,6 +8,7 @@ which should handle MIDI callbacks properly.
 
 import sys
 import time
+from importlib.util import find_spec
 
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication
@@ -16,14 +17,22 @@ from PySide6.QtWidgets import QApplication
 sys.path.insert(0, "/Users/brooks/projects/JDXI-Editor")
 
 # Import compatibility module first
-import rtmidi_compat
+if __package__:
+    from . import rtmidi_compat
+else:
+    import rtmidi_compat
 from decologr import setup_logging
 
-from jdxi_editor.midi.io.helper import MidiIOHelper
+if find_spec("mido") is None:
+    MidiIOHelper = None
+else:
+    from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class ControllerTestApp:
     def __init__(self):
+        if MidiIOHelper is None:
+            raise RuntimeError("mido is required for MIDI helper controller tests")
         self.app = QCoreApplication(sys.argv)
         self.midi_helper = MidiIOHelper()
         self.setup_connections()

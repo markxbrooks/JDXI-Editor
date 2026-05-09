@@ -10,9 +10,10 @@ from jdxi_editor.midi.sysex.parser.factory import (
     JDXiMessageFactory,
 )
 from jdxi_editor.midi.sysex.parser.model import JDXiSysExMessage, ParseResult
+from picoui.parser.service import ParsingService
 
 
-class JDXiSysExService:
+class JDXiSysExService(ParsingService):
     """
     Compose parser, domain factory, and optional stream deduplication.
 

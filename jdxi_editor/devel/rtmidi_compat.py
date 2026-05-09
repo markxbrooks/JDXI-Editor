@@ -5,7 +5,14 @@ This module provides compatibility between different versions of rtmidi.
 It creates wrapper classes that match the older MidiIn/MidiOut API expected by the JD-Xi Editor codebase.
 """
 
-import rtmidi
+import sys
+from types import SimpleNamespace
+
+try:
+    import rtmidi
+except ModuleNotFoundError:
+    rtmidi = SimpleNamespace()
+    sys.modules["rtmidi"] = rtmidi
 
 # Store original rtmidi classes before we potentially overwrite them
 _original_rtmidi_in = getattr(rtmidi, "RtMidiIn", None)

@@ -34,6 +34,7 @@ from jdxi_editor.midi.sysex.parser.factory import (
     JsonSysExLogSink,
     MidiMessageFactory,
 )
+from jdxi_editor.midi.sysex.parser.field import StructuredFieldParser
 from jdxi_editor.midi.sysex.parser.model import (
     JDXiSysExMessage,
     ParseResult,
@@ -53,6 +54,14 @@ from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
 from picomidi import MidiSysExByte
 from picomidi.constant import Midi
+
+
+def ir_to_dict(ir):
+    if hasattr(ir, "model_dump"):
+        return ir.model_dump()
+    if hasattr(ir, "__dict__"):
+        return ir.__dict__
+    return dict(ir)
 
 
 class JDXiSysExParser:
@@ -279,7 +288,21 @@ class JDXiSysExParser:
         else:
             log.info(scope="JDXiSysExParser", message="Correct JD-Xi header found")
 
-        self.sysex_dict = parse_sysex(self.sysex_data)
+        #self.sysex_dict = parse_sysex(self.sysex_data)
+        message_ir = self.parse_to_ir()
+        block = JDXiParameterDecoder.decode(message_ir)
+
+        if block:
+            """self.sysex_dict = {
+                **(message_ir.model_dump() if hasattr(message_ir, "model_dump") else {}),
+                "parameter_block": block.parameters,
+                "block_name": block.block_name,
+            }"""
+            self.sysex_dict = {
+                **ir_to_dict(message_ir),
+                "parameter_block": block.parameters,
+                "block_name": block.block_name,
+            }
         self._on_parse_complete(self.sysex_dict)
         return self.sysex_dict
 
@@ -362,21 +385,18 @@ class JDXiSysExParser:
         :param field: FieldSpec The field specification
         :return: bytes The extracted bytes
         """
-        data = self.sysex_data
-        data_len = len(data)
+        return StructuredFieldParser(
+            self.sysex_data,
+            JDXiSysExMessageLayout.FIELDS,
+            strict=self.strict,
+        ).extract_field_bytes(field)
 
-        start = field.normalized_offset(data_len)
-        end = field.end_offset(data_len)
-
-        # Bounds checking
-        if start < 0 or start >= data_len:
-            raise ValueError(
-                f"Field offset {field.offset} out of range for data length {data_len}"
-            )
-        if end > data_len:
-            raise ValueError(f"Field end {end} out of range for data length {data_len}")
-
-        return data[start:end]
+    def _field_parser(self) -> StructuredFieldParser:
+        return StructuredFieldParser(
+            self.sysex_data,
+            JDXiSysExMessageLayout.FIELDS,
+            strict=self.strict,
+        )
 
     def _parse_field(self, field: FieldSpec) -> any:
         """
@@ -385,57 +405,11 @@ class JDXiSysExParser:
         :param field: FieldSpec The field specification
         :return: Parsed value or raw bytes
         """
-        raw_bytes = self._extract_field_bytes(field)
-        if field.validator is not None and not field.validator(raw_bytes):
-            raise ValueError(
-                f"Validation failed for field {field.name or '<unnamed>'}: "
-                f"{raw_bytes.hex(' ')}"
-            )
-
-        # If no parser specified, return raw bytes
-        if field.parser is None:
-            return raw_bytes
-
-        # If parser is a type/class, try to use it
-        parser = field.parser
-
-        # Handle enum types (like RolandID, CommandID)
-        if isinstance(parser, type) and hasattr(parser, "__members__"):
-            # It's an enum class, try to match the byte value
-            try:
-                byte_value = raw_bytes[0] if len(raw_bytes) == 1 else None
-                if byte_value is not None:
-                    # Try to find matching enum member
-                    for member in parser:
-                        if member.value == byte_value:
-                            return member
-                    if self.strict:
-                        raise ValueError(
-                            f"No {parser.__name__} member for byte 0x{byte_value:02X}"
-                        )
-            except (AttributeError, IndexError) as ex:
-                if self.strict:
-                    raise ValueError(
-                        f"Failed to parse enum field {field.name or '<unnamed>'}"
-                    ) from ex
-
-        # Handle ParameterAddress from picomidi
-        if hasattr(parser, "from_bytes"):
-            try:
-                return parser.from_bytes(raw_bytes)
-            except (AttributeError, ValueError, TypeError) as ex:
-                if self.strict:
-                    raise ValueError(
-                        f"Failed to parse field {field.name or '<unnamed>'} "
-                        f"from {raw_bytes.hex(' ')}"
-                    ) from ex
-
-        # Handle bytes type
-        if parser is bytes:
-            return raw_bytes
-
-        # Fallback: return raw bytes
-        return raw_bytes
+        return StructuredFieldParser(
+            self.sysex_data,
+            JDXiSysExMessageLayout.FIELDS,
+            strict=self.strict,
+        ).parse_field(field)
 
     def _parse_fields(self) -> dict:
         """
@@ -446,26 +420,11 @@ class JDXiSysExParser:
 
         :return: dict Parsed field data with meaningful keys
         """
-        parsed_fields = {}
-
-        for i, field in enumerate(JDXiSysExMessageLayout.FIELDS):
-            try:
-                parsed_value = self._parse_field(field)
-                field_name = field.name or f"field_{i}"
-                parsed_fields[field_name] = parsed_value
-            except (ValueError, IndexError) as e:
-                if self.strict:
-                    raise ValueError(
-                        f"Failed to parse field {field.name or f'field_{i}'} "
-                        f"at offset {field.offset} with length {field.length}"
-                    ) from e
-                # Field extraction failed, skip it
-                log.debug(
-                    scope="JDXiSysExParser", message=f"Failed to parse field {i}: {e}"
-                )
-                continue
-
-        return parsed_fields
+        return StructuredFieldParser(
+            self.sysex_data,
+            JDXiSysExMessageLayout.FIELDS,
+            strict=self.strict,
+        ).parse_fields()
 
     def get_structured_fields(self) -> dict:
         """
