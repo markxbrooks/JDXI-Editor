@@ -122,9 +122,9 @@ class MIDIConfigDialog(QDialog):
         self.output_ports = midi_helper.get_output_ports()
         self.current_in = midi_helper.current_in
         self.current_out = midi_helper.current_out
-        # FluidSynth runtime state (optional)
-        self.fs = None
-        self.sfid = None
+        # FluidSynth runtime state (optional), shared with MIDI input forwarding.
+        self.fs = getattr(midi_helper, "soundfont_synth", None)
+        self.sfid = getattr(midi_helper, "soundfont_sfid", None)
         self.sf2_path = ""
         self._create_ui()
         # Prefill SoundFont path: prefer saved path, else default if file exists
@@ -463,8 +463,9 @@ class MIDIConfigDialog(QDialog):
                 self.fs_status.setText("Please select a SoundFont first.")
                 return
 
-            if self.fs is None:
-                self.fs = Synth()
+            fs = getattr(self.midi_helper, "soundfont_synth", None)
+            if fs is None:
+                fs = Synth()
                 device_name = self.hardware_interface_combo.currentText()
                 if device_name and device_name not in (
                     "(Default)",
@@ -473,33 +474,36 @@ class MIDIConfigDialog(QDialog):
                     if sys.platform == "darwin":
                         # macOS: use CoreAudio with specific device (accepts device name)
                         try:
-                            self.fs.setting("audio.coreaudio.device", device_name)
-                            self.fs.start(driver="coreaudio")
+                            fs.setting("audio.coreaudio.device", device_name)
+                            fs.start(driver="coreaudio")
                         except Exception as ex:
                             log.warning(
                                 f"Could not set CoreAudio device '{device_name}': {ex}"
                             )
-                            self.fs.start(driver="coreaudio")  # fallback to default
+                            fs.start(driver="coreaudio")  # fallback to default
                     else:
                         # Windows/Linux: use PortAudio with "index:HostApi:Name" format
                         device_spec = self.hardware_interface_combo.currentData()
                         try:
                             if isinstance(device_spec, str) and ":" in device_spec:
-                                self.fs.setting("audio.driver", "portaudio")
-                                self.fs.setting("audio.portaudio.device", device_spec)
-                                self.fs.start(driver="portaudio")
+                                fs.setting("audio.driver", "portaudio")
+                                fs.setting("audio.portaudio.device", device_spec)
+                                fs.start(driver="portaudio")
                             else:
-                                self.fs.start()
+                                fs.start()
                         except Exception as ex:
                             log.warning(f"Could not set PortAudio device: {ex}")
-                            self.fs.start()
+                            fs.start()
                 else:
-                    self.fs.start(
+                    fs.start(
                         driver="coreaudio" if sys.platform == "darwin" else None
                     )
+                self.midi_helper.soundfont_synth = fs
+                self.fs = fs
 
-            self.sfid = self.fs.sfload(sf_path)
-            self.fs.program_select(0, self.sfid, 0, 0)
+            self.sfid = fs.sfload(sf_path)
+            self.midi_helper.soundfont_sfid = self.sfid
+            fs.program_select(0, self.sfid, 0, 0)
             self.fs_status.setText("FluidSynth: started")
 
         except Exception as ex:
@@ -508,9 +512,13 @@ class MIDIConfigDialog(QDialog):
 
     def _stop_fluidsynth(self) -> None:
         try:
-            if self.fs is not None:
-                self.fs.delete()
+            fs = getattr(self.midi_helper, "soundfont_synth", None)
+            if fs is not None:
+                fs.delete()
+                self.midi_helper.soundfont_synth = None
+                self.midi_helper.soundfont_sfid = None
                 self.fs = None
+                self.sfid = None
                 self.fs_status.setText("FluidSynth: stopped")
         except Exception as ex:
             self.fs_status.setText(f"Stop error: {ex}")
@@ -518,12 +526,13 @@ class MIDIConfigDialog(QDialog):
 
     def _test_fluidsynth(self) -> None:
         try:
-            if self.fs is None:
+            fs = getattr(self.midi_helper, "soundfont_synth", None)
+            if fs is None:
                 self.fs_status.setText("Start FluidSynth first.")
                 return
             # Middle C test
-            self.fs.noteon(0, 60, 110)
-            self.fs.noteoff(0, 60)
+            fs.noteon(0, 60, 110)
+            fs.noteoff(0, 60)
             self.fs_status.setText("Test note triggered.")
         except Exception as ex:
             self.fs_status.setText(f"Test error: {ex}")

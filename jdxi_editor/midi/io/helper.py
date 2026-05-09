@@ -20,6 +20,7 @@ Dependencies:
 
 import json
 import logging
+import threading
 import zipfile
 
 import mido
@@ -88,6 +89,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         self.midi_messages = []
         self.current_in = None
         self.current_out = None
+        self.soundfont_synth = None
+        self.soundfont_sfid = None
+        self.soundfont_lock = threading.RLock()
         self.initialized = True
 
     def send_mido_message(self, msg: mido.Message):

@@ -274,8 +274,49 @@ class MidiInHandler(MidiIOController):
         """
         from jdxi_editor.globals import silence_midi_note_logging
 
+        self._forward_note_to_soundfont(message)
         if not silence_midi_note_logging():
             log.message(f"MIDI message note change: {message.type} as {message}")
+
+    def _forward_note_to_soundfont(self, message: mido.Message) -> None:
+        """
+        Forward incoming external MIDI notes to the shared FluidSynth instance.
+
+        FluidSynth is owned by MidiIOHelper when local SoundFont playback is started
+        from MIDI Configuration.
+        """
+        fs = getattr(self, "soundfont_synth", None)
+        if fs is None:
+            return
+
+        try:
+            channel = int(getattr(message, "channel", 0))
+            note = int(message.note)
+            velocity = int(getattr(message, "velocity", 0))
+            lock = getattr(self, "soundfont_lock", None)
+
+            def send_note() -> None:
+                if message.type == MidoMessageType.NOTE_ON.value and velocity > 0:
+                    fs.noteon(channel, note, velocity)
+                elif (
+                    message.type == MidoMessageType.NOTE_OFF.value
+                    or (
+                        message.type == MidoMessageType.NOTE_ON.value
+                        and velocity == 0
+                    )
+                ):
+                    fs.noteoff(channel, note)
+
+            if lock is None:
+                send_note()
+            else:
+                with lock:
+                    send_note()
+        except Exception as ex:
+            log.error(
+                f"Error forwarding MIDI note to SoundFont: {ex}",
+                scope=self.__class__.__name__,
+            )
 
     def _handle_clock(self, message: mido.Message, preset_data: dict) -> None:
         """
