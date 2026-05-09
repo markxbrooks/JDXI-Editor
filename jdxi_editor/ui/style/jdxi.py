@@ -110,7 +110,9 @@ class JDXiUIStyle:
     BUTTON_BACKGROUND_PRESSED = "#333333"
     FOREGROUND = "#FFFFFF"
     PADDING = 10  # in px
-    SPACING = 10  # in px
+    PADDING_MARGINS = (PADDING, PADDING, PADDING, PADDING)  # in px
+    REDUCED_PADDING = 5  # in px
+    REDUCED_PADDING_MARGINS = (REDUCED_PADDING, REDUCED_PADDING, REDUCED_PADDING, REDUCED_PADDING)  # in px
     ICON_PIXMAP_SIZE = 30  # in px
     TRACK_ICON_PIXMAP_SIZE = 50  # in px
     BUTTON_PADDING = 1
@@ -146,7 +148,7 @@ class JDXiUIStyle:
     GROOVE_WIDTH = "2px"
     ICON_SIZE = 20
     TAB_BUTTON_RECT_RADIUS = 6
-
+    SPACING = 2
     MAX_RULER_HEIGHT = 200  # Maximum height for the ruler in the midi player
     TRACK_HEIGHT_MINIMUM = 40  # Minimum height for the tracks in the midi player
 

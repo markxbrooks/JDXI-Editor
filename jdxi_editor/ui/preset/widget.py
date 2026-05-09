@@ -152,10 +152,7 @@ class InstrumentPresetWidget(QWidget):
             self.layout = QVBoxLayout()
             # Set proper margins and spacing to match PresetWidget
             self.layout.setContentsMargins(
-                JDXi.UI.Style.PADDING,
-                JDXi.UI.Style.PADDING,
-                JDXi.UI.Style.PADDING,
-                JDXi.UI.Style.PADDING,
+                *JDXi.UI.Style.PADDING_MARGINS
             )
             self.layout.setSpacing(JDXi.UI.Style.SPACING)
             self.setLayout(self.layout)
@@ -168,8 +165,8 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout = create_layout_with_items(items=[self.instrument_image_label],
                                                            vertical=True,
-                                                           margins=(5, 5, 5, 5),
-                                                           spacing=2)
+                                                           margins=JDXi.UI.Style.REDUCED_PADDING_MARGINS,
+                                                           spacing=JDXi.UI.Style.SPACING)
         instrument_image_group = create_group(layout=instrument_group_layout,
                                               style_sheet=JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL,
                                               width=JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH,
