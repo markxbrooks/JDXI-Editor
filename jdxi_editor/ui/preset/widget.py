@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget, QVBoxLayout
 
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -15,7 +15,6 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_preset_list_for_synth_type,
     get_preset_signals,
 )
-from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
@@ -25,6 +24,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_scroll_container,
     transfer_layout_items,
 )
+from picoui.helpers.layout import create_group
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -164,23 +164,16 @@ class InstrumentPresetWidget(QWidget):
 
     def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
         """Image group"""
-        instrument_image_group = QGroupBox()
-
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # instrument_group_layout = QVBoxLayout()
         instrument_group_layout = create_layout_with_items(items=[self.instrument_image_label],
                                                            vertical=True,
                                                            margins=(5, 5, 5, 5),
                                                            spacing=2)
-        #instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
-        #instrument_group_layout.setSpacing(2)  # Reduced spacing
-        instrument_image_group.setLayout(instrument_group_layout)
-        #instrument_group_layout.addWidget(self.instrument_image_label)
-        instrument_image_group.setStyleSheet(JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL)
-        instrument_image_group.setMinimumWidth(JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH)
-        instrument_image_group.setMaximumHeight(JDXi.UI.Style.INSTRUMENT_IMAGE_HEIGHT)
+        instrument_image_group = create_group(layout=instrument_group_layout,
+                                              style_sheet=JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL,
+                                              width=JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH,
+                                              height=JDXi.UI.Style.INSTRUMENT_IMAGE_HEIGHT)
         return (
             instrument_image_group,
             self.instrument_image_label,
