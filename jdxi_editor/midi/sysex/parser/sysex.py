@@ -12,9 +12,8 @@ True
 
 """
 
-import json
 from pathlib import Path
-from typing import List, Optional, TextIO, Union
+from typing import Any, Callable, List, Optional, Union
 
 import mido
 from decologr import Decologr as log
@@ -22,21 +21,38 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import RolandID
 from jdxi_editor.midi.device.constant import JDXiSysExIdentity
-from jdxi_editor.midi.io.utils import nibble_data
 from jdxi_editor.midi.message.jdxi import JDXiSysexHeader
 from jdxi_editor.midi.message.sysex.offset import (
     FieldSpec,
-    JDXIControlChangeOffset,
-    JDXIProgramChangeOffset,
     JDXiSysExMessageLayout,
 )
 from jdxi_editor.midi.sysex.device import DeviceInfo
+from jdxi_editor.midi.sysex.parser.factory import (
+    JDXiMessageDeduplicator,
+    JDXiMessageFactory,
+    JDXiMessageJsonAdapter,
+    JsonSysExLogSink,
+    MidiMessageFactory,
+)
+from jdxi_editor.midi.sysex.parser.model import (
+    JDXiSysExMessage,
+    ParseResult,
+    ParsedSysExMessage,
+)
+from jdxi_editor.midi.sysex.parser.parameter_block import (
+    JDXiParameterBlock,
+    JDXiParameterDecoder,
+    JDXiParameterEncoder,
+    JDXiParameterLayoutRegistry,
+    ParameterAddressInfo,
+    ParameterLayoutBuilder,
+    ParameterSpec,
+)
+from jdxi_editor.midi.sysex.parser.service import JDXiSysExService
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
 from picomidi import MidiSysExByte
 from picomidi.constant import Midi
-from picomidi.core.bitmask import BitMask
-from picomidi.message.type import MidoMessageType
 
 
 class JDXiSysExParser:
@@ -58,20 +74,27 @@ class JDXiSysExParser:
         >>> address = fields['address']      # ParameterAddress or bytes
     """
 
-    def __init__(self, sysex_data: Optional[bytes] = None):
+    def __init__(
+        self,
+        sysex_data: Optional[bytes] = None,
+        log_sink: Optional[Callable[[dict], None]] = None,
+        strict: bool = False,
+    ):
         """
         Initialize the parser.
 
         :param sysex_data: Optional bytes of SysEx data to parse
+        :param log_sink: Optional callback invoked with parsed dict data
+        :param strict: Raise field parsing errors instead of skipping them
         """
         if sysex_data:
             self.sysex_data = sysex_data
         else:
             self.sysex_data = None
         self.sysex_dict = {}
+        self.log_sink = log_sink
+        self.strict = strict
         self.log_folder = Path.home() / f".{__package_name__}" / "logs"
-        if not self.log_folder.exists():
-            self.log_folder.mkdir(parents=True, exist_ok=True)
 
     def from_bytes(self, sysex_data: bytes) -> None:
         """
@@ -94,16 +117,16 @@ class JDXiSysExParser:
         if not self._is_sysex_frame():
             raise ValueError("Invalid SysEx framing")
 
+        # Route to appropriate parser based on message type
+        if self._is_identity_sysex():
+            return self._parse_identity_sysex()
+
         # Check if this is a JD-Xi message before attempting to parse
-        if not self._is_jdxi_sysex():
+        if not self._is_jdxi_parameter_sysex():
             raise ValueError("Not a JD-Xi SysEx message")
 
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
-
-        # Route to appropriate parser based on message type
-        if self._is_identity_sysex():
-            return self._parse_identity_sysex()
 
         # Parse parameter messages
         return self._parse_parameter_message()
@@ -117,6 +140,130 @@ class JDXiSysExParser:
         """
         self.sysex_data = sysex_data
         return self.parse()
+
+    def parse_to_ir(self, sysex_data: Optional[bytes] = None) -> ParsedSysExMessage:
+        """
+        Parse SysEx data into a typed intermediate representation.
+
+        This entry point is intentionally side-effect free so callers can migrate
+        away from dict parsing without triggering parse-time JSON logging.
+        """
+        if sysex_data is not None:
+            self.sysex_data = sysex_data
+        if not self.sysex_data:
+            raise ValueError("No SysEx data provided")
+        if not self._is_sysex_frame():
+            raise ValueError("Invalid SysEx framing")
+        if self._is_identity_sysex():
+            return self._parse_identity_to_ir()
+        if not self._is_jdxi_parameter_sysex():
+            raise ValueError("Not a JD-Xi SysEx message")
+        if not self._is_valid_sysex():
+            raise ValueError("Invalid SysEx message")
+        if not self._verify_header():
+            raise ValueError("Invalid JD-Xi header")
+        return self._parse_parameter_to_ir()
+
+    def parse_to_result(self, sysex_data: Optional[bytes] = None) -> ParseResult:
+        """
+        Parse into a domain message without raising, for live MIDI stream paths.
+        """
+        raw = sysex_data if sysex_data is not None else self.sysex_data or b""
+        try:
+            parsed = self.parse_to_ir(sysex_data)
+            return ParseResult(
+                success=True,
+                message=JDXiMessageFactory.from_parsed(parsed),
+                errors=[],
+                raw=parsed.raw,
+            )
+        except Exception as ex:
+            return ParseResult(
+                success=False,
+                message=None,
+                errors=[str(ex)],
+                raw=raw,
+                error_type=ex.__class__.__name__,
+            )
+
+    def _parse_parameter_to_ir(self) -> ParsedSysExMessage:
+        """Parse a JD-Xi parameter SysEx message into a typed IR."""
+        fields = self._parse_fields()
+        raw = self.sysex_data
+        address = raw[
+            JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.TONE_NAME.START
+        ]
+        payload = raw[
+            JDXiSysExMessageLayout.TONE_NAME.START : JDXiSysExMessageLayout.CHECKSUM
+        ]
+        tone_name = self._decode_tone_name(fields.get("tone_name"))
+
+        return ParsedSysExMessage(
+            raw=raw,
+            roland_id=fields.get("roland_id"),
+            device_id=raw[JDXiSysExMessageLayout.DEVICE_ID],
+            model_id=bytes(
+                raw[
+                    JDXiSysExMessageLayout.MODEL_ID.POS1 : JDXiSysExMessageLayout.COMMAND_ID
+                ]
+            ),
+            command_id=fields.get("command_id"),
+            address=bytes(address),
+            data=bytes(payload),
+            checksum=raw[JDXiSysExMessageLayout.CHECKSUM],
+            valid_checksum=self._validate_checksum(raw),
+            message_type="parameter",
+            tone_name=tone_name,
+        )
+
+    def _parse_identity_to_ir(self) -> ParsedSysExMessage:
+        """Parse a universal identity request or reply into the typed IR."""
+        data = self.sysex_data
+        sub2 = data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+        message_type = (
+            "identity_reply"
+            if sub2 == JDXiSysExIdentity.SUB2_IDENTITY_REPLY
+            else "identity_request"
+        )
+        roland_id = None
+        if (
+            message_type == "identity_reply"
+            and len(data) > JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND] == RolandID.ROLAND_ID
+        ):
+            roland_id = RolandID.ROLAND_ID
+
+        return ParsedSysExMessage(
+            raw=data,
+            roland_id=roland_id,
+            device_id=data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.DEVICE],
+            model_id=None,
+            command_id=None,
+            address=None,
+            data=data[1:-1],
+            checksum=None,
+            valid_checksum=True,
+            message_type=message_type,
+        )
+
+    def _decode_tone_name(self, raw_value: Any) -> Optional[str]:
+        """Decode a fixed-width tone-name field when it contains printable bytes."""
+        if not isinstance(raw_value, (bytes, bytearray)):
+            return None
+        decoded = bytes(raw_value).split(b"\x00", 1)[0].decode(
+            "ascii", errors="ignore"
+        )
+        return decoded.strip() or None
+
+    def _validate_checksum(self, data: bytes) -> bool:
+        """Validate Roland checksum over address and payload bytes."""
+        if len(data) < 4:
+            return False
+        checksum_data = data[
+            JDXiSysExMessageLayout.ADDRESS.MSB : JDXiSysExMessageLayout.CHECKSUM
+        ]
+        computed = (128 - (sum(checksum_data) % 128)) % 128
+        return computed == data[JDXiSysExMessageLayout.CHECKSUM]
 
     def _parse_parameter_message(self) -> dict:
         """
@@ -132,40 +279,36 @@ class JDXiSysExParser:
         else:
             log.info(scope="JDXiSysExParser", message="Correct JD-Xi header found")
 
-        # Determine if short or long message and parse accordingly
-        if len(self.sysex_data) < JDXi.Midi.SYSEX.PARAMETER.LENGTH.FOUR_BYTE:
-            self.sysex_dict = self._parse_short_parameter_message()
-        else:
-            self.sysex_dict = self._parse_long_parameter_message()
-
-        # Save to log file
-        json_log_file = (
-            self.log_folder
-            / f"jdxi_tone_data_{self.sysex_dict.get('ADDRESS', 'unknown')}.json"
-        )
-        with open(json_log_file, "w", encoding="utf-8") as file_handle:  # type: TextIO
-            json.dump(self.sysex_dict, file_handle, ensure_ascii=False, indent=2)
+        self.sysex_dict = parse_sysex(self.sysex_data)
+        self._on_parse_complete(self.sysex_dict)
         return self.sysex_dict
 
-    def _parse_short_parameter_message(self) -> dict:
-        """
-        Parse a short (1-byte) parameter SysEx message.
-
-        :return: dict Parsed parameter data
-        """
-        # Use the existing parse_sysex function which handles both short and long
-        return parse_sysex(self.sysex_data)
-
-    def _parse_long_parameter_message(self) -> dict:
-        """
-        Parse a long (4-byte) parameter SysEx message.
-
-        :return: dict Parsed parameter data
-        """
-        # Use the existing parse_sysex function which handles both short and long
-        return parse_sysex(self.sysex_data)
+    def _on_parse_complete(self, parsed: dict) -> None:
+        """Notify the optional parse sink without coupling parsing to I/O."""
+        if self.log_sink is None:
+            return
+        self.log_sink(parsed)
 
     def _is_identity_sysex(self) -> bool:
+        return self._is_identity_request() or self._is_identity_reply()
+
+    def _is_identity_request(self) -> bool:
+        """Return True for universal MIDI identity request frames."""
+        data = self.sysex_data
+        return (
+            len(data) == 6
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START] == MidiSysExByte.START
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
+            in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
+            == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
+            == JDXiSysExIdentity.SUB2_IDENTITY_REQUEST
+            and data[-1] == MidiSysExByte.END
+        )
+
+    def _is_identity_reply(self) -> bool:
+        """Return True for JD-Xi identity reply frames."""
         data = self.sysex_data
         return (
             len(data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length()
@@ -175,11 +318,9 @@ class JDXiSysExParser:
             and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
             == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
             and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-            in (
-                JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
-                JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
-            )
-            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.END] == MidiSysExByte.END
+            == JDXiSysExIdentity.SUB2_IDENTITY_REPLY
+            and data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND] == RolandID.ROLAND_ID
+            and data[-1] == MidiSysExByte.END
         )
 
     def _is_valid_sysex(self) -> bool:
@@ -195,59 +336,24 @@ class JDXiSysExParser:
             and self.sysex_data[-1] == MidiSysExByte.END
         )
 
-    def _is_jdxi_sysex(self) -> bool:
-        """
-        Check if this is a JD-Xi specific SysEx message.
+    def _is_roland_sysex(self) -> bool:
+        """Return True when the frame is a Roland manufacturer SysEx message."""
+        return (
+            len(self.sysex_data) > JDXiSysExMessageLayout.ROLAND_ID
+            and self.sysex_data[JDXiSysExMessageLayout.ROLAND_ID]
+            == RolandID.ROLAND_ID
+        )
 
-        JD-Xi messages either:
-        1. Start with Roland ID (0x41) at position 1 (parameter messages)
-        2. Are JD-Xi identity_request messages (have Roland ID at position 5 after universal header)
-
-        Universal MIDI messages (like F0 7E 7F 06 01 F7) are not JD-Xi messages.
-        """
-        if len(self.sysex_data) < 2:
+    def _is_jdxi_parameter_sysex(self) -> bool:
+        """Return True for JD-Xi parameter SysEx messages."""
+        if not self._is_roland_sysex():
             return False
-
-        # Check if it's a JD-Xi parameter message (starts with Roland ID 0x41 at position 1)
-        if len(self.sysex_data) > JDXiSysExMessageLayout.ROLAND_ID:
-            if self.sysex_data[JDXiSysExMessageLayout.ROLAND_ID] == RolandID.ROLAND_ID:
-                return True
-
-        # Check if it's a JD-Xi identity_request message
-        # Universal identity_request requests (F0 7E 7F 06 01 F7) are only 6 bytes
-        # JD-Xi identity_request replies are longer and have Roland ID at position 5
-        if len(self.sysex_data) >= JDXi.Midi.SYSEX.IDENTITY.LAYOUT.expected_length():
-            # Check if it matches the identity_request message structure
-            if (
-                self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.START]
-                == MidiSysExByte.START
-                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.NUMBER]
-                in (JDXiSysExIdentity.NUMBER, JDXiSysExIdentity.DEVICE)
-                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB1]
-                == JDXiSysExIdentity.SUB1_GENERAL_INFORMATION
-                and self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-                in (
-                    JDXiSysExIdentity.SUB2_IDENTITY_REQUEST,
-                    JDXiSysExIdentity.SUB2_IDENTITY_REPLY,
-                )
-            ):
-                # If it's an identity_request reply (SUB2 == 0x02), check for Roland ID
-                if (
-                    self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.SUB2]
-                    == JDXiSysExIdentity.SUB2_IDENTITY_REPLY
-                ):
-                    if len(self.sysex_data) > JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND:
-                        if (
-                            self.sysex_data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND]
-                            == RolandID.ROLAND_ID
-                        ):
-                            return True
-                # Identity requests don't have Roland ID, but we can check length
-                # Universal requests are 6 bytes, JD-Xi requests would be longer if they exist
-                # For now, we'll treat identity_request requests as non-JD-Xi if they're too short
-                return False
-
-        return False
+        if len(self.sysex_data) <= JDXiSysExMessageLayout.COMMAND_ID:
+            return False
+        data = self.sysex_data[
+            JDXiSysExMessageLayout.ROLAND_ID : JDXiSysExMessageLayout.COMMAND_ID
+        ]
+        return data == JDXiSysexHeader.to_bytes()
 
     def _extract_field_bytes(self, field: FieldSpec) -> bytes:
         """
@@ -259,54 +365,13 @@ class JDXiSysExParser:
         data = self.sysex_data
         data_len = len(data)
 
-        # Handle offset - can be int, IntEnum member, or IntEnum class
-        offset = field.offset
-
-        # Check if it's an IntEnum class (has __members__)
-        if isinstance(offset, type) and hasattr(offset, "__members__"):
-            # It's an IntEnum class, use START if available, otherwise first member
-            if hasattr(offset, "START"):
-                offset = offset.START.value
-            elif hasattr(offset, "POS1"):
-                offset = offset.POS1.value
-            elif hasattr(offset, "MSB"):
-                offset = offset.MSB.value
-            else:
-                # Get first member value
-                members = list(offset.__members__.values())
-                if members:
-                    offset = members[0].value
-                else:
-                    raise ValueError(
-                        f"Cannot determine offset from IntEnum class {offset}"
-                    )
-        elif hasattr(offset, "value"):
-            # It's an IntEnum member
-            offset = offset.value
-        elif not isinstance(offset, int):
-            # Try to convert to int
-            try:
-                offset = int(offset)
-            except (ValueError, TypeError):
-                raise ValueError(f"Invalid offset type: {type(offset)}")
-
-        # Handle negative offsets (from end)
-        if offset < 0:
-            start = data_len + offset
-        else:
-            start = offset
-
-        # Handle length
-        if field.length is None:
-            # Extract to end if length not specified
-            end = data_len
-        else:
-            end = start + field.length
+        start = field.normalized_offset(data_len)
+        end = field.end_offset(data_len)
 
         # Bounds checking
         if start < 0 or start >= data_len:
             raise ValueError(
-                f"Field offset {offset} out of range for data length {data_len}"
+                f"Field offset {field.offset} out of range for data length {data_len}"
             )
         if end > data_len:
             raise ValueError(f"Field end {end} out of range for data length {data_len}")
@@ -321,6 +386,11 @@ class JDXiSysExParser:
         :return: Parsed value or raw bytes
         """
         raw_bytes = self._extract_field_bytes(field)
+        if field.validator is not None and not field.validator(raw_bytes):
+            raise ValueError(
+                f"Validation failed for field {field.name or '<unnamed>'}: "
+                f"{raw_bytes.hex(' ')}"
+            )
 
         # If no parser specified, return raw bytes
         if field.parser is None:
@@ -339,15 +409,26 @@ class JDXiSysExParser:
                     for member in parser:
                         if member.value == byte_value:
                             return member
-            except (AttributeError, IndexError):
-                pass
+                    if self.strict:
+                        raise ValueError(
+                            f"No {parser.__name__} member for byte 0x{byte_value:02X}"
+                        )
+            except (AttributeError, IndexError) as ex:
+                if self.strict:
+                    raise ValueError(
+                        f"Failed to parse enum field {field.name or '<unnamed>'}"
+                    ) from ex
 
         # Handle ParameterAddress from picomidi
         if hasattr(parser, "from_bytes"):
             try:
                 return parser.from_bytes(raw_bytes)
-            except (AttributeError, ValueError, TypeError):
-                pass
+            except (AttributeError, ValueError, TypeError) as ex:
+                if self.strict:
+                    raise ValueError(
+                        f"Failed to parse field {field.name or '<unnamed>'} "
+                        f"from {raw_bytes.hex(' ')}"
+                    ) from ex
 
         # Handle bytes type
         if parser is bytes:
@@ -367,26 +448,17 @@ class JDXiSysExParser:
         """
         parsed_fields = {}
 
-        # Map field indices to meaningful names based on JDXiSysExParameterLayout structure
-        field_names = {
-            0: "start",
-            1: "roland_id",
-            2: "device_id",
-            3: "model_id",  # 4 bytes
-            4: "command_id",
-            5: "address",  # 4 bytes - ParameterAddress
-            6: "tone_name",  # 12 bytes
-            7: "value",  # 3 bytes
-            8: "checksum",  # 1 byte
-            9: "end",
-        }
-
         for i, field in enumerate(JDXiSysExMessageLayout.FIELDS):
             try:
                 parsed_value = self._parse_field(field)
-                field_name = field_names.get(i, f"field_{i}")
+                field_name = field.name or f"field_{i}"
                 parsed_fields[field_name] = parsed_value
             except (ValueError, IndexError) as e:
+                if self.strict:
+                    raise ValueError(
+                        f"Failed to parse field {field.name or f'field_{i}'} "
+                        f"at offset {field.offset} with length {field.length}"
+                    ) from e
                 # Field extraction failed, skip it
                 log.debug(
                     scope="JDXiSysExParser", message=f"Failed to parse field {i}: {e}"
@@ -471,9 +543,16 @@ class JDXiSysExParser:
         :return: dict Parsed identity_request data
         """
         data = self.sysex_data
+        if self._is_identity_request():
+            parsed = {
+                "type": "identity_request",
+                "device_id": data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.DEVICE],
+            }
+            self.sysex_dict = parsed
+            return parsed
 
         parsed = {
-            "type": "identity_request",
+            "type": "identity_reply",
             "manufacturer_id": data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.ID.ROLAND],
             "device_family": tuple(
                 data[
@@ -550,103 +629,7 @@ class JDXiSysExParser:
         :param message_content: List[int] byte list
         :return: Optional[Union[mido.Message, List[mido.Message]]] either a single mido message or a list of mido messages
         """
-        if not message_content:
-            return None
-        status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
-
-        # Parse SysEx messages
-        try:
-            if (
-                status_byte == Midi.sysex.START
-                and message_content[JDXiSysExMessageLayout.END] == Midi.sysex.END
-            ):
-                return self._parse_sysex_to_mido(message_content)
-        except Exception as ex:
-            log.error(
-                scope="JDXiSysExParser", message=f"Error parsing SysEx message: {ex}"
-            )
-
-        # Parse Program Change messages
-        try:
-            if (
-                Midi.pc.STATUS <= status_byte <= Midi.pc.MAX_STATUS
-                and len(message_content) >= 2
-            ):
-                return self._parse_program_change_to_mido(message_content)
-        except Exception as ex:
-            log.error(
-                scope="JDXiSysExParser", message=f"Error parsing Program Change: {ex}"
-            )
-
-        # Parse Control Change messages
-        try:
-            if (
-                Midi.cc.STATUS <= status_byte <= Midi.cc.MAX_STATUS
-                and len(message_content) >= 3
-            ):
-                return self._parse_control_change_to_mido(message_content)
-        except Exception as ex:
-            log.error(
-                scope="JDXiSysExParser", message=f"Error parsing Control Change: {ex}"
-            )
-
-        log.message(
-            scope="JDXiSysExParser",
-            message=f"Unhandled MIDI message: {message_content}",
-        )
-        return None
-
-    def _parse_sysex_to_mido(
-        self, message_content: List[int]
-    ) -> Union[mido.Message, List[mido.Message]]:
-        """
-        Parse SysEx message to mido.Message format.
-
-        :param message_content: List[int] Raw MIDI bytes
-        :return: Union[mido.Message, List[mido.Message]] Parsed SysEx message(s)
-        """
-        sysex_data = nibble_data(
-            message_content[
-                JDXIProgramChangeOffset.PROGRAM_NUMBER : JDXIProgramChangeOffset.END
-            ]
-        )
-        if len(sysex_data) > 128:
-            # Split large messages into chunks
-            nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
-            return [mido.Message("sysex", data=nibble) for nibble in nibbles]
-        return mido.Message("sysex", data=sysex_data)
-
-    def _parse_program_change_to_mido(self, message_content: List[int]) -> mido.Message:
-        """
-        Parse Program Change message to mido.Message format.
-
-        :param message_content: List[int] Raw MIDI bytes
-        :return: mido.Message Parsed Program Change message
-        """
-        status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
-        channel = status_byte & BitMask.LOW_4_BITS
-        program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
-        return mido.Message(
-            MidoMessageType.PROGRAM_CHANGE.value, channel=channel, program=program
-        )
-
-    def _parse_control_change_to_mido(self, message_content: List[int]) -> mido.Message:
-        """
-        Parse Control Change message to mido.Message format.
-
-        :param message_content: List[int] Raw MIDI bytes
-        :return: mido.Message Parsed Control Change message
-        """
-        status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
-        channel = status_byte & BitMask.LOW_4_BITS
-        control = message_content[JDXIControlChangeOffset.CONTROL]
-        value = message_content[JDXIControlChangeOffset.VALUE]
-        return mido.Message(
-            MidoMessageType.CONTROL_CHANGE.value,
-            channel=channel,
-            control=control,
-            value=value,
-        )
+        return MidiMessageFactory.from_bytes(message_content)
 
     def _mido_message_data_to_byte_list(self, message: mido.Message) -> bytes:
         """

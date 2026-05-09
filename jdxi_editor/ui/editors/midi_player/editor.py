@@ -986,7 +986,7 @@ class MidiFilePlayer(SynthEditor):
             dir="",
             filter="MIDI Files (*.mid)",
         )
-        file_path = get_file_save_from_spec(load_file_spec, parent=self)
+        file_path, _ = get_file_save_from_spec(load_file_spec, parent=self)
         if not file_path:
             return
 

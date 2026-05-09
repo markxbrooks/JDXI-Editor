@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Type, Union
+from typing import Callable, Type, Union
 
 from jdxi_editor.midi.data.address.address import CommandID, ModelID, RolandID
 from picomidi import MidiSysExByte
@@ -23,6 +23,46 @@ class FieldSpec:
     offset: Union[int, type]  # int or OffsetEnum
     length: int | None
     parser: Type | int | None
+    name: str | None = None
+    validator: Callable[[bytes], bool] | None = None
+
+    def normalized_offset(self, data_len: int) -> int:
+        """
+        Resolve explicit ints, enum members, and legacy enum-class offsets.
+        """
+        offset = self.offset
+
+        if isinstance(offset, type) and hasattr(offset, "__members__"):
+            offset = self._enum_class_offset(offset)
+        elif hasattr(offset, "value"):
+            offset = offset.value
+        elif not isinstance(offset, int):
+            try:
+                offset = int(offset)
+            except (ValueError, TypeError) as ex:
+                raise ValueError(f"Invalid offset type: {type(offset)}") from ex
+
+        if offset < 0:
+            return data_len + offset
+        return offset
+
+    def end_offset(self, data_len: int) -> int:
+        start = self.normalized_offset(data_len)
+        if self.length is None:
+            return data_len
+        return start + self.length
+
+    @staticmethod
+    def _enum_class_offset(offset: type) -> int:
+        for attr_name in ("START", "POS1", "MSB"):
+            member = getattr(offset, attr_name, None)
+            if member is not None:
+                return member.value
+
+        members = list(offset.__members__.values())
+        if not members:
+            raise ValueError(f"Cannot determine offset from IntEnum class {offset}")
+        return members[0].value
 
 
 class JDXIControlChangeOffset(IntEnum):
@@ -103,6 +143,10 @@ class Checksum:
     pass
 
 
+def _matches_byte(expected: int) -> Callable[[bytes], bool]:
+    return lambda raw: len(raw) == 1 and raw[0] == int(expected)
+
+
 class JDXiSysExMessageLayout:
     """
     JDXiSysExMessageLayout
@@ -134,16 +178,28 @@ class JDXiSysExMessageLayout:
     """
 
     FIELDS = (
-        FieldSpec(0, 1, MidiSysExByte.START),
-        FieldSpec(1, 1, RolandID),
-        FieldSpec(2, 1, RolandID),
-        FieldSpec(JDXiSysExModelIDOffset, 4, ModelID),
-        FieldSpec(7, 1, CommandID),
-        FieldSpec(JDXiSysExAddressOffset, 4, ParameterAddress),
-        FieldSpec(JDXiSysExToneNameOffset, 12, bytes),
-        FieldSpec(-3, 3, bytes),
-        FieldSpec(-2, 1, Checksum),
-        FieldSpec(-1, 1, MidiSysExByte.END),
+        FieldSpec(
+            0,
+            1,
+            MidiSysExByte.START,
+            name="start",
+            validator=_matches_byte(MidiSysExByte.START),
+        ),
+        FieldSpec(1, 1, RolandID, name="roland_id"),
+        FieldSpec(2, 1, RolandID, name="device_id"),
+        FieldSpec(JDXiSysExModelIDOffset, 4, ModelID, name="model_id"),
+        FieldSpec(7, 1, CommandID, name="command_id"),
+        FieldSpec(JDXiSysExAddressOffset, 4, ParameterAddress, name="address"),
+        FieldSpec(JDXiSysExToneNameOffset, 12, bytes, name="tone_name"),
+        FieldSpec(-3, 3, bytes, name="value"),
+        FieldSpec(-2, 1, Checksum, name="checksum"),
+        FieldSpec(
+            -1,
+            1,
+            MidiSysExByte.END,
+            name="end",
+            validator=_matches_byte(MidiSysExByte.END),
+        ),
     )
     START = 0
     ROLAND_ID = 1
