@@ -165,13 +165,19 @@ class InstrumentPresetWidget(QWidget):
     def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
         """Image group"""
         instrument_image_group = QGroupBox()
-        instrument_group_layout = QVBoxLayout()
-        instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
-        instrument_group_layout.setSpacing(2)  # Reduced spacing
-        instrument_image_group.setLayout(instrument_group_layout)
+
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        instrument_group_layout.addWidget(self.instrument_image_label)
+
+        # instrument_group_layout = QVBoxLayout()
+        instrument_group_layout = create_layout_with_items(items=[self.instrument_image_label],
+                                                           vertical=True,
+                                                           margins=(5, 5, 5, 5),
+                                                           spacing=2)
+        #instrument_group_layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
+        #instrument_group_layout.setSpacing(2)  # Reduced spacing
+        instrument_image_group.setLayout(instrument_group_layout)
+        #instrument_group_layout.addWidget(self.instrument_image_label)
         instrument_image_group.setStyleSheet(JDXi.UI.Style.INSTRUMENT_IMAGE_LABEL)
         instrument_image_group.setMinimumWidth(JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH)
         instrument_image_group.setMaximumHeight(JDXi.UI.Style.INSTRUMENT_IMAGE_HEIGHT)
