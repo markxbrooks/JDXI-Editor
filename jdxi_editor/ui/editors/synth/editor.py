@@ -149,8 +149,10 @@ class SynthEditor(SynthBase):
         )
         # midi message bytes
         # To be over-ridden by subclasses
-        # Set window flags for address tool window
-        self.setWindowFlags(Qt.WindowType.Tool)
+        # Set window flags: frameless window for editor (consistent with main instrument window)
+        self.setWindowFlags(
+            Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint
+        )
 
         # --- Apply common style
         JDXi.UI.Theme.apply_editor_style(self)

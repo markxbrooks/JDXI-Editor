@@ -48,11 +48,12 @@ class ThemeManager(QObject):
         self._initialized = True
 
     @staticmethod
-    def apply_theme(theme: str = "dark") -> bool:
+    def apply_theme(theme: str = "dark", additional_qss: Optional[str] = None) -> bool:
         """
         Apply qdarktheme to the application (optional).
 
         :param theme: Theme mode - "auto", "light", or "dark"
+        :param additional_qss: Optional custom QSS to append (avoids separate setStyleSheet call)
         :return: True if theme was applied successfully, False otherwise
         """
         if not HAS_QDARKTHEME:
@@ -79,15 +80,22 @@ class ThemeManager(QObject):
                     resolved_theme = "dark"
                     log.debug("darkdetect not available, defaulting to dark")
 
-            # Try new API first (qdarktheme >= 2.0) - accepts "auto"
+            # Try new API first (qdarktheme >= 2.0) - accepts "auto" and optional additional_qss
             if hasattr(qdarktheme, "setup_theme"):
-                qdarktheme.setup_theme(theme)  # setup_theme accepts "auto"
+                sig = __import__("inspect").signature(qdarktheme.setup_theme)
+                if "additional_qss" in sig.parameters:
+                    qdarktheme.setup_theme(theme, additional_qss=additional_qss or "")
+                else:
+                    qdarktheme.setup_theme(theme)
+                    if additional_qss:
+                        app.setStyleSheet(app.styleSheet() + additional_qss)
                 log.info(f"qdarktheme applied: {theme}")
                 return True
             # Fallback to old API (qdarktheme < 2.0) - only accepts "dark" or "light"
             elif hasattr(qdarktheme, "load_stylesheet"):
-                # load_stylesheet doesn't accept "auto", so use resolved theme
                 stylesheet = qdarktheme.load_stylesheet(resolved_theme)
+                if additional_qss:
+                    stylesheet = stylesheet + additional_qss
                 app.setStyleSheet(stylesheet)
                 log.info(f"qdarktheme applied via stylesheet: {resolved_theme}")
                 return True
@@ -261,13 +269,14 @@ class ThemeManager(QObject):
         :return: Additional CSS stylesheet string
         """
         bg_gradient = JDXiUIStyle.BACKGROUND_GRADIENT
-        font_family = JDXiUIStyle.FONT_FAMILY
+        # Cross-platform font fallbacks (Segoe UI is Windows-only)
+        font_family = "Segoe UI, Helvetica Neue, Arial, sans-serif"
         return f"""
-        /* Custom JD-Xi Editor styles with rounded corners and improved spacing */
+        /* Custom JD-Xi Editor styles - complements qdarktheme */
         QMainWindow {{
             background: {bg_gradient};
         }}
-        
+
         QWidget {{
             font-family: {font_family};
         }}
@@ -403,8 +412,8 @@ class ThemeManager(QObject):
             border: 1px solid palette(mid);
             border-radius: 6px;
             padding: 6px 10px;
-            background-color: #1a1a1a;
-            color: #ffffff;
+            background-color: palette(base);
+            color: palette(text);
             selection-background-color: palette(highlight);
             selection-color: palette(highlighted-text);
         }}
@@ -762,10 +771,7 @@ class ThemeManager(QObject):
         QTableView::item:hover {{
             border-left: 3px solid palette(highlight);
         }}
-        """.format(
-            background_gradient=JDXiUIStyle.BACKGROUND_GRADIENT,
-            font_family=JDXiUIStyle.FONT_FAMILY,
-        )
+        """
 
     @staticmethod
     def apply_custom_stylesheet() -> bool:
@@ -814,13 +820,14 @@ class ThemeManager(QObject):
         :param apply_qdarktheme: Whether to apply qdarktheme (requires qdarktheme package)
         :return: True if initialization was successful, False otherwise
         """
-        success = True
+        custom_css = ThemeManager.get_custom_stylesheet() if apply_custom else None
+
         if apply_qdarktheme:
-            success = ThemeManager.apply_theme(theme)
+            # Pass custom CSS via additional_qss to avoid separate setStyleSheet (which can fail)
+            return ThemeManager.apply_theme(theme, additional_qss=custom_css or "")
         if apply_custom:
-            custom_success = ThemeManager.apply_custom_stylesheet()
-            success = success and custom_success
-        return success
+            return ThemeManager.apply_custom_stylesheet()
+        return True
 
     @staticmethod
     def get_progress_bar_style(use_custom_colors: bool = False) -> str:
