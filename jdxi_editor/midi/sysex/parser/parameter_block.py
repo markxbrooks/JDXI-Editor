@@ -194,10 +194,11 @@ class JDXiParameterDecoder:
 
         parameters: dict[str, Any] = {}
         for spec in layout.PARAMETERS:
-            raw = message.payload[spec.offset : spec.offset + spec.length]
-            if len(raw) < spec.length:
-                continue
-            parameters[spec.name] = JDXiParameterDecoder._decode_spec(spec, raw)
+            if message.payload is not None:
+                raw = message.payload[spec.offset : spec.offset + spec.length]
+                if len(raw) < spec.length:
+                    continue
+                parameters[spec.name] = JDXiParameterDecoder._decode_spec(spec, raw)
 
         return JDXiParameterBlock(
             address=message.address,

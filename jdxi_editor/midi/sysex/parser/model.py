@@ -14,11 +14,17 @@ class ParsedSysExMessage:
     model_id: Optional[bytes]
     command_id: Optional[Any]
     address: Optional[bytes]
+
     data: bytes
     checksum: Optional[int]
     valid_checksum: bool
     message_type: str
     tone_name: Optional[str] = None
+    payload: Optional[bytes] = None
+
+    @property
+    def is_parameter(self) -> bool:
+        return self.message_type == "parameter" and self.address is not None
 
 
 @dataclass(slots=True)

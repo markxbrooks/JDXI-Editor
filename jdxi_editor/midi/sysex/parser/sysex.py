@@ -1,14 +1,16 @@
 """
 
 Sysex parser
-# Example usage:
->>> sysex_data = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x01, 0x00, 0x00, 0x10, 0x7F, 0x57, 0xF7])
->>> parser = JDXiSysExParser(sysex_data)
->>> result = parser.parse()
->>> print(result)
-{'JD_XI_HEADER': 'f041100000000e', 'ADDRESS': '12190100', 'TEMPORARY_AREA': 'DIGITAL_SYNTH_1', 'SYNTH_TONE': 'COMMON', 'TONE_NAME': 'Unknown', 'TONE_NAME_1': 16, 'TONE_NAME_2': 127, 'TONE_NAME_3': 87, 'TONE_NAME_4': 247, 'TONE_NAME_5': 0, 'TONE_NAME_6': 0, 'TONE_NAME_7': 0, 'TONE_NAME_8': 0, 'TONE_NAME_9': 0, 'TONE_NAME_10': 0, 'TONE_NAME_11': 0, 'TONE_NAME_12': 0, 'TONE_LEVEL': 0, 'PORTAMENTO_SWITCH': 0, 'PORTAMENTO_TIME': 0, 'MONO_SWITCH': 0, 'OCTAVE_SHIFT': 0, 'PITCH_BEND_UP': 0, 'PITCH_BEND_DOWN': 0, 'PARTIAL1_SWITCH': 0, 'PARTIAL1_SELECT': 0, 'PARTIAL2_SWITCH': 0, 'PARTIAL2_SELECT': 0, 'PARTIAL3_SWITCH': 0, 'PARTIAL3_SELECT': 0, 'RING_SWITCH': 0, 'UNISON_SWITCH': 0, 'PORTAMENTO_MODE': 0, 'LEGATO_SWITCH': 0, 'ANALOG_FEEL': 0, 'WAVE_SHAPE': 0, 'TONE_CATEGORY': 0, 'UNISON_SIZE': 0}
->>> isinstance(result, dict)
-True
+
+Example usage::
+
+    sysex_data = bytes([
+        0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+        0x19, 0x01, 0x00, 0x00, 0x10, 0x7F, 0x57, 0xF7,
+    ])
+    parser = JDXiSysExParser(sysex_data)
+    result = parser.parse()
+    assert isinstance(result, dict)
 
 """
 
@@ -293,11 +295,6 @@ class JDXiSysExParser:
         block = JDXiParameterDecoder.decode(message_ir)
 
         if block:
-            """self.sysex_dict = {
-                **(message_ir.model_dump() if hasattr(message_ir, "model_dump") else {}),
-                "parameter_block": block.parameters,
-                "block_name": block.block_name,
-            }"""
             self.sysex_dict = {
                 **ir_to_dict(message_ir),
                 "parameter_block": block.parameters,
