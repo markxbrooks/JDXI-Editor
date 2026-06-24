@@ -1,3 +1,0 @@
-"""
-PicoMidi test suite.
-"""
