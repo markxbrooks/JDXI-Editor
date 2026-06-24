@@ -185,7 +185,10 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log.error(f"Error {ex} occurred", scope=self.__class__.__name__)
+                log.error(
+                    f"Error in MIDI handler [{message.type}]: {type(ex).__name__}: {ex}",
+                    scope=self.__class__.__name__,
+                )
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """
@@ -240,6 +243,33 @@ class MidiInHandler(MidiIOController):
             )
 
     def _handle_midi_message(self, message: Any) -> None:
+        try:
+            log.debug(f"Incoming MIDI: {message.type}")
+
+            handler_map = {
+                MidoMessageType.SYSEX.value: self._handle_sysex_message,
+                MidoMessageType.CONTROL_CHANGE.value: self._handle_control_change,
+                MidoMessageType.PROGRAM_CHANGE.value: self._handle_program_change,
+                MidoMessageType.NOTE_ON.value: self._handle_note_change,
+                MidoMessageType.NOTE_OFF.value: self._handle_note_change,
+                MidoMessageType.CLOCK.value: self._handle_clock,
+            }
+
+            handler = handler_map.get(message.type)
+
+            if handler is None:
+                log.message(f"Unhandled MIDI message type: {message.type}")
+                return
+
+            # Unified handler signature
+            handler(message, self.preset_data)
+
+            self.midi_message_incoming.emit(message)
+
+        except Exception as ex:
+            log.error(f"Error {ex} occurred")
+
+    def _handle_midi_message_old(self, message: Any) -> None:
         """
         Routes MIDI messages to appropriate handlers
 
@@ -330,6 +360,77 @@ class MidiInHandler(MidiIOController):
             return
 
     def _handle_sysex_message(self, message: mido.Message, preset_data: dict) -> None:
+        try:
+            if not (message.type == "sysex" and len(message.data) > 6):
+                return
+
+            # --- Identity check ---
+            offset = JDXiSysExIdentityLayout.ID.SUB2 - 1
+            if message.data[offset] == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY:
+                self.sysex_parser.parse_identity_request(message)
+                return
+
+            # --- Build raw SysEx ---
+            sysex_bytes = (
+                    bytes([Midi.sysex.START]) +
+                    bytes(message.data) +
+                    bytes([Midi.sysex.END])
+            )
+
+            hex_string = " ".join(f"{b:02X}" for b in message.data)
+
+            # --- Parse once ---
+            try:
+                parsed = self.sysex_parser.parse_bytes(sysex_bytes)
+            except ValueError as ex:
+                if "Not a JD-Xi SysEx message" in str(ex):
+                    return
+                log.error(f"Parse error: {ex}")
+                return
+            except Exception as ex:
+                log.error(f"Parse error: {ex}")
+                return
+
+            # --- Convert for logging ---
+            from dataclasses import asdict
+
+            parsed_dict = asdict(parsed)
+
+            filtered_data = {
+                k: v for k, v in parsed_dict.items()
+                if k not in IGNORED_KEYS
+            }
+
+            log.message(
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
+                silent=False,
+                scope=self.__class__.__name__,
+            )
+
+            # --- Emit only valid parameter messages ---
+            if parsed.is_parameter:
+                self._emit_program_or_tone_name(parsed)
+
+            # --- JSON safe emit ---
+            def _json_safe(obj):
+                if isinstance(obj, bytes):
+                    return obj.hex()
+                if hasattr(obj, "name"):
+                    return obj.name
+                return str(obj)
+
+            json_str = json.dumps(parsed_dict, default=_json_safe)
+
+            self.midi_sysex_json.emit(json_str)
+            log.json(parsed_dict, silent=True)
+
+        except Exception as ex:
+            log.error(
+                f"Unexpected error {ex} while handling SysEx message",
+                scope=self.__class__.__name__,
+            )
+
+    def _handle_sysex_message_old(self, message: mido.Message, preset_data: dict) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
 

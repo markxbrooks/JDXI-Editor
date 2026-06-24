@@ -965,7 +965,7 @@ class MidiFilePlayer(SynthEditor):
         save_file_spec = FileSelectionSpec(
             caption="Save MIDI File", dir="", filter="MIDI Files (*.mid)"
         )
-        file_path = get_file_save_from_spec(save_file_spec, parent=self)
+        file_path, _ = get_file_save_from_spec(save_file_spec, parent=self)
         if file_path:
             self.midi_file.midi_track_viewer.midi_file.save(file_path)
             file_name = f"Saved: {Path(file_path).name}"
