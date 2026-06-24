@@ -2,7 +2,7 @@
 Typed SysEx parser models.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Any, List, Optional
 
 
@@ -21,6 +21,11 @@ class ParsedSysExMessage:
     message_type: str
     tone_name: Optional[str] = None
     payload: Optional[bytes] = None
+    parameter_block: Optional[bytes] = None
+    block_name: Optional[str] = None
+
+    def items(self):
+        return asdict(self).items()
 
     @property
     def is_parameter(self) -> bool:
