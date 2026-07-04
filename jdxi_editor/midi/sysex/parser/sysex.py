@@ -30,6 +30,7 @@ from jdxi_editor.midi.message.sysex.offset import (
 )
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.factory import (
+    JDXiMessageDeduplicator,
     JDXiMessageFactory,
     JsonSysExLogSink,
     MidiMessageFactory,

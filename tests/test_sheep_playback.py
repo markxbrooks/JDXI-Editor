@@ -667,7 +667,7 @@ class TestPatternPlaybackFromController(unittest.TestCase):
         ok = controller.start_playback(measures, 120)
         self.assertTrue(ok, "start_playback should succeed")
 
-        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        engine_module = "picomidi.playback.engine"
         with patch(f"{engine_module}.time") as mock_time:
             mock_time.time.return_value = 1000.0
             # Re-trigger start time (engine.start already ran with real time)
@@ -710,7 +710,7 @@ class TestPatternPlaybackFromController(unittest.TestCase):
         ok = controller.start_playback(measures, 120)
         self.assertTrue(ok)
 
-        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        engine_module = "picomidi.playback.engine"
         with patch(f"{engine_module}.time") as mock_time:
             mock_time.time.return_value = 1000.0
             controller.playback_engine._start_time = 1000.0
@@ -739,7 +739,7 @@ class TestPatternPlaybackFromController(unittest.TestCase):
         self.assertTrue(ok)
         self.assertTrue(controller.is_playing)
 
-        engine_module = "jdxi_editor.ui.editors.midi_player.playback.engine"
+        engine_module = "picomidi.playback.engine"
         with patch(f"{engine_module}.time") as mock_time:
             mock_time.time.return_value = 1000.0
             controller.playback_engine._start_time = 1000.0

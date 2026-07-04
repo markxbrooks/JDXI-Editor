@@ -239,8 +239,11 @@ class PitchEnvSliderSpinbox(QWidget):
         :param value: float
         :return: None
         """
-        self.slider.setValue(value)
-        self.spinbox.setValue(int(value))
+        try:
+            self.slider.setValue(value)
+            self.spinbox.setValue(int(value))
+        except RuntimeError:
+            pass
 
     def value(self) -> float:
         """

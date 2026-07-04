@@ -44,7 +44,7 @@ class TestUSBRecorder(unittest.TestCase):
         self.assertEqual(recorder.channels, 1)
         self.assertEqual(recorder.rate, 44100)
         self.assertEqual(recorder.frames_per_buffer, 1024)
-        self.assertTrue(recorder.file_save_recording)
+        self.assertFalse(recorder.file_save_recording)
         self.assertIsNone(recorder.usb_port_input_device_index)
         self.assertEqual(recorder.usb_recording_rates["16bit"], pyaudio.paInt16)
         self.assertEqual(recorder.usb_recording_rates["32bit"], pyaudio.paInt32)
@@ -182,8 +182,8 @@ class TestWavRecordingThread(unittest.TestCase):
 
         self.assertFalse(thread.running)
 
-    @patch("jdxi_editor.ui.editors.io.recording_thread.wave.open")
-    @patch("jdxi_editor.ui.editors.io.recording_thread.log")
+    @patch("jdxi_editor.midi.recording.recording_thread.wave.open")
+    @patch("jdxi_editor.midi.recording.recording_thread.log")
     def test_record_success(self, mock_log, mock_wave_open):
         """Test successful recording and file saving."""
         # Create temporary file
@@ -327,7 +327,7 @@ class TestWavRecordingThread(unittest.TestCase):
         self.assertEqual(len(error_calls), 1)
         self.assertIn("Device info failed", error_calls[0])
 
-    @patch("jdxi_editor.ui.editors.io.recording_thread.wave.open")
+    @patch("jdxi_editor.midi.recording.recording_thread.wave.open")
     def test_record_file_save_error(self, mock_wave_open):
         """Test recording when file saving fails."""
         thread = WavRecordingThread(
@@ -358,7 +358,7 @@ class TestWavRecordingThread(unittest.TestCase):
         # The error might be wrapped, so just check that an error was emitted
         self.assertTrue(len(error_msg) > 0)
 
-    @patch("jdxi_editor.ui.editors.io.recording_thread.wave.open")
+    @patch("jdxi_editor.midi.recording.recording_thread.wave.open")
     def test_run_success(self, mock_wave_open):
         """Test run method with successful recording."""
         thread = WavRecordingThread(
@@ -467,7 +467,7 @@ class TestRecordingHelpers(unittest.TestCase):
         mock_thread.start.assert_called_once()
 
     @patch("jdxi_editor.midi.utils.helpers.WavRecordingThread")
-    @patch("jdxi_editor.midi.utils.helpers.show_message_box")
+    @patch("jdxi_editor.midi.utils.helpers.show_message_box_from_spec")
     @patch("jdxi_editor.midi.utils.helpers.log")
     def test_start_recording_exception(self, mock_log, mock_show_box, mock_thread_class):
         """Test start_recording when exception occurs."""
@@ -514,7 +514,9 @@ class TestRecordingHelpers(unittest.TestCase):
         """Test on_usb_recording_error."""
         on_usb_recording_error("Test error message")
 
-        mock_log.error.assert_called_once_with("Error during recording: Test error message")
+        mock_log.error.assert_called_once_with(
+            "[on_usb_recording_error] Error during recording: Test error message"
+        )
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@ from PySide6.QtWidgets import QApplication
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
+from picomidi import MidiTempo
+
 from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper

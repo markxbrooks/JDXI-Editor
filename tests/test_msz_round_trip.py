@@ -47,6 +47,7 @@ class TestMSZRoundTrip(unittest.TestCase):
         self.temp_dir = Path(tempfile.mkdtemp())
         self.test_msz_file = self.temp_dir / "test_round_trip.msz"
         self.test_midi_file = self.temp_dir / "test_song.mid"
+        self._editors = []
         
         # Store original parameter values for comparison
         self.original_values: Dict[str, Dict[str, Any]] = {}
@@ -56,6 +57,13 @@ class TestMSZRoundTrip(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
+        for editor in getattr(self, "_editors", []):
+            editor.close()
+            editor.deleteLater()
+        if self._editors:
+            QApplication.processEvents()
+            self._editors.clear()
+
         # Clean up temporary files
         if self.test_msz_file.exists():
             self.test_msz_file.unlink()
@@ -95,10 +103,9 @@ class TestMSZRoundTrip(unittest.TestCase):
         :param test_values: Dictionary of parameter names to values
         """
         for param_name, value in test_values.items():
-            # Find the parameter in controls
-            for param, widget in editor.lfo_depth_controls.items():
+            for param, widget in editor.controls.items():
                 if param.name == param_name:
-                    if hasattr(widget, 'setValue'):
+                    if hasattr(widget, "setValue"):
                         widget.blockSignals(True)
                         widget.setValue(value)
                         widget.blockSignals(False)
@@ -112,8 +119,8 @@ class TestMSZRoundTrip(unittest.TestCase):
         :return: Dictionary of parameter names to values
         """
         values = {}
-        for param, widget in editor.lfo_depth_controls.items():
-            if hasattr(widget, 'value'):
+        for param, widget in editor.controls.items():
+            if hasattr(widget, "value"):
                 values[param.name] = widget.value()
         return values
 
@@ -141,6 +148,9 @@ class TestMSZRoundTrip(unittest.TestCase):
         """Test round-trip save/load for Analog Synth editor."""
         # Create editor
         editor = AnalogSynthEditor(self.midi_helper)
+        editor.show()
+        QApplication.processEvents()
+        self._editors.append(editor)
         
         # Set some test values on the editor
         # Use parameters that are likely to exist in AnalogSynthEditor
@@ -224,6 +234,9 @@ class TestMSZRoundTrip(unittest.TestCase):
         # Now test loading
         # Create a new editor to load into
         loaded_editor = AnalogSynthEditor(self.midi_helper)
+        loaded_editor.show()
+        QApplication.processEvents()
+        self._editors.append(loaded_editor)
         
         # Load the .msz file
         loaded_values = {}
@@ -262,10 +275,12 @@ class TestMSZRoundTrip(unittest.TestCase):
         """Test round-trip save/load with MIDI file included."""
         # Create editors
         analog_editor = AnalogSynthEditor(self.midi_helper)
-        # Skip DigitalSynthEditor as it requires a parent with preset helpers
-        # Use DrumCommonEditor instead which is simpler
+        analog_editor.show()
         from jdxi_editor.ui.editors import DrumCommonEditor
         drum_editor = DrumCommonEditor(self.midi_helper)
+        drum_editor.show()
+        QApplication.processEvents()
+        self._editors.extend([analog_editor, drum_editor])
         
         # Set test values
         test_values_analog = {}
@@ -362,6 +377,9 @@ class TestMSZRoundTrip(unittest.TestCase):
         """Test that all MIDI values in saved .msz files are within valid ranges."""
         # Create editor
         editor = AnalogSynthEditor(self.midi_helper)
+        editor.show()
+        QApplication.processEvents()
+        self._editors.append(editor)
         
         # Save editor to .msz
         from PySide6.QtWidgets import QWidget

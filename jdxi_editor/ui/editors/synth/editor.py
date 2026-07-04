@@ -266,27 +266,28 @@ class SynthEditor(SynthBase):
 
         :returns: dict A dictionary of control parameter names and their values.
         """
-        try:
-            controls_data = {}
-            for param, widget in self.controls.items():
-                # ---- Get value from widget - all custom widgets have a value() method
-                # --- (Slider, ComboBox, SpinBox, Switch all implement value())
+        controls_data = {}
+        for param, widget in self.controls.items():
+            try:
                 if hasattr(widget, "value"):
                     val = getattr(widget, "value")
                     controls_data[param.name] = val() if callable(val) else val
                 else:
-                    # --- Fallback for unexpected widget types
-                    log.warning(
+                    log.debug(
                         scope=self.__class__.__name__,
-                        message=f"Widget for {param.name} has no value() method: {type(widget)}",
+                        message=f"Skipping {param.name}: widget has no value() ({type(widget).__name__})",
                     )
-                    controls_data[param.name] = 0
-            return controls_data
-        except Exception as ex:
-            log.error(
-                scope=self.__class__.__name__, message=f"Failed to get controls: {ex}"
-            )
-            return {}
+            except RuntimeError:
+                log.warning(
+                    scope=self.__class__.__name__,
+                    message=f"Widget for {param.name} was deleted, skipping",
+                )
+            except Exception as ex:
+                log.warning(
+                    scope=self.__class__.__name__,
+                    message=f"Failed to read {param.name}: {ex}",
+                )
+        return controls_data
 
     def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""
