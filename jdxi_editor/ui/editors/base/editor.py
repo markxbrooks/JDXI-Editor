@@ -382,6 +382,13 @@ class BaseSynthEditor(SynthEditor):
             JDXi.UI.Theme.apply_button_active(selected_btn, analog=self.analog)
         self._update_pw_controls_state(waveform)
 
+    _ANALOG_LFO_MODULATION_DEFAULTS = (
+        "LFO_PITCH_MODULATION_CONTROL",
+        "LFO_FILTER_MODULATION_CONTROL",
+        "LFO_AMP_MODULATION_CONTROL",
+        "LFO_RATE_MODULATION_CONTROL",
+    )
+
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
@@ -392,20 +399,28 @@ class BaseSynthEditor(SynthEditor):
         # --- Get base controls
         controls_data = super().get_controls_as_dict()
 
-        # --- Handle OSC_WAVEFORM specially - find which waveform button is checked
-        if self.SYNTH_SPEC.Param.OSC_WAVEFORM in self.controls:
-            # --- Check which waveform button is currently checked
-            for waveform, btn in self.wave_buttons.items():
+        # --- Handle OSC_WAVEFORM: ModeButtonGroup.value() is -1 when nothing is checked
+        osc_key = self.SYNTH_SPEC.Param.OSC_WAVEFORM.name
+        controls_data.pop(osc_key, None)
+
+        waveform_buttons = self.wave_buttons or {}
+        if self.oscillator_section and getattr(
+            self.oscillator_section, "wave_mode_group", None
+        ):
+            waveform_buttons = self.oscillator_section.wave_mode_group.buttons
+
+        osc_waveform_set = False
+        for waveform, btn in waveform_buttons.items():
+            try:
                 if btn.isChecked():
-                    controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = (
-                        waveform.value
-                    )
+                    controls_data[osc_key] = getattr(waveform, "value", waveform)
+                    osc_waveform_set = True
                     break
-            # --- If no button is checked, use default (SAW = 0)
-            if self.SYNTH_SPEC.Param.OSC_WAVEFORM.name not in controls_data:
-                controls_data[self.SYNTH_SPEC.Param.OSC_WAVEFORM.name] = (
-                    self.SYNTH_SPEC.Wave.Osc.SAW.value
-                )
+            except RuntimeError:
+                continue
+
+        if not osc_waveform_set:
+            controls_data[osc_key] = self.SYNTH_SPEC.Wave.Osc.SAW.value
 
         # --- Handle FILTER_MODE_SWITCH specially - find which filter mode button is checked
         if hasattr(self, "filter_section") and hasattr(
@@ -423,6 +438,10 @@ class BaseSynthEditor(SynthEditor):
                 controls_data[self.SYNTH_SPEC.Param.FILTER_MODE_SWITCH.name] = (
                     self.SYNTH_SPEC.Filter.FilterType.BYPASS.value
                 )
+
+        if getattr(self, "analog", False):
+            for param_name in self._ANALOG_LFO_MODULATION_DEFAULTS:
+                controls_data.setdefault(param_name, 0)
 
         return controls_data
 

@@ -13,6 +13,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.ui.widgets.digital.base import LCD_FONT_FAMILIES, lcd_font
+
 
 @dataclass
 class PlotContext:
@@ -98,7 +100,7 @@ class PlotConfig:
     envelope_line_width: int = 2
     axis_line_width: int = 1
     grid_line_width: int = 1
-    font_family: str = "JD LCD Rounded"
+    font_family: str = LCD_FONT_FAMILIES[0]
 
 
 class BasePlotWidget(QWidget):
@@ -332,7 +334,7 @@ class BasePlotWidget(QWidget):
         """
         orange_pen = QPen(QColor("orange"), 2)
         axis_pen = QPen(QColor("white"))
-        painter.setFont(QFont("JD LCD Rounded", 10))
+        painter.setFont(lcd_font(10))
         return axis_pen
 
     def plot_dimensions(

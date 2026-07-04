@@ -24,7 +24,7 @@ Dependencies:
 
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase
+from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase, LCD_FONT_FAMILIES
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 
@@ -34,7 +34,7 @@ class DigitalTitle(DigitalDisplayBase):
     def __init__(
         self,
         tone_name: str = "Init Tone",
-        digital_font_family: str = "JD LCD Rounded",
+        digital_font_family: str = LCD_FONT_FAMILIES[0],
         show_upper_text: bool = True,
         parent: QWidget = None,
     ):
