@@ -577,7 +577,7 @@ class BaseSynthEditor(SynthEditor):
         :return: None
         """
         new_value = (
-            midi_value_to_fraction(value)
+            param.convert_from_midi(value)
             if parameter
             in [
                 self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH,
@@ -618,7 +618,7 @@ class BaseSynthEditor(SynthEditor):
         :return: None
         """
         new_value = (
-            midi_value_to_fraction(value)
+            float(value)
             if parameter
             in [
                 self.SYNTH_SPEC.Param.OSC_PULSE_WIDTH_MOD_DEPTH,

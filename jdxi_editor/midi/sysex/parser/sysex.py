@@ -32,17 +32,26 @@ from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.sysex.parser.factory import (
     JDXiMessageDeduplicator,
     JDXiMessageFactory,
+    JDXiMessageJsonAdapter,
     JsonSysExLogSink,
     MidiMessageFactory,
 )
 from jdxi_editor.midi.sysex.parser.field import StructuredFieldParser
 from jdxi_editor.midi.sysex.parser.model import (
+    JDXiSysExMessage,
     ParseResult,
     ParsedSysExMessage,
 )
 from jdxi_editor.midi.sysex.parser.parameter_block import (
+    JDXiParameterBlock,
     JDXiParameterDecoder,
+    JDXiParameterEncoder,
+    JDXiParameterLayoutRegistry,
+    ParameterAddressInfo,
+    ParameterLayoutBuilder,
+    ParameterSpec,
 )
+from jdxi_editor.midi.sysex.parser.service import JDXiSysExService
 from jdxi_editor.project import __package_name__
 from picomidi import MidiSysExByte
 from picomidi.constant import Midi

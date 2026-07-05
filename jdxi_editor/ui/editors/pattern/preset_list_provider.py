@@ -1,9 +1,10 @@
 """
 Preset list provider for Digital, Analog, and Drums rows.
 
-Digital and Analog always use built-in JD-Xi presets. When "Use SoundFont
-List" is enabled in MIDI configuration, Drum preset names can be loaded from
-the configured SoundFont (.sf2) file.
+When "Use SoundFont List" is enabled in MIDI configuration and a valid
+SoundFont path is configured, preset names for Digital, Analog, and Drums
+instrument editors are loaded from the SoundFont (.sf2) file. Otherwise
+built-in JD-Xi presets are used.
 """
 
 import os
@@ -89,11 +90,12 @@ def get_drum_options() -> List[str]:
 
 
 def _use_soundfont_list() -> bool:
-    from decologr import Decologr as log
     settings = QSettings(__organization_name__, __program__)
-    # Explicitly request bool type - helps with cross-platform consistency
-    val = settings.value(USE_SOUNDFONT_LIST_KEY, False, type=bool)
-    log.debug(f"_use_soundfont_list: value={val!r}, type={type(val).__name__}")
+    val = settings.value(USE_SOUNDFONT_LIST_KEY, False)
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, str):
+        return val.lower() in ("true", "1", "yes")
     return bool(val)
 
 
@@ -124,10 +126,11 @@ def set_use_soundfont_list(enabled: bool) -> None:
 
 
 def set_sf2_path(path: str) -> None:
-    """Set the SoundFont path for preset list source."""
+    """Set the SoundFont path for preset list source and notify listeners."""
     settings = QSettings(__organization_name__, __program__)
     settings.setValue(SF2_PATH_KEY, path)
     settings.sync()
+    get_preset_signals().soundfont_list_changed.emit()
 
 
 def get_hardware_interface() -> str:
@@ -168,44 +171,32 @@ def get_preset_list_for_synth_type(
     """
     Get the preset list for the instrument preset widget.
 
-    Digital and Analog always return built-in JD-Xi presets. When "Use
-    SoundFont List" is enabled and SF2 path is valid, Drums can return presets
-    from the SoundFont. Otherwise returns built-in JD-Xi presets.
+    When "Use SoundFont List" is enabled and a valid SF2 path is configured,
+    returns presets from the SoundFont for Digital, Analog, and Drums.
+    Otherwise returns built-in JD-Xi presets.
 
     :param synth_type: "Analog", "Digital", or "Drums"
-    :return: Preset list in dict format (Digital) or list format (Analog/Drums)
+    :return: Preset list in dict format (JD-Xi Digital/Analog) or list format
     """
     from decologr import Decologr as log
-    
-    if synth_type != "Drums":
-        log.debug(f"Using JD-Xi preset list for {synth_type}")
-        return _get_jdxi_preset_list(synth_type)
 
-    use_sf = _use_soundfont_list()
-    log.debug(f"get_preset_list_for_synth_type({synth_type}): use_soundfont_list={use_sf}")
-    
-    if not use_sf:
+    if not _use_soundfont_list():
         log.debug(f"Using JD-Xi preset list for {synth_type}")
         return _get_jdxi_preset_list(synth_type)
 
     path = _sf2_path()
-    log.debug(f"SF2 path: {path!r}, exists: {os.path.isfile(path) if path else False}")
     if not path or not os.path.isfile(path):
-        log.debug(f"SF2 path invalid, falling back to JD-Xi presets")
+        log.debug(f"SF2 path invalid for {synth_type}, using JD-Xi presets")
         return _get_jdxi_preset_list(synth_type)
 
     presets = _load_sf2_presets(path)
-    log.debug(f"Loaded {len(presets)} presets from SF2")
     if not presets:
         return _get_jdxi_preset_list(synth_type)
 
     if synth_type == "Drums":
-        # Bank 128 = GM drum kits
         drum_presets = [(b, p, n) for b, p, n in presets if b == 128]
         if not drum_presets:
-            # Fallback: use bank 0 if no bank 128 (some SF2s put drums elsewhere)
             drum_presets = [(b, p, n) for b, p, n in presets if b != 0][:16]
-        # GM bank 128 = drum kits; MSB 128, LSB 0
         return [
             {
                 "id": f"{i + 1:03d}",
@@ -213,31 +204,28 @@ def get_preset_list_for_synth_type(
                 "category": "SoundFont",
                 "msb": "128",
                 "lsb": "0",
-                "pc": str(prog + 1),  # 1-based for MIDI send
+                "pc": str(prog + 1),
             }
             for i, (_bank, prog, name) in enumerate(drum_presets)
         ]
 
-    # Digital and Analog: use bank 0 melodic presets
-    melodic = [(b, p, n) for b, p, n in presets if b == 0]
-    if not melodic:
-        return _get_jdxi_preset_list(synth_type)
+    if synth_type in ("Digital", "Analog"):
+        melodic = [(b, p, n) for b, p, n in presets if b == 0]
+        if not melodic:
+            return _get_jdxi_preset_list(synth_type)
+        return [
+            {
+                "id": f"{i + 1:03d}",
+                "name": name,
+                "category": "SoundFont",
+                "msb": "0",
+                "lsb": "0",
+                "pc": str(prog + 1),
+            }
+            for i, (_bank, prog, name) in enumerate(melodic)
+        ]
 
-    # Return list format (works with get_preset_parameter_value and widget)
-    result = [
-        {
-            "id": f"{i + 1:03d}",
-            "name": name,
-            "category": "SoundFont",
-            "msb": "0",
-            "lsb": "0",
-            "pc": str(prog + 1),  # 1-based
-        }
-        for i, (_bank, prog, name) in enumerate(melodic)
-    ]
-
-    # Digital widget expects dict; Analog/Drum use list. Return list for both.
-    return result
+    return _get_jdxi_preset_list(synth_type)
 
 
 def _get_jdxi_preset_list(synth_type: str) -> Union[Dict, List]:

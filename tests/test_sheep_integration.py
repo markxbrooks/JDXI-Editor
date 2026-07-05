@@ -91,8 +91,19 @@ class TestSheepIntegration(unittest.TestCase):
         self.mock_midi_helper.midi_out.send_message = track_sent_messages
     
     def tearDown(self):
-        """Clean up patches."""
-        pass
+        """Stop playback worker so QThread is not left running."""
+        if getattr(self, "player", None) is not None:
+            try:
+                self.player.stop_playback_worker()
+            except Exception:
+                pass
+            try:
+                self.player.close()
+                self.player.deleteLater()
+            except Exception:
+                pass
+            self.player = None
+        QApplication.processEvents()
     
     def test_sheep_midi_file_loading(self):
         """Test that sheep.mid file loads correctly."""

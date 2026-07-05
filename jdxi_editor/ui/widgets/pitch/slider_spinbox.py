@@ -7,7 +7,12 @@ from PySide6.QtWidgets import QDoubleSpinBox, QSpinBox, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
 from picomidi.constant import Midi
 from picomidi.sysex.parameter.address import AddressParameter
-from picomidi.utils.conversion import midi_value_to_ms, ms_to_midi_value
+from picomidi.utils.conversion import (
+    fraction_to_midi_value,
+    midi_value_to_fraction,
+    midi_value_to_ms,
+    ms_to_midi_value,
+)
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -87,19 +92,40 @@ class PitchEnvSliderSpinbox(QWidget):
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
+        param_type = param.get_envelope_param_type()
+        self._bipolar_depth = (
+            param_type == EnvelopeParameter.PEAK_LEVEL and param.is_bipolar
+        )
+        slider_initial = value
+        spin_initial = value
+        if self._bipolar_depth:
+            if value is not None:
+                spin_initial = float(value)
+                slider_initial = int(round(float(value)))
+        elif param_type in (
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.MOD_DEPTH,
+            EnvelopeParameter.DEPTH,
+        ):
+            if value is not None and float(value) <= float(max_value) and float(value) <= 2.0:
+                spin_initial = float(value)
+                slider_initial = self.convert_from_envelope(spin_initial)
+            elif value is not None:
+                slider_initial = int(value)
+                spin_initial = midi_value_to_fraction(int(value))
         self.slider = self.create_parameter_slider(
             param=param,
             label=label,
             vertical=True,
-            initial_value=value,
+            initial_value=slider_initial,
         )
-        param_type = param.get_envelope_param_type()
         if param_type in [
             EnvelopeParameter.SUSTAIN_LEVEL,
             EnvelopeParameter.PEAK_LEVEL,
         ]:
             self.spinbox = create_double_spinbox(
-                min_value=min_value, max_value=max_value, step=0.01, value=value
+                min_value=min_value, max_value=max_value, step=0.01, value=spin_initial
             )
         else:
             self.spinbox = create_spinbox(
@@ -128,12 +154,15 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: float
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in [
+        if self._bipolar_depth:
+            converted_value = float(value)
+        elif param_type in [
             EnvelopeParameter.SUSTAIN_LEVEL,
             EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.MOD_DEPTH,
             EnvelopeParameter.DEPTH,
         ]:
-            converted_value = value / Midi.value.max.SEVEN_BIT
+            converted_value = midi_value_to_fraction(int(value))
         elif param_type in [
             EnvelopeParameter.ATTACK_TIME,
             EnvelopeParameter.DECAY_TIME,
@@ -158,13 +187,15 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: int
         """
         param_type = self.param.get_envelope_param_type()
-        if param_type in [
+        if self._bipolar_depth:
+            converted_value = int(round(float(value)))
+        elif param_type in [
             EnvelopeParameter.PEAK_LEVEL,
             EnvelopeParameter.SUSTAIN_LEVEL,
             EnvelopeParameter.MOD_DEPTH,
             EnvelopeParameter.DEPTH,
         ]:
-            converted_value = int(value * Midi.value.max.SEVEN_BIT)
+            converted_value = fraction_to_midi_value(float(value))
         elif param_type in [
             EnvelopeParameter.ATTACK_TIME,
             EnvelopeParameter.DECAY_TIME,
@@ -191,11 +222,12 @@ class PitchEnvSliderSpinbox(QWidget):
         :param value: int slider value
         :return: None
         """
+        envelope_value = self.convert_to_envelope(value)
         self.spinbox.blockSignals(True)
-        self.spinbox.setValue(int(self.convert_to_envelope(value)))
+        self.spinbox.setValue(envelope_value)
         self.spinbox.blockSignals(False)
         self.envelope_changed.emit(
-            {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
+            {self.param.get_envelope_param_type(): envelope_value}
         )
         self.valueChanged.emit(self.value())
 
@@ -209,27 +241,36 @@ class PitchEnvSliderSpinbox(QWidget):
         if value is None:
             return
 
-        # Defensive: make sure we can work with the value
-        if isinstance(value, float):
-            try:
-                value = int(value)
-            except Exception as ex:
-                log.error(f"Error {ex} occurred casting float {value} to int")
+        param_type = self.param.get_envelope_param_type()
+        if param_type in (
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.MOD_DEPTH,
+            EnvelopeParameter.DEPTH,
+        ):
+            envelope_value = float(value)
+            midi_value = self.convert_from_envelope(envelope_value)
+        else:
+            if isinstance(value, float):
+                try:
+                    value = int(value)
+                except Exception as ex:
+                    log.error(f"Error {ex} occurred casting float {value} to int")
+                    return
+            if not isinstance(value, int):
+                log.error(f"{value} is neither int nor castable float")
                 return
+            envelope_value = value
+            midi_value = self.convert_from_envelope(envelope_value)
 
-        if not isinstance(value, int):
-            log.error(f"{value} is neither int nor castable float")
-            return
-
-        converted_value = self.convert_from_envelope(value)
-        if converted_value is None:
+        if midi_value is None:
             log.error(f"convert_from_envelope({value}) returned None")
             return
 
         self.slider.blockSignals(True)
-        self.slider.setValue(int(converted_value))
+        self.slider.setValue(int(midi_value))
         self.slider.blockSignals(False)
-        self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
+        self.envelope_changed.emit({self.param.get_envelope_param_type(): envelope_value})
         self.valueChanged.emit(self.value())
 
     def setValue(self, value: float):
@@ -240,18 +281,43 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: None
         """
         try:
-            self.slider.setValue(value)
-            self.spinbox.setValue(int(value))
+            param_type = self.param.get_envelope_param_type()
+            if param_type in (
+                EnvelopeParameter.SUSTAIN_LEVEL,
+                EnvelopeParameter.PEAK_LEVEL,
+                EnvelopeParameter.MOD_DEPTH,
+                EnvelopeParameter.DEPTH,
+            ):
+                midi_val = self.convert_from_envelope(float(value))
+                self.slider.blockSignals(True)
+                self.spinbox.blockSignals(True)
+                self.slider.setValue(midi_val)
+                self.spinbox.setValue(float(value))
+                self.slider.blockSignals(False)
+                self.spinbox.blockSignals(False)
+            else:
+                self.slider.setValue(int(value))
+                self.spinbox.setValue(int(value))
         except RuntimeError:
             pass
 
     def value(self) -> float:
         """
-        Get the value of the spinbox
+        Get the semantic envelope value (fraction for depth, ms for time).
 
-        :return: int
+        :return: float
         """
-        return self.spinbox.value()
+        param_type = self.param.get_envelope_param_type()
+        if self._bipolar_depth:
+            return float(self.slider.value())
+        if param_type in (
+            EnvelopeParameter.SUSTAIN_LEVEL,
+            EnvelopeParameter.PEAK_LEVEL,
+            EnvelopeParameter.MOD_DEPTH,
+            EnvelopeParameter.DEPTH,
+        ):
+            return midi_value_to_fraction(self.slider.value())
+        return float(self.spinbox.value())
 
     def update(self):
         """Update the envelope values and plot"""

@@ -119,10 +119,16 @@ class PWMWidget(EnvelopeWidgetBase):
         )
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.pulse_width_control.setValue(
-            self.envelope[EnvelopeParameter.PULSE_WIDTH] * Midi.value.max.SEVEN_BIT
+            int(
+                self.envelope[EnvelopeParameter.PULSE_WIDTH]
+                * Midi.value.max.SEVEN_BIT
+            )
         )
         self.mod_depth_control.setValue(
-            self.envelope[EnvelopeParameter.MOD_DEPTH] * Midi.value.max.SEVEN_BIT
+            int(
+                self.envelope[EnvelopeParameter.MOD_DEPTH]
+                * Midi.value.max.SEVEN_BIT
+            )
         )
         JDXi.UI.Theme.apply_adsr_style(self, analog=analog)
 

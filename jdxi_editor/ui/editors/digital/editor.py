@@ -511,7 +511,15 @@ class DigitalSynthEditor(BaseSynthEditor):
             failures.append(param.name)
             return
 
-        value = convert_value(binding.transform, midi_value)
+        if getattr(param, "is_bipolar", False):
+            value = float(param.convert_from_midi(midi_value))
+        elif param in {
+            Digital.Param.OSC_PULSE_WIDTH,
+            Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
+        }:
+            value = float(midi_value)
+        else:
+            value = convert_value(binding.transform, midi_value)
 
         control.blockSignals(True)
         control.setValue(value)
@@ -772,7 +780,7 @@ class DigitalSynthEditor(BaseSynthEditor):
             Digital.Param.OSC_PITCH_ENV_DEPTH,
         }
         new_value = (
-            midi_value_to_fraction(midi_value)
+            param.convert_from_midi(midi_value)
             if use_fraction
             else midi_value_to_ms(midi_value, 10, 5000)
         )
@@ -813,13 +821,13 @@ class DigitalSynthEditor(BaseSynthEditor):
         :param failures: list = None,
         :return: None
         """
-        use_fraction = param in {
+        use_raw_midi = param in {
             Digital.Param.OSC_PULSE_WIDTH,
             Digital.Param.OSC_PULSE_WIDTH_MOD_DEPTH,
         }
         new_value = (
-            midi_value_to_fraction(midi_value)
-            if use_fraction
+            float(midi_value)
+            if use_raw_midi
             else midi_value_to_ms(midi_value, 10, 5000)
         )
         pe = self.partial_editors.get(partial_no)

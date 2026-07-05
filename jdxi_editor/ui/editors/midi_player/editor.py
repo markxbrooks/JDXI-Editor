@@ -10,6 +10,7 @@ import mido
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
 from PySide6.QtCore import QMargins, Qt, QThread, QTimer
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
@@ -1750,6 +1751,11 @@ class MidiFilePlayer(SynthEditor):
         self.midi_playback_worker_stop()
         self.midi_playback_worker_disconnect()
         self.midi_play_next_event_disconnect()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Ensure background playback thread is stopped before widget destruction."""
+        self.stop_playback_worker()
+        super().closeEvent(event)
 
     def reset_midi_state(self):
         """
