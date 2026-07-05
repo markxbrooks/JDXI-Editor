@@ -38,8 +38,11 @@ DIGITAL2_MODIFY_SYSEX = bytes.fromhex(
     "F0 41 10 00 00 00 0E 12 19 21 50 00 00 55 00 00 F7"
 )
 IDENTITY_REQUEST = bytes([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
-NON_JDXI_ROLAND_SYSEX = bytes.fromhex(
-    "F0 41 10 00 00 00 0F 12 19 01 00 00 10 7F 56 F7"
+DRUMS_RQ1_SYSEX = bytes.fromhex(
+    "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7"
+)
+DRUMS_BD1_RQ1_SYSEX = bytes.fromhex(
+    "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7"
 )
 
 EXPECTED_FIELD_NAMES = (
@@ -96,13 +99,38 @@ def test_field_validator_fails_clearly_in_strict_mode():
 
 
 def test_structured_field_parser_extracts_and_parses_fields():
-    parser = StructuredFieldParser(PARAMETER_SYSEX, JDXiSysExMessageLayout.FIELDS)
+    fields_layout = JDXiSysExMessageLayout.fields_for(len(PARAMETER_SYSEX))
+    parser = StructuredFieldParser(PARAMETER_SYSEX, fields_layout)
 
     fields = parser.parse_fields()
 
     assert fields["roland_id"] == RolandID.ROLAND_ID
     assert fields["model_id"] == bytes([0x00, 0x00, 0x00, 0x0E])
+    assert fields["data"] == bytes([0x10, 0x7F])
     assert fields["checksum"] == bytes([0x57])
+
+
+def test_fields_for_short_rq1_messages_skip_tone_name():
+    fields = StructuredFieldParser(
+        DRUMS_RQ1_SYSEX,
+        JDXiSysExMessageLayout.fields_for(len(DRUMS_RQ1_SYSEX)),
+    ).parse_fields()
+
+    assert "tone_name" not in fields
+    assert fields["address"] == bytes([0x19, 0x70, 0x00, 0x00])
+    assert fields["data"] == bytes([0x00, 0x00, 0x00, 0x12])
+
+
+def test_parse_to_ir_handles_drum_kit_rq1_requests():
+    parsed = JDXiSysExParser(DRUMS_RQ1_SYSEX).parse_to_ir()
+
+    assert parsed.address == bytes([0x19, 0x70, 0x00, 0x00])
+    assert parsed.data == bytes([0x00, 0x00, 0x00, 0x12])
+    assert parsed.valid_checksum is True
+
+    partial = JDXiSysExParser(DRUMS_BD1_RQ1_SYSEX).parse_to_ir()
+    assert partial.address == bytes([0x19, 0x70, 0x2E, 0x00])
+    assert partial.data == bytes([0x00, 0x00, 0x01, 0x43])
 
 
 def test_parser_field_methods_delegate_to_structured_field_parser():

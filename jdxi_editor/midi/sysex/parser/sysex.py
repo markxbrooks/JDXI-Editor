@@ -398,6 +398,10 @@ class JDXiSysExParser:
         ]
         return data == JDXiSysexHeader.to_bytes()
 
+    def _message_fields(self) -> tuple[FieldSpec, ...]:
+        """Return layout fields matched to the current message length."""
+        return JDXiSysExMessageLayout.fields_for(len(self.sysex_data))
+
     def _extract_field_bytes(self, field: FieldSpec) -> bytes:
         """
         Extract bytes for a given FieldSpec.
@@ -407,14 +411,14 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).extract_field_bytes(field)
 
     def _field_parser(self) -> StructuredFieldParser:
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         )
 
@@ -427,7 +431,7 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).parse_field(field)
 
@@ -442,7 +446,7 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).parse_fields()
 

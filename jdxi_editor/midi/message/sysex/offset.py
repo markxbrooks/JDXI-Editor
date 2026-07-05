@@ -177,7 +177,7 @@ class JDXiSysExMessageLayout:
         parsed = field.parser.from_bytes(raw)
     """
 
-    FIELDS = (
+    _HEADER_FIELDS = (
         FieldSpec(
             0,
             1,
@@ -190,8 +190,8 @@ class JDXiSysExMessageLayout:
         FieldSpec(JDXiSysExModelIDOffset, 4, ModelID, name="model_id"),
         FieldSpec(7, 1, CommandID, name="command_id"),
         FieldSpec(JDXiSysExAddressOffset, 4, ParameterAddress, name="address"),
-        FieldSpec(JDXiSysExToneNameOffset, 12, bytes, name="tone_name"),
-        FieldSpec(-3, 3, bytes, name="value"),
+    )
+    _CHECKSUM_END_FIELDS = (
         FieldSpec(-2, 1, Checksum, name="checksum"),
         FieldSpec(
             -1,
@@ -201,6 +201,13 @@ class JDXiSysExMessageLayout:
             validator=_matches_byte(MidiSysExByte.END),
         ),
     )
+
+    # Legacy long-message layout kept for callers that reference FIELDS directly.
+    FIELDS = _HEADER_FIELDS + (
+        FieldSpec(JDXiSysExToneNameOffset, 12, bytes, name="tone_name"),
+        FieldSpec(-3, 3, bytes, name="value"),
+    ) + _CHECKSUM_END_FIELDS
+
     START = 0
     ROLAND_ID = 1
     DEVICE_ID = 2
@@ -211,6 +218,27 @@ class JDXiSysExMessageLayout:
     VALUE = -3
     CHECKSUM = -2
     END = -1
+    MIN_LONG_MESSAGE_LENGTH = TONE_NAME.END + 2
+
+    @classmethod
+    def fields_for(cls, data_len: int) -> tuple[FieldSpec, ...]:
+        """
+        Return field specs appropriate for the message length.
+
+        Short parameter/RQ1 frames carry payload bytes immediately after the
+        4-byte address. Long tone dumps include a fixed 12-byte tone name first.
+        """
+        if data_len >= cls.MIN_LONG_MESSAGE_LENGTH:
+            payload_len = data_len - cls.TONE_NAME.END - 2
+            return cls._HEADER_FIELDS + (
+                FieldSpec(cls.TONE_NAME, 12, bytes, name="tone_name"),
+                FieldSpec(cls.TONE_NAME.END, payload_len, bytes, name="data"),
+            ) + cls._CHECKSUM_END_FIELDS
+
+        payload_len = max(data_len - cls.TONE_NAME.START - 2, 0)
+        return cls._HEADER_FIELDS + (
+            FieldSpec(cls.TONE_NAME.START, payload_len, bytes, name="data"),
+        ) + cls._CHECKSUM_END_FIELDS
 
 
 class JDXiIdentityHeaderOffset:
