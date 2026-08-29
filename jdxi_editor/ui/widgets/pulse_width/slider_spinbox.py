@@ -138,11 +138,11 @@ class PWMSliderSpinbox(QWidget):
             EnvelopeParameter.FILTER_CUTOFF,
             EnvelopeParameter.FILTER_RESONANCE,
         ]:
-            return value
+            return float(value)
         if param_type == EnvelopeParameter.MOD_DEPTH:
-            return value / self.factor
+            return float(value) if self._raw_range else value / self.factor
         if param_type == EnvelopeParameter.PULSE_WIDTH:
-            return value / self.factor
+            return float(value) if self._raw_range else value / self.factor
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
@@ -158,10 +158,10 @@ class PWMSliderSpinbox(QWidget):
             EnvelopeParameter.FILTER_CUTOFF,
             EnvelopeParameter.FILTER_RESONANCE,
         ]:
-            return value
-        if param_type in [EnvelopeParameter.MOD_DEPTH]:
-            return int(value * self.factor)
-        if param_type in [EnvelopeParameter.PULSE_WIDTH]:
+            return int(value)
+        if param_type in [EnvelopeParameter.MOD_DEPTH, EnvelopeParameter.PULSE_WIDTH]:
+            if self._raw_range:
+                return int(round(float(value)))
             return int(value * self.factor)
         else:
             return self.factor / 2  # Default case, or raise an error
@@ -200,10 +200,9 @@ class PWMSliderSpinbox(QWidget):
         When used for filter (0-127 range), value is 0-127; else 0-1.
         """
         if self._raw_range:
-            # Value is already in 0..max (e.g. 0-127)
-            v = int(value)
-            self.slider.setValue(v)
-            self.spinbox.setValue(v)
+            midi_val = int(round(float(value)))
+            self.slider.setValue(midi_val)
+            self.spinbox.setValue(float(midi_val))
         else:
             self.slider.setValue(value * self.factor)
             self.spinbox.setValue(value)
@@ -211,10 +210,12 @@ class PWMSliderSpinbox(QWidget):
 
     def value(self) -> float:
         """
-        Get the value of the spinbox
+        Get the parameter value for export.
 
-        :return: int
+        For 0-127 range controls, returns the slider MIDI value.
         """
+        if self._raw_range:
+            return float(self.slider.value())
         return self.spinbox.value()
 
     def update(self):

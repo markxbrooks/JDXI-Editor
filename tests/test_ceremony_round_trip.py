@@ -18,6 +18,8 @@ import unittest
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+from jdxi_editor.midi.sysex.sections import SysExSection
+
 
 class TestCeremonyRoundTrip(unittest.TestCase):
     """Test Ceremony program (F18) TONE_LEVEL values."""

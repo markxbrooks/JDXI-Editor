@@ -114,7 +114,10 @@ class FilterWidget(EnvelopeWidgetBase):
         )
 
         self.cutoff_param_control.setValue(
-            self.envelope[EnvelopeParameter.FILTER_CUTOFF] * Midi.value.max.SEVEN_BIT
+            int(
+                self.envelope[EnvelopeParameter.FILTER_CUTOFF]
+                * Midi.value.max.SEVEN_BIT
+            )
         )
         if self.slope_param:
             self.slope_param_control = self._create_parameter_switch(

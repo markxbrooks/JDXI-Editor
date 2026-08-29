@@ -134,12 +134,11 @@ class SynthBase(QWidget):
         self, synth_type: str, partial_no: int = 1
     ) -> ControlRegistry:
         """
-        Return the ControlRegistry singleton instance (shared across all partials).
-        Note: ControlRegistry is now a singleton, so all partials share the same registry.
+        Return a ControlRegistry for the given synth type and partial (one per key).
 
         :param synth_type: JDXiSynth.ANALOG_SYNTH, DIGITAL_SYNTH_1, DIGITAL_SYNTH_2, DRUM_KIT
         :param partial_no: Partial number (e.g. 1, 2 for digital; 1..N for drums)
-        :return: ControlRegistry singleton instance
+        :return: ControlRegistry instance for this editor/partial key
         """
         key = (synth_type, partial_no)
         if key not in self._control_registries:

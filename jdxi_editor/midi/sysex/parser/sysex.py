@@ -52,18 +52,24 @@ from jdxi_editor.midi.sysex.parser.parameter_block import (
     ParameterSpec,
 )
 from jdxi_editor.midi.sysex.parser.service import JDXiSysExService
-from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
 from picomidi import MidiSysExByte
 from picomidi.constant import Midi
 
 
 def ir_to_dict(ir):
+    from dataclasses import asdict, is_dataclass
+
     if hasattr(ir, "model_dump"):
         return ir.model_dump()
+
+    if is_dataclass(ir):
+        return asdict(ir)
+
     if hasattr(ir, "__dict__"):
-        return ir.__dict__
-    return dict(ir)
+        return vars(ir)
+
+    return dict(ir)  # last resort
 
 
 class JDXiSysExParser:
@@ -276,7 +282,7 @@ class JDXiSysExParser:
         computed = (128 - (sum(checksum_data) % 128)) % 128
         return computed == data[JDXiSysExMessageLayout.CHECKSUM]
 
-    def _parse_parameter_message(self) -> dict:
+    def _parse_parameter_message(self) -> ParsedSysExMessage:
         """
         Parse a parameter SysEx message (short or long).
 
@@ -301,7 +307,22 @@ class JDXiSysExParser:
                 "block_name": block.block_name,
             }
         self._on_parse_complete(self.sysex_dict)
-        return self.sysex_dict
+        return ParsedSysExMessage(
+            raw=message_ir.raw,
+            roland_id=message_ir.roland_id,
+            device_id=message_ir.device_id,
+            model_id=message_ir.model_id,
+            command_id=message_ir.command_id,
+            address=message_ir.address,
+            data=message_ir.data,
+            checksum=message_ir.checksum,
+            valid_checksum=message_ir.valid_checksum,
+            message_type="parameter",
+            payload=message_ir.payload,
+            tone_name=None,
+            #parameter_block=parameter_block,
+            #block_name=block_name,
+        )
 
     def _on_parse_complete(self, parsed: dict) -> None:
         """Notify the optional parse sink without coupling parsing to I/O."""
@@ -377,6 +398,10 @@ class JDXiSysExParser:
         ]
         return data == JDXiSysexHeader.to_bytes()
 
+    def _message_fields(self) -> tuple[FieldSpec, ...]:
+        """Return layout fields matched to the current message length."""
+        return JDXiSysExMessageLayout.fields_for(len(self.sysex_data))
+
     def _extract_field_bytes(self, field: FieldSpec) -> bytes:
         """
         Extract bytes for a given FieldSpec.
@@ -386,14 +411,14 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).extract_field_bytes(field)
 
     def _field_parser(self) -> StructuredFieldParser:
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         )
 
@@ -406,7 +431,7 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).parse_field(field)
 
@@ -421,7 +446,7 @@ class JDXiSysExParser:
         """
         return StructuredFieldParser(
             self.sysex_data,
-            JDXiSysExMessageLayout.FIELDS,
+            self._message_fields(),
             strict=self.strict,
         ).parse_fields()
 

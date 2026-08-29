@@ -10,12 +10,34 @@ from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
+# JD LCD Rounded is bundled on some systems; on macOS use native monospace fallbacks
+if platform.system() == "Darwin":
+    LCD_FONT_FAMILIES = ("Menlo", "Monaco", "Courier New", "monospace")
+else:
+    LCD_FONT_FAMILIES = (
+        "JD LCD Rounded",
+        "Menlo",
+        "Monaco",
+        "Courier New",
+        "monospace",
+    )
+
+
+def lcd_font(point_size: int, *, bold: bool = False) -> QFont:
+    """Build a font with LCD-style family fallbacks."""
+    font = QFont()
+    font.setFamilies(list(LCD_FONT_FAMILIES))
+    font.setPointSize(point_size)
+    if bold:
+        font.setBold(True)
+    return font
+
 
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
 
     def __init__(
-        self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None
+        self, digital_font_family: str = LCD_FONT_FAMILIES[0], parent: QWidget = None
     ):
         super().__init__(parent)
         """Initialize the DigitalDisplayBase
@@ -57,7 +79,7 @@ class DigitalDisplayBase(QWidget):
             font_size = 13
         else:
             font_size = 19
-        display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
+        display_font = lcd_font(font_size, bold=True)
         painter.setFont(display_font)
 
         # Draw text

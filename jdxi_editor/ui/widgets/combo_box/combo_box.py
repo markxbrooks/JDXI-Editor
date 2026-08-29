@@ -151,4 +151,7 @@ class ComboBox(QWidget):
 
         :return: int
         """
-        return self.combo_box.currentIndex()
+        try:
+            return self.combo_box.currentIndex()
+        except RuntimeError:
+            return 0

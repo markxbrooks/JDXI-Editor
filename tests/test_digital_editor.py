@@ -205,22 +205,21 @@ class TestDigitalSynthEditor(unittest.TestCase):
         """Test updating waveform buttons."""
         self.editor.setup_ui()
         
-        # Mock waveform buttons for partial 1
-        mock_buttons = {}
-        for wave in DigitalWaveOsc:
-            mock_btn = Mock()
-            mock_btn.setChecked = Mock()
-            mock_btn.setStyleSheet = Mock()
-            mock_buttons[wave] = mock_btn
-        
-        self.editor.partial_editors[1].oscillator_tab.widgets.waveform_buttons = mock_buttons
-        
+        # Mock wave_mode_group (current code path uses ModeButtonGroup, not legacy buttons)
+        osc_tab = self.editor.partial_editors[1].oscillator_tab
+        mock_mode_group = Mock()
+        osc_tab.wave_mode_group = mock_mode_group
+        osc_tab._update_button_enabled_states = Mock()
+
         # Update to PW_SQUARE waveform (value 2) - based on actual waveform_map
         self.editor._update_waveform_buttons(1, 2)
-        
-        # PW_SQUARE button should be checked
-        mock_buttons[DigitalWaveOsc.SQUARE].setChecked.assert_called_with(True)
-        mock_buttons[DigitalWaveOsc.SQUARE].setStyleSheet.assert_called()
+
+        mock_mode_group.set_mode.assert_called_once_with(
+            DigitalWaveOsc.SQUARE, send_midi=False
+        )
+        osc_tab._update_button_enabled_states.assert_called_once_with(
+            DigitalWaveOsc.SQUARE
+        )
 
     def test_update_waveform_buttons_invalid_partial(self):
         """Test updating waveform buttons with invalid partial number."""
@@ -375,56 +374,53 @@ class TestDigitalSynthEditor(unittest.TestCase):
         """Test updating filter state."""
         self.editor.setup_ui()
         
-        # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_controls_state = mock_update_method
-        
+        self.editor.partial_editors[1].filter_tab.update_controls_state = (
+            mock_update_method
+        )
+
         # Update filter state to LPF (value 1)
         self.editor._update_filter_state(1, 1)
-        
-        # Should call update_filter_controls_state on the partial editor
+
         mock_update_method.assert_called_once_with(1)
 
     def test_update_filter_state_bypass(self):
         """Test updating filter state to bypass."""
         self.editor.setup_ui()
         
-        # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_controls_state = mock_update_method
-        
-        # Update filter state to BYPASS (value 0)
+        self.editor.partial_editors[1].filter_tab.update_controls_state = (
+            mock_update_method
+        )
+
         self.editor._update_filter_state(1, 0)
-        
-        # Should call update_filter_controls_state on the partial editor
+
         mock_update_method.assert_called_once_with(0)
 
     def test_update_filter_state_hpf(self):
         """Test updating filter state to HPF."""
         self.editor.setup_ui()
         
-        # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_controls_state = mock_update_method
-        
-        # Update filter state to HPF (value 2)
+        self.editor.partial_editors[1].filter_tab.update_controls_state = (
+            mock_update_method
+        )
+
         self.editor._update_filter_state(1, 2)
-        
-        # Should call update_filter_controls_state on the partial editor
+
         mock_update_method.assert_called_once_with(2)
 
     def test_update_filter_state_bpf(self):
         """Test updating filter state to BPF."""
         self.editor.setup_ui()
         
-        # Mock update_filter_controls_state method on partial editor
         mock_update_method = Mock()
-        self.editor.partial_editors[1].update_controls_state = mock_update_method
-        
-        # Update filter state to BPF (value 3)
+        self.editor.partial_editors[1].filter_tab.update_controls_state = (
+            mock_update_method
+        )
+
         self.editor._update_filter_state(1, 3)
-        
-        # Should call update_filter_controls_state on the partial editor
+
         mock_update_method.assert_called_once_with(3)
 
     def test_partial_tab_widget_tabs(self):

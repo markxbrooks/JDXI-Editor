@@ -85,7 +85,7 @@ class PitchEnvWidget(EnvelopeWidgetBase):
             EnvelopeParameter.DECAY_TIME: 800,
             EnvelopeParameter.RELEASE_TIME: 500,
             EnvelopeParameter.INITIAL_LEVEL: 0.0,
-            EnvelopeParameter.PEAK_LEVEL: 64,
+            EnvelopeParameter.PEAK_LEVEL: 0.0,
             EnvelopeParameter.SUSTAIN_LEVEL: 0.0,
         }
 

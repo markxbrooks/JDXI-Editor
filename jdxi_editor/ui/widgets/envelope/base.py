@@ -191,21 +191,19 @@ class EnvelopeWidgetBase(QWidget):
                 elif hasattr(slider, "setValue"):
                     if param.name in ["OSC_WAVE"]:
                         continue
-                    elif isinstance(self.envelope.get(key), float) and key.endswith(
-                        "_level"
-                    ):
-                        if hasattr(slider, "setValue"):
+                    try:
+                        if isinstance(self.envelope.get(key), float) and key.endswith(
+                            "_level"
+                        ):
                             slider.setValue(self.envelope[key])
-                    elif isinstance(self.envelope.get(key), float) and key.endswith(
-                        "_width"
-                    ):
-                        if hasattr(slider, "setValue"):
+                        elif isinstance(self.envelope.get(key), float) and key.endswith(
+                            "_width"
+                        ):
                             slider.setValue(self.envelope[key])
-                    elif isinstance(self.envelope.get(key), float):
-                        if hasattr(slider, "setValue"):
+                        elif isinstance(self.envelope.get(key), float):
                             slider.setValue(self.envelope[key])
-                    else:
-                        pass  # Not in envelope or not a float
+                    except RuntimeError:
+                        continue
         except Exception as ex:
             log.error(
                 scope="EnvelopeWidgetBase",

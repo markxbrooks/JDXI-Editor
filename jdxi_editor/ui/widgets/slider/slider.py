@@ -219,7 +219,10 @@ class Slider(QWidget):
 
     def setValue(self, value: int):
         """Set current value"""
-        self.slider.setValue(value)
+        try:
+            self.slider.setValue(value)
+        except RuntimeError:
+            pass
 
     def setValueSilently(self, value: int):
         """Set current value without emitting signals (use when updating from MIDI)"""

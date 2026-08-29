@@ -10,6 +10,7 @@ import mido
 from decologr import Decologr as log
 from mido import Message, MidiFile, bpm2tempo
 from PySide6.QtCore import QMargins, Qt, QThread, QTimer
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
@@ -965,7 +966,7 @@ class MidiFilePlayer(SynthEditor):
         save_file_spec = FileSelectionSpec(
             caption="Save MIDI File", dir="", filter="MIDI Files (*.mid)"
         )
-        file_path = get_file_save_from_spec(save_file_spec, parent=self)
+        file_path, _ = get_file_save_from_spec(save_file_spec, parent=self)
         if file_path:
             self.midi_file.midi_track_viewer.midi_file.save(file_path)
             file_name = f"Saved: {Path(file_path).name}"
@@ -1750,6 +1751,11 @@ class MidiFilePlayer(SynthEditor):
         self.midi_playback_worker_stop()
         self.midi_playback_worker_disconnect()
         self.midi_play_next_event_disconnect()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Ensure background playback thread is stopped before widget destruction."""
+        self.stop_playback_worker()
+        super().closeEvent(event)
 
     def reset_midi_state(self):
         """

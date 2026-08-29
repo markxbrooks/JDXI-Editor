@@ -13,10 +13,11 @@ All plots digital 5-level, 4-time-segment envelope curves with interactive visua
 import numpy as np
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.digital.base import lcd_font
 from jdxi_editor.ui.widgets.plot.base import BasePlotWidget, PlotContext
 from picomidi.constant import Midi
 
@@ -198,7 +199,7 @@ class DrumPitchEnvPlot(BasePlotWidget):
                     y = ctx.value_to_y(level)
                     ctx.painter.drawEllipse(int(x) - 3, int(y) - 3, 6, 6)
                     ctx.painter.setPen(QPen(QColor("white")))
-                    ctx.painter.setFont(QFont("JD LCD Rounded", 8))
+                    ctx.painter.setFont(lcd_font(8))
                     ctx.painter.drawText(int(x) + 5, int(y) - 5, label)
                     ctx.painter.setPen(point_pen)
         except Exception as ex:
@@ -387,7 +388,7 @@ class DrumTVFEnvPlot(BasePlotWidget):
                     y = top_padding + plot_h - (level / y_max) * plot_h
                     painter.drawEllipse(int(x) - 3, int(y) - 3, 6, 6)
                     painter.setPen(QPen(QColor("white")))
-                    painter.setFont(QFont("JD LCD Rounded", 8))
+                    painter.setFont(lcd_font(8))
                     painter.drawText(int(x) + 5, int(y) - 5, label)
                     painter.setPen(point_pen)
         except Exception as ex:
@@ -576,7 +577,7 @@ class DrumTVAEnvPlot(BasePlotWidget):
                     y = top_padding + plot_h - (level / y_max) * plot_h
                     painter.drawEllipse(int(x) - 3, int(y) - 3, 6, 6)
                     painter.setPen(QPen(QColor("white")))
-                    painter.setFont(QFont("JD LCD Rounded", 8))
+                    painter.setFont(lcd_font(8))
                     painter.drawText(int(x) + 5, int(y) - 5, label)
                     painter.setPen(point_pen)
         except Exception as ex:

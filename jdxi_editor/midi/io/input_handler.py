@@ -36,6 +36,7 @@ from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.midi.program.program import JDXiProgram
+from jdxi_editor.midi.sysex.parser.model import ParsedSysExMessage
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.midi.sysex.sections import SysExSection
@@ -159,6 +160,7 @@ class MidiInHandler(MidiIOController):
         :param parent: Optional[Any] parent widget or object.
         """
         super().__init__(parent)
+        self.preset_data = JDXiPresetButtonData()
         self.parent = parent
         self.callbacks: List[Callable] = []
         self.channel: int = 1
@@ -185,7 +187,10 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log.error(f"Error {ex} occurred", scope=self.__class__.__name__)
+                log.error(
+                    f"Error in MIDI handler [{message.type}]: {type(ex).__name__}: {ex}",
+                    scope=self.__class__.__name__,
+                )
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """
@@ -240,6 +245,33 @@ class MidiInHandler(MidiIOController):
             )
 
     def _handle_midi_message(self, message: Any) -> None:
+        try:
+            log.debug(f"Incoming MIDI: {message.type}")
+
+            handler_map = {
+                MidoMessageType.SYSEX.value: self._handle_sysex_message,
+                MidoMessageType.CONTROL_CHANGE.value: self._handle_control_change,
+                MidoMessageType.PROGRAM_CHANGE.value: self._handle_program_change,
+                MidoMessageType.NOTE_ON.value: self._handle_note_change,
+                MidoMessageType.NOTE_OFF.value: self._handle_note_change,
+                MidoMessageType.CLOCK.value: self._handle_clock,
+            }
+
+            handler = handler_map.get(message.type)
+
+            if handler is None:
+                log.message(f"Unhandled MIDI message type: {message.type}")
+                return
+
+            # Unified handler signature
+            handler(message, self.preset_data)
+
+            self.midi_message_incoming.emit(message)
+
+        except Exception as ex:
+            log.error(f"Error {ex} occurred")
+
+    def _handle_midi_message_old(self, message: Any) -> None:
         """
         Routes MIDI messages to appropriate handlers
 
@@ -330,6 +362,77 @@ class MidiInHandler(MidiIOController):
             return
 
     def _handle_sysex_message(self, message: mido.Message, preset_data: dict) -> None:
+        try:
+            if not (message.type == "sysex" and len(message.data) > 6):
+                return
+
+            # --- Identity check ---
+            offset = JDXiSysExIdentityLayout.ID.SUB2 - 1
+            if message.data[offset] == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY:
+                self.sysex_parser.parse_identity_request(message)
+                return
+
+            # --- Build raw SysEx ---
+            sysex_bytes = (
+                    bytes([Midi.sysex.START]) +
+                    bytes(message.data) +
+                    bytes([Midi.sysex.END])
+            )
+
+            hex_string = " ".join(f"{b:02X}" for b in message.data)
+
+            # --- Parse once ---
+            try:
+                parsed = self.sysex_parser.parse_bytes(sysex_bytes)
+            except ValueError as ex:
+                if "Not a JD-Xi SysEx message" in str(ex):
+                    return
+                log.error(f"Parse error: {ex}")
+                return
+            except Exception as ex:
+                log.error(f"Parse error: {ex}")
+                return
+
+            # --- Convert for logging ---
+            from dataclasses import asdict
+
+            parsed_dict = asdict(parsed)
+
+            filtered_data = {
+                k: v for k, v in parsed_dict.items()
+                if k not in IGNORED_KEYS
+            }
+
+            log.message(
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
+                silent=False,
+                scope=self.__class__.__name__,
+            )
+
+            # --- Emit only valid parameter messages ---
+            if parsed.is_parameter:
+                self._emit_program_or_tone_name(parsed)
+
+            # --- JSON safe emit ---
+            def _json_safe(obj):
+                if isinstance(obj, bytes):
+                    return obj.hex()
+                if hasattr(obj, "name"):
+                    return obj.name
+                return str(obj)
+
+            json_str = json.dumps(parsed_dict, default=_json_safe)
+
+            self.midi_sysex_json.emit(json_str)
+            log.json(parsed_dict, silent=True)
+
+        except Exception as ex:
+            log.error(
+                f"Unexpected error {ex} while handling SysEx message",
+                scope=self.__class__.__name__,
+            )
+
+    def _handle_sysex_message_old(self, message: mido.Message, preset_data: dict) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
 
@@ -473,32 +576,30 @@ class MidiInHandler(MidiIOController):
         self._incoming_preset_data.program_number = program_number
         self.midi_program_changed.emit(channel, program_number)
 
-    def _emit_program_or_tone_name(self, parsed_data: dict) -> None:
-        """Emits the appropriate Qt signal for the extracted tone name.
-        :param parsed_data: dict
-        """
+    def _emit_program_or_tone_name(self, parsed: ParsedSysExMessage) -> None:
         valid_addresses = {
             "12180000",
             "12190100",
             "12192100",
             "12194200",
-            "12197000",  # Drums Common
+            "12197000",
         }
 
-        address = parsed_data.get(SysExSection.ADDRESS)
+        # --- Normalize address ---
+        address_bytes = parsed.address
+        address = address_bytes.hex() if address_bytes else None
 
-        tone_name = parsed_data.get(SysExSection.TONE_NAME)
-        temporary_area = parsed_data.get(SysExSection.TEMPORARY_AREA)
+        if not address:
+            return
+
+        tone_name = parsed.tone_name
+        temporary_area = address[:4]
+
         log.parameter(SysExSection.ADDRESS, address, silent=True)
         log.parameter(SysExSection.TEMPORARY_AREA, temporary_area, silent=True)
         log.parameter(SysExSection.TONE_NAME, tone_name, silent=True)
-        log.parameter(
-            SysExSection.SYNTH_TONE,
-            parsed_data.get(SysExSection.SYNTH_TONE),
-            silent=True,
-        )
 
-        # Map address to synth section
+        # --- Map address to synth section ---
         section_map = {
             "12190100": "digital_1",
             "12192100": "digital_2",
@@ -507,9 +608,10 @@ class MidiInHandler(MidiIOController):
         }
 
         section = section_map.get(address)
-        if section:
+        if section and tone_name:
             self._incoming_preset_data.set_tone_name(section, tone_name)
 
+        # --- Emit signals ---
         if address in valid_addresses and tone_name:
             if address == "12180000":
                 self._emit_program_name_signal(temporary_area, tone_name)
@@ -517,12 +619,12 @@ class MidiInHandler(MidiIOController):
             else:
                 self._emit_tone_name_signal(temporary_area, tone_name)
 
-        # All parts received? Then save program!
-        # Only auto-add if enabled (disabled during manual database updates)
+        # --- Auto-add program ---
         auto_add_enabled = getattr(self, "_auto_add_enabled", True)
+
         if auto_add_enabled and all(
-            k in self._incoming_preset_data.tone_names
-            for k in ("digital_1", "digital_2", "analog", "drum")
+                k in self._incoming_preset_data.tone_names
+                for k in ("digital_1", "digital_2", "analog", "drum")
         ):
             self._auto_add_current_program()
 

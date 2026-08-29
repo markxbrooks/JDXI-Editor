@@ -17,7 +17,7 @@ from decologr import Decologr as log
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase
+from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase, LCD_FONT_FAMILIES, lcd_font
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 
@@ -27,7 +27,7 @@ class DigitalDisplay(DigitalDisplayBase):
     def __init__(
         self,
         current_octave: int = 0,
-        digital_font_family: str = "JD LCD Rounded",
+        digital_font_family: str = LCD_FONT_FAMILIES[0],
         active_synth: str = "D1",
         tone_name: str = "Init Tone",
         tone_number: int = 1,

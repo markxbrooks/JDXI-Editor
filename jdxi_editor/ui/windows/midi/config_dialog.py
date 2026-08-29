@@ -430,6 +430,9 @@ class MIDIConfigDialog(QDialog):
 
     def _on_soundfont_list_toggled(self, checked: bool) -> None:
         """Handle SoundFont list checkbox toggle - save immediately and notify listeners."""
+        sf_path = self.sf2_edit.text().strip()
+        if sf_path and os.path.isfile(sf_path):
+            set_sf2_path(sf_path)
         set_use_soundfont_list(checked)
 
     def _browse_sf2(self) -> None:
@@ -443,6 +446,7 @@ class MIDIConfigDialog(QDialog):
         if file_path:
             self.sf2_edit.setText(file_path)
             self.sf2_path = file_path
+            set_sf2_path(file_path)
             # Add to combo if missing and select
             self._ensure_sf2_in_combo(file_path)
             self._select_sf2_in_combo(file_path)
@@ -567,6 +571,7 @@ class MIDIConfigDialog(QDialog):
         if isinstance(path, str) and path:
             self.sf2_edit.setText(path)
             self.sf2_path = path
+            set_sf2_path(path)
 
     def _ensure_sf2_in_combo(self, path: str) -> None:
         if not hasattr(self, "sf2_combo"):
