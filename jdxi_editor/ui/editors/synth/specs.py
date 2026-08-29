@@ -27,6 +27,20 @@ class DrumKitSpec:
     family: str = "kit"
 
 
+def preset_match_text(text: str) -> str:
+    """
+    Normalize preset labels for keyword matching.
+
+    Strips a leading program index (e.g. ``001 - Power 3`` → ``power 3``).
+    """
+    text = text.strip()
+    if " - " in text:
+        head, _, tail = text.partition(" - ")
+        if head.strip().isdigit():
+            return tail.strip().lower()
+    return text.lower()
+
+
 DRUM_KIT_SPECS = [
     DrumKitSpec(
         engine="tr",
@@ -51,6 +65,10 @@ DRUM_KIT_SPECS = [
     DrumKitSpec(
         engine="tr",
         keywords=("tr-626", "626"),
+    ),
+    DrumKitSpec(
+        engine="tr",
+        keywords=("power kit", "power kick"),
     ),
 ]
 INSTRUMENT_FAMILY_SPECS = [
@@ -255,6 +273,12 @@ INSTRUMENT_FAMILY_SPECS = [
             "cuttinglead",
             "s-sawstacld",
             "bend lead",
+            "power",
+            "power 1",
+            "power 2",
+            "power 3",
+            "power 4",
+            "power 5",
         ],
     ),
     # Brass

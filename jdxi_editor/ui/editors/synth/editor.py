@@ -60,6 +60,7 @@ from jdxi_editor.ui.editors.synth.specs import (
     DRUM_KIT_SPECS,
     ENGINE_KEYWORDS,
     INSTRUMENT_FAMILY_SPECS,
+    preset_match_text,
     InstrumentDescriptor,
 )
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -826,7 +827,7 @@ class SynthEditor(SynthBase):
         return ""
 
     def _parse_instrument_text(self, text: str) -> Optional[InstrumentDescriptor]:
-        text_lower = text.lower()
+        text_lower = preset_match_text(text)
 
         # --------------------------------------------------
         # 1. Drum kits (highest priority)

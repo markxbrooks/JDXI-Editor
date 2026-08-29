@@ -8,6 +8,8 @@ EXCLUDED_PORTS = [
     "through port",
     "midithru",
     "rtpmidi",  # Network MIDI can cause issues
+    "rtmidiout client",  # Virtual pass-through (RtMidiOut Client:RtMidi output)
+    "midi monitor",
 ]
 
 

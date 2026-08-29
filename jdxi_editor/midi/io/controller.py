@@ -32,6 +32,11 @@ import rtmidi
 from decologr import Decologr as log
 from PySide6.QtCore import QObject
 
+from jdxi_editor.ui.windows.jdxi.helpers.port import (
+    filter_excluded_ports,
+    is_excluded_port,
+)
+
 
 class MidiIOController(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
@@ -56,7 +61,7 @@ class MidiIOController(QObject):
         :return: Optional[str], MIDI input port name
         """
         if self.input_port_number is not None and self.is_input_open:
-            ports = self.midi_in.get_ports()
+            ports = self._raw_input_ports()
             if 0 <= self.input_port_number < len(ports):
                 return ports[self.input_port_number]
         return None
@@ -69,10 +74,18 @@ class MidiIOController(QObject):
         :return: Optional[str], MIDI output port name
         """
         if self.output_port_number is not None and self.is_output_open:
-            ports = self.midi_out.get_ports()
+            ports = self._raw_output_ports()
             if 0 <= self.output_port_number < len(ports):
                 return ports[self.output_port_number]
         return None
+
+    def _raw_input_ports(self) -> List[str]:
+        """Unfiltered MIDI input port names from RtMidi."""
+        return self.midi_in.get_ports()
+
+    def _raw_output_ports(self) -> List[str]:
+        """Unfiltered MIDI output port names from RtMidi."""
+        return self.midi_out.get_ports()
 
     def get_input_ports(self) -> List[str]:
         """
@@ -80,7 +93,7 @@ class MidiIOController(QObject):
 
         :return: List[str], MIDI input ports
         """
-        return self.midi_in.get_ports()
+        return filter_excluded_ports(self._raw_input_ports())
 
     def get_output_ports(self) -> List[str]:
         """
@@ -88,7 +101,7 @@ class MidiIOController(QObject):
 
         :return: List[str], MIDI output ports
         """
-        return self.midi_out.get_ports()
+        return filter_excluded_ports(self._raw_output_ports())
 
     def find_jdxi_ports(self) -> Tuple[Optional[str], Optional[str]]:
         """
@@ -130,11 +143,18 @@ class MidiIOController(QObject):
         :return: bool
         """
         try:
-            ports = self.get_input_ports()
+            ports = self._raw_input_ports()
             port_index = port_name_or_index
 
             if isinstance(port_name_or_index, str):
+                if is_excluded_port(port_name_or_index):
+                    log.warning(
+                        f"[open_input_port] Refusing excluded MIDI input port: {port_name_or_index}"
+                    )
+                    return False
                 for i, name in enumerate(ports):
+                    if is_excluded_port(name):
+                        continue
                     if port_name_or_index.lower() in name.lower():
                         port_index = i
                         break
@@ -169,11 +189,18 @@ class MidiIOController(QObject):
         :return: bool True if successful, False otherwise
         """
         try:
-            ports = self.get_output_ports()
+            ports = self._raw_output_ports()
 
             port_index = None
             if isinstance(port_name_or_index, str):
+                if is_excluded_port(port_name_or_index):
+                    log.warning(
+                        f"[open_output_port] Refusing excluded MIDI output port: {port_name_or_index}"
+                    )
+                    return False
                 for i, name in enumerate(ports):
+                    if is_excluded_port(name):
+                        continue
                     if port_name_or_index.lower() in name.lower():
                         port_index = i
                         break

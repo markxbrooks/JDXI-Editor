@@ -6,7 +6,7 @@ adds JD-Xi-specific helpers (filter buttons, icons, ADSR styling, etc.)
 and re-exports picoui helpers under the names used by the rest of the app.
 """
 
-from typing import Any
+from typing import Any, Optional
 
 import qtawesome as qta
 from PySide6.QtCore import QSize, Qt
@@ -301,12 +301,9 @@ def create_group_with_form_layout(
     return group, form_layout
 
 
-def create_centered_layout_with_child(layout: QFormLayout | QHBoxLayout) -> QHBoxLayout:
+def create_centered_layout_with_child(layout: QFormLayout | QHBoxLayout) -> QLayout:
     """create centered layout with a child layout"""
-    centered_layout = QHBoxLayout()
-    centered_layout.addStretch()
-    centered_layout.addLayout(layout)
-    centered_layout.addStretch()
+    centered_layout = create_layout_with_items(vertical=False, start_stretch=True, end_stretch=True, items=[layout])
     return centered_layout
 
 
@@ -326,12 +323,9 @@ def create_scroll_container() -> tuple[QWidget, QVBoxLayout]:
     return container, container_layout
 
 
-def create_layout_with_child(widget_layout: QHBoxLayout) -> QHBoxLayout:
+def create_layout_with_child(widget_layout: QHBoxLayout, vertical: bool = False) -> QLayout:
     """create layout with child layout"""
-    layout = QHBoxLayout()
-    layout.addStretch()
-    layout.addLayout(widget_layout)
-    layout.addStretch()
+    layout = create_layout_with_items(start_stretch=True, items=[widget_layout], end_stretch=False, vertical=vertical)
     return layout
 
 
@@ -412,20 +406,16 @@ def add_widgets_to_layout(
         layout.addWidget(widget)
 
 
-def create_centered_layout(spacing: int = None) -> QHBoxLayout:
-    """Hlayout to squish the slides of the widget together"""
-    layout = QHBoxLayout()
-    layout.addStretch()
-    if spacing is not None:
-        layout.setSpacing(spacing)
+def create_centered_layout(spacing: Optional[int]= None) -> QLayout:
+    """layout to squish the slides of the widget together"""
+    layout = create_layout_with_items(vertical=False, start_stretch=True, spacing=spacing, end_stretch=True)
     return layout
 
 
-def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QHBoxLayout:
+def create_centered_layout_with_widgets(widgets: list[QWidget]) -> QLayout:
     """create centered layout with stretch either side to squish in widgets"""
-    layout = QHBoxLayout()
-    pcm_layout = create_layout_with_items(items=widgets, vertical=True)
+    layout = create_layout_with_items(items=widgets, vertical=True)
     layout.addStretch()
-    layout.addLayout(pcm_layout)
+    layout.addLayout(layout)
     layout.addStretch()
     return layout

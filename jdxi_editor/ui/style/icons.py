@@ -150,6 +150,20 @@ class JDXiUIIconRegistry:
     SERVER_PROCESS = "msc.server-process"
     REPORT: str = "msc.report"
 
+    _RESOURCE_ICON_FALLBACKS: dict[str, str] = {
+        "drum_kit.png": "fa5s.drum",
+        "kick_drum-icon.png": "fa5s.drum",
+        "kick_drum2-icon.png": "fa5s.drum",
+        "cymbal-icon.png": "fa5s.drum-steelpan",
+    }
+
+    @staticmethod
+    def _is_resource_filename(icon_name: str) -> bool:
+        return bool(
+            icon_name
+            and (icon_name.endswith(".png") or icon_name.endswith(".ico"))
+        )
+
     @staticmethod
     def get_icon(
         icon_name: str, color: str = None, size: int = None, fallback: str = None
@@ -163,6 +177,14 @@ class JDXiUIIconRegistry:
         :param fallback: Fallback icon if primary fails
         :return: QIcon or None if both fail
         """
+        if JDXiUIIconRegistry._is_resource_filename(icon_name):
+            file_icon = JDXiUIIconRegistry.get_icon_from_resource(icon_name)
+            if file_icon is not None and not file_icon.isNull():
+                return file_icon
+            icon_name = JDXiUIIconRegistry._RESOURCE_ICON_FALLBACKS.get(
+                icon_name, fallback or JDXiUIIconRegistry.DRUM
+            )
+
         try:
             kwargs = {}
             if color:
@@ -175,7 +197,6 @@ class JDXiUIIconRegistry:
 
         except Exception as ex:
             log.debug(f"Failed to load icon {icon_name}: {ex}")
-            # Try loading from resources (e.g. cymbal-icon.png)
             file_icon = JDXiUIIconRegistry.get_icon_from_resource(icon_name)
             if file_icon is not None and not file_icon.isNull():
                 return file_icon
