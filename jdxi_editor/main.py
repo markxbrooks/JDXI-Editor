@@ -217,7 +217,7 @@ def setup_splash_screen(
     content_layout.setSpacing(16)
 
     # --- Splash image (full size)
-    image_path = resource_path(os.path.join("resources", "splash_screen_540_850v5.png"))
+    image_path = resource_path((Path("resources") / "splash_screen_540_850v5.png"))
     pixmap = QPixmap(image_path)
     if not pixmap.isNull():
         pixmap = pixmap.scaled(
