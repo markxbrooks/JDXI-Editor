@@ -34,7 +34,6 @@ from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
-    QHBoxLayout,
     QLabel,
     QProgressBar,
     QSplashScreen,
