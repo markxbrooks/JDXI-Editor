@@ -52,6 +52,7 @@ from jdxi_editor.midi.sysex.parser.parameter_block import (
     ParameterSpec,
 )
 from jdxi_editor.midi.sysex.parser.service import JDXiSysExService
+from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.project import __package_name__
 from picomidi import MidiSysExByte
 from picomidi.constant import Midi
@@ -282,11 +283,11 @@ class JDXiSysExParser:
         computed = (128 - (sum(checksum_data) % 128)) % 128
         return computed == data[JDXiSysExMessageLayout.CHECKSUM]
 
-    def _parse_parameter_message(self) -> ParsedSysExMessage:
+    def _parse_parameter_message(self) -> dict:
         """
         Parse a parameter SysEx message (short or long).
 
-        :return: dict Parsed parameter data
+        :return: dict Parsed parameter data for editors and MIDI dispatch
         """
         if len(self.sysex_data) <= JDXi.Midi.SYSEX.PARAMETER.LAYOUT.ADDRESS.LSB:
             raise ValueError("Invalid SysEx message: too short")
@@ -296,33 +297,14 @@ class JDXiSysExParser:
         else:
             log.info(scope="JDXiSysExParser", message="Correct JD-Xi header found")
 
-        #self.sysex_dict = parse_sysex(self.sysex_data)
+        self.sysex_dict = parse_sysex(self.sysex_data)
         message_ir = self.parse_to_ir()
         block = JDXiParameterDecoder.decode(message_ir)
-
         if block:
-            self.sysex_dict = {
-                **ir_to_dict(message_ir),
-                "parameter_block": block.parameters,
-                "block_name": block.block_name,
-            }
+            self.sysex_dict["parameter_block"] = block.parameters
+            self.sysex_dict["block_name"] = block.block_name
         self._on_parse_complete(self.sysex_dict)
-        return ParsedSysExMessage(
-            raw=message_ir.raw,
-            roland_id=message_ir.roland_id,
-            device_id=message_ir.device_id,
-            model_id=message_ir.model_id,
-            command_id=message_ir.command_id,
-            address=message_ir.address,
-            data=message_ir.data,
-            checksum=message_ir.checksum,
-            valid_checksum=message_ir.valid_checksum,
-            message_type="parameter",
-            payload=message_ir.payload,
-            tone_name=None,
-            #parameter_block=parameter_block,
-            #block_name=block_name,
-        )
+        return self.sysex_dict
 
     def _on_parse_complete(self, parsed: dict) -> None:
         """Notify the optional parse sink without coupling parsing to I/O."""

@@ -17,7 +17,7 @@ from decologr import Decologr as log
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
-from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase, LCD_FONT_FAMILIES, lcd_font
+from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase, lcd_font
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 
@@ -27,7 +27,7 @@ class DigitalDisplay(DigitalDisplayBase):
     def __init__(
         self,
         current_octave: int = 0,
-        digital_font_family: str = LCD_FONT_FAMILIES[0],
+        digital_font_family: str | None = None,
         active_synth: str = "D1",
         tone_name: str = "Init Tone",
         tone_number: int = 1,
@@ -36,9 +36,8 @@ class DigitalDisplay(DigitalDisplayBase):
         program_number: int = 1,
         parent: QWidget = None,
     ):
-        super().__init__(parent)
+        super().__init__(digital_font_family, parent)
         self.active_synth = active_synth
-        self.digital_font_family = digital_font_family
         self.current_octave = current_octave
         self.tone_name = tone_name
         self.tone_number = tone_number
@@ -99,7 +98,7 @@ class DigitalDisplay(DigitalDisplayBase):
             font_size = 15
         else:
             font_size = 19
-        display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
+        display_font = lcd_font(font_size, bold=True, primary=self.digital_font_family)
         painter.setFont(display_font)
         painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
 

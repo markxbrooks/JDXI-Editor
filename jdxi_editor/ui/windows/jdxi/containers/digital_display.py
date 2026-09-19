@@ -8,7 +8,7 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.widgets.digital.display import DigitalDisplay
 
 
-def add_digital_display(central_widget, parent):
+def add_digital_display(central_widget, parent, digital_font_family=None):
     """Add container with digital digital on the JD-Xi image"""
     central_widget.setLayout(QVBoxLayout())
 
@@ -21,6 +21,9 @@ def add_digital_display(central_widget, parent):
     )
     digital_display_layout = QHBoxLayout()
     digital_display_container.setLayout(digital_display_layout)
-    digital_display = DigitalDisplay(parent=parent)
+    digital_display = DigitalDisplay(
+        parent=parent,
+        digital_font_family=digital_font_family,
+    )
     digital_display_layout.addWidget(digital_display)
     return digital_display

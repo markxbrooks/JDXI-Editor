@@ -25,7 +25,7 @@ from typing import Union
 
 from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QAction, QFontDatabase
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QMainWindow, QMessageBox
 
 from jdxi_editor.core.synth.factory import create_synth_data
@@ -151,7 +151,11 @@ class JDXiWindow(QMainWindow):
         container_widget.layout().addWidget(self.image_label)
 
         # --- Add overlaid controls
-        self.digital_display = add_digital_display(container_widget, self)
+        self.digital_display = add_digital_display(
+            container_widget,
+            self,
+            digital_font_family=self.digital_font_family,
+        )
         add_title_container(container_widget)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
@@ -515,45 +519,14 @@ class JDXiWindow(QMainWindow):
             log.error(f"Error updating digital: {ex}", scope="JDXiWindow")
 
     def _load_digital_font(self) -> None:
-        """Load the digital LCD font for the digital"""
+        """Load the digital LCD font for the instrument display."""
+        from jdxi_editor.ui.widgets.digital.base import get_lcd_font_family, load_lcd_font
 
-        font_name = "JdLCD.ttf"
-        font_path = resource_path(os.path.join("resources", "fonts", font_name))
-        if not os.path.exists(font_path):
-            font_path = resource_path(font_name)
-        log.message(f"font_path: {font_path}", scope="JDXiWindow")
-        if os.path.exists(font_path):
-            log.message("Success: found font file, loading...", scope="JDXiWindow")
-            log.message(f"font_name: \t{font_name}", scope="JDXiWindow")
-            log.message(f"font_path: \t{font_path}", scope="JDXiWindow")
-            try:
-                font_id = QFontDatabase.addApplicationFont(font_path)
-                if font_id < 0:
-                    log.error(
-                        f"Error loading {font_name} font",
-                        level=logging.WARNING,
-                        scope="JDXiWindow",
-                    )
-                font_families = QFontDatabase.applicationFontFamilies(font_id)
-                if font_families:
-                    self.digital_font_family = font_families[0]
-                    log.message(
-                        f"Successfully loaded font family: \t{self.digital_font_family}",
-                        scope="JDXiWindow",
-                    )
-                else:
-                    log.message(
-                        "No font families found after loading font",
-                        level=logging.WARNING,
-                        scope="JDXiWindow",
-                    )
-            except Exception as ex:
-                log.error(
-                    f"Error loading {font_name} font from {font_path}: {ex}",
-                    scope="JDXiWindow",
-                )
-        else:
-            log.message(f"File not found: {font_path}", scope="JDXiWindow")
+        self.digital_font_family = load_lcd_font() or get_lcd_font_family()
+        log.message(
+            f"Using LCD font family: {self.digital_font_family}",
+            scope="JDXiWindow",
+        )
 
     def update_preset_display(self, preset_number: int, preset_name: str):
         """Update the current preset digital"""

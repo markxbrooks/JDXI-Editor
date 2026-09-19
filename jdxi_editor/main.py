@@ -88,6 +88,10 @@ def main() -> None:
         # --- Create application
         app = QApplication(sys.argv)
 
+        from jdxi_editor.ui.widgets.digital.base import load_lcd_font
+
+        load_lcd_font()
+
         # --- Load translations for current locale (e.g. en_GB -> "Bar" / "Bars")
         load_translations(app)
 
@@ -238,9 +242,7 @@ def setup_splash_screen(
     content_layout.addLayout(progress_row)
 
     # --- Rotating status label
-    status_label = DigitalTitle(
-        "Starting...", digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE
-    )
+    status_label = DigitalTitle("Starting...")
     status_label.setObjectName("StatusLabel")
     content_layout.addWidget(status_label)
 
@@ -256,11 +258,7 @@ def setup_splash_screen(
     root.addWidget(content)
 
     # --- Digital Title overlay at top left (on top of content)
-    title = DigitalTitle(
-        __program__,
-        digital_font_family=JDXi.UI.Style.FONT_FAMILY_MONOSPACE,
-        show_upper_text=False,
-    )
+    title = DigitalTitle(__program__, show_upper_text=False)
     title.setObjectName("TitleLabel")
     title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
     title.setParent(splash)

@@ -38,6 +38,7 @@ from jdxi_editor.midi.message.sysex.offset import JDXiSysExIdentityLayout
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.midi.sysex.parser.model import ParsedSysExMessage
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
+from jdxi_editor.midi.sysex.parser.utils import UNKNOWN
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.preset.button import JDXiPresetButtonData
@@ -393,14 +394,8 @@ class MidiInHandler(MidiIOController):
                 log.error(f"Parse error: {ex}")
                 return
 
-            # --- Convert for logging ---
-            from dataclasses import asdict
-
-            parsed_dict = asdict(parsed)
-
             filtered_data = {
-                k: v for k, v in parsed_dict.items()
-                if k not in IGNORED_KEYS
+                k: v for k, v in parsed.items() if k not in IGNORED_KEYS
             }
 
             log.message(
@@ -409,22 +404,11 @@ class MidiInHandler(MidiIOController):
                 scope=self.__class__.__name__,
             )
 
-            # --- Emit only valid parameter messages ---
-            if parsed.is_parameter:
+            if parsed.get(SysExSection.ADDRESS):
                 self._emit_program_or_tone_name(parsed)
 
-            # --- JSON safe emit ---
-            def _json_safe(obj):
-                if isinstance(obj, bytes):
-                    return obj.hex()
-                if hasattr(obj, "name"):
-                    return obj.name
-                return str(obj)
-
-            json_str = json.dumps(parsed_dict, default=_json_safe)
-
-            self.midi_sysex_json.emit(json_str)
-            log.json(parsed_dict, silent=True)
+            self.midi_sysex_json.emit(json.dumps(parsed))
+            log.json(parsed, silent=True)
 
         except Exception as ex:
             log.error(
@@ -576,7 +560,7 @@ class MidiInHandler(MidiIOController):
         self._incoming_preset_data.program_number = program_number
         self.midi_program_changed.emit(channel, program_number)
 
-    def _emit_program_or_tone_name(self, parsed: ParsedSysExMessage) -> None:
+    def _emit_program_or_tone_name(self, parsed: ParsedSysExMessage | dict) -> None:
         valid_addresses = {
             "12180000",
             "12190100",
@@ -585,15 +569,21 @@ class MidiInHandler(MidiIOController):
             "12197000",
         }
 
-        # --- Normalize address ---
-        address_bytes = parsed.address
-        address = address_bytes.hex() if address_bytes else None
+        if isinstance(parsed, ParsedSysExMessage):
+            address = parsed.address.hex() if parsed.address else None
+            tone_name = parsed.tone_name
+        else:
+            address = parsed.get(SysExSection.ADDRESS)
+            tone_name = parsed.get(SysExSection.TONE_NAME)
+            if tone_name in (None, "Unknown", UNKNOWN):
+                tone_name = None
 
-        if not address:
+        if not address or address in ("Unknown", UNKNOWN):
             return
 
-        tone_name = parsed.tone_name
-        temporary_area = address[:4]
+        temporary_area = self._resolve_temporary_area(parsed)
+        if not temporary_area:
+            return
 
         log.parameter(SysExSection.ADDRESS, address, silent=True)
         log.parameter(SysExSection.TEMPORARY_AREA, temporary_area, silent=True)
@@ -726,11 +716,29 @@ class MidiInHandler(MidiIOController):
             log.message(
                 f"✅ Auto-added program: {program.id}", scope=self.__class__.__name__
             )
+            if data.program_name:
+                self.update_program_name.emit(data.program_name)
         else:
             log.message(
                 f"⚠️ Duplicate or failed to add: {program.id}",
                 scope=self.__class__.__name__,
             )
+
+    def _resolve_temporary_area(
+        self, parsed: ParsedSysExMessage | dict
+    ) -> str | None:
+        """Resolve TEMPORARY_AREA for signal routing from parsed SysEx data."""
+        if isinstance(parsed, dict):
+            area = parsed.get(SysExSection.TEMPORARY_AREA)
+            if area and area not in (UNKNOWN, "Unknown"):
+                return area
+        elif isinstance(parsed, ParsedSysExMessage) and parsed.raw:
+            from jdxi_editor.midi.sysex.parser.tone_mapper import get_temporary_area
+
+            area = get_temporary_area(parsed.raw)
+            if area and area not in ("Unknown", UNKNOWN):
+                return area
+        return None
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """
