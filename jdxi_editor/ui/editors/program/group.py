@@ -40,6 +40,10 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
+from jdxi_editor.ui.widgets.midi.selection_info_bar import (
+    MidiSelectionInfoBar,
+    bind_program_midi_info,
+)
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 
 
@@ -149,6 +153,9 @@ class ProgramGroup(QGroupBox):
         )
         program_vlayout.addWidget(self.program_number_combo_box)
 
+        self.program_midi_info_bar = MidiSelectionInfoBar()
+        program_vlayout.addWidget(self.program_midi_info_bar)
+
         # Store reference to actual program list for use in filtering
         self._program_list_data = []
         # Load Program (round button + icon + label, centered)
@@ -257,3 +264,14 @@ class ProgramGroup(QGroupBox):
             log.message("File label not initialized.", scope=self.__class__.__name__)
         if self.mixer_widget:
             self.mixer_widget.update_program_name(program_name)
+
+    def bind_program_midi_info(self) -> None:
+        """Connect program combo selection to the MIDI info readout."""
+        if not self.program_number_combo_box or not self.program_midi_info_bar:
+            return
+        bind_program_midi_info(
+            self.program_number_combo_box,
+            self.program_midi_info_bar,
+            self._program_list_data,
+            parent=self,
+        )

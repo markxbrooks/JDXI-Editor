@@ -709,6 +709,14 @@ class ProgramEditor(BasicEditor):
             program_vlayout.insertWidget(
                 index + 1, self.program_group_widget.program_number_combo_box
             )
+            info_bar = self.program_group_widget.program_midi_info_bar
+            if info_bar and program_vlayout.indexOf(info_bar) >= 0:
+                program_vlayout.removeWidget(info_bar)
+                combo_index = program_vlayout.indexOf(
+                    self.program_group_widget.program_number_combo_box
+                )
+                program_vlayout.insertWidget(combo_index + 1, info_bar)
+            self.program_group_widget.bind_program_midi_info()
 
     def populate_programs(self, search_text: str = ""):
         """Populate the program list with available presets.

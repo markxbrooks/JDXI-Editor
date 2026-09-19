@@ -4,7 +4,7 @@ MIDI Player for JDXI Editor
 
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import mido
 from decologr import Decologr as log
@@ -131,6 +131,8 @@ class MidiFilePlayer(SynthEditor):
         self.preset_helper: JDXiPresetHelper = preset_helper
         # Midi-related
         self.midi_state: MidiPlaybackState = MidiPlaybackState()
+        self._midi_file_path: Optional[str] = None
+        self.on_midi_file_saved: Optional[Callable[[str], None]] = None
         self.playback_engine: PlaybackEngine = PlaybackEngine()
         self.midi_analyzer: MidiAnalyzer = MidiAnalyzer()
         self.midi_playback_worker: MidiPlaybackWorker = MidiPlaybackWorker(parent=self)
@@ -888,12 +890,9 @@ class MidiFilePlayer(SynthEditor):
 
         Setup the worker and thread for threaded playback using QTimer
         """
-        # Clean up any previous worker/thread
-        if self.midi_state.playback_thread:
-            self.midi_state.playback_thread.quit()
-            self.midi_state.playback_thread.wait()
-            self.midi_state.playback_thread.deleteLater()
-            self.midi_playback_worker = None
+        # Stop timer/worker before tearing down the thread (avoids wait() deadlocks).
+        if self.midi_state.playback_thread or self.midi_playback_worker:
+            self.midi_playback_worker_stop()
 
         # Create worker with correct initial tempo if available
         initial_tempo = getattr(
@@ -926,7 +925,7 @@ class MidiFilePlayer(SynthEditor):
         :return: None
         """
         self.playback_engine.stop()
-        if self.midi_state.timer.isActive():
+        if self.midi_state.timer and self.midi_state.timer.isActive():
             self.midi_state.timer.stop()
 
         if self.midi_playback_worker:
@@ -963,26 +962,84 @@ class MidiFilePlayer(SynthEditor):
             f"Suppress MIDI Control Changes = {self.midi_state.suppress_control_changes}"
         )
 
+    def _midi_file_dialog_path(self) -> str:
+        """Last loaded/saved MIDI path for file dialog defaults."""
+        if self._midi_file_path:
+            return self._midi_file_path
+        if self.midi_state.file and getattr(self.midi_state.file, "filename", None):
+            return self.midi_state.file.filename
+        return ""
+
+    def _remember_midi_file_path(self, file_path: str) -> None:
+        """Store MIDI path for subsequent load/save dialogs."""
+        self._midi_file_path = file_path
+        if self.midi_state.file is not None:
+            self.midi_state.file.filename = file_path
+
+    def _reload_saved_midi_file(self, file_path: str) -> None:
+        """Reload a saved MIDI file from disk so the UI matches persisted state."""
+        self.stop_playback()
+        # Defer reload so the save file handle is fully released before re-reading.
+        QTimer.singleShot(
+            0,
+            lambda path=file_path: self.midi_load_file_from_path(
+                path,
+                title_prefix="Saved",
+                notify_pattern_sequencer=False,
+                update_recent_files=False,
+            ),
+        )
+
+    def _after_midi_file_saved(self, file_path: str) -> None:
+        """Invoke post-save callback; default reloads the file into the UI."""
+        if self.on_midi_file_saved is not None:
+            self.on_midi_file_saved(file_path)
+        else:
+            self._reload_saved_midi_file(file_path)
+
+    def _save_midi_to_path(self, file_path: str) -> bool:
+        """Write the current MIDI file to *file_path* and update UI state."""
+        try:
+            self.midi_file.midi_track_viewer.midi_file.save(file_path)
+            self._remember_midi_file_path(file_path)
+            self._after_midi_file_saved(file_path)
+            return True
+        except Exception as ex:
+            show_message_box_from_spec(
+                self.specs["message_box"]["error_saving_file"],
+                message=str(ex),
+            )
+            return False
+
     def midi_save_file(self) -> None:
         """
-        midi_save_file
-
-        :return: None
-        Save the current MIDI file to disk.
+        Save the current MIDI file to its existing path, or prompt if none is set.
         """
+        if not self.midi_state.file:
+            show_message_box_from_spec(self.specs["message_box"]["no_midi_file"])
+            return
+
+        file_path = self._midi_file_dialog_path()
+        if file_path:
+            self._save_midi_to_path(file_path)
+        else:
+            self.midi_save_file_as()
+
+    def midi_save_file_as(self) -> None:
+        """Save the current MIDI file via a file dialog."""
+        if not self.midi_state.file:
+            show_message_box_from_spec(self.specs["message_box"]["no_midi_file"])
+            return
+
         save_file_spec = FileSelectionSpec(
-            caption="Save MIDI File", dir="", filter="MIDI Files (*.mid)"
+            mode=FileSelectionMode.SAVE,
+            caption="Save MIDI File As",
+            default_name=self._midi_file_dialog_path(),
+            filter="MIDI Files (*.mid)",
         )
         file_path, _ = get_file_save_from_spec(save_file_spec, parent=self)
         if file_path:
-            self.midi_file.midi_track_viewer.midi_file.save(file_path)
-            file_name = f"Saved: {Path(file_path).name}"
-            self.ui.digital_title_file_name.setText(file_name)
-            # Update digital to show tempo only (no bar when not playing)
-            if self.current_tempo_bpm is not None:
-                self.ui.digital_title_file_name.set_upper_display_text(
-                    f"Tempo: {round(self.current_tempo_bpm)} BPM"
-                )
+            self._save_midi_to_path(file_path)
 
     def midi_load_file(self) -> None:
         """
@@ -991,7 +1048,7 @@ class MidiFilePlayer(SynthEditor):
         load_file_spec = FileSelectionSpec(
             mode=FileSelectionMode.LOAD,
             caption="Open MIDI File",
-            dir="",
+            default_name=self._midi_file_dialog_path(),
             filter="MIDI Files (*.mid)",
         )
         file_path, _ = get_file_save_from_spec(load_file_spec, parent=self)
@@ -1000,19 +1057,51 @@ class MidiFilePlayer(SynthEditor):
 
         self.midi_load_file_from_path(file_path)
 
-    def midi_load_file_from_path(self, file_path: str) -> None:
+    def midi_load_file_from_path(
+        self,
+        file_path: str,
+        *,
+        title_prefix: str = "Loaded",
+        notify_pattern_sequencer: bool = True,
+        update_recent_files: bool = True,
+    ) -> None:
         """
         Load a MIDI file from a given path and initialize parameters.
 
         :param file_path: Path to the MIDI file
+        :param title_prefix: Prefix for the file title display (e.g. Loaded/Saved)
+        :param notify_pattern_sequencer: Push load to Pattern Sequencer when True
+        :param update_recent_files: Add path to recent-files menu when True
         """
         if not file_path:
             return
 
-        self.midi_state.file = MidiFile(file_path)
-        # Store filename in the MidiFile object for later use
-        self.midi_state.file.filename = file_path
-        file_name = f"Loaded: {Path(file_path).name}"
+        path = Path(file_path)
+        if not path.is_file():
+            show_message_box_from_spec(
+                self.specs["message_box"]["warning"],
+                title="MIDI File Not Found",
+                message=f"The file could not be found:\n{file_path}",
+            )
+            return
+
+        self.midi_playback_worker_stop()
+
+        try:
+            self.midi_state.file = MidiFile(str(path))
+        except Exception as ex:
+            log.error(f"Error loading MIDI file {file_path}: {ex}")
+            show_message_box_from_spec(
+                self.specs["message_box"]["warning"],
+                title="Error Loading MIDI File",
+                message=f"Could not load MIDI file:\n{path.name}\n\n{ex}",
+            )
+            return
+
+        resolved_path = str(path.resolve())
+        self._remember_midi_file_path(resolved_path)
+        self.midi_state.file.filename = resolved_path
+        file_name = f"{title_prefix}: {path.name}"
         self.ui.digital_title_file_name.setText(file_name)
         # Update digital to show tempo only (no bar when not playing)
         if self.current_tempo_bpm is not None:
@@ -1046,15 +1135,16 @@ class MidiFilePlayer(SynthEditor):
         self.ui_position_slider_reset()
 
         # Notify Pattern Sequencer if it exists
-        self._notify_pattern_sequencer_file_loaded()
+        if notify_pattern_sequencer:
+            self._notify_pattern_sequencer_file_loaded()
 
         # Add to recent files if parent has recent_files_manager
-        if (
+        if update_recent_files and (
             hasattr(self.parent, "recent_files_manager")
             and self.parent.recent_files_manager
         ):
             try:
-                self.parent.recent_files_manager.add_file(file_path)
+                self.parent.recent_files_manager.add_file(resolved_path)
                 if hasattr(self.parent, "_update_recent_files_menu"):
                     # Check if menu still exists before updating
                     if (

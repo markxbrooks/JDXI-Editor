@@ -1119,9 +1119,9 @@ class JDXiInstrument(JDXiWindow):
                 break
 
         if file_menu:
-            # Find the position after "Load MIDI file" and "Save MIDI file"
+            # Find the position after MIDI file load/save actions
             actions = file_menu.actions()
-            insert_pos = 2  # After "Load MIDI file" and "Save MIDI file"
+            insert_pos = 3  # After Load, Save, and Save As
 
             # Add separator before Recent Files
             file_menu.insertSeparator(
@@ -1206,8 +1206,11 @@ class JDXiInstrument(JDXiWindow):
         self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
         if not self.midi_file_editor:
             self.show_editor("midi_player")
+            self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
+        if not self.midi_file_editor:
+            return
 
-        # Load the file directly
+        self.midi_file_editor.parent = self
         self.midi_file_editor.midi_load_file_from_path(file_path)
         self.show_editor("midi_player")
 
@@ -1247,6 +1250,14 @@ class JDXiInstrument(JDXiWindow):
         if not self.midi_file_editor:
             self.show_editor("midi_player")
         self.midi_file_editor.midi_save_file()
+        self.show_editor("midi_player")
+
+    def _midi_file_save_as(self):
+        """Save the current MIDI file via file dialog."""
+        self.midi_file_editor = self.get_existing_editor(MidiFilePlayer)
+        if not self.midi_file_editor:
+            self.show_editor("midi_player")
+        self.midi_file_editor.midi_save_file_as()
         self.show_editor("midi_player")
 
     def _open_current_midi_as_pdf(self) -> None:

@@ -6,9 +6,35 @@ Example:
 (95, 64, 1)
 """
 
+from typing import Any, Dict, List, Union
+
 from decologr import Decologr as log
 
 from jdxi_editor.core.jdxi import JDXi
+
+
+def convert_preset_dict_to_list(
+    preset_list: Union[Dict[int, Dict[str, Any]], List[Dict[str, Any]]],
+) -> List[Dict[str, Any]]:
+    """
+    Normalize Digital PROGRAM_CHANGE dict or preset list to list format.
+
+    :param preset_list: Dict keyed by preset id or existing list (Analog/Drum)
+    :return: List of preset dicts with id, name, category, msb, lsb, pc
+    """
+    if isinstance(preset_list, dict):
+        return [
+            {
+                "id": f"{preset_id:03d}",
+                "name": preset_data.get("Name", ""),
+                "category": preset_data.get("Category", ""),
+                "msb": preset_data.get("MSB", 0),
+                "lsb": preset_data.get("LSB", 0),
+                "pc": preset_data.get("PC", preset_id),
+            }
+            for preset_id, preset_data in sorted(preset_list.items())
+        ]
+    return preset_list
 
 
 def get_preset_values(preset_index: int, preset_list=JDXi.UI.Preset.Digital.LIST):

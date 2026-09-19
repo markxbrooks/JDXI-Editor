@@ -18,11 +18,17 @@ from jdxi_editor.ui.editors.helpers.preset import (
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
+from jdxi_editor.ui.preset.utils import convert_preset_dict_to_list
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.midi.selection_info_bar import (
+    MidiSelectionInfoBar,
+    bind_program_midi_info,
+    bind_tone_midi_info,
+)
 
 
 class PresetWidget(QWidget):
@@ -87,6 +93,10 @@ class PresetWidget(QWidget):
             search_placeholder="Search presets...",
         )
         preset_vlayout.addWidget(self.preset_combo_box)
+
+        self.preset_midi_info_bar = MidiSelectionInfoBar()
+        preset_vlayout.addWidget(self.preset_midi_info_bar)
+        self._preset_midi_controller = None
 
         # Initialize the combo box with default preset type (Digital Synth 1)
         # This will be called again when preset type changes, but we need initial population
@@ -269,22 +279,7 @@ class PresetWidget(QWidget):
         # for use with get_preset_parameter_value, but we also need the actual list for the combo box
 
         # Convert dictionary format (Digital/Analog) to list format if needed
-        if isinstance(preset_list, dict):
-            # Convert dictionary {1: {"Name": "...", "Category": "...", ...}, ...} to list format
-            self._actual_preset_list = [
-                {
-                    "id": f"{preset_id:03d}",  # Format as "001", "002", etc.
-                    "name": preset_data.get("Name", ""),
-                    "category": preset_data.get("Category", ""),
-                    "msb": str(preset_data.get("MSB", 0)),
-                    "lsb": str(preset_data.get("LSB", 0)),
-                    "pc": str(preset_data.get("PC", preset_id)),
-                }
-                for preset_id, preset_data in sorted(preset_list.items())
-            ]
-        else:
-            # Already a list (Drum format)
-            self._actual_preset_list = preset_list
+        self._actual_preset_list = convert_preset_dict_to_list(preset_list)
 
         # Build options, values, and categories
         preset_options = [
@@ -338,3 +333,29 @@ class PresetWidget(QWidget):
             # Insert after digital_preset_type_combo
             index = preset_vlayout.indexOf(self.digital_preset_type_combo)
             preset_vlayout.insertWidget(index + 1, self.preset_combo_box)
+            self._bind_preset_midi_info()
+
+    def _bind_preset_midi_info(self) -> None:
+        """Connect preset combo selection to the MIDI info readout."""
+        if not self.preset_combo_box or not self.preset_midi_info_bar:
+            return
+        channel = (
+            self.midi_channel
+            if self.midi_channel is not None
+            else MidiChannel.DIGITAL_SYNTH_1
+        )
+        channel_labels = {
+            PresetTitle.DIGITAL_SYNTH1: "Digital 1",
+            PresetTitle.DIGITAL_SYNTH2: "Digital 2",
+            PresetTitle.DRUMS: "Drums",
+            PresetTitle.ANALOG_SYNTH: "Analog",
+        }
+        preset_type = self.digital_preset_type_combo.currentText()
+        bind_tone_midi_info(
+            self.preset_combo_box,
+            self.preset_midi_info_bar,
+            self._actual_preset_list,
+            channel=channel,
+            channel_label=channel_labels.get(preset_type),
+            parent=self,
+        )

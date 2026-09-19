@@ -48,6 +48,10 @@ class MidiTrackViewer(QWidget):
         self.ruler = TimeRulerWidget()
         self.midi_track_widgets = {}  # MidiTrackWidget()
         self.muted_tracks: set[int] = set()  # To track muted tracks
+        self.solo_track: int | None = None
+        self._pre_solo_muted_tracks: set[int] | None = None
+        self.track_mute_buttons: dict[int, QPushButton] = {}
+        self.track_solo_buttons: dict[int, QPushButton] = {}
         self._draggable_rows = {}
 
         # To track muted channels
@@ -140,6 +144,10 @@ class MidiTrackViewer(QWidget):
                 btn.setChecked(False)
         self.muted_channels.clear()
         self.muted_tracks.clear()
+        self.solo_track = None
+        self._pre_solo_muted_tracks = None
+        self.track_mute_buttons.clear()
+        self.track_solo_buttons.clear()
         self._track_name_edits.clear()
         self.track_channel_spins.clear()
         self._draggable_rows.clear()
@@ -291,6 +299,55 @@ class MidiTrackViewer(QWidget):
         print(f"Muted channels updated: {self.muted_channels}")
         self.update()  # trigger repaint or UI change if needed
 
+    def _apply_muted_tracks_to_widgets(self) -> None:
+        """Push the current muted-tracks set to all track row widgets."""
+        for track_index, widget in self.midi_track_widgets.items():
+            widget.muted = track_index in self.muted_tracks
+            widget.update_muted_tracks(self.muted_tracks)
+
+    def _sync_track_mute_solo_buttons(self) -> None:
+        """Keep per-track mute/solo buttons aligned with internal state."""
+        for track_index, btn in self.track_mute_buttons.items():
+            btn.blockSignals(True)
+            btn.setChecked(track_index in self.muted_tracks)
+            btn.blockSignals(False)
+        for track_index, btn in self.track_solo_buttons.items():
+            btn.blockSignals(True)
+            btn.setChecked(self.solo_track == track_index)
+            btn.blockSignals(False)
+
+    def _clear_solo(self, *, restore_pre_solo: bool = True) -> None:
+        """Exit solo mode and optionally restore pre-solo mute state."""
+        self.solo_track = None
+        if restore_pre_solo and self._pre_solo_muted_tracks is not None:
+            self.muted_tracks = set(self._pre_solo_muted_tracks)
+        self._pre_solo_muted_tracks = None
+        self._apply_muted_tracks_to_widgets()
+        self._sync_track_mute_solo_buttons()
+
+    def toggle_track_solo(self, track_index: int, is_solo: bool) -> None:
+        """
+        Solo a track: mute all other tracks and unmute the soloed track.
+
+        :param track_index: Index of the track to solo
+        :param is_solo: Whether solo is active for this track
+        """
+        if not self.midi_file:
+            return
+
+        if is_solo:
+            if self.solo_track is None:
+                self._pre_solo_muted_tracks = set(self.muted_tracks)
+            self.solo_track = track_index
+            num_tracks = len(self.midi_file.tracks)
+            self.muted_tracks = {t for t in range(num_tracks) if t != track_index}
+        elif self.solo_track == track_index:
+            self._clear_solo(restore_pre_solo=True)
+            return
+
+        self._apply_muted_tracks_to_widgets()
+        self._sync_track_mute_solo_buttons()
+
     def toggle_track_mute(self, track: int, is_muted: bool) -> None:
         """
         Toggle mute state for a specific MIDI track.
@@ -299,14 +356,15 @@ class MidiTrackViewer(QWidget):
         :param is_muted: bool is the channel muted?
         :return: None
         """
+        if self.solo_track is not None:
+            self._clear_solo(restore_pre_solo=True)
+
         if is_muted:
             self.muted_tracks.add(track)
         else:
             self.muted_tracks.discard(track)
 
-        # Notify all track widgets
-        for widget in self.midi_track_widgets.values():
-            widget.update_muted_tracks(self.muted_tracks)
+        self._apply_muted_tracks_to_widgets()
         print(f"Muted tracks updated: {self.muted_tracks}")
 
     def update_muted_tracks(self, muted_tracks: set[int]) -> None:
@@ -473,6 +531,11 @@ class MidiTrackViewer(QWidget):
 
         self.midi_track_widgets = {}
         self._draggable_rows = {}
+        self.solo_track = None
+        self._pre_solo_muted_tracks = None
+        self.muted_tracks.clear()
+        self.track_mute_buttons = {}
+        self.track_solo_buttons = {}
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
@@ -579,6 +642,24 @@ class MidiTrackViewer(QWidget):
                 lambda checked, tr=i: self.toggle_track_mute(tr, checked)
             )
             button_hlayout.addWidget(mute_button)
+            self.track_mute_buttons[i] = mute_button
+
+            solo_icon = JDXi.UI.Icon.get_icon(
+                JDXi.UI.Icon.SOLO,
+                color=JDXi.UI.Style.FOREGROUND,
+                fallback="mdi.headphones",
+            )
+            solo_button = QPushButton()
+            solo_button.setIcon(solo_icon)
+            solo_button.setToolTip("Solo Track (mute all other tracks)")
+            solo_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            solo_button.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            solo_button.setCheckable(True)
+            solo_button.toggled.connect(
+                lambda checked, tr=i: self.toggle_track_solo(tr, checked)
+            )
+            button_hlayout.addWidget(solo_button)
+            self.track_solo_buttons[i] = solo_button
 
             delete_icon = JDXi.UI.Icon.get_icon(
                 JDXi.UI.Icon.DELETE, color=JDXi.UI.Style.FOREGROUND
@@ -625,13 +706,13 @@ class MidiTrackViewer(QWidget):
         Returns the estimated total width of all controls to the left of the MidiTrackWidget.
         """
         # Fixed widths from layout:
-        # QLabels: JDXi.Style.ICON_PIXMAP_SIZE, JDXi.Style.TRACK_LABEL_WIDTH , QSpinBox: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Apply: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Mute: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH, Delete: JDXi.Style.TRACK_MUTE_BUTTON_WIDTH + margins (~10)
+        # Apply, Mute, Solo, Delete track buttons + label/spin controls
         return (
             JDXi.UI.Style.ICON_PIXMAP_SIZE
             + JDXi.UI.Style.TRACK_LABEL_WIDTH
             + (JDXi.UI.Style.BUTTON_TRACK_WIDTH * 4)
             + 10
-        )  # = 2JDXi.Style.TRACK_MUTE_BUTTON_WIDTH
+        )
 
     def clear_layout(self, layout: QLayout) -> None:
         while layout.count():

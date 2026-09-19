@@ -18,6 +18,11 @@ from jdxi_editor.core.jdxi import JDXi
 # MIDI Program Change is 0-127, so presets 129+ require LSB 65 and PC = (preset - 129)
 
 
+# Delay after a Program Change before sending an Analog cheat preset. The JD-Xi
+# applies all program parts (including Analog) asynchronously; 500ms is too soon.
+CHEAT_PRESET_AFTER_PROGRAM_MS = 2000
+
+
 def preset_to_jdxi_bank_pc(msb: int, lsb: int, pc: int) -> Tuple[int, int, int]:
     """
     Convert preset (msb, lsb, pc) to JD-Xi bank select + program change format.
@@ -110,3 +115,86 @@ def get_preset_parameter_value(
             return None
 
     return value
+
+
+def resolve_digital_cheat_preset_midi(
+    preset_id: Union[int, str],
+) -> Optional[Tuple[int, int, int, int, int, int]]:
+    """
+    Look up Digital cheat preset MIDI values.
+
+    :return: (msb, lsb, pc, bank_msb, bank_lsb, midi_pc) or None if not found.
+        ``pc`` is the preset-list PC field (1-based slot); ``midi_pc`` is 0-127.
+    """
+    try:
+        preset_id_int = int(str(preset_id).strip())
+    except (TypeError, ValueError):
+        return None
+    if preset_id_int < 1 or preset_id_int > 256:
+        return None
+
+    program_number = str(preset_id_int).zfill(3)
+    preset_list = JDXi.UI.Preset.Digital.LIST
+    msb = get_preset_parameter_value("msb", program_number, preset_list)
+    lsb = get_preset_parameter_value("lsb", program_number, preset_list)
+    pc = get_preset_parameter_value("pc", program_number, preset_list)
+    if msb is None or lsb is None or pc is None:
+        return None
+
+    bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
+    return msb, lsb, pc, bank_msb, bank_lsb, midi_pc
+
+
+def load_digital_cheat_preset_on_analog(
+    midi_helper,
+    preset_id: Union[int, str, None],
+    *,
+    channel: int = 2,
+) -> bool:
+    """
+    Load a Digital Synth tone on the Analog MIDI channel (cheat mode).
+
+    Matches the Cheat Presets panel: log preset-list MSB/LSB/PC, then send
+    bank select + 0-based program change.
+
+    :param midi_helper: MidiIOHelper instance
+    :param preset_id: Digital preset number 1-256
+    :param channel: MIDI channel (0-based); defaults to Analog Synth (Ch.3)
+    :return: True if MIDI was sent successfully
+    """
+    from decologr import Decologr as log
+
+    from jdxi_editor.log.midi_info import log_midi_info
+
+    if midi_helper is None:
+        log.warning("⚠️ MIDI helper not available for cheat preset loading")
+        return False
+    if preset_id is None:
+        return False
+
+    try:
+        preset_id_int = int(str(preset_id).strip())
+    except (TypeError, ValueError):
+        return False
+
+    program_number = str(preset_id_int).zfill(3)
+    log.message("=======load_cheat_preset (Cheat Mode)=======")
+    log.parameter("combo box program_number", program_number)
+
+    resolved = resolve_digital_cheat_preset_midi(preset_id_int)
+    if resolved is None:
+        log.warning(
+            f"Could not retrieve preset parameters for program {program_number}"
+        )
+        return False
+
+    msb, lsb, pc, bank_msb, bank_lsb, midi_pc = resolved
+    log.message("retrieved msb, lsb, pc for cheat preset:")
+    log.parameter("combo box msb", msb)
+    log.parameter("combo box lsb", lsb)
+    log.parameter("combo box pc", pc)
+    log_midi_info(msb, lsb, pc)
+
+    return midi_helper.send_bank_select_and_program_change(
+        channel, bank_msb, bank_lsb, midi_pc
+    )

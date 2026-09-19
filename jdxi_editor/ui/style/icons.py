@@ -92,6 +92,7 @@ class JDXiUIIconRegistry:
     PAUSE = "ri.pause-line"
     SHUFFLE = "mdi.shuffle"
     MUTE = "msc.mute"
+    SOLO = "msc.solo"
 
     # Instrument icons
     PIANO = "msc.piano"

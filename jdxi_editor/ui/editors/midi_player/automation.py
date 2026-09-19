@@ -8,16 +8,20 @@ from PySide6.QtWidgets import QComboBox, QGridLayout, QGroupBox
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec
 from jdxi_editor.ui.editors.midi_player.helper import (
     create_widget_cell_with_button_spec,
 )
+from jdxi_editor.ui.midi.selection_info import MidiWireInfo, channel_display_name
 from jdxi_editor.ui.preset.source import PresetSource
+from jdxi_editor.ui.preset.utils import convert_preset_dict_to_list
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_and_grid_layout,
     create_icon_and_label,
 )
 from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
+from jdxi_editor.ui.widgets.midi.selection_info_bar import MidiSelectionInfoBar
 from picoui.specs.widgets import ButtonSpec
 
 
@@ -30,6 +34,7 @@ class AutomationWidget(JDXiMidiGroup):
         self.automation_channel_combo: QComboBox | None = None
         self.automation_type_combo: QComboBox | None = None
         self.automation_program_combo: QComboBox | None = None
+        self.automation_midi_info_bar: MidiSelectionInfoBar | None = None
         self.setup_ui()
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
@@ -54,6 +59,9 @@ class AutomationWidget(JDXiMidiGroup):
         self.automation_channel_combo = QComboBox()
         for ch in range(1, 17):
             self.automation_channel_combo.addItem(f"Ch {ch}", ch)
+        self.automation_channel_combo.currentIndexChanged.connect(
+            self._update_automation_midi_info
+        )
         grid.addWidget(self.automation_channel_combo, row, 1)
         self.automation_type_combo = QComboBox()
         self.automation_type_combo.addItems(["Digital", "Analog", "Drums"])
@@ -62,6 +70,9 @@ class AutomationWidget(JDXiMidiGroup):
         )
         grid.addWidget(self.automation_type_combo, row, 2)
         self.automation_program_combo = QComboBox()
+        self.automation_program_combo.currentIndexChanged.connect(
+            self._update_automation_midi_info
+        )
         grid.addWidget(self.automation_program_combo, row, 3)
         spec = self.specs["buttons"]["automation_insert"]
         self.automation_insert_button = create_jdxi_button_from_spec(
@@ -71,6 +82,9 @@ class AutomationWidget(JDXiMidiGroup):
             spec, self.automation_insert_button
         )
         grid.addWidget(insert_cell, row, 4)
+        row += 1
+        self.automation_midi_info_bar = MidiSelectionInfoBar()
+        grid.addWidget(self.automation_midi_info_bar, row, 0, 1, 5)
         return group
 
     def populate_automation_programs(self, source: PresetSource) -> None:
@@ -79,25 +93,6 @@ class AutomationWidget(JDXiMidiGroup):
         source: "Digital" | "Analog" | "Drums"
         """
         self.automation_program_combo.clear()
-
-        # Helper function to convert dictionary format to list format
-        def convert_preset_dict_to_list(preset_dict):
-            """Convert PROGRAM_CHANGE dictionary to list format."""
-            if isinstance(preset_dict, dict):
-                return [
-                    {
-                        "id": f"{preset_id:03d}",
-                        "name": preset_data.get("Name", ""),
-                        "category": preset_data.get("Category", ""),
-                        "msb": preset_data.get("MSB", 0),
-                        "lsb": preset_data.get("LSB", 0),
-                        "pc": preset_data.get("PC", preset_id),
-                    }
-                    for preset_id, preset_data in sorted(preset_dict.items())
-                ]
-            else:
-                # Already a list (Drum format)
-                return preset_dict
 
         preset_list_sources = {
             PresetSource.DIGITAL: JDXi.UI.Preset.Digital.PROGRAM_CHANGE,
@@ -109,6 +104,7 @@ class AutomationWidget(JDXiMidiGroup):
         )
         preset_list = convert_preset_dict_to_list(preset_list_source)
         self._add_items_to_automation_combo(preset_list)
+        self._update_automation_midi_info()
 
     def _add_items_to_automation_combo(
         self, preset_list: list[dict[str, str | Any]] | Any
@@ -125,6 +121,34 @@ class AutomationWidget(JDXiMidiGroup):
         """Handle automation type selection change."""
         source = self.automation_type_combo.currentText()
         self.populate_automation_programs(source)
+
+    def _update_automation_midi_info(self, *_args) -> None:
+        """Refresh MIDI wire readout for automation program + channel selection."""
+        if not self.automation_midi_info_bar:
+            return
+        data = (
+            self.automation_program_combo.currentData()
+            if self.automation_program_combo
+            else None
+        )
+        if not data:
+            self.automation_midi_info_bar.set_message("MIDI  —")
+            return
+        msb, lsb, pc = data
+        display_channel = int(self.automation_channel_combo.currentData())
+        channel = display_channel - 1
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(
+            int(msb), int(lsb), int(pc)
+        )
+        info = MidiWireInfo(
+            channel=channel,
+            channel_display=channel_display_name(channel),
+            cc0=bank_msb,
+            cc32=bank_lsb,
+            midi_pc=midi_pc,
+            preset_pc=int(pc),
+        )
+        self.automation_midi_info_bar.set_info(info)
 
     def insert_program_change_current_position(self) -> None:
         """

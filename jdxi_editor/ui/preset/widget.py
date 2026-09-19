@@ -6,17 +6,20 @@ from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget, QVBoxLayout
 
-from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_preset_list_for_synth_type,
     get_preset_signals,
 )
+from jdxi_editor.ui.preset.utils import convert_preset_dict_to_list
 from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
+)
+from jdxi_editor.ui.widgets.midi.selection_info_bar import (
+    MidiSelectionInfoBar,
+    bind_tone_midi_info,
 )
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -52,6 +55,8 @@ class InstrumentPresetWidget(QWidget):
         self._synth_type: str = ""
         self._preset_list: list = []
         self.instrument_selection_combo: Optional["SearchableFilterableComboBox"] = None
+        self.tone_midi_info_bar: Optional[MidiSelectionInfoBar] = None
+        self.cheat_midi_info_bar: Optional[MidiSelectionInfoBar] = None
         
         # Connect to preset list change signal for dynamic refresh
         get_preset_signals().soundfont_list_changed.connect(self._refresh_preset_list)
@@ -78,20 +83,7 @@ class InstrumentPresetWidget(QWidget):
         )
         
         # Convert dictionary format to list format if needed
-        if isinstance(preset_list, dict):
-            converted_preset_list = [
-                {
-                    "id": f"{preset_id:03d}",
-                    "name": preset_data.get("Name", ""),
-                    "category": preset_data.get("Category", ""),
-                    "msb": str(preset_data.get("MSB", 0)),
-                    "lsb": str(preset_data.get("LSB", 0)),
-                    "pc": str(preset_data.get("PC", preset_id)),
-                }
-                for preset_id, preset_data in sorted(preset_list.items())
-            ]
-        else:
-            converted_preset_list = preset_list
+        converted_preset_list = convert_preset_dict_to_list(preset_list)
         
         # Update parent's preset list
         self.parent.preset_preset_list = converted_preset_list
@@ -310,22 +302,7 @@ class InstrumentPresetWidget(QWidget):
         preset_list = get_preset_list_for_synth_type(synth_type)
 
         # Convert dictionary format (Digital/Analog) to list format if needed
-        if isinstance(preset_list, dict):
-            # Convert dictionary {1: {"Name": "...", "Category": "...", ...}, ...} to list format
-            converted_preset_list = [
-                {
-                    "id": f"{preset_id:03d}",  # Format as "001", "002", etc.
-                    "name": preset_data.get("Name", ""),
-                    "category": preset_data.get("Category", ""),
-                    "msb": str(preset_data.get("MSB", 0)),
-                    "lsb": str(preset_data.get("LSB", 0)),
-                    "pc": str(preset_data.get("PC", preset_id)),
-                }
-                for preset_id, preset_data in sorted(preset_list.items())
-            ]
-        else:
-            # Already a list (Drum format or SoundFont)
-            converted_preset_list = preset_list
+        converted_preset_list = convert_preset_dict_to_list(preset_list)
 
         # Ensure parent uses this list for load_preset lookups
         self.parent.preset_preset_list = converted_preset_list
@@ -410,6 +387,19 @@ class InstrumentPresetWidget(QWidget):
             [self.instrument_selection_combo, load_row_widget], vertical=True
         )
 
+        self.tone_midi_info_bar = MidiSelectionInfoBar()
+        selection_layout.addWidget(self.tone_midi_info_bar)
+        channel = getattr(self.parent, "midi_channel", MidiChannel.DIGITAL_SYNTH_1)
+        channel_label = str(MidiChannel.from_midi_channel(channel) or synth_type)
+        bind_tone_midi_info(
+            self.instrument_selection_combo,
+            self.tone_midi_info_bar,
+            converted_preset_list,
+            channel=channel,
+            channel_label=channel_label,
+            parent=self,
+        )
+
         layout.addLayout(selection_layout)
 
         # Store reference to load button for compatibility
@@ -478,6 +468,17 @@ class InstrumentPresetWidget(QWidget):
         )
         layout.addWidget(self.cheat_preset_combo_box)
 
+        self.cheat_midi_info_bar = MidiSelectionInfoBar()
+        layout.addWidget(self.cheat_midi_info_bar)
+        bind_tone_midi_info(
+            self.cheat_preset_combo_box,
+            self.cheat_midi_info_bar,
+            JDXi.UI.Preset.Digital.LIST,
+            channel=MidiChannel.ANALOG_SYNTH,
+            channel_label="Analog",
+            parent=self,
+        )
+
         # Load Preset (round button + label, centered)
         self._add_centered_round_button(
             JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
@@ -509,43 +510,15 @@ class InstrumentPresetWidget(QWidget):
         # Get the current value from SearchableFilterableComboBox
         # The value is the preset ID as integer (e.g., 1 for "001")
         preset_id_int = self.cheat_preset_combo_box.value()
-        program_number = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
 
-        log.message("=======load_cheat_preset (Cheat Mode)=======")
-        log.parameter("combo box program_number", program_number)
-
-        # Get MSB, LSB, PC values from the Digital preset list
-        msb = get_preset_parameter_value(
-            "msb", program_number, JDXi.UI.Preset.Digital.LIST
-        )
-        lsb = get_preset_parameter_value(
-            "lsb", program_number, JDXi.UI.Preset.Digital.LIST
-        )
-        pc = get_preset_parameter_value(
-            "pc", program_number, JDXi.UI.Preset.Digital.LIST
+        from jdxi_editor.ui.editors.helpers.preset import (
+            load_digital_cheat_preset_on_analog,
         )
 
-        if None in [msb, lsb, pc]:
-            log.warning(
-                f"Could not retrieve preset parameters for program {program_number}"
-            )
-            return
-
-        log.message("retrieved msb, lsb, pc for cheat preset:")
-        log.parameter("combo box msb", msb)
-        log.parameter("combo box lsb", lsb)
-        log.parameter("combo box pc", pc)
-        log_midi_info(msb, lsb, pc)
-
-        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
-        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
-
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-        self.parent.midi_helper.send_bank_select_and_program_change(
-            MidiChannel.ANALOG_SYNTH,
-            bank_msb,
-            bank_lsb,
-            midi_pc,
+        load_digital_cheat_preset_on_analog(
+            self.parent.midi_helper,
+            preset_id_int,
+            channel=MidiChannel.ANALOG_SYNTH,
         )
 
         # Request data update

@@ -32,9 +32,14 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+from jdxi_editor.ui.editors.helpers.preset import (
+    CHEAT_PRESET_AFTER_PROGRAM_MS,
+    load_digital_cheat_preset_on_analog,
+)
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
     create_jdxi_row,
@@ -44,6 +49,11 @@ from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.widgets.midi.selection_info_bar import (
+    MidiSelectionInfoBar,
+    MidiSelectionInfoController,
+)
+from jdxi_editor.ui.midi.selection_info import resolve_tone_midi_for_channel
 
 
 class PlaylistEditor(QWidget):
@@ -82,6 +92,7 @@ class PlaylistEditor(QWidget):
         # Playback tracking state
         self._current_playlist_row: Optional[int] = None
         self._playlist_midi_editor = None
+        self._cheat_preset_play_generation = 0
 
         # UI components
         self.playlist_editor_combo: Optional[SearchableFilterableComboBox] = None
@@ -480,30 +491,11 @@ class PlaylistEditor(QWidget):
             )
             self.playlist_programs_table.setItem(row, 3, midi_file_item)
 
-            # Cheat Preset ComboBox
-            cheat_preset_combo = QComboBox()
-            cheat_preset_combo.addItem("None", None)  # No cheat preset
-            # Add Digital Synth presets
-
-            for preset in JDXi.UI.Preset.Digital.LIST:
-                preset_id = preset["id"]
-                preset_name = preset["name"]
-                cheat_preset_combo.addItem(f"{preset_id} - {preset_name}", preset_id)
-            # Set current selection
-            if cheat_preset_id:
-                index = cheat_preset_combo.findData(cheat_preset_id)
-                if index >= 0:
-                    cheat_preset_combo.setCurrentIndex(index)
-            # Connect change handler
-            cheat_preset_combo.currentIndexChanged.connect(
-                lambda idx, r=row: self._on_cheat_preset_changed(
-                    r, cheat_preset_combo.itemData(idx)
-                )
+            # Cheat Preset ComboBox with MIDI info readout
+            cheat_cell = self._create_cheat_preset_cell_widget(
+                cheat_preset_id, row, playlist_id, program.id
             )
-            # Store playlist_id and program_id for saving
-            cheat_preset_combo.setProperty("playlist_id", playlist_id)
-            cheat_preset_combo.setProperty("program_id", program.id)
-            self.playlist_programs_table.setCellWidget(row, 4, cheat_preset_combo)
+            self.playlist_programs_table.setCellWidget(row, 4, cheat_cell)
 
             # Play button (delegate handles this)
             play_item = QTableWidgetItem("")
@@ -520,19 +512,119 @@ class PlaylistEditor(QWidget):
             f"✅ Populated playlist programs table with {len(playlist_items)} programs"
         )
 
+    def _create_cheat_preset_cell_widget(
+        self,
+        cheat_preset_id: Any,
+        row: int,
+        playlist_id: int,
+        program_id: str,
+    ) -> QWidget:
+        """Build cheat preset combo with live MIDI wire readout."""
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setSpacing(2)
+
+        cheat_preset_combo = QComboBox()
+        cheat_preset_combo.addItem("None", None)
+        for preset in JDXi.UI.Preset.Digital.LIST:
+            preset_id_int = int(preset["id"])
+            cheat_preset_combo.addItem(
+                f"{preset_id_int} - {preset['name']}", preset_id_int
+            )
+        self._set_cheat_preset_combo_selection(cheat_preset_combo, cheat_preset_id)
+        cheat_preset_combo.currentIndexChanged.connect(
+            lambda _idx, r=row: self._on_cheat_preset_combo_changed(r)
+        )
+        cheat_preset_combo.setProperty("playlist_id", playlist_id)
+        cheat_preset_combo.setProperty("program_id", program_id)
+
+        info_bar = MidiSelectionInfoBar()
+        layout.addWidget(cheat_preset_combo)
+        layout.addWidget(info_bar)
+
+        def resolver(preset_id: int):
+            return resolve_tone_midi_for_channel(
+                preset_id,
+                JDXi.UI.Preset.Digital.LIST,
+                MidiChannel.ANALOG_SYNTH,
+                "Analog",
+            )
+
+        controller = MidiSelectionInfoController(info_bar, resolver, parent=container)
+        controller.bind_plain_combo(
+            cheat_preset_combo,
+            lambda index: cheat_preset_combo.itemData(index),
+        )
+        container.setProperty("cheat_preset_combo", cheat_preset_combo)
+        return container
+
+    @staticmethod
+    def _cheat_preset_combo_from_cell(cell_widget: QWidget) -> Optional[QComboBox]:
+        combo = cell_widget.property("cheat_preset_combo")
+        if combo is not None:
+            return combo
+        if isinstance(cell_widget, QComboBox):
+            return cell_widget
+        return cell_widget.findChild(QComboBox)
+
+    @staticmethod
+    def _normalize_cheat_preset_id(preset_id: Any) -> Optional[int]:
+        """Return cheat preset number (1-256) or None."""
+        if preset_id is None:
+            return None
+        try:
+            value = int(str(preset_id).strip())
+        except (TypeError, ValueError):
+            return None
+        if value < 1 or value > 256:
+            return None
+        return value
+
+    def _set_cheat_preset_combo_selection(
+        self, combo: QComboBox, cheat_preset_id: Any
+    ) -> None:
+        """Select a cheat preset in the combo without spurious save callbacks."""
+        preset_id_int = self._normalize_cheat_preset_id(cheat_preset_id)
+        combo.blockSignals(True)
+        if preset_id_int is None:
+            combo.setCurrentIndex(0)
+        else:
+            index = combo.findData(
+                preset_id_int, Qt.ItemDataRole.UserRole, Qt.MatchFlag.MatchExactly
+            )
+            combo.setCurrentIndex(index if index >= 0 else 0)
+        combo.blockSignals(False)
+
+    def _on_cheat_preset_combo_changed(self, row: int) -> None:
+        """Handle cheat preset selection change from the row combo box."""
+        if not self.playlist_programs_table:
+            return
+
+        combo = self._cheat_preset_combo_from_cell(
+            self.playlist_programs_table.cellWidget(row, 4)
+        )
+        if not combo:
+            return
+
+        preset_id_int = self._normalize_cheat_preset_id(combo.currentData())
+        self._on_cheat_preset_changed(row, preset_id_int)
+
     def _on_cheat_preset_changed(
-        self, row: int, cheat_preset_id: Optional[str]
+        self, row: int, cheat_preset_id: Optional[int]
     ) -> None:
         """
         Handle cheat preset selection change.
 
         :param row: Table row index
-        :param cheat_preset_id: Selected cheat preset ID or None
+        :param cheat_preset_id: Selected cheat preset number (1-256) or None
         """
         if not self.playlist_programs_table:
             return
 
-        combo = self.playlist_programs_table.cellWidget(row, 4)
+        combo = self._cheat_preset_combo_from_cell(
+            self.playlist_programs_table.cellWidget(row, 4)
+        )
         if not combo:
             return
 
@@ -542,15 +634,19 @@ class PlaylistEditor(QWidget):
         if not playlist_id or not program_id:
             return
 
+        stored_id = (
+            str(cheat_preset_id).zfill(3) if cheat_preset_id is not None else None
+        )
+
         try:
             from jdxi_editor.ui.programs.database import get_database
 
             db = get_database()
             db.update_playlist_item_cheat_preset(
-                playlist_id, program_id, cheat_preset_id
+                playlist_id, program_id, stored_id
             )
             log.message(
-                f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {cheat_preset_id}"
+                f"✅ Updated cheat preset for playlist {playlist_id}, program {program_id}: {stored_id}"
             )
         except Exception as e:
             log.error(f"❌ Failed to update cheat preset: {e}")
@@ -817,21 +913,31 @@ class PlaylistEditor(QWidget):
 
         # Load cheat preset if selected (send on Analog Synth channel 3)
         # Add a delay to ensure the main program change is processed first
-        cheat_preset_combo = self.playlist_programs_table.cellWidget(row, 4)
+        cheat_cell = self.playlist_programs_table.cellWidget(row, 4)
+        cheat_preset_combo = self._cheat_preset_combo_from_cell(cheat_cell)
         log.message(
             f"🔍 Checking cheat preset for row {row}: combo={cheat_preset_combo}"
         )
         if cheat_preset_combo:
-            cheat_preset_id = cheat_preset_combo.currentData()
+            cheat_preset_id = self._normalize_cheat_preset_id(
+                cheat_preset_combo.currentData()
+            )
             log.message(
                 f"🔍 Cheat preset ID from combo: {cheat_preset_id} (type: {type(cheat_preset_id)})"
             )
-            if cheat_preset_id:
+            if cheat_preset_id is not None:
+                self._cheat_preset_play_generation += 1
+                generation = self._cheat_preset_play_generation
                 log.message(
-                    f"🎹 Scheduling cheat preset load: {cheat_preset_id} (delayed by 500ms)"
+                    f"🎹 Scheduling cheat preset load: {cheat_preset_id} "
+                    f"(delayed by {CHEAT_PRESET_AFTER_PROGRAM_MS}ms after program change)"
                 )
-                # Delay cheat preset loading to ensure main program change is processed first
-                QTimer.singleShot(500, lambda: self._load_cheat_preset(cheat_preset_id))
+                QTimer.singleShot(
+                    CHEAT_PRESET_AFTER_PROGRAM_MS,
+                    lambda pid=cheat_preset_id, gen=generation: (
+                        self._load_cheat_preset_after_program(pid, gen)
+                    ),
+                )
             else:
                 log.message("ℹ️ No cheat preset selected (None)")
         else:
@@ -1191,71 +1297,34 @@ class PlaylistEditor(QWidget):
         if self.on_program_loaded_callback:
             self.on_program_loaded_callback(program)
 
-    def _load_cheat_preset(self, preset_id: str) -> None:
+    def _load_cheat_preset_after_program(self, preset_id: int, generation: int) -> None:
+        """Send cheat preset only if this play action is still current."""
+        if generation != self._cheat_preset_play_generation:
+            log.message(
+                f"ℹ️ Skipping stale cheat preset {preset_id} "
+                f"(generation {generation} != {self._cheat_preset_play_generation})"
+            )
+            return
+        self._load_cheat_preset(preset_id)
+
+    def _load_cheat_preset(self, preset_id: int) -> None:
         """
         Load a cheat preset (Digital Synth preset) on the Analog Synth channel (Ch3).
 
-        :param preset_id: Preset ID (e.g., "113")
+        :param preset_id: Preset number 1-256 (e.g. 183 for Dist Guitar1)
         """
-        log.message(
-            f"🎹 _load_cheat_preset called with preset_id: {preset_id} (type: {type(preset_id)})"
-        )
-
-        if not self.midi_helper:
-            log.warning("⚠️ MIDI helper not available for cheat preset loading")
+        preset_id_int = self._normalize_cheat_preset_id(preset_id)
+        if preset_id_int is None:
+            log.warning("⚠️ Preset ID is None or invalid")
             return
 
-        if not preset_id:
-            log.warning("⚠️ Preset ID is None or empty")
-            return
-
-        log.message(
-            f"🎹 Loading cheat preset {preset_id} on Analog Synth channel (Ch3)"
-        )
-
-        # Get preset parameters from JDXi.UI.Preset.Digital.LIST
-        from jdxi_editor.log.midi_info import log_midi_info
         from jdxi_editor.midi.channel.channel import MidiChannel
 
-        # Find preset in JDXi.UI.Preset.Digital.LIST
-        preset = None
-        for p in JDXi.UI.Preset.Digital.LIST:
-            if str(p["id"]) == str(
-                preset_id
-            ):  # Compare as strings to handle any type mismatches
-                preset = p
-                break
-
-        if not preset:
-            log.warning(
-                f"⚠️ Cheat preset {preset_id} not found in JDXi.UI.Preset.Digital.LIST"
-            )
-            log.message(
-                f"🔍 Available preset IDs (first 10): {[p['id'] for p in JDXi.UI.Preset.Digital.LIST[:10]]}"
-            )
-            return
-
-        # Get MSB, LSB, PC values and convert to integers (preset data has floats)
-        msb = int(preset.get("msb", 95))
-        lsb = int(preset.get("lsb", 64))
-        pc = int(preset.get("pc", int(preset_id)))
-
-        log.message(f"📊 Cheat preset parameters: MSB={msb}, LSB={lsb}, PC={pc}")
-        log_midi_info(msb, lsb, pc)
-
-        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
-        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
-
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
         try:
-            self.midi_helper.send_bank_select_and_program_change(
-                MidiChannel.ANALOG_SYNTH,
-                bank_msb,
-                bank_lsb,
-                midi_pc,
-            )
-            log.message(
-                f"✅ Sent cheat preset Program Change: Ch3, MSB={bank_msb}, LSB={bank_lsb}, PC={midi_pc} (0-based)"
+            load_digital_cheat_preset_on_analog(
+                self.midi_helper,
+                preset_id_int,
+                channel=MidiChannel.ANALOG_SYNTH,
             )
         except Exception as e:
             log.error(f"❌ Error sending cheat preset Program Change: {e}")
