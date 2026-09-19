@@ -30,6 +30,7 @@ from picoui.specs.widgets import (
     ButtonSpec,
     FileSelectionMode,
     FileSelectionSpec,
+    MessageBoxSpec,
     get_file_save_from_spec,
 )
 
@@ -58,6 +59,22 @@ class USBFileRecordingWidget(JDXiMidiGroup):
                 tooltip="Refresh list of USB devices",
                 icon=JDXi.UI.Icon.REFRESH,
                 slot=self.populate_devices,
+            ),
+        }
+
+    def _build_message_box_specs(self) -> dict[str, MessageBoxSpec]:
+        return {
+            "no_output_file": MessageBoxSpec(
+                title="No Output File",
+                message=(
+                    "Please select a WAV output file or enable auto-generate filename."
+                ),
+                type_attr="Warning",
+            ),
+            "error_saving_file": MessageBoxSpec(
+                title="Error Saving File",
+                message="",
+                type_attr="Critical",
             ),
         }
 
@@ -101,16 +118,16 @@ class USBFileRecordingWidget(JDXiMidiGroup):
             self.on_usb_save_recording_toggled
         )
         grid.addWidget(self.file_record_checkbox, row, 3)
-        # row += 1
+        row += 1
 
         # --- Row 3: Auto-generate WAV filename checkbox
-        self.file_auto_generate_checkbox = QCheckBox("Auto-filename")
+        self.file_auto_generate_checkbox = QCheckBox("Auto-generate filename")
         JDXi.UI.Theme.apply_button_mini_style(self.file_auto_generate_checkbox)
         self.file_auto_generate_checkbox.setChecked(False)
         self.file_auto_generate_checkbox.stateChanged.connect(
             self.on_usb_file_auto_generate_toggled
         )
-        grid.addWidget(self.file_auto_generate_checkbox, row, 4)
+        grid.addWidget(self.file_auto_generate_checkbox, row, 1, 1, 3)
         return group
 
     def start_recording(self):
@@ -142,12 +159,12 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         :param state: Qt.CheckState
         :return:
         """
-        self.file_auto_generate_checkbox.setChecked(state == JDXi.UI.Constants.CHECKED)
-        is_enabled = self.file_auto_generate_checkbox.isChecked()
+        is_enabled = state == JDXi.UI.Constants.CHECKED
         log.message(
             f"Auto generate filename based on current date and time and Midi file = {is_enabled}"
         )
-        self.update_auto_wav_filename()
+        if is_enabled:
+            self.update_auto_wav_filename()
 
     def populate_devices(self) -> list:
         """
@@ -288,9 +305,11 @@ class USBFileRecordingWidget(JDXiMidiGroup):
             filter="WAV files (*.wav)",
             caption="Save Recording As",
         )
-        file_name = get_file_save_from_spec(file_name_spec, parent=self)
+        file_name, _selected_filter = get_file_save_from_spec(
+            file_name_spec, parent=self
+        )
         if file_name:
-            self.file_select.setText(file_name)
             self.file_output_name = file_name
+            self.file_select.setText(Path(file_name).name)
         else:
             self.file_output_name = ""
