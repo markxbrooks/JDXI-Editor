@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
 )
 
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -220,7 +221,7 @@ class MidiFilePlayer(SynthEditor):
         header_widget = create_widget_with_layout(header_layout)
         # --- Use EditorBaseWidget for consistent scrollable layout structure
         self.base_widget = EditorBaseWidget(parent=self, analog=False)
-        self.base_widget.setup_scrollable_content()
+        self.base_widget.setup_scrollable_content(center_horizontally=False)
         # --- Create content widget
         centered_layout = create_layout_with_items(
             items=[
@@ -247,7 +248,13 @@ class MidiFilePlayer(SynthEditor):
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
         content_widget = create_widget_with_layout(main_layout)
-        container_layout.addWidget(content_widget)
+        content_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        self.midi_file.midi_track_viewer.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        container_layout.addWidget(content_widget, 1)
         self._add_base_widget_to_editor()
 
     def _add_base_widget_to_editor(self):

@@ -110,17 +110,22 @@ class EditorBaseWidget(QWidget):
         return self.main_layout
 
     def setup_scrollable_content(
-        self, spacing: int = 5, margins: tuple[int, int, int, int] = (5, 5, 5, 5)
+        self,
+        spacing: int = 5,
+        margins: tuple[int, int, int, int] = (5, 5, 5, 5),
+        center_horizontally: bool = True,
     ) -> tuple[QScrollArea, QVBoxLayout]:
         """
         Set up the standard scrollable content area.
 
         Creates a scroll area with a container widget and layout, following
-        the common pattern used across all editors. The container is wrapped
-        in an HBoxLayout with stretches on both sides for horizontal centering.
+        the common pattern used across all editors. By default the container
+        is wrapped in an HBoxLayout with stretches on both sides for horizontal
+        centering. Pass center_horizontally=False for full-width editors.
 
         :param spacing: Spacing for the container layout
         :param margins: Contents margins (left, top, right, bottom) for container layout
+        :param center_horizontally: When False, let content expand to the window width
         :return: Tuple of (scroll_area, container, container_layout)
         """
         # Set up main layout if not already done
@@ -144,17 +149,23 @@ class EditorBaseWidget(QWidget):
         self.container, self.container_layout = create_scroll_container()
         self.container_layout.setSpacing(spacing)
         self.container_layout.setContentsMargins(*margins)
+        self.container.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
 
-        # Wrap container in HBoxLayout with stretches for horizontal centering
-        self.centered_wrapper = QWidget()
-        wrapper_layout = QHBoxLayout(self.centered_wrapper)
-        wrapper_layout.setContentsMargins(0, 0, 0, 0)
-        wrapper_layout.setSpacing(0)
-        wrapper_layout.addStretch()  # Left stretch for centering
-        wrapper_layout.addWidget(self.container)  # Container in middle
-        wrapper_layout.addStretch()  # Right stretch for centering
-
-        self.scroll_area.setWidget(self.centered_wrapper)
+        if center_horizontally:
+            # Wrap container in HBoxLayout with stretches for horizontal centering
+            self.centered_wrapper = QWidget()
+            wrapper_layout = QHBoxLayout(self.centered_wrapper)
+            wrapper_layout.setContentsMargins(0, 0, 0, 0)
+            wrapper_layout.setSpacing(0)
+            wrapper_layout.addStretch()
+            wrapper_layout.addWidget(self.container)
+            wrapper_layout.addStretch()
+            self.scroll_area.setWidget(self.centered_wrapper)
+        else:
+            self.centered_wrapper = None
+            self.scroll_area.setWidget(self.container)
 
         return self.scroll_area, self.container, self.container_layout
 

@@ -7,7 +7,7 @@ from copy import deepcopy
 import mido
 import qtawesome as qta
 from decologr import Decologr as log
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QSlider,
+    QSizePolicy,
 )
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
@@ -38,6 +39,9 @@ class MidiTrackViewer(QWidget):
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
 
         self.midi_file = None
         self.event_index = None
@@ -99,14 +103,17 @@ class MidiTrackViewer(QWidget):
         # scroll_layout.addLayout(mute_layout)
 
         # Scroll area
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll_area.setWidget(self.scroll_content)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        self.scroll_area.setWidget(self.scroll_content)
 
         # Add scroll area to main layout
-        main_layout.addWidget(scroll_area)
+        main_layout.addWidget(self.scroll_area, 1)
 
         # Track zoom slider
         self.track_zoom_slider = QSlider(Qt.Horizontal)
@@ -200,6 +207,10 @@ class MidiTrackViewer(QWidget):
         # Reset zoom slider to default
         self.track_zoom_slider.setValue(50)
 
+    def resizeEvent(self, event: QEvent) -> None:
+        super().resizeEvent(event)
+        self.update_track_zoom(self.track_zoom_slider.value())
+
     def update_track_zoom(self, width: int):
         """
         update_track_zoom
@@ -209,6 +220,10 @@ class MidiTrackViewer(QWidget):
         """
         min_content_width = self.get_track_controls_width() + 200
         content_width = max(min_content_width, width * 80)
+        if self.scroll_area is not None:
+            viewport_width = self.scroll_area.viewport().width()
+            if viewport_width > 0:
+                content_width = max(content_width, viewport_width)
         self.scroll_content.setFixedWidth(content_width)
         self.scroll_content.updateGeometry()
 
