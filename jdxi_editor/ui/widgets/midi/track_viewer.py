@@ -7,7 +7,7 @@ from copy import deepcopy
 import mido
 import qtawesome as qta
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -207,9 +207,39 @@ class MidiTrackViewer(QWidget):
         # Reset zoom slider to default
         self.track_zoom_slider.setValue(50)
 
+    def fit_tracks_to_view(self) -> None:
+        """Scale the timeline so the full MIDI file fits the visible viewer width."""
+        if self.scroll_area is None:
+            return
+
+        viewport_width = self.scroll_area.viewport().width()
+        if viewport_width <= 0:
+            QTimer.singleShot(0, self.fit_tracks_to_view)
+            return
+
+        min_content_width = self.get_track_controls_width() + 200
+        target_width = max(min_content_width, viewport_width)
+        self.scroll_content.setFixedWidth(target_width)
+        self.scroll_content.updateGeometry()
+        self.scroll_area.horizontalScrollBar().setValue(0)
+
+        slider_value = max(1, min(100, target_width // 80))
+        self.track_zoom_slider.blockSignals(True)
+        self.track_zoom_slider.setValue(slider_value)
+        self.track_zoom_slider.blockSignals(False)
+
+        for widget in self.midi_track_widgets.values():
+            widget.cached_pixmap = None
+            widget.cached_width = 0
+            widget.update()
+        self.ruler.update()
+
     def resizeEvent(self, event: QEvent) -> None:
         super().resizeEvent(event)
-        self.update_track_zoom(self.track_zoom_slider.value())
+        if self.midi_file is not None:
+            self.fit_tracks_to_view()
+        else:
+            self.update_track_zoom(self.track_zoom_slider.value())
 
     def update_track_zoom(self, width: int):
         """
@@ -565,8 +595,11 @@ class MidiTrackViewer(QWidget):
 
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(
-                track=track, track_number=i, total_length=midi_file.length
-            )  # Initialize the dictionary
+                track=track,
+                track_number=i,
+                total_length=midi_file.length,
+                ticks_per_beat=midi_file.ticks_per_beat,
+            )
             hlayout.addWidget(self.midi_track_widgets[i])
 
             # Wrap the layout in a draggable row widget
@@ -585,7 +618,7 @@ class MidiTrackViewer(QWidget):
 
         self.channel_controls_vlayout.addLayout(apply_all_layout)
         self.channel_controls_vlayout.addStretch()
-        self.update_track_zoom(self.track_zoom_slider.value())
+        self.fit_tracks_to_view()
 
     def get_track_controls_width(self) -> int:
         """

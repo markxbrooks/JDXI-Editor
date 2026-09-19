@@ -9,7 +9,12 @@ from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPixmap
 
 from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
-from jdxi_editor.ui.widgets.midi.utils import generate_track_colors, get_first_channel
+from jdxi_editor.ui.widgets.midi.utils import (
+    generate_track_colors,
+    get_first_channel,
+    ticks_to_seconds,
+)
+from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
 
 
@@ -23,6 +28,7 @@ class MidiTrackWidget(QWidget):
         track: mido.MidiTrack,
         track_number: int,
         total_length: float,
+        ticks_per_beat: int | None = None,
         parent: QWidget = None,
     ):
         """
@@ -31,6 +37,7 @@ class MidiTrackWidget(QWidget):
         :param track: mido.MidiTrack the mido track data
         :param track_number: int The track number
         :param total_length: float The total length of the longest of the tracks in seconds
+        :param ticks_per_beat: MIDI file ticks per beat
         :param parent: QWidget Parent widget
         """
         super().__init__(parent)
@@ -38,6 +45,7 @@ class MidiTrackWidget(QWidget):
         self.note_width = 400
         self.track = track
         self.track_number = track_number
+        self.ticks_per_beat = ticks_per_beat or Midi.timing.TICKS_PER_BEAT
         self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
@@ -49,44 +57,54 @@ class MidiTrackWidget(QWidget):
         self.cached_width = 0
 
         if track:
-            self.set_track(track, total_length)
+            self.set_track(track, total_length, self.ticks_per_beat)
 
-    def set_track(self, track: mido.MidiTrack, total_length: float) -> None:
+    def set_track(
+        self,
+        track: mido.MidiTrack,
+        total_length: float,
+        ticks_per_beat: int | None = None,
+    ) -> None:
         """
         set_track
 
         :param track: mido.MidiTrack
-        :param total_length: float
+        :param total_length: float total file length in seconds
+        :param ticks_per_beat: MIDI file ticks per beat
         :return: None
         """
+        if ticks_per_beat is None:
+            ticks_per_beat = self.ticks_per_beat
+        self.ticks_per_beat = ticks_per_beat
         self.track = track
         self.track_data = None
         if not track:
             return
 
-        abs_time = 0
         rects = []
         channels = set()
         note_count = 0
         program_changes = []
 
-        # Find the first channel in the track
-        first_channel = None
-        for msg in track:
-            if hasattr(msg, "channel"):
-                first_channel = msg.channel
-                break
+        first_channel = get_first_channel(track)
         if first_channel is None:
-            first_channel = 0  # fallback if no channel found
+            first_channel = 0
 
+        tempo = Midi.tempo.BPM_120_USEC
+        abs_seconds = 0.0
         for msg in track:
-            abs_time += msg.time
+            abs_seconds += ticks_to_seconds(
+                msg.time, tempo, ticks_per_beat
+            )
+            if msg.type == MidoMessageType.SET_TEMPO.value:
+                tempo = msg.tempo
             if hasattr(msg, "channel"):
                 channels.add(msg.channel)
             if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
                 note_count += 1
-                norm_time = abs_time / total_length if total_length else 0
-                # Use first_channel for all notes
+                norm_time = (
+                    abs_seconds / total_length if total_length else 0.0
+                )
                 rects.append((norm_time, first_channel))
             if msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                 program_changes.append(msg.program)
@@ -229,15 +247,8 @@ class MidiTrackWidget(QWidget):
 
         # Compute scale based on last timestamp
         times = [t[0] for t in rects]
-        if not times:
-            return pixmap
-
-        max_time = max(times)
-        scale = width / max_time if max_time else 1.0
-
-        # Background track bar
-        start_x = min(times) * scale
-        end_x = max(times) * scale
+        start_x = min(times) * width if times else 0
+        end_x = max(times) * width if times else width
         if end_x - start_x < self.note_width:
             end_x = start_x + self.note_width
         track_rect = QRectF(start_x, y, end_x - start_x, height)
@@ -249,9 +260,9 @@ class MidiTrackWidget(QWidget):
         painter.setBrush(bg_color)
         painter.drawRect(track_rect)
 
-        # Notes
+        # Notes — norm_time is 0..1 over the full file duration
         for norm_time, channel in rects:
-            x = norm_time * scale
+            x = norm_time * width
             if x + self.note_width < 0 or x > width:
                 continue  # Skip offscreen
             color = MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150))
