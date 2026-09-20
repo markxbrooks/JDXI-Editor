@@ -31,7 +31,7 @@ from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.midi.selection_info import send_tone_with_expectation
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.address.address import (
@@ -52,7 +52,6 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import (
     get_preset_parameter_value,
-    preset_to_jdxi_bank_pc,
 )
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.editors.synth.helper import log_changes
@@ -569,14 +568,12 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Using MIDI channel: {self.midi_channel}",
         )
-        log_midi_info(msb, lsb, pc)
-        # -- Convert to JD-Xi bank format (LSB 65 for presets 129-256)
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            bank_msb,
-            bank_lsb,
-            midi_pc,  # Already 0-127
+        send_tone_with_expectation(
+            self.midi_helper,
+            int(program_number),
+            self.preset_preset_list,
+            self.midi_channel,
+            source="synth_editor",
         )
         self.data_request()
 

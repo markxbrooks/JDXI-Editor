@@ -1270,27 +1270,18 @@ class PlaylistEditor(QWidget):
             log.warning(f"Invalid program ID: {program_id}")
             return
 
-        bank_letter = program_id[0]
-        try:
-            bank_number = int(program_id[1:3])
-        except ValueError:
-            log.warning(f"Invalid program number in ID: {program_id}")
-            return
-
         log.message(f"🎹 Loading program from playlist: {program_id} - {program.name}")
-
-        # Calculate MIDI values
-        try:
-            msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        except (ValueError, TypeError) as e:
-            log.error(f"Error calculating MIDI values for {program_id}: {e}")
-            return
 
         # Send MIDI Program Change
         if self.midi_helper:
-            log.message(f"Sending Program Change: MSB={msb}, LSB={lsb}, PC={pc}")
-            self.midi_helper.send_bank_select_and_program_change(
-                self.channel, msb, lsb, pc
+            log.message(f"Sending Program Change for {program_id}")
+            from jdxi_editor.ui.midi.selection_info import send_program_with_expectation
+
+            send_program_with_expectation(
+                self.midi_helper,
+                program_id,
+                source="playlist",
+                channel=self.channel,
             )
 
         # Emit signal and call callback

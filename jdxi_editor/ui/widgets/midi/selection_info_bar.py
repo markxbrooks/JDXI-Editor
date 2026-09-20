@@ -57,10 +57,12 @@ class MidiSelectionInfoController(QObject):
         info_bar: MidiSelectionInfoBar,
         resolver: Callable[[int], Optional[MidiWireInfo]],
         parent: Optional[QObject] = None,
+        midi_helper=None,
     ):
         super().__init__(parent)
         self._info_bar = info_bar
         self._resolver = resolver
+        self._midi_helper = midi_helper
 
     def refresh(self, value: int) -> None:
         """Resolve and display MIDI info for the given selection value."""
@@ -69,6 +71,10 @@ class MidiSelectionInfoController(QObject):
 
     @Slot(int)
     def on_value_changed(self, value: int) -> None:
+        if self._midi_helper is not None and hasattr(
+            self._midi_helper, "clear_selection_expectation"
+        ):
+            self._midi_helper.clear_selection_expectation()
         self.refresh(value)
 
     def bind_searchable_combo(self, combo: SearchableFilterableComboBox) -> None:
@@ -103,6 +109,7 @@ def bind_tone_midi_info(
     channel: int,
     channel_label: Optional[str] = None,
     parent: Optional[QObject] = None,
+    midi_helper=None,
 ) -> MidiSelectionInfoController:
     """Wire a tone preset combo to a MIDI info readout."""
 
@@ -114,7 +121,9 @@ def bind_tone_midi_info(
             channel_label=channel_label,
         )
 
-    controller = MidiSelectionInfoController(info_bar, resolver, parent=parent)
+    controller = MidiSelectionInfoController(
+        info_bar, resolver, parent=parent, midi_helper=midi_helper
+    )
     controller.bind_searchable_combo(combo)
     return controller
 
@@ -124,6 +133,7 @@ def bind_program_midi_info(
     info_bar: MidiSelectionInfoBar,
     program_list,
     parent: Optional[QObject] = None,
+    midi_helper=None,
 ) -> MidiSelectionInfoController:
     """Wire a program combo (values = list indices) to a MIDI info readout."""
 
@@ -136,6 +146,8 @@ def bind_program_midi_info(
             return None
         return resolve_program_midi_from_id(program_id)
 
-    controller = MidiSelectionInfoController(info_bar, resolver, parent=parent)
+    controller = MidiSelectionInfoController(
+        info_bar, resolver, parent=parent, midi_helper=midi_helper
+    )
     controller.bind_searchable_combo(combo)
     return controller

@@ -119,5 +119,106 @@ class TestMidiSelectionInfo(unittest.TestCase):
         self.assertIn("CC0: 85", text)
 
 
+class TestMidiSelectionValidation(unittest.TestCase):
+    """Validation core: byte build/parse round-trip and compare."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.digital_list = JDXi.UI.Preset.Digital.LIST
+
+    def test_build_parse_round_trip_tone_183(self):
+        from jdxi_editor.midi.validation.selection import (
+            build_bank_select_pc_bytes,
+            compare_wire_info,
+            parse_bank_select_pc_sequence,
+        )
+
+        expected = resolve_tone_midi(
+            183,
+            self.digital_list,
+            channel=MidiChannel.DIGITAL_SYNTH_1,
+        )
+        self.assertIsNotNone(expected)
+        messages = build_bank_select_pc_bytes(
+            expected.channel, expected.cc0, expected.cc32, expected.midi_pc
+        )
+        actual = parse_bank_select_pc_sequence(messages)
+        self.assertIsNotNone(actual)
+        result = compare_wire_info(expected, actual)
+        self.assertTrue(result.ok, result.diff_fields)
+
+    def test_compare_detects_wrong_lsb(self):
+        from jdxi_editor.midi.validation.selection import (
+            compare_wire_info,
+            wire_info_from_bank_pc,
+        )
+
+        expected = wire_info_from_bank_pc(2, 95, 65, 54)
+        actual = wire_info_from_bank_pc(2, 95, 64, 54)
+        result = compare_wire_info(expected, actual)
+        self.assertFalse(result.ok)
+        self.assertIn("cc32", result.diff_fields)
+
+    def test_compare_detects_wrong_channel(self):
+        from jdxi_editor.midi.validation.selection import (
+            compare_wire_info,
+            wire_info_from_bank_pc,
+        )
+
+        expected = wire_info_from_bank_pc(2, 95, 65, 54)
+        actual = wire_info_from_bank_pc(1, 95, 65, 54)
+        result = compare_wire_info(expected, actual)
+        self.assertFalse(result.ok)
+        self.assertIn("channel", result.diff_fields)
+
+    def test_program_e05_build_matches_resolver(self):
+        from jdxi_editor.midi.validation.selection import (
+            build_bank_select_pc_bytes,
+            parse_bank_select_pc_sequence,
+            validate_bank_select_pc_send,
+        )
+
+        expected = resolve_program_midi_from_id("E05")
+        self.assertIsNotNone(expected)
+        messages = build_bank_select_pc_bytes(
+            expected.channel, expected.cc0, expected.cc32, expected.midi_pc
+        )
+        parsed = parse_bank_select_pc_sequence(messages)
+        self.assertIsNotNone(parsed)
+        result = validate_bank_select_pc_send(
+            expected.channel,
+            expected.cc0,
+            expected.cc32,
+            expected.midi_pc,
+            expected,
+        )
+        self.assertIsNotNone(result)
+        self.assertTrue(result.ok)
+
+    def test_automation_insert_bytes_match_cheat_load(self):
+        from jdxi_editor.midi.validation.selection import build_bank_select_pc_bytes
+        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
+
+        cheat = resolve_tone_midi_for_channel(
+            183,
+            self.digital_list,
+            MidiChannel.ANALOG_SYNTH,
+            "Analog",
+        )
+        self.assertIsNotNone(cheat)
+        msb = 95
+        lsb = 64
+        pc = 55
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
+        self.assertEqual((bank_msb, bank_lsb, midi_pc), (95, 65, 54))
+        automation_bytes = build_bank_select_pc_bytes(
+            MidiChannel.ANALOG_SYNTH, bank_msb, bank_lsb, midi_pc
+        )
+        cheat_bytes = build_bank_select_pc_bytes(
+            cheat.channel, cheat.cc0, cheat.cc32, cheat.midi_pc
+        )
+        self.assertEqual(automation_bytes, cheat_bytes)
+
+
 if __name__ == "__main__":
     unittest.main()

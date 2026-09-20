@@ -22,6 +22,8 @@ import json
 import logging
 import threading
 import zipfile
+from dataclasses import dataclass
+from typing import Any, Optional
 
 import mido
 from decologr import Decologr as log
@@ -49,6 +51,15 @@ from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
+
+
+@dataclass
+class MidiSelectionExpectation:
+    """Expected wire info registered before a combo-driven Load send."""
+
+    expected: Any  # MidiWireInfo; typed lazily to avoid circular imports
+    source: str
+    selection_value: Any = None
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
@@ -93,6 +104,28 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         self.soundfont_sfid = None
         self.soundfont_lock = threading.RLock()
         self.initialized = True
+        self._selection_expectation: Optional[MidiSelectionExpectation] = None
+
+    def set_selection_expectation(
+        self,
+        expected: Any,
+        source: str,
+        selection_value: Any = None,
+    ) -> None:
+        """Register expected wire info for the next bank-select + PC send."""
+        self._selection_expectation = MidiSelectionExpectation(
+            expected=expected,
+            source=source,
+            selection_value=selection_value,
+        )
+
+    def clear_selection_expectation(self) -> None:
+        """Clear registered expectation (e.g. when combo selection changes)."""
+        self._selection_expectation = None
+
+    def get_selection_expectation(self) -> Optional[MidiSelectionExpectation]:
+        """Return the current selection expectation, if any."""
+        return self._selection_expectation
 
     def send_mido_message(self, msg: mido.Message):
         """

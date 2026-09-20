@@ -177,3 +177,75 @@ def resolve_tone_midi_for_channel(
         channel=channel,
         channel_label=channel_label,
     )
+
+
+def send_tone_with_expectation(
+    midi_helper,
+    preset_id: Union[int, str],
+    preset_list: List[Any],
+    channel: int,
+    *,
+    source: str,
+    channel_label: Optional[str] = None,
+) -> bool:
+    """
+    Resolve tone wire info, register validation expectation, and send bank+PC.
+
+    Ensures readout resolver, send parameters, and validation expected match.
+    """
+    from jdxi_editor.log.midi_info import log_midi_wire_info
+    from jdxi_editor.midi.validation.settings import is_midi_selection_validation_enabled
+
+    expected = resolve_tone_midi(
+        preset_id,
+        preset_list,
+        channel=channel,
+        channel_label=channel_label,
+    )
+    if expected is None:
+        return False
+
+    if hasattr(midi_helper, "set_selection_expectation"):
+        midi_helper.set_selection_expectation(expected, source, preset_id)
+    if is_midi_selection_validation_enabled():
+        log_midi_wire_info(expected)
+
+    return midi_helper.send_bank_select_and_program_change(
+        expected.channel,
+        expected.cc0,
+        expected.cc32,
+        expected.midi_pc,
+    )
+
+
+def send_program_with_expectation(
+    midi_helper,
+    program_id: str,
+    *,
+    source: str,
+    channel: int = MidiChannel.PROGRAM,
+    channel_label: Optional[str] = "Program",
+) -> bool:
+    """Resolve program wire info, register validation expectation, and send bank+PC."""
+    from jdxi_editor.log.midi_info import log_midi_wire_info
+    from jdxi_editor.midi.validation.settings import is_midi_selection_validation_enabled
+
+    expected = resolve_program_midi_from_id(
+        program_id,
+        channel=channel,
+        channel_label=channel_label,
+    )
+    if expected is None:
+        return False
+
+    if hasattr(midi_helper, "set_selection_expectation"):
+        midi_helper.set_selection_expectation(expected, source, program_id)
+    if is_midi_selection_validation_enabled():
+        log_midi_wire_info(expected)
+
+    return midi_helper.send_bank_select_and_program_change(
+        expected.channel,
+        expected.cc0,
+        expected.cc32,
+        expected.midi_pc,
+    )

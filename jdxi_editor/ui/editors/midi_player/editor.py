@@ -562,6 +562,28 @@ class MidiFilePlayer(SynthEditor):
         if not data:
             return
         msb, lsb, pc = data
+        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
+        from jdxi_editor.ui.midi.selection_info import (
+            MidiWireInfo,
+            channel_display_name,
+        )
+
+        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(
+            int(msb), int(lsb), int(pc)
+        )
+
+        if self.midi_helper and hasattr(self.midi_helper, "set_selection_expectation"):
+            expected = MidiWireInfo(
+                channel=channel,
+                channel_display=channel_display_name(channel),
+                cc0=bank_msb,
+                cc32=bank_lsb,
+                midi_pc=midi_pc,
+                preset_pc=int(pc),
+            )
+            self.midi_helper.set_selection_expectation(
+                expected, "midi_automation", data
+            )
 
         # Convert seconds to absolute ticks (approx using current tempo at position)
         try:
@@ -578,22 +600,27 @@ class MidiFilePlayer(SynthEditor):
         track_index = self._find_track_for_channel(channel)
         target_track = self.midi_state.file.tracks[track_index]
 
-        # Build messages: CC#0, CC#32, Program Change (PC is 0-based in MIDI spec)
+        # Build messages: CC#0, CC#32, Program Change (JD-Xi wire PC)
         msgs = [
-            self._build_message(
-                message_type=MidoMessageType.CONTROL_CHANGE.value,
+            mido.Message(
+                type=MidoMessageType.CONTROL_CHANGE.value,
+                control=0,
+                value=bank_msb,
                 channel=channel,
-                value=int(msb),
+                time=0,
             ),
-            self._build_message(
-                message_type=MidoMessageType.CONTROL_CHANGE.value,
+            mido.Message(
+                type=MidoMessageType.CONTROL_CHANGE.value,
+                control=32,
+                value=bank_lsb,
                 channel=channel,
-                value=int(lsb),
+                time=0,
             ),
-            self._build_message(
-                message_type=MidoMessageType.PROGRAM_CHANGE.value,
+            mido.Message(
+                type=MidoMessageType.PROGRAM_CHANGE.value,
+                program=midi_pc,
                 channel=channel,
-                program=max(0, int(pc) - 1),
+                time=0,
             ),
         ]
 

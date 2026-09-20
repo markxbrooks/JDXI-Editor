@@ -398,6 +398,7 @@ class InstrumentPresetWidget(QWidget):
             channel=channel,
             channel_label=channel_label,
             parent=self,
+            midi_helper=getattr(self.parent, "midi_helper", None),
         )
 
         layout.addLayout(selection_layout)
@@ -477,6 +478,7 @@ class InstrumentPresetWidget(QWidget):
             channel=MidiChannel.ANALOG_SYNTH,
             channel_label="Analog",
             parent=self,
+            midi_helper=getattr(self.parent, "midi_helper", None),
         )
 
         # Load Preset (round button + label, centered)
