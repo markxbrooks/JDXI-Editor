@@ -54,9 +54,9 @@ Check out some great performances and demos of the Roland JD-Xi:
 
 ### 🎬 Featured Demo  
 
-Lady Gaga – *Telephone* performed on the Roland JD-Xi  
+Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi  
 
-[![Watch the demo](https://img.youtube.com/vi/PkUobEa_gyk/0.jpg)](https://www.youtube.com/watch?v=PkUobEa_gyk)
+[![Watch the demo](https://img.youtube.com/vi/oquaCQE1EFs/0.jpg)](https://www.youtube.com/watch?v=oquaCQE1EFs)
 
 ## 🚀 Getting Started
 
