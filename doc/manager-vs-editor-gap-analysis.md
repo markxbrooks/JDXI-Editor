@@ -1,41 +1,36 @@
-# JDXi Manager vs JDXi Editor: Feature Gap Analysis
+# JDXi Manager vs JDXi Editor: Updated Feature Gap Analysis
 
-**Question:** Where does JDXi Manager (Perl 0.30 alpha) provide a stronger workflow or capability than JDXi Editor (Python 0.9.6)?
+**Question:** Where does JDXi Manager (Perl 0.30 alpha) currently provide a stronger feature than JDXi Editor?
 
-**Scope:** This comparison is based on the Manager source in `/Users/brooks/projects/jdxi_manager-030` and Editor source and documentation in this repository. It compares implemented workflows, not aspirational Sphinx prose. “Stronger” means a capability is more direct, explicit, or complete in Manager; it does not mean Manager is the broader application.
+**Review date:** 2026-11-04. This revision rechecks the current Editor implementation, including the current workspace changes, against Manager source. It focuses on implemented capabilities rather than aspirational documentation.
 
 ## Summary
 
-JDXi Manager’s clearest advantages are its direct hardware round-trip workflow for each sound section, its integrated factory-preset browsing/loading, and its convenient per-section SysEx librarian flow. It also has a couple of small hands-on editing features: random analog tone generation and copy/paste of a synth or drum partial.
+The earlier analysis was stale. Editor has since added Manager-style hardware readback, preset navigation and loading, per-editor SysEx import/export, analog randomization, and partial copy/paste. Those are no longer Manager advantages.
 
-JDXi Editor is substantially broader overall: it includes a pattern sequencer, MIDI file player, SoundFont playback, searchable preset selection, and a richer patch bundle workflow. The comparison below isolates Manager’s advantages.
+The clearest remaining Manager advantage is **stricter validation of incoming SysEx dumps**: Manager checks exact expected section length, section-specific data patterns, and Roland checksum before accepting the dump into its editor state. Editor's per-part import currently checks that messages exist and performs a part address-area check, then sends the messages; it does not verify each message's expected length, data pattern, or checksum in this import path.
 
-## Manager advantages
+## Current comparison
 
-| Area | What Manager does better | Evidence in Manager | Editor comparison | Priority |
-|---|---|---|---|---|
-| **Read current hardware data on demand** | Every relevant editor exposes **Read from** and **Dump to**. Read issues RQ1 requests, receives and validates DT1 data, then populates the editor state. This is a clear, user-invoked hardware-to-editor round trip. | `jdxi_manager.pl`: `EditBufferOps`, `SysexPatRcve`, `SyxReceive` | Editor requests data when editors are shown and handles incoming SysEx, but its documented patch save flow saves current UI values and has no explicit “Read from synth, then save” operation. | **High** |
-| **Factory preset selection inside the part editor** | Analog, Digital 1/2, and Drum editors include a populated preset list, wheel-based previous/next selection, and a Load button that selects the hardware preset and then reads its data into the editor. | `jdxi_manager.pl`: `EditBufferOps`, `LoadPreset`, `ChgPreset`; factory lists in `JDXidata.pm` | Editor has preset selection and search, but the Manager’s integrated “select hardware preset → load → inspect/edit its parameters” flow is a particularly direct browsing experience. | **Medium** |
-| **Per-section SysEx librarian workflow** | Each editor can open/save its own patch file, retain the selected filename for Save, and browse a folder of patch files. Manager also validates section lengths and parameter patterns when loading. | `jdxi_manager.pl`: `FileMenu`, `browseFile`, `loadFile`, `saveFile`, `saveasFile`, `saveSub`, `ValidatePatData` | Editor supports `.syx` plus JSON and bundled `.jsz`/`.msz`; its bundle saves multiple sections together. Manager’s advantage is the focused, per-part file workflow and explicit validation. | **Medium** |
-| **Random analog tone generation** | The Analog editor has a dedicated random tone action which creates a randomized analog patch and sends it to the instrument when connected. | `jdxi_manager.pl`: `rndVoice` and Analog editor File menu | No comparable user-facing random analog patch action was found in Editor’s feature list or implementation search. | **Low** |
-| **Copy/paste a partial between parts or drum sounds** | Editor menus provide Copy Partial and Paste Partial; paste checks that the source and destination partial data lengths match. | `jdxi_manager.pl`: `FileMenu`, `copyPart`, `pastePart` | No matching partial clipboard operation was found in Editor’s documented workflows or source search. | **Low** |
+| Capability | JDXi Manager | JDXi Editor | Assessment |
+|---|---|---|---|
+| Read current hardware data | Per-editor **Read from** / RQ1 flow | Per-editor Read from controls; Patch Manager also has **Read from JD-Xi** and **Read then Save**, with section status | At parity; Editor has a broader all-sections save flow |
+| Select and load factory presets | Preset list and Load in the part editor | Searchable selection plus previous/next and Load | At parity; Editor offers search |
+| Per-part SysEx files | Per-editor open/save, with stored filename and folder browser | Per-editor Import/Export `.syx`; validates area and refreshes after import | At parity for normal workflow; Manager has stronger dump validation |
+| Random analog tone | Random analog patch action | **Random Patch** action in Analog preset UI | At parity |
+| Copy/paste partials | Copy/paste partial operations | Copy/paste in Digital and Drum editors | At parity |
+| Incoming SysEx dump validation | Exact message length, section pattern, and checksum validation | Per-part import validates that messages are present and checks expected address area, but does not currently check per-message expected length/pattern/checksum | **Manager ahead** |
+| Legacy file variants | Supports editor-specific `.as`, `.ds`, `.dk` ASCII-hex import paths (where enabled), in addition to `.syx` | General `.syx`, `.json`, `.jsz`, `.msz`; no matching `.as`/`.ds`/`.dk` import was found | **Manager ahead** for compatibility with those legacy files |
 
-## Recommended gaps to close
+## Remaining gaps to close
 
-1. **Add a “Read from JD-Xi” action to patch management.** Request all supported sections, wait for and validate responses, update the editor state, then allow saving. Show which sections were successfully read so a partial response cannot silently look complete.
-2. **Make factory preset auditioning a first-class workflow.** In the part editor, keep preset selection, hardware load, and readback together; add previous/next navigation if that is not already available in the current UI.
-3. **Offer optional per-part SysEx import/export.** Keep the existing multi-section JSON bundle flow, while allowing a user to load or save one compatible part file. Validate the target address and data length before sending.
-4. **Add partial copy/paste and an analog randomizer** as small editing conveniences, if they fit the current editor interaction model.
+1. **Validate each imported SysEx message before sending.** For the target editor, verify manufacturer/model/command, expected address and section size, legal data bytes, and checksum. Report the exact failing section and reject the file before sending any messages.
+2. **Consider legacy ASCII-hex formats only if there are users or archives that need them.** Manager's `.as`, `.ds`, and `.dk` handling is a niche compatibility advantage; the current `.syx` and bundled formats are more general for new workflows.
 
-## Important caveats
+## Evidence and limits
 
-- Both applications’ documented save flows use editor/UI state as the saved source. Manager’s **Read from** action improves the workflow by letting users refresh that state first; it is not an automatic hardware dump-to-file operation.
-- Manager’s `.syx` workflow is per editor/part. Editor’s `.jsz`/`.msz` formats are more convenient for saving a broader working set, and Editor also supports MIDI, patterns, and software playback features that are outside Manager’s scope.
-- “No comparable feature found” means no matching implemented workflow was found during this source/document review; it is not a claim that no code path could be adapted to provide it.
-
-## Source references
-
-- Manager UI and actions: `/Users/brooks/projects/jdxi_manager-030/jdxi_manager.pl` (`EditBufferOps`, `LoadPreset`, `rndVoice`, `browseFile`, `loadFile`, `saveSub`, `copyPart`, `pastePart`, `SysexPatRcve`, `SyxReceive`).
-- Manager preset tables and patch data: `/Users/brooks/projects/jdxi_manager-030/JDXidata.pm`.
-- Editor patch save/load comparison and readback limitation: [`patch-saving-gap-analysis.md`](patch-saving-gap-analysis.md).
-- Editor overview and feature scope: [`features-and-usage.md`](features-and-usage.md).
+- Manager's `ValidatePatData` in `/Users/brooks/projects/jdxi_manager-030/jdxi_manager.pl` checks expected length, a section-specific regular-expression pattern, and checksum. Both file loading and hardware receive call it before accepting data.
+- Editor's `validate_part_syx` in `jdxi_editor/midi/sysex/part_syx.py` splits F0…F7 blocks and checks the expected address area. `import_syx_to_editor` then sends each message and requests a refresh. It currently does not perform the same length/pattern/checksum validation.
+- Editor's updated feature implementation is in `jdxi_editor/ui/editors/helpers/edit_buffer_ops.py`, `jdxi_editor/ui/preset/widget.py`, `jdxi_editor/ui/editors/analog/editor.py`, `jdxi_editor/ui/editors/digital/editor.py`, and `jdxi_editor/ui/editors/drum/editor.py`.
+- Manager code reviewed: `/Users/brooks/projects/jdxi_manager-030/jdxi_manager.pl` and `/Users/brooks/projects/jdxi_manager-030/JDXidata.pm`.
+- This is a source-level comparison. It does not claim runtime testing of either app or hardware.

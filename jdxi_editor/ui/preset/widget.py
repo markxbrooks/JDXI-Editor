@@ -49,6 +49,8 @@ class InstrumentPresetWidget(QWidget):
         :param parent: QWidget
         """
         super().__init__(parent)
+        self.midi_channel_combo = None
+        self.midi_channel_combo_row = None
         self.group: QGroupBox | None = None
         self.layout: QVBoxLayout | None = None
         self.instrument_presets: QWidget | None = None
@@ -488,19 +490,16 @@ class InstrumentPresetWidget(QWidget):
             show_category=True,
             search_placeholder="Search presets...",
         )
-        layout.addWidget(self.cheat_preset_combo_box)
+
         from picomidi.core.channel import Channel
         channels = [str(Channel.display_value(i)) for i in Channel.all_channels()]
         # channel_strings = [str(j) for j in channels]
-        self.midi_channel_combo_row, self.midi_channel_combo = create_combo_row(label="Midi Channel",
-                                                                                items=channels,
-                                                                                sort_items=False,
-                                                                                slot=self._get_midi_channel_from_combo)
+        self.create_midi_combo_row(channels)
         self.midi_channel_combo.setCurrentIndex(MidiChannel.ANALOG_SYNTH)
         self._get_midi_channel_from_combo()
-        layout.addLayout(self.midi_channel_combo_row)
+
         self.cheat_midi_info_bar = MidiSelectionInfoBar()
-        layout.addWidget(self.cheat_midi_info_bar)
+
         self._cheat_midi_info_controller = bind_tone_midi_info(
             self.cheat_preset_combo_box,
             self.cheat_midi_info_bar,
@@ -510,7 +509,9 @@ class InstrumentPresetWidget(QWidget):
             parent=self,
             midi_helper=getattr(self.parent, "midi_helper", None),
         )
-
+        layout.addWidget(self.cheat_preset_combo_box)
+        layout.addLayout(self.midi_channel_combo_row)
+        layout.addWidget(self.cheat_midi_info_bar)
         # Load Preset (round button + label, centered)
         self._add_centered_round_button(
             JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
@@ -519,8 +520,19 @@ class InstrumentPresetWidget(QWidget):
             layout,
             name="cheat_load",
         )
-
         layout.addStretch()
+
+    def create_midi_combo_row(self, channels: list[str]) -> None:
+        """
+        create_midi_combo_row
+
+        :param channels: list
+        :return: None
+        """
+        self.midi_channel_combo_row, self.midi_channel_combo = create_combo_row(label="Midi Channel",
+                                                                                items=channels,
+                                                                                sort_items=False,
+                                                                                slot=self._get_midi_channel_from_combo)
 
     @staticmethod
     def _channel_label_for(channel: int) -> Optional[str]:
