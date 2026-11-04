@@ -127,6 +127,21 @@ class VocalFXEditor(BasicEditor):
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
+        from jdxi_editor.ui.editors.helpers.edit_buffer_ops import (
+            create_part_syx_row,
+            create_read_from_jdxi_row,
+        )
+
+        read_row, _, self._read_status_label = create_read_from_jdxi_row(
+            lambda: self.read_from_jdxi(
+                status_callback=lambda t: self._read_status_label.setText(t)
+            )
+        )
+        self.main_layout.addWidget(read_row)
+        self.main_layout.addWidget(
+            create_part_syx_row(self.import_part_syx, self.export_part_syx)
+        )
+
         self._apply_vocal_effect_tooltips()
 
         self.midi_requests = [

@@ -34,13 +34,24 @@ from decologr import Decologr as log
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
+    QLabel,
     QLineEdit,
+    QListWidget,
+    QListWidgetItem,
     QMainWindow,
+    QMessageBox,
     QPushButton,
 )
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+from jdxi_editor.midi.sysex.request.read_session import (
+    ReadResult,
+    SectionStatus,
+    collect_editor_requests,
+    sections_from_requests,
+    start_read_session,
+)
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
@@ -74,6 +85,10 @@ class PatchManager(QMainWindow):
         self.midi_helper = midi_helper
         self.save_mode = save_mode
         self.editors = editors
+        self._last_read_result: Optional[ReadResult] = None
+        self._read_session = None
+        self._pending_save_after_read = False
+        self._allow_partial_save = False
 
         # Set window properties
         self.setWindowTitle("Save Patch" if save_mode else "Load Patch")
@@ -96,13 +111,33 @@ class PatchManager(QMainWindow):
         path_layout.addWidget(browse_button)
         layout.addLayout(path_layout)
 
+        # Hardware read status (save mode only)
+        self.read_status_list: Optional[QListWidget] = None
+        self.read_status_label: Optional[QLabel] = None
+        self.read_button: Optional[QPushButton] = None
+        self.read_then_save_button: Optional[QPushButton] = None
+        if save_mode:
+            self.read_status_label = QLabel("Hardware read: not run")
+            layout.addWidget(self.read_status_label)
+            self.read_status_list = QListWidget()
+            self.read_status_list.setMinimumHeight(120)
+            layout.addWidget(self.read_status_list)
+            read_row = QHBoxLayout()
+            self.read_button = QPushButton("Read from JD-Xi")
+            self.read_button.clicked.connect(self._on_read_from_jdxi)
+            self.read_then_save_button = QPushButton("Read then Save")
+            self.read_then_save_button.clicked.connect(self._on_read_then_save)
+            read_row.addWidget(self.read_button)
+            read_row.addWidget(self.read_then_save_button)
+            layout.addLayout(read_row)
+
         # Create action buttons
         button_layout = QHBoxLayout()
-        action_button = QPushButton("Save" if save_mode else "Load")
-        action_button.clicked.connect(self._handle_action)
+        self.action_button = QPushButton("Save" if save_mode else "Load")
+        self.action_button.clicked.connect(self._handle_action)
         cancel_button = QPushButton("Cancel")
         cancel_button.clicked.connect(self.close)
-        button_layout.addWidget(action_button)
+        button_layout.addWidget(self.action_button)
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
 
@@ -142,6 +177,114 @@ class PatchManager(QMainWindow):
                 self.path_input.setText(file_path)
         except Exception as ex:
             log.error(f"Error browsing for file: {str(ex)}")
+
+    def _skip_editor_types(self) -> tuple:
+        return (PatternSequenceEditor, ProgramEditor, MidiFilePlayer)
+
+    def _collect_read_pairs(self) -> list[tuple[str, str]]:
+        return collect_editor_requests(
+            self.editors or [],
+            skip_types=self._skip_editor_types(),
+        )
+
+    def _on_read_from_jdxi(self) -> None:
+        """Request current tone/effect data from the JD-Xi and show section status."""
+        self._pending_save_after_read = False
+        self._start_hardware_read()
+
+    def _on_read_then_save(self) -> None:
+        """Read from hardware, then run save if a path is set."""
+        if not self.path_input.text():
+            QMessageBox.warning(self, "Save Patch", "Select a file path before Read then Save.")
+            return
+        self._pending_save_after_read = True
+        self._start_hardware_read()
+
+    def _start_hardware_read(self) -> None:
+        if self.midi_helper is None:
+            QMessageBox.warning(self, "Read from JD-Xi", "MIDI helper is not available.")
+            return
+        pairs = self._collect_read_pairs()
+        if not pairs:
+            QMessageBox.warning(
+                self,
+                "Read from JD-Xi",
+                "No editors with MIDI requests are registered.",
+            )
+            return
+        labels = [p[0] for p in pairs]
+        requests = [p[1] for p in pairs]
+        if self.read_button:
+            self.read_button.setEnabled(False)
+        if self.read_then_save_button:
+            self.read_then_save_button.setEnabled(False)
+        if self.read_status_label:
+            self.read_status_label.setText("Hardware read: in progress…")
+        self._update_read_status_list(
+            ReadResult(sections=sections_from_requests(requests, labels=labels))
+        )
+        self._read_session = start_read_session(
+            self.midi_helper,
+            requests,
+            labels=labels,
+            timeout_ms=10000,
+            on_progress=self._on_read_progress,
+            on_finished=self._on_read_finished,
+            parent=self,
+        )
+
+    def _update_read_status_list(self, result: ReadResult) -> None:
+        if not self.read_status_list:
+            return
+        self.read_status_list.clear()
+        for section in result.sections:
+            item = QListWidgetItem(f"{section.label} — {section.status.value}")
+            self.read_status_list.addItem(item)
+
+    def _on_read_progress(self, result: ReadResult) -> None:
+        self._update_read_status_list(result)
+        if self.read_status_label:
+            self.read_status_label.setText(
+                f"Hardware read: {result.ok_count}/{len(result.sections)} sections ok"
+            )
+
+    def _on_read_finished(self, result: ReadResult) -> None:
+        self._last_read_result = result
+        self._update_read_status_list(result)
+        if self.read_button:
+            self.read_button.setEnabled(True)
+        if self.read_then_save_button:
+            self.read_then_save_button.setEnabled(True)
+        if self.read_status_label:
+            status = "complete" if result.complete else "partial / timed out"
+            self.read_status_label.setText(
+                f"Hardware read: {status} ({result.ok_count}/{len(result.sections)})"
+            )
+        if self._pending_save_after_read:
+            self._pending_save_after_read = False
+            if result.complete:
+                self._allow_partial_save = True
+                self._handle_action()
+            elif self._confirm_partial_save(result):
+                self._allow_partial_save = True
+                self._handle_action()
+
+    def _confirm_partial_save(self, result: ReadResult) -> bool:
+        missing = [
+            s.label
+            for s in result.sections
+            if s.status != SectionStatus.OK
+        ]
+        reply = QMessageBox.question(
+            self,
+            "Incomplete hardware read",
+            "Some sections did not respond:\n\n"
+            + "\n".join(missing)
+            + "\n\nSave anyway using current UI values?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        return reply == QMessageBox.StandardButton.Yes
 
     def _save_program_common(self, temp_folder: Path) -> None:
         """
@@ -198,6 +341,14 @@ class PatchManager(QMainWindow):
             if not temp_folder.exists():
                 temp_folder.mkdir(parents=True, exist_ok=True)
             if self.save_mode:
+                if (
+                    self._last_read_result is not None
+                    and not self._last_read_result.complete
+                    and not self._allow_partial_save
+                    and not self._confirm_partial_save(self._last_read_result)
+                ):
+                    return
+                self._allow_partial_save = False
                 for editor in self.editors:
                     log.parameter("Editor", editor)
                     if isinstance(editor, PatternSequenceEditor):

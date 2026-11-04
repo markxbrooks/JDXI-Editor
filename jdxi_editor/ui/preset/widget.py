@@ -372,22 +372,22 @@ class InstrumentPresetWidget(QWidget):
             self.parent.update_instrument_title
         )
 
-        # --- Load (round button + label, centered)
-        load_row = QHBoxLayout()
-        load_row.addStretch()
-        load_button = self._add_round_action_button(
-            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
-            "Load",
-            self._on_load_preset,
-            load_row,
-            name=None,
+        from jdxi_editor.ui.editors.helpers.edit_buffer_ops import (
+            create_part_syx_row,
+            create_preset_nav_row,
+            create_read_from_jdxi_row,
         )
-        load_row.addStretch()
-        load_row_widget = QWidget()
-        load_row_widget.setLayout(load_row)
+
+        nav_row, prev_btn, next_btn, load_button = create_preset_nav_row(
+            self._on_prev_preset,
+            self._on_next_preset,
+            self._on_load_preset,
+        )
+        self._preset_prev_button = prev_btn
+        self._preset_next_button = next_btn
 
         selection_layout = create_layout_with_items(
-            [self.instrument_selection_combo, load_row_widget], vertical=True
+            [self.instrument_selection_combo, nav_row], vertical=True
         )
 
         self.tone_midi_info_bar = MidiSelectionInfoBar()
@@ -403,6 +403,24 @@ class InstrumentPresetWidget(QWidget):
             parent=self,
             midi_helper=getattr(self.parent, "midi_helper", None),
         )
+
+        read_row, self._read_from_jdxi_button, self._preset_status_label = (
+            create_read_from_jdxi_row(self._on_read_from_jdxi)
+        )
+        selection_layout.addWidget(read_row)
+        selection_layout.addWidget(
+            create_part_syx_row(self._on_import_part_syx, self._on_export_part_syx)
+        )
+        if synth_type == "Analog":
+            random_row = QHBoxLayout()
+            random_btn = QPushButton("Random Patch")
+            random_btn.setToolTip(
+                "Randomize analog tone parameters (Manager rndVoice)"
+            )
+            random_btn.clicked.connect(self._on_random_analog_patch)
+            random_row.addWidget(random_btn)
+            random_row.addStretch()
+            selection_layout.addLayout(random_row)
 
         layout.addLayout(selection_layout)
 
@@ -520,14 +538,57 @@ class InstrumentPresetWidget(QWidget):
                 channel_label=self._channel_label_for(self.midi_channel),
             )
 
+    def _set_preset_status(self, text: str) -> None:
+        label = getattr(self, "_preset_status_label", None)
+        if label is not None:
+            label.setText(text)
+
+    def _on_prev_preset(self) -> None:
+        combo = self.instrument_selection_combo.combo_box
+        idx = combo.currentIndex()
+        if idx > 0:
+            combo.setCurrentIndex(idx - 1)
+
+    def _on_next_preset(self) -> None:
+        combo = self.instrument_selection_combo.combo_box
+        idx = combo.currentIndex()
+        if idx < combo.count() - 1:
+            combo.setCurrentIndex(idx + 1)
+
+    def _on_read_from_jdxi(self) -> None:
+        parent = self.parent
+        if parent is None or not hasattr(parent, "read_from_jdxi"):
+            if hasattr(parent, "data_request"):
+                parent.data_request()
+                self._set_preset_status("Requested data (F5 path)")
+            return
+        parent.read_from_jdxi(status_callback=self._set_preset_status)
+
+    def _on_import_part_syx(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "import_part_syx"):
+            parent.import_part_syx()
+
+    def _on_export_part_syx(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "export_part_syx"):
+            parent.export_part_syx()
+
+    def _on_random_analog_patch(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "randomize_analog_patch"):
+            parent.randomize_analog_patch()
+            self._set_preset_status("Randomized analog patch")
+
     def _on_load_preset(self):
-        """Handle load button click for normal presets."""
-        # Get the current value from SearchableFilterableComboBox
-        # The value is the preset ID as integer (e.g., 1 for "001")
+        """Load factory preset on hardware, then read parameters into the editor."""
         preset_id_int = self.instrument_selection_combo.value()
-        preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
-        # Emit signal with preset number (preset ID as int)
-        self.parent.load_preset(int(preset_id))
+        self._set_preset_status(f"Loaded preset {preset_id_int} — reading…")
+        if hasattr(self.parent, "read_from_jdxi"):
+            self.parent.load_preset(int(preset_id_int), request_data=False)
+            self.parent.read_from_jdxi(status_callback=self._set_preset_status)
+        else:
+            self.parent.load_preset(int(preset_id_int))
 
     def _load_cheat_preset(self):
         """
@@ -537,8 +598,6 @@ class InstrumentPresetWidget(QWidget):
             log.warning("⚠️ MIDI helper not available for cheat preset loading")
             return
 
-        # Get the current value from SearchableFilterableComboBox
-        # The value is the preset ID as integer (e.g., 1 for "001")
         preset_id_int = self.cheat_preset_combo_box.value()
 
         from jdxi_editor.ui.editors.helpers.preset import (
@@ -551,8 +610,9 @@ class InstrumentPresetWidget(QWidget):
             channel=self.midi_channel,
         )
 
-        # Request data update
-        if hasattr(self.parent, "data_request"):
+        if hasattr(self.parent, "read_from_jdxi"):
+            self.parent.read_from_jdxi()
+        elif hasattr(self.parent, "data_request"):
             self.parent.data_request()
 
     def setup_header_layout(self) -> None:

@@ -312,6 +312,65 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
         container_layout.addWidget(self.tab_widget)
+        self._add_partial_clipboard_row(container_layout)
+
+    def _add_partial_clipboard_row(self, layout) -> None:
+        """Copy / paste current Digital partial (Manager copyPart / pastePart)."""
+        from PySide6.QtWidgets import QHBoxLayout, QPushButton
+
+        row = QHBoxLayout()
+        copy_btn = QPushButton("Copy Partial")
+        copy_btn.setToolTip("Copy the currently selected partial's parameters")
+        copy_btn.clicked.connect(self.copy_current_partial)
+        paste_btn = QPushButton("Paste Partial")
+        paste_btn.setToolTip("Paste into the currently selected partial")
+        paste_btn.clicked.connect(self.paste_current_partial)
+        row.addWidget(copy_btn)
+        row.addWidget(paste_btn)
+        row.addStretch()
+        layout.addLayout(row)
+
+    def _current_partial_panel(self):
+        idx = self.tab_widget.currentIndex() if self.tab_widget else -1
+        # Partials are tabs 0..2
+        if 0 <= idx <= 2:
+            return self.partial_editors.get(idx + 1)
+        # Fall back to partial_number if set
+        pn = getattr(self, "partial_number", None)
+        if pn in self.partial_editors:
+            return self.partial_editors[pn]
+        return self.partial_editors.get(1)
+
+    def copy_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import copy_partial
+
+        panel = self._current_partial_panel()
+        if panel is None or not hasattr(panel, "get_controls_as_dict"):
+            log.warning("No partial panel to copy", scope=self.__class__.__name__)
+            return
+        copy_partial("digital_partial", panel.get_controls_as_dict())
+
+    def paste_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import (
+            apply_controls_to_editor,
+            paste_partial,
+        )
+
+        panel = self._current_partial_panel()
+        if panel is None:
+            log.warning("No partial panel to paste into", scope=self.__class__.__name__)
+            return
+        controls = paste_partial("digital_partial")
+        if controls is None:
+            from PySide6.QtWidgets import QMessageBox
+
+            QMessageBox.warning(
+                self,
+                "Paste Partial",
+                "Clipboard is empty or not a Digital partial. Copy a partial first.",
+            )
+            return
+        apply_controls_to_editor(panel, controls)
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool

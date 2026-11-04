@@ -305,6 +305,112 @@ class SynthBase(QWidget):
             ),
         ).start()
 
+    def read_from_jdxi(
+        self,
+        *,
+        timeout_ms: int = 8000,
+        on_finished=None,
+        status_callback=None,
+    ):
+        """
+        Explicit Manager-style Read: RQ1 for this editor's ``midi_requests``
+        with section completion tracking.
+
+        :param timeout_ms: Wait for DT1 responses
+        :param on_finished: Optional callback(ReadResult)
+        :param status_callback: Optional callback(str) for short status text
+        :return: PatchReadSession or None
+        """
+        from jdxi_editor.midi.sysex.request.read_session import start_read_session
+
+        requests = list(self.midi_requests or [])
+        if not requests:
+            if status_callback:
+                status_callback("No MIDI requests configured")
+            log.warning(
+                "read_from_jdxi: no midi_requests",
+                scope=self.__class__.__name__,
+            )
+            return None
+        if status_callback:
+            status_callback("Reading from JD-Xi…")
+
+        def _finished(result):
+            if status_callback:
+                if result.complete:
+                    status_callback("Read complete")
+                else:
+                    status_callback(
+                        f"Read partial ({result.ok_count}/{len(result.sections)})"
+                    )
+            if on_finished:
+                on_finished(result)
+
+        return start_read_session(
+            self._midi_helper,
+            requests,
+            timeout_ms=timeout_ms,
+            on_finished=_finished,
+            parent=self,
+        )
+
+    def export_part_syx(self, file_path: Optional[str] = None) -> bool:
+        """Export this editor's controls as a per-part .syx file."""
+        from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog
+
+        from jdxi_editor.midi.sysex.part_syx import export_editor_to_syx
+
+        last = getattr(self, "_part_syx_path", "") or str(Path.home() / "part.syx")
+        if not file_path:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Export Part SysEx",
+                last,
+                "SysEx Files (*.syx);;All Files (*)",
+            )
+        if not file_path:
+            return False
+        if not file_path.lower().endswith(".syx"):
+            file_path += ".syx"
+        ok = export_editor_to_syx(self, self._midi_helper, file_path)
+        if ok:
+            self._part_syx_path = file_path
+            log.message(f"Exported part SysEx to {file_path}", scope=self.__class__.__name__)
+        return ok
+
+    def import_part_syx(self, file_path: Optional[str] = None) -> bool:
+        """Import a per-part .syx, validate address area, send to JD-Xi, refresh UI."""
+        from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+
+        from jdxi_editor.midi.sysex.part_syx import import_syx_to_editor
+
+        last = getattr(self, "_part_syx_path", "") or str(Path.home())
+        if not file_path:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Import Part SysEx",
+                last,
+                "SysEx Files (*.syx);;All Files (*)",
+            )
+        if not file_path:
+            return False
+        ok, message = import_syx_to_editor(
+            self._midi_helper, self, file_path, refresh=True
+        )
+        if ok:
+            self._part_syx_path = file_path
+            log.message(
+                f"Imported part SysEx from {file_path}: {message}",
+                scope=self.__class__.__name__,
+            )
+        else:
+            QMessageBox.warning(self, "Import Part SysEx", message)
+        return ok
+
     def _build_sliders(self, specs: list["SliderSpec"]):
         """build sliders"""
         return [

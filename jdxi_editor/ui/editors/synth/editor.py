@@ -476,8 +476,12 @@ class SynthEditor(SynthBase):
             )
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
-    def load_preset(self, preset_index):
-        """Load a preset by program change."""
+    def load_preset(self, preset_index, *, request_data: bool = True):
+        """Load a preset by program change.
+
+        :param request_data: If True, follow with data_request(); set False when
+            the caller will run read_from_jdxi() for tracked readback.
+        """
         # --- Get the combo box - it might be in instrument_preset widget or directly on self
         combo_box = self._get_instrument_selection_combo()
         if not combo_box:
@@ -575,7 +579,8 @@ class SynthEditor(SynthBase):
             self.midi_channel,
             source="synth_editor",
         )
-        self.data_request()
+        if request_data:
+            self.data_request()
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
