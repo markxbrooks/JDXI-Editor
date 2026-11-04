@@ -1,0 +1,7 @@
+#!/bin/bash
+# Set PYTHONPATH to include project root and editable packages (decologr and picomidi)
+# PROJECT_ROOT must be first so jdxi_editor module can be found
+export PYTHONPATH="/Users/brooks/projects/JDXI-Editor:/Users/brooks/projects/decologr:/Users/brooks/projects/PicoMidi:${PYTHONPATH}"
+# Change to project root directory for relative imports/resources
+cd "/Users/brooks/projects/JDXI-Editor"
+exec "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3.10" -m jdxi_editor.main

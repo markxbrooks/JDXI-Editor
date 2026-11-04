@@ -4,7 +4,7 @@ Live readout bar for MIDI channel, bank CC, and program change values.
 
 from __future__ import annotations
 
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
 from PySide6.QtCore import QObject, Slot
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
@@ -63,9 +63,58 @@ class MidiSelectionInfoController(QObject):
         self._info_bar = info_bar
         self._resolver = resolver
         self._midi_helper = midi_helper
+        self._bound_combo: Optional[SearchableFilterableComboBox] = None
+        self._last_value: Optional[int] = None
+        # Tone-binding state (set by bind_tone_midi_info)
+        self._preset_list = None
+        self._channel: Optional[int] = None
+        self._channel_label: Optional[str] = None
+
+    def set_resolver(
+        self, resolver: Callable[[int], Optional[MidiWireInfo]]
+    ) -> None:
+        """Replace the resolver and refresh the current selection."""
+        self._resolver = resolver
+        self._refresh_current()
+
+    def set_channel(
+        self, channel: int, channel_label: Optional[str] = None
+    ) -> None:
+        """
+        Update the MIDI channel used by a tone readout and refresh the bar.
+
+        Only applies when this controller was created via bind_tone_midi_info.
+        """
+        if self._preset_list is None:
+            return
+        self._channel = channel
+        self._channel_label = channel_label
+        self.set_resolver(self._make_tone_resolver())
+
+    def _make_tone_resolver(self) -> Callable[[int], Optional[MidiWireInfo]]:
+        preset_list = self._preset_list
+        channel = self._channel
+        channel_label = self._channel_label
+
+        def resolver(preset_id: int) -> Optional[MidiWireInfo]:
+            return resolve_tone_midi(
+                preset_id,
+                preset_list,
+                channel=channel,
+                channel_label=channel_label,
+            )
+
+        return resolver
+
+    def _refresh_current(self) -> None:
+        if self._last_value is not None:
+            self.refresh(self._last_value)
+        elif self._bound_combo is not None and self._bound_combo.combo_box.count() > 0:
+            self.refresh(self._bound_combo.value())
 
     def refresh(self, value: int) -> None:
         """Resolve and display MIDI info for the given selection value."""
+        self._last_value = value
         info = self._resolver(value)
         self._info_bar.set_info(info)
 
@@ -79,6 +128,7 @@ class MidiSelectionInfoController(QObject):
 
     def bind_searchable_combo(self, combo: SearchableFilterableComboBox) -> None:
         """Connect to SearchableFilterableComboBox.valueChanged."""
+        self._bound_combo = combo
         combo.valueChanged.connect(self.on_value_changed)
         if combo.combo_box.count() > 0:
             self.refresh(combo.value())
@@ -112,18 +162,16 @@ def bind_tone_midi_info(
     midi_helper=None,
 ) -> MidiSelectionInfoController:
     """Wire a tone preset combo to a MIDI info readout."""
-
-    def resolver(preset_id: int) -> Optional[MidiWireInfo]:
-        return resolve_tone_midi(
-            preset_id,
-            preset_list,
-            channel=channel,
-            channel_label=channel_label,
-        )
-
     controller = MidiSelectionInfoController(
-        info_bar, resolver, parent=parent, midi_helper=midi_helper
+        info_bar,
+        lambda _preset_id: None,
+        parent=parent,
+        midi_helper=midi_helper,
     )
+    controller._preset_list = preset_list
+    controller._channel = channel
+    controller._channel_label = channel_label
+    controller.set_resolver(controller._make_tone_resolver())
     controller.bind_searchable_combo(combo)
     return controller
 

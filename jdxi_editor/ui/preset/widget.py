@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget, QVBoxLayout
+import picomidi
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
@@ -28,6 +29,8 @@ from jdxi_editor.ui.widgets.editor.helper import (
     transfer_layout_items,
 )
 from picoui.helpers.layout import create_group
+from picoui.specs.widgets import ComboBoxSpec
+from picoui.widget.helper import create_combo_box, create_combo_row
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -468,15 +471,24 @@ class InstrumentPresetWidget(QWidget):
             search_placeholder="Search presets...",
         )
         layout.addWidget(self.cheat_preset_combo_box)
-
+        from picomidi.core.channel import Channel
+        channels = [str(Channel.display_value(i)) for i in Channel.all_channels()]
+        # channel_strings = [str(j) for j in channels]
+        self.midi_channel_combo_row, self.midi_channel_combo = create_combo_row(label="Midi Channel",
+                                                                                items=channels,
+                                                                                sort_items=False,
+                                                                                slot=self._get_midi_channel_from_combo)
+        self.midi_channel_combo.setCurrentIndex(MidiChannel.ANALOG_SYNTH)
+        self._get_midi_channel_from_combo()
+        layout.addLayout(self.midi_channel_combo_row)
         self.cheat_midi_info_bar = MidiSelectionInfoBar()
         layout.addWidget(self.cheat_midi_info_bar)
-        bind_tone_midi_info(
+        self._cheat_midi_info_controller = bind_tone_midi_info(
             self.cheat_preset_combo_box,
             self.cheat_midi_info_bar,
             JDXi.UI.Preset.Digital.LIST,
-            channel=MidiChannel.ANALOG_SYNTH,
-            channel_label="Analog",
+            channel=self.midi_channel,
+            channel_label=self._channel_label_for(self.midi_channel),
             parent=self,
             midi_helper=getattr(self.parent, "midi_helper", None),
         )
@@ -491,6 +503,22 @@ class InstrumentPresetWidget(QWidget):
         )
 
         layout.addStretch()
+
+    @staticmethod
+    def _channel_label_for(channel: int) -> Optional[str]:
+        midi_ch = MidiChannel.from_midi_channel(channel)
+        return str(midi_ch) if midi_ch is not None else None
+
+    def _get_midi_channel_from_combo(self, *_args) -> None:
+        """Update cheat MIDI channel from combo and refresh the info bar."""
+        self.midi_channel = self.midi_channel_combo.currentIndex()
+        log.info(f"midi channel = {self.midi_channel}")
+        controller = getattr(self, "_cheat_midi_info_controller", None)
+        if controller is not None:
+            controller.set_channel(
+                self.midi_channel,
+                channel_label=self._channel_label_for(self.midi_channel),
+            )
 
     def _on_load_preset(self):
         """Handle load button click for normal presets."""
@@ -520,7 +548,7 @@ class InstrumentPresetWidget(QWidget):
         load_digital_cheat_preset_on_analog(
             self.parent.midi_helper,
             preset_id_int,
-            channel=MidiChannel.ANALOG_SYNTH,
+            channel=self.midi_channel,
         )
 
         # Request data update
