@@ -74,9 +74,12 @@ def set_spinbox_value(spinbox: QSpinBox, value: int):
 def set_sequencer_style(
     btn: SequencerButton, is_current: bool = False, checked: bool = False
 ):
-    """set sequencer style"""
+    """Apply Pattern Editor step style (muted on-state; accent playhead)."""
     btn.setStyleSheet(
-        JDXi.UI.Style.generate_sequencer_button_style(
-            is_checked=checked, is_current=is_current, is_selected_bar=True
+        JDXi.UI.PatternEditor.step_button_style(
+            is_checked=checked,
+            is_current=is_current,
+            is_selected_bar=True,
+            row=getattr(btn, "row", None),
         )
     )

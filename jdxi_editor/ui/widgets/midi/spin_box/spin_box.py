@@ -15,19 +15,7 @@ class MidiSpinBox(QSpinBox):
     def __init__(self, parent: object | None = None) -> None:
         super().__init__(parent)
         self.setRange(1, 16)  # Display range is 1–16
-        style = JDXi.UI.Style
-        self.setStyleSheet(
-            f"""
-            QSpinBox {{
-                background-color: #222;
-                border: none;
-                border-top: 2px solid {style.ACCENT};
-                border-radius: 0;
-                padding: 1px;
-                color: {style.FOREGROUND};
-            }}
-            """
-        )
+        self.setStyleSheet(JDXi.UI.MidiPlayer.spin_box_stylesheet())
 
     def valueFromText(self, text: str) -> int:
         # Convert displayed value (1–16) to internal value (0–15)

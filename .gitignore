@@ -204,3 +204,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 /doc/_build/
+
+# Built application bundles
+*.app/
+# Roland's manuals: keep locally, link to roland.com instead of redistributing
+doc/JD-Xi_ParameterGuide_*.pdf
+doc/JD-Xi_MIDI_Imple*

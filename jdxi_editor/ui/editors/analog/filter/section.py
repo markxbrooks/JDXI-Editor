@@ -29,10 +29,11 @@ class AnalogFilterSection(BaseFilterSection):
 
     UI_TO_FILTER: Dict[Analog.Filter.Mode, AnalogFilterType]
 
-    # Same mechanism as Digital: used by update_controls_state() in base
+    # Same mechanism as Digital: used by update_controls_state() in base, which
+    # compares against Filter.Mode.BYPASS (FilterType members never equal it)
     FILTER_MODE_ENABLED_MAP = {
-        0: Analog.Filter.FilterType.BYPASS,
-        1: Analog.Filter.FilterType.LPF,
+        0: Analog.Filter.Mode.BYPASS,
+        1: Analog.Filter.Mode.LPF,
     }
     FILTER_MODE_MIDI_MAP = {
         Analog.Filter.Mode.BYPASS: Analog.Filter.ModeType.BYPASS,

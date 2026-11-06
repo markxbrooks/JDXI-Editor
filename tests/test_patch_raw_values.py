@@ -26,8 +26,7 @@ _APP = QApplication.instance() or QApplication([])
 from jdxi_editor.midi.data.parameter.analog.address import AnalogParam
 from jdxi_editor.midi.data.parameter.digital import DigitalPartialParam as P
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.io.request_queue import request_queue_for
-from jdxi_editor.midi.io.synth_memory import SynthMemory, build_dt1, synth_memory_for
+from jdxi_editor.midi.io.synth_memory import SynthMemory, build_dt1
 from jdxi_editor.midi.sysex.patch_bundle import (
     convert_editor_sections,
     section_param_dt1s,
@@ -137,7 +136,7 @@ class TestBundleRoundTrip(unittest.TestCase):
         self.helper.midi_out = Mock()
         self.helper.midi_out.is_port_open = Mock(return_value=True)
         self.helper.midi_out.send_message = Mock(side_effect=lambda m: self.sent.append(bytes(m)))
-        self.memory = synth_memory_for(self.helper)
+        self.memory = self.helper.device.memory
         self.memory.clear()
 
     def tearDown(self):
@@ -170,7 +169,7 @@ class TestBundleRoundTrip(unittest.TestCase):
         try:
             self.memory.clear()
             self.helper.load_patch(str(bundle))
-            self.assertTrue(request_queue_for(self.helper).wait_idle(5.0))
+            self.assertTrue(self.helper.device.requests.wait_idle(5.0))
             _APP.processEvents()
         finally:
             self.helper.update_tone_name.disconnect(tone)

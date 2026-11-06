@@ -58,11 +58,13 @@ class MidiSelectionInfoController(QObject):
         resolver: Callable[[int], Optional[MidiWireInfo]],
         parent: Optional[QObject] = None,
         midi_helper=None,
+        lcd_title=None,
     ):
         super().__init__(parent)
         self._info_bar = info_bar
         self._resolver = resolver
         self._midi_helper = midi_helper
+        self._lcd_title = lcd_title
         self._bound_combo: Optional[SearchableFilterableComboBox] = None
         self._last_value: Optional[int] = None
         # Tone-binding state (set by bind_tone_midi_info)
@@ -117,6 +119,8 @@ class MidiSelectionInfoController(QObject):
         self._last_value = value
         info = self._resolver(value)
         self._info_bar.set_info(info)
+        if self._lcd_title is not None and hasattr(self._lcd_title, "set_wire_info"):
+            self._lcd_title.set_wire_info(info)
 
     @Slot(int)
     def on_value_changed(self, value: int) -> None:
@@ -160,13 +164,15 @@ def bind_tone_midi_info(
     channel_label: Optional[str] = None,
     parent: Optional[QObject] = None,
     midi_helper=None,
+    lcd_title=None,
 ) -> MidiSelectionInfoController:
-    """Wire a tone preset combo to a MIDI info readout."""
+    """Wire a tone preset combo to a MIDI info readout (and optional LCD title)."""
     controller = MidiSelectionInfoController(
         info_bar,
         lambda _preset_id: None,
         parent=parent,
         midi_helper=midi_helper,
+        lcd_title=lcd_title,
     )
     controller._preset_list = preset_list
     controller._channel = channel

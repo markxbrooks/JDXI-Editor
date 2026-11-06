@@ -1,13 +1,18 @@
 """
 Partial Panel
+
+The three partials' ON / SELECT buttons, laid out like a section of the JD-Xi
+panel: a small uppercase label over a deep red rule, then the lit buttons.
+
+    PARTIAL 1        PARTIAL 2        PARTIAL 3
+    ─────────        ─────────        ─────────
+    [ON][SELECT]     [ON][SELECT]     [ON][SELECT]
 """
 
-import qtawesome as qta
-from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
+from jdxi_editor.ui.style.editor_style import AppEditorStyle as Style
 from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 
 
@@ -22,37 +27,33 @@ class PartialsPanel(QWidget):
         super().__init__(parent)
 
         layout = QVBoxLayout()
-        layout.setSpacing(3)  # Reduced spacing
-        layout.setContentsMargins(5, 5, 5, 5)  # Reduced margins
+        layout.setSpacing(3)
+        layout.setContentsMargins(5, 5, 5, 5)
         self.setLayout(layout)
 
         partial_layout = QHBoxLayout()
-        partial_layout.setSpacing(8)  # Reduced spacing
+        partial_layout.setSpacing(28)
         partial_layout.addStretch()
 
         # Create switches for each partial (not structure types)
         self.switches = {}
         for partial in DigitalPartial.get_partials():  # Only get actual partials
-            group_box = QGroupBox(f"Partial {partial}")
-            group_layout = QHBoxLayout()
-            partial_icon = QLabel()
-            qta_icon = qta.icon(
-                f"mdi.numeric-{partial}-circle-outline", color=JDXi.UI.Style.GREY
+            section = QVBoxLayout()
+            section.setSpacing(4)
+            label = QLabel(f"PARTIAL {partial.value}")
+            label.setStyleSheet(
+                f"color: {Style.TEXT_SECONDARY}; font-size: 10px; font-weight: 600;"
+                " letter-spacing: 1px; background: transparent;"
             )
-            partial_icon_pixmap = qta_icon.pixmap(
-                JDXi.UI.Style.ICON_SIZE, JDXi.UI.Style.ICON_SIZE
-            )  # Set the desired size
-            partial_icon.setPixmap(partial_icon_pixmap)
-            group_layout.addWidget(partial_icon)
+            section.addWidget(label)
+            rule = QFrame()
+            rule.setFixedHeight(2)
+            rule.setStyleSheet(f"background-color: {Style.METALLIC_RED}; border: none;")
+            section.addWidget(rule)
             switch = PartialSwitch(partial)
             self.switches[partial] = switch
-            group_layout.addWidget(switch)
-            group_layout.setSpacing(3)  # Reduced spacing
-            group_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            group_box.setLayout(group_layout)
-            partial_layout.addWidget(group_box)
+            section.addWidget(switch)
+            partial_layout.addLayout(section)
 
         layout.addLayout(partial_layout)
         partial_layout.addStretch()
-        # Style
-        self.setStyleSheet(JDXi.UI.Style.PARTIALS_PANEL)

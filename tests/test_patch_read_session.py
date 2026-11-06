@@ -172,9 +172,9 @@ class TestDt1Matching(unittest.TestCase):
         self.assertTrue(finished[0].complete, finished[0].summary())
         self.assertFalse(session._connected)
         # The RQ1s go out one at a time through the shared request queue
-        from jdxi_editor.midi.io.request_queue import request_queue_for
+        from jdxi_editor.midi.io.device import device_for
 
-        self.assertTrue(request_queue_for(helper).wait_idle(2.0))
+        self.assertTrue(device_for(helper).requests.wait_idle(2.0))
         self.assertEqual(len(helper.sent), 3)
 
     def test_loaded_patch_json_is_not_taken_as_a_reply(self):

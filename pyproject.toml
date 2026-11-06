@@ -23,47 +23,64 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: Multimedia :: Sound/Audio :: MIDI",
 ]
+# What the application imports (checked by starting the main window with
+# each module blocked); a frozen developer environment is not a dependency list
 dependencies = [
     "PySide6>=6.8.1.1",
-    "PySide6_Addons>=6.8.1.1",
-    "PySide6_Essentials>=6.8.1.1",
     "python-rtmidi>=1.5.8",
-    "qtpy",
+    "mido>=1.3",
     "qtawesome",
-    "mido",
     "Pillow",
+    "numpy",
+    "music21",
+    "PyAudio",
+    "pyqtdarktheme",
+    "darkdetect",
+    "SQLAlchemy>=2.0",
     "decologr",
     "picomidi",
-    "pyfluidsynth"
+    "pyfluidsynth",
 ]
 
 [project.optional-dependencies]
 soundfont = ["sf2utils>=1.0.0", "sounddevice>=0.4.0"]
+plots = ["matplotlib"]
+dev = ["pytest>=8", "mypy", "black", "isort", "flake8"]
 
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"
-Repository = "https://github.com/markxbrooks/JDXI-Manager.git"
+Repository = "https://github.com/markxbrooks/JDXI-Editor.git"
 Issues = "https://github.com/markxbrooks/JDXI-Editor/issues"
 
 [project.scripts]
-jdxi_manager = "jdxi_manager.main:main"
+jdxi_manager = "jdxi_editor.main:main"
+jdxi-editor = "jdxi_editor.main:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["jdxi-editor"]
+# picoui is shipped from this repository until a release newer than 0.1.1
+# (which lacks picoui.helpers, dialogs, menu, ...) is published.
+# resources/ sits next to the package (see jdxi_editor/resources.py); it is
+# shipped without image-editor sources and the README/demo animations.
+only-include = ["jdxi_editor", "picoui", "resources"]
+exclude = ["jdxi_editor/devel", "*.xcf", "*.rhif", "*.gif", "*.mp4", "*.mov", ".DS_Store"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra -q -m 'not slow and not hardware'"
 testpaths = [
     "tests",
+]
+markers = [
+    "slow: needs local files or plays in real time (run with -m slow)",
+    "hardware: needs a connected JD-Xi (run with -m hardware)",
 ]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.isort]

@@ -194,7 +194,6 @@ class BaseSynthEditor(SynthEditor):
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.add_stretch()
         self.update_instrument_image()
         self.build_widgets()
 
@@ -204,7 +203,7 @@ class BaseSynthEditor(SynthEditor):
         JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
         if not self.analog:
             JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
-            JDXi.UI.Theme.apply_editor_style(self.tab_widget)
+            JDXi.UI.Theme.apply_editor_style(self.tab_widget, body=False)
 
     def set_dimensions(self):
         """set dimensions"""

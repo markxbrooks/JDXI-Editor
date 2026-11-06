@@ -38,6 +38,10 @@ DIGITAL2_MODIFY_SYSEX = bytes.fromhex(
     "F0 41 10 00 00 00 0E 12 19 21 50 00 00 55 00 00 F7"
 )
 IDENTITY_REQUEST = bytes([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
+# Roland DT1 for another model (0F instead of the JD-Xi's 0E)
+NON_JDXI_ROLAND_SYSEX = bytes.fromhex(
+    "F0 41 10 00 00 00 0F 12 19 01 00 00 10 7F 56 F7"
+)
 DRUMS_RQ1_SYSEX = bytes.fromhex(
     "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7"
 )

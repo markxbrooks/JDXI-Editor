@@ -29,8 +29,6 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QListWidget,
-    QListWidgetItem,
     QPushButton,
     QSizePolicy,
     QSpinBox,
@@ -40,6 +38,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_button,
@@ -58,15 +57,15 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
 from jdxi_editor.ui.editors.pattern.spec import SequencerRowSpec
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
-from jdxi_editor.ui.style import JDXiUIThemeManager
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
+from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.pattern_file_group import PatternFileGroup
 from jdxi_editor.ui.widgets.transport.transport import PatternTransportWidget
-from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
+from jdxi_editor.ui.widgets.pattern.measure_widget import ROW_SPACING, PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from jdxi_editor.ui.widgets.pattern.widget import PatternConfig, PatternWidget
+from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.usb.recording import USBFileRecordingWidget
 from picoui.helpers import create_layout_with_items
 from picoui.helpers.spinbox import spinbox_with_label_from_spec
@@ -148,22 +147,26 @@ class PatternUI(SynthEditor):
         self.midi_state: MidiPlaybackState = MidiPlaybackState()
         self.usb_recorder = USBFileRecordingWidget(self.midi_state)
         self._setup_ui()
+        self._apply_pattern_editor_style()
 
-        JDXi.UI.Theme.apply_editor_style(self)
+    def _apply_pattern_editor_style(self) -> None:
+        """Player-aligned chrome: grey GroupBoxes; accent only when active."""
+        mark_editor_body(self)
+        self.setStyleSheet(JDXi.UI.PatternEditor.editor_stylesheet())
 
     def _build_row_specs(self):
         """build row specs"""
         self.row_specs: list[SequencerRowSpec] = [
             SequencerRowSpec(
-                "Digital Synth 1", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
+                "Digital Synth 1", JDXi.UI.Icon.PIANO, SequencerStyle.DIGITAL
             ),
             SequencerRowSpec(
-                "Digital Synth 2", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT
+                "Digital Synth 2", JDXi.UI.Icon.PIANO, SequencerStyle.DIGITAL_2
             ),
             SequencerRowSpec(
-                "Analog Synth", JDXi.UI.Icon.PIANO, JDXi.UI.Style.ACCENT_ANALOG
+                "Analog Synth", JDXi.UI.Icon.PIANO, SequencerStyle.ANALOG
             ),
-            SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, JDXi.UI.Style.ACCENT),
+            SequencerRowSpec("Drums", JDXi.UI.Icon.DRUM, SequencerStyle.DRUMS),
         ]
 
     def showEvent(self, event: QEvent) -> None:
@@ -206,38 +209,41 @@ class PatternUI(SynthEditor):
         # Assemble all specs for buttons and combos (used below)
         self.specs = self._build_specs()
 
-        # Add transport and file controls at the top
-        control_panel = QHBoxLayout()
-
         self.pattern_file_group = PatternFileGroup(parent=self)
         self.drum_selector = self.pattern_file_group.drum_selector
-
-        measure_group = self._create_measure_group()
-        control_panel.addWidget(measure_group)
 
         learn_group = self._create_learn_group()
         # not adding this for now
 
-        # --- Group 1 : Tempo and Beats
-        tempo_group = self._create_tempo_group()
-        beats_group = self._create_beats_group()
-        tempo_beats_layout = create_layout_with_items(
-            [tempo_group, beats_group], vertical=True
-        )
-        control_panel.addLayout(tempo_beats_layout)
+        # Compact lines above the grid:
+        #   ▶ Play  ■ Stop  ❙❙ Pause  ⤮ Shuffle                Load  Save    Clear…
+        #   BPM [120] Tap · Steps [16] · Vel [100] · Dur [16th]      [USB Recorder]
+        #   + Add Measure  ☐ Copy previous  ·  Steps [1] to [16]  Copy  Paste
+        self.pattern_transport = PatternTransportWidget(parent=self)
+        self.play_button = self.pattern_transport.play_button
+        self.stop_button = self.pattern_transport.stop_button
+        self.pause_button = self.pattern_transport.pause_button
+        self.shuffle_button = self.pattern_transport.shuffle_button
+        transport_row = QHBoxLayout()
+        transport_row.addWidget(self.pattern_transport)
+        transport_row.addStretch()
+        transport_row.addWidget(self.pattern_file_group)
 
-        # --- Group 2: Velocity and duration
-        velocity_group = self._create_velocity_group()
-        duration_group = self._create_duration_group()
-        velocity_duration_layout = create_layout_with_items(
-            [velocity_group, duration_group], vertical=True
-        )
-        control_panel.addLayout(velocity_duration_layout)
-
-        # --- add usb recorder
-        control_panel.addWidget(self.usb_recorder)
-
-        self.layout.addLayout(control_panel)
+        # Display at the left of the three lines, as in the MIDI File Player:
+        # tempo (and bar.step while playing) above, the pattern's file below
+        self.digital_title = DigitalTitle(tone_name="New pattern", show_upper_text=True)
+        rows = QVBoxLayout()
+        rows.addLayout(transport_row)
+        rows.addLayout(self._create_toolbar_row())
+        rows.addLayout(self._create_edit_row())
+        header = QHBoxLayout()
+        header.setSpacing(JDXi.UI.PatternEditor.SPACING_GROUP)
+        header.addWidget(self.digital_title, 0, Qt.AlignmentFlag.AlignTop)
+        header.addLayout(rows, 1)
+        self.layout.addLayout(header)
+        # USB Recorder: shown on demand (recording works while it is hidden)
+        self.usb_recorder.setVisible(False)
+        self.layout.addWidget(self.usb_recorder)
 
         # Create splitter for measures list and sequencer (builds measures group + sequencer widget)
         self._build_splitter_section()
@@ -249,19 +255,7 @@ class PatternUI(SynthEditor):
             3: self.drum_selector,
         }
 
-        # Transport at bottom, centered (stretch on both sides)
-        self.pattern_transport = PatternTransportWidget(parent=self)
-        self.play_button = self.pattern_transport.play_button
-        self.stop_button = self.pattern_transport.stop_button
-        self.pause_button = self.pattern_transport.pause_button
-        self.shuffle_button = self.pattern_transport.shuffle_button
-        transport_bottom_layout = create_layout_with_items(
-            [
-                self.pattern_transport,
-                self.pattern_file_group,
-            ]
-        )
-        self.layout.addLayout(transport_bottom_layout)
+        self.layout.addStretch()
 
         # Add content to scrollable area so the widget tree is retained
         self._container_layout.addWidget(content_widget)
@@ -277,69 +271,65 @@ class PatternUI(SynthEditor):
         self.layout.addWidget(self.pattern_widget)
 
     def _create_headers_widget(self) -> QWidget:
-        """Create header rows (icon, label, combo, mute) for PatternWidget."""
+        """
+        Row headers beside the step grid: one per part, as tall as its row.
+
+            [icon] Digital Synth 1  [C4 ▾] [mute]
+        """
         widget = QWidget()
         layout = QVBoxLayout(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(ROW_SPACING)
         for row_idx, label in enumerate(self.row_labels):
-            layout.addLayout(self._create_header_row(row_idx, label))
+            layout.addWidget(self._create_header_row(row_idx, label))
         return widget
 
-    def _create_header_row(self, row_idx: int, label_text: str) -> QHBoxLayout:
-        """Create one row: [icon, label, combo] [mute] (no step buttons)."""
-        row_layout = QHBoxLayout()
-        row_layout.addLayout(self._create_row_header(row_idx, label_text))
-        mute_btn_layout = QHBoxLayout()
-        mute_btn_layout.addStretch()
-        mute_btn = self._add_round_action_button(
-            JDXi.UI.Icon.MUTE,
-            self.tr("Mute"),
-            None,
-            mute_btn_layout,
-            checkable=True,
-            append_to=self.mute_buttons,
-        )
-        # Synth-style: unmuted=lit, muted=dark (checked_means_inactive)
-        mute_btn.setStyleSheet(
-            generate_sequencer_button_style(True, checked_means_inactive=True)
-        )
-        mute_btn.toggled.connect(
-            lambda checked, row=row_idx: self._toggle_mute(row, checked)
-        )
-        mute_btn_layout.addStretch()
-        row_layout.addLayout(mute_btn_layout)
-        return row_layout
+    def _create_header_row(self, row_idx: int, label_text: str) -> QWidget:
+        """One part's header: icon, name, note for new steps, mute."""
+        mp = JDXi.UI.PatternEditor
+        row = QWidget()
+        row.setFixedHeight(JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE)
+        row_layout = QHBoxLayout(row)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(mp.SPACING_RELATED)
 
-    def _create_row_header(self, row_idx: int, label_text: str) -> QHBoxLayout:
-        """create row header"""
-
+        color = self.row_specs[row_idx].accent_color
         icon_label = QLabel()
-        icon_label.setPixmap(self._get_row_icon(row_idx).pixmap(40, 40))
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_label.setPixmap(
+            JDXi.UI.Icon.get_icon(self.row_specs[row_idx].icon, color=color).pixmap(
+                mp.TRACK_ICON_SIZE + 4, mp.TRACK_ICON_SIZE + 4
+            )
+        )
+        row_layout.addWidget(icon_label)
 
         label = QLabel(label_text)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setFixedWidth(110)
         label.setStyleSheet(self._get_row_label_style(row_idx))
-
-        layout = create_layout_with_items([icon_label, label])
+        row_layout.addWidget(label)
 
         selector = self._create_selector_for_row(row_idx)
         if selector:
-            layout.addWidget(selector)
+            selector.setFixedWidth(84)
+            selector.setToolTip(
+                "Drum sound for new steps" if row_idx == 3 else "Note for new steps"
+            )
+            row_layout.addWidget(selector)
 
-        return layout
-
-    def _get_row_icon(self, row_idx: int):
-        """get row icon"""
-        icon_map = {
-            0: JDXi.UI.Icon.PIANO,
-            1: JDXi.UI.Icon.PIANO,
-            2: JDXi.UI.Icon.PIANO,
-            3: JDXi.UI.Icon.DRUM,
-        }
-
-        icon_key = icon_map.get(row_idx, JDXi.UI.Icon.PIANO)
-
-        return JDXi.UI.Icon.get_icon(icon_key, color=JDXi.UI.Style.FOREGROUND)
+        mute_btn = QPushButton()
+        mute_btn.setIcon(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.MUTE, color=JDXi.UI.Style.FOREGROUND)
+        )
+        mute_btn.setToolTip(f"Mute {label_text}")
+        mute_btn.setCheckable(True)
+        size = JDXi.UI.Style.BUTTON_TRACK_WIDTH + 6
+        mute_btn.setFixedSize(size, size)
+        mute_btn.setStyleSheet(mp.track_toggle_stylesheet(mp.ACCENT))
+        mute_btn.toggled.connect(
+            lambda checked, r=row_idx: self._toggle_mute(r, checked)
+        )
+        self.mute_buttons.append(mute_btn)
+        row_layout.addWidget(mute_btn)
+        return row
 
     def _get_row_label_style(self, row_idx: int) -> str:
         spec = self.row_specs[row_idx]
@@ -399,9 +389,6 @@ class PatternUI(SynthEditor):
 
         self.main_layout.addWidget(self.base_widget)
 
-    def _on_measure_selected(self, item: QListWidgetItem):
-        raise NotImplementedError("Should be implemented in subclass")
-
     @property
     def buttons(self):
         """Delegate to current measure's buttons for playback/display."""
@@ -418,13 +405,6 @@ class PatternUI(SynthEditor):
         return []
 
     @property
-    def measures_list(self):
-        """Delegate to pattern_widget measures list."""
-        if self.pattern_widget:
-            return self.pattern_widget.measures_list
-        return None
-
-    @property
     def current_measure_index(self):
         """Delegate to pattern_widget current measure index."""
         if self.pattern_widget:
@@ -436,72 +416,107 @@ class PatternUI(SynthEditor):
         if self.pattern_widget:
             self.pattern_widget.current_measure_index = value
 
-    def _create_duration_group(self) -> QGroupBox:
-        """Duration control area"""
-        duration_group = QGroupBox("Duration")
-        duration_layout = QHBoxLayout()
-
-        self.duration_label = QLabel("Dur:")
-        self.duration_combo = create_combo_box(spec=self.specs["combos"]["duration"])
-        self.duration_combo.setCurrentIndex(0)  # Default to 16th note
-        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
-
-        duration_layout.addWidget(self.duration_label)
-        duration_layout.addWidget(self.duration_combo)
-        duration_group.setLayout(duration_layout)
-        return duration_group
-
-    def _create_velocity_group(self) -> QGroupBox:
-        """Velocity control area"""
-        velocity_group = QGroupBox("Velocity")
-        velocity_layout = QHBoxLayout()
-
-        self.velocity_label, self.velocity_spinbox = spinbox_with_label_from_spec(
-            self.specs["spinboxes"]["velocity"]
-        )
-
-        velocity_layout.addWidget(self.velocity_label)
-        velocity_layout.addWidget(self.velocity_spinbox)
-        velocity_group.setLayout(velocity_layout)
-        return velocity_group
-
-    def _create_beats_group(self) -> QGroupBox:
-        """Beats per measure control area"""
-        beats_group = QGroupBox("Beats per Measure")
-        beats_layout = QHBoxLayout()
-
-        self.beats_per_measure_combo = create_combo_box(
-            spec=self.specs["combos"]["beats_per_measure"]
-        )
-        self.beats_per_measure_combo.setCurrentIndex(0)  # Default to 16 beats
-        self.beats_per_measure_combo.currentIndexChanged.connect(
-            self._on_beats_per_measure_changed
-        )
-
-        beats_layout.addWidget(self.beats_per_measure_combo)
-        beats_group.setLayout(beats_layout)
-        return beats_group
-
-    def _on_beats_per_measure_changed(self, index):
-        raise NotImplementedError
-
-    def _create_tempo_group(self) -> QGroupBox:
-        """Tempo control area"""
-        tempo_group = QGroupBox("Tempo")
-        tempo_layout = QHBoxLayout()
+    def _create_toolbar_row(self) -> QHBoxLayout:
+        """BPM + Tap · Steps · Vel · Dur, and the USB Recorder toggle."""
+        mp = JDXi.UI.PatternEditor
+        row = QHBoxLayout()
+        row.setSpacing(mp.SPACING_RELATED)
 
         self.tempo_label, self.tempo_spinbox = spinbox_with_label_from_spec(
             self.specs["spinboxes"]["tempo"]
         )
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
+        row.addWidget(self.tempo_label)
+        row.addWidget(self.tempo_spinbox)
+        self._add_tool_button("tap_tempo", self.specs["buttons"]["tap_tempo"], row)
+        row.addSpacing(mp.SPACING_GROUP)
 
-        tempo_layout.addWidget(self.tempo_label)
-        tempo_layout.addWidget(self.tempo_spinbox)
-        self._add_button_with_label_from_spec(
-            "tap_tempo", self.specs["buttons"]["tap_tempo"], tempo_layout
+        row.addWidget(QLabel(self.tr("Steps:")))
+        self.beats_per_measure_combo = create_combo_box(
+            spec=self.specs["combos"]["beats_per_measure"]
         )
-        tempo_group.setLayout(tempo_layout)
-        return tempo_group
+        self.beats_per_measure_combo.setCurrentIndex(0)  # 16 steps (4/4)
+        self.beats_per_measure_combo.currentIndexChanged.connect(
+            self._on_beats_per_measure_changed
+        )
+        row.addWidget(self.beats_per_measure_combo)
+        row.addSpacing(mp.SPACING_GROUP)
+
+        self.velocity_label, self.velocity_spinbox = spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["velocity"]
+        )
+        row.addWidget(self.velocity_label)
+        row.addWidget(self.velocity_spinbox)
+        row.addSpacing(mp.SPACING_GROUP)
+
+        self.duration_label = QLabel("Dur:")
+        self.duration_combo = create_combo_box(spec=self.specs["combos"]["duration"])
+        self.duration_combo.setCurrentIndex(0)  # Default to 16th note
+        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
+        row.addWidget(self.duration_label)
+        row.addWidget(self.duration_combo)
+        row.addStretch()
+
+        self.usb_recorder_toggle = QPushButton(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND),
+            self.tr("USB Recorder"),
+        )
+        self.usb_recorder_toggle.setCheckable(True)
+        self.usb_recorder_toggle.setToolTip(self.tr("Show the USB audio recorder"))
+        self.usb_recorder_toggle.setStyleSheet(mp.tool_button_stylesheet())
+        self.usb_recorder_toggle.toggled.connect(self.usb_recorder.setVisible)
+        row.addWidget(self.usb_recorder_toggle)
+        return row
+
+    def _create_edit_row(self) -> QHBoxLayout:
+        """Add Measure · Copy previous · step range · Copy · Paste."""
+        mp = JDXi.UI.PatternEditor
+        row = QHBoxLayout()
+        row.setSpacing(mp.SPACING_RELATED)
+
+        self._add_tool_button("add_measure", self.specs["buttons"]["add_measure"], row)
+        self.copy_previous_measure_checkbox = QCheckBox(
+            f"Copy previous {self.measure_name.lower()}"
+        )
+        self.copy_previous_measure_checkbox.setChecked(False)
+        JDXi.UI.Theme.apply_button_mini_style(self.copy_previous_measure_checkbox)
+        row.addWidget(self.copy_previous_measure_checkbox)
+        row.addSpacing(mp.SPACING_GROUP)
+
+        start_label, self.start_step_spinbox = spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["start"]
+        )
+        _, self.end_step_spinbox = spinbox_with_label_from_spec(
+            self.specs["spinboxes"]["end"]
+        )
+        row.addWidget(start_label)
+        row.addWidget(self.start_step_spinbox)
+        row.addWidget(QLabel(self.tr("to")))
+        row.addWidget(self.end_step_spinbox)
+        self._add_tool_button("copy", self.specs["buttons"]["copy"], row)
+        self._add_tool_button("paste", self.specs["buttons"]["paste"], row)
+        self.paste_button.setEnabled(False)  # Disabled until something is copied
+        row.addStretch()
+        return row
+
+    def _add_tool_button(
+        self, name: str, spec: ButtonSpec, layout: QHBoxLayout
+    ) -> QPushButton:
+        """Compact icon + text button from a ButtonSpec (sets self.<name>_button)."""
+        button = QPushButton(
+            JDXi.UI.Icon.get_icon(spec.icon, color=JDXi.UI.Style.FOREGROUND),
+            spec.label,
+        )
+        button.setToolTip(spec.tooltip or "")
+        button.setStyleSheet(JDXi.UI.PatternEditor.tool_button_stylesheet())
+        if spec.slot is not None:
+            button.clicked.connect(spec.slot)
+        setattr(self, f"{name}_button", button)
+        layout.addWidget(button)
+        return button
+
+    def _on_beats_per_measure_changed(self, index):
+        raise NotImplementedError
 
     def _create_spinbox_specs(self) -> dict[str, SpinBoxSpec]:
         """create spin box specs"""
@@ -521,18 +536,18 @@ class PatternUI(SynthEditor):
                 tooltip=self.tr("Tempo in beats per minute (20–300)"),
             ),
             "start": SpinBoxSpec(
-                label=self.tr("Start"),
-                min_val=0,
-                max_val=15,
-                value=0,
-                tooltip=self.tr("Start step (0–15)"),
+                label=self.tr("Steps"),
+                min_val=1,
+                max_val=16,
+                value=1,
+                tooltip=self.tr("First step to copy, or where to paste (1–16)"),
             ),
             "end": SpinBoxSpec(
-                label=self.tr("End"),
-                min_val=0,
-                max_val=15,
-                value=15,
-                tooltip=self.tr("End step (0–15)"),
+                label=self.tr("to"),
+                min_val=1,
+                max_val=16,
+                value=16,
+                tooltip=self.tr("Last step to copy (1–16)"),
             ),
         }
 
@@ -549,67 +564,6 @@ class PatternUI(SynthEditor):
         )
         learn_group.setLayout(learn_layout)
         return learn_group
-
-    def _create_measure_group(self) -> QGroupBox:
-        """Measure management area (separate row for Add Measure button and checkbox)"""
-
-        # First row: Add Measure button and Copy checkbox
-        measure_controls_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "add_measure", self.specs["buttons"]["add_measure"], measure_controls_layout
-        )
-        self.copy_previous_measure_checkbox = QCheckBox(
-            f"Copy previous {self.measure_name.lower()}"
-        )
-        self.copy_previous_measure_checkbox.setChecked(False)
-        JDXiUIThemeManager.apply_button_mini_style(self.copy_previous_measure_checkbox)
-
-        measure_controls_layout.addWidget(self.copy_previous_measure_checkbox)
-        measure_controls_layout.addStretch()  # Push controls to the left
-
-        # Copy/Paste controls (round buttons + icon labels)
-        copy_paste_layout = QHBoxLayout()
-        self._add_button_with_label_from_spec(
-            "copy", self.specs["buttons"]["copy"], copy_paste_layout
-        )
-        self._add_button_with_label_from_spec(
-            "paste", self.specs["buttons"]["paste"], copy_paste_layout
-        )
-        self.paste_button.setEnabled(False)  # Disabled until something is copied
-
-        # Step range selection (use SpinBoxSpec for both start and end)
-        start_label, self.start_step_spinbox = spinbox_with_label_from_spec(
-            self.specs["spinboxes"]["start"]
-        )
-        end_label, self.end_step_spinbox = spinbox_with_label_from_spec(
-            self.specs["spinboxes"]["end"]
-        )
-        step_label = QLabel(self.tr("Steps:"))
-        to_label = QLabel(self.tr("to"))
-
-        step_layout_widgets = [
-            step_label,
-            start_label,
-            self.start_step_spinbox,
-            to_label,
-            end_label,
-            self.end_step_spinbox,
-        ]
-        step_range_layout = create_layout_with_items(
-            items=step_layout_widgets, start_stretch=False, end_stretch=False
-        )
-        measure_group, measure_layout = create_group_with_layout(
-            label=self.measure_name_plural, vertical=True
-        )
-        measure_group_layouts = [
-            measure_controls_layout,
-            copy_paste_layout,
-            step_range_layout,
-        ]
-        for layout in measure_group_layouts:
-            measure_layout.addLayout(layout)
-        measure_group.setLayout(measure_layout)
-        return measure_group
 
     def _log_and_return(self, ok: bool, msg: str) -> bool:
         """log and return"""
@@ -727,8 +681,8 @@ class PatternUI(SynthEditor):
             "combos": {
                 "drum": _combo_spec(self.drum_options),
                 "beats_per_measure": ComboBoxSpec(
-                    items=["16 beats per measure", "12 beats per measure"],
-                    tooltip="",
+                    items=["16 steps", "12 steps"],
+                    tooltip="Steps per measure: 16 (4/4) or 12 (3/4), in 16th notes",
                     slot=None,
                 ),
                 "duration": ComboBoxSpec(

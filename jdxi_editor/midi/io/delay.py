@@ -8,7 +8,7 @@ requesting at the same moment no longer flood the JD-Xi.
 """
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.io.request_queue import request_queue_for
+from jdxi_editor.midi.io.device import device_for
 
 
 def send_with_delay(midi_helper: MidiIOHelper, midi_requests: list) -> None:
@@ -22,6 +22,6 @@ def send_with_delay(midi_helper: MidiIOHelper, midi_requests: list) -> None:
     :return: None
     """
     try:
-        request_queue_for(midi_helper).submit(midi_requests)
+        device_for(midi_helper).request(midi_requests)
     except Exception as ex:
         print(f"Error {ex} occurred queueing messages {midi_requests}")

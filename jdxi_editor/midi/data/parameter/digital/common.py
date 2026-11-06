@@ -99,7 +99,7 @@ class DigitalCommonParam(AddressParameter):
 
     # Tone level
     TONE_LEVEL = ParameterSpec(
-        0x0C, 0, 127, "Adjusts the overall volume of the tone", "Tone Level"
+        0x0C, 0, 127, 0, 127, "Adjusts the overall volume of the tone", "Tone Level"
     )  # Overall tone level
     # Performance parameters
     PORTAMENTO_SWITCH = ParameterSpec(
@@ -159,22 +159,22 @@ class DigitalCommonParam(AddressParameter):
 
     # Partial switches
     PARTIAL1_SWITCH = ParameterSpec(
-        0x19, 0, 1, 0, 24, "Partial 1 turn on (OFF, ON)", "Partial 1 Switch"
+        0x19, 0, 1, 0, 1, "Partial 1 turn on (OFF, ON)", "Partial 1 Switch"
     )  # Partial 1 Switch (OFF, ON)
     PARTIAL1_SELECT = ParameterSpec(
         0x1A, 0, 1, 0, 1, "Partial 1 select and edit (OFF, ON)", "Partial 1 Select"
     )  # Partial 1 Select (OFF, ON)
     PARTIAL2_SWITCH = ParameterSpec(
-        0x1B, 0, 1, 0, 24, "Partial 2 turn on (OFF, ON)", "Partial 2 Switch"
+        0x1B, 0, 1, 0, 1, "Partial 2 turn on (OFF, ON)", "Partial 2 Switch"
     )  # Partial 2 Switch (OFF, ON)
     PARTIAL2_SELECT = ParameterSpec(
-        0x1C, 0, 1, 0, 1, "Partial 2 select and edit (OFF, ON)", "Partial 1 Select"
+        0x1C, 0, 1, 0, 1, "Partial 2 select and edit (OFF, ON)", "Partial 2 Select"
     )  # Partial 2 Select (OFF, ON)
     PARTIAL3_SWITCH = ParameterSpec(
         0x1D, 0, 1, 0, 1, "Partial 3 turn on (OFF, ON)", "Partial 3 Switch"
     )  # Partial 3 Switch (OFF, ON)
     PARTIAL3_SELECT = ParameterSpec(
-        0x1E, 0, 1, "Partial 3 select and edit (OFF, ON)", "Partial 3 Select"
+        0x1E, 0, 1, 0, 1, "Partial 3 select and edit (OFF, ON)", "Partial 3 Select"
     )  # Partial 3 Select (OFF, ON)
 
     # Additional parameters
@@ -192,7 +192,7 @@ class DigitalCommonParam(AddressParameter):
         0,
         1,
         0,
-        21,
+        1,
         "This layers a single sound.\nIf the Unison Switch is on, the number of notes layered on one key will change according to the\nnumber of keys you play.",
         "Unison Switch",
     )  # OFF, ON

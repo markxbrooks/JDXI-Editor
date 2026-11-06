@@ -9,18 +9,13 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional
 
 from PySide6.QtCore import QPoint, Qt
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
     set_sequencer_style,
 )
+from jdxi_editor.ui.widgets.pattern.measure_strip import MeasureStrip
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi.pattern.measure import PatternMeasure
@@ -62,7 +57,7 @@ class PatternWidget(QWidget):
 
         # UI Components
         self.measure_widgets: List[PatternMeasureWidget] = []
-        self.measures_list: Optional[QListWidget] = None
+        self.measure_strip: Optional[MeasureStrip] = None
 
         # Data Models
         self.measures: List[PatternMeasure] = []
@@ -75,6 +70,8 @@ class PatternWidget(QWidget):
         self.on_measure_selected: Optional[Callable[[int], None]] = None
         self.on_measure_added: Optional[Callable[[int], None]] = None
         self.on_measure_removed: Optional[Callable[[int], None]] = None
+        # The strip's + tile; without a handler it adds an empty measure
+        self.on_add_requested: Optional[Callable[[], None]] = None
         self._button_context_handler: Optional[
             Callable[[SequencerButton, QPoint], None]
         ] = None
@@ -85,30 +82,41 @@ class PatternWidget(QWidget):
         self._setup_ui()
         self._initialize_measures(self.config.initial_measures)
         self._show_current_measure()
+        self.measure_strip.set_current(self.current_measure_index)
 
     def _setup_ui(self) -> None:
-        """Setup the UI layout."""
-        main_layout = QHBoxLayout()
+        """Setup the UI layout: measure strip above the row headers and steps."""
+        main_layout = QVBoxLayout()
+        main_layout.setSpacing(10)
 
-        # Measures list (navigation panel)
-        self.measures_list = QListWidget()
-        self.measures_list.setMaximumWidth(150)
-        self.measures_list.itemSelectionChanged.connect(self._on_measure_selected)
+        # Measures (navigation): a row of tiles with a miniature of each
+        self.measure_strip = MeasureStrip()
+        self.measure_strip.measure_clicked.connect(self.select_measure)
+        self.measure_strip.add_requested.connect(self._on_add_requested)
 
-        # Sequencer display area (header optional, content from _show_current_measure)
+        # Sequencer display area: row headers (optional) beside the steps of
+        # the current measure, so each part's name and mute sit on its row
         self.sequencer_display = QVBoxLayout()
+        self.sequencer_display.setContentsMargins(0, 0, 0, 0)
         self._sequencer_right = QWidget()
         self._sequencer_right_layout = QVBoxLayout(self._sequencer_right)
-        self._sequencer_right_layout.addLayout(self.sequencer_display)
+        self._rows_layout = QHBoxLayout()
+        self._rows_layout.setSpacing(12)
+        self._rows_layout.addLayout(self.sequencer_display, 1)
+        self._sequencer_right_layout.addLayout(self._rows_layout)
+        self._sequencer_right_layout.addStretch()
 
-        main_layout.addWidget(self.measures_list, 1)  # Navigation
-        main_layout.addWidget(self._sequencer_right, 4)  # Main display
+        main_layout.addWidget(self.measure_strip)  # Navigation
+        main_layout.addWidget(self._sequencer_right, 1)  # Main display
 
         self.setLayout(main_layout)
 
     def set_header_widget(self, widget: QWidget) -> None:
-        """Insert a header widget above the sequencer (e.g. row headers, presets)."""
-        self._sequencer_right_layout.insertWidget(0, widget)
+        """
+        Put row headers (one per row, e.g. part name, note, mute) to the left
+        of the steps; each header row should be as tall as a step row.
+        """
+        self._rows_layout.insertWidget(0, widget, 0, Qt.AlignmentFlag.AlignTop)
 
     def _initialize_measures(self, count: int) -> None:
         """Initialize pattern with specified number of measures."""
@@ -150,8 +158,8 @@ class PatternWidget(QWidget):
 
         self.measure_widgets.append(widget)
 
-        # Add to list widget
-        self._add_to_measures_list(measure_index)
+        # Add a tile to the strip
+        self.measure_strip.add_measure(widget)
 
         if self.on_measure_added:
             self.on_measure_added(measure_index)
@@ -171,10 +179,7 @@ class PatternWidget(QWidget):
         self.measures.pop(index)
         self.measure_widgets.pop(index)
 
-        # Update list widget
-        item = self.measures_list.item(index)
-        if item:
-            self.measures_list.takeItem(index)
+        self.measure_strip.remove_measure(index)
 
         # Update current selection
         if self.current_measure_index >= len(self.measures):
@@ -196,8 +201,7 @@ class PatternWidget(QWidget):
             return False
 
         self.current_measure_index = index
-        if self.measures_list:
-            self.measures_list.setCurrentRow(index)
+        self.measure_strip.set_current(index)
 
         self._show_current_measure()
 
@@ -507,12 +511,13 @@ class PatternWidget(QWidget):
         """Clear all measures and list; optionally add initial_count empty measures."""
         self.measures.clear()
         self.measure_widgets.clear()
-        if self.measures_list:
-            self.measures_list.clear()
+        self.measure_strip.clear()
         self.current_measure_index = 0
         for _ in range(initial_count):
             self._add_measure()
         self._show_current_measure()
+        if self.measures:
+            self.measure_strip.set_current(0)
 
     def _show_current_measure(self) -> None:
         """Remove previous content and show current measure widget in sequencer_display."""
@@ -599,22 +604,18 @@ class PatternWidget(QWidget):
                 dest_button.extra_notes = source_button.extra_notes
                 dest_button.refresh_note_count()
 
-    def _add_to_measures_list(self, measure_index: int) -> QListWidgetItem:
-        """Add measure to the list widget."""
-        item = QListWidgetItem(f"Measure {measure_index + 1}")
-        item.setData(Qt.ItemDataRole.UserRole, measure_index)
-        self.measures_list.addItem(item)
-        return item
-
-    def _on_measure_selected(self) -> None:
-        """Handle measure selection from list widget."""
-        row = self.measures_list.currentRow()
-        if 0 <= row < len(self.measures):
-            self.select_measure(row)
+    def _on_add_requested(self) -> None:
+        """The strip's + tile: the owner's add (e.g. copy previous), else an empty measure."""
+        if self.on_add_requested:
+            self.on_add_requested()
+        else:
+            self.select_measure(self.add_measure())
 
     def scroll_to_measure(self, measure_index: int) -> None:
-        """Scroll measures list to show the specified measure."""
-        if self.measures_list and 0 <= measure_index < self.measures_list.count():
-            item = self.measures_list.item(measure_index)
-            if item:
-                self.measures_list.scrollToItem(item)
+        """Select the measure's tile and scroll it into view."""
+        if 0 <= measure_index < self.measure_strip.count():
+            self.measure_strip.set_current(measure_index)
+
+    def set_playing_measure(self, measure_index: Optional[int]) -> None:
+        """Mark the measure being played on the strip (None when stopped)."""
+        self.measure_strip.set_playing(measure_index)

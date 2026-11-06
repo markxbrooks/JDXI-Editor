@@ -15,7 +15,8 @@ The queue sends one message at a time from a single worker thread:
 - a request that is already queued or waiting for its reply is not queued
   again; the reply reaches every listener anyway
 
-Replies are reported by MidiInHandler through notify_reply().
+Replies are reported through notify_reply(); the MIDI helper's JDXiDevice
+owns the queue and passes on every incoming message.
 
 Example:
     >>> sent = []
@@ -49,8 +50,6 @@ SYSEX_START = 0xF0
 REPLY_TIMEOUT = 0.3  # seconds to wait for a DT1 reply before moving on
 REPLY_GAP = 0.005  # pause after a reply before the next request
 
-_QUEUE_ATTR = "_sysex_request_queue"
-_queue_lock = threading.Lock()
 
 
 def roland_address(data: Sequence[int], command: int) -> Optional[str]:
@@ -125,6 +124,19 @@ class SysExRequestQueue:
         if address is not None and address == self._awaiting:
             self._reply.set()
 
+    def clear(self) -> int:
+        """
+        Drop everything not yet sent (e.g. on disconnect); a request awaiting
+        its reply stops waiting. Returns how many messages were dropped.
+        """
+        with self._cond:
+            dropped = len(self._items)
+            self._items.clear()
+            self._pending.clear()
+            self._cond.notify_all()
+        self._reply.set()
+        return dropped
+
     def wait_idle(self, timeout: float) -> bool:
         """Block until everything queued has been sent (for tests and shutdown)."""
         deadline = time.monotonic() + timeout
@@ -173,20 +185,3 @@ class SysExRequestQueue:
                 self._pending.discard(item.data)
         else:
             time.sleep(self._message_gap)
-
-
-def request_queue_for(midi_helper: Any) -> SysExRequestQueue:
-    """The helper's queue, created on first use."""
-    with _queue_lock:
-        queue = getattr(midi_helper, _QUEUE_ATTR, None)
-        if queue is None:
-            queue = SysExRequestQueue(midi_helper.send_raw_message)
-            setattr(midi_helper, _QUEUE_ATTR, queue)
-        return queue
-
-
-def notify_reply(midi_helper: Any, data: Sequence[int]) -> None:
-    """Pass incoming SysEx to the helper's queue, if it has one."""
-    queue = getattr(midi_helper, _QUEUE_ATTR, None)
-    if queue is not None:
-        queue.notify_reply(data)

@@ -117,3 +117,30 @@ def create_jdxi_row(
     label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
     label_layout.addWidget(label)
     return label_row, label
+
+
+def create_round_button_with_label(
+    text: str,
+    icon: str,
+    slot: Any = None,
+    tooltip: str = "",
+    checkable: bool = False,
+) -> tuple[QWidget, QPushButton]:
+    """
+    A round JD-Xi button with its icon and label beside it, as one widget.
+
+    Use in place of a plain text button so editor actions share the panel
+    look (as Edit Tone Name, the transport, ...).
+
+    :return: (widget to add to a layout, the button)
+    """
+    spec = ButtonSpec(label=text, icon=icon, tooltip=tooltip, slot=slot)
+    label_row, button = create_jdxi_button_with_label_from_spec(spec, checkable=checkable)
+    label_row.setToolTip(tooltip)
+    widget = QWidget()
+    layout = QHBoxLayout(widget)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(4)
+    layout.addWidget(button)
+    layout.addWidget(label_row)
+    return widget, button

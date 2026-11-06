@@ -19,7 +19,7 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
-from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+from jdxi_editor.midi.sysex.names import parse_sysex_byte
 
 
 class JDXiJSONComposer:
@@ -459,7 +459,7 @@ class JDXiJSONComposer:
             from jdxi_editor.midi.data.address.address import (
                 JDXiSysExOffsetTemporaryToneUMB,
             )
-            from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+            from jdxi_editor.midi.sysex.names import parse_sysex_byte
 
             editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
                 address.umb, JDXiSysExOffsetTemporaryToneUMB

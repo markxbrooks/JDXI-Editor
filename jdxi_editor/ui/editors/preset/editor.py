@@ -140,7 +140,7 @@ class PresetEditor(BasicEditor):
         main_vlayout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(main_vlayout)
-        self.setStyleSheet(JDXi.UI.Style.EDITOR)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         self.title_label = QLabel("Presets:")
         self.title_label.setStyleSheet(

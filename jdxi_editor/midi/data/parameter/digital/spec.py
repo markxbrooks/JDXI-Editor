@@ -32,7 +32,7 @@ from jdxi_editor.midi.data.parameter.digital.tone_modify import (
     DigitalModifyOptions,
 )
 from jdxi_editor.midi.data.parameter.digital.values import DigitalDisplayValues
-from jdxi_editor.ui.adsr.type import ADSRType
+from jdxi_editor.midi.data.parameter.adsr import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
 
 

@@ -156,6 +156,19 @@ def test_track_viewer_edits_reach_playback(player):
     assert channels == {5}
 
 
+def test_header_channel_edit_reaches_playback(player):
+    viewer = player.midi_file.midi_track_viewer
+    viewer.track_channel_spins[1].setValue(10)  # Bass track to Drums
+    viewer.flush_pending_edits()
+    assert player.midi_state.file is viewer.midi_file
+    channels = {
+        e.message.channel
+        for e in player.playback_engine.events
+        if e.track_index == 1 and hasattr(e.message, "channel")
+    }
+    assert channels == {9}
+
+
 def test_clone_and_delete_track_keep_mutes(player):
     viewer = player.midi_file.midi_track_viewer
     viewer.toggle_track_mute(1, True)

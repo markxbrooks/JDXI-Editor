@@ -170,11 +170,19 @@ class ChartMetrics:
 
 
 class InstrumentDimensions(Dimensions):
-    """Instrument Dimensions"""
+    """
+    Instrument Dimensions
+
+    The JD-Xi is 562 x 236 mm (2.38 : 1): at 1000 px wide the instrument is
+    420 px deep, about half control panel and half keyboard (51 % / 43 %).
+    The panel is drawn PANEL_HEIGHT tall with the step row along its bottom
+    edge; the keyboard (in the status bar) takes the rest.
+    """
 
     MARGIN: int = 15
-    HEIGHT: int = 400
+    HEIGHT: int = 420  # panel + keyboard
     WIDTH: int = 1000
+    PANEL_HEIGHT: int = 230  # control panel above the keys
 
 
 class EditorDimensions(Dimensions):
@@ -218,10 +226,11 @@ class LEDDisplayDimensions(Dimensions):
 class DigitalTitleDimensions(Dimensions):
     """
     Digital Title Dimensions
-    LED title area (enlarged for 2 rows)"""
+    LED title area (tone + optional BANK/PC detail)
+    """
 
     WIDTH: int = 330
-    HEIGHT: int = 70
+    HEIGHT: int = 88
 
 
 class PWMWidgetDimensions(Dimensions):
@@ -262,9 +271,12 @@ class SequencerContainerDimensions(Dimensions):
     """Sequencer container"""
 
     X = InstrumentDimensions.MARGIN + 520
-    Y = InstrumentDimensions.MARGIN + 155
+    # Step row along the bottom edge of the panel, as on the JD-Xi
+    Y = InstrumentDimensions.PANEL_HEIGHT - 64
     WIDTH: int = 500
     HEIGHT: int = 80
+    # The container's layout margins put the steps this far below its top
+    STEPS_OFFSET: int = 27
 
 
 class SequencerDimensions(Dimensions):
@@ -276,13 +288,9 @@ class SequencerDimensions(Dimensions):
     STEP_SIZE: int = 18
     SQUARE_SIZE: int = 25
     LARGE_SQUARE_SIZE: int = 40
-    # Sequencer above keyboard
-    Y_WINDOWS = (
-        InstrumentDimensions.HEIGHT - KeyboardDimensions.HEIGHT + 20
-    )  # Windows has a menu across the top
-    Y_NON_WINDOWS = (
-        InstrumentDimensions.HEIGHT - KeyboardDimensions.HEIGHT + 20
-    )  # Keep same distance above keyboard
+    # Top of the step buttons in panel coordinates (the measure lines are
+    # drawn just above them, as on the JD-Xi)
+    STEPS_TOP = SequencerContainerDimensions.Y + SequencerContainerDimensions.STEPS_OFFSET
     WIDTH: int = 440  # # Use roughly half keyboard width
     X = InstrumentDimensions.WIDTH - InstrumentDimensions.MARGIN - WIDTH
     GRID: SequencerGridDimensions = SequencerGridDimensions

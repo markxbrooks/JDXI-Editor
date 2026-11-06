@@ -20,7 +20,8 @@ sys.path.insert(0, os.path.abspath("."))
 from PySide6.QtWidgets import QApplication
 
 from jdxi_editor.midi.io.echo_guard import applying_device_data, is_device_echo
-from jdxi_editor.midi.io.request_queue import SysExRequestQueue, request_queue_for
+from jdxi_editor.midi.io.device import device_for
+from jdxi_editor.midi.io.request_queue import SysExRequestQueue
 
 _RQ1_ANALOG = "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
 _RQ1_DIGITAL1 = "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7"
@@ -99,9 +100,16 @@ class TestRequestQueue(unittest.TestCase):
         self.assertTrue(self.queue.wait_idle(1.0))
         self.assertEqual(self.sent, [_hex(_CC), _hex(_CC), _hex(_DT1_ANALOG)])
 
+    def test_clear_drops_unsent_requests(self):
+        self.queue.submit([_RQ1_ANALOG, _CC, _DT1_ANALOG])
+        self.queue.clear()
+        self.assertTrue(self.queue.wait_idle(1.0))
+        self.assertLessEqual(len(self.sent), 1)  # at most the one already sent
+        self.assertEqual(self.queue.submit([_RQ1_ANALOG]), 1)  # can queue it again
+
     def test_helper_shares_one_queue(self):
-        helper = Mock()
-        self.assertIs(request_queue_for(helper), request_queue_for(helper))
+        helper = Mock(spec=["send_raw_message"])
+        self.assertIs(device_for(helper).requests, device_for(helper).requests)
 
 
 class TestEchoGuard(unittest.TestCase):

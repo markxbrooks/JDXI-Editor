@@ -31,9 +31,6 @@ from PySide6.QtCore import Signal
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.echo_guard import applying_device_data
-from jdxi_editor.midi.io.request_queue import notify_reply
-from jdxi_editor.midi.io.synth_memory import synth_memory_for
 
 # handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
@@ -204,10 +201,10 @@ class MidiInHandler(MidiIOController):
         Emit SysEx JSON from the JD-Xi to the editors.
 
         Runs on the GUI thread (queued from the rtmidi callback), so the
-        editors' slots run inside applying_device_data() and their controls
+        editors' slots run inside device.applying_device_data() and their controls
         do not write the received values back to the synth.
         """
-        with applying_device_data():
+        with self.device.applying_device_data():
             self.midi_sysex_json.emit(payload)
 
     def reopen_input_port_name(self, in_port: str) -> bool:
@@ -276,13 +273,12 @@ class MidiInHandler(MidiIOController):
             }
 
             if message.type == MidoMessageType.SYSEX.value:
-                # Lets the request queue send the next RQ1
-                notify_reply(self, message.data)
-                # Keeps the copy of the synth's memory that patches are saved from
-                synth_memory_for(self).record_dt1(message.data)
+                # Lets the request queue send the next RQ1 and keeps the
+                # memory mirror that patches are saved from
+                self.device.received(message.data)
             elif message.type == MidoMessageType.PROGRAM_CHANGE.value:
                 # The temporary program is replaced; the editors read it again
-                synth_memory_for(self).clear()
+                self.device.received(message.bytes())
 
             handler = handler_map.get(message.type)
 

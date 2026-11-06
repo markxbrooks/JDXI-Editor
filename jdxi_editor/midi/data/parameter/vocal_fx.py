@@ -79,8 +79,8 @@ class VocalFXParam(AddressParameter):
     )  # Level (0-127)
     PAN = ParameterSpec(
         0x01,
-        -64,
-        63,
+        0,
+        127,
         -64,
         63,
         "Sets the pan of the vocal FX.",
@@ -147,16 +147,16 @@ class VocalFXParam(AddressParameter):
     )  # Auto Pitch note (0-11)
     AUTO_PITCH_GENDER = ParameterSpec(
         0x0A,
-        -10,
-        10,
+        0,
+        20,
         -10,
         10,
         "Sets the auto pitch gender.",
     )  # Gender (-10 to +10, centered at 0)
     AUTO_PITCH_OCTAVE = ParameterSpec(
         0x0B,
-        -1,
-        1,
+        0,
+        2,
         -1,
         1,
         "Sets the auto pitch octave.",

@@ -138,12 +138,13 @@ class SequencerButtonManager:
 
     def set_style_generator(
         self,
-        generator: Callable[[bool, bool, bool], str],
+        generator: Callable[..., str],
     ) -> None:
         """
         Set the style generator callback.
 
-        Called with (is_checked, is_current, is_selected_bar) returns stylesheet.
+        Called with (is_checked, is_current, is_selected_bar, row=...) returns
+        stylesheet; row (0-3) selects the part colour.
 
         :param generator: Callback function
         """
@@ -567,6 +568,7 @@ class SequencerButtonManager:
                     is_checked,
                     is_current,
                     is_selected_bar,
+                    row=getattr(button, "row", None),
                 )
                 button.setStyleSheet(stylesheet)
 

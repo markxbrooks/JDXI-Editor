@@ -46,8 +46,6 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 )
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
-from jdxi_editor.midi.io.echo_guard import applying_device_data
-from jdxi_editor.midi.io.request_queue import request_queue_for
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
@@ -649,7 +647,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             except Exception:
                 ui_json = json_string
             self._emit_patch_json(ui_json, section)
-            request_queue_for(self).submit([message])
+            self.device.request([message])
             return
         section = load_section(section)
         section_json = json.dumps(section)
@@ -668,7 +666,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         :param json_string: section JSON for the editors
         :param data: the section as saved (4-byte ADDRESS)
         """
-        with applying_device_data():
+        with self.device.applying_device_data():
             self.midi_sysex_json.emit(json_string)
         address = "".join(str(data.get(SysExSection.ADDRESS, "")).split()).lower()
         # Names live in the Common blocks: 18 00 00 00 and 19 xx 00 00

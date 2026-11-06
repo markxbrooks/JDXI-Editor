@@ -17,6 +17,7 @@ Features:
 """
 
 import datetime
+from pathlib import Path
 import random
 from typing import Any, Callable, Optional
 
@@ -28,7 +29,6 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QGroupBox,
     QHBoxLayout,
-    QListWidgetItem,
     QMenu,
     QMessageBox,
     QPushButton,
@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
 from jdxi_editor.midi.file.controller import (
     MidiFileController,
@@ -83,7 +84,6 @@ from jdxi_editor.ui.sequencer.button.manager import (
     NoteButtonAttrs,
     SequencerButtonManager,
 )
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.combo_box.synchronizer import (
     ComboBoxSynchronizer,
     ComboBoxUpdateConfig,
@@ -200,6 +200,7 @@ class PatternSequenceEditor(PatternUI):
         self._init_playing_controllers()
         self._connect_midi_signals()
         self.clear_pattern()
+        self._update_title_upper()  # the tempo is only written when it changes
         # --- Load file
         self._load_from_midi_file_editor_if_available()
         # If MidiFileEditor is provided and has a loaded file, load it
@@ -211,6 +212,10 @@ class PatternSequenceEditor(PatternUI):
         """Wire PatternWidget callbacks for measure selection and button clicks."""
         if self.pattern_widget:
             self.pattern_widget.on_measure_selected = self._on_pattern_measure_selected
+            # The strip's + tile adds like Add Measure (honours Copy previous)
+            self.pattern_widget.on_add_requested = self._add_measure
+            # New measures (Add Measure, loading) take on the current row mutes
+            self.pattern_widget.on_measure_added = lambda _index: self._apply_row_mutes()
             self.pattern_widget.set_button_click_handler(self._on_button_clicked)
             self.pattern_widget.set_button_context_handler(self._on_step_context_menu)
 
@@ -221,8 +226,9 @@ class PatternSequenceEditor(PatternUI):
         self._on_playback_step_changed(step_in_measure)
 
     def _init_style(self):
-        """init style"""
-        JDXi.UI.Theme.apply_editor_style(self)
+        """Apply Pattern Editor chrome (shared tokens with Midi Player)."""
+        mark_editor_body(self)
+        self.setStyleSheet(JDXi.UI.PatternEditor.editor_stylesheet())
 
     def _load_from_midi_file_editor_if_available(self) -> None:
         """Load from MidiFileEditor if it has a file."""
@@ -316,7 +322,7 @@ class PatternSequenceEditor(PatternUI):
         self._button_manager.set_buttons(self.buttons)
         self._button_manager.set_channel_map(self.row_map)
         self._button_manager.set_style_generator(
-            JDXi.UI.Style.generate_sequencer_button_style
+            JDXi.UI.PatternEditor.step_button_style
         )
         self._button_manager.total_steps = self.total_steps
         self._button_manager.default_velocity = 100
@@ -402,6 +408,9 @@ class PatternSequenceEditor(PatternUI):
         if state == TransportState.STOPPED:
             self.current_step = 0
             self._pattern_paused = False
+            if self.pattern_widget:
+                self.pattern_widget.set_playing_measure(None)
+        self._update_title_upper()
 
         if state == TransportState.PAUSED:
             self._pattern_paused = True
@@ -413,18 +422,11 @@ class PatternSequenceEditor(PatternUI):
         log.debug(traceback.format_exc())
 
     def _on_playback_measure_changed(self, measure_index: int) -> None:
-        """Sync sequencer and measure list to the current measure during playback."""
+        """Show the measure being played: steps, and its tile on the strip."""
         if self.pattern_widget and self.pattern_widget.select_measure(measure_index):
             self._button_manager.set_buttons(self.buttons)
-        self._scroll_measures_list_to(measure_index)
-
-    def _scroll_measures_list_to(self, measure_index: int) -> None:
-        """Select and scroll measures list to the given index."""
-        if self.measures_list and measure_index < self.measures_list.count():
-            self.measures_list.setCurrentRow(measure_index)
-            item = self.measures_list.item(measure_index)
-            if item:
-                self.measures_list.scrollToItem(item)
+        if self.pattern_widget:
+            self.pattern_widget.set_playing_measure(measure_index)
 
     def _on_playback_step_changed(self, step_in_measure: int) -> None:
         """Update step highlight during playback."""
@@ -435,6 +437,34 @@ class PatternSequenceEditor(PatternUI):
             for btn in self._get_step_buttons(row, step_in_measure):
                 set_sequencer_style(btn=btn, is_current=True, checked=btn.isChecked())
         self._playback_last_step_in_measure = step_in_measure
+        self._update_title_upper()
+
+    # --- Display (DigitalTitle) ---------------------------------------------
+
+    def _set_title_file(self, text: str) -> None:
+        """Lower line of the display: the pattern's file."""
+        title = getattr(self, "digital_title", None)
+        if title is not None:
+            title.setText(text)
+
+    def _update_title_upper(self) -> None:
+        """Upper line: tempo, plus Bar measure.step while playing or paused."""
+        title = getattr(self, "digital_title", None)
+        bpm = getattr(self, "timing_bpm", None)
+        if title is None or not bpm:
+            return
+        text = f"Tempo: {round(bpm)} BPM"
+        controller = getattr(self, "transport_controller", None)
+        if (
+            controller is not None
+            and controller.state != TransportState.STOPPED
+            and self.pattern_widget
+        ):
+            step = self.current_step % (self.measure_beats or 16)
+            text += f" | Bar {self.pattern_widget.current_measure_index + 1}.{step + 1}"
+        if text != getattr(self, "_title_upper_text", None):
+            self._title_upper_text = text
+            title.set_upper_display_text(text)
 
     def _initialize_default_measure(self):
         """Initialize with one default measure"""
@@ -520,26 +550,15 @@ class PatternSequenceEditor(PatternUI):
         if selector is not None:
             selector.setCurrentIndex(index)
 
-    def _on_measure_selected(self, item: QListWidgetItem):
-        """Handle measure selection from list"""
-        measure_index = item.data(Qt.ItemDataRole.UserRole)
-        if measure_index is not None:
-            self.current_measure_index = measure_index
-            # Sync sequencer buttons with the selected bar's notes
-            self._sync_sequencer_with_measure(measure_index)
-            log.message(
-                message=f"Selected bar {measure_index + 1}",
-                scope=self.__class__.__name__,
-            )
-
     def _copy_section(self):
         """Copy a section of notes from the current bar"""
         if self.current_measure_index >= len(self.measure_widgets):
             QMessageBox.warning(self, "Copy", "No bar selected")
             return
 
-        start_step = self.start_step_spinbox.value()
-        end_step = self.end_step_spinbox.value()
+        # The range is shown 1-16; steps are indexed from 0
+        start_step = self.start_step_spinbox.value() - 1
+        end_step = self.end_step_spinbox.value() - 1
 
         if start_step > end_step:
             QMessageBox.warning(self, "Copy", "Start step must be <= end step")
@@ -551,7 +570,7 @@ class PatternSequenceEditor(PatternUI):
         if self.paste_button:
             self.paste_button.setEnabled(True)
         log.message(
-            message=f"Copied steps {start_step}-{end_step} from bar {self.current_measure_index + 1}",
+            message=f"Copied steps {start_step + 1}-{end_step + 1} from bar {self.current_measure_index + 1}",
             scope=self.__class__.__name__,
         )
 
@@ -567,7 +586,7 @@ class PatternSequenceEditor(PatternUI):
             QMessageBox.warning(self, "Paste", "No bar selected")
             return
 
-        start_step = self.start_step_spinbox.value()
+        start_step = self.start_step_spinbox.value() - 1
         ok = self.pattern_widget.paste_measure_section(
             self.current_measure_index, start_step, self.clipboard
         )
@@ -722,8 +741,8 @@ class PatternSequenceEditor(PatternUI):
             is_checked = button.isChecked()
             is_current = (self.current_step % self.total_steps) == step
             button.setStyleSheet(
-                JDXi.UI.Style.generate_sequencer_button_style(
-                    is_checked, is_current, is_selected_bar=True
+                JDXi.UI.PatternEditor.step_button_style(
+                    is_checked, is_current, is_selected_bar=True, row=button.row
                 )
             )
 
@@ -753,6 +772,8 @@ class PatternSequenceEditor(PatternUI):
         if self.pattern_widget:
             self.pattern_widget.clear_and_reset(1)
             self._button_manager.set_buttons(self.buttons)
+            self.total_measures = self.pattern_widget.get_measure_count()
+        self._set_title_file("New pattern")
         log.message(message="Cleared pattern.", scope=self.__class__.__name__)
         self.schedule_recompile()
 
@@ -843,8 +864,11 @@ class PatternSequenceEditor(PatternUI):
             and (button.column // self.measure_beats) == self.current_measure_index
         )
         button.setStyleSheet(
-            JDXi.UI.Style.generate_sequencer_button_style(
-                checked, is_current, is_selected_bar=is_selected_bar and checked
+            JDXi.UI.PatternEditor.step_button_style(
+                checked,
+                is_current,
+                is_selected_bar=is_selected_bar and checked,
+                row=button.row,
             )
         )
 
@@ -855,10 +879,11 @@ class PatternSequenceEditor(PatternUI):
             sequencer_button, checked=sequencer_button.isChecked, is_current=is_current
         )
         sequencer_button.setStyleSheet(
-            JDXi.UI.Style.generate_sequencer_button_style(
+            JDXi.UI.PatternEditor.step_button_style(
                 sequencer_button.isChecked(),
                 is_current,
                 is_selected_bar=True,  # All displayed buttons are from selected bar
+                row=sequencer_button.row,
             )
         )
 
@@ -1091,6 +1116,7 @@ class PatternSequenceEditor(PatternUI):
     def set_tempo(self, bpm: int):
         """Set the pattern tempo in BPM; a playing pattern follows on the same beat."""
         self.timing_bpm = bpm
+        self._update_title_upper()
         StepNoteEvent.tempo_bpm = bpm  # note lengths are steps; their ms follow
         microseconds_per_beat = int(MidiTempo.MICROSECONDS_PER_MINUTE / bpm)
 
@@ -1397,6 +1423,7 @@ class PatternSequenceEditor(PatternUI):
         midi_file = self._build_midi_file_for_playback()
         self._save_midi_file(filename, midi_file)
         self._pattern_file_path = filename
+        self._set_title_file(f"Saved: {Path(filename).name}")
 
         self._update_midi_file_editor_with_file(filename)
 
@@ -1423,7 +1450,29 @@ class PatternSequenceEditor(PatternUI):
             message=f"Pattern saved to {filename}", scope=self.__class__.__name__
         )
 
-    def clear_pattern(self):
+    def confirm_clear(self) -> None:
+        """Ask whether to clear the current measure or the whole pattern."""
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle("Clear")
+        box.setText("What do you want to clear?")
+        box.setInformativeText("Cleared steps cannot be restored.")
+        measure_button = box.addButton(
+            f"Clear Measure {self.current_measure_index + 1}",
+            QMessageBox.ButtonRole.DestructiveRole,
+        )
+        pattern_button = box.addButton(
+            "Clear Whole Pattern", QMessageBox.ButtonRole.DestructiveRole
+        )
+        box.addButton(QMessageBox.StandardButton.Cancel)
+        box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+        box.exec()
+        if box.clickedButton() is measure_button:
+            self.clear_current_measure()
+        elif box.clickedButton() is pattern_button:
+            self.clear_pattern()
+
+    def clear_current_measure(self):
         """Clear the current bar's pattern, resetting all steps in the selected bar."""
         if self.current_measure_index < len(self.measure_widgets):
             measure = self.measure_widgets[self.current_measure_index]
@@ -1443,6 +1492,7 @@ class PatternSequenceEditor(PatternUI):
         try:
             self._pattern_file_path = filename
             self._apply_pattern_import(MidiFile(filename))
+            self._set_title_file(f"Loaded: {Path(filename).name}")
         except Exception as ex:
             log.error(
                 message=f"Error loading pattern: {ex}", scope=self.__class__.__name__
@@ -1732,6 +1782,7 @@ class PatternSequenceEditor(PatternUI):
             for btn in self._get_step_buttons(row, step_in_bar):
                 set_sequencer_style(btn=btn, is_current=True, checked=btn.isChecked())
         self._playback_last_step_in_bar = step_in_bar
+        self._update_title_upper()
 
     def closeEvent(self, event) -> None:
         """Stop the playback thread before the editor goes away."""
@@ -1739,15 +1790,20 @@ class PatternSequenceEditor(PatternUI):
         super().closeEvent(event)
 
     def _sync_sequencer_on_step_change(self, bar_index: int, last_bar: int | Any):
-        """Only sync sequencer and bar list when the displayed bar changes"""
+        """When playback enters another bar, show it (grid and strip)."""
         if bar_index != last_bar:
+            if self.pattern_widget:
+                # The bar left keeps no playhead outline (its last step had it)
+                if 0 <= last_bar < len(self.measure_widgets) and last_bar != bar_index:
+                    for row in self.measure_widgets[last_bar].buttons:
+                        for btn in row:
+                            set_sequencer_style(btn=btn, is_current=False, checked=btn.isChecked())
+                # select_measure swaps the displayed grid; the measure list did
+                # this through its selection signal before the strip replaced it
+                self.pattern_widget.select_measure(bar_index)
+                self.pattern_widget.set_playing_measure(bar_index)
             self._sync_sequencer_with_measure(bar_index)
             self._playback_last_bar_index = bar_index
-            if self.measures_list and bar_index < self.measures_list.count():
-                self.measures_list.setCurrentRow(bar_index)
-                item = self.measures_list.item(bar_index)
-                if item:
-                    self.measures_list.scrollToItem(item)
 
     def stop_pattern(self):
         """Stop the pattern, silence the instrument and rewind."""
@@ -1844,7 +1900,7 @@ class PatternSequenceEditor(PatternUI):
                     button.velocity = self.velocity_spinbox.value()
                     sync_button_note_spec(button)
                     button.setStyleSheet(
-                        JDXi.UI.Style.generate_sequencer_button_style(True)
+                        JDXi.UI.PatternEditor.step_button_style(True, row=button.row)
                     )
                     self._update_tooltip(row, button)
         self.schedule_recompile()
@@ -1891,18 +1947,27 @@ class PatternSequenceEditor(PatternUI):
             log.message(message=f"Row {row} unmuted", scope=self.__class__.__name__)
             self.muted_channels.remove(channel)
 
-        # Synth-style: unmuted=lit, muted=dark
-        if row < len(self.mute_buttons):
-            self.mute_buttons[row].setStyleSheet(
-                generate_sequencer_button_style(
-                    not checked, checked_means_inactive=True
-                )
-            )
-
-        # Update the UI or internal state to reflect the mute status
-        for button in self.buttons[row]:
-            button.setEnabled(not checked)
+        # The mute button styles itself: filled red while checked; the row's
+        # steps are dimmed in every measure but stay editable
+        self._apply_row_mutes()
         self._sync_transport_mutes()
+
+    def _apply_row_mutes(self) -> None:
+        """Mark the steps of muted rows (all measures) so their style dims them."""
+        muted_rows = {
+            row for row, button in enumerate(self.mute_buttons) if button.isChecked()
+        }
+        for measure in self.measure_widgets:
+            for row, buttons in enumerate(measure.buttons):
+                muted = row in muted_rows
+                for button in buttons:
+                    if bool(button.property("muted")) == muted:
+                        continue
+                    button.setProperty("muted", muted)
+                    button.style().unpolish(button)
+                    button.style().polish(button)
+        if self.pattern_widget:
+            self.pattern_widget.measure_strip.refresh()
 
     def update_drum_rows(self):
         """Update displayed buttons based on the selected drum option."""

@@ -117,17 +117,3 @@ class SynthMemory:
         with self._lock:
             self._bytes.clear()
             self._sections.clear()
-
-
-_MEMORY_ATTR = "_synth_memory"
-_memory_lock = threading.Lock()
-
-
-def synth_memory_for(midi_helper) -> SynthMemory:
-    """The helper's SynthMemory, created on first use."""
-    with _memory_lock:
-        memory = getattr(midi_helper, _MEMORY_ATTR, None)
-        if memory is None:
-            memory = SynthMemory()
-            setattr(midi_helper, _MEMORY_ATTR, memory)
-        return memory

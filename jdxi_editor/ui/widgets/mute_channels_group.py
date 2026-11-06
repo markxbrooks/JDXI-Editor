@@ -6,13 +6,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QGroupBox, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
-from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_row
 from jdxi_editor.ui.editors.helpers.widgets import create_small_sequencer_square_for_channel
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from picoui.helpers import create_layout_with_items
@@ -36,22 +34,16 @@ class MuteChannelsGroup(JDXiMidiGroup):
 
     def _build_group(self) -> QGroupBox:
         """Build the Mute Channels group with 16 channel buttons."""
-        mute_icon_pixmap = JDXi.UI.Icon.get_icon_pixmap(
-            JDXi.UI.Icon.MUTE, color=JDXi.UI.Style.FOREGROUND, size=20
-        )
-        mute_label_row, _ = create_jdxi_row("Mute Channels:", icon_pixmap=mute_icon_pixmap)
-        layout_widgets: list = [mute_label_row]
+        layout_widgets: list = []
+        style = JDXi.UI.MidiPlayer.channel_mute_stylesheet()
         for ch in range(1, 17):
             btn = create_small_sequencer_square_for_channel(ch)
-            btn.toggled.connect(
-                lambda checked, c=ch: self.parent._toggle_channel_mute(c, checked, btn)
-            )
             btn.setCheckable(True)
             btn.setChecked(False)
-            btn.setStyleSheet(
-                generate_sequencer_button_style(
-                    not btn.isChecked(), checked_means_inactive=True
-                )
+            btn.setToolTip(f"Mute channel {ch}")
+            btn.setStyleSheet(style)
+            btn.toggled.connect(
+                lambda checked, c=ch, b=btn: self.parent._toggle_channel_mute(c, checked, b)
             )
             self.mute_channel_buttons[ch] = btn
             layout_widgets.append(btn)
@@ -61,6 +53,19 @@ class MuteChannelsGroup(JDXiMidiGroup):
         )
         group, _ = create_group_with_layout(label="Mute Channels", layout=layout)
         return group
+
+    def set_used_channels(self, channels: set[int]) -> None:
+        """
+        Dim the buttons of channels the file has no notes or controllers on.
+
+        :param channels: 1-16 channels that are used
+        """
+        for ch, btn in self.mute_channel_buttons.items():
+            unused = ch not in channels
+            btn.setProperty("unused", unused)
+            btn.setToolTip(f"Mute channel {ch}" + (" (not used in this file)" if unused else ""))
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
         """No buttons in this group (uses dynamic channel buttons)."""

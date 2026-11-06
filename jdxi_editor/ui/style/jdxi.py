@@ -119,8 +119,12 @@ class JDXiUIStyle:
     BUTTON_PADDING = 1
     BUTTON_WAVEFORM_RADIUS = 8
     BUTTON_WAVEFORM_BORDER_WIDTH = 2
-    ACCENT = "#FF2200"  # Red accent color
-    ACCENT_HOVER = "#FF4400"  # Brighter red for hover
+    # Identity tokens (UI_CRITIQUE): metallic section / illuminated active / LCD
+    METALLIC_RED = "#A71920"
+    ACCENT = "#E04435"  # Illuminated red (was neon #FF2200)
+    ACCENT_HOVER = "#F05A5A"
+    LCD_ORANGE = "#FF6A00"
+    LCD_ORANGE_DIM = "#CC5500"
     ACCENT_ANALOG = "#00A0E9"
     ACCENT_ANALOG_HOVER = "#00C0FF"  # Brighter cyan for hover
     ACCENT_GLOW = "#FF6666"  # Glow color for red accents
@@ -694,9 +698,9 @@ class JDXiUIStyle:
         radius=TAB_BUTTON_RECT_RADIUS,
         text_color="white",
         hover_bg=BUTTON_BACKGROUND,
-        hover_border="#ff9999",
+        hover_border=ACCENT_HOVER,
         selected_bg=BUTTON_BACKGROUND,
-        selected_border=ACCENT,
+        selected_border=METALLIC_RED,
     )
 
     TABS_ANALOG = generate_tab_style(
@@ -716,9 +720,9 @@ class JDXiUIStyle:
         radius=TAB_BUTTON_RECT_RADIUS,
         text_color="white",
         hover_bg=BUTTON_BACKGROUND,
-        hover_border="#ff9999",
+        hover_border=ACCENT_HOVER,
         selected_bg=BUTTON_BACKGROUND,
-        selected_border="#ff6666",
+        selected_border=METALLIC_RED,
     )
 
     TABS_MAIN_EDITOR = (
@@ -728,9 +732,9 @@ class JDXiUIStyle:
             radius=TAB_BUTTON_RECT_RADIUS,
             text_color="white",
             hover_bg=BUTTON_BACKGROUND,
-            hover_border="#ff9999",
+            hover_border=ACCENT_HOVER,
             selected_bg=BUTTON_BACKGROUND,
-            selected_border="#ff6666",
+            selected_border=METALLIC_RED,
             font_size=FONT_SIZE_MAIN_TABS,
             font_family=FONT_FAMILY,
         )
@@ -739,12 +743,14 @@ class JDXiUIStyle:
             font-family: {FONT_FAMILY};
             background: {BUTTON_BACKGROUND};
             color: white;
-            border: 2px solid {ACCENT_ANALOG};
+            border: none;
+            border-bottom: 2px solid {ACCENT_ANALOG};
             font-size: {FONT_SIZE_MAIN_TABS};
         }}
         QTabBar[analogTabSelected="true"]::tab:hover {{
             background: {BUTTON_BACKGROUND};
-            border: 2px solid {ACCENT_ANALOG_HOVER};
+            border: none;
+            border-bottom: 2px solid {ACCENT_ANALOG_HOVER};
             font-family: {FONT_FAMILY};
             font-size: {FONT_SIZE_MAIN_TABS};
         }}
@@ -1284,12 +1290,17 @@ class JDXiUIStyle:
     COMBO_BOX = f"""
     QComboBox {{
         font-family: {FONT_FAMILY};
-        background-color: {BACKGROUND};
-        border: none;
-        border-top: 2px solid {ACCENT};
-        border-radius: 0;
-        padding: 1px;
+        background-color: #292929;
+        border: 1px solid #383838;
+        border-radius: 3px;
+        padding: 2px 6px;
         color: {FOREGROUND};
+    }}
+    QComboBox:hover {{
+        border-color: #555555;
+    }}
+    QComboBox:focus {{
+        border-color: {ACCENT};
     }}
 
     /* Style for the dropdown button */
@@ -1314,7 +1325,7 @@ class JDXiUIStyle:
     /* Scrollbar styling */
     QScrollBar:vertical {{
         background: black;
-        border: 2px solid #ff4500;
+        border: 1px solid #383838;
         width: 20px;
         border-radius: 5px;
     }}
@@ -1322,14 +1333,19 @@ class JDXiUIStyle:
 
     COMBO_BOX_ANALOG = f"""
         QComboBox {{
-            font-family: {FONT_FAMILY};
-            background-color: {BACKGROUND};
-            border: none;
-            border-top: 2px solid {ACCENT_ANALOG};
-            border-radius: 0;
-            padding: 1px;
-            color: {FOREGROUND};
-        }}
+        font-family: {FONT_FAMILY};
+        background-color: #292929;
+        border: 1px solid #383838;
+        border-radius: 3px;
+        padding: 2px 6px;
+        color: {FOREGROUND};
+    }}
+    QComboBox:hover {{
+        border-color: #555555;
+    }}
+    QComboBox:focus {{
+        border-color: {ACCENT_ANALOG};
+    }}
 
         /* Style for the dropdown button */
         QComboBox::drop-down {{
@@ -1353,7 +1369,7 @@ class JDXiUIStyle:
         /* Scrollbar styling */
         QScrollBar:vertical {{
             background: black;
-            border: 2px solid #ff4500;
+            border: 1px solid #383838;
             width: 20px;
             border-radius: 5px;
         }}
@@ -1386,26 +1402,36 @@ class JDXiUIStyle:
 
     QLINEEDIT = f"""
         QLineEdit {{
-            font-family: "{FONT_FAMILY}";
-            font-size: 12px;
-            color: #FFFFFF;
-            background: #1a1a1a;
-            border: none;
-            border-top: 2px solid {ACCENT};
-            border-radius: 0;
-        }}
+        font-family: {FONT_FAMILY};
+        background-color: #292929;
+        border: 1px solid #383838;
+        border-radius: 3px;
+        padding: 2px 6px;
+        color: {FOREGROUND};
+    }}
+    QLineEdit:hover {{
+        border-color: #555555;
+    }}
+    QLineEdit:focus {{
+        border-color: {ACCENT};
+    }}
     """
 
     QLINEEDIT_ANALOG = f"""
         QLineEdit {{
-            font-family: "{FONT_FAMILY}";
-            font-size: 12px;
-            color: #FFFFFF;
-            background: #1a1a1a;
-            border: none;
-            border-top: 2px solid {ACCENT_ANALOG};
-            border-radius: 0;
-        }}
+        font-family: {FONT_FAMILY};
+        background-color: #292929;
+        border: 1px solid #383838;
+        border-radius: 3px;
+        padding: 2px 6px;
+        color: {FOREGROUND};
+    }}
+    QLineEdit:hover {{
+        border-color: #555555;
+    }}
+    QLineEdit:focus {{
+        border-color: {ACCENT_ANALOG};
+    }}
     """
 
     KEYBOARD_DRUM_LABELS = """
@@ -1450,20 +1476,21 @@ class JDXiUIStyle:
     INSTRUMENT_IMAGE_LABEL = f"""        
         QGroupBox {{
             font-family: {FONT_FAMILY};
-            height: 60;
-            width: 80px;
-            background-color: #000000;
-            border: 1px solid {BACKGROUND_PRESSED};
-            border-radius: 5px;
-            padding: 1px;
-            margin: 1px;
+            background-color: transparent;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+            }}
+        QLabel {{
+            background-color: transparent;
+            border: none;
             }}
         """
 
     LABEL_SYNTH_PART = f"""
                 font-family: "{FONT_FAMILY}";
                 font-size: 13px;
-                color: "{FONT_RED}";  /* Base red */
+                color: "{METALLIC_RED}";
                 font-weight: bold;
             """
 
@@ -1487,18 +1514,23 @@ class JDXiUIStyle:
             font-size: 13px;
             font-weight: bold;
             color: {GREY};
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 6px 12px;
         }}
         QTabBar::tab:selected {{
             font-family: {FONT_FAMILY};
             font-size: 13px;
             font-weight: bold;
-            color: {ACCENT};
+            color: {FOREGROUND};
+            border-bottom: 2px solid {METALLIC_RED};
         }}
         QTabBar::tab:hover {{
             font-family: {FONT_FAMILY};
             font-size: 13px;
             font-weight: bold;
-            color: {ACCENT};
+            color: {FOREGROUND};
+            border-bottom: 2px solid {ACCENT_HOVER};
         }}
         QTabBar::tab:disabled {{
             font-family: {FONT_FAMILY};
@@ -1549,7 +1581,7 @@ class JDXiUIStyle:
             subcontrol-origin: margin;
             subcontrol-position: top center;
             padding: 10 10px;
-            background-color: black;
+            background-color: transparent;  /* over the glossy panel */
         }}
         """
 

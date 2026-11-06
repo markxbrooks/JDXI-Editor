@@ -1,9 +1,5 @@
-class ADSRType:
-    """Types of ADSR"""
+"""
+ADSR types (moved to jdxi_editor.midi.data.parameter.adsr; kept for UI imports)
+"""
 
-    ATTACK = "attack"
-    DECAY = "decay"
-    SUSTAIN = "sustain"
-    RELEASE = "release"
-    DEPTH = "peak"
-    PEAK = "peak"  # alias for depth
+from jdxi_editor.midi.data.parameter.adsr import ADSRType  # noqa: F401

@@ -8,6 +8,8 @@ from typing import Callable, Optional
 
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget
 
+from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
+
 
 def create_read_from_jdxi_row(
     on_read: Callable[[], None],
@@ -22,12 +24,15 @@ def create_read_from_jdxi_row(
     :return: (row_widget, button, status_label)
     """
     row = QHBoxLayout()
-    button = QPushButton("Read from JD-Xi")
-    button.setToolTip("Request current parameters from the synthesizer (RQ1)")
-    button.clicked.connect(on_read)
+    read, button = create_round_button_with_label(
+        "Read from JD-Xi",
+        "mdi.download",
+        on_read,
+        "Request current parameters from the synthesizer (RQ1)",
+    )
     label = status_label or QLabel("")
     label.setWordWrap(True)
-    row.addWidget(button)
+    row.addWidget(read)
     row.addWidget(label, stretch=1)
     container = QWidget()
     container.setLayout(row)
@@ -41,19 +46,22 @@ def create_preset_nav_row(
 ) -> tuple[QWidget, QPushButton, QPushButton, QPushButton]:
     """Previous / Next / Load controls for factory preset auditioning."""
     row = QHBoxLayout()
-    prev_btn = QPushButton("◀")
-    prev_btn.setToolTip("Previous preset")
-    prev_btn.clicked.connect(on_prev)
-    next_btn = QPushButton("▶")
-    next_btn.setToolTip("Next preset")
-    next_btn.clicked.connect(on_next)
-    load_btn = QPushButton("Load")
-    load_btn.setToolTip("Load selected factory preset and read parameters")
-    load_btn.clicked.connect(on_load)
+    prev, prev_btn = create_round_button_with_label(
+        "Previous", "mdi.chevron-left", on_prev, "Previous preset"
+    )
+    load, load_btn = create_round_button_with_label(
+        "Load",
+        "mdi.check",
+        on_load,
+        "Load selected factory preset and read parameters",
+    )
+    nxt, next_btn = create_round_button_with_label(
+        "Next", "mdi.chevron-right", on_next, "Next preset"
+    )
     row.addStretch()
-    row.addWidget(prev_btn)
-    row.addWidget(load_btn)
-    row.addWidget(next_btn)
+    row.addWidget(prev)
+    row.addWidget(load)
+    row.addWidget(nxt)
     row.addStretch()
     container = QWidget()
     container.setLayout(row)
@@ -66,14 +74,20 @@ def create_part_syx_row(
 ) -> QWidget:
     """Import / Export per-part .syx librarian buttons."""
     row = QHBoxLayout()
-    import_btn = QPushButton("Import .syx")
-    import_btn.setToolTip("Load a single-part SysEx file into this editor")
-    import_btn.clicked.connect(on_import)
-    export_btn = QPushButton("Export .syx")
-    export_btn.setToolTip("Save this part as a SysEx file")
-    export_btn.clicked.connect(on_export)
-    row.addWidget(import_btn)
-    row.addWidget(export_btn)
+    import_row, _ = create_round_button_with_label(
+        "Import .syx",
+        "mdi.file-import-outline",
+        on_import,
+        "Load a single-part SysEx file into this editor",
+    )
+    export_row, _ = create_round_button_with_label(
+        "Export .syx",
+        "mdi.file-export-outline",
+        on_export,
+        "Save this part as a SysEx file",
+    )
+    row.addWidget(import_row)
+    row.addWidget(export_row)
     row.addStretch()
     container = QWidget()
     container.setLayout(row)

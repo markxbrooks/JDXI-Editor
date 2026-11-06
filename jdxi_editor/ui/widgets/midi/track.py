@@ -6,7 +6,7 @@ from typing import Callable, Optional
 
 import mido
 from decologr import Decologr as log
-from PySide6.QtCore import QRect, QRectF
+from PySide6.QtCore import QRect, QRectF, Qt
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen, QPixmap
 
 from jdxi_editor.ui.common import JDXi, QWidget
@@ -47,24 +47,32 @@ class MidiTrackWidget(QWidget):
         """
         super().__init__(parent)
         self.midi_file = None
-        self.note_width = 400
         self.track = track
         self.track_number = track_number
         self.ticks_per_beat = ticks_per_beat or Midi.timing.TICKS_PER_BEAT
         self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
-        self.setMinimumHeight(JDXi.UI.Style.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
-        self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
+        self.setMinimumHeight(JDXi.UI.MidiPlayer.TRACK_HEIGHT)
+        self.track_data = None  # Dict: notes, label, channels, pitch_range
         self.muted_channels = set()  # Set of muted channels
         self.muted_tracks = set()  # Set of muted channels
         self.cached_pixmap = None
         self.cached_width = 0
         self.tick_to_seconds = tick_to_seconds
         self.playhead_norm: Optional[float] = None  # 0..1, None hides it
+        self.selected = False  # Brighter note fill / outline when selected
 
         if track:
             self.set_track(track, total_length, self.ticks_per_beat)
+
+    def set_selected(self, selected: bool) -> None:
+        """Highlight this track's notes as selected."""
+        if self.selected == selected:
+            return
+        self.selected = selected
+        self.cached_pixmap = None
+        self.update()
 
     def set_track(
         self,
@@ -88,14 +96,17 @@ class MidiTrackWidget(QWidget):
         if not track:
             return
 
-        rects = []
+        notes = []  # (start, end) as fractions of the file length, pitch, velocity
         channels = set()
-        note_count = 0
         program_changes = []
+        sounding: dict[tuple[int, int], list[tuple[float, int]]] = {}
 
         first_channel = get_first_channel(track)
         if first_channel is None:
             first_channel = 0
+
+        def norm(seconds: float) -> float:
+            return seconds / total_length if total_length else 0.0
 
         tempo = Midi.tempo.BPM_120_USEC
         abs_seconds = 0.0
@@ -111,27 +122,43 @@ class MidiTrackWidget(QWidget):
             if hasattr(msg, "channel"):
                 channels.add(msg.channel)
             if msg.type == MidoMessageType.NOTE_ON.value and msg.velocity > 0:
-                note_count += 1
-                norm_time = (
-                    abs_seconds / total_length if total_length else 0.0
+                sounding.setdefault((msg.channel, msg.note), []).append(
+                    (norm(abs_seconds), msg.velocity)
                 )
-                rects.append((norm_time, first_channel))
+            elif msg.type in (
+                MidoMessageType.NOTE_OFF.value,
+                MidoMessageType.NOTE_ON.value,
+            ):
+                started = sounding.get((msg.channel, msg.note))
+                if started:
+                    begin, velocity = started.pop(0)
+                    notes.append((begin, norm(abs_seconds), msg.note, velocity))
             if msg.type == MidoMessageType.PROGRAM_CHANGE.value:
                 program_changes.append(msg.program)
+        # Notes never released last to the end of the track
+        for (_, note), started in sounding.items():
+            for begin, velocity in started:
+                notes.append((begin, norm(abs_seconds), note, velocity))
+        notes.sort()
 
-        label = (
-            f"Track | {track.name if track.name else 'Unnamed'} | Notes: {note_count}"
-        )
+        name = track.name.strip() if track.name else "Unnamed"
+        label = f"{name} | Notes: {len(notes)}"
         if channels:
             label += f" | Channel: {first_channel + 1}"  # Display 1-based channel
         if program_changes:
             label += f" | Prog: {', '.join(map(str, program_changes))}"
+        self.setToolTip(label)
 
-        self.track_data = {"rects": rects, "label": label, "channels": {first_channel}}
+        pitches = [pitch for _, _, pitch, _ in notes]
+        self.track_data = {
+            "notes": notes,
+            "label": label,
+            "channels": {first_channel},
+            "pitch_range": (min(pitches), max(pitches)) if pitches else None,
+        }
         self.cached_pixmap = None
         self.cached_width = 0
         self.update()
-        # log.message(f"rects: {rects}")
 
     def update_muted_tracks(self, muted_tracks: set[int]) -> None:
         """
@@ -168,8 +195,9 @@ class MidiTrackWidget(QWidget):
         painter.drawPixmap(0, 0, self.cached_pixmap)
         x = self._playhead_x()
         if x is not None:
-            pen = QPen(QColor(JDXi.UI.Style.ACCENT))
-            pen.setWidth(2)
+            # Playhead is the primary red signal on the timeline
+            pen = QPen(QColor(JDXi.UI.MidiPlayer.ACCENT))
+            pen.setWidth(3)
             painter.setPen(pen)
             painter.drawLine(x, 0, x, self.height())
         painter.end()
@@ -195,131 +223,78 @@ class MidiTrackWidget(QWidget):
             if x is not None:
                 self.update(QRect(x - 2, 0, 5, self.height()))
 
-    def paintEventOld(self, event: QPaintEvent) -> None:
-        """
-        paintEvent
-
-        :param event: QPaintEvent
-        :return: None
-        """
-        if not self.track_data:
-            return
-
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.Antialiasing)
-
-            # Clear background
-            painter.fillRect(self.rect(), self.palette().window())
-
-            track_height = self.height()
-            widget_width = self.width()
-
-            font = painter.font()
-            font.setPointSize(8)
-            painter.setFont(font)
-
-            data = self.track_data
-            y = 0
-            rects = data["rects"]
-            label = data["label"]
-            channels = data["channels"]
-            muted = any(channel in self.muted_channels for channel in channels)
-
-            # Draw background for note range
-            if rects:
-                try:
-                    times = [t[0] for t in rects]
-                    max_time = max(times)  # Use the last time in the list
-                    scale = widget_width / max_time
-                    start_x = min(times) * scale
-                    end_x = max(times) * scale
-                    # Adjust the end_x to ensure it doesn't go beyond the widget width
-                    if end_x - start_x < self.note_width:
-                        end_x = start_x + self.note_width
-                    track_rect = QRectF(start_x, y, end_x - start_x, int(track_height))
-                    channel = get_first_channel(self.track)
-                    bg_color = generate_track_colors(16)[int(self.track_number) % 16]
-                    if muted:
-                        bg_color.setAlpha(50)
-                    painter.setBrush(bg_color)
-                    painter.drawRect(track_rect)
-                except Exception as e:
-                    log.error(f"Error drawing track background: {e}")
-
-            # Draw notes
-            for norm_time, channel in rects:
-                x = norm_time * widget_width
-                height = track_height
-                color = MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150))
-                if channel in self.muted_channels:
-                    color.setAlpha(100)
-                painter.setBrush(color)
-                painter.drawRect(QRectF(x, y, self.note_width, height))
-
-            # Draw label
-            painter.setPen(QColor(200, 200, 200))
-            painter.drawText(5, int(y + 15), label)
-
-        finally:
-            painter.end()
+    # Smallest pitch span drawn (an octave), so a few notes are not stretched
+    # over the whole lane height
+    MIN_PITCH_SPAN = 12
+    LANE_PADDING = 3
 
     def render_track_to_pixmap(self) -> QPixmap:
         """
-        render_track_to_pixmap
+        Draw the lane: a miniature piano roll in the track's channel colour.
+
+        Each note is a bar from its start to its end, placed by pitch; a faint
+        band in the same colour covers the stretch from the first note to the
+        last. Tracks without notes (tempo, markers) are left empty.
 
         :return: QPixmap
         """
         width = self.width()
         height = self.height()
         pixmap = QPixmap(width, height)
-        pixmap.fill(self.palette().window().color())
+        pixmap.fill(QColor(JDXi.UI.MidiPlayer.BACKGROUND))
 
         painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.SURFACE_ALT)))
+        painter.drawLine(0, height - 1, width, height - 1)  # row separator
 
-        font = painter.font()
-        font.setPointSize(8)
-        painter.setFont(font)
-
-        y = 0
-        rects = self.track_data["rects"]
-        label = self.track_data["label"]
+        notes = self.track_data["notes"]
         channels = self.track_data["channels"]
+        if not notes:
+            painter.end()
+            return pixmap
         muted = self.muted or any(
             self._is_channel_muted(channel) for channel in channels
         )
+        channel = next(iter(channels))
+        # Copy: the colour table is shared by every track
+        base = QColor(MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150)))
 
-        # Compute scale based on last timestamp
-        times = [t[0] for t in rects]
-        start_x = min(times) * width if times else 0
-        end_x = max(times) * width if times else width
-        if end_x - start_x < self.note_width:
-            end_x = start_x + self.note_width
-        track_rect = QRectF(start_x, y, end_x - start_x, height)
+        band = QColor(base)
+        band.setAlpha(18 if muted else 40)
+        band_left = notes[0][0] * width
+        band_right = max(end for _, end, _, _ in notes) * width
+        band_rect = QRectF(band_left, 1, max(2.0, band_right - band_left), height - 3)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(band)
+        painter.drawRoundedRect(band_rect, 3, 3)
+        if self.selected:
+            painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.TEXT), 1))
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRoundedRect(band_rect, 3, 3)
 
-        channel = get_first_channel(self.track)
-        bg_color = generate_track_colors(16)[int(self.track_number) % 16]
-        if muted:
-            bg_color.setAlpha(50)
-        painter.setBrush(bg_color)
-        painter.drawRect(track_rect)
+        low, high = self.track_data["pitch_range"]
+        span = max(high - low, self.MIN_PITCH_SPAN)
+        low -= (span - (high - low)) / 2  # centre narrow ranges
+        usable = height - 2 * self.LANE_PADDING
+        note_height = max(2.0, min(4.0, usable / (span + 1)))
 
-        # Notes — norm_time is 0..1 over the full file duration
-        for norm_time, channel in rects:
-            x = norm_time * width
-            if x + self.note_width < 0 or x > width:
-                continue  # Skip offscreen
-            # Copy: the colour table is shared by every track
-            color = QColor(MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150)))
-            if self.muted or self._is_channel_muted(channel):
-                color.setAlpha(100)
+        painter.setPen(Qt.PenStyle.NoPen)
+        for start, end, pitch, velocity in notes:
+            x = start * width
+            w = max(1.5, (end - start) * width)
+            if x > width or x + w < 0:
+                continue  # off screen
+            y = self.LANE_PADDING + (1 - (pitch - low) / span) * (usable - note_height)
+            color = QColor(base)
+            if muted:
+                color.setAlpha(60)
+            else:
+                # Louder notes are more opaque
+                color.setAlpha(min(255, 110 + velocity))
+                if self.selected:
+                    color = color.lighter(130)
             painter.setBrush(color)
-            painter.drawRect(QRectF(x, y, self.note_width, height))
-
-        # Label
-        painter.setPen(QColor(200, 200, 200))
-        painter.drawText(5, int(y + 15), label)
+            painter.drawRect(QRectF(x, y, w, note_height))
 
         painter.end()
         return pixmap

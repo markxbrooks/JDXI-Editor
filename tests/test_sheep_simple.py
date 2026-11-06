@@ -10,10 +10,18 @@ import time
 import mido
 from mido import MidiFile
 
+from picomidi import MidiTempo
+from picomidi.message.type import MidoMessageType
+
 # Add the project root to the path
 sys.path.insert(0, os.path.abspath('.'))
 
 from picomidi.playback.worker import MidiPlaybackWorker
+
+import pytest
+
+# Needs tests/sheep.mid (not in the repository); playback runs in real time
+pytestmark = pytest.mark.slow
 
 
 def test_sheep_midi_analysis():

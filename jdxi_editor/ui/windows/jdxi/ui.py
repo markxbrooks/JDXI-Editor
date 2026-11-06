@@ -140,6 +140,9 @@ class JDXiWindow(QMainWindow):
 
         # --- Create container for image and overlays
         container_widget = QWidget()
+        # Fixed panel height: the image is drawn this tall and the controls are
+        # placed in its coordinates (no stretching, no cropping)
+        container_widget.setFixedHeight(JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT)
         container_widget.setLayout(QVBoxLayout())
         container_widget.layout().setContentsMargins(0, 0, 0, 0)
         container_widget.layout().setSpacing(6)
@@ -410,7 +413,10 @@ class JDXiWindow(QMainWindow):
         # --- Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        status_bar.setStyleSheet("background-color: black;")
+        # Keyboard area: the same matte body colour as around the panel
+        from jdxi_editor.ui.image.instrument import BODY_COLOR
+
+        status_bar.setStyleSheet(f"background-color: {BODY_COLOR};")
 
     def _build_status_layout(self) -> None:
         layout = QVBoxLayout()

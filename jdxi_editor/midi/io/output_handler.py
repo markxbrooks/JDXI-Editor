@@ -26,8 +26,6 @@ from PySide6.QtCore import Signal
 from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.echo_guard import is_device_echo
-from jdxi_editor.midi.io.synth_memory import synth_memory_for
 from jdxi_editor.midi.message import (
     ControlChangeMessage,
     IdentityRequestMessage,
@@ -68,7 +66,7 @@ class MidiOutHandler(MidiIOController):
         """
         with self._midi_send_lock:
             try:
-                if is_device_echo([int(b) for b in message]):
+                if not self.device.before_send([int(b) for b in message]):
                     # Writing back data just received from the JD-Xi
                     log.debug(
                         "[MidiOutHandler] Dropped DT1 echo of received data",
@@ -81,11 +79,7 @@ class MidiOutHandler(MidiIOController):
                 # A parameter write is what the synth will hold (recorded even
                 # with the port closed: it is the state the editor shows)
                 message_bytes = [int(b) for b in message]
-                if message_bytes and message_bytes[0] & 0xF0 == 0xC0:
-                    # Program change: the temporary program is replaced
-                    synth_memory_for(self).clear()
-                else:
-                    synth_memory_for(self).record_dt1(message_bytes)
+                self.device.sent(message_bytes)
 
                 # Ensure message is a list of integers before formatting
                 def safe_int(val):

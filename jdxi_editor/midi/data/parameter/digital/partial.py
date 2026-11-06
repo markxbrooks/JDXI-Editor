@@ -96,12 +96,13 @@ class DigitalPartialParam(AddressParameter):
         ]
         # Centralized conversion offsets
         self.CONVERSION_OFFSETS = {
-            "OSC_DETUNE": 64,
+            "OSC_PITCH_COARSE": 64,  # 40-88 = -24..+24
+            "OSC_PITCH_FINE": 64,  # 14-114 = -50..+50
             "OSC_PITCH_ENV_DEPTH": 64,
+            "AMP_VELOCITY": 64,  # 1-127 = -63..+63
             "AMP_PAN": 64,
             "FILTER_CUTOFF_KEYFOLLOW": "map_range",
             "AMP_LEVEL_KEYFOLLOW": "map_range",
-            "OSC_PITCH": 64,
             "FILTER_ENV_VELOCITY_SENSITIVITY": 64,
             "FILTER_ENV_DEPTH": 64,
             "LFO_PITCH_DEPTH": 64,
@@ -141,11 +142,11 @@ class DigitalPartialParam(AddressParameter):
         "Wave Variation",
     )  # Wave variation
     OSC_PITCH_COARSE = ParameterSpec(
-        0x03, -24, 24, -24, 24, "Adjusts the pitch in semitone steps", "Coarse Tune"
-    )  # Coarse tune
+        0x03, 40, 88, -24, 24, "Adjusts the pitch in semitone steps", "Coarse Tune"
+    )  # Coarse tune (40 - 88: -24 - +24)
     OSC_PITCH_FINE = ParameterSpec(
-        0x04, -50, 50, -50, 50, "Adjusts the pitch in steps of one cent", "Fine tune"
-    )  # Fine tune (-50 to +50)
+        0x04, 14, 114, -50, 50, "Adjusts the pitch in steps of one cent", "Fine tune"
+    )  # Fine tune (14 - 114: -50 - +50)
     OSC_PULSE_WIDTH_MOD_DEPTH = ParameterSpec(
         0x05,
         0,
@@ -176,8 +177,8 @@ class DigitalPartialParam(AddressParameter):
     )  # Pitch Envelope Decay
     OSC_PITCH_ENV_DEPTH = ParameterSpec(
         0x09,
-        -63,
-        63,
+        1,
+        127,
         -63,
         63,
         "This specifies how much the pitch envelope will affect the pitch\nNegative values will invert the shape of the envelope",
@@ -268,8 +269,8 @@ class DigitalPartialParam(AddressParameter):
     )  # Amplitude level
     AMP_VELOCITY = ParameterSpec(
         0x16,
-        -63,
-        63,
+        1,
+        127,
         -63,
         63,
         "Specifies how the volume will vary according to the strength with which you play the keyboard.",
@@ -313,7 +314,7 @@ class DigitalPartialParam(AddressParameter):
         "Pan",
     )  # Pan position
     AMP_LEVEL_KEYFOLLOW = ParameterSpec(
-        0x1C,
+        0x3C,
         54,
         74,
         -100,

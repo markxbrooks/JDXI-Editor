@@ -64,6 +64,7 @@ from decologr import Decologr as log
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QGroupBox, QTabWidget
 
@@ -154,10 +155,10 @@ class DrumCommonEditor(SynthEditor):
             JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
         )
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
+        instrument_vrow_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         drum_kit_presets_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.GREY
@@ -306,17 +307,25 @@ class DrumCommonEditor(SynthEditor):
 
     def _add_partial_clipboard_row(self, layout) -> None:
         """Copy / paste current Drum partial (Manager copyPart / pastePart)."""
-        from PySide6.QtWidgets import QHBoxLayout, QPushButton
+        from PySide6.QtWidgets import QHBoxLayout
+
+        from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
 
         row = QHBoxLayout()
-        copy_btn = QPushButton("Copy Partial")
-        copy_btn.setToolTip("Copy the currently selected drum partial's parameters")
-        copy_btn.clicked.connect(self.copy_current_partial)
-        paste_btn = QPushButton("Paste Partial")
-        paste_btn.setToolTip("Paste into the currently selected drum partial")
-        paste_btn.clicked.connect(self.paste_current_partial)
-        row.addWidget(copy_btn)
-        row.addWidget(paste_btn)
+        copy_row, _ = create_round_button_with_label(
+            "Copy Partial",
+            "mdi.content-copy",
+            self.copy_current_partial,
+            "Copy the currently selected drum partial's parameters",
+        )
+        paste_row, _ = create_round_button_with_label(
+            "Paste Partial",
+            "mdi.content-paste",
+            self.paste_current_partial,
+            "Paste into the currently selected drum partial",
+        )
+        row.addWidget(copy_row)
+        row.addWidget(paste_row)
         row.addStretch()
         layout.addLayout(row)
 

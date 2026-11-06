@@ -27,6 +27,9 @@ HANDLE_WIDTH = 10  # Flag-shaped marker handle, px
 HANDLE_HEIGHT = 14
 HANDLE_HIT_SLOP = 4  # Extra px around a handle that still grabs it
 RULER_MIN_HEIGHT = 34
+MIN_LABEL_SPACING = 28  # px between bar numbers; fewer bars are numbered when zoomed out
+MIN_BEAT_SPACING = 6  # px between beat ticks before they are hidden
+MARKER_GROUP_PX = 6  # markers closer than this share one flag and label
 
 
 @dataclass
@@ -178,11 +181,13 @@ class TimeRulerWidget(QWidget):
         self.setCursor(
             Qt.CursorShape.OpenHandCursor if hovering else Qt.CursorShape.ArrowCursor
         )
-        self.setToolTip(
-            "Double-click to change, drag to move, right-click to delete"
-            if hovering
-            else ""
-        )
+        near = [m.label for m in self._markers_near(pos) if m.label]
+        tip = "\n".join(near)
+        if hovering:
+            tip += ("\n\n" if tip else "") + (
+                "Double-click to change, drag to move, right-click to delete"
+            )
+        self.setToolTip(tip)
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
         marker = (
@@ -225,6 +230,16 @@ class TimeRulerWidget(QWidget):
 
     # --- Painting -------------------------------------------------------------
 
+    def _tempo_bpm(self) -> float:
+        """First set_tempo in the file, or 120 BPM."""
+        if not self.midi_file:
+            return 120.0
+        for track in self.midi_file.tracks:
+            for msg in track:
+                if msg.type == "set_tempo":
+                    return 60_000_000 / float(msg.tempo)
+        return 120.0
+
     def paintEvent(self, event: QPaintEvent) -> None:
         if not self.midi_file:
             return
@@ -235,31 +250,86 @@ class TimeRulerWidget(QWidget):
         duration = self.duration
         width = self.width()
         height = self.height()
+        mp = JDXi.UI.MidiPlayer
 
         self._paint_loop_region(painter, height)
 
-        num_marks = int(duration) + 1
-        spacing = width / duration if duration else width
-
         font = painter.font()
-        font.setPointSize(8)
+        font.setPointSize(int(mp.FONT_RULER.replace("px", "")) or 10)
         painter.setFont(font)
-        painter.setPen(QPen(Qt.white))
-
-        for second in range(num_marks):
-            x = int(second * spacing)
-            if second % 10 == 0:
-                # Draw major ticks every 10 seconds
-                painter.drawLine(x, 0, x, height)
-                painter.drawText(x + 2, height - 4, f"{second}s")
-            elif spacing >= 4:
-                painter.drawLine(x, height - 5, x, height)
 
         if duration > 0:
-            for marker in self._markers:
-                self._paint_marker(painter, marker, height)
+            self._paint_bar_beat_grid(painter, width, height, duration)
+            self._paint_markers(painter, height)
             self._paint_playhead(painter, height)
         painter.end()
+
+    def _paint_bar_beat_grid(
+        self, painter: QPainter, width: int, height: int, duration: float
+    ) -> None:
+        """Draw bars (major) and beats (minor); fall back to seconds if needed."""
+        mp = JDXi.UI.MidiPlayer
+        bpm = self._tempo_bpm()
+        beats_per_bar = 4
+        seconds_per_beat = 60.0 / bpm if bpm > 0 else 0.5
+        seconds_per_bar = seconds_per_beat * beats_per_bar
+
+        bar_pen = QPen(QColor(mp.BORDER_HOVER))
+        bar_pen.setWidth(1)
+        beat_pen = QPen(QColor(mp.BORDER_HOVER))
+        beat_pen.setWidth(1)
+        label_pen = QPen(QColor(mp.TEXT_SECONDARY))
+
+        if seconds_per_bar <= 0 or duration / seconds_per_bar > 2000:
+            # Degenerate / huge — fall back to seconds
+            spacing = width / duration
+            for second in range(int(duration) + 1):
+                x = int(second * spacing)
+                if second % 10 == 0:
+                    painter.setPen(bar_pen)
+                    painter.drawLine(x, 0, x, height)
+                    painter.setPen(label_pen)
+                    painter.drawText(x + 2, height - 4, f"{second}s")
+                elif spacing >= 4:
+                    painter.setPen(beat_pen)
+                    painter.drawLine(x, height - 5, x, height)
+            return
+
+        bar_px = seconds_per_bar / duration * width
+        label_every = self._label_interval(bar_px, painter, duration / seconds_per_bar)
+        minor_pen = QPen(QColor(mp.BORDER))
+        bar = 0
+        t = 0.0
+        while t <= duration + 1e-6:
+            x = int(t / duration * width)
+            if bar % label_every == 0:
+                painter.setPen(beat_pen)
+                painter.drawLine(x, 0, x, height)
+                painter.setPen(label_pen)
+                painter.drawText(x + 3, height - 4, f"{bar + 1}")
+            else:
+                painter.setPen(minor_pen)
+                painter.drawLine(x, height - 10, x, height)
+            if bar_px / beats_per_bar >= MIN_BEAT_SPACING:
+                painter.setPen(minor_pen)
+                for beat in range(1, beats_per_bar):
+                    bt = t + beat * seconds_per_beat
+                    if bt > duration:
+                        break
+                    bx = int(bt / duration * width)
+                    painter.drawLine(bx, height - 5, bx, height)
+            bar += 1
+            t += seconds_per_bar
+
+    @staticmethod
+    def _label_interval(bar_px: float, painter: QPainter, bar_count: float) -> int:
+        """Number every 1, 2, 4, 8… bars so labels are MIN_LABEL_SPACING apart."""
+        text_px = painter.fontMetrics().horizontalAdvance(str(int(bar_count) + 1)) + 6
+        needed = max(MIN_LABEL_SPACING, text_px)
+        interval = 1
+        while bar_px * interval < needed and interval < 1024:
+            interval *= 2
+        return interval
 
     def _paint_loop_region(self, painter: QPainter, height: int) -> None:
         if self._loop_range is None and not self._loop_enabled:
@@ -276,7 +346,58 @@ class TimeRulerWidget(QWidget):
             painter.drawText(x1 + 3, height // 2 + 4, "A")
             painter.drawText(x2 - 10, height // 2 + 4, "B")
 
-    def _paint_marker(self, painter: QPainter, marker: RulerMarker, height: int) -> None:
+    def _marker_groups(self) -> list[list[RulerMarker]]:
+        """Markers drawn within MARKER_GROUP_PX of each other, left to right."""
+        def x_of(marker: RulerMarker) -> int:
+            if marker is self._dragging_marker and self._drag_seconds is not None:
+                return self._x_for(self._drag_seconds)
+            return self._x_for(marker.seconds)
+
+        groups: list[list[RulerMarker]] = []
+        for marker in sorted(self._markers, key=x_of):
+            if groups and x_of(marker) - x_of(groups[-1][0]) < MARKER_GROUP_PX:
+                groups[-1].append(marker)
+            else:
+                groups.append([marker])
+        return groups
+
+    def _paint_markers(self, painter: QPainter, height: int) -> None:
+        """One flag per group; a label only where it fits before the next one."""
+        groups = self._marker_groups()
+        for index, group in enumerate(groups):
+            for marker in group:
+                self._paint_marker(painter, marker, height, label=False)
+            labels = [m.label for m in group if m.label]
+            if not labels:
+                continue
+            text = labels[0] + (f" +{len(labels) - 1}" if len(labels) > 1 else "")
+            x = self._x_for(group[0].seconds) + HANDLE_WIDTH + 2
+            next_x = (
+                self._x_for(groups[index + 1][0].seconds)
+                if index + 1 < len(groups)
+                else self.width()
+            )
+            metrics = painter.fontMetrics()
+            if x + metrics.horizontalAdvance(text) >= next_x:
+                text = f"+{len(labels) - 1}" if len(labels) > 1 else ""
+                if not text or x + metrics.horizontalAdvance(text) >= next_x:
+                    continue  # no room: the tooltip lists it
+            painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.TEXT)))
+            painter.drawText(x, HANDLE_HEIGHT - 2, text)
+
+    def _markers_near(self, pos: QPoint) -> list[RulerMarker]:
+        """Markers in the group under *pos* (for the tooltip)."""
+        if pos.y() > HANDLE_HEIGHT + HANDLE_HIT_SLOP:
+            return []
+        for group in self._marker_groups():
+            x = self._x_for(group[0].seconds)
+            if x - HANDLE_HIT_SLOP <= pos.x() <= x + HANDLE_WIDTH + HANDLE_HIT_SLOP:
+                return group
+        return []
+
+    def _paint_marker(
+        self, painter: QPainter, marker: RulerMarker, height: int, label: bool = True
+    ) -> None:
         dragging = marker is self._dragging_marker
         seconds = self._drag_seconds if dragging else marker.seconds
         x = self._x_for(seconds)
@@ -286,7 +407,7 @@ class TimeRulerWidget(QWidget):
             else QColor(JDXi.UI.Style.ACCENT)
         )
         pen = QPen(color)
-        pen.setWidth(2)
+        pen.setWidth(1)
         painter.setPen(pen)
         painter.drawLine(x, 0, x, height)
         if marker.key is not None:
@@ -303,8 +424,8 @@ class TimeRulerWidget(QWidget):
             painter.setBrush(fill)
             painter.drawPolygon(flag)
             painter.setBrush(Qt.BrushStyle.NoBrush)
-        if marker.label:
-            painter.setPen(QPen(Qt.white))
+        if label and marker.label:
+            painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.TEXT)))
             painter.drawText(x + HANDLE_WIDTH + 2, HANDLE_HEIGHT - 2, marker.label)
 
     def _paint_playhead(self, painter: QPainter, height: int) -> None:
@@ -312,7 +433,7 @@ class TimeRulerWidget(QWidget):
         if seconds is None:
             return
         x = self._x_for(seconds)
-        pen = QPen(QColor(JDXi.UI.Style.FOREGROUND))
-        pen.setWidth(2)
+        pen = QPen(QColor(JDXi.UI.MidiPlayer.ACCENT))
+        pen.setWidth(3)
         painter.setPen(pen)
         painter.drawLine(x, 0, x, height)

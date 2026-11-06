@@ -39,6 +39,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.playback.transport import TransportController
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.bank import Bank
 from jdxi_editor.ui.dialogs.program_change import (
@@ -63,7 +64,6 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.preset.source import PresetSource
 from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
-from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -214,7 +214,7 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            spacing=JDXi.UI.MidiPlayer.SPACING_GROUP,
         )
         header_widget = create_widget_with_layout(header_layout)
         # --- Use EditorBaseWidget for consistent scrollable layout structure
@@ -231,12 +231,15 @@ class MidiFilePlayer(SynthEditor):
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            spacing=JDXi.UI.MidiPlayer.SPACING_GROUP,
         )
         centered_widget = create_widget_with_layout(centered_layout)
         # Vertical stack: header, ruler, track viewer (stretch), controls.
         # So MidiTrackViewer and its MidiTrackWidgets get space and are visible.
-        main_layout = create_vertical_layout(margins=QMargins(0, 0, 0, 0), spacing=0)
+        main_layout = create_vertical_layout(
+            margins=QMargins(0, 0, 0, 0),
+            spacing=JDXi.UI.MidiPlayer.SPACING_RELATED,
+        )
         main_layout.addWidget(header_widget)
         main_layout.addWidget(self.midi_file)
         main_layout.addWidget(
@@ -255,6 +258,12 @@ class MidiFilePlayer(SynthEditor):
         )
         container_layout.addWidget(content_widget, 1)
         self._add_base_widget_to_editor()
+        self._apply_midi_player_style()
+
+    def _apply_midi_player_style(self) -> None:
+        """Override global editor QSS with player-scoped tokens (less idle red)."""
+        mark_editor_body(self)
+        self.setStyleSheet(JDXi.UI.MidiPlayer.editor_stylesheet())
 
     def _add_base_widget_to_editor(self):
         """Add base widget to editor's layout"""
@@ -270,12 +279,16 @@ class MidiFilePlayer(SynthEditor):
             tone_name="No file loaded", show_upper_text=True
         )
         layout = create_layout_with_items(
-            items=[self.ui.digital_title_file_name, self.classification_group],
+            items=[
+                self.ui.digital_title_file_name,
+                self.classification_group,
+                self.mute_channels_group,
+            ],
             vertical=True,
             start_stretch=False,
             end_stretch=False,
             margins=QMargins(0, 0, 0, 0),
-            spacing=0,
+            spacing=JDXi.UI.MidiPlayer.SPACING_RELATED,
         )
         return layout
 
@@ -286,8 +299,8 @@ class MidiFilePlayer(SynthEditor):
             vertical=True,
             stretch=False,
         )
-        right_panel_layout.addWidget(self.mute_channels_group)
         right_panel_layout.setContentsMargins(QMargins(0, 0, 0, 0))
+        right_panel_layout.setSpacing(JDXi.UI.MidiPlayer.SPACING_GROUP)
         return right_panel_layout
 
     def detect_and_assign_drum_tracks(self) -> None:
@@ -498,7 +511,7 @@ class MidiFilePlayer(SynthEditor):
             if len(unclassified) > 5:
                 parts.append(f"  ... and {len(unclassified) - 5} more")
 
-        parts.append("\n\nClick 'Apply All Track Changes' to save the changes.")
+        parts.append("\n\nThe channels have been changed in the track list.")
 
         return "\n".join(parts)
 
@@ -932,7 +945,7 @@ class MidiFilePlayer(SynthEditor):
                     is_muted
                 )
                 self.midi_file.midi_track_viewer.mute_buttons[channel].setStyleSheet(
-                    generate_sequencer_button_style(
+                    JDXi.UI.MidiPlayer.sequencer_button_style(
                         not is_muted, checked_means_inactive=True
                     )
                 )
@@ -955,14 +968,16 @@ class MidiFilePlayer(SynthEditor):
                 btn.blockSignals(True)
                 btn.setChecked(channel in muted_channels)
                 btn.blockSignals(False)
-
-    def apply_all_track_changes(self) -> None:
-        """
-        Apply all Track Name and MIDI Channel changes.
-        Calls the track viewer's apply_all_track_changes method.
-        """
-        if self.midi_file and self.midi_file.midi_track_viewer:
-            self.midi_file.midi_track_viewer.apply_all_track_changes()
+        midi_file = self.midi_state.file
+        if midi_file is not None:
+            self.mute_channels_group.set_used_channels(
+                {
+                    msg.channel + Midi.channel.BINARY_TO_DISPLAY
+                    for track in midi_file.tracks
+                    for msg in track
+                    if hasattr(msg, "channel") and not msg.is_meta
+                }
+            )
 
     def apply_channel_presets(self) -> None:
         """
@@ -974,6 +989,8 @@ class MidiFilePlayer(SynthEditor):
             message="apply_channel_presets called (Apply Presets button)",
         )
 
+        if self.midi_file and self.midi_file.midi_track_viewer:
+            self.midi_file.midi_track_viewer.flush_pending_edits()
         if not self.midi_file or not self.midi_file.midi_track_viewer:
             log.message(
                 scope=self.__class__.__name__,

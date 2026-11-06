@@ -44,7 +44,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.io.synth_memory import synth_memory_for
+from jdxi_editor.midi.io.device import device_for
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.midi.sysex.patch_bundle import (
     convert_editor_sections,
@@ -397,7 +397,7 @@ class PatchManager(QMainWindow):
                 # ones (exact bytes, raw MIDI values); the rest are converted
                 # from the controls' display units to raw MIDI values
                 memory_sections = write_memory_sections(
-                    synth_memory_for(self.midi_helper), temp_folder
+                    device_for(self.midi_helper).memory, temp_folder
                 )
                 converted = convert_editor_sections(temp_folder, memory_sections)
                 log.message(

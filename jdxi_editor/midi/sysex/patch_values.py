@@ -45,7 +45,7 @@ from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
 from jdxi_editor.midi.sysex.sections import SysExSection
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
+from jdxi_editor.midi.data.parameter.envelope import EnvelopeParameter
 
 VALUE_FORMAT = "VALUE_FORMAT"
 VALUE_FORMAT_MIDI = "midi"

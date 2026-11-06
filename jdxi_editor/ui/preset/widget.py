@@ -9,7 +9,11 @@ import picomidi
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
+from jdxi_editor.ui.editors.helpers.widgets import (
+    create_jdxi_button,
+    create_jdxi_row,
+    create_round_button_with_label,
+)
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_preset_list_for_synth_type,
     get_preset_signals,
@@ -152,14 +156,15 @@ class InstrumentPresetWidget(QWidget):
                 *JDXi.UI.Style.PADDING_MARGINS
             )
             self.layout.setSpacing(JDXi.UI.Style.SPACING)
+            self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
             self.setLayout(self.layout)
-            # Add stretch at top for vertical centering
-            self.layout.addStretch()
 
     def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
-        """Image group"""
+        """Image group — frameless overview panel (no heavy inset card)."""
         self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.instrument_image_label.setAlignment(
+            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter
+        )
         instrument_group_layout = create_layout_with_items(items=[self.instrument_image_label],
                                                            vertical=True,
                                                            margins=JDXi.UI.Style.REDUCED_PADDING_MARGINS,
@@ -270,18 +275,15 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_normal_preset_content(self, layout: Any, synth_type: str):
         """Add normal preset selection content to the layout."""
-
-        # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
-        icon_row_container = QHBoxLayout()
-        icon_row_container.addStretch()
-        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
-
-        transfer_layout_items(icon_row, icon_row_container)
-        icon_row_container.addStretch()
-        layout.addLayout(icon_row_container)
-        layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
+        # No icon row here: the Digital and Drums editors show one above
 
         self.instrument_title_label = DigitalTitle()
+        # Upper line names the part being edited, as the JD-Xi's display does
+        part = {
+            "Digital": f"DIGITAL SYNTH {getattr(self.parent, 'synth_number', 1)}",
+            "Drums": "DRUMS",
+        }.get(synth_type, synth_type.upper())
+        self.instrument_title_label.set_upper_display_text(part)
         layout.addWidget(self.instrument_title_label)
 
         # --- Edit Tone Name (round button + label, centered)
@@ -404,6 +406,7 @@ class InstrumentPresetWidget(QWidget):
             channel_label=channel_label,
             parent=self,
             midi_helper=getattr(self.parent, "midi_helper", None),
+            lcd_title=self.instrument_title_label,
         )
 
         read_row, self._read_from_jdxi_button, self._preset_status_label = (
@@ -415,12 +418,13 @@ class InstrumentPresetWidget(QWidget):
         )
         if synth_type == "Analog":
             random_row = QHBoxLayout()
-            random_btn = QPushButton("Random Patch")
-            random_btn.setToolTip(
-                "Randomize analog tone parameters (Manager rndVoice)"
+            random_widget, _ = create_round_button_with_label(
+                "Random Patch",
+                "mdi.dice-5-outline",
+                self._on_random_analog_patch,
+                "Randomize analog tone parameters (Manager rndVoice)",
             )
-            random_btn.clicked.connect(self._on_random_analog_patch)
-            random_row.addWidget(random_btn)
+            random_row.addWidget(random_widget)
             random_row.addStretch()
             selection_layout.addLayout(random_row)
 
@@ -628,19 +632,16 @@ class InstrumentPresetWidget(QWidget):
             self.parent.data_request()
 
     def setup_header_layout(self) -> None:
-        """Top layout with title and image ---"""
+        """Top layout with preset controls and instrument overview."""
         # Ensure setup() has been called first
         if self.layout is None:
             self.setup()
         self.hlayout = QHBoxLayout()
-        # Set proper spacing on horizontal layout
         self.hlayout.setSpacing(JDXi.UI.Style.SPACING)
-        self.hlayout.addStretch()
+        self.hlayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         # Add the horizontal layout to the vertical layout
         self.layout.addLayout(self.hlayout)
 
     def add_stretch(self):
-        """Pad both sides by symmetry, supposedly."""
-        self.hlayout.addStretch()
-        # Add stretch at bottom for vertical centering
-        self.layout.addStretch()
+        """Flexible gap between preset panel and instrument image (horizontal only)."""
+        self.hlayout.addStretch(1)

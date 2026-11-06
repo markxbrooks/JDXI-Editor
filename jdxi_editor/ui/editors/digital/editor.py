@@ -36,7 +36,7 @@ from decologr import Decologr as log
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QSizePolicy, QTabWidget
 
@@ -209,10 +209,10 @@ class DigitalSynthEditor(BaseSynthEditor):
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_layout.addWidget(self.instrument_preset)
+        instrument_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         instrument_layout.setSpacing(
             JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
         )  # Minimal spacing
@@ -280,7 +280,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return: None
         """
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
-        JDXi.UI.Theme.apply_editor_style(self.tab_widget)
+        JDXi.UI.Theme.apply_editor_style(self.tab_widget, body=False)
         self.partial_editors = {}
         # --- Create editor for each partial; each panel keeps its own ControlRegistry (populated in __init__ by sections)
         for i in range(1, 4):
@@ -316,17 +316,25 @@ class DigitalSynthEditor(BaseSynthEditor):
 
     def _add_partial_clipboard_row(self, layout) -> None:
         """Copy / paste current Digital partial (Manager copyPart / pastePart)."""
-        from PySide6.QtWidgets import QHBoxLayout, QPushButton
+        from PySide6.QtWidgets import QHBoxLayout
+
+        from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
 
         row = QHBoxLayout()
-        copy_btn = QPushButton("Copy Partial")
-        copy_btn.setToolTip("Copy the currently selected partial's parameters")
-        copy_btn.clicked.connect(self.copy_current_partial)
-        paste_btn = QPushButton("Paste Partial")
-        paste_btn.setToolTip("Paste into the currently selected partial")
-        paste_btn.clicked.connect(self.paste_current_partial)
-        row.addWidget(copy_btn)
-        row.addWidget(paste_btn)
+        copy_row, _ = create_round_button_with_label(
+            "Copy Partial",
+            "mdi.content-copy",
+            self.copy_current_partial,
+            "Copy the currently selected partial's parameters",
+        )
+        paste_row, _ = create_round_button_with_label(
+            "Paste Partial",
+            "mdi.content-paste",
+            self.paste_current_partial,
+            "Paste into the currently selected partial",
+        )
+        row.addWidget(copy_row)
+        row.addWidget(paste_row)
         row.addStretch()
         layout.addLayout(row)
 
@@ -1107,7 +1115,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         if check_box:
             check_box.blockSignals(True)
-            check_box.setState(bool(value), False)
+            check_box.setOn(bool(value))  # SELECT is a separate parameter
             check_box.blockSignals(False)
             successes.append(param.name)
         else:

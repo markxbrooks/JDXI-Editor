@@ -214,8 +214,9 @@ def generate_tab_style(
                 color: {text_color};
                 padding: {padding};
                 margin: {margin};
-                border: 2px solid {border};
-                border-radius: {radius}px;
+                border: none;
+                border-bottom: 2px solid transparent;
+                border-radius: 0;
                 font-family: "{font_family}";
                 font-size: {font_size};
             }}
@@ -224,7 +225,8 @@ def generate_tab_style(
                 font-family: {FONT_FAMILY};
                 background: {selected_bg};
                 color: {text_color};
-                border: 2px solid {selected_border};
+                border: none;
+                border-bottom: 2px solid {selected_border};
                 font-family: "{font_family}";
                 font-size: {font_size};
             }}
@@ -235,7 +237,8 @@ def generate_tab_style(
 
             QTabBar::tab:hover {{
                 background: {hover_bg};
-                border: 2px solid {hover_border};
+                border: none;
+                border-bottom: 2px solid {hover_border};
                 font-family: "{font_family}";
                 font-size: {font_size};
             }}

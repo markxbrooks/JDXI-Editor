@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
 from jdxi_editor.midi.data.effects.type.handler import EffectTypeHandler
-from jdxi_editor.ui.editors.effects.dispatch_stats import DispatchStats
+from jdxi_editor.midi.data.effects.sysex.dispatch_stats import DispatchStats
 from jdxi_editor.ui.widgets.controls.registry import ControlResolver
 from jdxi_editor.ui.widgets.writer import WidgetWriter
 

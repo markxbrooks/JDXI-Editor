@@ -119,7 +119,7 @@ class MIDIConfigDialog(QDialog):
         self.setMinimumSize(
             JDXiUIDimensions.Config.WIDTH, JDXiUIDimensions.Config.HEIGHT
         )
-        self.setStyleSheet(JDXi.UI.Style.EDITOR)
+        JDXi.UI.Theme.apply_editor_style(self)
         self.midi_helper = midi_helper
         self.input_ports = midi_helper.get_input_ports()
         self.output_ports = midi_helper.get_output_ports()

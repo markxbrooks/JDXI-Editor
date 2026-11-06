@@ -380,7 +380,7 @@ class ProgramEditor(BasicEditor):
             )
 
         self.setLayout(main_vlayout)
-        self.setStyleSheet(JDXi.UI.Style.EDITOR)
+        JDXi.UI.Theme.apply_editor_style(self)
 
         program_preset_hlayout = QHBoxLayout()
         program_preset_hlayout.addStretch()

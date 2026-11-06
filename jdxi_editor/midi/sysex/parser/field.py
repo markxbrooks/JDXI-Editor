@@ -33,6 +33,15 @@ class StructuredFieldParser:
             )
         if end > data_len:
             raise ValueError(f"Field end {end} out of range for data length {data_len}")
+        # Only the start (F0) and end (F7) fields sit on the frame bytes; any
+        # other field must lie inside the body, or a short frame would read
+        # F0/F7 as a checksum or Roland ID
+        is_frame_byte = field.length == 1 and field.offset in (0, -1)
+        if not is_frame_byte and (start < 1 or end > data_len - 1):
+            raise ValueError(
+                f"Field {field.name or field.offset} is not in the message body "
+                f"(data length {data_len})"
+            )
 
         return self.data[start:end]
 
@@ -48,6 +57,9 @@ class StructuredFieldParser:
             return raw_bytes
 
         parser = field.parser
+        if isinstance(parser, int) and not isinstance(parser, type):
+            # An expected byte value (e.g. F0): the validator checked it
+            return raw_bytes
         if isinstance(parser, type) and hasattr(parser, "__members__"):
             try:
                 byte_value = raw_bytes[0] if len(raw_bytes) == 1 else None
