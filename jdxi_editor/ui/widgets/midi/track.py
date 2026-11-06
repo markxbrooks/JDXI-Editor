@@ -138,14 +138,20 @@ class MidiTrackWidget(QWidget):
         Called when the global mute state is updated.
         """
         self.muted_tracks = muted_tracks
-        self.update()  # trigger repaint or UI change if needed
+        self.cached_pixmap = None  # mute state is drawn into the pixmap
+        self.update()
+
+    def _is_channel_muted(self, channel: int) -> bool:
+        """*channel* is 0-15; muted_channels holds 1-16 as the mute buttons show."""
+        return channel + Midi.channel.BINARY_TO_DISPLAY in self.muted_channels
 
     def update_muted_channels(self, muted_channels: set[int]) -> None:
         """
         Called when the global mute state is updated.
         """
         self.muted_channels = muted_channels
-        self.update()  # trigger repaint or UI change if needed
+        self.cached_pixmap = None  # mute state is drawn into the pixmap
+        self.update()
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """
@@ -280,7 +286,9 @@ class MidiTrackWidget(QWidget):
         rects = self.track_data["rects"]
         label = self.track_data["label"]
         channels = self.track_data["channels"]
-        muted = any(channel in self.muted_channels for channel in channels)
+        muted = self.muted or any(
+            self._is_channel_muted(channel) for channel in channels
+        )
 
         # Compute scale based on last timestamp
         times = [t[0] for t in rects]
@@ -302,8 +310,9 @@ class MidiTrackWidget(QWidget):
             x = norm_time * width
             if x + self.note_width < 0 or x > width:
                 continue  # Skip offscreen
-            color = MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150))
-            if channel in self.muted_channels:
+            # Copy: the colour table is shared by every track
+            color = QColor(MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150)))
+            if self.muted or self._is_channel_muted(channel):
                 color.setAlpha(100)
             painter.setBrush(color)
             painter.drawRect(QRectF(x, y, self.note_width, height))

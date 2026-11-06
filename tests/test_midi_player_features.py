@@ -177,6 +177,20 @@ def test_clone_and_delete_track_keep_mutes(player):
     assert len(viewer.midi_track_widgets) == 2
 
 
+def test_track_velocity_slider_reaches_playback(player):
+    viewer = player.midi_file.midi_track_viewer
+    viewer.track_velocity_sliders[1].setValue(50)
+    assert player.playback_engine._velocity_scales == {1: 0.5}
+
+    viewer.clone_track(1)  # the copy starts at the source's velocity
+    assert viewer.track_velocity_scales == {1: 0.5, 2: 0.5}
+    assert player.playback_engine._velocity_scales == {1: 0.5, 2: 0.5}
+    assert viewer.track_velocity_sliders[2].value() == 50
+
+    viewer.track_velocity_sliders[1].mouseDoubleClickEvent(Mock())  # reset
+    assert player.playback_engine._velocity_scales == {2: 0.5}
+
+
 def test_loop_points_snap_and_enable_loop(player):
     controller = player.transport_controller
     controller.seek_seconds(8.2)

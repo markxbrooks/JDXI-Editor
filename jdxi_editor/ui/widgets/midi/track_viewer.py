@@ -25,6 +25,7 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
 from jdxi_editor.ui.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
+from jdxi_editor.ui.widgets.midi.slider.track_velocity import TrackVelocitySlider
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
@@ -39,6 +40,7 @@ class MidiTrackViewer(QWidget):
     """
 
     mute_changed = Signal()  # track/channel mute or solo state changed
+    track_velocity_changed = Signal()  # a track's velocity scale changed
     file_changed = Signal(object)  # the viewer now shows this mido.MidiFile
 
     def __init__(self, parent: QWidget = None):
@@ -56,6 +58,9 @@ class MidiTrackViewer(QWidget):
         self._pre_solo_muted_tracks: set[int] | None = None
         self.track_mute_buttons: dict[int, QPushButton] = {}
         self.track_solo_buttons: dict[int, QPushButton] = {}
+        # track index -> note velocity factor during playback (absent = 1.0)
+        self.track_velocity_scales: dict[int, float] = {}
+        self.track_velocity_sliders: dict[int, TrackVelocitySlider] = {}
         self._draggable_rows = {}
 
         # To track muted channels
@@ -151,6 +156,8 @@ class MidiTrackViewer(QWidget):
         self._pre_solo_muted_tracks = None
         self.track_mute_buttons.clear()
         self.track_solo_buttons.clear()
+        self.track_velocity_scales.clear()
+        self.track_velocity_sliders.clear()
         self._track_name_edits.clear()
         self.track_channel_spins.clear()
         self._draggable_rows.clear()
@@ -378,8 +385,8 @@ class MidiTrackViewer(QWidget):
         """
         Toggle mute state for a specific MIDI track.
 
-        :param track: int MIDI channel (1-16)
-        :param is_muted: bool is the channel muted?
+        :param track: int track index (0-based)
+        :param is_muted: bool is the track muted?
         :return: None
         """
         if self.solo_track is not None:
@@ -394,6 +401,27 @@ class MidiTrackViewer(QWidget):
         print(f"Muted tracks updated: {self.muted_tracks}")
         self.mute_changed.emit()
 
+    def set_track_velocity_scale(self, track: int, scale: float) -> None:
+        """
+        Scale a track's note velocities during playback.
+
+        :param track: int track index (0-based)
+        :param scale: float factor, 1.0 = velocities as in the file
+        """
+        if scale == 1.0:
+            self.track_velocity_scales.pop(track, None)
+        else:
+            self.track_velocity_scales[track] = scale
+        slider = self.track_velocity_sliders.get(track)
+        if slider is not None and slider.scale() != scale:
+            slider.blockSignals(True)
+            slider.set_scale(scale)
+            slider.blockSignals(False)
+        self.track_velocity_changed.emit()
+
+    def get_track_velocity_scales(self) -> dict[int, float]:
+        return dict(self.track_velocity_scales)
+
     def update_muted_tracks(self, muted_tracks: set[int]) -> None:
         """
         Called when the global mute state is updated.
@@ -401,20 +429,6 @@ class MidiTrackViewer(QWidget):
         self.muted_tracks = muted_tracks
         print(f"Muted tracks updated: {self.muted_tracks}")
         self.update()  # trigger repaint or UI change if needed
-
-    def mute_track(self, track_index: int) -> None:
-        """
-        Mute a specific track
-
-        :param track_index: int
-        :return: None
-        """
-        if not (0 <= track_index < len(self.midi_file.tracks)):
-            raise IndexError("Invalid track index")
-
-        track_widget = self.midi_track_widgets[track_index]
-        track_widget.muted = not track_widget.muted
-        self.toggle_track_mute(track_index, track_widget.muted)
 
     def delete_track(self, track_index: int) -> None:
         """
@@ -489,23 +503,28 @@ class MidiTrackViewer(QWidget):
         self, tracks: list[mido.MidiTrack], index_map: dict[int, int]
     ) -> None:
         """
-        Show a new file made of *tracks*, keeping per-track mutes.
+        Show a new file made of *tracks*, keeping per-track mutes and velocity.
 
         :param tracks: Tracks for the new file, in order
         :param index_map: New track index -> index the track had before
         """
         old_muted = set(self.muted_tracks)
+        old_scales = dict(self.track_velocity_scales)
         new_midi = mido.MidiFile(
             type=1 if len(tracks) > 1 else self.midi_file.type,
             ticks_per_beat=self.midi_file.ticks_per_beat,
         )
         new_midi.tracks.extend(tracks)
-        self.set_midi_file(new_midi)
+        # Solo ends; the tracks it muted stay muted
+        self.solo_track = None
+        self._pre_solo_muted_tracks = None
         self.muted_tracks = {
             new for new, old in index_map.items() if old in old_muted
         }
-        self._apply_muted_tracks_to_widgets()
-        self._sync_track_mute_solo_buttons()
+        self.track_velocity_scales = {
+            new: old_scales[old] for new, old in index_map.items() if old in old_scales
+        }
+        self.set_midi_file(new_midi, keep_track_state=True)
         self.mute_changed.emit()
 
     def _show_track_menu(self, track_index: int, global_pos: QPoint) -> None:
@@ -538,7 +557,7 @@ class MidiTrackViewer(QWidget):
         self.set_track_name(track_copy, new_name)
         log.message(f"Renamed track {track_index} to {new_name}")
 
-        self.set_midi_file(midi_file_copy)  # Replace with modified file
+        self.set_midi_file(midi_file_copy, keep_track_state=True)
 
     def set_track_name(self, track, new_name):
         for msg in track:
@@ -571,9 +590,7 @@ class MidiTrackViewer(QWidget):
             f"Changing track {track_index} channel from {old_channel} to {new_channel}"
         )
 
-        new_midi = mido.MidiFile()
-        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
-
+        tracks = []
         for i, t in enumerate(self.midi_file.tracks):
             new_track = mido.MidiTrack()
             for msg in t:
@@ -582,14 +599,15 @@ class MidiTrackViewer(QWidget):
                 if i == track_index and hasattr(msg_copy, "channel"):
                     msg_copy.channel = new_channel
                 new_track.append(msg_copy)
-            new_midi.tracks.append(new_track)
+            tracks.append(new_track)
 
-        new_channel_tested = get_first_channel(new_midi.tracks[track_index])
+        new_channel_tested = get_first_channel(tracks[track_index])
         log.message(
             f"Changed track {track_index} channel from {old_channel} to {new_channel_tested}"
         )
 
-        self.set_midi_file(new_midi)
+        # Same tracks in the same order: mutes carry over
+        self._replace_tracks(tracks, {i: i for i in range(len(tracks))})
 
     def make_apply_slot(self, track_index: int, spin_box: MidiSpinBox) -> callable:
         """
@@ -615,13 +633,29 @@ class MidiTrackViewer(QWidget):
         log.message(f"Track index: {track_name}, Text: {text_edit.text()}")
         return lambda: self.change_track_name(track_name, text_edit.text())
 
-    def set_midi_file(self, midi_file: mido.MidiFile) -> None:
+    def set_midi_file(self, midi_file: mido.MidiFile, keep_track_state: bool = False) -> None:
         """
         Set the MIDI file for the widget and create channel controls.
 
         :param midi_file:
+        :param keep_track_state: keep track mutes, solo and velocity scales
+            (an edit of the same tracks, in the same order); a new file starts
+            unmuted at 100 %
         :return: None
         """
+        track_count = len(midi_file.tracks)
+        kept_muted = (
+            {t for t in self.muted_tracks if t < track_count} if keep_track_state else set()
+        )
+        kept_solo = self.solo_track if keep_track_state else None
+        if kept_solo is not None and kept_solo >= track_count:
+            kept_solo = None
+        kept_pre_solo = self._pre_solo_muted_tracks if kept_solo is not None else None
+        kept_scales = (
+            {t: v for t, v in self.track_velocity_scales.items() if t < track_count}
+            if keep_track_state
+            else {}
+        )
         self.midi_file = midi_file
         self.ruler.set_midi_file(midi_file)
 
@@ -634,9 +668,11 @@ class MidiTrackViewer(QWidget):
 
         self.midi_track_widgets = {}
         self._draggable_rows = {}
-        self.solo_track = None
-        self._pre_solo_muted_tracks = None
-        self.muted_tracks.clear()
+        self.solo_track = kept_solo
+        self._pre_solo_muted_tracks = kept_pre_solo
+        self.muted_tracks = kept_muted
+        self.track_velocity_scales = kept_scales
+        self.track_velocity_sliders = {}
         self.track_mute_buttons = {}
         self.track_solo_buttons = {}
         tick_to_seconds = build_tick_to_seconds(midi_file)
@@ -739,9 +775,6 @@ class MidiTrackViewer(QWidget):
             mute_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             mute_button.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
             mute_button.setCheckable(True)
-            mute_button.clicked.connect(
-                lambda _, tr=i: self.mute_track(tr)
-            )  # Send internal value (0–15)
             mute_button.toggled.connect(
                 lambda checked, tr=i: self.toggle_track_mute(tr, checked)
             )
@@ -787,6 +820,18 @@ class MidiTrackViewer(QWidget):
             clone_button.clicked.connect(lambda _, tr=i: self.clone_track(tr))
             button_hlayout.addWidget(clone_button)
 
+            velocity_slider = TrackVelocitySlider()
+            velocity_slider.set_scale(self.track_velocity_scales.get(i, 1.0))
+            velocity_slider.setFixedWidth(JDXi.UI.Style.TRACK_VELOCITY_SLIDER_WIDTH)
+            velocity_slider.setFixedHeight(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            velocity_slider.valueChanged.connect(
+                lambda _, tr=i, sl=velocity_slider: self.set_track_velocity_scale(
+                    tr, sl.scale()
+                )
+            )
+            button_hlayout.addWidget(velocity_slider)
+            self.track_velocity_sliders[i] = velocity_slider
+
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(
                 track=track,
@@ -819,6 +864,8 @@ class MidiTrackViewer(QWidget):
 
         self.channel_controls_vlayout.addLayout(apply_all_layout)
         self.channel_controls_vlayout.addStretch()
+        self._apply_muted_tracks_to_widgets()
+        self._sync_track_mute_solo_buttons()
         self.fit_tracks_to_view()
         self.file_changed.emit(midi_file)
 
@@ -827,11 +874,13 @@ class MidiTrackViewer(QWidget):
         Returns the estimated total width of all controls to the left of the MidiTrackWidget.
         """
         # Fixed widths from layout:
-        # Apply, Mute, Solo, Delete, Clone track buttons + label/spin controls
+        # Apply, Mute, Solo, Delete, Clone track buttons, velocity slider
+        # + label/spin controls
         return (
             JDXi.UI.Style.ICON_PIXMAP_SIZE
             + JDXi.UI.Style.TRACK_LABEL_WIDTH
             + (JDXi.UI.Style.BUTTON_TRACK_WIDTH * 5)
+            + JDXi.UI.Style.TRACK_VELOCITY_SLIDER_WIDTH
             + 10
         )
 
@@ -906,7 +955,7 @@ class MidiTrackViewer(QWidget):
 
             new_midi.tracks.append(new_track)
 
-        self.set_midi_file(new_midi)
+        self.set_midi_file(new_midi, keep_track_state=True)
 
     # Channel (1-16) → JD-Xi preset number (e.g. 159 Picked Bass, 162 Piano, 1 JP8 Strings)
     _CHANNEL_PRESET_MAP = {
@@ -1001,7 +1050,7 @@ class MidiTrackViewer(QWidget):
             message="Tracks with presets inserted",
             parameter=len(new_midi.tracks),
         )
-        self.set_midi_file(new_midi)
+        self.set_midi_file(new_midi, keep_track_state=True)
 
     def get_muted_channels(self):
         return self.muted_channels
@@ -1032,59 +1081,10 @@ class MidiTrackViewer(QWidget):
 
         log.message(f"Moving track {from_index + 1} to position {to_index + 1}")
 
-        # Reorder tracks in MIDI file
-        tracks = list(self.midi_file.tracks)
-        track_to_move = tracks.pop(from_index)
-        tracks.insert(to_index, track_to_move)
-
-        # Create new MIDI file with reordered tracks
-        new_midi = mido.MidiFile()
-        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
-        new_midi.tracks = tracks
-
-        # Update the MIDI file and refresh the UI
-        self.midi_file = new_midi
-
-        # Rebuild the track mappings to reflect new order
-        # We need to preserve the track name edits and channel spins, but remap them
-        old_name_edits = self._track_name_edits.copy()
-        old_channel_spins = self.track_channel_spins.copy()
-        old_track_widgets = self.midi_track_widgets.copy()
-
-        # Clear current mappings
-        self._track_name_edits.clear()
-        self.track_channel_spins.clear()
-        self.midi_track_widgets.clear()
-        self._draggable_rows.clear()
-
-        # Remap: the track that was at from_index is now at to_index
-        # All tracks between from_index and to_index shift
-        for i in range(len(tracks)):
-            if i == to_index:
-                # This is the moved track
-                old_idx = from_index
-            elif from_index < to_index:
-                # Moving down: tracks between from_index and to_index shift up
-                if from_index < i <= to_index:
-                    old_idx = i - 1
-                else:
-                    old_idx = i
-            else:
-                # Moving up: tracks between to_index and from_index shift down
-                if to_index <= i < from_index:
-                    old_idx = i + 1
-                else:
-                    old_idx = i
-
-            # Copy mappings from old index to new index
-            if old_idx in old_name_edits:
-                self._track_name_edits[i] = old_name_edits[old_idx]
-            if old_idx in old_channel_spins:
-                self.track_channel_spins[i] = old_channel_spins[old_idx]
-            if old_idx in old_track_widgets:
-                self.midi_track_widgets[i] = old_track_widgets[old_idx]
-
-        # Refresh the UI
-        self.set_midi_file(new_midi)
+        # order[new index] = old index
+        order = list(range(len(self.midi_file.tracks)))
+        order.insert(to_index, order.pop(from_index))
+        tracks = [self.midi_file.tracks[old] for old in order]
+        self._replace_tracks(tracks, dict(enumerate(order)))
 
         log.message(f"Track moved successfully")

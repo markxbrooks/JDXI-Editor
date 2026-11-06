@@ -314,6 +314,19 @@ class TransportController(QObject):
             for channel in range(16):
                 self.engine.mute_channel(channel, channel in muted_channels)
 
+    def set_track_velocity_scales(self, scales: dict[int, float]) -> None:
+        """
+        Scale tracks' note-on velocities; takes effect on the next notes.
+
+        :param scales: 0-based track index -> factor (absent = 1.0)
+        """
+        with self._lock:
+            track_count = len(self.engine.midi_file.tracks) if self._loaded else 0
+            for track_index in range(track_count):
+                self.engine.set_track_velocity_scale(
+                    track_index, scales.get(track_index, 1.0)
+                )
+
     def set_suppression(self, program_changes: bool, control_changes: bool) -> None:
         """Choose whether program changes / control changes in the file are sent."""
         with self._lock:

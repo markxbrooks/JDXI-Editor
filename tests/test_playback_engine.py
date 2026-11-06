@@ -259,6 +259,97 @@ def test_engine_release_sustain(clock):
     )
 
 
+def _make_two_track_unison_midi():
+    """Tracks 0 and 1 both play note 60 on channel 0 from tick 0 to 480."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    for _ in range(2):
+        track = MidiTrack()
+        track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+        track.append(Message("note_off", note=60, velocity=0, channel=0, time=480))
+        mid.tracks.append(track)
+    return mid
+
+
+def test_engine_unmute_during_playback_restores_controllers(clock):
+    """Unmuting sends the program, CCs and bend the muted track skipped."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.mute_track(0, True)
+    engine.start(0)
+    clock.now = 1000.75  # tick 720: past the bend, before program 7
+    engine.process_until_now()
+    assert received == []
+
+    engine.mute_track(0, False)
+    assert _summary(received) == [
+        ("cc", 0, 95),
+        ("cc", 32, 64),
+        ("pc", 3),
+        ("cc", 7, 90),
+        ("bend", 2000),
+    ]
+
+
+def test_engine_unmute_while_paused_restores_on_resume(clock):
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.mute_channel(0, True)
+    engine.start(0)
+    clock.now = 1000.75
+    engine.process_until_now()
+    engine.pause()
+    engine.mute_channel(0, False)
+    assert received == []
+    engine.resume()
+    assert ("pc", 3) in _summary(received)
+
+
+def test_engine_mute_call_that_changes_nothing_sends_nothing(clock):
+    """The UI re-sends every mute flag on each toggle; repeats are ignored."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.mute_channel(0, False)
+    engine.mute_track(0, False)
+    assert received == []
+
+
+def test_engine_mute_track_keeps_other_tracks_unison_note(clock):
+    """Muting one of two tracks playing the same note leaves the other's held."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.mute_track(1, True)
+    assert _summary(received) == [("note_off",)]
+    assert engine._held_notes == {(0, 60): {0}}
+    engine.stop()
+    assert engine._held_notes == {}
+
+
+def test_engine_track_velocity_scale(clock):
+    """Note-on velocities are scaled per track; the file is unchanged."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.set_track_velocity_scale(0, 0.5)
+    engine.set_track_velocity_scale(1, 3.0)
+    engine.start(0)
+    engine.process_until_now()
+    assert sorted(m.velocity for m in received if m.type == "note_on") == [32, 127]
+    assert engine.midi_file.tracks[0][0].velocity == 64
+
+
+def test_engine_velocity_scale_keeps_notes_audible_and_note_offs(clock):
+    engine, received = _loaded_engine()
+    engine.set_track_velocity_scale(0, 0.0)
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert [m.velocity for m in received if m.type == "note_on"] == [1, 1]
+    assert [m.velocity for m in received if m.type == "note_off"] == [0, 0]
+
+    engine.set_track_velocity_scale(0, 1.0)
+    assert engine._velocity_scales == {}
+
+
 def test_engine_reset_clears_position_not_mute():
     """reset() clears position and playing; mute/suppress are unchanged."""
     engine, _ = _loaded_engine()

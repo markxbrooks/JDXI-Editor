@@ -187,6 +187,7 @@ class MidiFilePlayer(SynthEditor):
         self.midi_file = MidiFileViewer(midi_state=self.midi_state, parent=self)
         track_viewer = self.midi_file.midi_track_viewer
         track_viewer.mute_changed.connect(self._sync_transport_settings)
+        track_viewer.track_velocity_changed.connect(self._sync_transport_settings)
         track_viewer.file_changed.connect(self._on_track_viewer_file_changed)
         track_viewer.ruler.seek_requested.connect(self.transport_controller.seek_seconds)
         track_viewer.ruler.marker_moved.connect(self._move_program_change)
@@ -587,7 +588,7 @@ class MidiFilePlayer(SynthEditor):
         self._insert_messages_at_abs_tick(target_track, abs_ticks, msgs)
 
         # Refresh viewer; its file_changed updates playback and the PC markers
-        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file, keep_track_state=True)
 
     def _snap_to_bar(self, seconds: float) -> float:
         """Nearest bar line to *seconds* when Snap to bar is on."""
@@ -686,7 +687,7 @@ class MidiFilePlayer(SynthEditor):
             return
         new_tick = self.playback_engine.seconds_to_tick(self._snap_to_bar(seconds))
         self._insert_messages_at_abs_tick(track, new_tick, removed)
-        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file, keep_track_state=True)
 
     @staticmethod
     def _bank_program_messages(
@@ -774,7 +775,7 @@ class MidiFilePlayer(SynthEditor):
                 selection.program,
             ),
         )
-        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
+        self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file, keep_track_state=True)
 
     def _delete_program_change(self, key: tuple[int, int, int]) -> None:
         """Delete a program change (and its bank select)."""
@@ -783,7 +784,7 @@ class MidiFilePlayer(SynthEditor):
             return
         track = self.midi_state.file.tracks[track_index]
         if self._remove_program_change(track, abs_tick, channel):
-            self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file)
+            self.midi_file.midi_track_viewer.set_midi_file(self.midi_state.file, keep_track_state=True)
 
     @staticmethod
     def _remove_program_change(
@@ -1661,7 +1662,7 @@ class MidiFilePlayer(SynthEditor):
             super().dropEvent(event)
 
     def _sync_transport_settings(self) -> None:
-        """Push mute and event-suppression settings to the transport (applies live)."""
+        """Push mute, track velocity and event-suppression settings to the transport (applies live)."""
         self.midi_state.muted_tracks = self.get_muted_tracks()
         self.midi_state.muted_channels = self.get_muted_channels()
         self.transport_controller.set_mutes(
@@ -1670,6 +1671,9 @@ class MidiFilePlayer(SynthEditor):
                 ch - Midi.channel.BINARY_TO_DISPLAY
                 for ch in self.midi_state.muted_channels
             },
+        )
+        self.transport_controller.set_track_velocity_scales(
+            self.midi_file.midi_track_viewer.get_track_velocity_scales()
         )
         self.transport_controller.set_suppression(
             program_changes=self.midi_state.suppress_program_changes,
