@@ -49,7 +49,7 @@ from jdxi_editor.ui.editors.helpers.widgets import (
     create_jdxi_row,
 )
 from jdxi_editor.ui.editors.pattern.models import ClipboardData, SequencerStyle
-from jdxi_editor.ui.editors.pattern.options import DIGITAL_OPTIONS, DRUM_OPTIONS
+from jdxi_editor.ui.editors.pattern.options import DEFAULT_PITCH, DIGITAL_OPTIONS, DRUM_OPTIONS
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_analog_options,
     get_digital_options,
@@ -335,6 +335,14 @@ class PatternUI(SynthEditor):
         row_layout.addWidget(mute_btn)
         return row
 
+    def _pitch_selector(self, key: str):
+        """A melodic row's pitch combo, starting on DEFAULT_PITCH (the list starts lower)."""
+        selector = create_combo_box(spec=self.specs["combos"][key])
+        index = selector.findText(DEFAULT_PITCH)
+        if index >= 0:
+            selector.setCurrentIndex(index)
+        return selector
+
     def _get_row_label_style(self, row_idx: int) -> str:
         spec = self.row_specs[row_idx]
         return SequencerStyle.row_label(spec.accent_color)
@@ -342,17 +350,13 @@ class PatternUI(SynthEditor):
     def _create_selector_for_row(self, row_idx: int):
         """Create and return the combo selector for this row; assign to self for channel_map / _update_combo_boxes."""
         if row_idx == 0:
-            self.digital1_selector = create_combo_box(
-                spec=self.specs["combos"]["digital1"]
-            )
+            self.digital1_selector = self._pitch_selector("digital1")
             return self.digital1_selector
         if row_idx == 1:
-            self.digital2_selector = create_combo_box(
-                spec=self.specs["combos"]["digital2"]
-            )
+            self.digital2_selector = self._pitch_selector("digital2")
             return self.digital2_selector
         if row_idx == 2:
-            self.analog_selector = create_combo_box(spec=self.specs["combos"]["analog"])
+            self.analog_selector = self._pitch_selector("analog")
             return self.analog_selector
         if row_idx == 3:
             return self.drum_selector
@@ -588,7 +592,9 @@ class PatternUI(SynthEditor):
             selector.clear()
             selector.addItems(opts)
             idx = selector.findText(prev_text)
-            selector.setCurrentIndex(idx if idx >= 0 else 0)
+            if idx < 0:
+                idx = max(0, selector.findText(DEFAULT_PITCH))  # drums: first drum
+            selector.setCurrentIndex(idx)
             selector.blockSignals(False)
 
     def _add_button_with_label_from_spec(

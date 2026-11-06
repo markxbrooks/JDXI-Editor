@@ -1,6 +1,6 @@
 """Project metadata and version information for JD-Xi Editor."""
 
-__version__ = "0.9.7"
+__version__ = "0.9.8"
 __program__ = "JD-Xi Editor"
 __project__ = "JD-Xi Editor"
 __author__ = "JDXi Editor Team"

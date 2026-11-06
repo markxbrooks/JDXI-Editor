@@ -48,7 +48,7 @@ PANEL_SPLIT_X = 498  # gap between the left (display, parts) and right halves
 PANEL_SPLIT_GAP = 4
 
 
-def _draw_gloss_panel(painter: QPainter, rect: QRectF, sheen: bool) -> None:
+def draw_gloss_panel(painter: QPainter, rect: QRectF, sheen: bool) -> None:
     """A shiny black plastic panel: deep gradient, soft edge, optional sheen."""
     gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
     gradient.setColorAt(0, QColor(22, 22, 24))
@@ -110,8 +110,8 @@ def draw_instrument_pixmap() -> QPixmap:
     left_half = QRectF(PANEL_INSET, top, PANEL_SPLIT_X - PANEL_INSET, bottom - top)
     right_x = PANEL_SPLIT_X + PANEL_SPLIT_GAP
     right_half = QRectF(right_x, top, jdxi_width - PANEL_INSET - right_x, bottom - top)
-    _draw_gloss_panel(painter, left_half, sheen=True)
-    _draw_gloss_panel(painter, right_half, sheen=False)
+    draw_gloss_panel(painter, left_half, sheen=True)
+    draw_gloss_panel(painter, right_half, sheen=False)
 
     draw_sequencer(painter)
     painter.end()

@@ -24,7 +24,7 @@ from picoui.helpers import (create_layout_with_items, create_row_with_widgets,
                             group_with_layout)
 from picoui.icons import IconRegistry
 from picoui.specs.widgets import (ButtonSpec, CheckBoxSpec, ComboBoxSpec,
-                                  DoubleSpinBoxSpec, FileSelectionSpec,
+                                  DoubleSpinBoxSpec, FileSelectionMode, FileSelectionSpec,
                                   GroupBoxSpec, LabelSpec, LineEditSpec,
                                   LogoSpec, SpinBoxSpec, TabSpec,
                                   wayland_safe_file_dialog_options, BaseSpinBoxSpec)
@@ -309,7 +309,9 @@ def get_file_path_from_spec(
     kw: dict = {}
     if opts is not None:
         kw["options"] = opts
-    if spec.mode == "save":
+    # FileSelectionSpec normalises mode="save" to FileSelectionMode.SAVE (a plain
+    # Enum, never equal to the string), so accept either
+    if spec.mode in (FileSelectionMode.SAVE, FileSelectionMode.SAVE.value):
         path, _ = QFileDialog.getSaveFileName(
             parent,
             spec.caption,

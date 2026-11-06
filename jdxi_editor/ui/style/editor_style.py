@@ -36,7 +36,9 @@ def _icon_file(name: str, color: str, size: int = 12) -> str:
 BODY_COLOR = "#2C2C2C"
 BODY_GRAIN = 7  # +/- grey levels of texture noise
 BODY_PROPERTY = "jdxiBody"  # set on an editor's root widget (see mark_editor_body)
-FLAT_PROPERTY = "jdxiFlat"  # set on a tab stack nested in a glossy panel (see mark_flat_tabs)
+FLAT_PROPERTY = "jdxiFlat"  # set on a tab stack nested in a glossy panel (see mark_flat)
+SHEEN_PROPERTY = "jdxiSheen"  # set on an editor's outermost panels (see mark_sheen_panels)
+SHEEN_SLICE = 3  # px of the panel image kept unstretched at each edge (rim, top highlight)
 GLOSS_GRADIENT = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1,"
     " stop:0 #161618, stop:0.5 #0A0A0B, stop:1 #050506)"
@@ -76,11 +78,66 @@ def mark_editor_body(widget) -> None:
     widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
 
-def mark_flat_tabs(tab_widget) -> None:
-    """Draw *tab_widget* (nested in a glossy panel) and its groups flat on that panel."""
-    tab_widget.setProperty(FLAT_PROPERTY, True)
-    tab_widget.style().unpolish(tab_widget)
-    tab_widget.style().polish(tab_widget)
+def _gloss_panel_file(width: int = 1000, height: int = 420) -> str:
+    """
+    The Instrument window's glossy panel (gradient, diagonal sheen, rim and
+    top highlight) as PNG, for stylesheet border-image on editor panels.
+    """
+    folder = Path(tempfile.gettempdir()) / "jdxi_editor_icons"
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"gloss_panel_{width}x{height}.png"
+    if not path.exists():
+        from PySide6.QtCore import QRectF, Qt
+        from PySide6.QtGui import QImage, QPainter
+
+        from jdxi_editor.ui.image.instrument import draw_gloss_panel
+
+        image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
+        image.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(image)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        draw_gloss_panel(painter, QRectF(0.5, 0.5, width - 1, height - 1), sheen=True)
+        painter.end()
+        image.save(str(path))
+    return path.as_posix()
+
+
+def mark_sheen_panels(editor) -> None:
+    """
+    Give *editor*'s outermost panels (tab panes and groups not inside another
+    one) the Instrument window's glossy sheen. Panels inside them keep the
+    plain gradient, so the reflection is not repeated.
+    """
+    from PySide6.QtWidgets import QGroupBox, QTabWidget, QWidget
+
+    panel_types = (QGroupBox, QTabWidget)
+    for widget in editor.findChildren(QWidget):
+        if not isinstance(widget, panel_types) or widget.property(FLAT_PROPERTY):
+            continue
+        parent = widget.parentWidget()
+        while parent is not None and parent is not editor:
+            if isinstance(parent, panel_types):
+                break
+            parent = parent.parentWidget()
+        if parent is editor:
+            mark_sheen(widget)
+
+
+def mark_sheen(widget) -> None:
+    """Give *widget* (a QGroupBox or QTabWidget panel) the Instrument window's glossy sheen."""
+    widget.setProperty(SHEEN_PROPERTY, True)
+    widget.style().unpolish(widget)
+    widget.style().polish(widget)
+
+
+def mark_flat(widget) -> None:
+    """
+    Draw the groups inside *widget* (nested in a glossy panel) flat on that
+    panel, as sections; a tab widget's pane is drawn flat too.
+    """
+    widget.setProperty(FLAT_PROPERTY, True)
+    widget.style().unpolish(widget)
+    widget.style().polish(widget)
 
 
 def _jdxi_slider_rules(analog: bool = False) -> str:
@@ -327,12 +384,19 @@ class AppEditorStyle:
             border-top: 1px solid #3A3A3C;
             background: {GLOSS_GRADIENT};
         }}
-        /* A tab stack marked flat (mark_flat_tabs) sits on the glossy panel
+        /* An editor's outermost panels: the Instrument window's glossy panel */
+        QGroupBox[{SHEEN_PROPERTY}="true"],
+        QTabWidget[{SHEEN_PROPERTY}="true"]::pane {{
+            background: transparent;
+            border-width: {SHEEN_SLICE}px;
+            border-image: url({_gloss_panel_file()}) {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} stretch stretch;
+        }}
+        /* A widget marked flat (mark_flat) sits on the glossy panel
            around it, and so do its groups. Marked explicitly: a descendant
            selector would also match every editor, as all of them sit in the
            main window's tabs. */
         QTabWidget[{FLAT_PROPERTY}="true"]::pane,
-        QTabWidget[{FLAT_PROPERTY}="true"] QGroupBox {{
+        QWidget[{FLAT_PROPERTY}="true"] QGroupBox {{
             background: transparent;
             border: none;
             border-top: 1px solid #2E2E30;

@@ -2,7 +2,7 @@
 Lit partial switches (no MIDI hardware).
 
 - LitButton lights (glow) when checked, also when set with signals blocked
-- PartialSwitch emits (partial, on, selected); setOn leaves SELECT alone
+- PartialSwitch (round mini switches) emits (partial, on, selected); setOn leaves Select alone
 - an incoming PARTIALn_SWITCH no longer clears that partial's SELECT
 """
 

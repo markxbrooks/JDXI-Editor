@@ -120,3 +120,55 @@ def test_pads_select_partial_pages(drum_editor):
     assert tabs.currentIndex() == 12 and tabs.tabText(12) == "TOM1"
     tabs.setCurrentIndex(3)
     assert grid.current() == 3 and grid.pads[3].isChecked()
+
+
+def test_only_outermost_panels_get_the_sheen():
+    """The Instrument window's sheen goes on an editor's outer panels only, not nested ones."""
+    from PySide6.QtWidgets import QGroupBox
+
+    from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
+    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+
+    editor = DigitalSynthEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    try:
+        _APP.processEvents()  # marking runs once the editor is built
+        assert editor.tab_widget.property(SHEEN_PROPERTY)
+        nested = [g for g in editor.tab_widget.findChildren(QGroupBox)]
+        assert nested and not any(g.property(SHEEN_PROPERTY) for g in nested)
+    finally:
+        editor.close()
+        editor.deleteLater()
+
+
+def test_mixer_is_laid_out_like_a_kit(drum_editor):
+    """Hats and cymbals above snares and toms, kicks at the bottom; master beside them; icons kept."""
+    from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
+    from jdxi_editor.ui.editors.drum.mixer.section import DrumKitMixerSection
+
+    drum_editor.resize(1600, 1100)
+    drum_editor.show()
+    drum_editor.presets_parts_tab_widget.setCurrentIndex(2)
+    _APP.processEvents()
+    mixer = drum_editor.findChild(DrumKitMixerSection)
+    lanes = {lane.title(): lane for lane in mixer.findChildren(MixerLane)}
+
+    def top(name):
+        return lanes[name].mapTo(mixer, lanes[name].rect().topLeft()).y()
+
+    def left(name):
+        return lanes[name].mapTo(mixer, lanes[name].rect().topLeft()).x()
+
+    assert top("Hi-Hat") == top("Cymbals") < top("Snare") == top("Toms") < top("Kick")
+    assert left("Kit") < left("Percussion") < left("Snare") < left("Toms") < left("Other")
+    assert len(mixer.mixer_sliders) == 27  # master + 26 partials, each once
+    from PySide6.QtWidgets import QLabel
+
+    icons = [l for l in mixer.findChildren(QLabel) if l.pixmap() and not l.pixmap().isNull()]
+    assert len(icons) == 27  # every strip shows its drum (or keyboard) icon
+    assert mixer.title_label.isVisible()  # the Drum Kit Mixer display
+    # Display and every strip sit inside the one glossy panel
+    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+
+    assert mixer.panel.property(SHEEN_PROPERTY)
+    assert mixer.panel.isAncestorOf(mixer.title_label)
+    assert all(mixer.panel.isAncestorOf(s) for s in mixer.mixer_sliders.values())

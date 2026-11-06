@@ -291,7 +291,9 @@ class PatternSequenceEditor(PatternUI):
         """Create MIDI/learn controllers and wire to UI (Pattern Playing)."""
         self._note_converter = MidiNoteConverter(drum_options=list(self.drum_options))
 
-        combo_config = ComboBoxUpdateConfig()
+        # Follow every note the pitch lists hold (from C0), not only from C2 up;
+        # notes without an entry are ignored by the lookup
+        combo_config = ComboBoxUpdateConfig(min_note=0)
         self._combo_synchronizer = ComboBoxSynchronizer(
             config=combo_config,
             midi_converter=self._note_converter,
@@ -956,32 +958,18 @@ class PatternSequenceEditor(PatternUI):
         self.measure_beats = beats
 
     def _update_button_states_for_beats_per_measure(self):
-        """Enable/disable sequencer buttons based on beats per measure setting"""
-        # Steps 12-15 disabled when beats_per_measure is 12
+        """
+        Grey out the steps beyond the measure length (12 or 16) in every row.
+        Notes they hold are kept (playback and saving stop at the measure
+        length), so switching back to 16 steps brings them back unchanged.
+        """
         for row in range(self.sequencer_rows):
-            func = self._update_button_states_measure
-            self._each_measure_beat_row(func=func, row=row)
+            for step, button in enumerate(self.buttons[row]):
+                update_button_state(button, enabled_state=step < self.measure_beats)
 
         # Sync sequencer digital after updating button states
         if self.current_measure_index < len(self.measure_widgets):
             self._sync_sequencer_with_measure(self.current_measure_index)
-
-    def _update_button_states_measure(self, row: int, step: int):
-        """update button states measure"""
-        if step < len(self.buttons[row]):
-            button = self.buttons[row][step]
-            if self.measure_beats == MeasureBeats.PER_MEASURE_3_4:
-                # Disable last 4 buttons (steps 12-15)
-                button.setEnabled(step < MeasureBeats.PER_MEASURE_3_4)
-                if step >= MeasureBeats.PER_MEASURE_3_4:
-                    button.setEnabled(False)
-                    button.setChecked(False)  # Uncheck disabled buttons
-                    for measure in self.measure_widgets:
-                        if step < len(measure.buttons[row]):
-                            reset_button(measure.buttons[row][step])
-            else:
-                # Enable all 16 buttons
-                update_button_state(button, button.isChecked())
 
     def _get_step_buttons(self, row: int, step: int):
         """get step buttons"""

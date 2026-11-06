@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTabWidget, QVBoxLayout
 import picomidi
 
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -140,13 +140,15 @@ class InstrumentPresetWidget(QWidget):
             self.instrument_selection_combo.set_value(current_value)
 
     def add_image_group(self, group: QGroupBox):
-        """add image group"""
+        """add the image beside the preset panel; the pair stays centred"""
         group.setMinimumWidth(JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH)
-        self.hlayout.addWidget(group)
+        self.hlayout.addWidget(group, 0, Qt.AlignmentFlag.AlignTop)
+        self.hlayout.addStretch(1)
 
     def add_preset_group(self, group: QGroupBox):
-        """add groupbox for instruments"""
-        self.hlayout.addWidget(group)
+        """add groupbox for instruments (as tall as its contents)"""
+        group.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.hlayout.addWidget(group, 0, Qt.AlignmentFlag.AlignTop)
 
     def setup(self):
         """set up the widget - creates the main vertical layout"""
@@ -295,16 +297,7 @@ class InstrumentPresetWidget(QWidget):
             layout,
             name="edit_tone_name",
         )
-        # --- Send Read Request to Synth (round button + label, centered)
-        self._add_centered_round_button(
-            JDXi.UI.Icon.REFRESH,
-            "Send Read Request to Synth",
-            self.parent.data_request,
-            layout,
-            name="read_request",
-        )
-        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
-        layout.addWidget(self.instrument_selection_label)
+        # (Reading from the synth is the "Read from JD-Xi" button below)
 
         # Determine the correct preset list for this synth type.
         preset_list = get_preset_list_for_synth_type(synth_type)
@@ -640,9 +633,10 @@ class InstrumentPresetWidget(QWidget):
         self.hlayout = QHBoxLayout()
         self.hlayout.setSpacing(JDXi.UI.Style.SPACING)
         self.hlayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.hlayout.addStretch(1)  # centre the preset panel and image (see add_image_group)
         # Add the horizontal layout to the vertical layout
         self.layout.addLayout(self.hlayout)
 
     def add_stretch(self):
-        """Flexible gap between preset panel and instrument image (horizontal only)."""
-        self.hlayout.addStretch(1)
+        """Gap between preset panel and instrument image (fixed: the image sits beside the panel)."""
+        self.hlayout.addSpacing(24)

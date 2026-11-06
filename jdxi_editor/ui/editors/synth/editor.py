@@ -26,7 +26,7 @@ import re
 from typing import Optional
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget
 
@@ -63,6 +63,7 @@ from jdxi_editor.ui.editors.synth.specs import (
     InstrumentDescriptor,
 )
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.style.editor_style import mark_sheen_panels
 
 TONE_DISPATCH = {
     JDXiSysExOffsetSuperNATURALLMB.COMMON: "_update_common_controls",
@@ -156,6 +157,9 @@ class SynthEditor(SynthBase):
 
         # --- Apply common style
         JDXi.UI.Theme.apply_editor_style(self)
+        # Outermost panels get the Instrument window's sheen once the subclass
+        # has built them (runs on the next event loop pass; context = self)
+        QTimer.singleShot(0, self, lambda: mark_sheen_panels(self))
 
         # --- Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)

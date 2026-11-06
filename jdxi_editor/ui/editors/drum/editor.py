@@ -307,7 +307,7 @@ class DrumCommonEditor(SynthEditor):
     def _add_pad_grid(self, layout) -> None:
         """Pads select the partial page; the stack's own tab bar is hidden."""
         from jdxi_editor.ui.editors.drum.pad_grid import DrumPadGrid
-        from jdxi_editor.ui.style.editor_style import mark_flat_tabs
+        from jdxi_editor.ui.style.editor_style import mark_flat
 
         tabs = self.partial_tab_widget
         names = [tabs.tabText(i) for i in range(tabs.count())]
@@ -316,7 +316,7 @@ class DrumCommonEditor(SynthEditor):
         tabs.currentChanged.connect(self.pad_grid.set_current)
         self.pad_grid.set_current(tabs.currentIndex())
         tabs.tabBar().hide()
-        mark_flat_tabs(tabs)
+        mark_flat(tabs)
         layout.insertWidget(layout.indexOf(tabs), self.pad_grid)
 
     def _add_partial_clipboard_row(self, layout) -> None:

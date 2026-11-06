@@ -1,12 +1,12 @@
 """
 Partial Panel
 
-The three partials' ON / SELECT buttons, laid out like a section of the JD-Xi
-panel: a small uppercase label over a deep red rule, then the lit buttons.
+The three partials' On / Select switches, laid out like a section of the JD-Xi
+panel: a small uppercase label over a deep red rule, then the switches.
 
     PARTIAL 1        PARTIAL 2        PARTIAL 3
     ─────────        ─────────        ─────────
-    [ON][SELECT]     [ON][SELECT]     [ON][SELECT]
+    (o) On (o) Select   (o) On (o) Select   (o) On (o) Select
 """
 
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget

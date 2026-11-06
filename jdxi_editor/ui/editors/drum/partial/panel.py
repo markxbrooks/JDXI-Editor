@@ -27,7 +27,7 @@ from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialPanel
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style.editor_style import mark_flat_tabs
+from jdxi_editor.ui.style.editor_style import mark_flat
 
 
 class DrumPartialPanel(PartialPanel):
@@ -78,7 +78,7 @@ class DrumPartialPanel(PartialPanel):
         scroll_area.setWidget(scroll_content)
 
         tab_widget = QTabWidget()
-        mark_flat_tabs(tab_widget)  # nested in the Parts tab's glossy panel
+        mark_flat(tab_widget)  # nested in the Parts tab's glossy panel
         tab_widget.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         tab_widget.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
