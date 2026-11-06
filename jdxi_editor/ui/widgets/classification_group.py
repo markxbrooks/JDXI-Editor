@@ -8,10 +8,11 @@ from typing import TYPE_CHECKING
 
 from decologr import Decologr as log
 from PySide6.QtCore import QMargins
-from PySide6.QtWidgets import QGroupBox, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QGroupBox, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
+from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
 from picoui.helpers import create_layout_with_items
@@ -38,28 +39,25 @@ class ClassificationGroup(JDXiMidiGroup):
     def _build_group(self) -> QGroupBox:
         """Build the Track Classification group: one row of compact buttons."""
         mp = JDXi.UI.MidiPlayer
-        buttons = []
+        buttons, items = [], []
         for key in ("detect_drums", "classify_tracks", "apply_presets"):
             spec = self.specs["buttons"][key]
-            button = QPushButton(
-                JDXi.UI.Icon.get_icon(spec.icon, color=JDXi.UI.Style.FOREGROUND),
-                spec.label,
+            # Round button + label, as the other panel actions
+            item, button = create_round_button_with_label(
+                spec.label, spec.icon, spec.slot, spec.tooltip
             )
-            button.setToolTip(spec.tooltip)
-            button.setStyleSheet(mp.tool_button_stylesheet())
-            button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-            button.clicked.connect(spec.slot)
             buttons.append(button)
+            items.append(item)
         (
             self.detect_drums_button,
             self.classify_tracks_button,
             self.apply_presets_button,
         ) = buttons
         layout = create_layout_with_items(
-            items=buttons,
+            items=items,
             vertical=False,
             start_stretch=False,
-            end_stretch=False,
+            end_stretch=True,
             margins=QMargins(0, 0, 0, 0),
             spacing=mp.SPACING_RELATED,
         )

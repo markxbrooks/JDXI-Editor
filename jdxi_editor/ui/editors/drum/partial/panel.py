@@ -27,6 +27,7 @@ from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialPanel
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
+from jdxi_editor.ui.style.editor_style import mark_flat_tabs
 
 
 class DrumPartialPanel(PartialPanel):
@@ -77,6 +78,7 @@ class DrumPartialPanel(PartialPanel):
         scroll_area.setWidget(scroll_content)
 
         tab_widget = QTabWidget()
+        mark_flat_tabs(tab_widget)  # nested in the Parts tab's glossy panel
         tab_widget.setMinimumWidth(JDXi.UI.Dimensions.EDITOR_DRUM.PARTIAL_TAB_MIN_WIDTH)
         tab_widget.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
@@ -92,9 +94,14 @@ class DrumPartialPanel(PartialPanel):
         )
         tab_widget.addTab(tab_partial, partial_icon, "Partial")
 
-        partial_group = DrumPartialSection(
-            controls=self.controls, midi_helper=self.midi_helper
+        section_kwargs = dict(
+            controls=self.controls,
+            midi_helper=self.midi_helper,
+            address=self.address,
+            send_midi_parameter=self.send_midi_parameter,
         )
+
+        partial_group = DrumPartialSection(**section_kwargs)
         tab_partial_layout.addWidget(partial_group)
         tab_partial_layout.addStretch()
 
@@ -124,9 +131,7 @@ class DrumPartialPanel(PartialPanel):
         pitch_env_icon = QIcon(base64_to_pixmap(pitch_env_icon_base64))
         tab_widget.addTab(tab_pitch_env, pitch_env_icon, "Pitch Env")
 
-        pitch_env_group = DrumPitchEnvSection(
-            controls=self.controls, midi_helper=self.midi_helper
-        )
+        pitch_env_group = DrumPitchEnvSection(**section_kwargs)
         tab_pitch_env_layout.addWidget(pitch_env_group)
         tab_pitch_env_layout.addStretch()
 
@@ -139,9 +144,7 @@ class DrumPartialPanel(PartialPanel):
         )
         tab_widget.addTab(tab_output, output_icon, "Output")
 
-        output_group = DrumOutputSection(
-            controls=self.controls, midi_helper=self.midi_helper
-        )
+        output_group = DrumOutputSection(**section_kwargs)
         tab_output_layout.addWidget(output_group)
         tab_output_layout.addStretch()
 
@@ -152,7 +155,7 @@ class DrumPartialPanel(PartialPanel):
         tvf_icon = JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FILTER, color=JDXi.UI.Style.GREY)
         tab_widget.addTab(tab_tvf, tvf_icon, "TVF")
 
-        tvf_group = DrumTVFSection(controls=self.controls, midi_helper=self.midi_helper)
+        tvf_group = DrumTVFSection(**section_kwargs)
         tab_tvf_layout.addWidget(tvf_group)
         tab_tvf_layout.addStretch()
 
@@ -165,7 +168,7 @@ class DrumPartialPanel(PartialPanel):
         )
         tab_widget.addTab(tab_tva, tva_icon, "TVA")
 
-        tva_group = DrumTVASection(controls=self.controls, midi_helper=self.midi_helper)
+        tva_group = DrumTVASection(**section_kwargs)
         tab_tva_layout.addWidget(tva_group)
         tab_tva_layout.addStretch()
 

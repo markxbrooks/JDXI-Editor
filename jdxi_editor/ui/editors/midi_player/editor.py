@@ -39,6 +39,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.playback.transport import TransportController
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.bank import Bank
@@ -240,13 +241,17 @@ class MidiFilePlayer(SynthEditor):
             margins=QMargins(0, 0, 0, 0),
             spacing=JDXi.UI.MidiPlayer.SPACING_RELATED,
         )
-        main_layout.addWidget(header_widget)
+        # Three panels, as the JD-Xi has a few large glossy ones: controls on
+        # top, the timeline, transport and playback below. The groups inside a
+        # panel draw as flat sections (see AppEditorStyle).
+        main_layout.addWidget(create_panel(header_widget))
         main_layout.addWidget(self.midi_file)
         main_layout.addWidget(
             self.midi_file.midi_track_viewer, 1
         )  # stretch so track viewer gets remaining space
-        main_layout.addWidget(centered_widget)
-        main_layout.addWidget(self.playback_options)
+        main_layout.addWidget(
+            create_panel(centered_widget, self.playback_options)
+        )
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
         content_widget = create_widget_with_layout(main_layout)

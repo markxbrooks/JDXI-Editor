@@ -23,24 +23,31 @@ from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 
 @pytest.fixture(scope="module")
 def window():
+    """
+    The Instrument window on its own MidiIOHelper (the class is a singleton):
+    the window connects lambdas to the helper's signals, which outlive it and
+    would send read requests whenever later tests use the shared helper.
+    """
+    from jdxi_editor.midi.io.helper import MidiIOHelper
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
-    w = JDXiInstrument()
+    shared = MidiIOHelper._instance
+    MidiIOHelper._instance = None
+    try:
+        w = JDXiInstrument()
+    finally:
+        own = MidiIOHelper._instance
+        MidiIOHelper._instance = shared
     w.show()
     for _ in range(10):
         _APP.processEvents()
     yield w
     w.close()
-    # Delete it: a closed window stays connected to the shared MIDI helper's
-    # signals and would request data whenever later tests load patches
+    own.device.requests.clear()
     from PySide6.QtCore import QCoreApplication, QEvent
 
     w.deleteLater()
     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
-    # The window's startup read requests go through the shared helper's
-    # queue; without a synth each waits for its timeout, so drop them
-    w.midi_helper.device.requests.clear()
-    assert w.midi_helper.device.requests.wait_idle(2.0)
 
 
 def test_panel_image_is_the_panel():

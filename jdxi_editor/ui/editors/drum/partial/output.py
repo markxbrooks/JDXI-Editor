@@ -38,7 +38,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_layout,
     create_layout_with_items,
@@ -50,10 +49,13 @@ class DrumOutputSection(DrumBaseSection):
     """Drum Output Section for the JDXI Editor"""
 
     def __init__(
-        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+        **kwargs,
     ):
         self.spec: LayoutSpec = self._build_layout_spec()
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        super().__init__(controls=controls or {}, midi_helper=midi_helper, **kwargs)
         self.setup_ui()
 
     def _build_layout_spec(self) -> LayoutSpec:
@@ -100,7 +102,6 @@ class DrumOutputSection(DrumBaseSection):
         row_layout.addLayout(output_layout)
         row_layout.addLayout(slider_layout)
         group, layout = create_group_with_layout(label="Output", layout=row_layout)
-        group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
         main_row_hlayout = create_layout_with_items([group], vertical=True)

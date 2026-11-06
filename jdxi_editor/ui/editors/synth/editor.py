@@ -421,7 +421,35 @@ class SynthEditor(SynthBase):
                 title_label = getattr(self, "instrument_title_label", None)
             if title_label:
                 title_label.setText(name)
+            self._sync_preset_selection_to_tone(name, title_label)
         self.tone_names[synth_type] = name
+
+    def _sync_preset_selection_to_tone(self, name: str, title_label=None) -> None:
+        """
+        Point the preset combo (and the display's BANK/PC line) at the preset
+        named *name*, the tone the synth reported. Without a match (an edited
+        or user tone) the BANK/PC line is cleared rather than describing
+        another sound. Nothing is sent to the synth.
+
+        :param name: str tone name read from the synth
+        :param title_label: DigitalTitle or None
+        """
+        combo = self._get_instrument_selection_combo()
+        if combo is None or not hasattr(combo, "options"):
+            return
+        target = name.strip().casefold()
+        for option, value in zip(combo.options, combo.values):
+            # Options read "001 - TR-909 Kit 1"
+            preset_name = option.split(" - ", 1)[-1].strip().casefold()
+            if preset_name == target:
+                combo.setValue(value)  # signals blocked: selects, does not load
+                self.update_instrument_image()
+                info = getattr(getattr(self, "instrument_preset", None), "tone_midi_info", None)
+                if info is not None:
+                    info.refresh(value)
+                return
+        if title_label is not None and hasattr(title_label, "set_wire_info"):
+            title_label.set_wire_info(None)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

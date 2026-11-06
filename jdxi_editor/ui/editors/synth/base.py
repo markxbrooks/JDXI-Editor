@@ -176,12 +176,19 @@ class SynthBase(QWidget):
         # If we're in a ProgramEditor or using ProgramCommonParam, we need a program address
         needs_program_address = needs_program_address or is_program_editor
 
-        # Try self first
-        if hasattr(self, "address") and self.address is not None:
-            if isinstance(self.address, JDXiSysExAddress) and hasattr(
-                self.address, "add_offset"
+        def _valid_address(obj) -> Optional[JDXiSysExAddress]:
+            addr = getattr(obj, "address", None)
+            if (
+                isinstance(addr, JDXiSysExAddress)
+                and hasattr(addr, "add_offset")
             ):
-                return self.address
+                return addr
+            return None
+
+        # Try self first
+        found = _valid_address(self)
+        if found is not None:
+            return found
 
         # If self is ProgramEditor and has no address, create one
         if is_program_editor:
@@ -189,45 +196,23 @@ class SynthBase(QWidget):
 
             return ProgramCommonAddress()
 
-        # Try parent
-        if hasattr(self, "parent") and self.parent is not None:
-            if hasattr(self.parent, "address") and self.parent.address is not None:
-                if isinstance(self.parent.address, JDXiSysExAddress) and hasattr(
-                    self.parent.address, "add_offset"
-                ):
-                    return self.parent.address
-            # If parent is ProgramEditor and has no address, create one
-            if (
-                hasattr(self.parent, "__class__")
-                and "ProgramEditor" in self.parent.__class__.__name__
-            ):
+        # Walk QWidget parents (self.parent is a method — must call it)
+        widget = self
+        for _ in range(6):
+            parent_fn = getattr(widget, "parent", None)
+            if not callable(parent_fn):
+                break
+            parent = parent_fn()
+            if parent is None:
+                break
+            found = _valid_address(parent)
+            if found is not None:
+                return found
+            if "ProgramEditor" in parent.__class__.__name__:
                 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 
                 return ProgramCommonAddress()
-
-        # Try parent.parent
-        if (
-            hasattr(self, "parent")
-            and self.parent is not None
-            and hasattr(self.parent, "parent")
-            and self.parent.parent is not None
-        ):
-            if (
-                hasattr(self.parent.parent, "address")
-                and self.parent.parent.address is not None
-            ):
-                if isinstance(self.parent.parent.address, JDXiSysExAddress) and hasattr(
-                    self.parent.parent.address, "add_offset"
-                ):
-                    return self.parent.parent.address
-            # If parent.parent is ProgramEditor and has no address, create one
-            if (
-                hasattr(self.parent.parent, "__class__")
-                and "ProgramEditor" in self.parent.parent.__class__.__name__
-            ):
-                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
-
-                return ProgramCommonAddress()
+            widget = parent
 
         return None
 

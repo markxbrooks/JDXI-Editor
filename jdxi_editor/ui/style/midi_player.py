@@ -110,28 +110,6 @@ class MidiPlayerStyle(AppEditorStyle):
     SOLO = "#C88C3C"  # amber: soloed track
 
     @classmethod
-    def tool_button_stylesheet(cls) -> str:
-        """Compact icon + text action button (toolbar rows)."""
-        return f"""
-        QPushButton {{
-            background-color: {cls.SURFACE_ALT};
-            border: 1px solid {cls.BORDER};
-            border-radius: 3px;
-            padding: 4px 10px;
-            color: {cls.TEXT};
-            font-size: {cls.FONT_CONTROL};
-            text-align: left;
-        }}
-        QPushButton:hover {{
-            border-color: {cls.BORDER_HOVER};
-            background-color: {cls.SURFACE};
-        }}
-        QPushButton:pressed {{
-            background-color: {cls.BACKGROUND};
-        }}
-        """
-
-    @classmethod
     def channel_mute_stylesheet(cls) -> str:
         """
         Channel mute squares: grey when playing, red when muted; channels the

@@ -40,16 +40,10 @@ Example:
     editor.show()
 """
 
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QVBoxLayout,
-)
+from PySide6.QtWidgets import QVBoxLayout
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_scrolled_area_with_layout,
-    transfer_layout_items,
-)
+from jdxi_editor.ui.widgets.editor.helper import create_scrolled_area_with_layout
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 
 
@@ -66,7 +60,7 @@ class DrumBaseSection(SectionBaseWidget):
         # Pass controls so widgets created from SLIDER_GROUPS are stored in the panel's dict
         super().__init__(
             midi_helper=midi_helper,
-            icons_row_type=IconType.ADSR,
+            icons_row_type=IconType.NONE,
             analog=False,
             controls=controls,
             **kwargs,
@@ -109,16 +103,8 @@ class DrumBaseSection(SectionBaseWidget):
         pass
 
     def _setup_scrolled_layout_with_icons(self) -> tuple[QVBoxLayout, QVBoxLayout]:
-        """Set up scrolled layout with icons row"""
-        # Create main vertical layout for the widget
+        """Set up the scrolled layout (no waveform icon row: drum partials have no oscillator choice)"""
         layout = QVBoxLayout(self)
         scroll_area, scrolled_layout = create_scrolled_area_with_layout()
         layout.addWidget(scroll_area)
-
-        # --- Icons row (standardized across editor tabs) - transfer items to avoid "already has a parent" errors
-        icon_row_container = QHBoxLayout()
-        icon_hlayout = JDXi.UI.Icon.create_adsr_icons_row()
-
-        transfer_layout_items(icon_hlayout, icon_row_container)
-        scrolled_layout.addLayout(icon_row_container)
         return layout, scrolled_layout

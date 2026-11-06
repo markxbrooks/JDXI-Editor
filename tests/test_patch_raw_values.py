@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 import zipfile
 from pathlib import Path
@@ -130,7 +131,13 @@ class TestSectionParamMessages(unittest.TestCase):
 
 class TestBundleRoundTrip(unittest.TestCase):
     def setUp(self):
+        # A helper of its own (MidiIOHelper is a singleton): editors built by
+        # other tests stay connected to the shared one and queue read
+        # requests when a patch loads, delaying these messages
+        self._shared_helper = MidiIOHelper._instance
+        MidiIOHelper._instance = None
         self.helper = MidiIOHelper()
+        MidiIOHelper._instance = self._shared_helper
         self._saved_out = self.helper.midi_out
         self.sent = []
         self.helper.midi_out = Mock()
@@ -169,14 +176,23 @@ class TestBundleRoundTrip(unittest.TestCase):
         try:
             self.memory.clear()
             self.helper.load_patch(str(bundle))
-            self.assertTrue(self.helper.device.requests.wait_idle(5.0))
+            # Wait for our own DT1s (other objects may also use the shared
+            # helper's request queue, so its being idle proves nothing)
+            expected = sorted(bytes.fromhex(r) for r in _REPLIES)
+            deadline = time.monotonic() + 5.0
+            while time.monotonic() < deadline:
+                _APP.processEvents()
+                if all(m in self.sent for m in expected):
+                    break
+                time.sleep(0.01)
             _APP.processEvents()
         finally:
             self.helper.update_tone_name.disconnect(tone)
             self.helper.update_program_name.disconnect(program)
         # Each section goes back as its DT1 (open editors may also send requests)
         written_back = [m for m in self.sent if len(m) > 7 and m[7] == 0x12]
-        self.assertEqual(sorted(written_back), sorted(bytes.fromhex(r) for r in _REPLIES))
+        for message in expected:  # each section restored byte for byte, once
+            self.assertEqual(written_back.count(message), 1)
         self.assertIn(("PROGRAM", "SMALLTOWN BO"), names)
         self.assertIn(("DRUM_KIT", "TR-606 Kit 1"), names)
 

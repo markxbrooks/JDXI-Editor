@@ -41,6 +41,8 @@ from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.widgets import (
+    create_panel,
+    create_round_button_with_label,
     create_jdxi_button,
     create_jdxi_button_from_spec,
     create_jdxi_button_with_label_from_spec,
@@ -240,10 +242,12 @@ class PatternUI(SynthEditor):
         header.setSpacing(JDXi.UI.PatternEditor.SPACING_GROUP)
         header.addWidget(self.digital_title, 0, Qt.AlignmentFlag.AlignTop)
         header.addLayout(rows, 1)
-        self.layout.addLayout(header)
         # USB Recorder: shown on demand (recording works while it is hidden)
         self.usb_recorder.setVisible(False)
-        self.layout.addWidget(self.usb_recorder)
+        # Two glossy panels, as in the MIDI File Player: the controls (the
+        # Transport, Pattern and USB groups draw as sections on it) and the
+        # sequencer (measure strip and steps)
+        self.layout.addWidget(create_panel(header, self.usb_recorder))
 
         # Create splitter for measures list and sequencer (builds measures group + sequencer widget)
         self._build_splitter_section()
@@ -268,7 +272,7 @@ class PatternUI(SynthEditor):
             )
         )
         self.pattern_widget.set_header_widget(self._create_headers_widget())
-        self.layout.addWidget(self.pattern_widget)
+        self.layout.addWidget(create_panel(self.pattern_widget))
 
     def _create_headers_widget(self) -> QWidget:
         """
@@ -457,15 +461,14 @@ class PatternUI(SynthEditor):
         row.addWidget(self.duration_combo)
         row.addStretch()
 
-        self.usb_recorder_toggle = QPushButton(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SAVE, color=JDXi.UI.Style.FOREGROUND),
+        usb_item, self.usb_recorder_toggle = create_round_button_with_label(
             self.tr("USB Recorder"),
+            JDXi.UI.Icon.SAVE,
+            tooltip=self.tr("Show the USB audio recorder"),
+            checkable=True,
         )
-        self.usb_recorder_toggle.setCheckable(True)
-        self.usb_recorder_toggle.setToolTip(self.tr("Show the USB audio recorder"))
-        self.usb_recorder_toggle.setStyleSheet(mp.tool_button_stylesheet())
         self.usb_recorder_toggle.toggled.connect(self.usb_recorder.setVisible)
-        row.addWidget(self.usb_recorder_toggle)
+        row.addWidget(usb_item)
         return row
 
     def _create_edit_row(self) -> QHBoxLayout:
@@ -502,17 +505,12 @@ class PatternUI(SynthEditor):
     def _add_tool_button(
         self, name: str, spec: ButtonSpec, layout: QHBoxLayout
     ) -> QPushButton:
-        """Compact icon + text button from a ButtonSpec (sets self.<name>_button)."""
-        button = QPushButton(
-            JDXi.UI.Icon.get_icon(spec.icon, color=JDXi.UI.Style.FOREGROUND),
-            spec.label,
+        """Round button + label from a ButtonSpec (sets self.<name>_button)."""
+        item, button = create_round_button_with_label(
+            spec.label, spec.icon, spec.slot, spec.tooltip or ""
         )
-        button.setToolTip(spec.tooltip or "")
-        button.setStyleSheet(JDXi.UI.PatternEditor.tool_button_stylesheet())
-        if spec.slot is not None:
-            button.clicked.connect(spec.slot)
         setattr(self, f"{name}_button", button)
-        layout.addWidget(button)
+        layout.addWidget(item)
         return button
 
     def _on_beats_per_measure_changed(self, index):

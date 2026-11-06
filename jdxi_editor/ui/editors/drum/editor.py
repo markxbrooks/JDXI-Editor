@@ -124,6 +124,7 @@ class DrumCommonEditor(SynthEditor):
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(24, 12, 24, 24)  # matte body around the panel
         self.setMinimumSize(
             JDXi.UI.Dimensions.EDITOR_DRUM.WIDTH, JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT
         )
@@ -173,7 +174,6 @@ class DrumCommonEditor(SynthEditor):
         container_layout = self.base_widget.get_container_layout()
 
         # Add partial_tab_widget to the container
-        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         container_layout.addWidget(self.partial_tab_widget)
         self._add_partial_clipboard_row(container_layout)
 
@@ -185,8 +185,6 @@ class DrumCommonEditor(SynthEditor):
             self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
         )
 
-        self.presets_parts_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
-        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         self._setup_partial_editors()
         # Create and add the common section
         self.common_section = DrumCommonSection(
@@ -215,6 +213,7 @@ class DrumCommonEditor(SynthEditor):
             )
         self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")
 
+        self._add_pad_grid(container_layout)
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
@@ -304,6 +303,21 @@ class DrumCommonEditor(SynthEditor):
             from PySide6.QtWidgets import QApplication
 
             QApplication.processEvents()
+
+    def _add_pad_grid(self, layout) -> None:
+        """Pads select the partial page; the stack's own tab bar is hidden."""
+        from jdxi_editor.ui.editors.drum.pad_grid import DrumPadGrid
+        from jdxi_editor.ui.style.editor_style import mark_flat_tabs
+
+        tabs = self.partial_tab_widget
+        names = [tabs.tabText(i) for i in range(tabs.count())]
+        self.pad_grid = DrumPadGrid(names)
+        self.pad_grid.padSelected.connect(tabs.setCurrentIndex)
+        tabs.currentChanged.connect(self.pad_grid.set_current)
+        self.pad_grid.set_current(tabs.currentIndex())
+        tabs.tabBar().hide()
+        mark_flat_tabs(tabs)
+        layout.insertWidget(layout.indexOf(tabs), self.pad_grid)
 
     def _add_partial_clipboard_row(self, layout) -> None:
         """Copy / paste current Drum partial (Manager copyPart / pastePart)."""

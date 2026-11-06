@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
     QSlider,
     QSpinBox,
     QWidget,
@@ -143,4 +144,27 @@ def create_round_button_with_label(
     layout.setSpacing(4)
     layout.addWidget(button)
     layout.addWidget(label_row)
+    # Keep the label next to its button when the row has room to spare
+    widget.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
     return widget, button
+
+
+def create_panel(*items: Any) -> "QGroupBox":
+    """
+    One untitled glossy panel (the JD-Xi's shiny black inset) holding several
+    widgets or layouts, stacked. Group boxes inside it draw as flat sections
+    with a title and a thin rule (see AppEditorStyle), so a few large panels
+    replace many small black boxes.
+    """
+    from PySide6.QtWidgets import QGroupBox, QLayout, QVBoxLayout
+
+    panel = QGroupBox()
+    layout = QVBoxLayout(panel)
+    layout.setContentsMargins(6, 0, 6, 6)
+    layout.setSpacing(JDXi.UI.MidiPlayer.SPACING_RELATED)
+    for item in items:
+        if isinstance(item, QLayout):
+            layout.addLayout(item)
+        else:
+            layout.addWidget(item)
+    return panel

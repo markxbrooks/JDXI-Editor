@@ -36,6 +36,7 @@ def _icon_file(name: str, color: str, size: int = 12) -> str:
 BODY_COLOR = "#2C2C2C"
 BODY_GRAIN = 7  # +/- grey levels of texture noise
 BODY_PROPERTY = "jdxiBody"  # set on an editor's root widget (see mark_editor_body)
+FLAT_PROPERTY = "jdxiFlat"  # set on a tab stack nested in a glossy panel (see mark_flat_tabs)
 GLOSS_GRADIENT = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1,"
     " stop:0 #161618, stop:0.5 #0A0A0B, stop:1 #050506)"
@@ -75,6 +76,13 @@ def mark_editor_body(widget) -> None:
     widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
 
+def mark_flat_tabs(tab_widget) -> None:
+    """Draw *tab_widget* (nested in a glossy panel) and its groups flat on that panel."""
+    tab_widget.setProperty(FLAT_PROPERTY, True)
+    tab_widget.style().unpolish(tab_widget)
+    tab_widget.style().polish(tab_widget)
+
+
 def _jdxi_slider_rules(analog: bool = False) -> str:
     """
     The one slider look (both orientations): black handle with a neon border,
@@ -101,6 +109,7 @@ def _jdxi_slider_rules(analog: bool = False) -> str:
             height: 10px;
             margin: -8px;
             margin-bottom: 2px;
+            margin-top: 1px;  /* else a handle at maximum is clipped at the top */
         }}
         QSlider::handle:vertical:hover {{
             border: 2px solid {hover};
@@ -228,6 +237,14 @@ class AppEditorStyle:
             color: {cls.TEXT_SECONDARY};
             font-size: {cls.FONT_PANEL};
         }}
+        /* A group inside a panel is a section printed on it (as on the JD-Xi):
+           no black box of its own, just its title and a thin rule */
+        QGroupBox QGroupBox {{
+            background: transparent;
+            border: none;
+            border-top: 1px solid #2E2E30;
+            border-radius: 0;
+        }}
         QLabel {{
             color: {cls.TEXT};
             font-size: {cls.FONT_CONTROL};
@@ -309,6 +326,17 @@ class AppEditorStyle:
             border: 1px solid #000000;
             border-top: 1px solid #3A3A3C;
             background: {GLOSS_GRADIENT};
+        }}
+        /* A tab stack marked flat (mark_flat_tabs) sits on the glossy panel
+           around it, and so do its groups. Marked explicitly: a descendant
+           selector would also match every editor, as all of them sit in the
+           main window's tabs. */
+        QTabWidget[{FLAT_PROPERTY}="true"]::pane,
+        QTabWidget[{FLAT_PROPERTY}="true"] QGroupBox {{
+            background: transparent;
+            border: none;
+            border-top: 1px solid #2E2E30;
+            border-radius: 0;
         }}
         QTabBar::tab {{
             background-color: {cls.SURFACE_ALT};

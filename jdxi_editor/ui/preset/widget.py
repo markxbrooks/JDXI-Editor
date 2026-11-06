@@ -66,6 +66,7 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_combo: Optional["SearchableFilterableComboBox"] = None
         self.tone_midi_info_bar: Optional[MidiSelectionInfoBar] = None
         self.cheat_midi_info_bar: Optional[MidiSelectionInfoBar] = None
+        self.tone_midi_info = None  # MidiSelectionInfoController for the preset combo
         
         # Connect to preset list change signal for dynamic refresh
         get_preset_signals().soundfont_list_changed.connect(self._refresh_preset_list)
@@ -398,7 +399,7 @@ class InstrumentPresetWidget(QWidget):
         selection_layout.addWidget(self.tone_midi_info_bar)
         channel = getattr(self.parent, "midi_channel", MidiChannel.DIGITAL_SYNTH_1)
         channel_label = str(MidiChannel.from_midi_channel(channel) or synth_type)
-        bind_tone_midi_info(
+        self.tone_midi_info = bind_tone_midi_info(
             self.instrument_selection_combo,
             self.tone_midi_info_bar,
             converted_preset_list,

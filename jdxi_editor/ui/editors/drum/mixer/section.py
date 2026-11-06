@@ -87,7 +87,6 @@ class DrumKitMixerSection(SectionBaseWidget):
 
         # Title
         title_label = DigitalTitle("Drum Kit Mixer")
-        self.setStyleSheet(JDXi.UI.Style.ADSR)
         main_layout.addWidget(title_label)
 
         # Scroll area for sliders
