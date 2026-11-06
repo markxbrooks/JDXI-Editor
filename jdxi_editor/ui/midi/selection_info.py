@@ -8,27 +8,53 @@ channel numbers (Ch 1–16). CC0 and CC32 are bank-select values (MSB/LSB).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
+from jdxi_editor.midi.bank import Bank
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.ui.editors.helpers.preset import (
-    get_preset_parameter_value,
-    preset_to_jdxi_bank_pc,
-)
-from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+
+if TYPE_CHECKING:
+    from jdxi_editor.ui.preset.model import ProgramChangeSelection
 
 
 @dataclass(frozen=True)
 class MidiWireInfo:
-    """Wire-format MIDI values that will be sent for a program or tone selection."""
+    """Resolved MIDI address for a program or tone selection."""
 
     channel: int  # 0-based MIDI channel
-    channel_display: str  # e.g. "Ch 3 (Analog)"
-    cc0: int  # Bank MSB (CC#0)
-    cc32: int  # Bank LSB (CC#32)
-    midi_pc: int  # 0-based Program Change sent on wire
-    preset_pc: Optional[int] = None  # 1-based slot from preset list or internal PC
-    program_id: Optional[str] = None  # e.g. "A01" for JD-Xi programs
+    bank: Bank
+    program: int  # 0-based Program Change sent on wire
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.channel <= 15:
+            raise ValueError("Channel must be between 0 and 15")
+        if not 0 <= self.program <= 127:
+            raise ValueError("Program must be between 0 and 127")
+
+    @property
+    def cc0(self) -> int:
+        return self.bank.msb
+
+    @property
+    def cc32(self) -> int:
+        return self.bank.lsb
+
+    @property
+    def midi_pc(self) -> int:
+        return self.program
+
+    @property
+    def channel_display(self) -> str:
+        return channel_display_name(self.channel)
+
+    @classmethod
+    def from_selection(cls, selection: "ProgramChangeSelection") -> "MidiWireInfo":
+        """Build wire info from a channel + preset selection."""
+        return cls(
+            channel=selection.channel,
+            bank=selection.preset.bank,
+            program=selection.preset.program,
+        )
 
 
 def channel_display_name(channel: int, label: Optional[str] = None) -> str:
@@ -46,18 +72,13 @@ def format_midi_wire_info(info: Optional[MidiWireInfo]) -> str:
     """Format wire info for UI readout or logs."""
     if info is None:
         return "MIDI  —"
-    parts = [
-        f"MIDI  {info.channel_display}",
-        f"CC0: {info.cc0}",
-        f"CC32: {info.cc32}",
-        f"PC: {info.midi_pc}",
-    ]
-    if info.program_id:
-        parts.append(info.program_id)
-    line = "  ·  ".join(parts)
-    if info.preset_pc is not None and info.program_id is None:
-        line += f"\n      (preset slot {info.preset_pc})"
-    return line
+    channel = channel_display_name(info.channel)
+    return (
+        f"MIDI  {channel} · "
+        f"CC#0 {info.bank.msb} · "
+        f"CC#32 {info.bank.lsb} · "
+        f"PC {info.program}"
+    )
 
 
 def resolve_program_midi(
@@ -73,20 +94,19 @@ def resolve_program_midi(
     :param bank: Bank letter A–H
     :param program_number: 1-based slot within bank (1–64)
     """
-    msb, lsb, midi_pc = calculate_midi_values(bank, program_number)
+    from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
+
+    try:
+        msb, lsb, midi_pc = calculate_midi_values(bank, program_number)
+    except ValueError:
+        return None
     if msb is None or lsb is None or midi_pc is None:
         return None
 
-    internal_pc = midi_pc + 1
-    program_id = f"{bank.upper()}{program_number:02d}"
     return MidiWireInfo(
         channel=channel,
-        channel_display=channel_display_name(channel, channel_label),
-        cc0=msb,
-        cc32=lsb,
-        midi_pc=midi_pc,
-        preset_pc=internal_pc,
-        program_id=program_id,
+        bank=Bank(msb=msb, lsb=lsb),
+        program=midi_pc,
     )
 
 
@@ -104,19 +124,8 @@ def resolve_program_midi_from_id(
         number = int(program_id[1:3])
     except ValueError:
         return None
-    info = resolve_program_midi(
+    return resolve_program_midi(
         bank, number, channel=channel, channel_label=channel_label
-    )
-    if info is None:
-        return None
-    return MidiWireInfo(
-        channel=info.channel,
-        channel_display=info.channel_display,
-        cc0=info.cc0,
-        cc32=info.cc32,
-        midi_pc=info.midi_pc,
-        preset_pc=info.preset_pc,
-        program_id=program_id.upper(),
     )
 
 
@@ -134,6 +143,11 @@ def resolve_tone_midi(
     :param preset_list: Digital/Analog/Drum LIST or PROGRAM_CHANGE data
     :param channel: 0-based MIDI channel for the synth part
     """
+    from jdxi_editor.ui.editors.helpers.preset import (
+        get_preset_parameter_value,
+        preset_to_jdxi_bank_pc,
+    )
+
     try:
         preset_id_int = int(str(preset_id).strip())
     except (TypeError, ValueError):
@@ -149,18 +163,10 @@ def resolve_tone_midi(
         return None
 
     bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-    label = channel_label
-    if label is None:
-        midi_ch = MidiChannel.from_midi_channel(channel)
-        if midi_ch == MidiChannel.PROGRAM:
-            label = "Program"
     return MidiWireInfo(
         channel=channel,
-        channel_display=channel_display_name(channel, label),
-        cc0=bank_msb,
-        cc32=bank_lsb,
-        midi_pc=midi_pc,
-        preset_pc=pc,
+        bank=Bank(msb=bank_msb, lsb=bank_lsb),
+        program=midi_pc,
     )
 
 

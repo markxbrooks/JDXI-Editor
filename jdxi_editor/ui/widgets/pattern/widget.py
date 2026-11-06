@@ -8,7 +8,7 @@ Acts as the main container for the pattern sequencer grid.
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QListWidget,
@@ -75,6 +75,9 @@ class PatternWidget(QWidget):
         self.on_measure_selected: Optional[Callable[[int], None]] = None
         self.on_measure_added: Optional[Callable[[int], None]] = None
         self.on_measure_removed: Optional[Callable[[int], None]] = None
+        self._button_context_handler: Optional[
+            Callable[[SequencerButton, QPoint], None]
+        ] = None
         self._button_click_handler: Optional[
             Callable[[SequencerButton, bool], None]
         ] = None
@@ -274,7 +277,7 @@ class PatternWidget(QWidget):
                 button.setChecked(step_data.active)
                 button.note = step_data.note
                 button.note_velocity = step_data.velocity
-                button.note_duration = step_data.duration_steps
+                button.note_steps = step_data.duration_steps
 
     def sync_measure_to_ui(self, measure_index: int) -> None:
         """
@@ -299,8 +302,8 @@ class PatternWidget(QWidget):
                 step_data.active = button.isChecked()
                 step_data.note = button.note or 60
                 step_data.velocity = button.note_velocity or 100
-                # note_duration is ms (float); duration_steps accepts int/float (0 when inactive)
-                step_data.duration_steps = button.note_duration if button.note_duration is not None else 0
+                # Length in steps (float; 0 when inactive)
+                step_data.duration_steps = button.note_steps or 0
 
     def copy_measure(self, from_index: int, to_index: int) -> bool:
         """
@@ -362,12 +365,18 @@ class PatternWidget(QWidget):
                     "note": spec.note,
                     "velocity": spec.velocity if spec.is_active else 100,
                     "duration_ms": spec.duration_ms if spec.is_active else None,
+                    "duration_steps": (
+                        getattr(spec, "duration_steps", None) if spec.is_active else None
+                    ),
+                    "extra_notes": list(button.extra_notes) if spec.is_active else [],
                 }
                 section_data["rows"][row][step] = step_dict
                 section_data["notes_data"][row][step] = {
                     "checked": step_dict["checked"],
                     "note": step_dict["note"],
                     "duration": step_dict["duration_ms"],
+                    "duration_steps": step_dict["duration_steps"],
+                    "extra_notes": step_dict["extra_notes"],
                     "velocity": step_dict["velocity"],
                 }
 
@@ -419,17 +428,24 @@ class PatternWidget(QWidget):
                     "duration"
                 )
 
+                duration_steps = step_data_dict.get("duration_steps")
+
                 button.setChecked(checked)
                 button.note = note
                 button.note_velocity = velocity
-                button.note_duration = duration_ms
+                if duration_steps is not None:
+                    button.note_steps = duration_steps
+                else:
+                    button.note_duration = duration_ms
+                button.extra_notes = step_data_dict.get("extra_notes", []) if checked else []
+                button.refresh_note_count()
 
                 # Sync to PatternMeasure for consistency
                 step_data = measure.steps[row][dest_step]
                 step_data.active = checked
                 step_data.note = note or 60
                 step_data.velocity = velocity
-                step_data.duration_steps = 1 if duration_ms else 0
+                step_data.duration_steps = button.note_steps or 0
 
         return True
 
@@ -459,6 +475,8 @@ class PatternWidget(QWidget):
                 button.note = None
                 button.note_velocity = None
                 button.note_duration = None
+                button.extra_notes = []
+                button.refresh_note_count()
 
         return True
 
@@ -515,14 +533,29 @@ class PatternWidget(QWidget):
                 set_sequencer_style(btn, is_current=False, checked=btn.isChecked())
 
     def _wire_button_clicks(self, widget: PatternMeasureWidget) -> None:
-        """Wire button clicks to handler if set."""
-        if not self._button_click_handler:
-            return
+        """Wire button clicks (and right-clicks) to the handlers if set."""
         for row in widget.buttons:
             for btn in row:
-                btn.clicked.connect(
-                    lambda checked, b=btn: self._button_click_handler(b, checked)  # type: ignore[misc]
-                )
+                if self._button_click_handler and not getattr(btn, "_click_wired", False):
+                    btn.clicked.connect(
+                        lambda checked, b=btn: self._button_click_handler(b, checked)  # type: ignore[misc]
+                    )
+                    btn._click_wired = True
+                if self._button_context_handler and not getattr(btn, "_context_wired", False):
+                    btn.customContextMenuRequested.connect(
+                        lambda pos, b=btn: self._button_context_handler(  # type: ignore[misc]
+                            b, b.mapToGlobal(pos)
+                        )
+                    )
+                    btn._context_wired = True
+
+    def set_button_context_handler(
+        self, handler: Optional[Callable[[SequencerButton, QPoint], None]]
+    ) -> None:
+        """Set handler for right-clicks on steps; wires current and future measures."""
+        self._button_context_handler = handler
+        for mw in self.measure_widgets:
+            self._wire_button_clicks(mw)
 
     def set_button_click_handler(
         self, handler: Optional[Callable[[SequencerButton, bool], None]]
@@ -562,7 +595,9 @@ class PatternWidget(QWidget):
                 dest_button.setChecked(source_button.isChecked())
                 dest_button.note = source_button.note
                 dest_button.note_velocity = source_button.note_velocity
-                dest_button.note_duration = source_button.note_duration
+                dest_button.note_steps = source_button.note_steps
+                dest_button.extra_notes = source_button.extra_notes
+                dest_button.refresh_note_count()
 
     def _add_to_measures_list(self, measure_index: int) -> QListWidgetItem:
         """Add measure to the list widget."""

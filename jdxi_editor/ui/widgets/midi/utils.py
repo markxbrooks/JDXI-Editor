@@ -2,6 +2,9 @@
 Midi Widget Utils
 """
 
+import bisect
+from typing import Callable
+
 import mido
 from mido import MidiFile
 from PySide6.QtGui import QColor
@@ -55,6 +58,45 @@ def get_total_duration_in_seconds(midi_file: MidiFile) -> float:
             current_tempo = msg.tempo
 
     return time_seconds
+
+
+def build_tick_to_seconds(midi_file: MidiFile) -> Callable[[int], float]:
+    """
+    Build a tick → seconds converter using the file-wide tempo map.
+
+    In Type 1 files tempo changes usually live in track 0 only, so every
+    track must be timed with the merged map to line up with playback.
+
+    :param midi_file: MidiFile
+    :return: Callable taking an absolute tick and returning seconds
+    """
+    ticks_per_beat = midi_file.ticks_per_beat
+    tempo_changes = {0: Midi.tempo.BPM_120_USEC}
+    for track in midi_file.tracks:
+        abs_tick = 0
+        for msg in track:
+            abs_tick += msg.time
+            if msg.type == MidoMessageType.SET_TEMPO.value:
+                tempo_changes[abs_tick] = msg.tempo
+
+    seg_ticks: list[int] = []
+    seg_seconds: list[float] = []
+    seg_tempos: list[int] = []
+    seconds = 0.0
+    for tick in sorted(tempo_changes):
+        if seg_ticks:
+            seconds += ticks_to_seconds(tick - seg_ticks[-1], seg_tempos[-1], ticks_per_beat)
+        seg_ticks.append(tick)
+        seg_seconds.append(seconds)
+        seg_tempos.append(tempo_changes[tick])
+
+    def tick_to_seconds(tick: int) -> float:
+        idx = max(0, bisect.bisect_right(seg_ticks, tick) - 1)
+        return seg_seconds[idx] + ticks_to_seconds(
+            tick - seg_ticks[idx], seg_tempos[idx], ticks_per_beat
+        )
+
+    return tick_to_seconds
 
 
 def extract_notes_with_absolute_time(

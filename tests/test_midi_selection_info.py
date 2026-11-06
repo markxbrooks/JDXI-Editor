@@ -7,6 +7,7 @@ import unittest
 sys.path.insert(0, os.path.abspath("."))
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.midi.bank import Bank
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.midi.selection_info import (
     format_midi_wire_info,
@@ -33,10 +34,11 @@ class TestMidiSelectionInfo(unittest.TestCase):
             channel_label="Digital 1",
         )
         self.assertIsNotNone(info)
+        self.assertEqual(info.bank, Bank(msb=95, lsb=65))
         self.assertEqual(info.cc0, 95)
         self.assertEqual(info.cc32, 65)
         self.assertEqual(info.midi_pc, 54)
-        self.assertEqual(info.preset_pc, 55)
+        self.assertEqual(info.program, 54)
 
     def test_digital_tone_248(self):
         info = resolve_tone_midi(
@@ -46,7 +48,6 @@ class TestMidiSelectionInfo(unittest.TestCase):
         )
         self.assertIsNotNone(info)
         self.assertEqual(info.midi_pc, 119)
-        self.assertEqual(info.preset_pc, 120)
 
     def test_digital_tone_001(self):
         info = resolve_tone_midi(
@@ -58,7 +59,6 @@ class TestMidiSelectionInfo(unittest.TestCase):
         self.assertEqual(info.cc0, 95)
         self.assertEqual(info.cc32, 64)
         self.assertEqual(info.midi_pc, 0)
-        self.assertEqual(info.preset_pc, 1)
 
     def test_program_a01(self):
         info = resolve_program_midi("A", 1)
@@ -67,7 +67,6 @@ class TestMidiSelectionInfo(unittest.TestCase):
         self.assertEqual(info.cc0, 85)
         self.assertEqual(info.cc32, 64)
         self.assertEqual(info.midi_pc, 0)
-        self.assertEqual(info.program_id, "A01")
 
     def test_program_e05(self):
         info = resolve_program_midi_from_id("E05")
@@ -75,7 +74,6 @@ class TestMidiSelectionInfo(unittest.TestCase):
         self.assertEqual(info.cc0, 85)
         self.assertEqual(info.cc32, 0)
         self.assertEqual(info.midi_pc, 4)
-        self.assertEqual(info.program_id, "E05")
 
     def test_program_h64(self):
         info = resolve_program_midi_from_id("H64")
@@ -106,17 +104,19 @@ class TestMidiSelectionInfo(unittest.TestCase):
         )
         self.assertIsNotNone(info)
         self.assertEqual(info.channel, MidiChannel.ANALOG_SYNTH)
-        self.assertIn("Ch 3", info.channel_display)
+        self.assertTrue(
+            "Ch.3" in info.channel_display or "Ch 3" in info.channel_display
+        )
         self.assertEqual(info.midi_pc, 54)
 
     def test_format_none(self):
         self.assertEqual(format_midi_wire_info(None), "MIDI  —")
 
-    def test_format_includes_program_id(self):
+    def test_format_wire_values(self):
         info = resolve_program_midi_from_id("A13")
         text = format_midi_wire_info(info)
-        self.assertIn("A13", text)
-        self.assertIn("CC0: 85", text)
+        self.assertIn("CC#0 85", text)
+        self.assertIn("PC ", text)
 
 
 class TestMidiSelectionValidation(unittest.TestCase):
@@ -149,15 +149,15 @@ class TestMidiSelectionValidation(unittest.TestCase):
 
     def test_compare_detects_wrong_lsb(self):
         from jdxi_editor.midi.validation.selection import (
-            compare_wire_info,
+            ValidationResult,
             wire_info_from_bank_pc,
         )
 
         expected = wire_info_from_bank_pc(2, 95, 65, 54)
         actual = wire_info_from_bank_pc(2, 95, 64, 54)
-        result = compare_wire_info(expected, actual)
+        result = ValidationResult.compare(expected, actual)
         self.assertFalse(result.ok)
-        self.assertIn("cc32", result.diff_fields)
+        self.assertIn("bank", result.diff_fields)
 
     def test_compare_detects_wrong_channel(self):
         from jdxi_editor.midi.validation.selection import (
@@ -197,7 +197,6 @@ class TestMidiSelectionValidation(unittest.TestCase):
 
     def test_automation_insert_bytes_match_cheat_load(self):
         from jdxi_editor.midi.validation.selection import build_bank_select_pc_bytes
-        from jdxi_editor.ui.editors.helpers.preset import preset_to_jdxi_bank_pc
 
         cheat = resolve_tone_midi_for_channel(
             183,
@@ -206,13 +205,9 @@ class TestMidiSelectionValidation(unittest.TestCase):
             "Analog",
         )
         self.assertIsNotNone(cheat)
-        msb = 95
-        lsb = 64
-        pc = 55
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-        self.assertEqual((bank_msb, bank_lsb, midi_pc), (95, 65, 54))
+        self.assertEqual((cheat.cc0, cheat.cc32, cheat.midi_pc), (95, 65, 54))
         automation_bytes = build_bank_select_pc_bytes(
-            MidiChannel.ANALOG_SYNTH, bank_msb, bank_lsb, midi_pc
+            MidiChannel.ANALOG_SYNTH, cheat.cc0, cheat.cc32, cheat.midi_pc
         )
         cheat_bytes = build_bank_select_pc_bytes(
             cheat.channel, cheat.cc0, cheat.cc32, cheat.midi_pc

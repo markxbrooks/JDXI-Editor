@@ -262,12 +262,12 @@ class SynthEditor(SynthBase):
 
     def get_controls_as_dict(self):
         """
-        Get the current values of self.controls as a dictionary.
+        Get the current values of all controls (see all_controls) as a dictionary.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
         controls_data = {}
-        for param, widget in self.controls.items():
+        for param, widget in self.all_controls().items():
             try:
                 if hasattr(widget, "value"):
                     val = getattr(widget, "value")

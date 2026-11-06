@@ -23,6 +23,7 @@ from jdxi_editor.ui.editors.helpers.widgets import (
 )
 from jdxi_editor.ui.widgets.editor.helper import create_group_with_layout
 from jdxi_editor.ui.widgets.jdxi.midi_group import JDXiMidiGroup
+from picomidi.playback.engine import TransportState
 from picomidi.ui.widget.transport.spec import TransportSpec
 
 if TYPE_CHECKING:
@@ -41,18 +42,17 @@ class TransportWidget(JDXiMidiGroup):
         self.play_button = QPushButton()
         self.stop_button = QPushButton()
         self.pause_button = QPushButton()
+        self._button_group: QButtonGroup | None = None
         self.setup_ui()
 
     def _build_group(self) -> QGroupBox:
         """init transport controls"""
         group, transport_layout = create_group_with_layout("Transport", vertical=False)
-        transport_button_group = QButtonGroup(self)
-        transport_button_group.setExclusive(True)
+        self._button_group = QButtonGroup(self)
+        self._button_group.setExclusive(True)
 
         for spec in self.specs["transport"].values():
-            self._create_transport_control(
-                spec, transport_layout, transport_button_group
-            )
+            self._create_transport_control(spec, transport_layout, self._button_group)
 
         return group
 
@@ -82,24 +82,50 @@ class TransportWidget(JDXiMidiGroup):
             "pause": TransportSpec(
                 label="Pause",
                 icon=JDXi.UI.Icon.PAUSE,
-                tooltip="Pause",
+                tooltip="Pause (Space toggles play/pause)",
                 slot=self.parent.midi_playback_pause_toggle,
                 grouped=False,
                 name="pause",
                 text="Pause",
             ),
+            "panic": TransportSpec(
+                label="Panic",
+                icon="mdi.alert-octagon-outline",
+                tooltip="Silence everything: note-offs plus All Sound Off / All Notes Off on all channels",
+                slot=self.parent.midi_playback_panic,
+                grouped=False,
+                checkable=False,
+                name="panic",
+                text="Panic",
+            ),
         }
 
-    def set_state(self, state: str):
-        """set state"""
-        self.play_button.blockSignals(True)
-        self.stop_button.blockSignals(True)
+    def set_state(self, state: TransportState) -> None:
+        """
+        Show *state* on the buttons without triggering their slots.
 
-        self.play_button.setChecked(state == "play")
-        self.stop_button.setChecked(state == "stop")
-
-        self.play_button.blockSignals(False)
-        self.stop_button.blockSignals(False)
+        Called by the owner whenever its transport state changes (including
+        at the end of a song), so the buttons never drive their own state.
+        """
+        group = self._button_group
+        # Other grouped buttons (e.g. Shuffle Play) are cleared
+        checked = {button: False for button in (group.buttons() if group else [])}
+        checked[self.play_button] = state == TransportState.PLAYING
+        checked[self.stop_button] = state == TransportState.STOPPED
+        checked[self.pause_button] = state == TransportState.PAUSED
+        # An exclusive group ignores unchecking its checked button
+        if group is not None:
+            group.setExclusive(False)
+        for button, is_checked in checked.items():
+            button.blockSignals(True)
+            button.setChecked(is_checked)
+            button.blockSignals(False)
+        if group is not None:
+            group.setExclusive(True)
+        if self.pause_label is not None:
+            self.pause_label.setText(
+                "Resume" if state == TransportState.PAUSED else "Pause"
+            )
 
     def _create_transport_control(
         self,
@@ -110,7 +136,7 @@ class TransportWidget(JDXiMidiGroup):
         """Create a transport button + label row"""
 
         # ---- Button
-        btn = create_jdxi_button_from_spec(spec, button_group)
+        btn = create_jdxi_button_from_spec(spec, button_group, checkable=spec.checkable)
         setattr(self, f"{spec.name}_button", btn)
         layout.addWidget(btn)
 

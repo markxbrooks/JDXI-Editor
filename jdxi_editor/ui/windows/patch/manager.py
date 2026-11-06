@@ -44,11 +44,18 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.io.synth_memory import synth_memory_for
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+from jdxi_editor.midi.sysex.patch_bundle import (
+    convert_editor_sections,
+    write_memory_sections,
+)
 from jdxi_editor.midi.sysex.request.read_session import (
     ReadResult,
     SectionStatus,
+    address_from_rq1_hex,
     collect_editor_requests,
+    patch_section_requests,
     sections_from_requests,
     start_read_session,
 )
@@ -182,10 +189,18 @@ class PatchManager(QMainWindow):
         return (PatternSequenceEditor, ProgramEditor, MidiFilePlayer)
 
     def _collect_read_pairs(self) -> list[tuple[str, str]]:
-        return collect_editor_requests(
+        """Open editors' requests, then every other patch section (saved from the synth)."""
+        pairs = collect_editor_requests(
             self.editors or [],
             skip_types=self._skip_editor_types(),
         )
+        seen = {address_from_rq1_hex(request) for _, request in pairs}
+        for label, request in patch_section_requests():
+            address = address_from_rq1_hex(request)
+            if address not in seen:
+                seen.add(address)
+                pairs.append((label, request))
+        return pairs
 
     def _on_read_from_jdxi(self) -> None:
         """Request current tone/effect data from the JD-Xi and show section status."""
@@ -227,7 +242,7 @@ class PatchManager(QMainWindow):
             self.midi_helper,
             requests,
             labels=labels,
-            timeout_ms=10000,
+            timeout_ms=30000,  # 61 sections, paced one reply at a time
             on_progress=self._on_read_progress,
             on_finished=self._on_read_finished,
             parent=self,
@@ -288,33 +303,39 @@ class PatchManager(QMainWindow):
 
     def _save_program_common(self, temp_folder: Path) -> None:
         """
-        Save Program Common (PROGRAM_LEVEL) from the mixer.
-        ProgramEditor is skipped in the main save loop, but the Master level
-        must be included so patch load restores it correctly.
+        Save Program Common: the program name and PROGRAM_LEVEL (mixer Master).
+        ProgramEditor is skipped in the main save loop, but both must be
+        included so patch load restores them.
         """
         program_editor = next(
             (e for e in (self.editors or []) if isinstance(e, ProgramEditor)),
             None,
         )
-        if not program_editor or not getattr(program_editor, "mixer_widget", None):
+        if not program_editor:
             return
-        mixer = program_editor.mixer_widget
-        master_slider = getattr(mixer, "master_level_slider", None)
-        if not master_slider or not hasattr(master_slider, "value"):
-            return
-        program_level = master_slider.value()
         program_common = {
             SysExSection.JD_XI_HEADER: "f041100000000e",
             SysExSection.ADDRESS: "18000000",
             SysExSection.TEMPORARY_AREA: "TEMPORARY_PROGRAM",
             SysExSection.SYNTH_TONE: "COMMON",
-            SysExSection.PROGRAM_LEVEL: program_level,
         }
+        program_name = getattr(program_editor, "program_name", "") or ""
+        if program_name and program_name != "Untitled Program":
+            # Same TONE_NAME_1..12 layout the parser reports for 18 00 00 00
+            for i, char in enumerate(program_name.ljust(12)[:12], start=1):
+                program_common[f"TONE_NAME_{i}"] = ord(char)
+        mixer = getattr(program_editor, "mixer_widget", None)
+        master_slider = getattr(mixer, "master_level_slider", None) if mixer else None
+        if master_slider is not None and hasattr(master_slider, "value"):
+            program_common[SysExSection.PROGRAM_LEVEL] = master_slider.value()
+        if len(program_common) == 4:
+            return  # neither a name nor a level to save
         out_path = temp_folder / "jdxi_tone_data_18000000.json"
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(program_common, f, indent=2)
         log.message(
-            f"Saved Program Common PROGRAM_LEVEL={program_level} to {out_path.name}",
+            f"Saved Program Common name={program_name!r} "
+            f"PROGRAM_LEVEL={program_common.get(SysExSection.PROGRAM_LEVEL)} to {out_path.name}",
             scope=self.__class__.__name__,
         )
 
@@ -371,6 +392,19 @@ class PatchManager(QMainWindow):
 
                 # Save Program Common (PROGRAM_LEVEL) from mixer - ProgramEditor is skipped above
                 self._save_program_common(temp_folder)
+
+                # Sections the synth's memory holds replace the editor-written
+                # ones (exact bytes, raw MIDI values); the rest are converted
+                # from the controls' display units to raw MIDI values
+                memory_sections = write_memory_sections(
+                    synth_memory_for(self.midi_helper), temp_folder
+                )
+                converted = convert_editor_sections(temp_folder, memory_sections)
+                log.message(
+                    f"Patch sections: {len(memory_sections)} from the synth, "
+                    f"{converted} from the editor controls",
+                    scope=self.__class__.__name__,
+                )
 
                 # Save MIDI file if available
                 midi_file_saved = False
@@ -459,115 +493,15 @@ class PatchManager(QMainWindow):
                                     log.message(
                                         f"Loading MIDI file into editor: {midi_file_name}"
                                     )
-                                    # Stop any current playback first
-                                    if hasattr(midi_file_editor, "midi_stop_playback"):
-                                        midi_file_editor.midi_playback_stop()
-                                    if hasattr(
-                                        midi_file_editor, "midi_playback_worker_stop"
-                                    ):
-                                        midi_file_editor.midi_playback_worker_stop()
-
-                                    from mido import MidiFile
-
-                                    # Load MIDI file (this does NOT send it to the instrument)
-                                    midi_file_editor.midi_state.file = MidiFile(
-                                        str(temp_midi_path)
+                                    # Load MIDI file (this does NOT send it to the instrument
+                                    # or start playback; it stops any current playback)
+                                    midi_file_editor.midi_load_file_from_path(
+                                        str(temp_midi_path),
+                                        title_prefix="Loaded from bundle",
+                                        notify_pattern_sequencer=False,
+                                        update_recent_files=False,
+                                        remember_path=False,
                                     )
-                                    midi_file_editor.ui.digital_title_file_name.setText(
-                                        f"Loaded from bundle: {Path(midi_file_name).name}"
-                                    )
-                                    midi_file_editor.midi_file.midi_track_viewer.clear()
-                                    midi_file_editor.midi_file.midi_track_viewer.set_midi_file(
-                                        midi_file_editor.midi_state.file
-                                    )
-
-                                    # Initialize MIDI file in editor (similar to midi_load_file)
-                                    # Ensure ticks_per_beat is available early
-                                    midi_file_editor.ticks_per_beat = (
-                                        midi_file_editor.midi_state.file.ticks_per_beat
-                                    )
-
-                                    # Detect initial tempo
-                                    if hasattr(
-                                        midi_file_editor, "detect_initial_tempo"
-                                    ):
-                                        initial_track_tempos = (
-                                            midi_file_editor.detect_initial_tempo()
-                                        )
-
-                                    # Set tempo digital
-                                    if hasattr(
-                                        midi_file_editor, "ui_display_set_tempo_usecs"
-                                    ):
-                                        midi_file_editor.ui_display_set_tempo_usecs(
-                                            midi_file_editor.midi_state.tempo_initial
-                                        )
-
-                                    # Set tempo at position
-                                    midi_file_editor.midi_state.tempo_at_position = (
-                                        midi_file_editor.midi_state.tempo_initial
-                                    )
-
-                                    # Channel selection
-                                    if hasattr(midi_file_editor, "midi_channel_select"):
-                                        midi_file_editor.midi_channel_select()
-
-                                    # Extract events (this prepares the file for playback but doesn't start it)
-                                    if hasattr(midi_file_editor, "midi_extract_events"):
-                                        midi_file_editor.midi_extract_events()
-
-                                    # Setup worker (this prepares playback but doesn't start it)
-                                    if hasattr(midi_file_editor, "setup_worker"):
-                                        midi_file_editor.setup_worker()
-
-                                    # Calculate durations
-                                    if hasattr(midi_file_editor, "calculate_duration"):
-                                        midi_file_editor.calculate_duration()
-                                    if hasattr(
-                                        midi_file_editor, "calculate_tick_duration"
-                                    ):
-                                        midi_file_editor.calculate_tick_duration()
-
-                                    # Reset position slider
-                                    if hasattr(
-                                        midi_file_editor, "ui_position_slider_reset"
-                                    ):
-                                        midi_file_editor.ui_position_slider_reset()
-
-                                    # Ensure playback is NOT started - stop timer and worker
-                                    if (
-                                        hasattr(midi_file_editor.midi_state, "timer")
-                                        and midi_file_editor.midi_state.timer
-                                    ):
-                                        if midi_file_editor.midi_state.timer.isActive():
-                                            midi_file_editor.midi_state.timer.stop()
-                                            log.message("Stopped MIDI playback timer")
-
-                                    # Ensure worker is stopped
-                                    if (
-                                        hasattr(
-                                            midi_file_editor, "midi_playback_worker"
-                                        )
-                                        and midi_file_editor.midi_playback_worker
-                                    ):
-                                        if hasattr(
-                                            midi_file_editor.midi_playback_worker,
-                                            "stop",
-                                        ):
-                                            midi_file_editor.midi_playback_worker.stop()
-
-                                    # Reset playback state
-                                    if hasattr(
-                                        midi_file_editor.midi_state,
-                                        "playback_start_time",
-                                    ):
-                                        midi_file_editor.midi_state.playback_start_time = (
-                                            None
-                                        )
-                                    if hasattr(
-                                        midi_file_editor.midi_state, "event_index"
-                                    ):
-                                        midi_file_editor.midi_state.event_index = None
 
                                     # Verify file is loaded
                                     if midi_file_editor.midi_state.file:

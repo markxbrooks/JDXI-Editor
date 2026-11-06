@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QPushButton, QSpinBox
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.editors.pattern.models import NoteButtonAttrs
+from jdxi_editor.ui.editors.pattern.step_note import StepNoteEvent
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi.ui.widget.button.note import NoteButtonEvent
@@ -9,8 +10,9 @@ from picomidi.ui.widget.button.note import NoteButtonEvent
 
 def reset_button(button: SequencerButton):
     """reset the Sequencer button"""
-    button.note_spec = NoteButtonEvent()
+    button.note_spec = StepNoteEvent()
     update_button_state(button, False)
+    button.setText("")
 
 
 def reset_measure(measure: PatternMeasureWidget):
@@ -20,12 +22,17 @@ def reset_measure(measure: PatternMeasureWidget):
 
 
 def _note_spec_from_button(button) -> NoteButtonEvent:
-    """Build NoteButtonSpec from button NOTE/NOTE_DURATION/NOTE_VELOCITY."""
-    return NoteButtonEvent(
+    """Build the note spec from the button's note, length and velocity (steps preferred)."""
+    steps = getattr(button, "note_steps", None)
+    spec = StepNoteEvent(
         note=getattr(button, NoteButtonAttrs.NOTE, None),
-        duration_ms=int(getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120),
+        duration_ms=getattr(button, NoteButtonAttrs.NOTE_DURATION, 120) or 120,
         velocity=getattr(button, NoteButtonAttrs.NOTE_VELOCITY, 100) or 100,
+        duration_steps=steps,
     )
+    # Keep the step's extra (chord) notes
+    spec.extra_notes = list(getattr(button, "extra_notes", []))
+    return spec
 
 
 def get_button_note_spec(button) -> NoteButtonEvent:

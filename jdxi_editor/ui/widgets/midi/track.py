@@ -2,10 +2,12 @@
 Midi Track Widget
 """
 
+from typing import Callable, Optional
+
 import mido
 from decologr import Decologr as log
-from PySide6.QtCore import QRectF
-from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPixmap
+from PySide6.QtCore import QRect, QRectF
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen, QPixmap
 
 from jdxi_editor.ui.common import JDXi, QWidget
 from jdxi_editor.ui.widgets.midi.colors import MIDI_CHANNEL_COLORS
@@ -30,6 +32,7 @@ class MidiTrackWidget(QWidget):
         total_length: float,
         ticks_per_beat: int | None = None,
         parent: QWidget = None,
+        tick_to_seconds: Optional[Callable[[int], float]] = None,
     ):
         """
         Initialize the MidiTrackWidget.
@@ -39,6 +42,8 @@ class MidiTrackWidget(QWidget):
         :param total_length: float The total length of the longest of the tracks in seconds
         :param ticks_per_beat: MIDI file ticks per beat
         :param parent: QWidget Parent widget
+        :param tick_to_seconds: File-wide tick → seconds converter; without it
+            only this track's own tempo events are used
         """
         super().__init__(parent)
         self.midi_file = None
@@ -55,6 +60,8 @@ class MidiTrackWidget(QWidget):
         self.muted_tracks = set()  # Set of muted channels
         self.cached_pixmap = None
         self.cached_width = 0
+        self.tick_to_seconds = tick_to_seconds
+        self.playhead_norm: Optional[float] = None  # 0..1, None hides it
 
         if track:
             self.set_track(track, total_length, self.ticks_per_beat)
@@ -92,10 +99,13 @@ class MidiTrackWidget(QWidget):
 
         tempo = Midi.tempo.BPM_120_USEC
         abs_seconds = 0.0
+        abs_tick = 0
         for msg in track:
-            abs_seconds += ticks_to_seconds(
-                msg.time, tempo, ticks_per_beat
-            )
+            abs_tick += msg.time
+            if self.tick_to_seconds is not None:
+                abs_seconds = self.tick_to_seconds(abs_tick)
+            else:
+                abs_seconds += ticks_to_seconds(msg.time, tempo, ticks_per_beat)
             if msg.type == MidoMessageType.SET_TEMPO.value:
                 tempo = msg.tempo
             if hasattr(msg, "channel"):
@@ -150,7 +160,34 @@ class MidiTrackWidget(QWidget):
 
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.cached_pixmap)
+        x = self._playhead_x()
+        if x is not None:
+            pen = QPen(QColor(JDXi.UI.Style.ACCENT))
+            pen.setWidth(2)
+            painter.setPen(pen)
+            painter.drawLine(x, 0, x, self.height())
         painter.end()
+
+    def _playhead_x(self) -> Optional[int]:
+        if self.playhead_norm is None:
+            return None
+        return int(self.playhead_norm * self.width())
+
+    def set_playhead(self, norm: Optional[float]) -> None:
+        """
+        Show the playback position as a line.
+
+        :param norm: Position as a fraction (0..1) of the file length; None hides it
+        """
+        old_x = self._playhead_x()
+        self.playhead_norm = None if norm is None else max(0.0, min(1.0, norm))
+        new_x = self._playhead_x()
+        if old_x == new_x:
+            return
+        # Repaint only the columns the line leaves and enters
+        for x in (old_x, new_x):
+            if x is not None:
+                self.update(QRect(x - 2, 0, 5, self.height()))
 
     def paintEventOld(self, event: QPaintEvent) -> None:
         """

@@ -1144,12 +1144,12 @@ class EffectsCommonEditor(BasicEditor):
             if stats.failed:
                 log.warning(
                     scope=self.__class__.__name__,
-                    message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}",
+                    message=f"ℹ️❌  Failures ({len(stats.failed)}): {stats.failed[:10]}",
                 )
 
             log.message(
                 scope=self.__class__.__name__,
-                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1f}%",
+                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1%}",
             )
 
         except Exception as ex:

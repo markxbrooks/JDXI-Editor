@@ -46,11 +46,34 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 )
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParam
+from jdxi_editor.midi.io.echo_guard import applying_device_data
+from jdxi_editor.midi.io.request_queue import request_queue_for
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
+from jdxi_editor.midi.sysex.patch_bundle import (
+    load_section,
+    section_param_dt1s,
+    section_sysex,
+)
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
+
+
+def patch_json_tone_name(data: dict) -> str:
+    """
+    Name stored in a patch JSON section, or "".
+
+    Parsed replies carry TONE_NAME as text; saved patches carry the 12
+    character codes TONE_NAME_1..TONE_NAME_12.
+    """
+    name = data.get(SysExSection.TONE_NAME)
+    if isinstance(name, str) and name.strip():
+        return name.rstrip()
+    codes = [data.get(f"TONE_NAME_{i}") for i in range(1, 13)]
+    if not any(isinstance(c, int) for c in codes):
+        return ""
+    return "".join(chr(c) for c in codes if isinstance(c, int) and 32 <= c < 127).rstrip()
 
 
 @dataclass
@@ -590,10 +613,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                             # Read the JSON file from the zip archive
                             with zip_ref.open(json_file) as json_file_handle:
                                 json_string = json_file_handle.read().decode("utf-8")
-                                # Emit for UI update
-                                self.midi_sysex_json.emit(json_string)
-                                # Send to instrument
-                                self.send_json_patch_to_instrument(json_string)
+                                self._load_patch_section(json_string)
             except Exception as ex:
                 log.error(
                     f"Error reading or emitting sysex JSON: {ex}", scope="MidiIOHelper"
@@ -602,12 +622,66 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             with open(file_path, "r", encoding="utf-8") as file_handle:
                 json_string = file_handle.read()
-                # Emit for UI update
-                self.midi_sysex_json.emit(json_string)
-                # Send to instrument
-                self.send_json_patch_to_instrument(json_string)
+                self._load_patch_section(json_string)
         except Exception as ex:
             log.error(f"Error reading or emitting sysex JSON: {ex}")
+
+    def _load_patch_section(self, json_string: str) -> None:
+        """
+        Load one section of a patch file: show it in the editors and titles,
+        and send it to the instrument.
+
+        A section with SYSEX (saved from the synth's memory) is sent as that
+        DT1 and shown as the JD-Xi would report it. An older section, saved
+        in display units, is converted to raw MIDI values first.
+        """
+        try:
+            section = json.loads(json_string)
+        except (TypeError, ValueError) as ex:
+            log.error(f"Invalid patch section: {ex}", scope="MidiIOHelper")
+            return
+        if not isinstance(section, dict):
+            return
+        message = section_sysex(section)
+        if message is not None:
+            try:
+                ui_json = json.dumps(self.sysex_parser.parse_bytes(message))
+            except Exception:
+                ui_json = json_string
+            self._emit_patch_json(ui_json, section)
+            request_queue_for(self).submit([message])
+            return
+        section = load_section(section)
+        section_json = json.dumps(section)
+        self._emit_patch_json(section_json, section)
+        for parameter_message in section_param_dt1s(section):
+            self.send_raw_message(parameter_message)
+
+    def _emit_patch_json(self, json_string: str, data: dict) -> None:
+        """
+        Show one loaded section in the editors and titles.
+
+        The editors apply it without writing it back (the section is sent to
+        the instrument separately), and a Common section's name updates the
+        program / tone titles the same way a reply from the JD-Xi does.
+
+        :param json_string: section JSON for the editors
+        :param data: the section as saved (4-byte ADDRESS)
+        """
+        with applying_device_data():
+            self.midi_sysex_json.emit(json_string)
+        address = "".join(str(data.get(SysExSection.ADDRESS, "")).split()).lower()
+        # Names live in the Common blocks: 18 00 00 00 and 19 xx 00 00
+        if len(address) != 8 or address[4:] != "0000":
+            return
+        name = patch_json_tone_name(data)
+        area = data.get(SysExSection.TEMPORARY_AREA)
+        if not name or not area:
+            return
+        if address.startswith("18") and address[2:4] == "00":
+            self._emit_program_name_signal(area, name)
+        elif address.startswith("19"):
+            self._emit_tone_name_signal(area, name)
 
     def __str__(self):
         """

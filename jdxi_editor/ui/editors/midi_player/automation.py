@@ -13,7 +13,8 @@ from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button_from_spec
 from jdxi_editor.ui.editors.midi_player.helper import (
     create_widget_cell_with_button_spec,
 )
-from jdxi_editor.ui.midi.selection_info import MidiWireInfo, channel_display_name
+from jdxi_editor.midi.bank import Bank
+from jdxi_editor.ui.midi.selection_info import MidiWireInfo
 from jdxi_editor.ui.preset.source import PresetSource
 from jdxi_editor.ui.preset.utils import convert_preset_dict_to_list
 from jdxi_editor.ui.widgets.editor.helper import (
@@ -142,11 +143,8 @@ class AutomationWidget(JDXiMidiGroup):
         )
         info = MidiWireInfo(
             channel=channel,
-            channel_display=channel_display_name(channel),
-            cc0=bank_msb,
-            cc32=bank_lsb,
-            midi_pc=midi_pc,
-            preset_pc=int(pc),
+            bank=Bank(msb=bank_msb, lsb=bank_lsb),
+            program=midi_pc,
         )
         self.automation_midi_info_bar.set_info(info)
 

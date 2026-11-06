@@ -31,6 +31,9 @@ from PySide6.QtCore import Signal
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
 from jdxi_editor.midi.io.controller import MidiIOController
+from jdxi_editor.midi.io.echo_guard import applying_device_data
+from jdxi_editor.midi.io.request_queue import notify_reply
+from jdxi_editor.midi.io.synth_memory import synth_memory_for
 
 # handle_identity_request moved to JDXiSysExParser.parse_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
@@ -153,6 +156,8 @@ class MidiInHandler(MidiIOController):
     midi_program_changed = Signal(int, int)  # channel, program
     midi_control_changed = Signal(int, int, int)  # channel, control, value
     midi_sysex_json = Signal(str)  # Signal emitting SysEx data as address JSON string
+    # SysEx JSON from the JD-Xi, re-emitted as midi_sysex_json on the GUI thread
+    _device_sysex_json = Signal(str)
 
     def __init__(self, parent: Optional[Any] = None) -> None:
         """
@@ -173,6 +178,7 @@ class MidiInHandler(MidiIOController):
         self.sysex_parser = JDXiSysExParser()
         self._incoming_preset_data = IncomingPresetData()
         self._incoming_preset_data.msb = 85  # default to Preset Bank
+        self._device_sysex_json.connect(self._emit_device_sysex_json)
 
     def midi_callback(self, message: list[Any], data: Any) -> None:
         """
@@ -192,6 +198,17 @@ class MidiInHandler(MidiIOController):
                     f"Error in MIDI handler [{message.type}]: {type(ex).__name__}: {ex}",
                     scope=self.__class__.__name__,
                 )
+
+    def _emit_device_sysex_json(self, payload: str) -> None:
+        """
+        Emit SysEx JSON from the JD-Xi to the editors.
+
+        Runs on the GUI thread (queued from the rtmidi callback), so the
+        editors' slots run inside applying_device_data() and their controls
+        do not write the received values back to the synth.
+        """
+        with applying_device_data():
+            self.midi_sysex_json.emit(payload)
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """
@@ -257,6 +274,15 @@ class MidiInHandler(MidiIOController):
                 MidoMessageType.NOTE_OFF.value: self._handle_note_change,
                 MidoMessageType.CLOCK.value: self._handle_clock,
             }
+
+            if message.type == MidoMessageType.SYSEX.value:
+                # Lets the request queue send the next RQ1
+                notify_reply(self, message.data)
+                # Keeps the copy of the synth's memory that patches are saved from
+                synth_memory_for(self).record_dt1(message.data)
+            elif message.type == MidoMessageType.PROGRAM_CHANGE.value:
+                # The temporary program is replaced; the editors read it again
+                synth_memory_for(self).clear()
 
             handler = handler_map.get(message.type)
 
@@ -407,7 +433,7 @@ class MidiInHandler(MidiIOController):
             if parsed.get(SysExSection.ADDRESS):
                 self._emit_program_or_tone_name(parsed)
 
-            self.midi_sysex_json.emit(json.dumps(parsed))
+            self._device_sysex_json.emit(json.dumps(parsed))
             log.json(parsed, silent=True)
 
         except Exception as ex:
@@ -479,7 +505,7 @@ class MidiInHandler(MidiIOController):
                 )
                 self._emit_program_or_tone_name(parsed_data)
                 log.message(f"json sysex: {json.dumps(parsed_data)}")
-                self.midi_sysex_json.emit(json.dumps(parsed_data))
+                self._device_sysex_json.emit(json.dumps(parsed_data))
                 log.json(parsed_data, silent=True)
             except Exception as parse_ex:
                 log.error(

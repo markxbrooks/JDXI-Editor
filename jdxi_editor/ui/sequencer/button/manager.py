@@ -11,6 +11,7 @@ from decologr import Decologr as log
 from PySide6.QtWidgets import QComboBox
 
 from jdxi_editor.midi.conversion.note import MidiNoteConverter
+from jdxi_editor.ui.editors.pattern.step_note import StepNoteEvent
 from picomidi.ui.widget.button.note import NoteButtonEvent
 
 
@@ -46,7 +47,7 @@ class ButtonState:
         :param note_spec: Canonical note data; takes precedence over note/velocity/duration_ms
         """
         self.is_checked = is_checked
-        self.note_spec = note_spec or NoteButtonEvent(
+        self.note_spec = note_spec or StepNoteEvent(
             note=note,
             duration_ms=int(duration_ms or 120),
             velocity=velocity or 100,
@@ -649,6 +650,8 @@ class SequencerButtonManager:
                         button, NoteButtonAttrs.NOTE_VELOCITY, self.default_velocity
                     ),
                 )
+                # Keep the step's extra (chord) notes
+                note_spec.extra_notes = list(getattr(button, "extra_notes", []))
                 button.note_spec = note_spec
 
         except Exception as ex:
@@ -666,15 +669,15 @@ class SequencerButtonManager:
         :param velocity: Velocity (0-127)
         :return: NoteButtonSpec
         """
-        return NoteButtonEvent(
+        return StepNoteEvent(
             note=note,
-            duration_ms=int(duration_ms or 120),
+            duration_ms=duration_ms or 120,
             velocity=velocity or 100,
         )
 
     def _create_empty_note_spec(self):
         """Create an empty note spec."""
-        return NoteButtonEvent()
+        return StepNoteEvent()
 
     def _reset_button_internal(self, button) -> None:
         """Internal button reset (without logging)."""

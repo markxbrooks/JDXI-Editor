@@ -285,6 +285,7 @@ class PlaylistEditor(QWidget):
             self._playlist_midi_editor, "midi_playback_stop"
         ):
             self._playlist_midi_editor.midi_playback_stop()
+        self._disconnect_playlist_finished(self._playlist_midi_editor)
         self._current_playlist_row = None
         self._playlist_midi_editor = None
 
@@ -945,8 +946,6 @@ class PlaylistEditor(QWidget):
 
         # If MIDI file is specified, load and play it
         if midi_file_path:
-            from mido import MidiFile
-
             # Check if file exists
             if not os.path.exists(midi_file_path):
                 log.warning(f"⚠️ MIDI file not found: {midi_file_path}")
@@ -992,80 +991,29 @@ class PlaylistEditor(QWidget):
                     # Load the MIDI file directly (bypassing the file dialog)
                     try:
                         # Disconnect any existing finished signal from previous playlist playback
-                        if self._playlist_midi_editor and hasattr(
-                            self._playlist_midi_editor, "midi_playback_worker"
-                        ):
-                            if self._playlist_midi_editor.midi_playback_worker:
-                                try:
-                                    self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
-                                        self._on_playlist_playback_finished
-                                    )
-                                except Exception:
-                                    pass
-
-                        # Stop any current playback
-                        if hasattr(midi_file_editor, "midi_stop_playback"):
-                            midi_file_editor.midi_playback_stop()
-                        if hasattr(midi_file_editor, "midi_playback_worker_stop"):
-                            midi_file_editor.midi_playback_worker_stop()
+                        self._disconnect_playlist_finished(self._playlist_midi_editor)
+                        self._disconnect_playlist_finished(midi_file_editor)
 
                         # Reset tracking if we're starting a new playback
                         self._current_playlist_row = None
                         self._playlist_midi_editor = None
 
-                        # Load MIDI file
-                        midi_file_editor.midi_state.file = MidiFile(midi_file_path)
-                        midi_file_editor.ui.digital_title_file_name.setText(
-                            f"Loaded: {Path(midi_file_path).name}"
-                        )
-                        midi_file_editor.midi_file.midi_track_viewer.clear()
-                        midi_file_editor.midi_file.midi_track_viewer.set_midi_file(
-                            midi_file_editor.midi_state.file
-                        )
-
-                        # Initialize MIDI file parameters (similar to midi_load_file)
-                        midi_file_editor.ticks_per_beat = (
-                            midi_file_editor.midi_state.file.ticks_per_beat
-                        )
-
-                        # Detect initial tempo
-                        if hasattr(midi_file_editor, "detect_initial_tempo"):
-                            initial_track_tempos = (
-                                midi_file_editor.detect_initial_tempo()
-                            )
-
-                        midi_file_editor.ui_display_set_tempo_usecs(
-                            midi_file_editor.midi_state.tempo_initial
-                        )
-                        midi_file_editor.midi_state.tempo_at_position = (
-                            midi_file_editor.midi_state.tempo_initial
-                        )
-
-                        midi_file_editor.midi_channel_select()
-                        midi_file_editor.midi_extract_events()
-                        midi_file_editor.setup_worker()
-                        midi_file_editor.calculate_duration()
-                        midi_file_editor.calculate_tick_duration()
-                        midi_file_editor.ui_position_slider_reset()
+                        # Load MIDI file (stops any current playback)
+                        if not midi_file_editor.midi_load_file_from_path(
+                            midi_file_path,
+                            notify_pattern_sequencer=False,
+                            update_recent_files=False,
+                        ):
+                            return
 
                         # Store current playlist row and editor for auto-advance
                         self._current_playlist_row = row
                         self._playlist_midi_editor = midi_file_editor
 
-                        # Connect to worker's finished signal for auto-advance
-                        if (
-                            hasattr(midi_file_editor, "midi_playback_worker")
-                            and midi_file_editor.midi_playback_worker
-                        ):
-                            try:
-                                # Disconnect any existing connection
-                                midi_file_editor.midi_playback_worker.finished.disconnect()
-                            except Exception:
-                                pass
-                            # Connect to finished signal
-                            midi_file_editor.midi_playback_worker.finished.connect(
-                                self._on_playlist_playback_finished
-                            )
+                        # Advance to the next item when the song ends
+                        midi_file_editor.transport_controller.finished.connect(
+                            self._on_playlist_playback_finished
+                        )
 
                         # Start playback
                         midi_file_editor.midi_playback_start()
@@ -1093,22 +1041,24 @@ class PlaylistEditor(QWidget):
                 f"ℹ️ No MIDI file selected for program {program.id}, only program loaded"
             )
 
+    def _disconnect_playlist_finished(self, midi_file_editor) -> None:
+        """Stop *midi_file_editor*'s end-of-song signal from advancing the playlist."""
+        if midi_file_editor is None:
+            return
+        try:
+            midi_file_editor.transport_controller.finished.disconnect(
+                self._on_playlist_playback_finished
+            )
+        except (RuntimeError, TypeError):
+            pass  # Not connected
+
     def _on_playlist_playback_finished(self):
         """Called when MIDI playback finishes. Advances to the next playlist item."""
         if self._current_playlist_row is None or not self.playlist_programs_table:
             return
 
         # Disconnect the finished signal
-        if self._playlist_midi_editor and hasattr(
-            self._playlist_midi_editor, "midi_playback_worker"
-        ):
-            try:
-                if self._playlist_midi_editor.midi_playback_worker:
-                    self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
-                        self._on_playlist_playback_finished
-                    )
-            except Exception:
-                pass
+        self._disconnect_playlist_finished(self._playlist_midi_editor)
 
         # Advance to next row
         next_row = self._current_playlist_row + 1

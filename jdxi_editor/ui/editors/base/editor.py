@@ -577,20 +577,26 @@ class BaseSynthEditor(SynthEditor):
         :return: None
         """
         new_value = (
-            param.convert_from_midi(value)
+            parameter.convert_from_midi(value)
             if parameter
             in [
                 self.SYNTH_SPEC.Param.OSC_PITCH_ENV_DEPTH,
             ]
-            else midi_value_to_ms(value, 10, 1000)
+            else None
         )
 
         if parameter in self.pitch_env_mapping:
             control_getter = self.pitch_env_mapping[parameter]
             control = control_getter()
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
+            if new_value is None and hasattr(control, "setMidiValue"):
+                # Times: the slider takes the MIDI value, not milliseconds
+                control.setMidiValue(value)
+            else:
+                control.blockSignals(True)
+                control.setValue(
+                    midi_value_to_ms(value, 10, 1000) if new_value is None else new_value
+                )
+                control.blockSignals(False)
             if hasattr(self, "oscillator_section") and self.oscillator_section:
                 pitch_env = self.oscillator_section.widget_for(
                     OscillatorWidgetTypes.PITCH_ENV

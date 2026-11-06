@@ -9,21 +9,42 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional
 
+from jdxi_editor.midi.bank import Bank
 from jdxi_editor.midi.message.control.message import ControlChangeMessage
 from jdxi_editor.midi.message.program.message import ProgramChangeMessage
 from jdxi_editor.ui.midi.selection_info import MidiWireInfo
 
-_COMPARE_FIELDS = ("channel", "cc0", "cc32", "midi_pc")
+_COMPARE_FIELDS = ("channel", "bank", "program")
 
 
 @dataclass(frozen=True)
 class ValidationResult:
-    """Outcome of comparing expected vs actual wire-format MIDI."""
+    """Outcome of comparing expected and actual MIDI wire values."""
 
-    ok: bool
     expected: MidiWireInfo
     actual: MidiWireInfo
-    diff_fields: List[str]
+    diff_fields: tuple[str, ...]
+
+    @property
+    def ok(self) -> bool:
+        return not self.diff_fields
+
+    @classmethod
+    def compare(
+        cls,
+        expected: MidiWireInfo,
+        actual: MidiWireInfo,
+    ) -> "ValidationResult":
+        differences = tuple(
+            field
+            for field in _COMPARE_FIELDS
+            if getattr(expected, field) != getattr(actual, field)
+        )
+        return cls(
+            expected=expected,
+            actual=actual,
+            diff_fields=differences,
+        )
 
 
 def wire_info_from_bank_pc(
@@ -31,21 +52,12 @@ def wire_info_from_bank_pc(
     bank_msb: int,
     bank_lsb: int,
     midi_pc: int,
-    *,
-    channel_display: Optional[str] = None,
-    preset_pc: Optional[int] = None,
-    program_id: Optional[str] = None,
 ) -> MidiWireInfo:
     """Build MidiWireInfo from send parameters."""
-    display = channel_display or f"Ch {channel + 1}"
     return MidiWireInfo(
         channel=channel,
-        channel_display=display,
-        cc0=bank_msb,
-        cc32=bank_lsb,
-        midi_pc=midi_pc,
-        preset_pc=preset_pc,
-        program_id=program_id,
+        bank=Bank(msb=bank_msb, lsb=bank_lsb),
+        program=midi_pc,
     )
 
 
@@ -96,18 +108,8 @@ def parse_bank_select_pc_sequence(
 def compare_wire_info(
     expected: MidiWireInfo, actual: MidiWireInfo
 ) -> ValidationResult:
-    """Field-by-field diff on channel, cc0, cc32, and midi_pc."""
-    diff_fields = [
-        field
-        for field in _COMPARE_FIELDS
-        if getattr(expected, field) != getattr(actual, field)
-    ]
-    return ValidationResult(
-        ok=not diff_fields,
-        expected=expected,
-        actual=actual,
-        diff_fields=diff_fields,
-    )
+    """Field-by-field diff on channel, bank, and program."""
+    return ValidationResult.compare(expected, actual)
 
 
 def validate_bank_select_pc_send(

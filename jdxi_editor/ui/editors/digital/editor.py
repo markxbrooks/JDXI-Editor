@@ -838,11 +838,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         use_fraction = param in {
             Digital.Param.OSC_PITCH_ENV_DEPTH,
         }
-        new_value = (
-            param.convert_from_midi(midi_value)
-            if use_fraction
-            else midi_value_to_ms(midi_value, 10, 5000)
-        )
+        new_value = param.convert_from_midi(midi_value) if use_fraction else None
         pe = self.partial_editors.get(partial_no)
         pitch_env = (
             pe.oscillator_tab.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV)
@@ -854,9 +850,13 @@ class DigitalSynthEditor(BaseSynthEditor):
             return
         control = pitch_env.controls.get(param)
         if control:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
+            if new_value is None and hasattr(control, "setMidiValue"):
+                # Times: the slider takes the MIDI value, not milliseconds
+                control.setMidiValue(midi_value)
+            else:
+                control.blockSignals(True)
+                control.setValue(new_value)
+                control.blockSignals(False)
             pitch_env.refresh_plot_from_controls()
             successes.append(param.name)
         else:

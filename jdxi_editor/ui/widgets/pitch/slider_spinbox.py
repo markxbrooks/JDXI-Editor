@@ -301,6 +301,26 @@ class PitchEnvSliderSpinbox(QWidget):
         except RuntimeError:
             pass
 
+    def setMidiValue(self, midi_value: int) -> None:
+        """
+        Show a value received from the synth, without emitting.
+
+        The slider is in MIDI units and the spinbox in envelope units, so each
+        is set in its own unit; setValue would pass the number to both.
+
+        :param midi_value: int 0-127 as sent by the JD-Xi
+        """
+        try:
+            self.slider.blockSignals(True)
+            self.spinbox.blockSignals(True)
+            self.slider.setValue(int(midi_value))
+            self.spinbox.setValue(self.convert_to_envelope(int(midi_value)))
+        except RuntimeError:
+            pass
+        finally:
+            self.slider.blockSignals(False)
+            self.spinbox.blockSignals(False)
+
     def value(self) -> float:
         """
         Get the semantic envelope value (fraction for depth, ms for time).

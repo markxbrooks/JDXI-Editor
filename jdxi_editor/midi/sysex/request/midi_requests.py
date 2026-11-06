@@ -23,7 +23,7 @@ class MidiRequests:
     PROGRAM_VOCAL_EFFECT = create_request(
         TEMPORARY_PROGRAM_RQ11_HEADER,
         JDXISysExHex.PROGRAM_VOCAL_EFFECT_AREA,
-        "00 00 00 00 00 18",
+        "00 00 00 18",
     )
 
     PROGRAM_CONTROLLER = create_request(

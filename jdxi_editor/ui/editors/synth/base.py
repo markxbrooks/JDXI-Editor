@@ -592,15 +592,42 @@ class SynthBase(QWidget):
             log.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
+    def all_controls(self) -> dict:
+        """
+        self.controls plus the controls held by this editor's sections.
+
+        Sections (oscillator, filter, common, modify, ...) keep their own
+        controls dict, so self.controls alone can be empty. Sections inside a
+        nested partial panel are left out: each partial panel is registered
+        and saved on its own, at its own address.
+
+        :returns: dict AddressParameter -> widget
+        """
+        from jdxi_editor.ui.editors.synth.partial import PartialPanel
+        from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+
+        merged = dict(self.controls.items()) if self.controls else {}
+        for section in self.findChildren(SectionBaseWidget):
+            owner = section.parentWidget()
+            while owner is not None and owner is not self and not isinstance(
+                owner, PartialPanel
+            ):
+                owner = owner.parentWidget()
+            if owner is not self:
+                continue  # belongs to a nested partial panel
+            for param, widget in (section.controls or {}).items():
+                merged.setdefault(param, widget)
+        return merged
+
     def get_controls_as_dict(self):
         """
-        Get the current values of self.controls as a dictionary.
+        Get the current values of all controls (see all_controls) as a dictionary.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
         try:
             controls_data = {}
-            for param, widget in self.controls.items():
+            for param, widget in self.all_controls().items():
                 # --- Get value from widget - all custom widgets have a value() method
                 # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, "value"):
@@ -907,7 +934,7 @@ class SynthBase(QWidget):
         :return: None
         """
         if slider is None:
-            slider = self.controls.get(param)
+            slider = self.controls.get(param) or self.all_controls().get(param)
         if slider:
             if hasattr(param, "convert_from_midi"):
                 slider_value = param.convert_from_midi(midi_value)
@@ -915,7 +942,7 @@ class SynthBase(QWidget):
                 slider_value = midi_value
             log_slider_parameters(self.address, param, midi_value, slider_value)
             slider.blockSignals(True)
-            slider.setValue(midi_value)
+            slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
         else:
@@ -937,9 +964,9 @@ class SynthBase(QWidget):
         :param failures: list
         :return: None
         """
-        if not midi_value:
+        if midi_value is None:
             return
-        switch = self.controls.get(param)
+        switch = self.controls.get(param) or self.all_controls().get(param)
         try:
             midi_value = int(midi_value)
             if switch:

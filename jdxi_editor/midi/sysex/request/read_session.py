@@ -3,6 +3,12 @@ Coordinated RQ1 read session with DT1 address matching and section status.
 
 Used by Patch Manager and per-editor "Read from JD-Xi" actions so saves are
 not based on stale UI state without an explicit hardware round-trip.
+
+Replies are matched on the raw DT1 bytes from the MIDI input
+(``midi_message_incoming``). The parsed ``midi_sysex_json`` signal is not used
+when raw input is available: its ADDRESS field is the command byte plus only
+three address bytes (e.g. ``"12194200"`` for ``19 42 00 00``), and the same
+signal also carries JSON from patch files being loaded, which are not replies.
 """
 
 from __future__ import annotations
@@ -15,6 +21,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tupl
 from decologr import Decologr as log
 from PySide6.QtCore import QObject, QTimer, Signal
 
+from jdxi_editor.midi.io.request_queue import DT1_COMMAND, roland_address
 from jdxi_editor.midi.sysex.sections import SysExSection
 
 
@@ -87,6 +94,24 @@ def address_from_rq1_hex(request_hex: str) -> str:
     return normalize_address("".join(addr_tokens))
 
 
+def address_from_dt1_bytes(data: Sequence[int]) -> Optional[str]:
+    """4-byte address of a Roland DT1 (data set) message, or None if *data* is not one."""
+    return roland_address(data, DT1_COMMAND)
+
+
+def address_from_parsed_json(address_field: Optional[str]) -> str:
+    """
+    Normalise the ADDRESS of a parsed-SysEx JSON payload to the 4-byte form.
+
+    The parser reports ``command + 3 address bytes`` (``"12194200"``); patch
+    JSON written by the composer uses the 4-byte address (``"19420000"``).
+    """
+    address = normalize_address(address_field)
+    if len(address) == 8 and address.startswith("12"):
+        return address[2:] + "00"
+    return address
+
+
 def label_for_address(address: str) -> str:
     """Human-readable label for a common JD-Xi temporary address."""
     addr = normalize_address(address)
@@ -113,9 +138,72 @@ def label_for_address(address: str) -> str:
     }
     if addr in known:
         return known[addr]
-    if addr.startswith("1970"):
-        return f"Drum Partial ({addr[4:6]})"
+    if addr.startswith("1970") and len(addr) == 8:
+        index = drum_partial_index(addr)
+        if index is not None:
+            return f"Drum Partial {index + 1} (note {DRUM_FIRST_NOTE + index})"
     return addr or "Unknown"
+
+
+DRUM_PARTIAL_COUNT = 38
+DRUM_FIRST_NOTE = 36  # partial 1 (19 70 2E 00) is BD1, note 36
+_DRUM_FIRST_LMB = 0x2E
+_DRUM_PARTIAL_SIZE = (0x00, 0x00, 0x01, 0x43)
+
+
+def drum_partial_index(address: str) -> Optional[int]:
+    """0-based drum partial of a 19 70 xx 00 address, or None."""
+    lmb = int(address[4:6], 16)
+    index, odd = divmod(lmb - _DRUM_FIRST_LMB, 2)
+    if odd or not 0 <= index < DRUM_PARTIAL_COUNT:
+        return None
+    return index
+
+
+def rq1_hex(address: Sequence[int], size: Sequence[int]) -> str:
+    """JD-Xi RQ1 (data request) for *size* bytes at *address*, as hex."""
+    body = list(address) + list(size)
+    checksum = (128 - sum(body) % 128) % 128
+    data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, *body, checksum, 0xF7]
+    return " ".join(f"{b:02X}" for b in data)
+
+
+def patch_section_requests() -> List[Tuple[str, str]]:
+    """
+    (label, RQ1) for every section of a patch, whichever editors are open.
+
+    Program Common, Vocal FX, Effects, Delay, Reverb, Zones, Arpeggio, both
+    Digital synths (Common, partials, Modify), Analog, Drum Common and all 38
+    drum partials.
+    """
+    from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests as R
+
+    requests = [
+        R.PROGRAM_COMMON,
+        R.PROGRAM_VOCAL_EFFECT,
+        R.PROGRAM_EFFECT1,
+        R.PROGRAM_EFFECT2,
+        R.PROGRAM_DELAY,
+        R.PROGRAM_REVERB,
+        R.PROGRAM_ZONE_DIGITAL1,
+        R.PROGRAM_ZONE_DIGITAL2,
+        R.PROGRAM_ZONE_ANALOG,
+        R.PROGRAM_ZONE_DRUMS,
+        R.PROGRAM_CONTROLLER,
+        *R.DIGITAL1,
+        *R.DIGITAL2,
+        R.ANALOG,
+        R.DRUMS[0] if isinstance(R.DRUMS, list) else R.DRUMS,
+    ]
+    requests += [
+        rq1_hex((0x19, 0x70, _DRUM_FIRST_LMB + 2 * i, 0x00), _DRUM_PARTIAL_SIZE)
+        for i in range(DRUM_PARTIAL_COUNT)
+    ]
+    pairs = []
+    for request in requests:
+        address = address_from_rq1_hex(request)
+        pairs.append((label_for_address(address), request))
+    return pairs
 
 
 def sections_from_requests(
@@ -209,6 +297,7 @@ class PatchReadSession(QObject):
         self._timer.setSingleShot(True)
         self._timer.timeout.connect(self._on_timeout)
         self._connected = False
+        self._connected_signal = None
         self._done = False
 
     @property
@@ -226,9 +315,17 @@ class PatchReadSession(QObject):
             self._finish()
             return
 
-        if hasattr(self._midi_helper, "midi_sysex_json") and not self._connected:
-            self._midi_helper.midi_sysex_json.connect(self._on_sysex_json)
-            self._connected = True
+        if not self._connected:
+            # Prefer the raw MIDI input: exact addresses, and only real replies
+            signal = getattr(self._midi_helper, "midi_message_incoming", None)
+            slot = self._on_midi_message
+            if signal is None:
+                signal = getattr(self._midi_helper, "midi_sysex_json", None)
+                slot = self._on_sysex_json
+            if signal is not None:
+                signal.connect(slot)
+                self._connected = True
+                self._connected_signal = (signal, slot)
 
         from jdxi_editor.midi.io.delay import send_with_delay
         import threading
@@ -247,16 +344,27 @@ class PatchReadSession(QObject):
         """Stop waiting; mark remaining sections as timeout."""
         self._on_timeout()
 
+    def _on_midi_message(self, message: Any) -> None:
+        """Raw MIDI input: match DT1 replies by their exact address."""
+        if self._done or getattr(message, "type", None) != "sysex":
+            return
+        address = address_from_dt1_bytes(getattr(message, "data", ()))
+        if address:
+            self._mark_received(address)
+
     def _on_sysex_json(self, payload: str) -> None:
+        """Fallback when raw input is unavailable: match parsed-SysEx JSON."""
         if self._done:
             return
         try:
             parsed = json.loads(payload) if isinstance(payload, str) else payload
         except (TypeError, json.JSONDecodeError):
             return
-        address = normalize_address(parsed.get(SysExSection.ADDRESS))
-        if not address:
-            return
+        address = address_from_parsed_json(parsed.get(SysExSection.ADDRESS))
+        if address:
+            self._mark_received(address)
+
+    def _mark_received(self, address: str) -> None:
         section = self._by_address.get(address)
         if section is None or section.status != SectionStatus.PENDING:
             return
@@ -291,13 +399,15 @@ class PatchReadSession(QObject):
         self.finished.emit(result)
 
     def _disconnect(self) -> None:
-        if not self._connected:
+        if not self._connected or self._connected_signal is None:
             return
+        signal, slot = self._connected_signal
         try:
-            self._midi_helper.midi_sysex_json.disconnect(self._on_sysex_json)
+            signal.disconnect(slot)
         except (TypeError, RuntimeError):
             pass
         self._connected = False
+        self._connected_signal = None
 
 
 def start_read_session(

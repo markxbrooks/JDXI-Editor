@@ -7,12 +7,13 @@ from copy import deepcopy
 import mido
 import qtawesome as qta
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtCore import QPoint, Qt, QEvent, QTimer, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLayout,
     QLineEdit,
+    QMenu,
     QMessageBox,
     QPushButton,
     QScrollArea,
@@ -27,7 +28,7 @@ from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
-from jdxi_editor.ui.widgets.midi.utils import get_first_channel
+from jdxi_editor.ui.widgets.midi.utils import build_tick_to_seconds, get_first_channel
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMetaMessageType, MidoMessageType
 
@@ -36,6 +37,9 @@ class MidiTrackViewer(QWidget):
     """
     MidiTrackViewer
     """
+
+    mute_changed = Signal()  # track/channel mute or solo state changed
+    file_changed = Signal(object)  # the viewer now shows this mido.MidiFile
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -72,17 +76,16 @@ class MidiTrackViewer(QWidget):
         scroll_layout.setContentsMargins(0, 0, 0, 0)
         # scroll_layout.addWidget(self.ruler)
         ruler_container = QWidget()
-        ruler_layout = QHBoxLayout(ruler_container)
-        ruler_layout.setContentsMargins(0, 0, 0, 0)
-        ruler_layout.setSpacing(0)
+        self._ruler_layout = QHBoxLayout(ruler_container)
+        self._ruler_layout.setContentsMargins(0, 0, 0, 0)
+        self._ruler_layout.setSpacing(0)
 
-        left_spacer = QWidget()
-        left_spacer.setFixedWidth(
-            self.get_track_controls_width()
-        )  # same width as controls
-        ruler_layout.addWidget(left_spacer)
+        # Width is matched to the track controls in _align_ruler_to_tracks()
+        self._ruler_spacer = QWidget()
+        self._ruler_spacer.setFixedWidth(self.get_track_controls_width())
+        self._ruler_layout.addWidget(self._ruler_spacer)
 
-        ruler_layout.addWidget(self.ruler, stretch=1)
+        self._ruler_layout.addWidget(self.ruler, stretch=1)
 
         scroll_layout.addWidget(ruler_container)
 
@@ -241,6 +244,25 @@ class MidiTrackViewer(QWidget):
             widget.cached_width = 0
             widget.update()
         self.ruler.update()
+        QTimer.singleShot(0, self._align_ruler_to_tracks)
+
+    def _align_ruler_to_tracks(self) -> None:
+        """Line the ruler up exactly with the track timelines below it."""
+        widget = next(iter(self.midi_track_widgets.values()), None)
+        if widget is None or not widget.isVisible():
+            return
+        left = widget.mapTo(self.scroll_content, QPoint(0, 0)).x()
+        right_gap = self.scroll_content.width() - (left + widget.width())
+        self._ruler_spacer.setFixedWidth(max(0, left))
+        self._ruler_layout.setContentsMargins(0, 0, max(0, right_gap), 0)
+
+    def set_playhead(self, seconds: float | None) -> None:
+        """Show the playback position on the ruler and every track (None hides it)."""
+        self.ruler.set_playhead(seconds)
+        length = self.midi_file.length if self.midi_file else 0
+        norm = None if seconds is None or not length else seconds / length
+        for widget in self.midi_track_widgets.values():
+            widget.set_playhead(norm)
 
     def resizeEvent(self, event: QEvent) -> None:
         super().resizeEvent(event)
@@ -264,6 +286,7 @@ class MidiTrackViewer(QWidget):
                 content_width = max(content_width, viewport_width)
         self.scroll_content.setFixedWidth(content_width)
         self.scroll_content.updateGeometry()
+        QTimer.singleShot(0, self._align_ruler_to_tracks)
 
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """
@@ -290,6 +313,7 @@ class MidiTrackViewer(QWidget):
         for widget in self.midi_track_widgets.values():
             widget.update_muted_channels(self.muted_channels)
         print(f"Muted channels updated: {self.muted_channels}")
+        self.mute_changed.emit()
 
     def update_muted_channels(self, muted_channels: set[int]) -> None:
         """
@@ -343,10 +367,12 @@ class MidiTrackViewer(QWidget):
             self.muted_tracks = {t for t in range(num_tracks) if t != track_index}
         elif self.solo_track == track_index:
             self._clear_solo(restore_pre_solo=True)
+            self.mute_changed.emit()
             return
 
         self._apply_muted_tracks_to_widgets()
         self._sync_track_mute_solo_buttons()
+        self.mute_changed.emit()
 
     def toggle_track_mute(self, track: int, is_muted: bool) -> None:
         """
@@ -366,6 +392,7 @@ class MidiTrackViewer(QWidget):
 
         self._apply_muted_tracks_to_widgets()
         print(f"Muted tracks updated: {self.muted_tracks}")
+        self.mute_changed.emit()
 
     def update_muted_tracks(self, muted_tracks: set[int]) -> None:
         """
@@ -398,25 +425,101 @@ class MidiTrackViewer(QWidget):
         """
         if not (0 <= track_index < len(self.midi_file.tracks)):
             raise IndexError("Invalid track index")
+        if len(self.midi_file.tracks) == 1:
+            QMessageBox.information(
+                self, "Delete Track", "A MIDI file needs at least one track."
+            )
+            return
 
-        # Optional: Get the track name to show in dialog
         track = self.midi_file.tracks[track_index]
-        track_name = getattr(track, "name", f"Track {track_index + 1}")
+        track_name = track.name or f"Track {track_index + 1}"
 
-        # Show confirmation dialog
         reply = QMessageBox.question(
             self,
             "Delete Track?",
             f"Are you sure you want to delete '{track_name}'?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
+        if reply != QMessageBox.StandardButton.Yes:
+            return
 
-        if reply == QMessageBox.StandardButton.Yes:
-            del self.midi_file.tracks[track_index]
-            self.midi_track_widgets.pop(track_index)
+        tracks = [t for i, t in enumerate(self.midi_file.tracks) if i != track_index]
+        # new index -> old index (tracks after the deleted one move up)
+        index_map = {
+            new: (new if new < track_index else new + 1) for new in range(len(tracks))
+        }
+        self._replace_tracks(tracks, index_map)
+        log.message(f"Deleted track {track_index + 1} ({track_name})")
 
-            # Optional: update UI if needed
-            self.refresh_track_list()
+    def clone_track(self, track_index: int) -> None:
+        """
+        Insert a copy of a track directly below it.
+
+        :param track_index: int
+        :return: None
+        """
+        if not (0 <= track_index < len(self.midi_file.tracks)):
+            raise IndexError("Invalid track index")
+
+        source = self.midi_file.tracks[track_index]
+        copy = deepcopy(source)
+        new_name = f"{source.name or f'Track {track_index + 1}'} (copy)"
+        for msg in copy:
+            if msg.type == MidoMetaMessageType.TRACK_NAME.value:
+                msg.name = new_name
+                break
+        else:
+            copy.insert(
+                0,
+                mido.MetaMessage(
+                    MidoMetaMessageType.TRACK_NAME.value, name=new_name, time=0
+                ),
+            )
+
+        tracks = list(self.midi_file.tracks)
+        tracks.insert(track_index + 1, copy)
+        # The copy (track_index + 1) starts with the source's mute state
+        index_map = {
+            new: (new if new <= track_index else new - 1) for new in range(len(tracks))
+        }
+        self._replace_tracks(tracks, index_map)
+        log.message(f"Cloned track {track_index + 1} as '{new_name}'")
+
+    def _replace_tracks(
+        self, tracks: list[mido.MidiTrack], index_map: dict[int, int]
+    ) -> None:
+        """
+        Show a new file made of *tracks*, keeping per-track mutes.
+
+        :param tracks: Tracks for the new file, in order
+        :param index_map: New track index -> index the track had before
+        """
+        old_muted = set(self.muted_tracks)
+        new_midi = mido.MidiFile(
+            type=1 if len(tracks) > 1 else self.midi_file.type,
+            ticks_per_beat=self.midi_file.ticks_per_beat,
+        )
+        new_midi.tracks.extend(tracks)
+        self.set_midi_file(new_midi)
+        self.muted_tracks = {
+            new for new, old in index_map.items() if old in old_muted
+        }
+        self._apply_muted_tracks_to_widgets()
+        self._sync_track_mute_solo_buttons()
+        self.mute_changed.emit()
+
+    def _show_track_menu(self, track_index: int, global_pos: QPoint) -> None:
+        """Right-click menu for a track row."""
+        if not self.midi_file or not (0 <= track_index < len(self.midi_file.tracks)):
+            return
+        menu = QMenu(self)
+        clone_action = menu.addAction("Clone Track")
+        delete_action = menu.addAction("Delete Track…")
+        chosen = menu.exec(global_pos)
+        if chosen is clone_action:
+            self.clone_track(track_index)
+        elif chosen is delete_action:
+            self.delete_track(track_index)
 
     def change_track_name(self, track_index: int, new_name: str) -> None:
         """
@@ -536,6 +639,7 @@ class MidiTrackViewer(QWidget):
         self.muted_tracks.clear()
         self.track_mute_buttons = {}
         self.track_solo_buttons = {}
+        tick_to_seconds = build_tick_to_seconds(midi_file)
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
@@ -668,11 +772,20 @@ class MidiTrackViewer(QWidget):
             delete_button.setIcon(delete_icon)
             delete_button.setToolTip("Delete Track")
             delete_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
-            delete_button.setCheckable(True)
             delete_button.clicked.connect(
                 lambda _, tr=i: self.delete_track(tr)
             )  # Send internal value (0–15)
             button_hlayout.addWidget(delete_button)
+
+            clone_icon = JDXi.UI.Icon.get_icon(
+                "mdi.content-copy", color=JDXi.UI.Style.FOREGROUND
+            )
+            clone_button = QPushButton()
+            clone_button.setIcon(clone_icon)
+            clone_button.setToolTip("Clone Track (insert a copy below)")
+            clone_button.setFixedWidth(JDXi.UI.Style.BUTTON_TRACK_WIDTH)
+            clone_button.clicked.connect(lambda _, tr=i: self.clone_track(tr))
+            button_hlayout.addWidget(clone_button)
 
             # Add the MidiTrackWidget for the specific track
             self.midi_track_widgets[i] = MidiTrackWidget(
@@ -680,12 +793,19 @@ class MidiTrackViewer(QWidget):
                 track_number=i,
                 total_length=midi_file.length,
                 ticks_per_beat=midi_file.ticks_per_beat,
+                tick_to_seconds=tick_to_seconds,
             )
             hlayout.addWidget(self.midi_track_widgets[i])
 
             # Wrap the layout in a draggable row widget
             draggable_row = DraggableTrackRow(i, hlayout, self.scroll_content)
             draggable_row.track_moved.connect(self.move_track)
+            draggable_row.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            draggable_row.customContextMenuRequested.connect(
+                lambda pos, tr=i, row=draggable_row: self._show_track_menu(
+                    tr, row.mapToGlobal(pos)
+                )
+            )
             self._draggable_rows[i] = draggable_row
             self.channel_controls_vlayout.addWidget(draggable_row)
 
@@ -700,17 +820,18 @@ class MidiTrackViewer(QWidget):
         self.channel_controls_vlayout.addLayout(apply_all_layout)
         self.channel_controls_vlayout.addStretch()
         self.fit_tracks_to_view()
+        self.file_changed.emit(midi_file)
 
     def get_track_controls_width(self) -> int:
         """
         Returns the estimated total width of all controls to the left of the MidiTrackWidget.
         """
         # Fixed widths from layout:
-        # Apply, Mute, Solo, Delete track buttons + label/spin controls
+        # Apply, Mute, Solo, Delete, Clone track buttons + label/spin controls
         return (
             JDXi.UI.Style.ICON_PIXMAP_SIZE
             + JDXi.UI.Style.TRACK_LABEL_WIDTH
-            + (JDXi.UI.Style.BUTTON_TRACK_WIDTH * 4)
+            + (JDXi.UI.Style.BUTTON_TRACK_WIDTH * 5)
             + 10
         )
 

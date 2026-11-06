@@ -46,7 +46,9 @@ class EffectsSysExDispatcher:
 
             widget = self.controls.get(param)
             if not widget:
-                stats.record_failed(name)
+                # No control of its own, e.g. the generic EFX1_PARAM_n names the
+                # parser reports beside the type-specific ones that are applied
+                stats.record_skipped(name)
                 continue
 
             try:

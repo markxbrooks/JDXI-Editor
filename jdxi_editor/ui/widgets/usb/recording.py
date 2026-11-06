@@ -130,15 +130,21 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         grid.addWidget(self.file_auto_generate_checkbox, row, 1, 1, 3)
         return group
 
-    def start_recording(self):
-        """start usb recording"""
+    def start_recording(self, duration_seconds: Optional[float] = None):
+        """
+        start usb recording
+
+        :param duration_seconds: How long to record; defaults to the file length
+        """
         if self.recorder.file_save_recording:
             recording_rate = "32bit"  # Default to 32-bit recording
             try:
                 rate = self.recorder.usb_recording_rates.get(
                     recording_rate, pyaudio.paInt16
                 )
-                self._start_recording(recording_rate=rate)
+                self._start_recording(
+                    recording_rate=rate, duration_seconds=duration_seconds
+                )
             except Exception as ex:
                 log.error(f"Error {ex} occurred starting USB recording")
 
@@ -209,14 +215,21 @@ class USBFileRecordingWidget(JDXiMidiGroup):
             f"Auto generate filename based on current date and time and Midi file = {self.file_auto_generate_checkbox.isChecked()}"
         )
 
-    def _start_recording(self, recording_rate: int = pyaudio.paInt16):
+    def _start_recording(
+        self,
+        recording_rate: int = pyaudio.paInt16,
+        duration_seconds: Optional[float] = None,
+    ):
         """
         usb_start_recording
 
         :param recording_rate: int
+        :param duration_seconds: How long to record; defaults to the file length
         :return: None
         Start recording in a separate thread
         """
+        if duration_seconds is None:
+            duration_seconds = self.midi_state.file_duration_seconds
         try:
             # If auto-generate is enabled, regenerate filename with fresh timestamp
             if self.file_auto_generate_checkbox.isChecked():
@@ -230,16 +243,14 @@ class USBFileRecordingWidget(JDXiMidiGroup):
                 return
 
             log.message(f"🎙️ Starting WAV recording to: {self.file_output_name}")
-            log.message(
-                f"🎙️ Recording duration: {self.midi_state.file_duration_seconds} seconds"
-            )
+            log.message(f"🎙️ Recording duration: {duration_seconds} seconds")
 
             selected_index = self.port_select_combo.currentIndex()
             log.message(f"🎙️ Using USB input device index: {selected_index}")
 
             start_recording(
                 self.recorder,
-                self.midi_state.file_duration_seconds,
+                duration_seconds,
                 self.file_output_name,
                 recording_rate,
                 selected_index,
