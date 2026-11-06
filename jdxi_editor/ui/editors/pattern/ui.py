@@ -272,7 +272,12 @@ class PatternUI(SynthEditor):
             )
         )
         self.pattern_widget.set_header_widget(self._create_headers_widget())
-        self.layout.addWidget(create_panel(self.pattern_widget))
+        # A "Pattern Sequencer" section on the glossy panel, as on the JD-Xi
+        self.sequencer_group = QGroupBox(self.tr("Pattern Sequencer"))
+        sequencer_layout = QVBoxLayout(self.sequencer_group)
+        sequencer_layout.setContentsMargins(0, 0, 0, 0)
+        sequencer_layout.addWidget(self.pattern_widget)
+        self.layout.addWidget(create_panel(self.sequencer_group))
 
     def _create_headers_widget(self) -> QWidget:
         """

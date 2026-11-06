@@ -129,3 +129,9 @@ def test_step_guide_lines_span_their_steps(editor):
     assert threes == [(left(i), right(i + 2)) for i in (0, 3, 6, 9)]
     assert eights == [(left(0), right(7)), (left(8), right(15))]
     assert fours == [(left(i), right(i + 3)) for i in (0, 4, 8, 12)]
+
+
+def test_sequencer_is_in_a_pattern_sequencer_group(editor):
+    """Measures and steps sit in a "Pattern Sequencer" section, as on the JD-Xi panel."""
+    assert editor.sequencer_group.title() == "Pattern Sequencer"
+    assert editor.sequencer_group.isAncestorOf(editor.pattern_widget)
