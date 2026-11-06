@@ -70,7 +70,9 @@ from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
 from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.editors.program.mixer.section import MixerAttrs, ProgramMixer
+from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -433,7 +435,10 @@ class ProgramEditor(BasicEditor):
         self.program_group_widget.mixer_widget = self.mixer_widget
 
         self.right_hlayout = QHBoxLayout()
-        self.right_hlayout.addWidget(mixer_group)
+        # The mixer sits on its own glossy black panel (its group a section on it)
+        self.mixer_panel = create_panel(mixer_group)
+        mark_sheen(self.mixer_panel)
+        self.right_hlayout.addWidget(self.mixer_panel)
         self.title_right_vlayout.addLayout(self.right_hlayout)
         self.title_hlayout.addStretch()
         self.title_vlayout.addStretch()

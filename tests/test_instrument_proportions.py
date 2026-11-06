@@ -88,7 +88,12 @@ def test_finish_matte_body_and_glossy_panel():
     assert panel.red() < body.red() - 15  # glossy black panel (with its sheen)
     sheet = AppEditorStyle.editor_stylesheet()
     assert f'QWidget[{BODY_PROPERTY}="true"]' in sheet and "background-image" in sheet
-    assert "qlineargradient" in sheet.split("QGroupBox {")[1].split("}")[0]
+    # Groups are JD-Xi sections (centred title over one accent rule); the
+    # glossy black is on the editors' outer panels (the sheen rule)
+    group = sheet.split("QGroupBox {")[1].split("}")[0]
+    assert "background: transparent" in group and f"border-top: 1px solid {AppEditorStyle.ACCENT}" in group
+    assert "subcontrol-position: top center" in sheet.split("QGroupBox::title {")[1].split("}")[0]
+    assert "border-image" in sheet.split('QTabWidget[jdxiSheen="true"]::pane {')[1].split("}")[0]
 
 
 def test_editor_roots_get_the_body_finish():

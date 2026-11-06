@@ -80,6 +80,7 @@ import platform
 from jdxi_editor.ui.style.factory import (
     generate_button_style,
     generate_editor_style,
+    generate_section_group_style,
     generate_tab_style,
 )
 
@@ -543,14 +544,7 @@ class JDXiUIStyle:
     """
 
     PROGRAM_PRESET_GROUPS = f"""            
-         QGroupBox {{
-                 font-family: {FONT_FAMILY};
-                 width: 300px;
-                 border: none;
-                 border-top: 1px solid {ACCENT};
-                 margin: 1px;
-                 padding: 1px;
-             }}"""
+{generate_section_group_style(ACCENT)}"""
 
     PROGRAM_PRESET_GROUP_WIDTH = 300
 
@@ -1006,14 +1000,7 @@ class JDXiUIStyle:
     """
 
     ADSR_ANALOG = f"""
-        QGroupBox {{
-             font-family: {FONT_FAMILY};
-             width: 300px;
-             border: none;
-             border-top: 1px solid {ACCENT_ANALOG};
-             margin: 1px;
-             padding: 1px;
-         }}
+        {generate_section_group_style(ACCENT_ANALOG)}
         /* Groove (Track) */
         QSlider::groove:vertical {{
             font-family: {FONT_FAMILY};
@@ -1096,14 +1083,7 @@ class JDXiUIStyle:
     """
 
     ADSR = f"""
-         QGroupBox {{
-             font-family: {FONT_FAMILY};
-             width: 200px;
-             border: none;
-             border-top: 1px solid {ACCENT};
-             margin: 1px;
-             padding: 1px;
-         }}
+        {generate_section_group_style(ACCENT)}
         /* Groove (Track) */
         QSlider::groove:vertical {{
             font-family: {FONT_FAMILY};
@@ -1568,21 +1548,7 @@ class JDXiUIStyle:
     """
 
     GROUP_BOX_ANALOG = f"""
-        QGroupBox {{
-            font-family: {FONT_FAMILY};
-            border: none;
-            color: #FFFFFF;
-            border-top: 1px solid {ACCENT_ANALOG};
-            margin: 10px;
-            padding: 10px;
-        }}
-        QGroupBox::title {{
-            font-family: {FONT_FAMILY};
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 10 10px;
-            background-color: transparent;  /* over the glossy panel */
-        }}
+        {generate_section_group_style(ACCENT_ANALOG)}
         """
 
     PATCH_MANAGER = f"""

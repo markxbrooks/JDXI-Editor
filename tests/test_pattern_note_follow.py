@@ -104,3 +104,28 @@ def test_save_button_opens_a_save_dialog(editor, monkeypatch, tmp_path):
 
     editor.pattern_file_group.load_button.click()
     assert calls == ["save", "open"]  # Load still opens an Open dialog
+
+
+def test_step_guide_lines_span_their_steps(editor):
+    """Lines of 3 (over steps 1-12), 8 and 4 steps, each from its first step's left edge to its last's right edge."""
+    from PySide6.QtCore import QPoint
+
+    editor.resize(1400, 900)
+    editor.show()
+    _APP.processEvents()
+    guide = editor.pattern_widget.step_guide
+    buttons = editor.pattern_widget.get_current_measure_widget().buttons[0]
+
+    def left(i):
+        return guide.mapFrom(guide.window(), buttons[i].mapTo(guide.window(), QPoint(0, 0))).x()
+
+    def right(i):
+        return left(i) + buttons[i].width() - 1
+
+    rows = {}
+    for x1, x2, y in guide.segments():
+        rows.setdefault(y, []).append((x1, x2))
+    threes, eights, fours = (rows[y] for y in sorted(rows))
+    assert threes == [(left(i), right(i + 2)) for i in (0, 3, 6, 9)]
+    assert eights == [(left(0), right(7)), (left(8), right(15))]
+    assert fours == [(left(i), right(i + 3)) for i in (0, 4, 8, 12)]

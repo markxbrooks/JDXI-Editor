@@ -16,6 +16,7 @@ from jdxi_editor.ui.editors.pattern.helper import (
     set_sequencer_style,
 )
 from jdxi_editor.ui.widgets.pattern.measure_strip import MeasureStrip
+from jdxi_editor.ui.widgets.pattern.step_guide import StepGuide
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi.pattern.measure import PatternMeasure
@@ -103,6 +104,9 @@ class PatternWidget(QWidget):
         self._rows_layout = QHBoxLayout()
         self._rows_layout.setSpacing(12)
         self._rows_layout.addLayout(self.sequencer_display, 1)
+        # The JD-Xi's step-length lines, above the first row of steps
+        self.step_guide = StepGuide(self._guide_buttons)
+        self._sequencer_right_layout.addWidget(self.step_guide)
         self._sequencer_right_layout.addLayout(self._rows_layout)
         self._sequencer_right_layout.addStretch()
 
@@ -110,6 +114,11 @@ class PatternWidget(QWidget):
         main_layout.addWidget(self._sequencer_right, 1)  # Main display
 
         self.setLayout(main_layout)
+
+    def _guide_buttons(self) -> list:
+        """The current measure's first row of steps, which the step guide lines up with."""
+        widget = self.get_current_measure_widget()
+        return widget.buttons[0] if widget is not None and widget.buttons else []
 
     def set_header_widget(self, widget: QWidget) -> None:
         """
@@ -530,6 +539,8 @@ class PatternWidget(QWidget):
             self.sequencer_display.addWidget(w)
             # Refresh all button styles so checked state matches visual (fixes load/switch)
             self._apply_sequencer_style(w)
+        if hasattr(self, "step_guide"):
+            self.step_guide.update()  # lines follow the measure shown
 
     def _apply_sequencer_style(self, widget: PatternMeasureWidget) -> None:
         """Apply sequencer button styling to all buttons in the measure widget."""

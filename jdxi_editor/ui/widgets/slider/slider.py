@@ -23,7 +23,7 @@ This module requires PySide6 to be installed.
 """
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPainter, QPen
+from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -34,6 +34,9 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.style import JDXiUIDimensions
+
+
+TICK_COLOR = "#3A3A3C"  # graduations: a dark grey, visible on the glossy panels without standing out
 
 
 class Slider(QWidget):
@@ -175,7 +178,8 @@ class Slider(QWidget):
         """Override paint event to draw center mark if needed"""
         super().paintEvent(event)
         painter = QPainter(self)
-        painter.setPen(QPen(Qt.GlobalColor.darkGray, 2))
+        painter.setPen(QPen(Qt.GlobalColor.darkGray, 2))  # centre mark: stays clear
+        tick_pen = QPen(QColor(TICK_COLOR), 2)  # graduations: quiet
         positions = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
         slider_rect = self.slider.geometry()
         if self.has_center_mark:
@@ -197,6 +201,7 @@ class Slider(QWidget):
         elif self.vertical:
             # draw tick mark lines perpendicular to the vertical slider
             if self.draw_tick_marks:
+                painter.setPen(tick_pen)
                 for position in positions:
                     painter.drawLine(
                         slider_rect.x(),
@@ -205,6 +210,7 @@ class Slider(QWidget):
                         slider_rect.y() + (position * slider_rect.height()),
                     )
         else:
+            painter.setPen(tick_pen)
             for position in positions:
                 painter.drawLine(
                     slider_rect.x() + position * slider_rect.width(),

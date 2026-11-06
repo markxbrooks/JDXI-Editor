@@ -172,3 +172,36 @@ def test_mixer_is_laid_out_like_a_kit(drum_editor):
     assert mixer.panel.property(SHEEN_PROPERTY)
     assert mixer.panel.isAncestorOf(mixer.title_label)
     assert all(mixer.panel.isAncestorOf(s) for s in mixer.mixer_sliders.values())
+
+
+def test_arpeggiator_controls_sit_on_a_glossy_panel():
+    """The Arpeggiator's switches, combos and sliders are on one glossy panel; no empty tab strip."""
+    from PySide6.QtWidgets import QComboBox, QGroupBox
+
+    from jdxi_editor.ui.editors.arpeggio.arpeggio import ArpeggioEditor
+    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+
+    editor = ArpeggioEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    try:
+        _APP.processEvents()  # sheen marking runs once the editor is built
+        combos = editor.findChildren(QComboBox)
+        panels = [g for g in editor.findChildren(QGroupBox) if g.property(SHEEN_PROPERTY)]
+        assert combos and any(all(p.isAncestorOf(c) for c in combos) for p in panels)
+        assert editor.editor_helper.get_tab_widget().isHidden()
+    finally:
+        editor.close()
+        editor.deleteLater()
+
+
+def test_program_mixer_sits_on_a_glossy_panel():
+    """The Program editor's Mixer Level Settings are a section on their own glossy panel."""
+    from jdxi_editor.ui.editors.program.editor import ProgramEditor
+    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+
+    editor = ProgramEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    try:
+        assert editor.mixer_panel.property(SHEEN_PROPERTY)
+        assert editor.mixer_panel.isAncestorOf(editor.mixer_widget.mixer_group)
+    finally:
+        editor.close()
+        editor.deleteLater()

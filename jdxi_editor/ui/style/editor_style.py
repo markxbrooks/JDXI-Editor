@@ -12,6 +12,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
+from jdxi_editor.ui.style.factory import generate_section_group_style
+
 
 @lru_cache(maxsize=None)
 def _icon_file(name: str, color: str, size: int = 12) -> str:
@@ -252,7 +254,7 @@ class AppEditorStyle:
         """
         Restrained editor chrome.
 
-        GroupBoxes use grey borders (never an accent top stripe).
+        GroupBoxes are JD-Xi sections: centred title over one rule, in the accent.
         ``accent`` tints focus/hover/checked only (e.g. Analog cyan).
         """
         focus = accent or cls.ACCENT
@@ -276,31 +278,12 @@ class AppEditorStyle:
         QAbstractItemView, QTextEdit, QPlainTextEdit, QMenu, QToolTip {{
             background-color: {cls.SURFACE};
         }}
+        /* Groups are sections printed on the panel, as on the JD-Xi: the
+           title centred in the section colour over one rule; no box */
+        {generate_section_group_style(focus)}
         QGroupBox {{
-            background: {GLOSS_GRADIENT};
-            border: 1px solid #000000;
-            border-top: 1px solid #3A3A3C;
-            border-radius: 4px;
-            margin-top: 10px;
-            padding: {cls.PANEL_PADDING}px;
             font-size: {cls.FONT_PANEL};
-            font-weight: 600;
             color: {cls.TEXT};
-        }}
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            left: 10px;
-            padding: 0 4px;
-            color: {cls.TEXT_SECONDARY};
-            font-size: {cls.FONT_PANEL};
-        }}
-        /* A group inside a panel is a section printed on it (as on the JD-Xi):
-           no black box of its own, just its title and a thin rule */
-        QGroupBox QGroupBox {{
-            background: transparent;
-            border: none;
-            border-top: 1px solid #2E2E30;
-            border-radius: 0;
         }}
         QLabel {{
             color: {cls.TEXT};
@@ -385,18 +368,20 @@ class AppEditorStyle:
             background: {GLOSS_GRADIENT};
         }}
         /* An editor's outermost panels: the Instrument window's glossy panel */
+        QGroupBox[{SHEEN_PROPERTY}="true"] {{
+            margin-top: 4px;  /* outer panels are untitled */
+            padding: {cls.PANEL_PADDING}px;
+        }}
         QGroupBox[{SHEEN_PROPERTY}="true"],
         QTabWidget[{SHEEN_PROPERTY}="true"]::pane {{
             background: transparent;
             border-width: {SHEEN_SLICE}px;
             border-image: url({_gloss_panel_file()}) {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} stretch stretch;
         }}
-        /* A widget marked flat (mark_flat) sits on the glossy panel
-           around it, and so do its groups. Marked explicitly: a descendant
-           selector would also match every editor, as all of them sit in the
-           main window's tabs. */
-        QTabWidget[{FLAT_PROPERTY}="true"]::pane,
-        QWidget[{FLAT_PROPERTY}="true"] QGroupBox {{
+        /* A tab stack marked flat (mark_flat) sits on the glossy panel
+           around it. Marked explicitly: a descendant selector would also
+           match every editor, as all of them sit in the main window's tabs. */
+        QTabWidget[{FLAT_PROPERTY}="true"]::pane {{
             background: transparent;
             border: none;
             border-top: 1px solid #2E2E30;

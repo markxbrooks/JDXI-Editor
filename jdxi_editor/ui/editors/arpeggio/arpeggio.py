@@ -71,6 +71,7 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
@@ -165,7 +166,12 @@ class ArpeggioEditor(BasicEditor):
         form_layout_widget = QWidget()
         form_layout = QFormLayout()
         form_layout_widget.setLayout(form_layout)
-        rows_layout.addWidget(form_layout_widget)
+        # The controls sit on one glossy black panel under the title panel;
+        # the helper's tab widget is not used here
+        rows_layout.addWidget(create_panel(form_layout_widget))
+        tab_widget = self.editor_helper.get_tab_widget()
+        if tab_widget is not None:
+            tab_widget.hide()
         # --- 3) add widgets
         widgets = arp_widgets.switches + arp_widgets.combos + arp_widgets.sliders
         for widget in widgets:

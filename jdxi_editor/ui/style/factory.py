@@ -41,6 +41,39 @@ from PySide6.QtWidgets import QPushButton
 FONT_FAMILY = "Segoe UI"
 
 
+SECTION_TITLE_SPACE = 22  # px above a section's rule, where its centred title sits
+
+
+def generate_section_group_style(color: str, font_family: str = FONT_FAMILY) -> str:
+    """
+    A group box drawn as a section of the JD-Xi panel: its title centred in
+    *color*, then one rule of the same colour across the top; no box.
+
+        ──────────── FILTER ────────────   (the JD-Xi prints the name above
+                                             the rule; so does this)
+    """
+    return f"""
+        QGroupBox {{
+            font-family: {font_family};
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            border-top: 1px solid {color};
+            border-radius: 0;
+            margin: 0;
+            margin-top: {SECTION_TITLE_SPACE}px;
+            padding: 6px 4px 4px 4px;
+        }}
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 0 6px 4px 6px;
+            color: {color};
+            background: transparent;
+        }}
+    """
+
+
 def generate_polyend_sequencer_button_style(
     self, is_checked: bool, is_current: bool = False
 ) -> str:
@@ -303,14 +336,7 @@ def generate_editor_style(
             font-size: {font_size};
             padding: 1px;
         }}
-               QGroupBox {{
-             font-family: {FONT_FAMILY};
-             width: 200px;
-             border: none;
-             border-top: 1px solid {accent};
-             margin: 1px;
-             padding: 1px;
-         }}
+        {generate_section_group_style(accent)}
         /* Groove (Track) */
         QSlider::groove:vertical {{
             font-family: {FONT_FAMILY};
@@ -396,15 +422,7 @@ def generate_editor_style(
             color: #ff1a1a;
         }}
 
-        QGroupBox {{
-            font-family: {font_family};
-            border: none;
-            border-top: 1px solid {accent};
-            border-radius: 3px;
-            margin-top: 1px;
-            width: 200px;
-            padding: {padding}px;
-        }}
+        {generate_section_group_style(accent, font_family)}
         
         QPushButton {{
             width: {box_width};
@@ -426,13 +444,6 @@ def generate_editor_style(
             border-color: {accent_hover};
         }}
 
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 1px;
-            color: {foreground};
-            font-weight: {font_weight};
-        }}
 
         QPushButton {{
             font-family: {font_family};
