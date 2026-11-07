@@ -29,8 +29,12 @@ class WidgetWriter:
 
     @classmethod
     def set_slider(cls, widget, display):
-        pass
+        """Show *display* on a slider (or any control with setValue) without emitting."""
+        widget.blockSignals(True)
+        widget.setValue(display)
+        widget.blockSignals(False)
 
     @classmethod
     def set_combo(cls, widget, value):
-        pass
+        """Select *value* (one of the combo's values, else an index) without emitting."""
+        cls.apply(widget, value, value)

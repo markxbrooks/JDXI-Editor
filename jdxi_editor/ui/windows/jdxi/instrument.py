@@ -74,6 +74,7 @@ from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
+from jdxi_editor.midi.playback.activity import DeviceRefresher
 from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
@@ -390,13 +391,18 @@ class JDXiInstrument(JDXiWindow):
 
     def _handle_program_change(self, bank_letter: str, program_number: int) -> None:
         """
-        perform data request
+        Re-read the program and tone names (debounced, and held back while a
+        MIDI file or pattern plays)
 
         :param bank_letter: str
         :param program_number: int
         :return: None
         """
-        self.data_request()
+        if getattr(self, "device_refresher", None) is None:
+            self.device_refresher = DeviceRefresher(
+                lambda: self.data_request(), parent=self
+            )
+        self.device_refresher.schedule()
 
     def register_editor(self, editor: "SynthEditor") -> None:
         """

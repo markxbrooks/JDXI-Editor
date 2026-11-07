@@ -43,7 +43,9 @@ from jdxi_editor.ui.editors.helpers.preset import (
     load_digital_cheat_preset_on_analog,
 )
 from jdxi_editor.ui.editors.playlist.progress import PlaylistProgressWidget
+from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.editors.helpers.widgets import (
+    create_panel,
     create_jdxi_button,
     create_jdxi_row,
 )
@@ -175,7 +177,10 @@ class PlaylistEditor(QWidget):
         # Now playing: song n of N, its progress and the playlist's
         self.playlist_progress = PlaylistProgressWidget()
         self.playlist_progress.song_clicked.connect(self._play_song)
-        layout.addWidget(self.playlist_progress)
+        # ... on a glossy black panel, like the other editors' displays
+        self.playlist_progress_panel = create_panel(self.playlist_progress)
+        mark_sheen(self.playlist_progress_panel)
+        layout.addWidget(self.playlist_progress_panel)
 
         # Create playlist programs table
         self.playlist_programs_table = QTableWidget()

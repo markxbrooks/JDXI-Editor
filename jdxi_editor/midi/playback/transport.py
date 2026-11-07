@@ -23,6 +23,7 @@ import mido
 from decologr import Decologr as log
 from PySide6.QtCore import QCoreApplication, QObject, Qt, QThread, QTimer, Signal
 
+from jdxi_editor.midi.playback.activity import playback_activity
 from picomidi.playback.engine import PlaybackEngine, TransportState
 
 SCHEDULER_INTERVAL_MS = 5
@@ -338,6 +339,7 @@ class TransportController(QObject):
         if self._loaded and self.engine.state != TransportState.STOPPED:
             self.stop()
         self._position_timer.stop()
+        playback_activity().set_playing(self, False)
         if self._scheduler is not None:
             self._scheduler.quit()
             self._scheduler.wait()
@@ -376,6 +378,7 @@ class TransportController(QObject):
             self._position_timer.stop()
         if self.engine.state != self._last_state:
             self._last_state = self.engine.state
+            playback_activity().set_playing(self, playing)
             self.state_changed.emit(self._last_state)
         self._emit_position()
 

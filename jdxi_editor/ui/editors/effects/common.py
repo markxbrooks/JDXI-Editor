@@ -952,6 +952,7 @@ class EffectsCommonEditor(BasicEditor):
             SliderSpec(DelayParam.DELAY_TIME_MS, "Time [ms]", vertical=False),
             SliderSpec(DelayParam.DELAY_TAP_TIME, "Tap Time [%]", vertical=False),
             SliderSpec(DelayParam.DELAY_FEEDBACK, "Feedback [%]", vertical=False),
+            SliderSpec(DelayParam.DELAY_EFFECT_LEVEL, "Effect Level", vertical=False),
         ]
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
@@ -1029,6 +1030,7 @@ class EffectsCommonEditor(BasicEditor):
         sliders = [
             SliderSpec(ReverbParam.REVERB_TIME, "Time", vertical=False),
             SliderSpec(ReverbParam.REVERB_LEVEL, "Level", vertical=False),
+            SliderSpec(ReverbParam.REVERB_EFFECT_LEVEL, "Effect Level", vertical=False),
         ]
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 

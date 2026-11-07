@@ -41,6 +41,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.playback.activity import DeviceRefresher
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.sections import SysExSection
@@ -114,6 +115,11 @@ class SynthEditor(SynthBase):
         # Use passed-in midi_helper so MIDI sending works (e.g. Analog editor); only create new if None
         if midi_helper is None:
             self.midi_helper = MidiIOHelper()
+        # Re-reads this editor's values after changes made on the JD-Xi
+        # (debounced, and held back while a MIDI file or pattern plays)
+        self.device_refresher = DeviceRefresher(
+            lambda: self.data_request(), self.isVisible, parent=self
+        )
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.midi_helper.midi_control_changed.connect(self._handle_control_change)
         self.cc_parameters = dict()
@@ -137,7 +143,6 @@ class SynthEditor(SynthBase):
                     title, synth_type
                 )
             )
-        self.midi_helper.midi_program_changed.connect(self.data_request)
         log.parameter(
             scope=self.__class__.__name__,
             message="Initialized:",
@@ -262,7 +267,7 @@ class SynthEditor(SynthBase):
                 "🎛️Effects Editor shown - requesting current settings from instrument",
                 scope="SynthEditor",
             )
-        self.data_request()
+        self.device_refresher.request_now()
 
     def get_controls_as_dict(self):
         """
@@ -620,7 +625,7 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Program change {program} detected on channel {channel}, requesting data update",
         )
-        # self.data_request() reducing midi flood
+        self.device_refresher.schedule()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
@@ -629,7 +634,7 @@ class SynthEditor(SynthBase):
             message=f"Control change {channel} {control} detected on channel {channel} with value {value}, ",
         )
         log.message(scope=self.__class__.__name__, message="requesting data update")
-        # self.data_request() reducing midi flood
+        self.device_refresher.schedule()
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""

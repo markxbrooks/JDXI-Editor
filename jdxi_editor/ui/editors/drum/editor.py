@@ -229,7 +229,7 @@ class DrumCommonEditor(SynthEditor):
         log.message(
             f"[DrumCommonEditor] Program change {program} detected on channel {channel}, requesting data update"
         )
-        self.data_request(channel, program)
+        self.device_refresher.schedule()
 
     def _setup_partial_editors(self):
         """
