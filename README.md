@@ -243,8 +243,18 @@ python3 -m building.buildsys --pkg
 
 Linux .deb or .Appimage
 ```commandline
-python3 -m building.buildsys --dpkg
+python3 -m building.buildsys # builds both with no flag
 ```
+
+Windows 
+```commandline
+python -m building.buildsys
+```
+or ]
+```
+.\building\scripts\build.ps1
+```
+
 
 
 ## 🙏 Credits
