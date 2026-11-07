@@ -53,8 +53,10 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     set_sf2_path,
     set_use_soundfont_list,
 )
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.layout.helper import add_round_button_from_spec
 from jdxi_editor.ui.style import JDXiUIDimensions
+from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.helpers.port import (
     filter_excluded_ports,
@@ -160,7 +162,12 @@ class MIDIConfigDialog(QDialog):
 
     def _create_ui(self):
         """Create the dialog UI"""
-        layout = QVBoxLayout(self)
+        # Everything sits on one glossy black panel (its groups sections on it)
+        outer_layout = QVBoxLayout(self)
+        self.panel = create_panel()
+        mark_sheen(self.panel)
+        outer_layout.addWidget(self.panel)
+        layout = self.panel.layout()
 
         # Input port selection
         input_group = QGroupBox("MIDI Input")

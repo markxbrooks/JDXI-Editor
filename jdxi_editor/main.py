@@ -34,6 +34,7 @@ from PySide6.QtGui import QColor, QIcon, QPixmap, Qt
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
+    QHBoxLayout,
     QLabel,
     QProgressBar,
     QSplashScreen,
@@ -192,6 +193,7 @@ def setup_splash_screen(
         QLabel#SubtitleLabel { color: #bbbbbb; font-size: 14px; }
         QLabel#StatusLabel { color: #88ccff; font-size: 18px; font-style: italic; font-weight: 500; }
         QLabel#CreditLabel { color: #888888; font-size: 10px; }
+        QLabel#NoticeLabel { color: #d06a10; font-size: 11px; }
         QFrame#Card { 
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1c1c1c, stop:1 #0f0f0f);
             border-radius: 14px; border: 1px solid #2a2a2a; 
@@ -207,18 +209,18 @@ def setup_splash_screen(
     )
 
     root = QVBoxLayout(splash)
-    root.setContentsMargins(28, 28, 28, 28)
-    root.setSpacing(16)
+    root.setContentsMargins(20, 20, 20, 20)
+    root.setSpacing(10)
 
     # --- Content container (so we can overlay the title on top)
     content = QFrame()
     content.setObjectName("Card")
     content_layout = QVBoxLayout(content)
     content_layout.setContentsMargins(0, 0, 0, 0)
-    content_layout.setSpacing(16)
+    content_layout.setSpacing(10)
 
-    # --- Splash image (full size)
-    image_path = resource_path((Path("resources") / "splash_screen_540_850v5.png"))
+    # --- Logo on the left; title and trademark notice on the right
+    image_path = resource_path((Path("resources") / "JDXI-Editor_logo_640.png"))
     pixmap = QPixmap(image_path)
     if not pixmap.isNull():
         pixmap = pixmap.scaled(
@@ -228,13 +230,41 @@ def setup_splash_screen(
             Qt.SmoothTransformation,
         )
     logo = create_icon_label_with_pixmap(pixmap)
-    content_layout.addWidget(logo)
+
+    title = DigitalTitle(__program__, show_upper_text=False)
+    title.setObjectName("TitleLabel")
+    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
+
+    notice = QLabel(
+        "'Roland' and 'JD-Xi' are trademarks of the Roland Corporation "
+        "in the United States and/or other countries.\n\n"
+        "This app is an independent, unofficial companion tool for the "
+        "Roland JD-Xi synthesizer. It is not affiliated with, endorsed by, "
+        "or sponsored by Roland Corporation in any way.\n\n"
+        "All product names, trademarks, and logos are the property of "
+        "their respective owners."
+    )
+    notice.setObjectName("NoticeLabel")
+    notice.setWordWrap(True)
+
+    side_layout = QVBoxLayout()
+    side_layout.setContentsMargins(0, 12, 12, 0)
+    side_layout.setSpacing(16)
+    side_layout.addWidget(title)
+    side_layout.addWidget(notice)
+    side_layout.addStretch()
+
+    header_layout = QHBoxLayout()
+    header_layout.setSpacing(16)
+    header_layout.addWidget(logo)
+    header_layout.addLayout(side_layout, 1)
+    content_layout.addLayout(header_layout)
 
     # --- Progress bar
     progress_bar = QProgressBar()
     progress_bar.setRange(0, 100)
     progress_bar.setValue(0)
-    progress_bar.setFixedWidth(JDXiUIDimensions.SPLASH.WIDTH - 56)
+    progress_bar.setFixedWidth(JDXiUIDimensions.SPLASH.WIDTH - 40)
     progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
     progress_row = create_layout_with_items([progress_bar])
     content_layout.addLayout(progress_row)
@@ -254,14 +284,6 @@ def setup_splash_screen(
     content_layout.addWidget(credits)
 
     root.addWidget(content)
-
-    # --- Digital Title overlay at top left (on top of content)
-    title = DigitalTitle(__program__, show_upper_text=False)
-    title.setObjectName("TitleLabel")
-    title.setStyleSheet(JDXi.UI.Style.INSTRUMENT_TITLE_LABEL)
-    title.setParent(splash)
-    title.setGeometry(48, 48, 400, 44)
-    title.raise_()
 
     splash.show()
     splash.raise_()
