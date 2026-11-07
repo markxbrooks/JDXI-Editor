@@ -2,6 +2,23 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [0.9.8] — 2026-11
+
+### Refreshed UI (UI_CRITIQUE)
+
+- **AppEditorStyle**: Shared restrained editor chrome (grey idle borders, soft sliders; accent only for focus/active) used app-wide via `Theme.apply_editor_style`
+- **MidiPlayerStyle / PatternEditorStyle**: Subclass the shared chrome; muted timeline colours, two-line track headers, bar/beat ruler
+- **Identity tokens**: Metallic red `#A71920`, illuminated accent `#E04435`, LCD orange `#FF6A00` in `AppEditorStyle` and `JDXiUIStyle`
+- **Signature LCD**: `DigitalDisplay` / `DigitalTitle` JD-Xi-style panel; optional `BANK msb/lsb · PC n` line wired from tone selection
+- **Tabs**: Underline selection (metallic red / Analog cyan) instead of full red box borders; main editor and section `TAB_TITLE` aligned
+- **Preset workspace**: Top-aligned Digital/Analog/Drum preset + instrument image row; frameless instrument overview (no heavy inset card)
+- **Selection / MIDI wire**: Slim `MidiWireInfo` (channel, bank, program); `MidiSelectionInfoBar` syncs LCD detail on preset change
+- **Drum partial SysEx**: Pass `address` + `send_midi_parameter` into Pitch Env, Partial, Output, TVF, and TVA sections (fixes failed sends such as `PITCH_ENV_TIME_4_VELOCITY_SENS`); harden QWidget parent address lookup
+
+# [0.9.7] — 2026-06
+
+Interim release between Effects/Vocal/Pattern work (0.9.6) and the UI refresh (0.9.8).
+
 # [0.9.6] — 2026-03
 
 ### Arpeggiator SysEx Sync

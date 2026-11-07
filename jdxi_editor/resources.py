@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 
 _PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+# An installed wheel carries resources/ inside the package (see hatch_build.py)
+_INSTALLED_BUNDLE = Path(__file__).resolve().parent / "_bundle"
 
 
 def _macos_app_resources_dir() -> Path | None:
@@ -47,6 +49,9 @@ def _resource_base_path() -> str:
         for candidate in (exe_dir / "Resources", exe_dir):
             if (candidate / "resources").is_dir():
                 return str(candidate)
+
+    if (_INSTALLED_BUNDLE / "resources").is_dir():
+        return str(_INSTALLED_BUNDLE)
 
     return str(_PACKAGE_ROOT)
 

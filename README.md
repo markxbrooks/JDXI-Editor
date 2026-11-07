@@ -1,6 +1,6 @@
 # JDXi-Editor
 
-![Roland JD-Xi Cartoon](./resources/JDXI-Editor_logo_640.png)
+![Roland JD-Xi Cartoon](https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/JDXI-Editor_logo_640.png)
 
 **JDXi-Editor**: The missing MIDI editor for the **Roland JD-Xi synthesizer**
 
@@ -32,8 +32,8 @@ Designed for musicians, sound designers, and MIDI enthusiasts looking to unlock 
 
 ### 🖥️ 'Keyboard Window' Screenshot
 
-<a href="./resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
-  <img src="./resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
 </a>
 
 ---
@@ -72,14 +72,25 @@ There is a new build for Linux. See the [releases page](https://github.com/markx
 
 
 ### Python 🐍
-If you're a Python programmer, you may wish to run the program from a Python environment:
+JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
+
+```bash
+$ python -m venv jdxi-env
+$ source jdxi-env/bin/activate        # Windows: jdxi-env\Scripts\activate
+$ python -m pip install jdxi_manager
+$ jdxi-editor
+```
+
+PyAudio needs the PortAudio library: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`, before the `pip install`. The FluidSynth player needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`).
+
+To run from a checkout instead (for development):
 
 ```bash
 $ git clone https://github.com/markxbrooks/JDXI-Editor.git
 $ cd JDXI-Editor
 $ python -m venv venv
 $ source venv/bin/activate
-$ python -m pip install -r requirements.txt
+$ python -m pip install -e ".[dev]"
 $ python -m jdxi_editor.main
 ```
 
@@ -87,7 +98,7 @@ $ python -m jdxi_editor.main
 
 ## Features and Usage
 
-See **[Features and Usage](doc/features-and-usage.md)** for:
+See **[Features and Usage](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/features-and-usage.md)** for:
 
 - **Recent changes** — Arpeggiator SysEx sync, Effects Editor, Vocal Effects
 - **Patch loading and saving** — .jsz, .msz, .json, .syx formats; save/load flow
@@ -104,49 +115,49 @@ https://markxbrooks.github.io/JDXI-Editor/
 
 
 **Program Editor**  
-<a href="./resources/program_editor.gif">
-  <img src="./resources/program_editor_600.gif" alt="Program Editor" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/program_editor.gif">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/program_editor_600.gif" alt="Program Editor" />
 </a>
 
 &nbsp;
 
 **Analog & Digital Synths**  
-<a href="./resources/analog_synth.gif">
-  <img src="./resources/analog_synth_600.gif" alt="Analog Synth" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/analog_synth.gif">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/analog_synth_600.gif" alt="Analog Synth" />
 </a>
 
 &nbsp;
 
-<a href="./resources/digital_synth.png">
-  <img src="./resources/digital_synth_600.png" alt="Digital Synth" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/digital_synth.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/digital_synth_600.png" alt="Digital Synth" />
 </a>
 
 &nbsp;
 
 **Drum Editor**  
-<a href="./resources/drum_editor.gif">
-  <img src="./resources/drum_editor_600.gif" alt="Drum Editor" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/drum_editor.gif">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/drum_editor_600.gif" alt="Drum Editor" />
 </a>
 
 &nbsp;
 
 **Midi File Player**  
-<a href="./resources/midi_player.gif">
-  <img src="./resources/midi_player_600.gif" alt="Midi File Player" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/midi_player.gif">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/midi_player_600.gif" alt="Midi File Player" />
 </a>
 
 &nbsp;
 
 **Pattern Sequencer**  
-<a href="./resources/pattern.gif">
-  <img src="./resources/pattern_600.gif" alt="Pattern Sequencer" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/pattern.gif">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/pattern_600.gif" alt="Pattern Sequencer" />
 </a>
 
 &nbsp;
 
 **Effects and Arpeggiator**  
-<a href="./resources/effects.png">
-  <img src="./resources/effects_600.png" alt="Effects and Arpeggiator" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/effects.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/effects_600.png" alt="Effects and Arpeggiator" />
 </a>
 
 

@@ -64,7 +64,7 @@ def load_translations(app: QApplication) -> bool:
     base_name = f"jdxi_editor_{locale_name}"
     for search_dir in (
         Path(__file__).parent / "i18n",
-        Path(__file__).parent / "resources" / "translations",
+        Path(resource_path(os.path.join("resources", "translations"))),
         Path(__file__).parent.parent / "i18n",
     ):
         qm_path = search_dir / f"{base_name}.qm"
@@ -112,10 +112,8 @@ def main() -> None:
 
         # --- Set application icon
         icon_locations = [
-            Path(__file__).parent / "resources" / "jdxi_icon.png",  # Package location
-            Path(__file__).parent.parent
-            / "resources"
-            / "jdxi_icon.png",  # Development location
+            # Installed package, app bundle or repository checkout
+            Path(resource_path(os.path.join("resources", "jdxi_icon.png"))),
         ]
 
         icon_found = False
