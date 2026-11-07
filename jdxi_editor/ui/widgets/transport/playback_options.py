@@ -86,6 +86,16 @@ class PlaybackOptionsWidget(JDXiMidiGroup):
                 name="loop_clear",
                 text="Clear",
             ),
+            "trim": TransportSpec(
+                label="Trim",
+                icon="mdi.content-cut",
+                tooltip="Keep only part of the file (the A–B range, if set); "
+                "right-click a track to trim just that track",
+                slot=self.parent.midi_trim_file,
+                checkable=False,
+                name="trim",
+                text="Trim",
+            ),
         }
 
     def _build_group(self) -> QGroupBox:

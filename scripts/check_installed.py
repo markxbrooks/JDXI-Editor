@@ -1,5 +1,5 @@
 """
-Check an installed jdxi_manager package (run from outside the repository).
+Check an installed JDXI-Editor package (run from outside the repository).
 
     python scripts/check_installed.py
 

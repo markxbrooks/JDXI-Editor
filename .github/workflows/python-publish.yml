@@ -1,4 +1,4 @@
-# Publish jdxi_manager to PyPI when a GitHub release is published, or to
+# Publish JDXI-Editor to PyPI when a GitHub release is published, or to
 # TestPyPI when run by hand (Actions > Upload Python Package > Run workflow).
 #
 # Uploads use trusted publishing (no API token in the repository). Set it up
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/jdxi_manager
+      url: https://test.pypi.org/p/JDXI-Editor
     permissions:
       id-token: write  # trusted publishing
     steps:
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/jdxi_manager
+      url: https://pypi.org/p/JDXI-Editor
     permissions:
       id-token: write  # trusted publishing
     steps:

@@ -2,6 +2,9 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [0.9.9] — 2026-11
+Bumping version for PyPi
+
 # [0.9.8] — 2026-11
 
 ### Refreshed UI (UI_CRITIQUE)

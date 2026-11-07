@@ -4,7 +4,7 @@ requires = ["hatchling", "Pillow"]
 build-backend = "hatchling.build"
 
 [project]
-name = "jdxi_manager"
+name = "JDXI-Editor"
 dynamic = ["version"]  # from jdxi_editor/project.py (__version__), the one the app shows
 description = "A MIDI manager and editor for the Roland JD-Xi synthesizer"
 readme = "README.md"

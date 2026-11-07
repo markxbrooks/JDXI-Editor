@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.file.trim import trim_midi_file, trim_track
 from jdxi_editor.midi.data.address.address import (
     JDXiSysExAddress,
     JDXiSysExAddressStartMSB,
@@ -43,6 +44,7 @@ from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.style.editor_style import mark_editor_body
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.midi.bank import Bank
+from jdxi_editor.ui.dialogs.trim import TrimDialog
 from jdxi_editor.ui.dialogs.program_change import (
     ProgramChangeDialog,
     ProgramChangeSelection,
@@ -190,6 +192,7 @@ class MidiFilePlayer(SynthEditor):
         track_viewer.mute_changed.connect(self._sync_transport_settings)
         track_viewer.track_velocity_changed.connect(self._sync_transport_settings)
         track_viewer.file_changed.connect(self._on_track_viewer_file_changed)
+        track_viewer.trim_track_requested.connect(self.midi_trim_track)
         track_viewer.ruler.seek_requested.connect(self.transport_controller.seek_seconds)
         track_viewer.ruler.marker_moved.connect(self._move_program_change)
         track_viewer.ruler.marker_delete_requested.connect(self._delete_program_change)
@@ -1616,6 +1619,75 @@ class MidiFilePlayer(SynthEditor):
         else:
             self._loop_points = (a, b)
             self.playback_options.set_loop_points(a, b)
+
+    # --- Trim ---------------------------------------------------------------
+
+    def _ask_trim_range(self, title: str, description: str) -> Optional[tuple[int, int]]:
+        """
+        Ask for the range to keep, starting from the A–B range (else the whole
+        file); (start, end) in ticks, or None if cancelled.
+        """
+        duration = self.transport_controller.duration_seconds
+        a, b = self._loop_points
+        start, end = (a, b) if a is not None and b is not None else (0.0, duration)
+        dialog = TrimDialog(
+            title=title,
+            description=description,
+            start=start,
+            end=end,
+            duration=duration,
+            bar_beat=self.transport_controller.bar_beat_at_seconds,
+            playhead=lambda: self._snap_to_bar(self.transport_controller.position_seconds),
+            parent=self,
+        )
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return None
+        start, end = dialog.range_seconds()
+        return (
+            self.playback_engine.seconds_to_tick(start),
+            self.playback_engine.seconds_to_tick(end),
+        )
+
+    def midi_trim_file(self, *_args) -> None:
+        """Trim button: keep only part of the file, moved to the start."""
+        if not self.is_midi_ready():
+            return
+        ticks = self._ask_trim_range(
+            "Trim MIDI File",
+            "Keep only this part of every track; it then starts at 0:00. "
+            "The tempo, programs and controllers in force at the start are kept. "
+            "The file on disk changes only when you save.",
+        )
+        if ticks is None:
+            return
+        trimmed = trim_midi_file(self.midi_state.file, *ticks)
+        self.midi_playback_stop()
+        # The A–B range and the playback position refer to the old timing
+        self.midi_loop_clear()
+        self.midi_file.midi_track_viewer.set_midi_file(trimmed, keep_track_state=True)
+        self.transport_controller.seek_seconds(0.0)
+        log.message(f"Trimmed the MIDI file to ticks {ticks[0]}–{ticks[1]}")
+
+    def midi_trim_track(self, track_index: int) -> None:
+        """Trim Track… (track menu): remove the track's notes outside a range."""
+        if not self.is_midi_ready() or not (
+            0 <= track_index < len(self.midi_state.file.tracks)
+        ):
+            return
+        track = self.midi_state.file.tracks[track_index]
+        name = track.name or f"Track {track_index + 1}"
+        ticks = self._ask_trim_range(
+            f"Trim {name}",
+            f"Remove the notes of '{name}' outside this range. The track keeps "
+            "its timing, so it stays in step with the others. "
+            "The file on disk changes only when you save.",
+        )
+        if ticks is None:
+            return
+        self.midi_file.midi_track_viewer.replace_track(
+            track_index, trim_track(track, *ticks)
+        )
+        log.message(f"Trimmed track {track_index + 1} ({name}) to ticks {ticks[0]}–{ticks[1]}")
 
     def midi_loop_clear(self, *_args) -> None:
         """Forget the A–B range so Loop repeats the whole song."""

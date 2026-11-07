@@ -77,7 +77,7 @@ JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environme
 ```bash
 $ python -m venv jdxi-env
 $ source jdxi-env/bin/activate        # Windows: jdxi-env\Scripts\activate
-$ python -m pip install jdxi_manager
+$ python -m pip install JDXI-Editor
 $ jdxi-editor
 ```
 
@@ -224,6 +224,21 @@ Project root: /home/brooks/PycharmProjects/JDXI-Editor
                     INFO                        ℹ️                                                                                                                                                                          
                              📦 Building with PyInstaller...                                                                                                                                                               
                     INFO                        ℹ️   This may take a few minutes... 
+```
+
+Mac .dmg package
+```commandline
+python3 -m building.buildsys --dmg
+```
+
+Mac .app
+```commandline
+python3 -m building.buildsys --app
+```
+
+Mac .pkg
+```commandline
+python3 -m building.buildsys --pkg
 ```
 
 

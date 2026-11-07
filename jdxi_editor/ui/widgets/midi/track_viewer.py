@@ -41,6 +41,7 @@ class MidiTrackViewer(QWidget):
     mute_changed = Signal()  # track/channel mute or solo state changed
     track_velocity_changed = Signal()  # a track's velocity scale changed
     file_changed = Signal(object)  # the viewer now shows this mido.MidiFile
+    trim_track_requested = Signal(int)  # Trim Track… chosen for this track
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -553,10 +554,13 @@ class MidiTrackViewer(QWidget):
             return
         menu = QMenu(self)
         clone_action = menu.addAction("Clone Track")
+        trim_action = menu.addAction("Trim Track…")
         delete_action = menu.addAction("Delete Track…")
         chosen = menu.exec(global_pos)
         if chosen is clone_action:
             self.clone_track(track_index)
+        elif chosen is trim_action:
+            self.trim_track_requested.emit(track_index)
         elif chosen is delete_action:
             self.delete_track(track_index)
 
@@ -632,6 +636,12 @@ class MidiTrackViewer(QWidget):
             raise IndexError("Invalid track index")
         track = mido.MidiTrack(msg.copy() for msg in self.midi_file.tracks[track_index])
         self.set_track_name(track, new_name)
+        self._update_tracks_in_place({track_index: track})
+
+    def replace_track(self, track_index: int, track: mido.MidiTrack) -> None:
+        """Show *track* in place of track *track_index* (an edit of that track)."""
+        if not (0 <= track_index < len(self.midi_file.tracks)):
+            raise IndexError("Invalid track index")
         self._update_tracks_in_place({track_index: track})
 
     def _update_tracks_in_place(self, changed: dict[int, mido.MidiTrack]) -> None:
