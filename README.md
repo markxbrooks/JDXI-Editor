@@ -241,6 +241,11 @@ Mac .pkg
 python3 -m building.buildsys --pkg
 ```
 
+Linux .deb or .Appimage
+```commandline
+python3 -m building.buildsys --dpkg
+```
+
 
 ## 🙏 Credits
 
