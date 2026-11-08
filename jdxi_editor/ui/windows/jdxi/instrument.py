@@ -709,7 +709,9 @@ class JDXiInstrument(JDXiWindow):
         self.main_editor.hide()
         self.main_editor.setUpdatesEnabled(False)
         self.main_editor.blockSignals(True)
-        self.editors = [
+        # Editor types opened at startup, in tab order. Not self.editors: that
+        # holds the editor objects register_editor() adds while these open
+        startup_editors = [
             "program",
             "digital1",
             "digital2",
@@ -717,9 +719,12 @@ class JDXiInstrument(JDXiWindow):
             "drums",
             "arpeggio",
             "effects",
+            "vocal_fx",
+            "pattern",
+            "midi_player",
         ]
-        for editor in self.editors:
-            self.show_editor(editor)
+        for editor_type in startup_editors:
+            self.show_editor(editor_type)
         self.main_editor.editor_tab_widget.setCurrentIndex(0)
         self.main_editor.blockSignals(False)
         self.main_editor.setUpdatesEnabled(True)
