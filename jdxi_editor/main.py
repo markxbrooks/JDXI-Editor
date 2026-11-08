@@ -36,7 +36,6 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
-    QProgressBar,
     QSplashScreen,
     QVBoxLayout,
 )
@@ -47,10 +46,8 @@ from jdxi_editor.project import __organization_name__, __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
-from jdxi_editor.ui.widgets.editor.helper import (
-    create_icon_label_with_pixmap,
-    create_layout_with_items,
-)
+from jdxi_editor.ui.widgets.indicator.startup_sequencer import StartupSequencer
+from jdxi_editor.ui.widgets.editor.helper import create_icon_label_with_pixmap
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 from jdxi_editor.utils.profiling_decorator import profiling_decorator
 
@@ -150,7 +147,9 @@ def main() -> None:
             splash=splash, progress_bar=progress_bar, status_label=status_label
         )
 
-        # --- Finalize splash screen
+        # --- Finalize splash screen (every step lit)
+        progress_bar.setValue(100)
+        app.processEvents()
         splash.finish(window)
         window.show()
 
@@ -164,7 +163,7 @@ def main() -> None:
 
 def setup_splash_screen(
     app: QApplication,
-) -> tuple[QSplashScreen, QProgressBar, DigitalTitle]:
+) -> tuple[QSplashScreen, StartupSequencer, DigitalTitle]:
     """Setup and digital a professional application splash screen with rotating status text.
 
     Returns:
@@ -198,13 +197,7 @@ def setup_splash_screen(
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1c1c1c, stop:1 #0f0f0f);
             border-radius: 14px; border: 1px solid #2a2a2a; 
         }
-        QProgressBar { 
-            background: #2a2a2a; border-radius: 6px; height: 14px; text-align: center; color: #cccccc; font-size: 10px;
-        }
-        QProgressBar::chunk {
-            border-radius: 6px;
-            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #7ac1ff, stop:1 #3b8fe8);
-        }
+        QFrame#StartupSequencer { background: transparent; }
     """
     )
 
@@ -260,14 +253,9 @@ def setup_splash_screen(
     header_layout.addLayout(side_layout, 1)
     content_layout.addLayout(header_layout)
 
-    # --- Progress bar
-    progress_bar = QProgressBar()
-    progress_bar.setRange(0, 100)
-    progress_bar.setValue(0)
-    progress_bar.setFixedWidth(JDXiUIDimensions.SPLASH.WIDTH - 40)
-    progress_bar.setStyleSheet(JDXi.UI.Style.PROGRESS_BAR)
-    progress_row = create_layout_with_items([progress_bar])
-    content_layout.addLayout(progress_row)
+    # --- 16 step startup sequencer
+    progress_bar = StartupSequencer()  # fills the card's width
+    content_layout.addWidget(progress_bar)
 
     # --- Rotating status label
     status_label = DigitalTitle("Starting...")
