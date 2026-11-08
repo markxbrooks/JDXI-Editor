@@ -16,7 +16,9 @@ Images (doc/images/ for the Sphinx docs, resources/ for the READMEs, where
 "_600"/"_200" copies are the thumbnails linked to the full-size image):
     jdxi-digital-synth1.png  digital_synth.png   (+ _600)
     jdxi-analog-synth.png    analog_synth.png    (+ _600)
-    jdxi-drum-kit.png
+    (README only)            program_editor.png  (+ _600)
+    jdxi-drum-kit.png        drum_editor.png     (+ _600)
+    (README only)            arpeggiator.png     (+ _600)
     jdxi-effects.png         effects.png         (+ _600)
     jdxi-vocal-effects.png   vocal_effects.png   (+ _600)
     jdxi-pattern-sequencer.png  pattern.png      (+ _600)
@@ -37,11 +39,13 @@ SCALE = "2"
 WINDOW_SIZE = (1400, 780)  # logical pixels of the editor window
 MIDI_CONFIG_SIZE = (520, 0)  # width; height from the dialog's content
 
-# editor type -> (doc/images name, resources name or None)
+# editor type -> (doc/images name or None, resources name or None)
 EDITOR_SHOTS = {
+    "program": (None, "program_editor.png"),
     "digital1": ("jdxi-digital-synth1.png", "digital_synth.png"),
     "analog": ("jdxi-analog-synth.png", "analog_synth.png"),
-    "drums": ("jdxi-drum-kit.png", None),
+    "drums": ("jdxi-drum-kit.png", "drum_editor.png"),
+    "arpeggio": (None, "arpeggiator.png"),
     "effects": ("jdxi-effects.png", "effects.png"),
     "vocal_fx": ("jdxi-vocal-effects.png", "vocal_effects.png"),
     "pattern": ("jdxi-pattern-sequencer.png", "pattern.png"),
@@ -80,6 +84,12 @@ def readme_name_for(doc_name: str) -> str:
     return f"readme-{doc_name}"
 
 
+def capture_name(names: tuple) -> str:
+    """The capture's file name: the doc image's, else the README image's."""
+    doc_name, readme_name = names
+    return doc_name or readme_name
+
+
 def capture(out_dir: Path) -> list[Path]:
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     os.environ["QT_SCALE_FACTOR"] = SCALE
@@ -107,7 +117,8 @@ def capture(out_dir: Path) -> list[Path]:
 
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
-    for editor_type, (doc_name, _readme_name) in EDITOR_SHOTS.items():
+    for editor_type, names in EDITOR_SHOTS.items():
+        doc_name = capture_name(names)
         window.show_editor(editor_type)
         _settle(app)
         path = out_dir / doc_name
@@ -151,11 +162,12 @@ def install(shots: Path) -> None:
     doc_images = ROOT / "doc" / "images"
     resources = ROOT / "resources"
     for editor_type, (doc_name, readme_name) in EDITOR_SHOTS.items():
-        source = shots / doc_name
-        shutil.copyfile(source, doc_images / doc_name)
-        print(f"updated doc/images/{doc_name}")
+        source = shots / capture_name((doc_name, readme_name))
+        if doc_name:
+            shutil.copyfile(source, doc_images / doc_name)
+            print(f"updated doc/images/{doc_name}")
         if readme_name:
-            readme_source = shots / readme_name_for(doc_name)
+            readme_source = shots / readme_name_for(source.name)
             if editor_type not in README_TABS or not readme_source.exists():
                 readme_source = source
             _install_readme_image(readme_source, resources, readme_name, Image)
