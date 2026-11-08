@@ -189,7 +189,7 @@ class BaseFilterSection(SectionBaseWidget):
         self.tab_widget = QTabWidget()
         self._create_tabs()
         JDXi.UI.Theme.apply_tabs_style(widget=self.tab_widget, analog=self.analog)
-        JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(widget=self.tab_widget, analog=self.analog, body=False)
 
     def _create_tabs(self):
         for feature, builder_name in self.spec.feature_tabs.items():
@@ -273,8 +273,27 @@ class BaseFilterSection(SectionBaseWidget):
                     scope=self.__class__.__name__,
                     message=f"Set filter_widget.setEnabled({enabled})",
                 )
+            # Incoming SysEx (FILTER_MODE_SWITCH) comes here, not through the
+            # mode buttons: the chart must follow, or it stays in bypass
+            # (drawing off) while the sliders are enabled
+            self._sync_filter_plot(value, enabled)
         except Exception as ex:
             log.error(f"Error {ex} occurred updating controls")
+
+    def _sync_filter_plot(self, value, enabled: bool) -> None:
+        """Show filter mode *value* (MIDI value or mode enum) on the filter chart."""
+        widget = getattr(self, "filter_widget", None)
+        plot = getattr(widget, "plot", None)
+        if plot is None:
+            return
+        # FILTER_MODE_ENABLED_MAP lists every mode (Digital: 8); the
+        # definition's midi_to_mode may only list bypass and LPF
+        mode = (self.FILTER_MODE_ENABLED_MAP or {}).get(
+            int(value)
+        ) or self.defn.midi_to_mode.get(int(value), self.defn.bypass_mode)
+        widget.filter_mode = mode.name.lower()
+        plot.enabled = enabled
+        plot.set_filter_mode(mode.name)  # redraws
 
     def _on_button_selected(self, button_param):
         """Override to update filter mode in FilterWidget plot and enable/disable Controls sliders and ADSR"""

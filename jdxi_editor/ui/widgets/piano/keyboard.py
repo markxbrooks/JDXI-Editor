@@ -52,9 +52,10 @@ class PianoKeyboard(QWidget):
 
         # Set keyboard dimensions
         self.white_key_width = 35
-        self.white_key_height = 160
+        # The keyboard is about 43 % of the JD-Xi's depth (InstrumentDimensions)
+        self.white_key_height = 145
         self.black_key_width = int(self.white_key_width * 0.6)
-        self.black_key_height = 100
+        self.black_key_height = 90  # ~62 % of a white key, as on the JD-Xi
 
         # Define note patterns
         self.white_notes = KEYBOARD_WHITE_NOTES

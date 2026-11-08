@@ -226,6 +226,8 @@ class DrumPartialParam(AddressParameter):
         0x15,
         0,
         1,
+        0,
+        1,
         "Partial Env Mode: When a loop waveform is selected, the sound will normally continue as long as the key is pressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\nMEMO\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to“SUSTAIN.” NO-SUS, SUSTAIN",
     )  # NO-SUS, SUSTAIN
 
@@ -804,7 +806,7 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         -64,
-        64,
+        63,
         "Sets the pan for the drum partial. “L64” is far left, “0” is center, and “63R” is far right.\nMEMO\nUse the Wave Pan parameter (p. 21 f the Manual) to specify the panning of the waveforms that make up\nthe drum partial.",
     )  # L64 - 63R
 
@@ -998,8 +1000,8 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         -64,
-        64,
-        "Pan\nLeft: -64, Center: 0, Right: +64",
+        63,
+        "Pan\nLeft: -64, Center: 0, Right: +63",
     )  # L64 - 63R
 
     # WMT4 Wave Random Pan Switch
@@ -1246,7 +1248,7 @@ class DrumPartialParam(AddressParameter):
 
     # TVF Env Velocity Sens
     TVF_ENV_VELOCITY_SENS = ParameterSpec(
-        0x137,
+        0x12A,
         *RANGE_BIPOLAR_63,
         description="Sets the sensitivity of the envelope to velocity. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -63 - +63
@@ -1452,17 +1454,10 @@ class DrumPartialParam(AddressParameter):
         0,
         127,
         -64,
-        64,
+        63,
         "Sets the relative level of the drum partial. Higher settings result in a more dramatic effect, while lower settings result in a more subtle effect.",
     )  # -64 - +63
 
-    DRUM_PART = ParameterSpec(
-        0x70, 1, 5, 1, 5, "Sets the drum partial. 1 - 5"
-    )  # Hack alert @@
-
-    DRUM_GROUP = ParameterSpec(
-        0x2F, 1, 5, 1, 5, "Sets the drum group. 1 - 5"
-    )  # Hack alert @@
 
     @property
     def display_name(self) -> str:

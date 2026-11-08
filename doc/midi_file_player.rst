@@ -21,7 +21,7 @@ Core Features
    - **Detect Drums**: Identifies drum tracks and assigns them to MIDI Channel 10
    - **Classify Tracks**: Classifies non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)
    - **Apply Presets**: Applies channel presets for JD-Xi part routing
-   - **Apply All Track Changes**: Applies all track changes (channel assignments, etc.) to the loaded file
+   - Track names and channels edited in the track list apply immediately
 
 **Channel Assignment**
    - Channels 1, 2, 3 map to Digital 1, Digital 2, Analog
@@ -46,10 +46,10 @@ Workflow
 ========
 
 1. **Load a MIDI file**: File → Open… or drag-and-drop
-2. **Classify tracks** (optional): Use **Detect Drums** and **Classify Tracks** to auto-assign channels
-3. **Apply changes**: Use **Apply All Track Changes** or **Apply Presets** to apply channel assignments
-4. **Play**: Start playback; audio goes to JD-Xi or FluidSynth
-5. **Edit in Pattern Editor** (optional): Use **Load into Pattern Editor** to edit the file in the Pattern Sequencer
+2. **Assign channels** (optional): use **Detect Drums** and **Classify Tracks**, or set a track's
+   channel in its header; changes apply immediately. **Apply Presets** inserts JD-Xi presets per channel
+3. **Play**: Start playback; audio goes to JD-Xi or FluidSynth
+4. **Edit in Pattern Editor** (optional): Use **Load into Pattern Editor** to edit the file in the Pattern Sequencer
 
 .. figure:: images/jdxi-midi-editor.png
    :alt: MIDI File Player - Track Classification and Playback

@@ -19,7 +19,7 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.project import __package_name__
-from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+from jdxi_editor.midi.sysex.names import parse_sysex_byte
 
 
 class JDXiJSONComposer:
@@ -158,7 +158,8 @@ class JDXiJSONComposer:
             other_controls = {}
 
             controls_dict = editor.get_controls_as_dict()
-            for param, widget in editor.controls.items():
+            # The controls live in the Common and Tone Modify sections
+            for param, widget in editor.all_controls().items():
                 param_name = param.name
                 value = controls_dict.get(param_name)
 
@@ -187,12 +188,19 @@ class JDXiJSONComposer:
                     editor, common_controls, common_address, temp_folder, "COMMON"
                 )
 
-            # Save Modify section with Modify address (current editor address)
+            # Save Modify section with the Modify address (19 xx 50 00); the
+            # editor's own address is Common's, so using it overwrote Common
             if modify_controls or other_controls:
                 # Combine modify and other controls
                 all_modify_controls = {**modify_controls, **other_controls}
+                modify_address = JDXiSysExAddress(
+                    msb=editor.address.msb,
+                    umb=editor.address.umb,
+                    lmb=JDXiSysExOffsetSuperNATURALLMB.MODIFY,
+                    lsb=Midi.value.ZERO,
+                )
                 self._save_editor_section(
-                    editor, all_modify_controls, editor.address, temp_folder, "MODIFY"
+                    editor, all_modify_controls, modify_address, temp_folder, "MODIFY"
                 )
 
             # Return the Common file path if it exists, otherwise Modify
@@ -451,7 +459,7 @@ class JDXiJSONComposer:
             from jdxi_editor.midi.data.address.address import (
                 JDXiSysExOffsetTemporaryToneUMB,
             )
-            from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+            from jdxi_editor.midi.sysex.names import parse_sysex_byte
 
             editor_data[SysExSection.TEMPORARY_AREA] = parse_sysex_byte(
                 address.umb, JDXiSysExOffsetTemporaryToneUMB
@@ -478,8 +486,12 @@ class JDXiJSONComposer:
                 else:
                     editor_data[k] = v
 
-            # Add tone name parameters if available
-            if hasattr(editor, "tone_names") and hasattr(editor, "preset_type"):
+            # Add tone name parameters if available (they belong to Common)
+            if (
+                section_name == "COMMON"
+                and hasattr(editor, "tone_names")
+                and hasattr(editor, "preset_type")
+            ):
                 tone_name = editor.tone_names.get(editor.preset_type, "")
                 if tone_name:
                     # Convert tone name string to TONE_NAME_1 through TONE_NAME_12

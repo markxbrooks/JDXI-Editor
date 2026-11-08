@@ -105,14 +105,18 @@ def add_sequencer_container(
 def add_favorite_button_container(central_widget):
     """Create a circular button to set and unset favorites"""
     favourites_button_container = QWidget(central_widget)
+    # Just left of the steps: label above, button level with the steps (as
+    # Favorite on the JD-Xi), inside the panel's bottom edge
+    # (on the right half of the panel, between its edge and the first step)
     favourites_button_container.setGeometry(
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X - 50,
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
-        100,
-        200,
+        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X - 30,
+        JDXi.UI.Dimensions.SEQUENCER.STEPS_TOP - 24,
+        34,
+        52,
     )
     text = "Fav."
     row = QHBoxLayout()
+    row.setContentsMargins(0, 0, 0, 0)
     row.setSpacing(1)
     favourite_button_column = QVBoxLayout()
     favourite_button_column.setSpacing(1)

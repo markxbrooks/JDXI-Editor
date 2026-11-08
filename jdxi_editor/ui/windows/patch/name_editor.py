@@ -72,7 +72,7 @@ class PatchNameEditor(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(JDXi.UI.Style.EDITOR)
+        JDXi.UI.Theme.apply_editor_style(self)
 
     def get_sysex_string(self):
         """
@@ -131,7 +131,7 @@ class PatchNameEditorOld(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(JDXi.UI.Style.EDITOR)
+        JDXi.UI.Theme.apply_editor_style(self)
 
     def get_name(self):
         """Get the edited patch name"""

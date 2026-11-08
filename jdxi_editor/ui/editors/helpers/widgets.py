@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
     QSlider,
     QSpinBox,
     QWidget,
@@ -117,3 +118,53 @@ def create_jdxi_row(
     label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
     label_layout.addWidget(label)
     return label_row, label
+
+
+def create_round_button_with_label(
+    text: str,
+    icon: str,
+    slot: Any = None,
+    tooltip: str = "",
+    checkable: bool = False,
+) -> tuple[QWidget, QPushButton]:
+    """
+    A round JD-Xi button with its icon and label beside it, as one widget.
+
+    Use in place of a plain text button so editor actions share the panel
+    look (as Edit Tone Name, the transport, ...).
+
+    :return: (widget to add to a layout, the button)
+    """
+    spec = ButtonSpec(label=text, icon=icon, tooltip=tooltip, slot=slot)
+    label_row, button = create_jdxi_button_with_label_from_spec(spec, checkable=checkable)
+    label_row.setToolTip(tooltip)
+    widget = QWidget()
+    layout = QHBoxLayout(widget)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(4)
+    layout.addWidget(button)
+    layout.addWidget(label_row)
+    # Keep the label next to its button when the row has room to spare
+    widget.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+    return widget, button
+
+
+def create_panel(*items: Any) -> "QGroupBox":
+    """
+    One untitled glossy panel (the JD-Xi's shiny black inset) holding several
+    widgets or layouts, stacked. Group boxes inside it draw as flat sections
+    with a title and a thin rule (see AppEditorStyle), so a few large panels
+    replace many small black boxes.
+    """
+    from PySide6.QtWidgets import QGroupBox, QLayout, QVBoxLayout
+
+    panel = QGroupBox()
+    layout = QVBoxLayout(panel)
+    layout.setContentsMargins(6, 0, 6, 6)
+    layout.setSpacing(JDXi.UI.MidiPlayer.SPACING_RELATED)
+    for item in items:
+        if isinstance(item, QLayout):
+            layout.addLayout(item)
+        else:
+            layout.addWidget(item)
+    return panel

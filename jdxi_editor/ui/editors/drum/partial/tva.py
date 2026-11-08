@@ -60,13 +60,17 @@ class DrumTVASection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+        **kwargs,
     ):
         """
         Initialize the DrumTVASection
 
         :param controls: dict
         :param midi_helper: MidiIOHelper
+        :param kwargs: forwarded to DrumBaseSection (address, send_midi_parameter, …)
         """
         self.spec: LayoutSpec = self._build_layout_spec()
         self.envelope = {
@@ -82,7 +86,7 @@ class DrumTVASection(DrumBaseSection):
             EnvelopeParameter.LEVEL_2: 80,
             EnvelopeParameter.LEVEL_3: 70,
         }
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        super().__init__(controls=controls or {}, midi_helper=midi_helper, **kwargs)
         self.setup_ui()
 
     def _build_layout_spec(self) -> LayoutSpec:

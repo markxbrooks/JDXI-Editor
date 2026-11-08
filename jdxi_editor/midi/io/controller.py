@@ -30,6 +30,8 @@ from typing import List, Optional, Tuple
 
 import rtmidi
 from decologr import Decologr as log
+
+from jdxi_editor.midi.io.device import JDXiDevice
 from PySide6.QtCore import QObject
 
 from jdxi_editor.ui.windows.jdxi.helpers.port import (
@@ -52,6 +54,9 @@ class MidiIOController(QObject):
         self.midi_out = rtmidi.MidiOut()
         self.input_port_number: Optional[int] = None
         self.output_port_number: Optional[int] = None
+        # Request queue, memory mirror and echo guard of the connected JD-Xi;
+        # the queue sends through the output handler's send_raw_message
+        self.device = JDXiDevice(lambda message: self.send_raw_message(message))
 
     @property
     def current_in_port(self) -> Optional[str]:

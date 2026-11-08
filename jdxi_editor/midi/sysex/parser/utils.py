@@ -122,10 +122,33 @@ def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
     :param parameter_type: Iterable Type
     :return: Dict[str, int]
     """
-    return {
-        param.name: get_byte_offset_by_tone_name(data, param.address)
-        for param in parameter_type
-    }
+    return {param.name: get_parameter_value(data, param) for param in parameter_type}
+
+
+def get_parameter_value(data: bytes, param: AddressParameter, offset: int = 12) -> int:
+    """
+    Value of *param* in SysEx data: one byte, or for parameters with a range
+    above 127 (e.g. the Delay and Reverb parameters, 32768 ± n) four bytes
+    holding a nibble each, most significant first.
+
+    :param data: bytes SysEx message data
+    :param param: AddressParameter The parameter
+    :param offset: int Offset of the data in the message
+    :return: int The (MIDI) value
+    """
+    get_size = getattr(param, "get_nibbled_size", None)
+    size = get_size() if get_size else 1
+    if size == 1:
+        return get_byte_offset_by_tone_name(data, param.address, offset)
+    start = param.address + offset
+    nibbles = data[start : start + size]
+    # The checksum and F7 follow the data, so a short read is a truncated message
+    if len(nibbles) < size or start + size > len(data) - 2:
+        return get_byte_offset_by_tone_name(data, param.address, offset)
+    value = 0
+    for nibble in nibbles:
+        value = (value << 4) | (nibble & 0x0F)
+    return value
 
 
 def parse_single_parameter(

@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from jdxi_editor.midi.data.effects.param.registry import EffectParamRegistry
 from jdxi_editor.midi.data.effects.type.handler import EffectTypeHandler
-from jdxi_editor.ui.editors.effects.dispatch_stats import DispatchStats
+from jdxi_editor.midi.data.effects.sysex.dispatch_stats import DispatchStats
 from jdxi_editor.ui.widgets.controls.registry import ControlResolver
 from jdxi_editor.ui.widgets.writer import WidgetWriter
 
@@ -46,7 +46,9 @@ class EffectsSysExDispatcher:
 
             widget = self.controls.get(param)
             if not widget:
-                stats.record_failed(name)
+                # No control of its own, e.g. the generic EFX1_PARAM_n names the
+                # parser reports beside the type-specific ones that are applied
+                stats.record_skipped(name)
                 continue
 
             try:

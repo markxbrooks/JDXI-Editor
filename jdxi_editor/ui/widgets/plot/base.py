@@ -5,7 +5,7 @@ Base Plot Widget
 Base class for plot widgets that provides common functionality like shaded curve drawing.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
 
 import numpy as np
@@ -90,12 +90,16 @@ class PlotConfig:
     title_font_size: int = 16
     label_font_size: int = 10
     tick_font_size: int = 8
-    title_color: QColor = QColor("orange")
-    label_color: QColor = QColor("white")
-    grid_color: QColor = QColor(Qt.GlobalColor.darkGray)
-    envelope_color: QColor = QColor("orange")
-    axis_color: QColor = QColor("white")
-    point_color: QColor = QColor("orange")
+    # QColor is mutable (and unhashable), so each config gets its own
+    # (Python 3.11+ refuses a shared QColor default)
+    title_color: QColor = field(default_factory=lambda: QColor("orange"))
+    label_color: QColor = field(default_factory=lambda: QColor("white"))
+    grid_color: QColor = field(
+        default_factory=lambda: QColor(Qt.GlobalColor.darkGray)
+    )
+    envelope_color: QColor = field(default_factory=lambda: QColor("orange"))
+    axis_color: QColor = field(default_factory=lambda: QColor("white"))
+    point_color: QColor = field(default_factory=lambda: QColor("orange"))
     point_size: int = 6
     envelope_line_width: int = 2
     axis_line_width: int = 1

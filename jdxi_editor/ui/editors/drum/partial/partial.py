@@ -32,16 +32,15 @@ Example:
     editor.show()
 """
 
-from PySide6.QtWidgets import QGroupBox, QTabWidget
+from PySide6.QtWidgets import QGridLayout, QGroupBox
 
 from jdxi_editor.midi.data.parameter.drum.name import DrumDisplayName
 from jdxi_editor.midi.data.parameter.drum.option import DrumDisplayOptions
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParam
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.ui.common import JDXi, QWidget
+from jdxi_editor.ui.common import QWidget
 from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
-from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_group_with_form_layout,
     create_group_with_layout,
@@ -50,21 +49,36 @@ from jdxi_editor.ui.widgets.editor.helper import (
 )
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec
 
+NOTE_NAMES = ("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+
+
+def note_name(note: int) -> str:
+    """MIDI note number as a name, 0 = C-1 (the JD-Xi's Coarse Tune range C-1 to G9)."""
+    return f"{NOTE_NAMES[note % 12]}{note // 12 - 1}"
+
 
 class DrumPartialSection(DrumBaseSection):
     """Drum Partial Section for the JDXI Editor"""
 
     def __init__(
-        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+        **kwargs,
     ):
         """
         Initialize the DrumPartialSection
 
         :param controls: dict
         :param midi_helper: MidiIOHelper
+        :param kwargs: forwarded to DrumBaseSection (address, send_midi_parameter, …)
         """
         self.spec: LayoutSpec = self._build_layout_spec()
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        super().__init__(controls=controls or {}, midi_helper=midi_helper, **kwargs)
+        # Coarse Tune is the note the partial plays at, not an offset
+        coarse_tune = self.controls.get(DrumPartialParam.PARTIAL_COARSE_TUNE)
+        if coarse_tune is not None and hasattr(coarse_tune, "setValueDisplayFormat"):
+            coarse_tune.setValueDisplayFormat(note_name)
         self.setup_ui()
 
     def _build_layout_spec(self) -> LayoutSpec:
@@ -145,41 +159,16 @@ class DrumPartialSection(DrumBaseSection):
         return LayoutSpec(controls=controls)
 
     def setup_ui(self) -> None:
-        """setup UI - follows ParameterSectionBase pattern"""
-        # Get layout (this will create scrolled_layout via DrumBaseSection.get_layout() if needed)
+        """setup UI: Pitch, Pan, Misc and Modes as sections of one panel"""
         layout = self.get_layout()
-
-        # Create tab widget
-        self.partial_controls_tab_widget = QTabWidget()
-
-        # Add tab widget to the scrolled layout
-        layout.addWidget(self.partial_controls_tab_widget)
-
-        controls_icon = JDXi.UI.Icon.get_icon("mdi.tune", color=JDXi.UI.Style.GREY)
-        self.partial_controls_tab_widget.addTab(
-            self._create_pitch_controls_group(), controls_icon, "Controls"
-        )
-
-        pan_icon = JDXi.UI.Icon.get_icon("mdi.pan-horizontal", color=JDXi.UI.Style.GREY)
-        self.partial_controls_tab_widget.addTab(
-            self._create_partial_pan_group(), pan_icon, "Pan"
-        )
-
-        misc_icon = JDXi.UI.Icon.get_icon(
-            "mdi.dots-horizontal", color=JDXi.UI.Style.GREY
-        )
-        self.partial_controls_tab_widget.addTab(
-            self._create_partial_misc_group(), misc_icon, "Misc"
-        )
-
-        modes_icon = JDXi.UI.Icon.get_icon(
-            "mdi.toggle-switch", color=JDXi.UI.Style.GREY
-        )
-        self.partial_controls_tab_widget.addTab(
-            self._create_partial_modes_group(), modes_icon, "Modes"
-        )
-
-        # Add stretch to allow proper expansion
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(24)
+        grid.setVerticalSpacing(12)
+        grid.addWidget(self._create_pitch_controls_group(), 0, 0)
+        grid.addWidget(self._create_partial_pan_group(), 0, 1)
+        grid.addWidget(self._create_partial_misc_group(), 1, 0)
+        grid.addWidget(self._create_partial_modes_group(), 1, 1)
+        layout.addLayout(grid)
         layout.addStretch()
 
     def _create_partial_misc_group(self) -> QGroupBox:
@@ -199,9 +188,6 @@ class DrumPartialSection(DrumBaseSection):
         )
         slider_layout = create_layout_with_items(items=slider_widgets)
         layout.addRow(slider_layout)
-        group.setStyleSheet(JDXiUIStyle.ADSR)
-        group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
-        group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
         return group
 
     def _create_partial_modes_group(self) -> QGroupBox:
@@ -215,9 +201,6 @@ class DrumPartialSection(DrumBaseSection):
         group = create_group_with_widgets_in_hlayout(
             widgets=widgets, label="Modes", vertical=True
         )
-        group.setStyleSheet(JDXiUIStyle.ADSR)
-        group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
-        group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
         return group
 
     def _create_partial_pan_group(self) -> QGroupBox:
@@ -231,9 +214,6 @@ class DrumPartialSection(DrumBaseSection):
         group = create_group_with_widgets_in_hlayout(
             widgets=widgets, label="Pan", vertical=True
         )
-        group.setStyleSheet(JDXiUIStyle.ADSR)
-        group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.MIN_HEIGHT)
-        group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DIGITAL.HEIGHT)
         return group
 
     def _create_pitch_controls_group(self) -> QGroupBox:
@@ -244,10 +224,9 @@ class DrumPartialSection(DrumBaseSection):
             self.controls[DrumPartialParam.PARTIAL_FINE_TUNE],
             self.controls[DrumPartialParam.PARTIAL_RANDOM_PITCH_DEPTH],
         ]
-        group, inner_layout = create_group_with_layout(label="Controls", vertical=False)
+        group, inner_layout = create_group_with_layout(label="Pitch", vertical=False)
         inner_layout.addStretch()
         for widget in widgets:
             inner_layout.addWidget(widget)
         inner_layout.addStretch()
-        group.setStyleSheet(JDXi.UI.Style.ADSR)
         return group

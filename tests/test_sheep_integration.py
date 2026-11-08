@@ -91,10 +91,10 @@ class TestSheepIntegration(unittest.TestCase):
         self.mock_midi_helper.midi_out.send_message = track_sent_messages
     
     def tearDown(self):
-        """Stop playback worker so QThread is not left running."""
+        """Stop the transport so its scheduler thread is not left running."""
         if getattr(self, "player", None) is not None:
             try:
-                self.player.stop_playback_worker()
+                self.player.transport_controller.shutdown()
             except Exception:
                 pass
             try:
@@ -122,8 +122,8 @@ class TestSheepIntegration(unittest.TestCase):
         print(f"Found {len(tempo_messages)} tempo changes in MIDI file")
     
     def test_buffer_refill_with_real_midi_file(self):
-        """Test that setup_playback_worker loads the engine with sheep.mid."""
-        self.player.setup_playback_worker()
+        """Test that the transport loads the engine with sheep.mid."""
+        self.player.transport_controller.load(self.player.midi_state.file)
 
         # Engine should have events after load
         self.assertGreater(len(self.player.playback_engine.events), 0,
@@ -136,7 +136,7 @@ class TestSheepIntegration(unittest.TestCase):
     
     def test_tempo_change_timing_calculation(self):
         """Test that engine has tempo map and can compute time from ticks."""
-        self.player.setup_playback_worker()
+        self.player.transport_controller.load(self.player.midi_state.file)
 
         engine = self.player.playback_engine
         self.assertGreater(len(engine._tempo_map), 0, "No tempo map in engine")
@@ -147,41 +147,38 @@ class TestSheepIntegration(unittest.TestCase):
             bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     
-    def test_worker_initialization_with_real_buffer(self):
-        """Test that the worker is initialized with the playback engine."""
-        self.player.setup_playback_worker()
+    def test_transport_drives_player_engine(self):
+        """The transport controller drives the player's playback engine."""
+        self.player.transport_controller.load(self.player.midi_state.file)
 
-        worker = self.player.midi_playback_worker
-        self.assertIsNotNone(worker.playback_engine, "Worker should have playback_engine")
-        self.assertEqual(worker.playback_engine, self.player.playback_engine)
-        self.assertEqual(worker.initial_tempo, self.player.midi_state.tempo_at_position)
-
-        print(f"Worker has playback_engine with {len(worker.playback_engine.events)} events")
-        print(f"Worker initial tempo: {worker.initial_tempo} ({MidiTempo.MICROSECONDS_PER_MINUTE/worker.initial_tempo:.1f} BPM)")
-    
-    def test_playback_simulation_with_real_timing(self):
-        """Test simulated playback using engine and worker."""
-        self.player.setup_playback_worker()
-        self.player.playback_engine.start(0)
-
-        worker = self.player.midi_playback_worker
         engine = self.player.playback_engine
+        self.assertIs(self.player.transport_controller.engine, engine)
+        self.assertGreater(len(engine.events), 0)
+        self.assertGreater(engine.duration_seconds, 0.0)
+        print(f"Engine has {len(engine.events)} events, {engine.duration_seconds:.1f}s")
+
+    def test_playback_simulation_with_real_timing(self):
+        """Test simulated playback by driving the engine directly."""
+        self.player.transport_controller.load(self.player.midi_state.file)
+        engine = self.player.playback_engine
+        engine.start(0)
+
         tempo_changes_in_buffer = [(t, tempo) for t, tempo in engine._tempo_map.items() if t > 0]
         print(f"Found {len(tempo_changes_in_buffer)} tempo changes in engine (excluding tick 0)")
 
         start_time = time.time()
         end_time = start_time + 2.0  # Run 2 seconds
-        messages_processed = 0
+        cycles = 0
         max_iterations = 500
 
-        while time.time() < end_time and messages_processed < max_iterations:
-            worker.do_work()
-            messages_processed += 1
+        while time.time() < end_time and cycles < max_iterations:
+            engine.process_until_now()
+            cycles += 1
             if not engine._is_playing:
                 break
             time.sleep(0.01)
 
-        print(f"Processed {messages_processed} worker cycles")
+        print(f"Processed {cycles} cycles")
         print(f"Engine event index: {engine.event_index} / {len(engine.events)}")
         print(f"Sent {len(self.sent_messages)} MIDI messages")
 

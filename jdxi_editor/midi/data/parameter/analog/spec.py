@@ -29,7 +29,7 @@ from jdxi_editor.midi.data.parameter.digital.spec import (
     GroupBoxDefinitionMixin,
     TabDefinitionMixin,
 )
-from jdxi_editor.ui.adsr.type import ADSRType
+from jdxi_editor.midi.data.parameter.adsr import ADSRType
 from jdxi_editor.ui.style import JDXiUIIconRegistry
 
 

@@ -271,6 +271,21 @@ class EffectsCommonEditor(BasicEditor):
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
 
+        from jdxi_editor.ui.editors.helpers.edit_buffer_ops import (
+            create_part_syx_row,
+            create_read_from_jdxi_row,
+        )
+
+        read_row, _, self._read_status_label = create_read_from_jdxi_row(
+            lambda: self.read_from_jdxi(
+                status_callback=lambda t: self._read_status_label.setText(t)
+            )
+        )
+        self.main_layout.addWidget(read_row)
+        self.main_layout.addWidget(
+            create_part_syx_row(self.import_part_syx, self.export_part_syx)
+        )
+
         self.address = JDXiSysExAddress(
             JDXiSysExAddressStartMSB.TEMPORARY_PROGRAM,
             JDXiSysExOffsetSystemUMB.COMMON,
@@ -937,6 +952,7 @@ class EffectsCommonEditor(BasicEditor):
             SliderSpec(DelayParam.DELAY_TIME_MS, "Time [ms]", vertical=False),
             SliderSpec(DelayParam.DELAY_TAP_TIME, "Tap Time [%]", vertical=False),
             SliderSpec(DelayParam.DELAY_FEEDBACK, "Feedback [%]", vertical=False),
+            SliderSpec(DelayParam.DELAY_EFFECT_LEVEL, "Effect Level", vertical=False),
         ]
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
@@ -1014,6 +1030,7 @@ class EffectsCommonEditor(BasicEditor):
         sliders = [
             SliderSpec(ReverbParam.REVERB_TIME, "Time", vertical=False),
             SliderSpec(ReverbParam.REVERB_LEVEL, "Level", vertical=False),
+            SliderSpec(ReverbParam.REVERB_EFFECT_LEVEL, "Effect Level", vertical=False),
         ]
         return WidgetLayoutSpec(switches=switches, sliders=sliders, combos=combos)
 
@@ -1129,12 +1146,12 @@ class EffectsCommonEditor(BasicEditor):
             if stats.failed:
                 log.warning(
                     scope=self.__class__.__name__,
-                    message=f"ℹ️❌  Failures ({len(stats.failures)}): {stats.failures[:10]}",
+                    message=f"ℹ️❌  Failures ({len(stats.failed)}): {stats.failed[:10]}",
                 )
 
             log.message(
                 scope=self.__class__.__name__,
-                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1f}%",
+                message=f"ℹ️📊  Success Rate: {stats.success_rate:.1%}",
             )
 
         except Exception as ex:

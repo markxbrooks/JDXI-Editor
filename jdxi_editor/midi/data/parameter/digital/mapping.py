@@ -1,4 +1,4 @@
-from jdxi_editor.ui.widgets.envelope.parameter import EnvelopeParameter
+from jdxi_editor.midi.data.parameter.envelope import EnvelopeParameter
 
 ENVELOPE_MAPPING = {
     # Filter ADSR

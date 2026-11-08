@@ -53,7 +53,6 @@ from jdxi_editor.ui.editors.base.layout.spec import LayoutSpec
 from jdxi_editor.ui.editors.drum.partial.base import DrumBaseSection
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXiUIStyle
 from jdxi_editor.ui.widgets.editor.helper import (
     create_centered_layout_with_child,
     create_layout_with_items,
@@ -68,13 +67,17 @@ class DrumTVFSection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+        **kwargs,
     ):
         """
         Initialize the DrumTVFSection
 
         :param controls: dict
         :param midi_helper: MidiIOHelper
+        :param kwargs: forwarded to DrumBaseSection (address, send_midi_parameter, …)
         """
         self.spec: LayoutSpec = self._build_layout_spec()
         self.envelope = {
@@ -92,7 +95,7 @@ class DrumTVFSection(DrumBaseSection):
             "level_3": 70,
             "level_4": 0,
         }
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        super().__init__(controls=controls or {}, midi_helper=midi_helper, **kwargs)
         self.setup_ui()
 
     def _build_layout_spec(self) -> LayoutSpec:
@@ -226,7 +229,6 @@ class DrumTVFSection(DrumBaseSection):
         envelope_slider_layout = QGridLayout()
         envelope_group.setLayout(envelope_group_layout)
 
-        envelope_group.setStyleSheet(JDXi.UI.Style.ADSR)
 
         #  --- Use widgets from SLIDER_GROUPS["controls"] and connect them ---
         row = 0
@@ -385,7 +387,6 @@ class DrumTVFSection(DrumBaseSection):
             items=[tvf_cutoff_frequency_slider], vertical=False
         )
         basic_tvf_layout.addRow(tvf_cutoff_frequency_layout)
-        group.setStyleSheet(JDXiUIStyle.ADSR)
         group.setMinimumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.MIN_HEIGHT)
         group.setMaximumHeight(JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT)
         return group

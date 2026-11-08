@@ -8,19 +8,15 @@ Acts as the main container for the pattern sequencer grid.
 from dataclasses import dataclass
 from typing import Callable, List, Optional
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtCore import QPoint, Qt
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from jdxi_editor.ui.editors.pattern.helper import (
     get_button_note_spec,
     set_sequencer_style,
 )
+from jdxi_editor.ui.widgets.pattern.measure_strip import MeasureStrip
+from jdxi_editor.ui.widgets.pattern.step_guide import StepGuide
 from jdxi_editor.ui.widgets.pattern.measure_widget import PatternMeasureWidget
 from jdxi_editor.ui.widgets.pattern.sequencer_button import SequencerButton
 from picomidi.pattern.measure import PatternMeasure
@@ -62,7 +58,7 @@ class PatternWidget(QWidget):
 
         # UI Components
         self.measure_widgets: List[PatternMeasureWidget] = []
-        self.measures_list: Optional[QListWidget] = None
+        self.measure_strip: Optional[MeasureStrip] = None
 
         # Data Models
         self.measures: List[PatternMeasure] = []
@@ -75,6 +71,11 @@ class PatternWidget(QWidget):
         self.on_measure_selected: Optional[Callable[[int], None]] = None
         self.on_measure_added: Optional[Callable[[int], None]] = None
         self.on_measure_removed: Optional[Callable[[int], None]] = None
+        # The strip's + tile; without a handler it adds an empty measure
+        self.on_add_requested: Optional[Callable[[], None]] = None
+        self._button_context_handler: Optional[
+            Callable[[SequencerButton, QPoint], None]
+        ] = None
         self._button_click_handler: Optional[
             Callable[[SequencerButton, bool], None]
         ] = None
@@ -82,30 +83,49 @@ class PatternWidget(QWidget):
         self._setup_ui()
         self._initialize_measures(self.config.initial_measures)
         self._show_current_measure()
+        self.measure_strip.set_current(self.current_measure_index)
 
     def _setup_ui(self) -> None:
-        """Setup the UI layout."""
-        main_layout = QHBoxLayout()
+        """Setup the UI layout: measure strip above the row headers and steps."""
+        main_layout = QVBoxLayout()
+        main_layout.setSpacing(10)
 
-        # Measures list (navigation panel)
-        self.measures_list = QListWidget()
-        self.measures_list.setMaximumWidth(150)
-        self.measures_list.itemSelectionChanged.connect(self._on_measure_selected)
+        # Measures (navigation): a row of tiles with a miniature of each
+        self.measure_strip = MeasureStrip()
+        self.measure_strip.measure_clicked.connect(self.select_measure)
+        self.measure_strip.add_requested.connect(self._on_add_requested)
 
-        # Sequencer display area (header optional, content from _show_current_measure)
+        # Sequencer display area: row headers (optional) beside the steps of
+        # the current measure, so each part's name and mute sit on its row
         self.sequencer_display = QVBoxLayout()
+        self.sequencer_display.setContentsMargins(0, 0, 0, 0)
         self._sequencer_right = QWidget()
         self._sequencer_right_layout = QVBoxLayout(self._sequencer_right)
-        self._sequencer_right_layout.addLayout(self.sequencer_display)
+        self._rows_layout = QHBoxLayout()
+        self._rows_layout.setSpacing(12)
+        self._rows_layout.addLayout(self.sequencer_display, 1)
+        # The JD-Xi's step-length lines, above the first row of steps
+        self.step_guide = StepGuide(self._guide_buttons)
+        self._sequencer_right_layout.addWidget(self.step_guide)
+        self._sequencer_right_layout.addLayout(self._rows_layout)
+        self._sequencer_right_layout.addStretch()
 
-        main_layout.addWidget(self.measures_list, 1)  # Navigation
-        main_layout.addWidget(self._sequencer_right, 4)  # Main display
+        main_layout.addWidget(self.measure_strip)  # Navigation
+        main_layout.addWidget(self._sequencer_right, 1)  # Main display
 
         self.setLayout(main_layout)
 
+    def _guide_buttons(self) -> list:
+        """The current measure's first row of steps, which the step guide lines up with."""
+        widget = self.get_current_measure_widget()
+        return widget.buttons[0] if widget is not None and widget.buttons else []
+
     def set_header_widget(self, widget: QWidget) -> None:
-        """Insert a header widget above the sequencer (e.g. row headers, presets)."""
-        self._sequencer_right_layout.insertWidget(0, widget)
+        """
+        Put row headers (one per row, e.g. part name, note, mute) to the left
+        of the steps; each header row should be as tall as a step row.
+        """
+        self._rows_layout.insertWidget(0, widget, 0, Qt.AlignmentFlag.AlignTop)
 
     def _initialize_measures(self, count: int) -> None:
         """Initialize pattern with specified number of measures."""
@@ -147,8 +167,8 @@ class PatternWidget(QWidget):
 
         self.measure_widgets.append(widget)
 
-        # Add to list widget
-        self._add_to_measures_list(measure_index)
+        # Add a tile to the strip
+        self.measure_strip.add_measure(widget)
 
         if self.on_measure_added:
             self.on_measure_added(measure_index)
@@ -168,10 +188,7 @@ class PatternWidget(QWidget):
         self.measures.pop(index)
         self.measure_widgets.pop(index)
 
-        # Update list widget
-        item = self.measures_list.item(index)
-        if item:
-            self.measures_list.takeItem(index)
+        self.measure_strip.remove_measure(index)
 
         # Update current selection
         if self.current_measure_index >= len(self.measures):
@@ -193,8 +210,7 @@ class PatternWidget(QWidget):
             return False
 
         self.current_measure_index = index
-        if self.measures_list:
-            self.measures_list.setCurrentRow(index)
+        self.measure_strip.set_current(index)
 
         self._show_current_measure()
 
@@ -274,7 +290,7 @@ class PatternWidget(QWidget):
                 button.setChecked(step_data.active)
                 button.note = step_data.note
                 button.note_velocity = step_data.velocity
-                button.note_duration = step_data.duration_steps
+                button.note_steps = step_data.duration_steps
 
     def sync_measure_to_ui(self, measure_index: int) -> None:
         """
@@ -299,8 +315,8 @@ class PatternWidget(QWidget):
                 step_data.active = button.isChecked()
                 step_data.note = button.note or 60
                 step_data.velocity = button.note_velocity or 100
-                # note_duration is ms (float); duration_steps accepts int/float (0 when inactive)
-                step_data.duration_steps = button.note_duration if button.note_duration is not None else 0
+                # Length in steps (float; 0 when inactive)
+                step_data.duration_steps = button.note_steps or 0
 
     def copy_measure(self, from_index: int, to_index: int) -> bool:
         """
@@ -362,12 +378,18 @@ class PatternWidget(QWidget):
                     "note": spec.note,
                     "velocity": spec.velocity if spec.is_active else 100,
                     "duration_ms": spec.duration_ms if spec.is_active else None,
+                    "duration_steps": (
+                        getattr(spec, "duration_steps", None) if spec.is_active else None
+                    ),
+                    "extra_notes": list(button.extra_notes) if spec.is_active else [],
                 }
                 section_data["rows"][row][step] = step_dict
                 section_data["notes_data"][row][step] = {
                     "checked": step_dict["checked"],
                     "note": step_dict["note"],
                     "duration": step_dict["duration_ms"],
+                    "duration_steps": step_dict["duration_steps"],
+                    "extra_notes": step_dict["extra_notes"],
                     "velocity": step_dict["velocity"],
                 }
 
@@ -419,17 +441,24 @@ class PatternWidget(QWidget):
                     "duration"
                 )
 
+                duration_steps = step_data_dict.get("duration_steps")
+
                 button.setChecked(checked)
                 button.note = note
                 button.note_velocity = velocity
-                button.note_duration = duration_ms
+                if duration_steps is not None:
+                    button.note_steps = duration_steps
+                else:
+                    button.note_duration = duration_ms
+                button.extra_notes = step_data_dict.get("extra_notes", []) if checked else []
+                button.refresh_note_count()
 
                 # Sync to PatternMeasure for consistency
                 step_data = measure.steps[row][dest_step]
                 step_data.active = checked
                 step_data.note = note or 60
                 step_data.velocity = velocity
-                step_data.duration_steps = 1 if duration_ms else 0
+                step_data.duration_steps = button.note_steps or 0
 
         return True
 
@@ -459,6 +488,8 @@ class PatternWidget(QWidget):
                 button.note = None
                 button.note_velocity = None
                 button.note_duration = None
+                button.extra_notes = []
+                button.refresh_note_count()
 
         return True
 
@@ -489,12 +520,13 @@ class PatternWidget(QWidget):
         """Clear all measures and list; optionally add initial_count empty measures."""
         self.measures.clear()
         self.measure_widgets.clear()
-        if self.measures_list:
-            self.measures_list.clear()
+        self.measure_strip.clear()
         self.current_measure_index = 0
         for _ in range(initial_count):
             self._add_measure()
         self._show_current_measure()
+        if self.measures:
+            self.measure_strip.set_current(0)
 
     def _show_current_measure(self) -> None:
         """Remove previous content and show current measure widget in sequencer_display."""
@@ -507,6 +539,8 @@ class PatternWidget(QWidget):
             self.sequencer_display.addWidget(w)
             # Refresh all button styles so checked state matches visual (fixes load/switch)
             self._apply_sequencer_style(w)
+        if hasattr(self, "step_guide"):
+            self.step_guide.update()  # lines follow the measure shown
 
     def _apply_sequencer_style(self, widget: PatternMeasureWidget) -> None:
         """Apply sequencer button styling to all buttons in the measure widget."""
@@ -515,14 +549,29 @@ class PatternWidget(QWidget):
                 set_sequencer_style(btn, is_current=False, checked=btn.isChecked())
 
     def _wire_button_clicks(self, widget: PatternMeasureWidget) -> None:
-        """Wire button clicks to handler if set."""
-        if not self._button_click_handler:
-            return
+        """Wire button clicks (and right-clicks) to the handlers if set."""
         for row in widget.buttons:
             for btn in row:
-                btn.clicked.connect(
-                    lambda checked, b=btn: self._button_click_handler(b, checked)  # type: ignore[misc]
-                )
+                if self._button_click_handler and not getattr(btn, "_click_wired", False):
+                    btn.clicked.connect(
+                        lambda checked, b=btn: self._button_click_handler(b, checked)  # type: ignore[misc]
+                    )
+                    btn._click_wired = True
+                if self._button_context_handler and not getattr(btn, "_context_wired", False):
+                    btn.customContextMenuRequested.connect(
+                        lambda pos, b=btn: self._button_context_handler(  # type: ignore[misc]
+                            b, b.mapToGlobal(pos)
+                        )
+                    )
+                    btn._context_wired = True
+
+    def set_button_context_handler(
+        self, handler: Optional[Callable[[SequencerButton, QPoint], None]]
+    ) -> None:
+        """Set handler for right-clicks on steps; wires current and future measures."""
+        self._button_context_handler = handler
+        for mw in self.measure_widgets:
+            self._wire_button_clicks(mw)
 
     def set_button_click_handler(
         self, handler: Optional[Callable[[SequencerButton, bool], None]]
@@ -562,24 +611,22 @@ class PatternWidget(QWidget):
                 dest_button.setChecked(source_button.isChecked())
                 dest_button.note = source_button.note
                 dest_button.note_velocity = source_button.note_velocity
-                dest_button.note_duration = source_button.note_duration
+                dest_button.note_steps = source_button.note_steps
+                dest_button.extra_notes = source_button.extra_notes
+                dest_button.refresh_note_count()
 
-    def _add_to_measures_list(self, measure_index: int) -> QListWidgetItem:
-        """Add measure to the list widget."""
-        item = QListWidgetItem(f"Measure {measure_index + 1}")
-        item.setData(Qt.ItemDataRole.UserRole, measure_index)
-        self.measures_list.addItem(item)
-        return item
-
-    def _on_measure_selected(self) -> None:
-        """Handle measure selection from list widget."""
-        row = self.measures_list.currentRow()
-        if 0 <= row < len(self.measures):
-            self.select_measure(row)
+    def _on_add_requested(self) -> None:
+        """The strip's + tile: the owner's add (e.g. copy previous), else an empty measure."""
+        if self.on_add_requested:
+            self.on_add_requested()
+        else:
+            self.select_measure(self.add_measure())
 
     def scroll_to_measure(self, measure_index: int) -> None:
-        """Scroll measures list to show the specified measure."""
-        if self.measures_list and 0 <= measure_index < self.measures_list.count():
-            item = self.measures_list.item(measure_index)
-            if item:
-                self.measures_list.scrollToItem(item)
+        """Select the measure's tile and scroll it into view."""
+        if 0 <= measure_index < self.measure_strip.count():
+            self.measure_strip.set_current(measure_index)
+
+    def set_playing_measure(self, measure_index: Optional[int]) -> None:
+        """Mark the measure being played on the strip (None when stopped)."""
+        self.measure_strip.set_playing(measure_index)

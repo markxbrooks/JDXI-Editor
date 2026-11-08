@@ -36,7 +36,7 @@ from decologr import Decologr as log
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QSizePolicy, QTabWidget
 
@@ -209,10 +209,10 @@ class DigitalSynthEditor(BaseSynthEditor):
             self.instrument_group_layout,
         ) = self.instrument_preset.create_instrument_image_group()
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_layout.addWidget(self.instrument_preset)
+        instrument_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         instrument_layout.setSpacing(
             JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
         )  # Minimal spacing
@@ -280,7 +280,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         :return: None
         """
         JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
-        JDXi.UI.Theme.apply_editor_style(self.tab_widget)
+        JDXi.UI.Theme.apply_editor_style(self.tab_widget, body=False)
         self.partial_editors = {}
         # --- Create editor for each partial; each panel keeps its own ControlRegistry (populated in __init__ by sections)
         for i in range(1, 4):
@@ -312,6 +312,73 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
         container_layout.addWidget(self.tab_widget)
+        self._add_partial_clipboard_row(container_layout)
+
+    def _add_partial_clipboard_row(self, layout) -> None:
+        """Copy / paste current Digital partial (Manager copyPart / pastePart)."""
+        from PySide6.QtWidgets import QHBoxLayout
+
+        from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
+
+        row = QHBoxLayout()
+        copy_row, _ = create_round_button_with_label(
+            "Copy Partial",
+            "mdi.content-copy",
+            self.copy_current_partial,
+            "Copy the currently selected partial's parameters",
+        )
+        paste_row, _ = create_round_button_with_label(
+            "Paste Partial",
+            "mdi.content-paste",
+            self.paste_current_partial,
+            "Paste into the currently selected partial",
+        )
+        row.addWidget(copy_row)
+        row.addWidget(paste_row)
+        row.addStretch()
+        layout.addLayout(row)
+
+    def _current_partial_panel(self):
+        idx = self.tab_widget.currentIndex() if self.tab_widget else -1
+        # Partials are tabs 0..2
+        if 0 <= idx <= 2:
+            return self.partial_editors.get(idx + 1)
+        # Fall back to partial_number if set
+        pn = getattr(self, "partial_number", None)
+        if pn in self.partial_editors:
+            return self.partial_editors[pn]
+        return self.partial_editors.get(1)
+
+    def copy_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import copy_partial
+
+        panel = self._current_partial_panel()
+        if panel is None or not hasattr(panel, "get_controls_as_dict"):
+            log.warning("No partial panel to copy", scope=self.__class__.__name__)
+            return
+        copy_partial("digital_partial", panel.get_controls_as_dict())
+
+    def paste_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import (
+            apply_controls_to_editor,
+            paste_partial,
+        )
+
+        panel = self._current_partial_panel()
+        if panel is None:
+            log.warning("No partial panel to paste into", scope=self.__class__.__name__)
+            return
+        controls = paste_partial("digital_partial")
+        if controls is None:
+            from PySide6.QtWidgets import QMessageBox
+
+            QMessageBox.warning(
+                self,
+                "Paste Partial",
+                "Clipboard is empty or not a Digital partial. Copy a partial first.",
+            )
+            return
+        apply_controls_to_editor(panel, controls)
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool
@@ -779,11 +846,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         use_fraction = param in {
             Digital.Param.OSC_PITCH_ENV_DEPTH,
         }
-        new_value = (
-            param.convert_from_midi(midi_value)
-            if use_fraction
-            else midi_value_to_ms(midi_value, 10, 5000)
-        )
+        new_value = param.convert_from_midi(midi_value) if use_fraction else None
         pe = self.partial_editors.get(partial_no)
         pitch_env = (
             pe.oscillator_tab.widget_for(DigitalOscillatorWidgetTypes.PITCH_ENV)
@@ -795,9 +858,13 @@ class DigitalSynthEditor(BaseSynthEditor):
             return
         control = pitch_env.controls.get(param)
         if control:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
+            if new_value is None and hasattr(control, "setMidiValue"):
+                # Times: the slider takes the MIDI value, not milliseconds
+                control.setMidiValue(midi_value)
+            else:
+                control.blockSignals(True)
+                control.setValue(new_value)
+                control.blockSignals(False)
             pitch_env.refresh_plot_from_controls()
             successes.append(param.name)
         else:
@@ -1048,7 +1115,7 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         if check_box:
             check_box.blockSignals(True)
-            check_box.setState(bool(value), False)
+            check_box.setOn(bool(value))  # SELECT is a separate parameter
             check_box.blockSignals(False)
             successes.append(param.name)
         else:

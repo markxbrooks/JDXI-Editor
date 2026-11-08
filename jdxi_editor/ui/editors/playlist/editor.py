@@ -18,6 +18,7 @@ from typing import Any, Callable, Optional
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -32,6 +33,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from picomidi.playback.engine import TransportState
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.program.program import JDXiProgram
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
@@ -40,7 +42,10 @@ from jdxi_editor.ui.editors.helpers.preset import (
     CHEAT_PRESET_AFTER_PROGRAM_MS,
     load_digital_cheat_preset_on_analog,
 )
+from jdxi_editor.ui.editors.playlist.progress import PlaylistProgressWidget
+from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.editors.helpers.widgets import (
+    create_panel,
     create_jdxi_button,
     create_jdxi_row,
 )
@@ -89,8 +94,9 @@ class PlaylistEditor(QWidget):
         self.on_refresh_playlist_combo_callback = on_refresh_playlist_combo
         self.get_parent_instrument_callback = get_parent_instrument
 
-        # Playback tracking state
-        self._current_playlist_row: Optional[int] = None
+        # Playback tracking state: the playing row's Program Name item (it
+        # follows the row when the table is sorted); see _current_playlist_row
+        self._playing_item: Optional[QTableWidgetItem] = None
         self._playlist_midi_editor = None
         self._cheat_preset_play_generation = 0
 
@@ -168,6 +174,14 @@ class PlaylistEditor(QWidget):
         self.playlist_transport = PlaylistTransportWidget(parent=self)
         layout.addWidget(self.playlist_transport)
 
+        # Now playing: song n of N, its progress and the playlist's
+        self.playlist_progress = PlaylistProgressWidget()
+        self.playlist_progress.song_clicked.connect(self._play_song)
+        # ... on a glossy black panel, like the other editors' displays
+        self.playlist_progress_panel = create_panel(self.playlist_progress)
+        mark_sheen(self.playlist_progress_panel)
+        layout.addWidget(self.playlist_progress_panel)
+
         # Create playlist programs table
         self.playlist_programs_table = QTableWidget()
         self.playlist_programs_table.setColumnCount(6)
@@ -214,6 +228,11 @@ class PlaylistEditor(QWidget):
         # Connect double-click to show Program Editor when Program Name is clicked
         self.playlist_programs_table.itemDoubleClicked.connect(
             self._on_playlist_program_double_clicked
+        )
+
+        # Song order and the playing row's mark follow sorting
+        self.playlist_programs_table.horizontalHeader().sortIndicatorChanged.connect(
+            lambda *_: QTimer.singleShot(0, self._refresh_playlist_progress)
         )
 
         # Connect selection changed to enable/disable delete button
@@ -285,8 +304,113 @@ class PlaylistEditor(QWidget):
             self._playlist_midi_editor, "midi_playback_stop"
         ):
             self._playlist_midi_editor.midi_playback_stop()
+        self._disconnect_playlist_finished(self._playlist_midi_editor)
         self._current_playlist_row = None
         self._playlist_midi_editor = None
+        self.playlist_progress.show_stopped()
+
+    # --- Progress through the playlist -----------------------------------------
+
+    @property
+    def _current_playlist_row(self) -> Optional[int]:
+        """Row of the playing song (None if none), wherever sorting has put it."""
+        item = self._playing_item
+        if item is None:
+            return None
+        try:
+            row = item.row()
+        except RuntimeError:  # the table was refilled
+            return None
+        return row if row >= 0 else None
+
+    @_current_playlist_row.setter
+    def _current_playlist_row(self, row: Optional[int]) -> None:
+        table = self.playlist_programs_table
+        self._playing_item = table.item(row, 2) if row is not None and table else None
+        self._mark_playing_row()
+
+    def _playlist_song_rows(self) -> list[int]:
+        """Rows with a MIDI file, in the order they play (top to bottom)."""
+        table = self.playlist_programs_table
+        if not table:
+            return []
+        return [
+            row
+            for row in range(table.rowCount())
+            if table.item(row, 3) and table.item(row, 3).text().strip()
+        ]
+
+    def _song_title(self, row: int) -> str:
+        table = self.playlist_programs_table
+        name_item = table.item(row, 2)
+        name = name_item.text().strip() if name_item else ""
+        file_name = Path(table.item(row, 3).text().strip()).name
+        return f"{name} — {file_name}" if name else file_name
+
+    def _play_song(self, index: int) -> None:
+        """Play song *index* (0-based) of the playlist (a clicked segment)."""
+        rows = self._playlist_song_rows()
+        model = self.playlist_programs_table.model() if self.playlist_programs_table else None
+        if model and 0 <= index < len(rows):
+            self._play_playlist_program(model.index(rows[index], 5))
+
+    def _mark_playing_row(self) -> None:
+        """▶ in the playing row's header and its text in bold; numbers elsewhere."""
+        table = self.playlist_programs_table
+        if not table:
+            return
+        playing = self._current_playlist_row
+        # A font change is an itemChanged, which would re-save the MIDI path
+        table.blockSignals(True)
+        for row in range(table.rowCount()):
+            is_playing = row == playing
+            header = table.verticalHeaderItem(row)
+            if header is None:
+                header = QTableWidgetItem()
+                table.setVerticalHeaderItem(row, header)
+            header.setText("▶" if is_playing else str(row + 1))
+            header.setToolTip("Playing" if is_playing else "")
+            for column in range(table.columnCount()):
+                item = table.item(row, column)
+                if item is not None and item.font().bold() != is_playing:
+                    font = item.font()
+                    font.setBold(is_playing)
+                    item.setFont(font)
+        table.blockSignals(False)
+        table.viewport().update()
+
+    def _refresh_playlist_progress(self) -> None:
+        """Show the playlist's songs, and which is playing."""
+        rows = self._playlist_song_rows()
+        self.playlist_progress.set_songs([self._song_title(row) for row in rows])
+        playing = self._current_playlist_row
+        if playing in rows and self.playlist_progress.current is not None:
+            self.playlist_progress.set_current(rows.index(playing))
+            editor = self._playlist_midi_editor
+            if editor is not None:
+                self.playlist_progress.set_position(
+                    editor.transport_controller.position_seconds
+                )
+        self._mark_playing_row()
+
+    def _on_playlist_song_started(self, row: int) -> None:
+        """The song in *row* has started: follow its position and state."""
+        rows = self._playlist_song_rows()
+        self.playlist_progress.set_songs([self._song_title(r) for r in rows])
+        controller = self._playlist_midi_editor.transport_controller
+        if row in rows:
+            self.playlist_progress.show_song(rows.index(row), controller.duration_seconds)
+        controller.position_changed.connect(self._on_playlist_position_changed)
+        controller.state_changed.connect(self._on_playlist_state_changed)
+        self.playlist_programs_table.scrollToItem(
+            self._playing_item, QAbstractItemView.ScrollHint.EnsureVisible
+        )
+
+    def _on_playlist_position_changed(self, seconds: float) -> None:
+        self.playlist_progress.set_position(seconds)
+
+    def _on_playlist_state_changed(self, state: TransportState) -> None:
+        self.playlist_progress.set_paused(state == TransportState.PAUSED)
 
     def playlist_transport_pause_toggle(self) -> None:
         """Pause or resume current playlist playback."""
@@ -511,6 +635,7 @@ class PlaylistEditor(QWidget):
         log.message(
             f"✅ Populated playlist programs table with {len(playlist_items)} programs"
         )
+        self._refresh_playlist_progress()
 
     def _create_cheat_preset_cell_widget(
         self,
@@ -674,6 +799,8 @@ class PlaylistEditor(QWidget):
         playlist_id = playlist_data["playlist_id"]
         program_id = playlist_data["program_id"]
         midi_file_path = item.text().strip() if item.text() else None
+        # A song gained or lost its MIDI file
+        self._refresh_playlist_progress()
 
         # Save to database
         from jdxi_editor.ui.programs.database import get_database
@@ -945,8 +1072,6 @@ class PlaylistEditor(QWidget):
 
         # If MIDI file is specified, load and play it
         if midi_file_path:
-            from mido import MidiFile
-
             # Check if file exists
             if not os.path.exists(midi_file_path):
                 log.warning(f"⚠️ MIDI file not found: {midi_file_path}")
@@ -992,83 +1117,33 @@ class PlaylistEditor(QWidget):
                     # Load the MIDI file directly (bypassing the file dialog)
                     try:
                         # Disconnect any existing finished signal from previous playlist playback
-                        if self._playlist_midi_editor and hasattr(
-                            self._playlist_midi_editor, "midi_playback_worker"
-                        ):
-                            if self._playlist_midi_editor.midi_playback_worker:
-                                try:
-                                    self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
-                                        self._on_playlist_playback_finished
-                                    )
-                                except Exception:
-                                    pass
-
-                        # Stop any current playback
-                        if hasattr(midi_file_editor, "midi_stop_playback"):
-                            midi_file_editor.midi_playback_stop()
-                        if hasattr(midi_file_editor, "midi_playback_worker_stop"):
-                            midi_file_editor.midi_playback_worker_stop()
+                        self._disconnect_playlist_finished(self._playlist_midi_editor)
+                        self._disconnect_playlist_finished(midi_file_editor)
 
                         # Reset tracking if we're starting a new playback
                         self._current_playlist_row = None
                         self._playlist_midi_editor = None
 
-                        # Load MIDI file
-                        midi_file_editor.midi_state.file = MidiFile(midi_file_path)
-                        midi_file_editor.ui.digital_title_file_name.setText(
-                            f"Loaded: {Path(midi_file_path).name}"
-                        )
-                        midi_file_editor.midi_file.midi_track_viewer.clear()
-                        midi_file_editor.midi_file.midi_track_viewer.set_midi_file(
-                            midi_file_editor.midi_state.file
-                        )
-
-                        # Initialize MIDI file parameters (similar to midi_load_file)
-                        midi_file_editor.ticks_per_beat = (
-                            midi_file_editor.midi_state.file.ticks_per_beat
-                        )
-
-                        # Detect initial tempo
-                        if hasattr(midi_file_editor, "detect_initial_tempo"):
-                            initial_track_tempos = (
-                                midi_file_editor.detect_initial_tempo()
-                            )
-
-                        midi_file_editor.ui_display_set_tempo_usecs(
-                            midi_file_editor.midi_state.tempo_initial
-                        )
-                        midi_file_editor.midi_state.tempo_at_position = (
-                            midi_file_editor.midi_state.tempo_initial
-                        )
-
-                        midi_file_editor.midi_channel_select()
-                        midi_file_editor.midi_extract_events()
-                        midi_file_editor.setup_worker()
-                        midi_file_editor.calculate_duration()
-                        midi_file_editor.calculate_tick_duration()
-                        midi_file_editor.ui_position_slider_reset()
+                        # Load MIDI file (stops any current playback)
+                        if not midi_file_editor.midi_load_file_from_path(
+                            midi_file_path,
+                            notify_pattern_sequencer=False,
+                            update_recent_files=False,
+                        ):
+                            return
 
                         # Store current playlist row and editor for auto-advance
                         self._current_playlist_row = row
                         self._playlist_midi_editor = midi_file_editor
 
-                        # Connect to worker's finished signal for auto-advance
-                        if (
-                            hasattr(midi_file_editor, "midi_playback_worker")
-                            and midi_file_editor.midi_playback_worker
-                        ):
-                            try:
-                                # Disconnect any existing connection
-                                midi_file_editor.midi_playback_worker.finished.disconnect()
-                            except Exception:
-                                pass
-                            # Connect to finished signal
-                            midi_file_editor.midi_playback_worker.finished.connect(
-                                self._on_playlist_playback_finished
-                            )
+                        # Advance to the next item when the song ends
+                        midi_file_editor.transport_controller.finished.connect(
+                            self._on_playlist_playback_finished
+                        )
 
                         # Start playback
                         midi_file_editor.midi_playback_start()
+                        self._on_playlist_song_started(row)
 
                         log.message(
                             f"✅ Started playing MIDI file: {Path(midi_file_path).name}"
@@ -1093,22 +1168,28 @@ class PlaylistEditor(QWidget):
                 f"ℹ️ No MIDI file selected for program {program.id}, only program loaded"
             )
 
+    def _disconnect_playlist_finished(self, midi_file_editor) -> None:
+        """Stop *midi_file_editor*'s end-of-song signal from advancing the playlist."""
+        if midi_file_editor is None:
+            return
+        controller = midi_file_editor.transport_controller
+        for signal, slot in (
+            (controller.finished, self._on_playlist_playback_finished),
+            (controller.position_changed, self._on_playlist_position_changed),
+            (controller.state_changed, self._on_playlist_state_changed),
+        ):
+            try:
+                signal.disconnect(slot)
+            except (RuntimeError, TypeError):
+                pass  # Not connected
+
     def _on_playlist_playback_finished(self):
         """Called when MIDI playback finishes. Advances to the next playlist item."""
         if self._current_playlist_row is None or not self.playlist_programs_table:
             return
 
         # Disconnect the finished signal
-        if self._playlist_midi_editor and hasattr(
-            self._playlist_midi_editor, "midi_playback_worker"
-        ):
-            try:
-                if self._playlist_midi_editor.midi_playback_worker:
-                    self._playlist_midi_editor.midi_playback_worker.finished.disconnect(
-                        self._on_playlist_playback_finished
-                    )
-            except Exception:
-                pass
+        self._disconnect_playlist_finished(self._playlist_midi_editor)
 
         # Advance to next row
         next_row = self._current_playlist_row + 1
@@ -1118,6 +1199,7 @@ class PlaylistEditor(QWidget):
             log.message("✅ Playlist playback completed - reached end of playlist")
             self._current_playlist_row = None
             self._playlist_midi_editor = None
+            self.playlist_progress.show_finished()
             return
 
         # Check if next row has a MIDI file
@@ -1128,6 +1210,7 @@ class PlaylistEditor(QWidget):
             )
             self._current_playlist_row = None
             self._playlist_midi_editor = None
+            self.playlist_progress.show_stopped()
             return
 
         # Play the next item
@@ -1270,27 +1353,18 @@ class PlaylistEditor(QWidget):
             log.warning(f"Invalid program ID: {program_id}")
             return
 
-        bank_letter = program_id[0]
-        try:
-            bank_number = int(program_id[1:3])
-        except ValueError:
-            log.warning(f"Invalid program number in ID: {program_id}")
-            return
-
         log.message(f"🎹 Loading program from playlist: {program_id} - {program.name}")
-
-        # Calculate MIDI values
-        try:
-            msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        except (ValueError, TypeError) as e:
-            log.error(f"Error calculating MIDI values for {program_id}: {e}")
-            return
 
         # Send MIDI Program Change
         if self.midi_helper:
-            log.message(f"Sending Program Change: MSB={msb}, LSB={lsb}, PC={pc}")
-            self.midi_helper.send_bank_select_and_program_change(
-                self.channel, msb, lsb, pc
+            log.message(f"Sending Program Change for {program_id}")
+            from jdxi_editor.ui.midi.selection_info import send_program_with_expectation
+
+            send_program_with_expectation(
+                self.midi_helper,
+                program_id,
+                source="playlist",
+                channel=self.channel,
             )
 
         # Emit signal and call callback

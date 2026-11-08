@@ -418,7 +418,6 @@ class DrumWMTSection(SectionBaseWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        adsr_widget.setStyleSheet(JDXi.UI.Style.ADSR)
         return adsr_widget
 
     def _create_tuning_group(self, p: Callable[[Any], Any]):

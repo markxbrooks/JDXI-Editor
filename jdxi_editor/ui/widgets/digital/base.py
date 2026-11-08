@@ -6,14 +6,25 @@ from __future__ import annotations
 
 import logging
 import os
+import platform
 from pathlib import Path
+from typing import Optional
 
 from decologr import Decologr as log
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QColor, QFont, QFontDatabase, QLinearGradient, QPainter, QPaintEvent, QPen
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QFontDatabase,
+    QLinearGradient,
+    QPainter,
+    QPaintEvent,
+    QPen,
+)
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.style.editor_style import AppEditorStyle
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 LCD_FONT_FILE = "JdLCD.ttf"
@@ -127,7 +138,7 @@ class DigitalDisplayBase(QWidget):
         super().__init__(parent)
         load_lcd_font()
         self.digital_font_family = digital_font_family or get_lcd_font_family()
-        self.display_texts = []
+        self.display_texts: list[str] = []
         self.setMinimumSize(210, 70)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
@@ -139,51 +150,107 @@ class DigitalDisplayBase(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, False)
         self.draw_display(painter)
 
-    def draw_display(self, painter: QPainter):
-        """Draws the LCD-style digital with a gradient glow effect."""
-        display_width, display_height = self.width(), self.height()
+    def _paint_lcd_panel(self, painter: QPainter) -> None:
+        """Signature LCD bezel: dark red gradient + subtle inner edge."""
+        style = AppEditorStyle
+        w, h = self.width(), self.height()
 
-        # Gradient background
-        gradient = QLinearGradient(0, 0, display_width, display_height)
-        gradient.setColorAt(0.0, QColor("#321212"))
-        gradient.setColorAt(0.3, QColor("#331111"))
-        gradient.setColorAt(0.5, QColor("#551100"))
-        gradient.setColorAt(0.7, QColor("#331111"))
-        gradient.setColorAt(1.0, QColor("#111111"))
+        gradient = QLinearGradient(0, 0, 0, h)
+        gradient.setColorAt(0.0, QColor(style.LCD_BG_EDGE))
+        gradient.setColorAt(0.35, QColor(style.LCD_BG_MID))
+        gradient.setColorAt(0.55, QColor(style.LCD_BG_GLOW))
+        gradient.setColorAt(1.0, QColor(style.LCD_BG_EDGE))
 
         painter.setBrush(gradient)
-        painter.setPen(QPen(QColor("#000000"), 2))
-        painter.drawRect(0, 0, display_width, display_height)
+        painter.setPen(QPen(QColor("#0A0505"), 2))
+        painter.drawRect(0, 0, w, h)
 
-        import platform
+        # Inner highlight (top) / shadow (bottom) for LCD depth
+        painter.setPen(QPen(QColor(80, 40, 20, 90), 1))
+        painter.drawLine(3, 3, w - 4, 3)
+        painter.setPen(QPen(QColor(0, 0, 0, 120), 1))
+        painter.drawLine(3, h - 4, w - 4, h - 4)
+
+    def draw_display(self, painter: QPainter):
+        """Draws the LCD-style digital with a gradient glow effect."""
+        self._paint_lcd_panel(painter)
 
         if platform.system() == "Windows":
             font_size = 13
         else:
-            font_size = 19
+            font_size = 16
         display_font = lcd_font(font_size, bold=True, primary=self.digital_font_family)
         painter.setFont(display_font)
 
-        # Draw text
-        y_offset = 10
-        for text in self.display_texts:
-            painter.setPen(QPen(QColor("#FFAA33")))
-            rect = QRect(10, y_offset, self.width() - 20, 30)
-            painter.drawText(rect, 1, str(text))
-            y_offset += 30
+        line_h = 22 if len(self.display_texts) > 2 else 28
+        y_offset = 8
+        for i, text in enumerate(self.display_texts):
+            # Primary line (tone) brighter; secondary lines slightly dimmer
+            color = (
+                AppEditorStyle.LCD_ORANGE
+                if i == 0 or (i == 1 and len(self.display_texts) <= 2)
+                else AppEditorStyle.LCD_ORANGE_DIM
+            )
+            # Prefer last non-empty line as hero when upper is a status line
+            if len(self.display_texts) >= 2 and i == len(self.display_texts) - 1:
+                color = AppEditorStyle.LCD_ORANGE
+            painter.setPen(QPen(QColor(color)))
+            rect = QRect(10, y_offset, self.width() - 20, line_h)
+            painter.drawText(
+                rect,
+                int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter),
+                str(text),
+            )
+            y_offset += line_h
 
     def set_state(self, state: JDXiDisplayState) -> None:
-        self.update_display(["", state.tone_name])
+        lines = [state.tone_name]
+        detail = state.bank_detail_line()
+        if detail:
+            lines.append(detail)
+        self.update_display(lines)
 
     def update_display(self, texts: list) -> None:
         """Update the digital text and trigger repaint."""
-        self.display_texts = texts
+        self.display_texts = [str(t) for t in texts]
         self.update()
 
     def set_upper_display_text(self, text: str) -> None:
         """Update the upper line of the display."""
-        self.display_texts[0] = text
+        if not self.display_texts:
+            self.display_texts = [text]
+        else:
+            self.display_texts[0] = text
         self.update()
+
+    def set_wire_detail(
+        self,
+        *,
+        bank_msb: Optional[int] = None,
+        bank_lsb: Optional[int] = None,
+        program: Optional[int] = None,
+    ) -> None:
+        """Set or clear the BANK / PC detail line under the tone name."""
+        tone = ""
+        if self.display_texts:
+            # Prefer the last line as tone when an upper status line exists
+            tone = self.display_texts[-1] if len(self.display_texts) > 1 else self.display_texts[0]
+            if len(self.display_texts) > 1 and self.display_texts[0]:
+                # Keep upper status (tempo / bar) + tone + wire
+                upper = self.display_texts[0]
+                detail = JDXiDisplayState.format_bank_line(bank_msb, bank_lsb, program)
+                lines = [upper, tone]
+                if detail:
+                    lines.append(detail)
+                self.update_display(lines)
+                return
+
+        detail = JDXiDisplayState.format_bank_line(bank_msb, bank_lsb, program)
+        lines = [tone] if tone else []
+        if detail:
+            lines.append(detail)
+        if lines:
+            self.update_display(lines)
 
 
 # Backwards-compatible alias used by older imports.

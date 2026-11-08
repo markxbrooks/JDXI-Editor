@@ -195,6 +195,14 @@ def load_digital_cheat_preset_on_analog(
     log.parameter("combo box pc", pc)
     log_midi_info(msb, lsb, pc)
 
-    return midi_helper.send_bank_select_and_program_change(
-        channel, bank_msb, bank_lsb, midi_pc
+    from jdxi_editor.core.jdxi import JDXi
+    from jdxi_editor.ui.midi.selection_info import send_tone_with_expectation
+
+    return send_tone_with_expectation(
+        midi_helper,
+        preset_id_int,
+        JDXi.UI.Preset.Digital.LIST,
+        channel,
+        source="cheat_preset",
+        channel_label="Analog",
     )

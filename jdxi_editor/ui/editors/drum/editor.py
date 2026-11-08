@@ -64,6 +64,7 @@ from decologr import Decologr as log
 if TYPE_CHECKING:
     from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QGroupBox, QTabWidget
 
@@ -123,6 +124,7 @@ class DrumCommonEditor(SynthEditor):
     def setup_ui(self) -> None:
         """Setup the UI components for the drum editor."""
         main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(24, 12, 24, 24)  # matte body around the panel
         self.setMinimumSize(
             JDXi.UI.Dimensions.EDITOR_DRUM.WIDTH, JDXi.UI.Dimensions.EDITOR_DRUM.HEIGHT
         )
@@ -154,10 +156,10 @@ class DrumCommonEditor(SynthEditor):
             JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH
         )
         self.instrument_preset.add_image_group(self.instrument_image_group)
-        self.instrument_preset.add_stretch()
         self.update_instrument_image()
 
         instrument_vrow_layout.addWidget(self.instrument_preset)
+        instrument_vrow_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         drum_kit_presets_icon = JDXi.UI.Icon.get_icon(
             JDXi.UI.Icon.MUSIC_NOTES, color=JDXi.UI.Style.GREY
@@ -172,8 +174,8 @@ class DrumCommonEditor(SynthEditor):
         container_layout = self.base_widget.get_container_layout()
 
         # Add partial_tab_widget to the container
-        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         container_layout.addWidget(self.partial_tab_widget)
+        self._add_partial_clipboard_row(container_layout)
 
         # Add the base widget as the second tab (it contains the scroll area)
         drum_kit_parts_icon = JDXi.UI.Icon.get_icon(
@@ -183,8 +185,6 @@ class DrumCommonEditor(SynthEditor):
             self.base_widget, drum_kit_parts_icon, "Drum Kit Parts"
         )
 
-        self.presets_parts_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
-        self.partial_tab_widget.setStyleSheet(JDXi.UI.Style.TABS_DRUMS)
         self._setup_partial_editors()
         # Create and add the common section
         self.common_section = DrumCommonSection(
@@ -213,6 +213,7 @@ class DrumCommonEditor(SynthEditor):
             )
         self.presets_parts_tab_widget.addTab(mixer_widget, mixer_icon, "Drum Kit Mixer")
 
+        self._add_pad_grid(container_layout)
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
@@ -228,7 +229,7 @@ class DrumCommonEditor(SynthEditor):
         log.message(
             f"[DrumCommonEditor] Program change {program} detected on channel {channel}, requesting data update"
         )
-        self.data_request(channel, program)
+        self.device_refresher.schedule()
 
     def _setup_partial_editors(self):
         """
@@ -302,6 +303,85 @@ class DrumCommonEditor(SynthEditor):
             from PySide6.QtWidgets import QApplication
 
             QApplication.processEvents()
+
+    def _add_pad_grid(self, layout) -> None:
+        """Pads select the partial page; the stack's own tab bar is hidden."""
+        from jdxi_editor.ui.editors.drum.pad_grid import DrumPadGrid
+        from jdxi_editor.ui.style.editor_style import mark_flat
+
+        tabs = self.partial_tab_widget
+        names = [tabs.tabText(i) for i in range(tabs.count())]
+        self.pad_grid = DrumPadGrid(names)
+        self.pad_grid.padSelected.connect(tabs.setCurrentIndex)
+        tabs.currentChanged.connect(self.pad_grid.set_current)
+        self.pad_grid.set_current(tabs.currentIndex())
+        tabs.tabBar().hide()
+        mark_flat(tabs)
+        layout.insertWidget(layout.indexOf(tabs), self.pad_grid)
+
+    def _add_partial_clipboard_row(self, layout) -> None:
+        """Copy / paste current Drum partial (Manager copyPart / pastePart)."""
+        from PySide6.QtWidgets import QHBoxLayout
+
+        from jdxi_editor.ui.editors.helpers.widgets import create_round_button_with_label
+
+        row = QHBoxLayout()
+        copy_row, _ = create_round_button_with_label(
+            "Copy Partial",
+            "mdi.content-copy",
+            self.copy_current_partial,
+            "Copy the currently selected drum partial's parameters",
+        )
+        paste_row, _ = create_round_button_with_label(
+            "Paste Partial",
+            "mdi.content-paste",
+            self.paste_current_partial,
+            "Paste into the currently selected drum partial",
+        )
+        row.addWidget(copy_row)
+        row.addWidget(paste_row)
+        row.addStretch()
+        layout.addLayout(row)
+
+    def _current_partial_panel(self):
+        idx = self.partial_tab_widget.currentIndex() if self.partial_tab_widget else -1
+        keys = list(self.partial_editors.keys())
+        # Common tab is appended after all partials — ignore it for clipboard
+        if 0 <= idx < len(keys):
+            return self.partial_editors.get(keys[idx])
+        return None
+
+    def copy_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import copy_partial
+
+        panel = self._current_partial_panel()
+        if panel is None or not hasattr(panel, "get_controls_as_dict"):
+            log.warning("No drum partial panel to copy", scope=self.__class__.__name__)
+            return
+        copy_partial("drum_partial", panel.get_controls_as_dict())
+
+    def paste_current_partial(self) -> None:
+        from jdxi_editor.ui.editors.helpers.partial_clipboard import (
+            apply_controls_to_editor,
+            paste_partial,
+        )
+        from PySide6.QtWidgets import QMessageBox
+
+        panel = self._current_partial_panel()
+        if panel is None:
+            log.warning(
+                "No drum partial panel to paste into", scope=self.__class__.__name__
+            )
+            return
+        controls = paste_partial("drum_partial")
+        if controls is None:
+            QMessageBox.warning(
+                self,
+                "Paste Partial",
+                "Clipboard is empty or not a Drum partial. Copy a partial first.",
+            )
+            return
+        apply_controls_to_editor(panel, controls)
 
     def update_partial_number(self, index: int):
         """

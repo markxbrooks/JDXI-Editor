@@ -8,13 +8,9 @@ from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton
 
-from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.preset import (
-    get_preset_parameter_value,
-    preset_to_jdxi_bank_pc,
-)
+from jdxi_editor.ui.editors.helpers.preset import get_preset_parameter_value
 from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
 from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
@@ -24,6 +20,7 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
+from jdxi_editor.ui.midi.selection_info import send_tone_with_expectation
 from jdxi_editor.ui.widgets.midi.selection_info_bar import (
     MidiSelectionInfoBar,
     bind_program_midi_info,
@@ -192,13 +189,7 @@ class PresetWidget(QWidget):
         log.parameter("[PresetWidget] combo box msb", msb)
         log.parameter("[PresetWidget] combo box lsb", lsb)
         log.parameter("[PresetWidget] combo box pc", pc)
-        log_midi_info(msb, lsb, pc)
 
-        # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-
-        # Use PresetWidget's midi_channel if set, otherwise fall back to parent's
-        # Access ProgramEditor through ProgramGroupWidget.parent
         program_editor = getattr(self.parent, "parent", None) if self.parent else None
         if not program_editor or not hasattr(program_editor, "midi_helper"):
             log.error(
@@ -211,11 +202,20 @@ class PresetWidget(QWidget):
             if self.midi_channel is not None
             else getattr(self.parent, "midi_channel", None)
         )
-        program_editor.midi_helper.send_bank_select_and_program_change(
+        channel_labels = {
+            PresetTitle.DIGITAL_SYNTH1: "Digital 1",
+            PresetTitle.DIGITAL_SYNTH2: "Digital 2",
+            PresetTitle.DRUMS: "Drums",
+            PresetTitle.ANALOG_SYNTH: "Analog",
+        }
+        preset_type = self.digital_preset_type_combo.currentText()
+        send_tone_with_expectation(
+            program_editor.midi_helper,
+            int(str(preset_id).strip()),
+            preset_list_to_use,
             midi_channel,
-            bank_msb,
-            bank_lsb,
-            midi_pc,  # Already 0-127
+            source="preset_widget",
+            channel_label=channel_labels.get(preset_type),
         )
         if hasattr(program_editor, "data_request"):
             program_editor.data_request()
@@ -351,6 +351,7 @@ class PresetWidget(QWidget):
             PresetTitle.ANALOG_SYNTH: "Analog",
         }
         preset_type = self.digital_preset_type_combo.currentText()
+        program_editor = getattr(self.parent, "parent", None) if self.parent else None
         bind_tone_midi_info(
             self.preset_combo_box,
             self.preset_midi_info_bar,
@@ -358,4 +359,5 @@ class PresetWidget(QWidget):
             channel=channel,
             channel_label=channel_labels.get(preset_type),
             parent=self,
+            midi_helper=getattr(program_editor, "midi_helper", None),
         )

@@ -7,10 +7,13 @@ from jdxi_editor.ui.parameters import JDXiUIParameters
 from jdxi_editor.ui.preset.tone.lists import JDXiUIPreset
 from jdxi_editor.ui.programs import JDXiUIProgramList
 from jdxi_editor.ui.style import (
+    EditorStyle,
     JDXiUIDimensions,
     JDXiUIIconRegistry,
     JDXiUIStyle,
     JDXiUIThemeManager,
+    MidiPlayerStyle,
+    PatternEditorStyle,
 )
 
 
@@ -18,6 +21,9 @@ class JDXiUI:
     """Composition of main JDXI UI components as a single container."""
 
     Style: JDXiUIStyle = JDXiUIStyle
+    EditorStyle: EditorStyle = EditorStyle
+    MidiPlayer: MidiPlayerStyle = MidiPlayerStyle
+    PatternEditor: PatternEditorStyle = PatternEditorStyle
     Theme: JDXiUIThemeManager = JDXiUIThemeManager
     Icon: JDXiUIIconRegistry = JDXiUIIconRegistry
     Dimensions: JDXiUIDimensions = JDXiUIDimensions

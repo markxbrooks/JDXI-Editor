@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from jdxi_editor.ui.style.midi_player import PatternEditorStyle
+
 
 @dataclass
 class NoteButtonAttrs:
@@ -29,8 +31,10 @@ class ClipboardData:
 
 
 class SequencerStyle:
-    ROW_FONT_SIZE = 20
-    ROW_FONT_WEIGHT = "bold"
+    """Row label typography aligned with PatternEditorStyle / UI critique scale."""
+
+    ROW_FONT_SIZE = 12
+    ROW_FONT_WEIGHT = "600"
 
     @staticmethod
     def row_label(color: str) -> str:
@@ -39,3 +43,10 @@ class SequencerStyle:
             f"font-weight: {SequencerStyle.ROW_FONT_WEIGHT};"
             f"color: {color};"
         )
+
+    # Muted part accents (not full JD-Xi neon red)
+    DIGITAL = "#B44646"
+    DIGITAL_2 = "#C88C3C"
+    ANALOG = "#3296A0"
+    DRUMS = "#7850A0"
+    DEFAULT = PatternEditorStyle.TEXT_SECONDARY

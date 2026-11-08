@@ -132,7 +132,7 @@ class FilterWidget(EnvelopeWidgetBase):
             self.slope_param_control.setValue(
                 self.envelope[EnvelopeParameter.FILTER_SLOPE]
             )
-        JDXi.UI.Theme.apply_editor_style(self, analog=self.analog)
+        JDXi.UI.Theme.apply_editor_style(self, analog=self.analog, body=False)
         JDXi.UI.Theme.apply_adsr_style(self, analog=self.analog)
 
     def on_envelope_changed(self, envelope: dict) -> None:
@@ -155,8 +155,8 @@ class FilterWidget(EnvelopeWidgetBase):
         """
         self.envelope[EnvelopeParameter.FILTER_CUTOFF] = (
             val / Midi.value.max.SEVEN_BIT
-        )  # Convert from 0–100 to 0.0–1.0
-        self.update()  # Trigger repaint if needed
+        )  # Convert from 0–127 to 0.0–1.0
+        self.plot.update()  # The chart draws from self.envelope
 
     def on_slope_param_changed(self, val: int) -> None:
         """
@@ -166,7 +166,7 @@ class FilterWidget(EnvelopeWidgetBase):
         :return: None
         """
         self.envelope["slope_param"] = val  # keep as binary 1/0
-        self.update()  # Trigger repaint if needed
+        self.plot.update()  # The chart draws from self.envelope
 
     def update_envelope_from_controls(self) -> None:
         """Read slider controls into envelope and apply centrally."""

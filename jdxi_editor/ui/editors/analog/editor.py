@@ -368,6 +368,12 @@ class AnalogSynthEditor(BaseSynthEditor):
         )
         self.update_filter_controls_state(mode=mode)
 
+    def randomize_analog_patch(self) -> int:
+        """Randomize Analog parameters within Manager-style ranges and send DT1."""
+        from jdxi_editor.ui.editors.helpers.analog_random import randomize_analog_editor
+
+        return randomize_analog_editor(self)
+
 
 if __name__ == "__main__":
     # --- Test the AnalogSynthEditor

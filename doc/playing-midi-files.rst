@@ -16,10 +16,10 @@ Typical Workflow
 ================
 
 1. **Load a MIDI file** in the MIDI File Player (File → Open… or drag-and-drop)
-2. **Classify tracks** (optional): Use Detect Drums and Classify Tracks to auto-assign channels
-3. **Apply changes**: Apply All Track Changes or Apply Presets
-4. **Play**: Start playback (JD-Xi or FluidSynth)
-5. **Edit in Pattern Editor** (optional): Load into Pattern Editor → edit steps → Save Pattern
+2. **Assign channels** (optional): Detect Drums and Classify Tracks, or a track's channel in its
+   header (changes apply immediately); Apply Presets inserts JD-Xi presets per channel
+3. **Play**: Start playback (JD-Xi or FluidSynth)
+4. **Edit in Pattern Editor** (optional): Load into Pattern Editor → edit steps → Save Pattern
 
 SoundFont Playback
 ==================

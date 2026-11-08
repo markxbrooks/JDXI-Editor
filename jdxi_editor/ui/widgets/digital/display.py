@@ -14,7 +14,7 @@ Usage Example:
 import platform
 
 from decologr import Decologr as log
-from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPaintEvent, QPen
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from jdxi_editor.ui.widgets.digital.base import DigitalDisplayBase, lcd_font
@@ -75,34 +75,21 @@ class DigitalDisplay(DigitalDisplayBase):
         self.draw_display(painter)
 
     def draw_display(self, painter: QPainter):
-        """Draws the JD-Xi style digital digital with a gradient glow effect."""
+        """Draws the JD-Xi style digital with signature LCD treatment."""
+        from jdxi_editor.ui.style.editor_style import AppEditorStyle
 
         display_x, display_y = 0, 0
         display_width, display_height = self.width(), self.height()
 
-        # 1. Create an orange glow gradient background
-        gradient = QLinearGradient(0, 0, display_width, display_height)
-        gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
-        gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
-        gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
+        self._paint_lcd_panel(painter)
 
-        painter.setBrush(gradient)
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        painter.setPen(QPen(QColor("#000000"), 2))  # black border
-        painter.drawRect(display_x, display_y, display_width, display_height)
-
-        # 2. Set font for digital digital
         if platform.system() == "Windows":
             font_size = 15
         else:
-            font_size = 19
+            font_size = 17
         display_font = lcd_font(font_size, bold=True, primary=self.digital_font_family)
         painter.setFont(display_font)
-        painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
 
-        # 3. Draw text with glowing effect
         tone_name_text = f" {self.active_synth}:{self.tone_name}"
         tone_name_text = (
             tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
@@ -113,21 +100,24 @@ class DigitalDisplay(DigitalDisplayBase):
         )
         oct_text = f"Oct {self.current_octave:+}" if self.current_octave else "Oct 0"
 
-        # Glow effect simulation (by drawing text multiple times with slight offsets)
-        offsets = [(-2, -2), (1, -1), (-1, 1), (1, 1)]
-        glow_color = QColor("#FF00")  # Darker orange for glow effect
+        orange = QColor(AppEditorStyle.LCD_ORANGE)
+        dim = QColor(AppEditorStyle.LCD_ORANGE_DIM)
+        glow_color = QColor(AppEditorStyle.LCD_ORANGE_DIM)
+        glow_color.setAlpha(90)
+
+        offsets = [(-1, -1), (1, -1), (-1, 1), (1, 1)]
         for dx, dy in offsets:
             painter.setPen(QPen(glow_color))
             painter.drawText(display_x + 7 + dx, display_y + 20 + dy, program_text)
             painter.drawText(display_x + 3 + dx, display_y + 50 + dy, tone_name_text)
             painter.drawText(
-                display_x + display_width - 20 + dx, display_y + 30 + dy, oct_text
+                display_x + display_width - 66 + dx, display_y + 50 + dy, oct_text
             )
 
-        # Draw the main text on top
-        painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
-        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
+        painter.setPen(QPen(dim))
         painter.drawText(display_x + 7, display_y + 20, program_text)
+        painter.setPen(QPen(orange))
+        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
         painter.drawText(display_x + display_width - 66, display_y + 50, oct_text)
 
     # --- Property Setters ---

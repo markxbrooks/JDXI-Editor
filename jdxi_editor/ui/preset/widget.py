@@ -4,11 +4,16 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTabWidget, QVBoxLayout
+import picomidi
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
-from jdxi_editor.ui.editors.helpers.widgets import create_jdxi_button, create_jdxi_row
+from jdxi_editor.ui.editors.helpers.widgets import (
+    create_jdxi_button,
+    create_jdxi_row,
+    create_round_button_with_label,
+)
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_preset_list_for_synth_type,
     get_preset_signals,
@@ -28,6 +33,8 @@ from jdxi_editor.ui.widgets.editor.helper import (
     transfer_layout_items,
 )
 from picoui.helpers.layout import create_group
+from picoui.specs.widgets import ComboBoxSpec
+from picoui.widget.helper import create_combo_box, create_combo_row
 
 if TYPE_CHECKING:
     from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -46,6 +53,8 @@ class InstrumentPresetWidget(QWidget):
         :param parent: QWidget
         """
         super().__init__(parent)
+        self.midi_channel_combo = None
+        self.midi_channel_combo_row = None
         self.group: QGroupBox | None = None
         self.layout: QVBoxLayout | None = None
         self.instrument_presets: QWidget | None = None
@@ -57,6 +66,7 @@ class InstrumentPresetWidget(QWidget):
         self.instrument_selection_combo: Optional["SearchableFilterableComboBox"] = None
         self.tone_midi_info_bar: Optional[MidiSelectionInfoBar] = None
         self.cheat_midi_info_bar: Optional[MidiSelectionInfoBar] = None
+        self.tone_midi_info = None  # MidiSelectionInfoController for the preset combo
         
         # Connect to preset list change signal for dynamic refresh
         get_preset_signals().soundfont_list_changed.connect(self._refresh_preset_list)
@@ -130,13 +140,15 @@ class InstrumentPresetWidget(QWidget):
             self.instrument_selection_combo.set_value(current_value)
 
     def add_image_group(self, group: QGroupBox):
-        """add image group"""
+        """add the image beside the preset panel; the pair stays centred"""
         group.setMinimumWidth(JDXi.UI.Style.INSTRUMENT_IMAGE_WIDTH)
-        self.hlayout.addWidget(group)
+        self.hlayout.addWidget(group, 0, Qt.AlignmentFlag.AlignTop)
+        self.hlayout.addStretch(1)
 
     def add_preset_group(self, group: QGroupBox):
-        """add groupbox for instruments"""
-        self.hlayout.addWidget(group)
+        """add groupbox for instruments (as tall as its contents)"""
+        group.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.hlayout.addWidget(group, 0, Qt.AlignmentFlag.AlignTop)
 
     def setup(self):
         """set up the widget - creates the main vertical layout"""
@@ -147,14 +159,15 @@ class InstrumentPresetWidget(QWidget):
                 *JDXi.UI.Style.PADDING_MARGINS
             )
             self.layout.setSpacing(JDXi.UI.Style.SPACING)
+            self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
             self.setLayout(self.layout)
-            # Add stretch at top for vertical centering
-            self.layout.addStretch()
 
     def create_instrument_image_group(self) -> tuple[QGroupBox, Any, Any]:
-        """Image group"""
+        """Image group — frameless overview panel (no heavy inset card)."""
         self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.instrument_image_label.setAlignment(
+            Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter
+        )
         instrument_group_layout = create_layout_with_items(items=[self.instrument_image_label],
                                                            vertical=True,
                                                            margins=JDXi.UI.Style.REDUCED_PADDING_MARGINS,
@@ -265,18 +278,15 @@ class InstrumentPresetWidget(QWidget):
 
     def _add_normal_preset_content(self, layout: Any, synth_type: str):
         """Add normal preset selection content to the layout."""
-
-        # Add icon row at the top (centered with stretch on both sides, matching PresetWidget)
-        icon_row_container = QHBoxLayout()
-        icon_row_container.addStretch()
-        icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
-
-        transfer_layout_items(icon_row, icon_row_container)
-        icon_row_container.addStretch()
-        layout.addLayout(icon_row_container)
-        layout.addSpacing(10)  # Add spacing after icon row, matching PresetWidget
+        # No icon row here: the Digital and Drums editors show one above
 
         self.instrument_title_label = DigitalTitle()
+        # Upper line names the part being edited, as the JD-Xi's display does
+        part = {
+            "Digital": f"DIGITAL SYNTH {getattr(self.parent, 'synth_number', 1)}",
+            "Drums": "DRUMS",
+        }.get(synth_type, synth_type.upper())
+        self.instrument_title_label.set_upper_display_text(part)
         layout.addWidget(self.instrument_title_label)
 
         # --- Edit Tone Name (round button + label, centered)
@@ -287,16 +297,7 @@ class InstrumentPresetWidget(QWidget):
             layout,
             name="edit_tone_name",
         )
-        # --- Send Read Request to Synth (round button + label, centered)
-        self._add_centered_round_button(
-            JDXi.UI.Icon.REFRESH,
-            "Send Read Request to Synth",
-            self.parent.data_request,
-            layout,
-            name="read_request",
-        )
-        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
-        layout.addWidget(self.instrument_selection_label)
+        # (Reading from the synth is the "Read from JD-Xi" button below)
 
         # Determine the correct preset list for this synth type.
         preset_list = get_preset_list_for_synth_type(synth_type)
@@ -369,36 +370,57 @@ class InstrumentPresetWidget(QWidget):
             self.parent.update_instrument_title
         )
 
-        # --- Load (round button + label, centered)
-        load_row = QHBoxLayout()
-        load_row.addStretch()
-        load_button = self._add_round_action_button(
-            JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
-            "Load",
-            self._on_load_preset,
-            load_row,
-            name=None,
+        from jdxi_editor.ui.editors.helpers.edit_buffer_ops import (
+            create_part_syx_row,
+            create_preset_nav_row,
+            create_read_from_jdxi_row,
         )
-        load_row.addStretch()
-        load_row_widget = QWidget()
-        load_row_widget.setLayout(load_row)
+
+        nav_row, prev_btn, next_btn, load_button = create_preset_nav_row(
+            self._on_prev_preset,
+            self._on_next_preset,
+            self._on_load_preset,
+        )
+        self._preset_prev_button = prev_btn
+        self._preset_next_button = next_btn
 
         selection_layout = create_layout_with_items(
-            [self.instrument_selection_combo, load_row_widget], vertical=True
+            [self.instrument_selection_combo, nav_row], vertical=True
         )
 
         self.tone_midi_info_bar = MidiSelectionInfoBar()
         selection_layout.addWidget(self.tone_midi_info_bar)
         channel = getattr(self.parent, "midi_channel", MidiChannel.DIGITAL_SYNTH_1)
         channel_label = str(MidiChannel.from_midi_channel(channel) or synth_type)
-        bind_tone_midi_info(
+        self.tone_midi_info = bind_tone_midi_info(
             self.instrument_selection_combo,
             self.tone_midi_info_bar,
             converted_preset_list,
             channel=channel,
             channel_label=channel_label,
             parent=self,
+            midi_helper=getattr(self.parent, "midi_helper", None),
+            lcd_title=self.instrument_title_label,
         )
+
+        read_row, self._read_from_jdxi_button, self._preset_status_label = (
+            create_read_from_jdxi_row(self._on_read_from_jdxi)
+        )
+        selection_layout.addWidget(read_row)
+        selection_layout.addWidget(
+            create_part_syx_row(self._on_import_part_syx, self._on_export_part_syx)
+        )
+        if synth_type == "Analog":
+            random_row = QHBoxLayout()
+            random_widget, _ = create_round_button_with_label(
+                "Random Patch",
+                "mdi.dice-5-outline",
+                self._on_random_analog_patch,
+                "Randomize analog tone parameters (Manager rndVoice)",
+            )
+            random_row.addWidget(random_widget)
+            random_row.addStretch()
+            selection_layout.addLayout(random_row)
 
         layout.addLayout(selection_layout)
 
@@ -466,19 +488,28 @@ class InstrumentPresetWidget(QWidget):
             show_category=True,
             search_placeholder="Search presets...",
         )
-        layout.addWidget(self.cheat_preset_combo_box)
+
+        from picomidi.core.channel import Channel
+        channels = [str(Channel.display_value(i)) for i in Channel.all_channels()]
+        # channel_strings = [str(j) for j in channels]
+        self.create_midi_combo_row(channels)
+        self.midi_channel_combo.setCurrentIndex(MidiChannel.ANALOG_SYNTH)
+        self._get_midi_channel_from_combo()
 
         self.cheat_midi_info_bar = MidiSelectionInfoBar()
-        layout.addWidget(self.cheat_midi_info_bar)
-        bind_tone_midi_info(
+
+        self._cheat_midi_info_controller = bind_tone_midi_info(
             self.cheat_preset_combo_box,
             self.cheat_midi_info_bar,
             JDXi.UI.Preset.Digital.LIST,
-            channel=MidiChannel.ANALOG_SYNTH,
-            channel_label="Analog",
+            channel=self.midi_channel,
+            channel_label=self._channel_label_for(self.midi_channel),
             parent=self,
+            midi_helper=getattr(self.parent, "midi_helper", None),
         )
-
+        layout.addWidget(self.cheat_preset_combo_box)
+        layout.addLayout(self.midi_channel_combo_row)
+        layout.addWidget(self.cheat_midi_info_bar)
         # Load Preset (round button + label, centered)
         self._add_centered_round_button(
             JDXi.UI.Icon.FOLDER_NOTCH_OPEN,
@@ -487,17 +518,87 @@ class InstrumentPresetWidget(QWidget):
             layout,
             name="cheat_load",
         )
-
         layout.addStretch()
 
+    def create_midi_combo_row(self, channels: list[str]) -> None:
+        """
+        create_midi_combo_row
+
+        :param channels: list
+        :return: None
+        """
+        self.midi_channel_combo_row, self.midi_channel_combo = create_combo_row(label="Midi Channel",
+                                                                                items=channels,
+                                                                                sort_items=False,
+                                                                                slot=self._get_midi_channel_from_combo)
+
+    @staticmethod
+    def _channel_label_for(channel: int) -> Optional[str]:
+        midi_ch = MidiChannel.from_midi_channel(channel)
+        return str(midi_ch) if midi_ch is not None else None
+
+    def _get_midi_channel_from_combo(self, *_args) -> None:
+        """Update cheat MIDI channel from combo and refresh the info bar."""
+        self.midi_channel = self.midi_channel_combo.currentIndex()
+        log.info(f"midi channel = {self.midi_channel}")
+        controller = getattr(self, "_cheat_midi_info_controller", None)
+        if controller is not None:
+            controller.set_channel(
+                self.midi_channel,
+                channel_label=self._channel_label_for(self.midi_channel),
+            )
+
+    def _set_preset_status(self, text: str) -> None:
+        label = getattr(self, "_preset_status_label", None)
+        if label is not None:
+            label.setText(text)
+
+    def _on_prev_preset(self) -> None:
+        combo = self.instrument_selection_combo.combo_box
+        idx = combo.currentIndex()
+        if idx > 0:
+            combo.setCurrentIndex(idx - 1)
+
+    def _on_next_preset(self) -> None:
+        combo = self.instrument_selection_combo.combo_box
+        idx = combo.currentIndex()
+        if idx < combo.count() - 1:
+            combo.setCurrentIndex(idx + 1)
+
+    def _on_read_from_jdxi(self) -> None:
+        parent = self.parent
+        if parent is None or not hasattr(parent, "read_from_jdxi"):
+            if hasattr(parent, "data_request"):
+                parent.data_request()
+                self._set_preset_status("Requested data (F5 path)")
+            return
+        parent.read_from_jdxi(status_callback=self._set_preset_status)
+
+    def _on_import_part_syx(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "import_part_syx"):
+            parent.import_part_syx()
+
+    def _on_export_part_syx(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "export_part_syx"):
+            parent.export_part_syx()
+
+    def _on_random_analog_patch(self) -> None:
+        parent = self.parent
+        if parent is not None and hasattr(parent, "randomize_analog_patch"):
+            parent.randomize_analog_patch()
+            self._set_preset_status("Randomized analog patch")
+
     def _on_load_preset(self):
-        """Handle load button click for normal presets."""
-        # Get the current value from SearchableFilterableComboBox
-        # The value is the preset ID as integer (e.g., 1 for "001")
+        """Load factory preset on hardware, then read parameters into the editor."""
         preset_id_int = self.instrument_selection_combo.value()
-        preset_id = str(preset_id_int).zfill(3)  # Convert back to 3-digit format
-        # Emit signal with preset number (preset ID as int)
-        self.parent.load_preset(int(preset_id))
+        self._set_preset_status(f"Loaded preset {preset_id_int} — reading…")
+        if hasattr(self.parent, "read_from_jdxi"):
+            self.parent.load_preset(int(preset_id_int), request_data=False)
+            self.parent.read_from_jdxi(status_callback=self._set_preset_status)
+        else:
+            self.parent.load_preset(int(preset_id_int))
 
     def _load_cheat_preset(self):
         """
@@ -507,8 +608,6 @@ class InstrumentPresetWidget(QWidget):
             log.warning("⚠️ MIDI helper not available for cheat preset loading")
             return
 
-        # Get the current value from SearchableFilterableComboBox
-        # The value is the preset ID as integer (e.g., 1 for "001")
         preset_id_int = self.cheat_preset_combo_box.value()
 
         from jdxi_editor.ui.editors.helpers.preset import (
@@ -518,27 +617,26 @@ class InstrumentPresetWidget(QWidget):
         load_digital_cheat_preset_on_analog(
             self.parent.midi_helper,
             preset_id_int,
-            channel=MidiChannel.ANALOG_SYNTH,
+            channel=self.midi_channel,
         )
 
-        # Request data update
-        if hasattr(self.parent, "data_request"):
+        if hasattr(self.parent, "read_from_jdxi"):
+            self.parent.read_from_jdxi()
+        elif hasattr(self.parent, "data_request"):
             self.parent.data_request()
 
     def setup_header_layout(self) -> None:
-        """Top layout with title and image ---"""
+        """Top layout with preset controls and instrument overview."""
         # Ensure setup() has been called first
         if self.layout is None:
             self.setup()
         self.hlayout = QHBoxLayout()
-        # Set proper spacing on horizontal layout
         self.hlayout.setSpacing(JDXi.UI.Style.SPACING)
-        self.hlayout.addStretch()
+        self.hlayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.hlayout.addStretch(1)  # centre the preset panel and image (see add_image_group)
         # Add the horizontal layout to the vertical layout
         self.layout.addLayout(self.hlayout)
 
     def add_stretch(self):
-        """Pad both sides by symmetry, supposedly."""
-        self.hlayout.addStretch()
-        # Add stretch at bottom for vertical centering
-        self.layout.addStretch()
+        """Gap between preset panel and instrument image (fixed: the image sits beside the panel)."""
+        self.hlayout.addSpacing(24)

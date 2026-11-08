@@ -51,15 +51,13 @@ class PatternFileGroup(JDXiMidiGroup):
         self.drum_selector.currentIndexChanged.connect(
             self.parent.update_drum_rows
         )
+        # The drum selector is shown in the Drums row header, not here
         layout = create_layout_with_items(
             items=[
                 self.load_button,
                 load_label_row,
                 self.save_button,
                 save_label_row,
-                self.clear_learn_button,
-                clear_label_row,
-                self.drum_selector,
             ],
             vertical=False,
             start_stretch=False,
@@ -67,6 +65,10 @@ class PatternFileGroup(JDXiMidiGroup):
             margins=self.margins,
             spacing=self.spacing
         )
+        # Clear… discards work: set apart from Load / Save (and it asks first)
+        layout.addSpacing(JDXi.UI.MidiPlayer.SPACING_GROUP * 2)
+        layout.addWidget(self.clear_learn_button)
+        layout.addWidget(clear_label_row)
         group, _ = create_group_with_layout("Pattern", layout=layout)
         return group
 
@@ -86,10 +88,10 @@ class PatternFileGroup(JDXiMidiGroup):
                 slot=self.parent.save_pattern_dialog,
             ),
             "clear_learn": ButtonSpec(
-                label="Clear",
+                label="Clear…",
                 icon=JDXi.UI.Icon.CLEAR,
-                tooltip="Clear pattern",
-                slot=self.parent.clear_pattern,
+                tooltip="Clear the current measure or the whole pattern (asks first)",
+                slot=self.parent.confirm_clear,
             ),
         }
 

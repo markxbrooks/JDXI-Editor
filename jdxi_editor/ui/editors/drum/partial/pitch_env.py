@@ -54,15 +54,17 @@ class DrumPitchEnvSection(DrumBaseSection):
     envelope_changed = Signal(dict)
 
     def __init__(
-        self, controls: dict[DrumPartialParam, QWidget], midi_helper: MidiIOHelper
+        self,
+        controls: dict[DrumPartialParam, QWidget],
+        midi_helper: MidiIOHelper,
+        **kwargs,
     ):
         """
         Initialize the DrumPitchEnvSection
 
         :param controls: dict
-        :param create_parameter_combo_box: Callable
-        :param create_parameter_slider: Callable
         :param midi_helper: MidiIOHelper
+        :param kwargs: forwarded to DrumBaseSection (address, send_midi_parameter, …)
         """
         self.spec: LayoutSpec = self._build_layout_spec()
         self.envelope = {
@@ -80,7 +82,7 @@ class DrumPitchEnvSection(DrumBaseSection):
             EnvelopeParameter.LEVEL_3: 15,
             EnvelopeParameter.LEVEL_4: -25,
         }
-        super().__init__(controls=controls or {}, midi_helper=midi_helper)
+        super().__init__(controls=controls or {}, midi_helper=midi_helper, **kwargs)
         self.setup_ui()
 
     def _build_layout_spec(self) -> LayoutSpec:

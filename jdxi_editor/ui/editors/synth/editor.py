@@ -26,12 +26,12 @@ import re
 from typing import Optional
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut, QShowEvent
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.midi.selection_info import send_tone_with_expectation
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address import JDXiSysExOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.address.address import (
@@ -41,6 +41,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.playback.activity import DeviceRefresher
 from jdxi_editor.midi.sysex.parser.json_parser import JDXiJsonSysexParser
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.midi.sysex.sections import SysExSection
@@ -52,7 +53,6 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.helpers.preset import (
     get_preset_parameter_value,
-    preset_to_jdxi_bank_pc,
 )
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.editors.synth.helper import log_changes
@@ -64,6 +64,7 @@ from jdxi_editor.ui.editors.synth.specs import (
     InstrumentDescriptor,
 )
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.style.editor_style import mark_sheen_panels
 
 TONE_DISPATCH = {
     JDXiSysExOffsetSuperNATURALLMB.COMMON: "_update_common_controls",
@@ -114,6 +115,11 @@ class SynthEditor(SynthBase):
         # Use passed-in midi_helper so MIDI sending works (e.g. Analog editor); only create new if None
         if midi_helper is None:
             self.midi_helper = MidiIOHelper()
+        # Re-reads this editor's values after changes made on the JD-Xi
+        # (debounced, and held back while a MIDI file or pattern plays)
+        self.device_refresher = DeviceRefresher(
+            lambda: self.data_request(), self.isVisible, parent=self
+        )
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.midi_helper.midi_control_changed.connect(self._handle_control_change)
         self.cc_parameters = dict()
@@ -137,7 +143,6 @@ class SynthEditor(SynthBase):
                     title, synth_type
                 )
             )
-        self.midi_helper.midi_program_changed.connect(self.data_request)
         log.parameter(
             scope=self.__class__.__name__,
             message="Initialized:",
@@ -157,6 +162,9 @@ class SynthEditor(SynthBase):
 
         # --- Apply common style
         JDXi.UI.Theme.apply_editor_style(self)
+        # Outermost panels get the Instrument window's sheen once the subclass
+        # has built them (runs on the next event loop pass; context = self)
+        QTimer.singleShot(0, self, lambda: mark_sheen_panels(self))
 
         # --- Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -259,16 +267,16 @@ class SynthEditor(SynthBase):
                 "🎛️Effects Editor shown - requesting current settings from instrument",
                 scope="SynthEditor",
             )
-        self.data_request()
+        self.device_refresher.request_now()
 
     def get_controls_as_dict(self):
         """
-        Get the current values of self.controls as a dictionary.
+        Get the current values of all controls (see all_controls) as a dictionary.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
         controls_data = {}
-        for param, widget in self.controls.items():
+        for param, widget in self.all_controls().items():
             try:
                 if hasattr(widget, "value"):
                     val = getattr(widget, "value")
@@ -422,7 +430,35 @@ class SynthEditor(SynthBase):
                 title_label = getattr(self, "instrument_title_label", None)
             if title_label:
                 title_label.setText(name)
+            self._sync_preset_selection_to_tone(name, title_label)
         self.tone_names[synth_type] = name
+
+    def _sync_preset_selection_to_tone(self, name: str, title_label=None) -> None:
+        """
+        Point the preset combo (and the display's BANK/PC line) at the preset
+        named *name*, the tone the synth reported. Without a match (an edited
+        or user tone) the BANK/PC line is cleared rather than describing
+        another sound. Nothing is sent to the synth.
+
+        :param name: str tone name read from the synth
+        :param title_label: DigitalTitle or None
+        """
+        combo = self._get_instrument_selection_combo()
+        if combo is None or not hasattr(combo, "options"):
+            return
+        target = name.strip().casefold()
+        for option, value in zip(combo.options, combo.values):
+            # Options read "001 - TR-909 Kit 1"
+            preset_name = option.split(" - ", 1)[-1].strip().casefold()
+            if preset_name == target:
+                combo.setValue(value)  # signals blocked: selects, does not load
+                self.update_instrument_image()
+                info = getattr(getattr(self, "instrument_preset", None), "tone_midi_info", None)
+                if info is not None:
+                    info.refresh(value)
+                return
+        if title_label is not None and hasattr(title_label, "set_wire_info"):
+            title_label.set_wire_info(None)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -477,8 +513,12 @@ class SynthEditor(SynthBase):
             )
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
-    def load_preset(self, preset_index):
-        """Load a preset by program change."""
+    def load_preset(self, preset_index, *, request_data: bool = True):
+        """Load a preset by program change.
+
+        :param request_data: If True, follow with data_request(); set False when
+            the caller will run read_from_jdxi() for tracked readback.
+        """
         # --- Get the combo box - it might be in instrument_preset widget or directly on self
         combo_box = self._get_instrument_selection_combo()
         if not combo_box:
@@ -569,16 +609,15 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Using MIDI channel: {self.midi_channel}",
         )
-        log_midi_info(msb, lsb, pc)
-        # -- Convert to JD-Xi bank format (LSB 65 for presets 129-256)
-        bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            bank_msb,
-            bank_lsb,
-            midi_pc,  # Already 0-127
+        send_tone_with_expectation(
+            self.midi_helper,
+            int(program_number),
+            self.preset_preset_list,
+            self.midi_channel,
+            source="synth_editor",
         )
-        self.data_request()
+        if request_data:
+            self.data_request()
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
@@ -586,7 +625,7 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Program change {program} detected on channel {channel}, requesting data update",
         )
-        # self.data_request() reducing midi flood
+        self.device_refresher.schedule()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
@@ -595,7 +634,7 @@ class SynthEditor(SynthBase):
             message=f"Control change {channel} {control} detected on channel {channel} with value {value}, ",
         )
         log.message(scope=self.__class__.__name__, message="requesting data update")
-        # self.data_request() reducing midi flood
+        self.device_refresher.schedule()
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""

@@ -13,6 +13,7 @@ LOGGING = False  # bool(settings.value("logging", True, type=bool))
 
 # Key for user preference: when True, note-on/note-off messages are not logged (reduces log volume).
 SILENCE_MIDI_NOTE_LOGGING_KEY = "silence_midi_note_logging"
+MIDI_SELECTION_VALIDATION_KEY = "midi_selection_validation_enabled"
 
 
 def silence_midi_note_logging() -> bool:

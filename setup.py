@@ -1,5 +1,7 @@
 import glob
+import re
 import sys
+from pathlib import Path
 
 # modulegraph uses recursive AST traversal; deeply nested code (e.g. long if/elif chains)
 # in jdxi_editor or dependencies can exceed Python's default recursion limit
@@ -11,6 +13,11 @@ from setuptools import setup, find_packages
 # python setup.py py2app -A
 
 APP = ['run_editor.py']
+# The app's version is the project's: the PKG installer skips an app whose
+# version is lower than the installed one, so it must not stay at a fixed value
+VERSION = re.search(
+    r'__version__ = "([^"]+)"', Path("jdxi_editor/project.py").read_text()
+).group(1)
 DATA_FILES = [
     "resources/jdxi_icon.png",
     "resources/fonts/JdLCD.ttf",
@@ -56,7 +63,8 @@ OPTIONS = {
                  'site'  # exclude site module to avoid sitecustomize circular import issues
                  ],
     "plist": {
-        "CFBundleShortVersionString": "0.1.0",
+        "CFBundleShortVersionString": VERSION,
+        "CFBundleVersion": VERSION,
         'CFBundleIconFile': 'jdxi_icon_512',  # Should match the iconfile name without .icns
         'CFBundleName': 'JD-Xi Editor',
         'CFBundleDisplayName': 'JD-Xi Editor',

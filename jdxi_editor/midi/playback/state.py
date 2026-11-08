@@ -2,12 +2,10 @@
 MIDI playback state management.
 """
 
-from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Literal, Optional
 
 from mido import MidiFile
-from PySide6.QtCore import QThread, QTimer
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from picomidi.constant import Midi
@@ -17,9 +15,6 @@ from picomidi.constant import Midi
 class MidiPlaybackState:
     """State container for MIDI file playback."""
 
-    active_notes: dict = field(default_factory=lambda: defaultdict(set))
-    buffered_msgs: list = field(default_factory=list)
-    buffer_end_time: float = 0.0
     channel_selected: Literal[
         MidiChannel.DIGITAL_SYNTH_1,
         MidiChannel.DIGITAL_SYNTH_2,
@@ -27,9 +22,6 @@ class MidiPlaybackState:
         MidiChannel.DRUM_KIT,
     ] = MidiChannel.DIGITAL_SYNTH_1
     events: list = field(default_factory=list)
-    event_index_current: int = 0
-    event_index: Optional[int] = None
-    event_buffer: list = field(default_factory=list)
     file: Optional[MidiFile] = None
     file_duration_seconds: float = 0.0
     # New attributes for playback state
@@ -43,14 +35,9 @@ class MidiPlaybackState:
     )  # Default custom tempo in microseconds
     tempo_initial: int = field(default=Midi.tempo.BPM_120_USEC)
     tempo_at_position: int = field(default=Midi.tempo.BPM_120_USEC)
-    timer: Optional[QTimer] = field(default=None)
     # end of new attributes
     muted_tracks: set[int] = field(default_factory=set)
     muted_channels: set[int] = field(default_factory=set)
-    playback_thread: Optional[QThread] = None
-    playback_paused_time: Optional[float] = None
-    playback_start_time: Optional[float] = None
-    playback_paused: bool = False
 
     def __post_init__(self) -> None:
         if self.custom_tempo_force:

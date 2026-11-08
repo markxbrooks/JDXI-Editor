@@ -75,8 +75,8 @@ class ChannelStrip(QWidget):
         layout.addWidget(self.mute, 0, center)
 
     def _update_mute_button_style(self, is_muted: bool) -> None:
-        """Apply JD-Xi sequencer-style visual for mute toggle."""
-        self.mute.setStyleSheet(generate_sequencer_button_style(not is_muted))
+        """Apply JD-Xi sequencer-style visual for mute toggle: lit while muted."""
+        self.mute.setStyleSheet(generate_sequencer_button_style(is_muted))
 
     def _on_mute_toggled(self, checked: bool) -> None:
         """Handle mute toggling: send MIDI 0 when muted, restore stored value when unmuted."""

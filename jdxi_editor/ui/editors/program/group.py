@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 from decologr import Decologr as log
 
-from jdxi_editor.log.midi_info import log_midi_info
+from jdxi_editor.ui.midi.selection_info import send_program_with_expectation
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParam
 from jdxi_editor.midi.program.program import JDXiProgram
@@ -231,9 +231,11 @@ class ProgramGroup(QGroupBox):
         log.parameter("[msb]", msb, scope=self.__class__.__name__)
         log.parameter("[lsb]", lsb, scope=self.__class__.__name__)
         log.parameter("[pc]", pc, scope=self.__class__.__name__)
-        log_midi_info(msb, lsb, pc)
-        self.parent.midi_helper.send_bank_select_and_program_change(
-            self.channel, msb, lsb, pc
+        send_program_with_expectation(
+            self.parent.midi_helper,
+            program_id,
+            source="program_group",
+            channel=self.channel,
         )
         self.parent.data_request()
 
@@ -274,4 +276,5 @@ class ProgramGroup(QGroupBox):
             self.program_midi_info_bar,
             self._program_list_data,
             parent=self,
+            midi_helper=getattr(self.parent, "midi_helper", None),
         )

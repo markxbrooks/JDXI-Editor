@@ -1,16 +1,18 @@
 """
 Sequencer step button with row, column, and note data.
 
-Note data is canonical in note_spec (NoteButtonSpec); note, note_duration,
-note_velocity are properties that read/write through it.
+Note data is canonical in note_spec (a StepNoteEvent); note, note_steps,
+note_duration (ms at the pattern tempo) and note_velocity are properties that
+read/write through it.
 """
 
 from typing import Optional
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QWidget
 
+from jdxi_editor.ui.editors.pattern.step_note import ChordNote, StepNoteEvent
 from jdxi_editor.ui.style import JDXiUIDimensions
-from picomidi.ui.widget.button.note import NoteButtonEvent
 
 
 class SequencerButton(QPushButton):
@@ -25,8 +27,10 @@ class SequencerButton(QPushButton):
         super().__init__(parent)
         self.row: int = row
         self.column: int = column
-        self.note_spec: NoteButtonEvent = NoteButtonEvent()
+        self.note_spec: StepNoteEvent = StepNoteEvent()
         self.setCheckable(True)
+        # Right-click lists the step's notes (handler wired by PatternWidget)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.setFixedSize(
             JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE,
             JDXiUIDimensions.SEQUENCER.LARGE_SQUARE_SIZE,
@@ -39,6 +43,44 @@ class SequencerButton(QPushButton):
     @note.setter
     def note(self, value: Optional[int]) -> None:
         self.note_spec.note = value
+
+    @property
+    def extra_notes(self) -> list[ChordNote]:
+        """Notes on this step besides the main one (chord / extra drum hits)."""
+        return getattr(self.note_spec, "extra_notes", [])
+
+    @extra_notes.setter
+    def extra_notes(self, notes: list[ChordNote]) -> None:
+        if not isinstance(self.note_spec, StepNoteEvent):
+            self.note_spec = StepNoteEvent(
+                note=self.note_spec.note,
+                velocity=self.note_spec.velocity,
+                duration_steps=self.note_steps,
+            )
+        self.note_spec.extra_notes = [ChordNote(n.note, n.velocity, n.duration_steps) for n in notes]
+
+    def refresh_note_count(self) -> None:
+        """Show how many notes the step plays when it is more than one."""
+        count = len(self.note_spec.notes()) if isinstance(self.note_spec, StepNoteEvent) else 0
+        self.setText(str(count) if count > 1 else "")
+
+    @property
+    def note_steps(self) -> Optional[float]:
+        """Note length in steps (16th notes); the canonical length."""
+        if not self.note_spec.is_active:
+            return None
+        return getattr(self.note_spec, "duration_steps", None)
+
+    @note_steps.setter
+    def note_steps(self, value: Optional[float]) -> None:
+        if isinstance(self.note_spec, StepNoteEvent):
+            self.note_spec.duration_steps = None if value is None else float(value)
+        else:
+            self.note_spec = StepNoteEvent(
+                note=self.note_spec.note,
+                velocity=self.note_spec.velocity,
+                duration_steps=value,
+            )
 
     @property
     def note_duration(self) -> Optional[float]:

@@ -128,6 +128,29 @@ class UiPreferencesDialog(QDialog):
         self.silence_midi_notes_layout.addWidget(self.silence_midi_notes_label)
         self.silence_midi_notes_layout.addWidget(self.silence_midi_notes_checkbox)
 
+        from jdxi_editor.globals import MIDI_SELECTION_VALIDATION_KEY
+
+        self.midi_validation_layout = QHBoxLayout(self)
+        self.midi_validation_icon = QLabel()
+        self.midi_validation_checkbox = QCheckBox(
+            "Validate MIDI sends against combo selection (log only)"
+        )
+        self.midi_validation_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        _val_mv = self.settings.value(MIDI_SELECTION_VALIDATION_KEY, False)
+        _checked_mv = (
+            _val_mv
+            if isinstance(_val_mv, bool)
+            else (str(_val_mv).lower() in ("true", "1", "yes"))
+        )
+        self.midi_validation_checkbox.setChecked(_checked_mv)
+        self.midi_validation_icon.setPixmap(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.REPORT).pixmap(self.icon_size)
+        )
+        self.midi_validation_label = QLabel("MIDI selection cross-validation:")
+        self.midi_validation_layout.addWidget(self.midi_validation_icon)
+        self.midi_validation_layout.addWidget(self.midi_validation_label)
+        self.midi_validation_layout.addWidget(self.midi_validation_checkbox)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -147,6 +170,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout.addLayout(self.log_level_layout)
         main_content_layout.addLayout(self.logging_layout)
         main_content_layout.addLayout(self.silence_midi_notes_layout)
+        main_content_layout.addLayout(self.midi_validation_layout)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -211,7 +235,10 @@ class UiPreferencesDialog(QDialog):
         on_save_settings
         :return: None
         """
-        from jdxi_editor.globals import SILENCE_MIDI_NOTE_LOGGING_KEY
+        from jdxi_editor.globals import (
+            MIDI_SELECTION_VALIDATION_KEY,
+            SILENCE_MIDI_NOTE_LOGGING_KEY,
+        )
 
         settings = self.settings
         try:
@@ -219,6 +246,10 @@ class UiPreferencesDialog(QDialog):
             settings.setValue(
                 SILENCE_MIDI_NOTE_LOGGING_KEY,
                 bool(self.silence_midi_notes_checkbox.isChecked()),
+            )
+            settings.setValue(
+                MIDI_SELECTION_VALIDATION_KEY,
+                bool(self.midi_validation_checkbox.isChecked()),
             )
             settings.sync()
             log_settings()

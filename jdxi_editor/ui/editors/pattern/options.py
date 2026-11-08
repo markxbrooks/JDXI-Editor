@@ -2,45 +2,13 @@
 Drum & digital options
 """
 
-DIGITAL_OPTIONS = [
-    "C4",
-    "C#4",
-    "D4",
-    "D#4",
-    "E4",
-    "F4",
-    "F#4",
-    "G4",
-    "G#4",
-    "A4",
-    "A#4",
-    "B4",
-    "C5",
-    "C#5",
-    "D5",
-    "D#5",
-    "E5",
-    "F5",
-    "F#5",
-    "G5",
-    "G#5",
-    "A5",
-    "A#5",
-    "B5",
-    "C6",
-    "C#6",
-    "D6",
-    "D#6",
-    "E6",
-    "F6",
-    "F#6",
-    "G6",
-    "G#6",
-    "A6",
-    "A#6",
-    "B6",
-    "C7",
-]
+_NOTE_NAMES = ("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+
+# Pitches for the melodic rows: every note from C0 (MIDI 12) to C8 (108), so
+# any key played on the JD-Xi, octave shift included, has an entry
+DIGITAL_OPTIONS = [f"{_NOTE_NAMES[n % 12]}{n // 12 - 1}" for n in range(12, 109)]
+DEFAULT_PITCH = "C4"  # selected when a row starts or its list is reloaded
+
 DRUM_OPTIONS = [
     "BD1",
     "RIM",

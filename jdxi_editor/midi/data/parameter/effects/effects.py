@@ -410,6 +410,15 @@ class Effect1Param(AddressParameter):
 
     convert_from_display = convert_to_midi
 
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to digital value (inverse of convert_to_midi)
+        :param midi_value: int The MIDI value (4-byte parameters: 32768 + value)
+        :return: int The digital value
+        """
+        if self.get_nibbled_size() == 4:
+            return midi_value - Midi.value.min.SIGNED_SIXTEEN_BIT
+        return midi_value
+
     @staticmethod
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
@@ -660,6 +669,15 @@ class Effect2Param(AddressParameter):
 
     convert_from_display = convert_to_midi
 
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to digital value (inverse of convert_to_midi)
+        :param midi_value: int The MIDI value (4-byte parameters: 32768 + value)
+        :return: int The digital value
+        """
+        if self.get_nibbled_size() == 4:
+            return midi_value - Midi.value.min.SIGNED_SIXTEEN_BIT
+        return midi_value
+
     @staticmethod
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
@@ -835,6 +853,15 @@ class DelayParam(AddressParameter):
         "High-frequency damp (200Hz … BYPASS).",
         "HF Damp",
     )
+    DELAY_EFFECT_LEVEL = ParameterSpec(
+        0x20,
+        32768,
+        32895,
+        0,
+        127,
+        "Delay level (Delay Parameter 8); the DELAY knob sets it.",
+        "Effect Level",
+    )
     DELAY_PARAM_24 = ParameterSpec(
         0x60,
         32768,
@@ -888,6 +915,15 @@ class DelayParam(AddressParameter):
 
     convert_from_display = convert_to_midi
 
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to digital value (inverse of convert_to_midi)
+        :param midi_value: int The MIDI value (4-byte parameters: 32768 + value)
+        :return: int The digital value
+        """
+        if self.get_nibbled_size() == 4:
+            return midi_value - Midi.value.min.SIGNED_SIXTEEN_BIT
+        return midi_value
+
     @staticmethod
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
@@ -926,6 +962,7 @@ class DelayParam(AddressParameter):
                 "DELAY_TAP_TIME",
                 "DELAY_FEEDBACK",
                 "DELAY_HF_DAMP",
+                "DELAY_EFFECT_LEVEL",
                 "DELAY_PARAM_24",
             },
         }
@@ -1035,6 +1072,15 @@ class ReverbParam(AddressParameter):
         127,
         "Reverb Parameter 3 (4-byte signed).",
     )
+    REVERB_EFFECT_LEVEL = ParameterSpec(
+        0x0F,
+        32768,
+        32895,
+        0,
+        127,
+        "Reverb level (Reverb Parameter 4); the REVERB knob sets it.",
+        "Effect Level",
+    )
     REVERB_PARAM_24 = ParameterSpec(
         0x5F,
         32768,
@@ -1086,6 +1132,15 @@ class ReverbParam(AddressParameter):
 
     convert_from_display = convert_to_midi
 
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to digital value (inverse of convert_to_midi)
+        :param midi_value: int The MIDI value (4-byte parameters: 32768 + value)
+        :return: int The digital value
+        """
+        if self.get_nibbled_size() == 4:
+            return midi_value - Midi.value.min.SIGNED_SIXTEEN_BIT
+        return midi_value
+
     @staticmethod
     def get_midi_value(param_name: str, value: int) -> Optional[int]:
         """
@@ -1120,6 +1175,7 @@ class ReverbParam(AddressParameter):
                 "REVERB_PARAM_2",
                 "REVERB_HF_DAMP",
                 "REVERB_PARAM_3",
+                "REVERB_EFFECT_LEVEL",
                 "REVERB_PARAM_24",
             },
         }

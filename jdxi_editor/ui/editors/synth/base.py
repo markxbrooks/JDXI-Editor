@@ -176,12 +176,19 @@ class SynthBase(QWidget):
         # If we're in a ProgramEditor or using ProgramCommonParam, we need a program address
         needs_program_address = needs_program_address or is_program_editor
 
-        # Try self first
-        if hasattr(self, "address") and self.address is not None:
-            if isinstance(self.address, JDXiSysExAddress) and hasattr(
-                self.address, "add_offset"
+        def _valid_address(obj) -> Optional[JDXiSysExAddress]:
+            addr = getattr(obj, "address", None)
+            if (
+                isinstance(addr, JDXiSysExAddress)
+                and hasattr(addr, "add_offset")
             ):
-                return self.address
+                return addr
+            return None
+
+        # Try self first
+        found = _valid_address(self)
+        if found is not None:
+            return found
 
         # If self is ProgramEditor and has no address, create one
         if is_program_editor:
@@ -189,45 +196,23 @@ class SynthBase(QWidget):
 
             return ProgramCommonAddress()
 
-        # Try parent
-        if hasattr(self, "parent") and self.parent is not None:
-            if hasattr(self.parent, "address") and self.parent.address is not None:
-                if isinstance(self.parent.address, JDXiSysExAddress) and hasattr(
-                    self.parent.address, "add_offset"
-                ):
-                    return self.parent.address
-            # If parent is ProgramEditor and has no address, create one
-            if (
-                hasattr(self.parent, "__class__")
-                and "ProgramEditor" in self.parent.__class__.__name__
-            ):
+        # Walk QWidget parents (self.parent is a method — must call it)
+        widget = self
+        for _ in range(6):
+            parent_fn = getattr(widget, "parent", None)
+            if not callable(parent_fn):
+                break
+            parent = parent_fn()
+            if parent is None:
+                break
+            found = _valid_address(parent)
+            if found is not None:
+                return found
+            if "ProgramEditor" in parent.__class__.__name__:
                 from jdxi_editor.midi.data.address.program import ProgramCommonAddress
 
                 return ProgramCommonAddress()
-
-        # Try parent.parent
-        if (
-            hasattr(self, "parent")
-            and self.parent is not None
-            and hasattr(self.parent, "parent")
-            and self.parent.parent is not None
-        ):
-            if (
-                hasattr(self.parent.parent, "address")
-                and self.parent.parent.address is not None
-            ):
-                if isinstance(self.parent.parent.address, JDXiSysExAddress) and hasattr(
-                    self.parent.parent.address, "add_offset"
-                ):
-                    return self.parent.parent.address
-            # If parent.parent is ProgramEditor and has no address, create one
-            if (
-                hasattr(self.parent.parent, "__class__")
-                and "ProgramEditor" in self.parent.parent.__class__.__name__
-            ):
-                from jdxi_editor.midi.data.address.program import ProgramCommonAddress
-
-                return ProgramCommonAddress()
+            widget = parent
 
         return None
 
@@ -304,6 +289,112 @@ class SynthBase(QWidget):
                 self.midi_requests,
             ),
         ).start()
+
+    def read_from_jdxi(
+        self,
+        *,
+        timeout_ms: int = 8000,
+        on_finished=None,
+        status_callback=None,
+    ):
+        """
+        Explicit Manager-style Read: RQ1 for this editor's ``midi_requests``
+        with section completion tracking.
+
+        :param timeout_ms: Wait for DT1 responses
+        :param on_finished: Optional callback(ReadResult)
+        :param status_callback: Optional callback(str) for short status text
+        :return: PatchReadSession or None
+        """
+        from jdxi_editor.midi.sysex.request.read_session import start_read_session
+
+        requests = list(self.midi_requests or [])
+        if not requests:
+            if status_callback:
+                status_callback("No MIDI requests configured")
+            log.warning(
+                "read_from_jdxi: no midi_requests",
+                scope=self.__class__.__name__,
+            )
+            return None
+        if status_callback:
+            status_callback("Reading from JD-Xi…")
+
+        def _finished(result):
+            if status_callback:
+                if result.complete:
+                    status_callback("Read complete")
+                else:
+                    status_callback(
+                        f"Read partial ({result.ok_count}/{len(result.sections)})"
+                    )
+            if on_finished:
+                on_finished(result)
+
+        return start_read_session(
+            self._midi_helper,
+            requests,
+            timeout_ms=timeout_ms,
+            on_finished=_finished,
+            parent=self,
+        )
+
+    def export_part_syx(self, file_path: Optional[str] = None) -> bool:
+        """Export this editor's controls as a per-part .syx file."""
+        from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog
+
+        from jdxi_editor.midi.sysex.part_syx import export_editor_to_syx
+
+        last = getattr(self, "_part_syx_path", "") or str(Path.home() / "part.syx")
+        if not file_path:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Export Part SysEx",
+                last,
+                "SysEx Files (*.syx);;All Files (*)",
+            )
+        if not file_path:
+            return False
+        if not file_path.lower().endswith(".syx"):
+            file_path += ".syx"
+        ok = export_editor_to_syx(self, self._midi_helper, file_path)
+        if ok:
+            self._part_syx_path = file_path
+            log.message(f"Exported part SysEx to {file_path}", scope=self.__class__.__name__)
+        return ok
+
+    def import_part_syx(self, file_path: Optional[str] = None) -> bool:
+        """Import a per-part .syx, validate address area, send to JD-Xi, refresh UI."""
+        from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+
+        from jdxi_editor.midi.sysex.part_syx import import_syx_to_editor
+
+        last = getattr(self, "_part_syx_path", "") or str(Path.home())
+        if not file_path:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Import Part SysEx",
+                last,
+                "SysEx Files (*.syx);;All Files (*)",
+            )
+        if not file_path:
+            return False
+        ok, message = import_syx_to_editor(
+            self._midi_helper, self, file_path, refresh=True
+        )
+        if ok:
+            self._part_syx_path = file_path
+            log.message(
+                f"Imported part SysEx from {file_path}: {message}",
+                scope=self.__class__.__name__,
+            )
+        else:
+            QMessageBox.warning(self, "Import Part SysEx", message)
+        return ok
 
     def _build_sliders(self, specs: list["SliderSpec"]):
         """build sliders"""
@@ -486,15 +577,42 @@ class SynthBase(QWidget):
             log.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
+    def all_controls(self) -> dict:
+        """
+        self.controls plus the controls held by this editor's sections.
+
+        Sections (oscillator, filter, common, modify, ...) keep their own
+        controls dict, so self.controls alone can be empty. Sections inside a
+        nested partial panel are left out: each partial panel is registered
+        and saved on its own, at its own address.
+
+        :returns: dict AddressParameter -> widget
+        """
+        from jdxi_editor.ui.editors.synth.partial import PartialPanel
+        from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
+
+        merged = dict(self.controls.items()) if self.controls else {}
+        for section in self.findChildren(SectionBaseWidget):
+            owner = section.parentWidget()
+            while owner is not None and owner is not self and not isinstance(
+                owner, PartialPanel
+            ):
+                owner = owner.parentWidget()
+            if owner is not self:
+                continue  # belongs to a nested partial panel
+            for param, widget in (section.controls or {}).items():
+                merged.setdefault(param, widget)
+        return merged
+
     def get_controls_as_dict(self):
         """
-        Get the current values of self.controls as a dictionary.
+        Get the current values of all controls (see all_controls) as a dictionary.
 
         :returns: dict A dictionary of control parameter names and their values.
         """
         try:
             controls_data = {}
-            for param, widget in self.controls.items():
+            for param, widget in self.all_controls().items():
                 # --- Get value from widget - all custom widgets have a value() method
                 # --- (Slider, ComboBox, SpinBox, Switch all implement value())
                 if hasattr(widget, "value"):
@@ -801,7 +919,7 @@ class SynthBase(QWidget):
         :return: None
         """
         if slider is None:
-            slider = self.controls.get(param)
+            slider = self.controls.get(param) or self.all_controls().get(param)
         if slider:
             if hasattr(param, "convert_from_midi"):
                 slider_value = param.convert_from_midi(midi_value)
@@ -809,7 +927,7 @@ class SynthBase(QWidget):
                 slider_value = midi_value
             log_slider_parameters(self.address, param, midi_value, slider_value)
             slider.blockSignals(True)
-            slider.setValue(midi_value)
+            slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
         else:
@@ -831,9 +949,9 @@ class SynthBase(QWidget):
         :param failures: list
         :return: None
         """
-        if not midi_value:
+        if midi_value is None:
             return
-        switch = self.controls.get(param)
+        switch = self.controls.get(param) or self.all_controls().get(param)
         try:
             midi_value = int(midi_value)
             if switch:

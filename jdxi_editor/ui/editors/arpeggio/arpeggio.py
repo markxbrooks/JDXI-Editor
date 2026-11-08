@@ -71,6 +71,7 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_arp_address
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
 from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
@@ -165,7 +166,12 @@ class ArpeggioEditor(BasicEditor):
         form_layout_widget = QWidget()
         form_layout = QFormLayout()
         form_layout_widget.setLayout(form_layout)
-        rows_layout.addWidget(form_layout_widget)
+        # The controls sit on one glossy black panel under the title panel;
+        # the helper's tab widget is not used here
+        rows_layout.addWidget(create_panel(form_layout_widget))
+        tab_widget = self.editor_helper.get_tab_widget()
+        if tab_widget is not None:
+            tab_widget.hide()
         # --- 3) add widgets
         widgets = arp_widgets.switches + arp_widgets.combos + arp_widgets.sliders
         for widget in widgets:
@@ -177,6 +183,21 @@ class ArpeggioEditor(BasicEditor):
             self.main_layout = QVBoxLayout(self)
             self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.base_widget)
+
+        from jdxi_editor.ui.editors.helpers.edit_buffer_ops import (
+            create_part_syx_row,
+            create_read_from_jdxi_row,
+        )
+
+        read_row, _, self._read_status_label = create_read_from_jdxi_row(
+            lambda: self.read_from_jdxi(
+                status_callback=lambda t: self._read_status_label.setText(t)
+            )
+        )
+        self.main_layout.addWidget(read_row)
+        self.main_layout.addWidget(
+            create_part_syx_row(self.import_part_syx, self.export_part_syx)
+        )
 
     def showEvent(self, event: QShowEvent) -> None:
         """Request current settings from the instrument when the editor is shown."""

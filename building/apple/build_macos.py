@@ -17,6 +17,7 @@ Requirements:
 """
 
 import os
+import plistlib
 import sys
 import shutil
 import subprocess
@@ -417,11 +418,34 @@ def make_dmg(app_bundle_path):
         return None
 
     # Get DMG size
-    dmg_size = shutil.disk_usage(dmg_path).used / (1024 * 1024)  # MB
+    dmg_size = dmg_path.stat().st_size / (1024 * 1024)  # MB
     print(f"  ✓ DMG created: {dmg_path}")
     print(f"  ✓ DMG size: {dmg_size:.1f} MB")
 
     return dmg_path
+
+
+def write_component_plist(root: Path, plist_path: Path) -> bool:
+    """
+    Write a pkgbuild component plist for the bundles under *root* that turns
+    off relocation and version checking for each of them.
+    """
+    result = run_command(
+        ["pkgbuild", "--analyze", "--root", str(root), str(plist_path)],
+        check=False,
+    )
+    if result is None or result.returncode != 0 or not plist_path.exists():
+        print("  ✗ Could not analyze the app bundle for the PKG")
+        return False
+    with open(plist_path, "rb") as f:
+        components = plistlib.load(f)
+    for component in components:
+        component["BundleIsRelocatable"] = False
+        component["BundleIsVersionChecked"] = False
+    with open(plist_path, "wb") as f:
+        plistlib.dump(components, f)
+    print(f"  ✓ Component plist: {len(components)} bundle(s), install to /Applications only")
+    return True
 
 
 def make_pkg(app_bundle_path):
@@ -455,11 +479,20 @@ def make_pkg(app_bundle_path):
     shutil.copytree(app_bundle_path, install_dir / APP_NAME)
     print("  ✓ App bundle copied")
 
+    # Always install into /Applications: by default the installer "relocates"
+    # an app to wherever a copy with the same bundle identifier already is
+    # (e.g. a build left in the project), and skips it if that copy's version
+    # is higher
+    component_plist = PROJECT_ROOT / "pkg_components.plist"
+    if not write_component_plist(build_dir, component_plist):
+        return None
+
     # Build PKG
     print(f"  Building PKG installer: {pkg_name}...")
     cmd = [
         "pkgbuild",
         "--root", str(build_dir),
+        "--component-plist", str(component_plist),
         "--identifier", PKG_IDENTIFIER,
         "--version", VERSION,
         "--install-location", "/",
@@ -467,6 +500,7 @@ def make_pkg(app_bundle_path):
     ]
 
     result = run_command(cmd, check=False)
+    component_plist.unlink(missing_ok=True)
     if result is None or result.returncode != 0:
         print("  ✗ PKG creation failed")
         return None
@@ -476,7 +510,7 @@ def make_pkg(app_bundle_path):
         return None
 
     # Get PKG size
-    pkg_size = shutil.disk_usage(pkg_path).used / (1024 * 1024)  # MB
+    pkg_size = pkg_path.stat().st_size / (1024 * 1024)  # MB
     print(f"  ✓ PKG created: {pkg_path}")
     print(f"  ✓ PKG size: {pkg_size:.1f} MB")
 

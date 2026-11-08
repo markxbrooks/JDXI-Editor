@@ -14,6 +14,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
 
 from jdxi_editor.ui.style import JDXiUIDimensions
+from jdxi_editor.ui.style.editor_style import AppEditorStyle, mark_editor_body
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
 
@@ -125,17 +126,24 @@ class JDXiUIThemeManager(QObject):
         JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.INSTRUMENT)
 
     @staticmethod
-    def apply_editor_style(widget: QWidget, analog: bool = False) -> None:
+    def apply_editor_style(
+        widget: QWidget, analog: bool = False, body: bool = True
+    ) -> None:
         """
-        Apply editor style
+        Apply the editor chrome: matte body, glossy panels, JD-Xi sliders.
 
         :param widget: QWidget to style
-        :param analog: bool If True, use analog editor style, else standard
+        :param analog: bool If True, cyan accent for focus/hover only
+        :param body: bool *widget* is an editor's root, painted with the rough
+            matte body finish; False for widgets inside an editor (tab
+            widgets, panels), which stay transparent over it
         """
-        if analog and hasattr(JDXiUIStyle, "EDITOR_ANALOG"):
-            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.EDITOR_ANALOG)
-        else:
-            JDXiUIThemeManager.apply_style(widget, JDXiUIStyle.EDITOR)
+        accent = JDXiUIStyle.ACCENT_ANALOG if analog else None
+        if body:
+            mark_editor_body(widget)
+        JDXiUIThemeManager.apply_style(
+            widget, AppEditorStyle.editor_stylesheet(accent=accent)
+        )
 
     @staticmethod
     def apply_instrument_title_label(widget: QWidget) -> None:

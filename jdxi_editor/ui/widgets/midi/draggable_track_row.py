@@ -16,6 +16,7 @@ class DraggableTrackRow(QWidget):
 
     # Signal emitted when a track is moved
     track_moved = Signal(int, int)  # from_index, to_index
+    track_clicked = Signal(int)  # track_index — select / highlight
 
     def __init__(self, track_index: int, content_widget: QHBoxLayout, parent=None):
         """
@@ -57,24 +58,34 @@ class DraggableTrackRow(QWidget):
         # Set minimum height for better drag visibility
         self.setMinimumHeight(40)
 
-        # Style the row
+        # Style the row (grey idle; accent only when selected via property)
         self.setStyleSheet(
             """
             DraggableTrackRow {
-                border: 1px solid transparent;
+                border: 1px solid #383838;
                 background-color: transparent;
             }
             DraggableTrackRow:hover {
-                border: 1px solid #888;
-                background-color: rgba(128, 128, 128, 0.1);
+                border: 1px solid #555555;
+                background-color: rgba(128, 128, 128, 0.12);
+            }
+            DraggableTrackRow[selected="true"] {
+                border: 1px solid #E04444;
+                background-color: rgba(224, 68, 68, 0.08);
             }
         """
         )
+
+    def set_row_selected(self, selected: bool) -> None:
+        self.setProperty("selected", "true" if selected else "false")
+        self.style().unpolish(self)
+        self.style().polish(self)
 
     def mousePressEvent(self, event):
         """Handle mouse press to start drag operation."""
         if event.button() == Qt.LeftButton:
             self.drag_start_position = event.position().toPoint()
+            self.track_clicked.emit(self.track_index)
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):

@@ -66,9 +66,20 @@ class MidiOutHandler(MidiIOController):
         """
         with self._midi_send_lock:
             try:
+                if not self.device.before_send([int(b) for b in message]):
+                    # Writing back data just received from the JD-Xi
+                    log.debug(
+                        "[MidiOutHandler] Dropped DT1 echo of received data",
+                        scope="MidiOutHandler",
+                    )
+                    return True
                 if not validate_midi_message(message):
                     log.message("[MidiOutHandler] MIDI message validation failed.")
                     return False
+                # A parameter write is what the synth will hold (recorded even
+                # with the port closed: it is the state the editor shows)
+                message_bytes = [int(b) for b in message]
+                self.device.sent(message_bytes)
 
                 # Ensure message is a list of integers before formatting
                 def safe_int(val):
@@ -441,6 +452,43 @@ class MidiOutHandler(MidiIOController):
             log.message(scope="MidiOutHandler", message="Failed to send NRPN messages.")
         return ok
 
+    def _log_selection_validation(
+        self, channel: int, bank_msb: int, bank_lsb: int, program: int
+    ) -> None:
+        """Compare outgoing bank+PC to a registered combo selection expectation."""
+        from jdxi_editor.log.midi_info import log_midi_validation_result
+        from jdxi_editor.midi.validation.selection import validate_bank_select_pc_send
+        from jdxi_editor.midi.validation.settings import (
+            is_midi_selection_validation_enabled,
+        )
+
+        if not is_midi_selection_validation_enabled():
+            return
+
+        get_expectation = getattr(self, "get_selection_expectation", None)
+        if not callable(get_expectation):
+            return
+
+        expectation = get_expectation()
+        if expectation is None:
+            return
+
+        result = validate_bank_select_pc_send(
+            channel,
+            bank_msb,
+            bank_lsb,
+            program,
+            expectation.expected,
+        )
+        if result is None:
+            return
+
+        log_midi_validation_result(
+            result,
+            source=expectation.source,
+            selection_value=expectation.selection_value,
+        )
+
     def send_bank_select_and_program_change(
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
@@ -474,19 +522,24 @@ class MidiOutHandler(MidiIOController):
             log.message(
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
             )
-            self.send_control_change(0, bank_msb, channel)
+            if not self.send_control_change(0, bank_msb, channel):
+                return False
             time.sleep(MIDI_SLEEP_TIME)  # Small delay between bank select messages
 
             log.message(
                 f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
             )
-            self.send_control_change(32, bank_lsb, channel)
+            if not self.send_control_change(32, bank_lsb, channel):
+                return False
             time.sleep(MIDI_SLEEP_TIME)  # Small delay before program change
 
             log.message(
                 f"-------#3 send_program_change program: {program} channel: {channel} --------"
             )
-            self.send_program_change(program, channel)
+            if not self.send_program_change(program, channel):
+                return False
+
+            self._log_selection_validation(channel, bank_msb, bank_lsb, program)
             return True
         except Exception as ex:
             log.error(
