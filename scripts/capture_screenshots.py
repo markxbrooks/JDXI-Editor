@@ -49,8 +49,11 @@ EDITOR_SHOTS = {
     "pattern": ("jdxi-pattern-sequencer.png", "pattern.png"),
     "midi_player": ("jdxi-midi-editor.png", "midi_player.png"),
 }
-# README versions of the synth editors show a sound-editing page, as before
-README_TABS = {"digital1": ("Partial 1", "Amp", "ADSR"), "analog": ("Amp", "ADSR")}
+# README versions that show a different page from the docs' image
+README_TABS = {"analog": ("Amp", "ADSR")}
+# README versions cropped to the editor's content (left, right fractions of
+# the width), so it is larger in the 600 px thumbnail
+README_CROP = {"digital1": (0.13, 0.87)}
 MIDI_CONFIG_SHOT = ("midi_config_200.png", "midi_config.png")
 THUMBNAIL_WIDTHS = {"midi_config.png": 200}  # others: 600
 
@@ -123,17 +126,23 @@ def capture(out_dir: Path) -> list[Path]:
         editor_window.grab().save(str(path))
         written.append(path)
         print(f"captured {editor_type:12} -> {path}")
-        tabs = README_TABS.get(editor_type)
-        if tabs:
+        tabs = README_TABS.get(editor_type, ())
+        crop = README_CROP.get(editor_type)
+        if tabs or crop:
             editor = editor_window.editor_tab_widget.currentWidget()
             for tab in tabs:
                 if not select_tab(editor, tab):
                     print(f"  tab {tab!r} not found in {editor_type}")
                 _settle(app)
+            image = editor_window.grab()
+            if crop:
+                left = round(image.width() * crop[0])
+                right = round(image.width() * crop[1])
+                image = image.copy(left, 0, right - left, image.height())
             path = out_dir / readme_name_for(doc_name)
-            editor_window.grab().save(str(path))
+            image.save(str(path))
             written.append(path)
-            print(f"captured {editor_type + ' ' + '/'.join(tabs):12} -> {path}")
+            print(f"captured {editor_type + ' README':12} -> {path}")
 
     from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 
@@ -166,7 +175,8 @@ def install(shots: Path) -> None:
             print(f"updated doc/images/{doc_name}")
         if readme_name:
             readme_source = shots / readme_name_for(source.name)
-            if editor_type not in README_TABS or not readme_source.exists():
+            customised = editor_type in README_TABS or editor_type in README_CROP
+            if not customised or not readme_source.exists():
                 readme_source = source
             _install_readme_image(readme_source, resources, readme_name, Image)
     config_source = shots / MIDI_CONFIG_SHOT[1]
