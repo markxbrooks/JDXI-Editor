@@ -35,14 +35,8 @@ class WavRecordingThread(QThread):
 
     def run(self):
         try:
+            # record() emits recording_finished or recording_error itself
             self.record()
-            # Ensure output_file is a string before emitting
-            if isinstance(self.output_file, str) and self.output_file:
-                self.recording_finished.emit(self.output_file)
-            else:
-                self.recording_error.emit(
-                    f"[WavRecordingThread] Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"
-                )
         except Exception as e:
             # Ensure exception is converted to string safely
             try:

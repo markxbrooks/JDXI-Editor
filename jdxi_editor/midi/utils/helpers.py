@@ -59,6 +59,19 @@ def on_usb_recording_error(message: str):
         log.error(f"[on_usb_recording_error] Error during recording: {message}")
 
 
+# Recording threads that are still running. They have no Qt parent, so without
+# this a thread replaced by the next recording (e.g. a playlist's next song
+# starting during the previous recording's tail) is garbage-collected while
+# running, and Qt aborts ("QThread: Destroyed while thread is still running")
+_running_threads: set[WavRecordingThread] = set()
+
+
+def _keep_until_finished(thread: WavRecordingThread) -> None:
+    """Hold a reference to *thread* until it has finished."""
+    _running_threads.add(thread)
+    thread.finished.connect(lambda: _running_threads.discard(thread))
+
+
 def start_recording(
     usb_recorder: USBRecorder,
     file_duration_seconds: float,
@@ -79,30 +92,26 @@ def start_recording(
     Start the recording thread with the selected device index and recording rate.
     """
     try:
+        # A recording still in its tail (it runs 10 s past the end of the file)
+        # stops and saves now; it finishes in the background
+        previous = getattr(usb_recorder, "usb_recording_thread", None)
+        if previous is not None and previous.isRunning():
+            log.message("[start_recording] Stopping the previous recording")
+            previous.stop_recording()
+
         usb_recorder.input_device_index = selected_index  # self.input_device_index
-        usb_recorder.usb_recording_thread = WavRecordingThread(
+        thread = WavRecordingThread(
             recorder=usb_recorder,
             duration=file_duration_seconds + 10,
             output_file=usb_file_output_name,
             recording_rate=recording_rate,
             # --- e.g. pyaudio.paInt16
         )
-
-        def _on_finished_then_wait(output_file: str) -> None:
-            on_usb_recording_finished(output_file)
-            # Always wait for thread to fully terminate before returning - prevents
-            # "QThread: Destroyed while thread is still running" when WAV is saved
-            thread = usb_recorder.usb_recording_thread
-            if thread is not None:
-                thread.wait(5000)
-
-        usb_recorder.usb_recording_thread.recording_finished.connect(
-            _on_finished_then_wait
-        )
-        usb_recorder.usb_recording_thread.recording_error.connect(
-            on_usb_recording_error
-        )
-        usb_recorder.usb_recording_thread.start()
+        thread.recording_finished.connect(on_usb_recording_finished)
+        thread.recording_error.connect(on_usb_recording_error)
+        _keep_until_finished(thread)
+        usb_recorder.usb_recording_thread = thread
+        thread.start()
         log.message(
             f"[start_recording] Success: Recording started in background thread to {usb_file_output_name}"
         )

@@ -344,6 +344,13 @@ class JDXiInstrument(JDXiWindow):
                     message="Waiting for USB recording to finish before exit...",
                 )
                 thread.wait(5000)
+        # Recordings replaced by a later one (e.g. during a playlist)
+        from jdxi_editor.midi.utils.helpers import _running_threads
+
+        for thread in list(_running_threads):
+            if thread.isRunning():
+                thread.stop_recording()
+                thread.wait(5000)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """
