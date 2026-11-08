@@ -51,6 +51,7 @@ OPTIONS = {
                  'picomidi',      # MIDI library
                  'qtawesome',     # Icon library
                  'qtawesome.iconic_font',  # Ensure PySide6 is bundled
+                 'PySide6.QtNetwork',  # update check (GitHub Releases)
                  'fluidsynth',  # pyfluidsynth: FluidSynth MIDI synth (use includes; fluidsynth pkg shadows .py)
                  'sounddevice',  # FluidSynth audio output device selection
                  '_sounddevice'],  # sounddevice CFFI extension

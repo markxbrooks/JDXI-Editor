@@ -74,7 +74,13 @@ from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
-from jdxi_editor.midi.playback.activity import DeviceRefresher
+from jdxi_editor.midi.playback.activity import DeviceRefresher, playback_activity
+from jdxi_editor.update.checker import (
+    STARTUP_DELAY_MS,
+    ReleaseInfo,
+    UpdateChecker,
+    should_auto_check,
+)
 from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
@@ -119,6 +125,8 @@ from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
+
+DOCUMENTATION_URL = "https://markxbrooks.github.io/JDXI-Editor/"
 from picomidi.constant import Midi
 from picoui.specs.widgets import MessageBoxSpec
 
@@ -234,6 +242,65 @@ class JDXiInstrument(JDXiWindow):
         # Initialize the current preset and synth type
         self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         self.channel = MidiChannel.DIGITAL_SYNTH_1
+        self._init_update_checker()
+
+    def _init_update_checker(self) -> None:
+        """Check GitHub Releases shortly after startup (at most once a day)."""
+        self.update_checker = UpdateChecker(self)
+        self.update_checker.update_available.connect(self._on_update_available)
+        self.update_checker.up_to_date.connect(self._on_up_to_date)
+        self.update_checker.failed.connect(self._on_update_check_failed)
+        self._pending_update: Optional[ReleaseInfo] = None
+        playback_activity().playing_changed.connect(self._on_playing_for_update)
+        if should_auto_check():
+            QTimer.singleShot(
+                STARTUP_DELAY_MS, lambda: self.update_checker.check(manual=False)
+            )
+
+    def on_check_for_updates(self) -> None:
+        """Help → Check for Updates…"""
+        self.statusBar().showMessage("Checking GitHub for updates…", 5000)
+        self.update_checker.check(manual=True)
+
+    def _on_update_available(self, release: ReleaseInfo, manual: bool) -> None:
+        if not manual and playback_activity().is_playing:
+            self._pending_update = release  # don't interrupt a song or pattern
+            return
+        self._show_update_dialog(release)
+
+    def _on_playing_for_update(self, playing: bool) -> None:
+        if not playing and self._pending_update is not None:
+            release, self._pending_update = self._pending_update, None
+            self._show_update_dialog(release)
+
+    def _show_update_dialog(self, release: ReleaseInfo) -> None:
+        from jdxi_editor.ui.dialogs.update import UpdateDialog
+
+        dialog = UpdateDialog(release, self.update_checker.kind, parent=self)
+        dialog.setAttribute(Qt.WA_DeleteOnClose)
+        dialog.open()  # window-modal, doesn't block the event loop
+
+    def _on_up_to_date(self, latest: str, manual: bool) -> None:
+        if manual:
+            from jdxi_editor.project import __program__, __version__
+
+            QMessageBox.information(
+                self,
+                "Check for Updates",
+                f"You're up to date: {__program__} {__version__} is the newest "
+                "release.",
+            )
+
+    def _on_update_check_failed(self, message: str, manual: bool) -> None:
+        log.warning(
+            scope="JDXiInstrument", message=f"Update check failed: {message}"
+        )
+        if manual:
+            QMessageBox.warning(
+                self,
+                "Check for Updates",
+                f"Couldn't check GitHub for updates:\n{message}",
+            )
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
@@ -767,15 +834,18 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         html_file = documentation_file_path("index.html")
-        try:
-            os_file_open(html_file)
-        except Exception as ex:
-            # open browser https://markxbrooks.github.io/JDXI-Editor/
-            webbrowser.open("https://markxbrooks.github.io/JDXI-Editor/")
-            log.exception(
-                scope="JDXiInstrument",
-                message=f" Error {ex} occurred opening documentation",
-            )
+        # A local Sphinx build (make -C doc html) if there is one; app bundles
+        # and fresh checkouts don't have it, so use the published docs
+        if os.path.exists(html_file):
+            try:
+                os_file_open(html_file)
+                return
+            except Exception as ex:
+                log.exception(
+                    scope="JDXiInstrument",
+                    message=f" Error {ex} occurred opening documentation",
+                )
+        webbrowser.open(DOCUMENTATION_URL)
 
     def on_preferences(self):
         """

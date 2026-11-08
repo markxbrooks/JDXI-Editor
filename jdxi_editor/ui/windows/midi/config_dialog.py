@@ -70,7 +70,13 @@ SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
 # Top-level imports so py2app/modulegraph includes these in the bundle
 # (lazy imports inside functions are not traced by the dependency analyzer)
+from jdxi_editor.midi.fluidsynth_library import (
+    import_error_message,
+    prepare_fluidsynth_library,
+)
+
 _fluidsynth_err_msg = ""
+prepare_fluidsynth_library()  # Windows: point the DLL search at FluidSynth
 try:
     import fluidsynth as _fluidsynth_module
 except Exception as _fluidsynth_err:
@@ -461,11 +467,7 @@ class MIDIConfigDialog(QDialog):
 
     def _start_fluidsynth(self) -> None:
         if _fluidsynth_module is None:
-            if "Couldn't find" in _fluidsynth_err_msg:
-                msg = "FluidSynth library not found (install libfluidsynth, e.g. brew install fluid-synth)"
-            else:
-                msg = "FluidSynth not installed: pip install pyfluidsynth"
-            self.fs_status.setText(msg)
+            self.fs_status.setText(import_error_message(_fluidsynth_err_msg))
             return
         Synth = _fluidsynth_module.Synth
 

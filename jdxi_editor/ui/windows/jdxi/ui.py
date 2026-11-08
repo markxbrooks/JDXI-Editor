@@ -387,6 +387,11 @@ class JDXiWindow(QMainWindow):
         preferences_action.triggered.connect(self.on_preferences)
         self.help_menu.addAction(preferences_action)
 
+        check_updates_action = QAction("Check for Updates…", self)
+        check_updates_action.setStatusTip("Look for a newer release on GitHub")
+        check_updates_action.triggered.connect(self.on_check_for_updates)
+        self.help_menu.addAction(check_updates_action)
+
         documentation_action = QAction(
             JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS), "Documentation", self
         )
@@ -612,6 +617,9 @@ class JDXiWindow(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def on_preferences(self):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def on_check_for_updates(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def show_editor(self, param: str):

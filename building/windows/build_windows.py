@@ -92,6 +92,18 @@ def remove_build_dirs():
             shutil.rmtree(path)
 
 
+
+def fluidsynth_binary_args(root: Path) -> list[str]:
+    """Bundle the native FluidSynth DLLs (committed in fluidsynth/bin) at
+    fluidsynth/bin, where jdxi_editor.midi.fluidsynth_library looks."""
+    args: list[str] = []
+    for dll in sorted((root / "fluidsynth" / "bin").glob("*.dll")):
+        args += ["--add-binary", f"{dll}{os.pathsep}fluidsynth/bin"]
+    if not args:
+        log.message("No FluidSynth DLLs in fluidsynth/bin: SoundFont playback needs a separate install")
+    return args
+
+
 def build_with_pyinstaller():
     """build with pyinstaller"""
     entry_point = Path(PROJECT_ROOT) / "jdxi_editor" / "main.py"
@@ -112,6 +124,7 @@ def build_with_pyinstaller():
             "--noconfirm",
             "-n", __package_name__,
             "--clean",
+            *fluidsynth_binary_args(Path(PROJECT_ROOT)),
             str(entry_point),
         ]
 
