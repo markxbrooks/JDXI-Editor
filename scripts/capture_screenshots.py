@@ -16,7 +16,6 @@ Images (doc/images/ for the Sphinx docs, resources/ for the READMEs, where
 "_600"/"_200" copies are the thumbnails linked to the full-size image):
     jdxi-digital-synth1.png  digital_synth.png   (+ _600)
     jdxi-analog-synth.png    analog_synth.png    (+ _600)
-    (README only)            program_editor.png  (+ _600)
     jdxi-drum-kit.png        drum_editor.png     (+ _600)
     (README only)            arpeggiator.png     (+ _600)
     jdxi-effects.png         effects.png         (+ _600)
@@ -41,7 +40,6 @@ MIDI_CONFIG_SIZE = (520, 0)  # width; height from the dialog's content
 
 # editor type -> (doc/images name or None, resources name or None)
 EDITOR_SHOTS = {
-    "program": (None, "program_editor.png"),
     "digital1": ("jdxi-digital-synth1.png", "digital_synth.png"),
     "analog": ("jdxi-analog-synth.png", "analog_synth.png"),
     "drums": ("jdxi-drum-kit.png", "drum_editor.png"),

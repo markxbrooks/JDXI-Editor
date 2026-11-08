@@ -122,8 +122,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Analog & Digital Synths**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/analog_synth.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/analog_synth_600.gif" alt="Analog Synth" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/analog_synth.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/analog_synth_600.png" alt="Analog Synth" />
 </a>
 
 &nbsp;
@@ -135,31 +135,44 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Drum Editor**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/drum_editor.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/drum_editor_600.gif" alt="Drum Editor" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/drum_editor.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/drum_editor_600.png" alt="Drum Editor" />
 </a>
 
 &nbsp;
 
-**Midi File Player**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/midi_player.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/midi_player_600.gif" alt="Midi File Player" />
+**MIDI File Player**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/midi_player.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/midi_player_600.png" alt="MIDI File Player" />
 </a>
 
 &nbsp;
 
 **Pattern Sequencer**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/pattern.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/pattern_600.gif" alt="Pattern Sequencer" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/pattern.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/pattern_600.png" alt="Pattern Sequencer" />
 </a>
 
 &nbsp;
 
-**Effects and Arpeggiator**  
+**Effects**  
 <a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/effects.png">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/effects_600.png" alt="Effects and Arpeggiator" />
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/effects_600.png" alt="Effects" />
 </a>
 
+&nbsp;
+
+**Vocal Effects**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/vocal_effects.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/vocal_effects_600.png" alt="Vocal Effects" />
+</a>
+
+&nbsp;
+
+**Arpeggiator**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/arpeggiator.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/arpeggiator_600.png" alt="Arpeggiator" />
+</a>
 
 ---
 
