@@ -57,7 +57,9 @@ INSTALL_LOCATION = "/Applications"
 # Directories
 BUILD_DIR = PROJECT_ROOT / "build" / "macos"
 DIST_DIR = PROJECT_ROOT / "dist"
-VENV_PATH = PROJECT_ROOT / "venv"
+# The uv-managed environment (uv sync); it has no pip, so packages are
+# installed with uv pip (see pip_command)
+VENV_PATH = PROJECT_ROOT / ".venv"
 PYTHON_PATH = VENV_PATH / "bin" / "python"
 
 # Paths to editable packages (installed from git repositories)
@@ -98,6 +100,25 @@ def run_command(cmd, cwd=None, check=True, shell=False, capture_output=True):
     return result
 
 
+def pip_command(*args):
+    """
+    A pip command for the build environment: pip itself when the environment
+    has it, otherwise uv pip (uv creates environments without pip).
+    """
+    has_pip = run_command(
+        [str(PYTHON_PATH), "-m", "pip", "--version"], check=False
+    )
+    if has_pip is not None and has_pip.returncode == 0:
+        return [str(PYTHON_PATH), "-m", "pip", *args]
+    uv = shutil.which("uv")
+    if uv is None:
+        print("  ✗ Neither pip nor uv is available for the build environment")
+        sys.exit(1)
+    if args[0] == "uninstall":
+        args = tuple(a for a in args if a != "-y")  # uv pip never prompts
+    return [uv, "pip", *args, "--python", str(PYTHON_PATH)]
+
+
 def check_dependencies():
     """Check if required build tools are installed."""
     print("\n🔍 Checking dependencies...")
@@ -105,7 +126,7 @@ def check_dependencies():
     # Check Python virtual environment
     if not VENV_PATH.exists():
         print(f"  ✗ Virtual environment not found at {VENV_PATH}")
-        print("     Please create a virtual environment first.")
+        print("     Please create it first: uv sync")
         sys.exit(1)
     print(f"  ✓ Virtual environment found: {VENV_PATH}")
 
@@ -132,19 +153,23 @@ def check_dependencies():
     # Install py2app and setuptools so py2app has pkg_resources and we avoid Errno 17 duplicate dist-info
     # - setuptools 70.3: has pkg_resources; 71+ causes duplicate dist-info copy; 75+ removes pkg_resources
     # - py2app<0.28.9: 0.28.9 errors when dist has install_requires
+    # - sounddevice: bundled by setup.py, but only in the optional "soundfont" extra
+    # (uv sync removes these again; they are reinstalled on every build)
     pip_install = run_command(
-        [str(PYTHON_PATH), "-m", "pip", "install", "-q", "setuptools==70.3.0", "py2app>=0.28.2,<0.28.9"],
+        pip_command(
+            "install", "-q", "setuptools==70.3.0", "py2app>=0.28.2,<0.28.9", "sounddevice>=0.4.0"
+        ),
         check=False,
         capture_output=True,
     )
     if pip_install and pip_install.returncode == 0:
-        print("  ✓ Build tools (setuptools 70.3, py2app) ready")
+        print("  ✓ Build tools (setuptools 70.3, py2app, sounddevice) ready")
     else:
         print("  ⚠ pip install of setuptools/py2app failed; ensure setuptools<75 and py2app<0.28.9 for pkg_resources")
 
     # fluidsynth 0.2 (package) shadows pyfluidsynth's fluidsynth.py; uninstall it so py2app bundles the correct module
     run_command(
-        [str(PYTHON_PATH), "-m", "pip", "uninstall", "-y", "fluidsynth"],
+        pip_command("uninstall", "-y", "fluidsynth"),
         check=False,
         capture_output=True,
     )
