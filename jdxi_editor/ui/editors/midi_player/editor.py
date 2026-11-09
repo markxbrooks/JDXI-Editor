@@ -257,8 +257,8 @@ class MidiFilePlayer(SynthEditor):
                 (self.midi_file.midi_track_viewer, 1), 
                 (create_panel(centered_widget, self.playback_options), 0)
             ]
-        for item, spacing in main_layout_items:
-            main_layout.addWidget(item, spacing)
+        for item, stretch in main_layout_items:
+            main_layout.addWidget(item, stretch)
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
         content_widget = create_widget_with_layout(main_layout)
