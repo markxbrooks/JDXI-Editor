@@ -12,6 +12,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
+from PySide6.QtCore import QMargins
+
 from jdxi_editor.ui.style.factory import generate_section_group_style
 
 
@@ -244,6 +246,8 @@ class AppEditorStyle:
     FONT_CONTROL = "11px"
     FONT_RULER = "10px"
     FONT_STATUS = "11px"
+
+    MARGINS = QMargins(0, 0, 0, 0)
 
     SPACING_RELATED = 8
     SPACING_GROUP = 14

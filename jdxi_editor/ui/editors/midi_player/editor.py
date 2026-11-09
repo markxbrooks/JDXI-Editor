@@ -217,7 +217,7 @@ class MidiFilePlayer(SynthEditor):
             items=panel_widgets,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
+            margins=JDXi.UI.MidiPlayer.MARGINS,
             spacing=JDXi.UI.MidiPlayer.SPACING_GROUP,
         )
         header_widget = create_widget_with_layout(header_layout)
@@ -234,19 +234,23 @@ class MidiFilePlayer(SynthEditor):
             vertical=False,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
+            margins=JDXi.UI.MidiPlayer.MARGINS,
             spacing=JDXi.UI.MidiPlayer.SPACING_GROUP,
         )
         centered_widget = create_widget_with_layout(centered_layout)
+
         # Vertical stack: header, ruler, track viewer (stretch), controls.
         # So MidiTrackViewer and its MidiTrackWidgets get space and are visible.
-        main_layout = create_vertical_layout(
-            margins=QMargins(0, 0, 0, 0),
+        main_layout = create_layout_with_items(
+            margins=JDXi.UI.MidiPlayer.MARGINS,
             spacing=JDXi.UI.MidiPlayer.SPACING_RELATED,
+            items=[],
+            vertical=True
         )
         # Three panels, as the JD-Xi has a few large glossy ones: controls on
         # top, the timeline, transport and playback below. The groups inside a
         # panel draw as flat sections (see AppEditorStyle).
+
         main_layout_items = [
                 (create_panel(header_widget), 0),
                 (self.midi_file, 0), 
@@ -255,16 +259,6 @@ class MidiFilePlayer(SynthEditor):
             ]
         for item, spacing in main_layout_items:
             main_layout.addWidget(item, spacing)
-        """
-        main_layout.addWidget(create_panel(header_widget))
-        main_layout.addWidget(self.midi_file)
-        main_layout.addWidget(
-            self.midi_file.midi_track_viewer, 1
-        )  # stretch so track viewer gets remaining space
-        main_layout.addWidget(
-            create_panel(centered_widget, self.playback_options)
-        )
-        """
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
         content_widget = create_widget_with_layout(main_layout)
@@ -305,7 +299,7 @@ class MidiFilePlayer(SynthEditor):
             vertical=True,
             start_stretch=False,
             end_stretch=False,
-            margins=QMargins(0, 0, 0, 0),
+            margins=JDXi.UI.MidiPlayer.MARGINS,
             spacing=JDXi.UI.MidiPlayer.SPACING_RELATED,
         )
         return layout
@@ -317,7 +311,7 @@ class MidiFilePlayer(SynthEditor):
             vertical=True,
             stretch=False,
         )
-        right_panel_layout.setContentsMargins(QMargins(0, 0, 0, 0))
+        right_panel_layout.setContentsMargins(JDXi.UI.MidiPlayer.MARGINS)
         right_panel_layout.setSpacing(JDXi.UI.MidiPlayer.SPACING_GROUP)
         return right_panel_layout
 
@@ -562,7 +556,7 @@ class MidiFilePlayer(SynthEditor):
         Create a grid layout containing Automation, USB Port, and USB File controls.
         """
         grid = QGridLayout()
-        grid.setContentsMargins(QMargins(0, 0, 0, 0))
+        grid.setContentsMargins(JDXi.UI.MidiPlayer.MARGINS)
         row = 0
         grid.addWidget(self.automation, row, 0, 1, 5)
         row += 1
