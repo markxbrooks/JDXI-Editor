@@ -151,3 +151,96 @@ Here are 10 high-risk bugs / correctness issues I’d fix first in scripts/class
 If you want, I can turn this into:
 - a stricter “bug report” format with severity + reproduction steps, or
 - a prioritized fix list from easiest to hardest.
+
+## Refactoring plan for `scripts/classify_midi_parts.py`
+
+The goal should be **to separate responsibilities without changing behavior first**. Treat correctness changes—such as altering ghost detection or alignment—as a separate effort, each backed by a regression test. The current file already delegates musicality and diagnosis to `midi_musicality.py` and `midi_diagnose.py`; preserve those boundaries rather than moving their logic back into the classifier.
+
+### Proposed layout
+
+Keep the existing script path as a compatibility entry point, while moving implementation into focused modules:
+
+```text
+scripts/
+    classify_midi_parts.py       # compatibility facade and CLI entry point
+    midi_parts/
+        __init__.py
+        models.py                # Note, RefNote, Grid, Result
+        midi_io.py               # MIDI parsing, tempo maps, note pairing, writers
+        classification.py        # cleanup, sections, lines, profiles, labels
+        alignment.py             # reference alignment and note matching
+        chords.py                # chord analysis and rebuild
+        tempo.py                 # tempo planning and beat/bar helpers
+        quantize.py              # quantization
+        rhythm.py                # rhythm analysis
+        patterns.py              # repeated-pattern analysis and repair
+        cycles.py                # sequencer-cycle analysis and repair
+        roundtrip.py             # pitch-content comparison and rendering helpers
+        key.py                   # key detection and filtering
+        cli.py                   # argument parsing and command dispatch
+```
+
+Keep `midi_musicality.py` and `midi_diagnose.py` as separate modules. The facade can re-export commonly used names temporarily so existing imports and tests continue to work.
+
+### Phase 1: Establish a safe baseline
+
+Before moving code:
+
+1. Run the existing test suite and record the result.
+2. Add focused tests for the riskiest behavior: MIDI note pairing, tempo-map conversion, reference matching, ghost marking, quantization collisions, and chord-track rebuilding.
+3. Save a few representative MIDI inputs and expected outputs—or compare parsed note events rather than raw MIDI bytes, which may vary in irrelevant metadata.
+4. Identify functions and names imported by other scripts and tests. Preserve these imports during the refactor.
+
+**Acceptance:** the baseline passes, and tests capture behavior for important transformations.
+
+### Phase 2: Extract shared models and MIDI I/O
+
+Move the dataclasses and low-level MIDI helpers into `models.py` and `midi_io.py`. Keep their behavior unchanged. Have higher-level modules depend on these shared types and helpers, not on the CLI or on other feature modules.
+
+Use a consistent internal representation—preferably the existing `Note` dataclass for classification and a clearly documented representation for external MIDI rows. Avoid trying to convert every tuple throughout the repository in one pass.
+
+**Acceptance:** import paths work through both the new modules and the old `classify_midi_parts` facade.
+
+### Phase 3: Extract classification and alignment
+
+Move the classification pipeline into `classification.py`; put reference alignment and matching in `alignment.py`. Keep `classify()` as a thin orchestrator, and leave report and file-writing calls outside its core logic where practical.
+
+This is also the right stage to make mutation more visible: document which functions mutate notes, and add tests for those mutations. Do not silently change algorithms as part of this extraction.
+
+**Acceptance:** existing classification tests and output comparisons pass.
+
+### Phase 4: Extract the independent analysis and transformation commands
+
+Move the remaining feature groups one at a time: chords, tempo and quantization, rhythm, patterns, cycles, roundtrip, and key detection/filtering. Each module should own its calculations and transformation logic; the CLI should parse arguments, call the relevant function, and print or write results.
+
+For each extraction, move its tests with it or add a small set of focused tests before proceeding to the next group. This avoids creating one large, difficult-to-debug migration.
+
+**Acceptance:** all subcommands still produce equivalent results for the test fixtures.
+
+### Phase 5: Keep the old script as a compatibility layer
+
+Make `scripts/classify_midi_parts.py` import and re-export the functions other scripts or tests rely on, then invoke `midi_parts.cli.main()` when run as a script. Update internal imports gradually, not all at once.
+
+This preserves the current command:
+
+```sh
+python scripts/classify_midi_parts.py classify ...
+```
+
+and reduces the risk of breaking tests that load the file directly.
+
+### Phase 6: Separate correctness fixes from structural changes
+
+Once the code is modular and the tests are in place, investigate suspected behavior problems individually. For each change, include a minimal failing example, a test demonstrating the expected result, and a separate commit where possible.
+
+A correction to my previous review: it overstated some findings as confirmed bugs. In particular, `match_reference()` does track already-used transcription notes, and ghost-marked notes are assigned to a `Ghost` output track rather than simply deleted. Those may still merit behavioral review, but they should not be treated as established defects without a reproducer.
+
+### Guardrails
+
+- Avoid a big-bang rewrite; extract one responsibility at a time.
+- Keep command names, arguments, output filenames, and default behavior stable during extraction.
+- Replace `SystemExit` in reusable functions only in a separate change; use exceptions internally and let the CLI translate them into user-facing errors.
+- Add config dataclasses only where a group of related parameters genuinely benefits from one; don’t introduce abstractions just to make the code look uniform.
+- Run the full tests after every extraction, and inspect output diffs for representative MIDI files.
+
+The first practical milestone should be **baseline tests plus extracting models and MIDI I/O**. That creates a stable foundation for the rest without changing the musical heuristics up front.
