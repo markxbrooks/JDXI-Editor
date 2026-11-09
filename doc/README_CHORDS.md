@@ -324,9 +324,10 @@ measurement on both:
    - **chroma:** mean cosine of the 12-pitch-class frames, from 0 to 1. It
      measures harmony and timing, and can't hear octave errors.
    - **r:** the Pearson correlation of the same matrices.
-   - **pitch:** mean cosine per semitone. It counts octave errors, with
-     partial credit, since the audio's second harmonic sits an octave up.
-     It is also affected by differences in instrument sound.
+   - **pitch:** mean cosine per semitone. On real audio it barely notices
+     octave errors, because the recording's overtones sit at the octaves the
+     wrong notes land on, and added octave doublings *raise* it. It is also
+     affected by differences in instrument sound.
    - **cover:** the share of the recording's sounding frames that the MIDI
      covers.
 
@@ -337,6 +338,28 @@ effects and each synth's own sound can't be carried by MIDI. **Compare
 versions of the same piece against the same recording, not the absolute
 numbers.** A raw sample-by-sample correlation of the two waveforms would be
 close to 0 even for identical notes.
+
+**How far to trust it.** A round-trip test on Take Five (the MIDI rendered
+with FluidR3 GM, transcribed with Basic Pitch, and compared with the MIDI it
+came from) calibrated these scores. Rendered against its own audio, the
+perfect MIDI scored r 0.616; the best Basic Pitch transcription, which gets
+only about half the notes right, scored 0.620. Damaging the perfect MIDI
+showed why:
+
+| Change to the perfect MIDI | Notes right (F) | r | pitch | chroma |
+|---|---|---|---|---|
+| None | 0.97 | 0.682 | 0.468 | 0.785 |
+| Drop 50% of notes | 0.68 | 0.559 | 0.352 | 0.660 |
+| 25% of notes a semitone off | 0.73 | 0.568 | 0.414 | 0.746 |
+| Add 50% random notes | 0.77 | 0.543 | 0.408 | 0.765 |
+| 25% of notes an octave off | 0.75 | 0.681 | 0.465 | 0.781 |
+| Timing shifted up to ±60 ms | 0.82 | 0.675 | 0.464 | 0.781 |
+| Octave doublings added to 50% | 0.77 | 0.667 | 0.543 | 0.773 |
+
+So `roundtrip` notices missing notes, wrong semitones and random extra
+notes, but not octave errors, octave doublings or small timing errors, and
+the pitch score rewards overtone notes. Treat differences of about 0.01 as
+noise. When a ground-truth MIDI exists, use `accuracy` (below) instead.
 
 **What it showed for Oxygène V** (notes, chroma / pitch):
 
@@ -361,6 +384,62 @@ close to 0 even for identical notes.
   the recording, being a 4-minute sequence of the second half.
 - **Rendered with FluidSynth,** the scores are higher (Basic Pitch
   transcription 0.93 chroma, 0.81 pitch), but the versions rank the same way.
+
+## Accuracy: counting right notes against a ground-truth MIDI
+
+When the right notes are known, `accuracy` counts them instead of comparing
+sound. This is the case for a MIDI file rendered to audio and transcribed (a
+round-trip test), or for a sequence already in the recording's time.
+
+```bash
+# round trip: render, transcribe, score
+.venv/bin/python scripts/classify_midi_parts.py render-test song.mid song.wav --gain 0.25
+#   ... transcribe song.wav with Basic Pitch (one or more settings), then:
+.venv/bin/python scripts/classify_midi_parts.py accuracy song.mid \
+    "song - bp default.mid" "song - bp no-melodia f0.2.mid"
+```
+
+- **Rendering:** `--gain 0.25` keeps a full band from clipping (Take Five
+  clipped at 0.6).
+- **A match** is a transcribed note of the same pitch starting within
+  `--tolerance` (default 50 ms) of a reference note. Each note matches at
+  most once.
+- **Offset:** the files are first lined up by the offset (searched within
+  `--max-offset`, default ±0.1 s) that matches most notes, refined by the
+  median onset difference. Basic Pitch starts notes about 30 ms late. Use
+  `--offset` to fix it.
+- **Reported per file:**
+  - P (share of transcribed notes that are right), R (share of reference
+    notes found) and F;
+  - F end (note ends must match too) and F octave (any octave of the right
+    note);
+  - frame F (sounding pitches every 10 ms);
+  - recall per reference track;
+  - what the wrong notes are: an overtone (an octave, twelfth or two octaves
+    above a reference note sounding then), an octave below, a semitone off,
+    or other.
+- **Left out:** drums (`--drums` keeps them) and tracks named in `--exclude`
+  (default Ghost). Notes of one pitch starting within 10 ms of each other,
+  such as two parts doubling a note, count as one (`--keep-unisons` keeps
+  them).
+- **Time:** the reference must be in the transcription's time (to within the
+  offset). For a sequence in its own tempo, such as `oxygene5 2.mid`, use
+  `classify --reference` and its reference recall instead.
+
+Take Five, rendered with FluidR3 GM without drums and transcribed with Basic
+Pitch at three settings:
+
+| Basic Pitch setting | Notes | P | R | F | F end | F octave |
+|---|---|---|---|---|---|---|
+| default | 2,099 | 0.66 | 0.51 | 0.57 | 0.28 | 0.63 |
+| `--no-melodia`, frame 0.2 | 2,532 | 0.65 | 0.60 | **0.63** | 0.23 | 0.68 |
+| onset 0.6, frame 0.4 | 1,465 | **0.79** | 0.42 | 0.55 | 0.30 | 0.59 |
+
+Bass is found best (70–82%) and piano worst (32–56%). Note ends are mostly
+wrong, and 13% of the no-melodia notes are overtones. With drums, F falls by
+about 0.05. Each kind of damage to the perfect MIDI (see the table under
+Round trip) lowers F, including the octave errors and doublings that
+`roundtrip` can't see.
 
 ## Key detection, and an optional key filter
 
@@ -697,16 +776,47 @@ whole bars don't match. `cycles` aligns each track with itself instead:
    instances that play at least half the figure, looking beyond the windows
    too. Runs need at least 8 repeats.
 3. **The figure.** For each step of the cycle, the pitches at least half the
-   instances play (none means a rest), with their median velocity and
-   length. It's computed from the agreeing instances only, then recomputed.
-4. **Errors in each instance:**
-   - *missing*: the figure has a note here, but nothing plays it;
+   instances play (none means a rest). It's computed from the agreeing
+   instances only, then recomputed.
+4. **The logo.** The repeats between the ends are stacked and averaged,
+   like a sequence logo. For each step and pitch, the logo value is the
+   share of repeats in which that pitch starts on that step:
+   - **Confidence** of a figure note is its logo value. 0.9 means it plays
+     in about nine repeats out of ten.
+   - **Conservation** of a step is 1 − H/Hmax, from the Shannon entropy of
+     the column. Each repeat's set of notes on that step is one symbol, but
+     a repeat that only drops or adds notes counts as playing the commonest
+     set: a hole isn't an alternative. A step that is almost always A#
+     scores near 1. A step split between A# and D scores near 0, even if A#
+     is slightly ahead.
+   - **Weights:** with `--detector matrix`, each repeat is weighted by its
+     mean score on the lag matrix's diagonal at the period, so a noisy copy
+     pulls the logo less. The grid detector weights repeats equally.
+   - **Velocity and length** of a figure note are the means of the repeats
+     that actually played it. A back-filled note uses them.
+
+   The report prints one line per step: each note's average frequency, the
+   strongest other note, and the step's conservation. For example:
+
+   ```
+   BassSynth: every 4 steps (3 notes, 1 rests): G1+G2/62 Bb1/70 C2/61 rest
+       step  1: G1 0.97; G2 0.60 (not filled)  (conserved 0.76)
+       step  2: Bb1 0.98; also C2 0.16  (conserved 0.95)
+       step  3: C2 0.99; also C3 0.15  (conserved 0.97)
+       step  4: rest 0.19; also G2 0.52, C2 0.38  (conserved 0.61)
+   ```
+5. **Errors in each instance:**
+   - *missing*: the figure has a note here, with confidence at least 0.75
+     on a conserved step (conservation at least 0.35, so another note
+     replaces it in at most about one repeat in six), but nothing plays it.
+     A note below either bar is marked "(not filled)": its holes aren't
+     errors;
    - *in another track*: the right note is present, labelled as another part;
    - *wrong pitch*: a different note where the figure has one;
    - *extra*: a note where the figure has a rest, or beside its note.
 
    All are listed in `<name> - cycles.csv` by bar, step and time.
-5. **`--repair`** writes `<name> - cycles.mid`. By default it adds missing
+6. **`--repair`** writes `<name> - cycles.mid`. By default it adds missing
    notes, with that step's velocity and length, and moves the figure's notes
    from other tracks into its track, so the whole figure plays on one JD-Xi
    part. `--fix-pitch` and `--review-extra` are optional.
@@ -747,10 +857,308 @@ whole bars don't match. `cycles` aligns each track with itself instead:
 The repaired file is `OxygeneV - merged - parts_QuantTempo_JDXI - patterns
 - cycles.mid`.
 
+**With the logo rule** (from 9 November), the same step on the current
+file fills fewer notes:
+- **BassSynth:** 15 high-confidence holes in B♭1 and C2 are filled. The G2
+  doubling on step 1 (0.60) is no longer filled. Step 4, the "rest", has
+  G2 in 52% of repeats and C2 in 38%, a second voice the consensus misses.
+- **SeqSynth1:** G3 (0.73) and B♭3 (0.71) fall just under 0.75, so nothing
+  is filled there now. Before, 18 notes were filled in SeqSynth1 and Organ.
+  The reference starts at 5:57, so it can't judge fills at 5:34–6:00, and
+  `roundtrip` moves by 0.001 either way.
+
 **The velocities** are Basic Pitch's loudness estimates, not the original
 sequencer's settings. A sequencer usually plays every step at one
 velocity, so differences such as 65 / 56 / 62 are accents in the sound, or
 transcription noise.
+
+## Audio evidence for figure notes (experiment, 9 November)
+
+`scripts/midi_parts/evidence.py` measures, for any pitch over one step,
+whether the recording supports a note starting there. This is Phase 1 of
+the plan in `doc/CRITIQUE_FT.md`. It is a measuring tool only: nothing uses
+it to change MIDI yet.
+
+- **Spectrogram:** constant-Q, three bins per semitone, tuned to the
+  recording, harmonic part only, folded to one log level per MIDI pitch.
+- **Features per pitch and step:**
+  - fundamental;
+  - weighted harmonic sum (+0, +12, +19, +24);
+  - octave below (energy at p − 12 and p + 7, which a lower note explains);
+  - contrast with the neighbouring semitones;
+  - onset (the rise at the step's start);
+  - persistence.
+- **Diagnostic:** `plot_figure_evidence` draws the spectrogram with the MIDI
+  notes outlined and the figure's holes circled.
+- **Bin centring (fixed during Phase 2):** each semitone's three CQT bins
+  now sit at −⅓, 0 and +⅓ of it. They were at 0, +⅓ and +⅔, so a pitch
+  picked up its upper neighbour's energy (a B3 scored like the C4 above
+  it). The numbers below are from after the fix.
+
+**Experiment 1.** Can the audio tell a figure's notes from the other figure
+pitches at the same step? This uses a logistic model on the features,
+trained on half the repeats and scored on the other half (AUC: 0.5 is
+chance, 1 is perfect):
+
+| Figure | Source | AUC | Holes that look like notes* |
+|---|---|---|---|
+| BassSynth (rendered `oxygene5 2.mid`) | FluidSynth render | 0.91 | — |
+| BassSynth G1+G2 B♭1 C2 | mix | **0.96** | 66% of 172 |
+| BassSynth | Demucs bass stem | 0.83 | 17% |
+| SeqSynth1 G3 B♭3 C4 | mix | 1.00 | 100% of 31 |
+| SeqSynth1 | Demucs other stem | 1.00 | 100% |
+
+\* above the 95th percentile of non-figure pitches.
+
+- **Onset is the strongest single feature** on clean audio (0.78), as
+  expected: held chord notes are present but don't start.
+- **The mix beats the bass stem for BassSynth.** Demucs weakens the
+  synth bass's attack, so use the mix by default.
+- **The octave above a sounding note is the hardest case.** On the
+  rendered reference, with the true notes known, real notes are told from
+  the octave above a sounding note with AUC 0.82. Against two octaves
+  above, a twelfth, a fifth or a tone above, AUC is 0.88–0.92.
+- **SeqSynth1's 1.00 is partly that confound.** It plays BassSynth's figure
+  one or two octaves up. Scored on 40 s after `cycles` ends the figure, 96%
+  of its steps still look present. Either SeqSynth1 continues there
+  (its track still has notes on 53 of those steps), or BassSynth's
+  harmonics supply the energy. The audio alone can't decide.
+
+The diagnostic images are in `OxygeneV parts/diagnosis/audio evidence/`.
+
+## Arpeggio refine: filling figure notes the recording confirms
+
+```sh
+.venv/bin/python scripts/classify_midi_parts.py arpeggio-refine ~/Downloads/OxygeneV.wav \
+    "<quantized>.mid" --track BassSynth SeqSynth1 [--repair [--fix-pitch] [--review]] [--plot]
+```
+
+For each figure `cycles` finds, every expected note of every repeat is
+checked against the recording, keeping three confidences apart:
+- **repeat:** the note's logo frequency;
+- **audio:** a logistic model on the evidence features, fitted per figure
+  on its own played notes against its other pitches at each step. It's
+  cross-fitted by repeat, so a repeat never judges itself, and given as a
+  probability under even odds;
+- **combined:** Bayes, the audio's likelihood ratio times the repeat odds.
+
+Each missing note gets one decision:
+- **confirmed:** firmly in the figure (the `cycles` gate), audio at least
+  0.5 and above the 95th percentile of non-figure pitches, combined at
+  least `--min-confidence` (0.9), and nothing else explains it. Only these
+  are filled by `--repair`, into `<name> - refined.mid`, with the figure's
+  mean velocity and length;
+- **probable:** combined at least 0.5, with the failing conditions listed;
+- **uncertain;**
+- **absent:** combined below 0.2.
+
+Also:
+- **Harmonic attribution:** a note an octave, a twelfth or two octaves
+  above a note sounding in the MIDI at that step, in any track, is never
+  confirmed. The CSV names the lower note.
+- **Wrong pitches** (a semitone neighbour played where the audio has the
+  figure's note) are corrected only with `--fix-pitch`.
+- **Step audit:** the report lists, for each figure note, the mean audio
+  support where the MIDI plays it, and flags figure notes the audio
+  doesn't support.
+- **Outputs:** `--plot` writes before and after images. Missing notes are
+  boxes coloured by decision, labelled with their combined confidence,
+  with repeat numbers along the top. Every missing note and its features
+  are in `<name> - refine.csv`.
+
+**On Oxygène V** (`patterns (rebuilt)`):
+- **BassSynth:** 172 holes. 152 are the G2 doubling on step 1, and all are
+  explained by G1 below. The audit agrees: where the MIDI plays G2, the
+  audio supports it at only 0.32, so it's most likely G1's overtone, which
+  Basic Pitch transcribed. Of the other 20 holes, 7 are confirmed and
+  filled.
+- **SeqSynth1:** all 31 holes are probable. The audio supports them (median
+  0.92), but every one sits above a BassSynth note, so none is filled.
+  Listening decides this one.
+- **No wrong pitches** are corrected.
+
+**Deletion test.** Deleting 10% of BassSynth's played G1, B♭1 and C2 notes,
+which the recording certainly contains, made 120 holes:
+
+| | Holes | Audio alone would confirm | Confirmed |
+|---|---|---|---|
+| Deleted notes (really there) | 120 | 67 (56%) | 37 (31%) |
+| Basic Pitch's own holes (not G2) | 20 | 3 (15%) | 1 |
+
+- **The audio tells real missing notes from doubtful holes** (56% against
+  15%).
+- **The repeat gate blocks the rest.** Since the `cycles` rework, the
+  gate is the combined A·S·R·T score, not the logo frequency, and deleting
+  10% of the notes drops it to 0.72 (G1) and 0.70 (B♭1), under 0.75.
+
+The diagnostic images are in `OxygeneV parts/diagnosis/audio evidence/`.
+
+## Arpeggio trial: delete, back-fill from the spectrogram, score
+
+```sh
+.venv/bin/python scripts/classify_midi_parts.py arpeggio-trial clean.mid --drop 0.2 --seed 1 \
+    --track BassSynth [--grid 8] [--wav clean.wav] --out-dir out
+```
+
+A repeatable test bench for the filler. The clean file's notes are the
+ground truth, and the file is never modified.
+1. **Render:** the round-trip render (`_render_copy`, one sustained GM
+   program, FluidSynth) writes `clean.wav`. Every deleted note is still in
+   the audio. `--wav` reuses a rendering.
+2. **Drop:** a seeded share of the chosen tracks' notes is removed, giving
+   `damaged.mid` and `deleted.csv` (track, start tick, pitch, duration,
+   velocity).
+3. **Fill:** the trial filler writes `ft-generated.mid`.
+4. **Score:** a restored note matches track, pitch and start tick. Recall
+   is restored over deleted; precision is restored over inserted. An
+   insert the clean file doesn't have is a false insert. `trial.txt`
+   records the seed, the drop rate, the counts and every pitch model, and
+   is what two iterations are compared with. `figure N - damaged.png` and
+   `figure N - ft-generated.png` show the deleted notes circled.
+
+**The trial filler** (`ft_fill` in `refine.py`), for each consensus pitch c
+at each step of a figure found as `cycles` finds it:
+- **Positives:** c's six evidence features in the repeats that play it.
+- **Negatives:** the figure's other pitches, c's neighbours (±1 and ±2
+  semitones) and any other pitch the MIDI played there, all at the same
+  step. The literal alternative, c in the repeats that lack it, makes the
+  deleted notes the negatives. Those are in the audio, so on the synthetic
+  loop it separates at AUC 0.50–0.72 and restores 24% (option
+  `--negatives repeats`).
+- **Score:** the standardized features' dot product with the difference of
+  the class means; separation is the leave-one-out AUC.
+- **A model is used only when:**
+  - it has at least 4 positives;
+  - its AUC is at least 0.7;
+  - its weights on fundamental, harmonics and onset sum to more than 0.
+    Without that last check, a D the MIDI plays where the recording has A#
+    was filled: the model had learned that D is quieter than its
+    neighbours.
+- **Placement:**
+  - **lag:** one lag from `audio_offset` shifts the whole recording;
+  - **onset:** each candidate is read at its strongest onset within half a
+    step.
+- **Per cell:**
+  - **audio:** a softmax over the candidates (the figure's pitches plus
+    what the MIDI played);
+  - **combined:** the audio times the logo frequency, normalized;
+  - **repeat confidence:** A·S·R·T.
+- **Decisions:**
+  - **insert:** the cell is empty, repeat confidence is at least 0.75,
+    audio is at least 0.5, and the model is usable;
+  - **correct:** both repeat confidence and audio are at least 0.9;
+  - otherwise **review**, and nothing is written.
+- **A figure at a double period is folded back** (G A# C rest twice is G
+  A# C rest), so each step pools all its repeats. With random gaps, the
+  grid detector chose period 8 for a 4-step loop, which halved the repeats
+  and pushed A·S·R·T under 0.75.
+
+**Results:**
+
+| Trial | Deleted | Restored | False inserts | Recall | Precision |
+|---|---|---|---|---|---|
+| Synthetic G–A#–C loop (tests) | 38 | 35 | 0 | 0.92 | 1.00 |
+| `oxygene5 2.mid` BassSynth, seed 1 | 584 | 102 | 0 | 0.17 | 1.00 |
+| `oxygene5 2.mid` BassSynth, seed 2 | 584 | 111 | 0 | 0.19 | 1.00 |
+
+Where the 584 deleted notes of seed 1 went:
+
+| Outcome | Notes |
+|---|---|
+| Outside every figure `cycles` found | 115 |
+| Inside a figure, but not its consensus note there | 171 |
+| Review: repeat confidence under 0.75 | 91 |
+| Review: audio under 0.5 | 54 |
+| Review: model direction rejected | 50 |
+| Inserted (all correct) | 102 |
+
+The filler never inserts a wrong note, but it restores few. Most losses
+come before the audio is consulted: deleted notes outside the figures, or
+off their consensus. Among cells the filler judged, the low notes are the
+weak point. C1 and G1 sit where the constant-Q window is about a second
+long, so their evidence blurs across steps, while B♭1 and C2 separate at
+AUC 0.98–1.00.
+
+### Lifting the trial's caps, and a per-time-point template
+
+Three caps limited the first trial; two were lifted in `refine.py` and
+`evidence.py`, and the third led to a new option:
+- **Repeat confidence on undamaged neighbours** (`neighbour_confidence`): an
+  empty cell is judged from the repeats that still sound, so the deletions
+  don't pull the gate down.
+- **Consensus per transposition** (`split_transpositions`): a stretch of a
+  figure at its own transposition is rebuilt as its own piece.
+- **Short windows for low notes:** below B♭1 the spectrogram uses a second
+  constant-Q with a window of about 0.15 s at G1, instead of about 1 s.
+- **`--template`, for notes outside every figure.** About 43% of
+  BassSynth's notes in the reference fall outside any figure `cycles`
+  finds. For an empty step there, the prior comes from the track's own
+  context:
+  - **rhythm:** a note at the same position in the bars within ±2 bars, at
+    least 0.5;
+  - **pitch:** the pitch among the track's nearby onsets, at least 0.25.
+
+  A per-pitch audio model fitted on the whole track then decides, with a
+  stricter bar (audio at least 0.9). A step gets no note if any of these
+  hold: another track sounds the pitch, the track has it a step either
+  side, or a MIDI note sounds an octave, a twelfth or two octaves below.
+
+| `oxygene5 2.mid` BassSynth, 20% drop | Seed 1 recall | Seed 2 recall | Precision | False inserts |
+|---|---|---|---|---|
+| First trial | 0.17 | 0.19 | 1.00 | 0 |
+| + neighbour confidence, transpositions, short low windows | 0.45 | 0.37 | 1.00 | 0 |
+| + `--template` | 0.46 | 0.40 | 0.99 | 1–2 |
+
+The template restores only 10–16 of the 261–289 deleted notes outside the
+figures. Most are held back because the audio alone isn't decisive (median
+likelihood 0.30), or because the bass repeats the same pitch on
+neighbouring steps (early/late). A per-time-point audio template without a
+repeat prior is essentially re-transcription, which is what Basic Pitch
+already does, so it adds little. Figure coverage is now the main limit.
+
+**On Oxygène V** (`cycles` repair, then the FT filler):
+
+| | Previous best | + FT v2 | + FT v2 + template |
+|---|---|---|---|
+| Notes inserted | — | 12 (BassSynth 7, Organ 5) | 17 (+ 5 from the template) |
+| Roundtrip chroma / r / pitch | 0.840 / 0.804 / 0.556 | the same | the same |
+| Reference notes found | 2,985 (42.81%) | 2,989 (42.87%) | 2,989 (42.87%) |
+
+`cycles` finds only three figures in the recording (BassSynth, SeqSynth1
+and Organ), so the filler has little to work on.
+
+## Tie notes: joining what a tremolo or phaser split
+
+A held synth note whose loudness swells and dips is transcribed as a run of
+short notes of the same pitch, because each swell looks like a new attack.
+On Oxygène V's Bass track (after `cycles` and the FT filler), 145 of the 354
+notes were such fragments, mostly C2, B1 and A1 in runs of 2–8, each
+0.15–0.4 s long.
+
+```bash
+python scripts/classify_midi_parts.py tie-notes OxygeneV.wav "<file>.mid" --track Bass \
+    [--plot-at 33] [--verbose]
+```
+
+It writes `<file> - tied.mid`; other tracks and all non-note events are
+unchanged. Consecutive notes of the same pitch are joined when the
+recording holds the pitch across the joint:
+
+| Joint | Tied when | Option (default) |
+|---|---|---|
+| Abutting | the second note starts within 10 ms of the first's end (or overlaps it) | `--abut 0.010` |
+| Gap | up to 0.5 s, and the pitch stays on average 0.3 log units above the louder neighbouring semitone across the gap | `--max-gap 0.5`, `--contrast 0.3` |
+| Either | not if the pitch rises by 0.3 log units or more from the 60 ms before the second note to the 60 ms after: that is a new attack | `--reattack 0.3` |
+
+The joined note keeps the first start, the last end and the loudest
+velocity. Notes of other pitches in between don't block a tie. Use it on
+held parts; sequencer tracks with repeated notes are best left out.
+
+**On Oxygène V's Bass:** 354 notes become 248. 91 abutting joints and 15
+gaps are tied. 14 joints are kept apart as re-attacks, and 35 because the
+pitch isn't held through the gap. By ear the result is a clear improvement,
+though none of the scores measures it (the reference has no held-bass
+part).
 
 ## Musicality: five dimensions against the recording
 
@@ -1104,6 +1512,30 @@ call better.
 - `test_quantize_snaps_triplet_bars_only_when_asked`;
 - `test_cycles_find_the_figure_its_span_and_errors`;
 - `test_cycles_repair_fills_and_adopts`;
+- in `tests/test_midi_similarity.py`, for the logo: a clean loop scores 1
+  everywhere with no missing notes; one A# removed keeps a high confidence
+  and `--repair` writes it back with the average velocity and length; an
+  A# traded with D in about half the repeats has low confidence and
+  conservation, and nothing is filled (with both detectors);
+- `tests/test_refine.py`, the trial without FluidSynth (a G–A#–C loop and
+  a sawtooth WAV of its clean notes): with seed 1 and a 20% drop, recall
+  is above 0.8 with no false inserts, and the clean and damaged files are
+  unchanged; where every repeat plays D and the WAV has A#, nothing is
+  written for that step, and the trial record lists the counts;
+- `tests/test_arpeggio_refine.py`, on synthetic audio rendered from the
+  true figure: a note missing from the MIDI but heard is confirmed and
+  filled; one missing from both is not; one an octave above a sounding
+  note is never confirmed; a wrong pitch is corrected only with
+  `--fix-pitch`; fills can go to the review track; and the logistic fit;
+- `tests/test_audio_evidence.py`, with synthetic sawtooth notes: a note
+  beats its neighbours and its octave (whose octave-below value is higher),
+  a starting note has an onset and a held one doesn't, silence has no
+  evidence, and the AUC helper;
 - `test_roundtrip_scores`, which checks that right chords score high,
   octave errors keep the chroma score but lower the pitch score, wrong chords
   score low, and a 2 s offset is found.
+- `tests/test_note_accuracy.py`, for `accuracy`: a perfect copy scores 1, a
+  late transcription is lined up, onsets outside the tolerance miss, octave
+  errors are wrong except for F octave, overtone doublings lower precision
+  and are named, matching is one to one, wrong ends lower only F end, and
+  drums and Ghost are left out.

@@ -372,6 +372,31 @@ def test_quantize_strength_and_downbeat(tmp_path):
     assert half.mean_shift_ms == pytest.approx(full.mean_shift_ms / 2, rel=0.1)
 
 
+def test_tempo_map_ticks_and_seconds_roundtrip():
+    midi = mido.MidiFile(ticks_per_beat=480)
+    track = mido.MidiTrack()
+    track.append(mido.MetaMessage("set_tempo", tempo=500000, time=0))
+    track.append(mido.MetaMessage("set_tempo", tempo=600000, time=480))
+    track.append(mido.MetaMessage("set_tempo", tempo=400000, time=960))
+    midi.tracks.append(track)
+    tempo_map = cmp._tempo_map(midi)
+    tpb = midi.ticks_per_beat
+    for ticks in range(0, 2400, 17):
+        seconds = cmp._seconds(ticks, tempo_map, tpb)
+        assert cmp._ticks(seconds, tempo_map, tpb) == ticks
+
+
+def test_quantize_joins_same_pitch_notes_on_one_onset(tmp_path):
+    import numpy as np
+
+    path = _write(tmp_path / "song.mid", {"Seq": [(0.02, 0.12, 60, 80), (0.06, 0.16, 60, 90), (0.50, 0.62, 60, 70)]})
+    plan = cmp.TempoPlan(np.arange(0.0, 3.0, 0.6), 0.0, 0.15, 4, 1.0, "test")
+    stats = cmp.quantize_midi(path, tmp_path / "quantized.mid", plan)
+    assert stats.merged == 1
+    pitches = [r[2] for r in cmp._paired_notes(tmp_path / "quantized.mid")]
+    assert pitches.count(60) == 2
+
+
 def test_moving_chord_tones_are_kept_unless_dropped(tmp_path):
     pad, bass = _progression(["C", "C", "Am", "Am"])
     run = [(0.5 + k * 0.5, 0.9 + k * 0.5, (76, 79, 84)[k % 3], 60) for k in range(6)]  # C-chord tones moving above
