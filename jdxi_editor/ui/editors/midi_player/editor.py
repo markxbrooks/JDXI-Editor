@@ -254,7 +254,7 @@ class MidiFilePlayer(SynthEditor):
                 (create_panel(centered_widget, self.playback_options), 0)
             ]
         for item, spacing in main_layout_items:
-            main_layout.addWidget(item)
+            main_layout.addWidget(item, spacing)
         """
         main_layout.addWidget(create_panel(header_widget))
         main_layout.addWidget(self.midi_file)
