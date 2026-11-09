@@ -43,3 +43,83 @@ For polyphonic parts, a step can contain a *set* of pitches rather than one symb
 The key caution is that the matrix finds *similarity*, not necessarily a meaningful repeated musical pattern. Repeated bass notes, rests, or generic chord tones can create misleading stripes. Require enough distinctive events, a minimum phrase length, and a margin over less-similar candidate matches; validate on known examples before enabling repair.
 
 So: **yes, this is a promising direction**, especially as a candidate-discovery stage. I’d extend `cycles` with a matrix-based detector and compare its findings against the existing detector, rather than replacing the current logic immediately.
+
+Extend `cycles` with a **self-similarity candidate detector**, then reuse its existing cycle consensus and error-reporting logic. Don’t replace the current detector or let matrix matches trigger repairs immediately.
+
+## Why this may help
+
+Today, `find_cycles()` searches short periods—by default 2–16 grid steps—in moving two-bar windows. It scores exact-pitch recurrence, then builds a consensus. That works for clean, short loops, but can miss longer figures, transposed repeats, and repetitions with a few transcription errors.
+
+A self-similarity matrix can search across the track for repeated passages, rather than only testing a narrow set of periods.
+
+## Proposed pipeline
+
+### 1. Build a feature vector for each grid step
+
+For each track, create one vector per step from its notes. Initially include:
+
+- Pitch classes and absolute pitches that start on the step.
+- Onset and rest information.
+- Note duration or gate length, in a separate feature.
+- Optionally, pitch intervals from nearby notes, which can help match transposed repeats.
+
+Weight rare or distinctive features more than common ones. That helps prevent repeated single notes or dense pedals from looking like meaningful phrases.
+
+### 2. Compare steps or short windows
+
+Compute similarity between step features, producing a matrix `S[i, j]`. Use separate or combined scores for rhythm and pitch; for pitch, allow an optional transposition that maximizes the match.
+
+A repeated passage should create a strong diagonal stripe away from the matrix’s main diagonal. The distance between the diagonals estimates the repeat period. A few mismatched or missing notes weaken parts of a stripe, rather than erasing the match entirely.
+
+### 3. Turn stripes into candidate repetitions
+
+Detect runs of similar windows that recur at a consistent offset. Each candidate should include:
+
+- Start and end steps.
+- Estimated period.
+- Best-fit transposition.
+- Similarity and confidence.
+- The number of supporting repetitions.
+
+Apply minimum-length, minimum-repeat, and distinctiveness checks. In particular, reject candidates that are mostly one pitch or mostly rests.
+
+### 4. Refine candidates with local alignment
+
+For each candidate, align its repeated instances to a representative phrase. A small sequence-alignment step can tolerate a missed onset or extra note, and report where instances differ. This is a refinement step, not a reason to repair anything automatically.
+
+### 5. Reuse existing reporting and repair machinery
+
+Convert only high-confidence candidates into the current `Cycle` representation, then reuse `_consensus()`, `_instance_agreement()`, `Cycle.errors`, and the existing CSV reporting.
+
+Initially, matrix detection should be **analysis-only**. Keep `--repair` on the existing behavior, or require an explicit opt-in for matrix-derived repairs until tests show they are reliable.
+
+## Keep the first implementation bounded
+
+A full `N × N` matrix can use too much memory for long tracks. Start with one track and the gridded section, and compare short windows or limit the search to a configurable maximum period. If the track is long, process blocks or use a sparse candidate search instead of storing every pairwise score.
+
+Possible CLI additions:
+
+```text
+cycles file.mid --detector both
+    --max-period-bars 8
+    --min-repeats 4
+    --min-similarity 0.75
+    --plot-similarity
+```
+
+`--detector both` would run the existing detector and the new detector side by side, making it easier to see what the matrix approach adds. A similarity plot is useful for diagnosing false positives; it should be optional.
+
+## Test plan
+
+Extend the synthetic cycle tests to cover:
+
+1. A clean short loop that the current detector already finds.
+2. A loop longer than 16 steps.
+3. Repeats with one missing, extra, or wrong-pitch note.
+4. A transposed repeat.
+5. A repeated single-note pedal as a negative control.
+6. Two different patterns interleaved or separated by a gap.
+
+Compare candidate starts, periods, transposition, and confidence against known expected values. Also compare the new detector’s results with the existing detector on real MIDI examples before using it for repairs.
+
+The key design choice is to make the matrix detector a **broader candidate finder**, not a source of unquestioned truth. Let alignment and confidence checks validate its candidates, and keep repair decisions conservative.
