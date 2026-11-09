@@ -21,11 +21,11 @@ Methods:
 import logging
 import os
 import re
-from typing import Union
+from typing import Callable, Optional, Union
 
 from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon, QKeySequence
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QMainWindow, QMessageBox
 
 from jdxi_editor.core.synth.factory import create_synth_data
@@ -213,124 +213,176 @@ class JDXiWindow(QMainWindow):
         # --- Initialize current preset index
         self.current_preset_index = 0
 
+    def _menu_action(
+        self,
+        text: str,
+        slot: Callable,
+        shortcut: Optional[Union[QKeySequence, QKeySequence.StandardKey, str]] = None,
+        icon: Optional[QIcon] = None,
+        status_tip: Optional[str] = None,
+    ) -> QAction:
+        """Menu item with a shortcut that works while any editor window is focused."""
+        action = QAction(icon, text, self) if icon is not None else QAction(text, self)
+        if shortcut is not None:
+            action.setShortcut(QKeySequence(shortcut))
+            action.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
+        if status_tip:
+            action.setStatusTip(status_tip)
+        action.triggered.connect(slot)
+        return action
+
     def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
 
         # --- File menu
-        file_menu = menubar.addMenu("File")
+        file_menu = menubar.addMenu("&File")
 
-        load_midi_file_action = QAction("Load MIDI file", self)
-        load_midi_file_action.triggered.connect(self._midi_file_load)
-        file_menu.addAction(load_midi_file_action)
-
-        save_midi_file_action = QAction("Save MIDI file", self)
-        save_midi_file_action.triggered.connect(self._midi_file_save)
-        file_menu.addAction(save_midi_file_action)
-
-        save_midi_file_as_action = QAction("Save MIDI file As...", self)
-        save_midi_file_as_action.triggered.connect(self._midi_file_save_as)
-        file_menu.addAction(save_midi_file_as_action)
-
-        open_midi_as_pdf_action = QAction("Open current MIDI as PDF", self)
-        open_midi_as_pdf_action.triggered.connect(self._open_current_midi_as_pdf)
-        file_menu.addAction(open_midi_as_pdf_action)
+        file_menu.addAction(
+            self._menu_action(
+                "&Load MIDI file",
+                self._midi_file_load,
+                QKeySequence.StandardKey.Open,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "&Save MIDI file",
+                self._midi_file_save,
+                QKeySequence.StandardKey.Save,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "Save MIDI file &As...",
+                self._midi_file_save_as,
+                QKeySequence.StandardKey.SaveAs,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "Open current MIDI as &PDF",
+                self._open_current_midi_as_pdf,
+                "Ctrl+P",
+            )
+        )
 
         file_menu.addSeparator()
 
-        load_program_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED), "Load Program...", self
+        file_menu.addAction(
+            self._menu_action(
+                "Load P&rogram...",
+                lambda: self.show_editor("program"),
+                "Ctrl+Shift+O",
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED),
+            )
         )
-        load_program_action.triggered.connect(lambda: self.show_editor("program"))
-        file_menu.addAction(load_program_action)
 
         load_preset_action = QAction("Load Preset...", self)
         load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
         # file_menu.addAction(load_preset_action)
 
-        load_action = QAction("Load Patch...", self)
-        load_action.triggered.connect(self._patch_load)
-        file_menu.addAction(load_action)
-
-        save_action = QAction("Save Patch...", self)
-        save_action.triggered.connect(self._patch_save)
-        file_menu.addAction(save_action)
-
-        file_menu.addSeparator()
-
-        dump_settings_action = QAction("Dump Settings to Synth", self)
-        dump_settings_action.triggered.connect(self._dump_settings_to_synth)
-        file_menu.addAction(dump_settings_action)
+        file_menu.addAction(
+            self._menu_action("Load &Patch...", self._patch_load, "Ctrl+Alt+O")
+        )
+        file_menu.addAction(
+            self._menu_action("Save Patc&h...", self._patch_save, "Ctrl+Alt+S")
+        )
 
         file_menu.addSeparator()
 
-        quit_action = QAction("Quit", self)
-        quit_action.triggered.connect(self.close)
-        file_menu.addAction(quit_action)
+        file_menu.addAction(
+            self._menu_action(
+                "&Dump Settings to Synth",
+                self._dump_settings_to_synth,
+                "Ctrl+Shift+D",
+            )
+        )
+
+        file_menu.addSeparator()
+
+        file_menu.addAction(self._menu_action("&Quit", self.close, "Ctrl+Q"))
 
         # --- Edit menu
-        edit_menu = menubar.addMenu("Edit")
+        edit_menu = menubar.addMenu("&Edit")
 
-        midi_config_action = QAction("MIDI Configuration...", self)
-        midi_config_action.triggered.connect(self._show_midi_config)
-        edit_menu.addAction(midi_config_action)
+        edit_menu.addAction(
+            self._menu_action(
+                "&MIDI Configuration...",
+                self._show_midi_config,
+                "Ctrl+Shift+M",
+            )
+        )
 
         edit_menu.addSeparator()
 
-        update_db_action = QAction("Update User Program Database", self)
-        update_db_action.triggered.connect(self._update_user_program_database)
-        edit_menu.addAction(update_db_action)
+        edit_menu.addAction(
+            self._menu_action(
+                "&Update User Program Database",
+                self._update_user_program_database,
+                "Ctrl+Shift+U",
+            )
+        )
 
     def _create_parts_menu(self) -> None:
         """Create editors menu"""
-        self.parts_menu = self.menuBar().addMenu("Parts")
+        self.parts_menu = self.menuBar().addMenu("&Parts")
 
-        digital1_action = QAction("Digital Synth 1", self)
-        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
-        self.parts_menu.addAction(digital1_action)
-
-        digital2_action = QAction("Digital Synth 2", self)
-        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-        self.parts_menu.addAction(digital2_action)
-
-        digital3_action = QAction("Digital Synth 3", self)
-        digital3_action.triggered.connect(lambda: self.show_editor("digital3"))
-        self.parts_menu.addAction(digital3_action)
-
-        drums_action = QAction("Drums", self)
-        drums_action.triggered.connect(lambda: self.show_editor("drums"))
-        self.parts_menu.addAction(drums_action)
-
-        analog_action = QAction("Analog Synth", self)
-        analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
-        self.parts_menu.addAction(analog_action)
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &1", lambda: self.show_editor("digital1"), "Ctrl+1"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &2", lambda: self.show_editor("digital2"), "Ctrl+2"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &3", lambda: self.show_editor("digital3"), "Ctrl+3"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action("&Drums", lambda: self.show_editor("drums"), "Ctrl+4")
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "&Analog Synth", lambda: self.show_editor("analog"), "Ctrl+5"
+            )
+        )
 
     def _create_effects_menu(self) -> None:
         """Create editors menu"""
-        self.effects_menu = self.menuBar().addMenu("Effects")
+        self.effects_menu = self.menuBar().addMenu("Effe&cts")
 
-        effects_action = QAction("Effects", self)
-        effects_action.triggered.connect(lambda: self.show_editor("effects"))
-        self.effects_menu.addAction(effects_action)
-
-        vocal_effects_action = QAction("Vocal FX", self)
-        vocal_effects_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
-        self.effects_menu.addAction(vocal_effects_action)
+        self.effects_menu.addAction(
+            self._menu_action("&Effects", lambda: self.show_editor("effects"), "Ctrl+6")
+        )
+        self.effects_menu.addAction(
+            self._menu_action(
+                "&Vocal FX", lambda: self.show_editor("vocal_fx"), "Ctrl+7"
+            )
+        )
 
     def _create_playback_menu(self) -> None:
         # --- Create editors menu
-        playback_menu = self.menuBar().addMenu("Playback")
+        playback_menu = self.menuBar().addMenu("P&layback")
 
-        # --- Add MIDI file action
-        midi_file_action = QAction("MIDI File", self)
-        midi_file_action.triggered.connect(lambda: self.show_editor("midi_player"))
-        playback_menu.addAction(midi_file_action)
-
-        arpeggiator_action = playback_menu.addAction("Arpeggiator")
-        arpeggiator_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
-        sequencer_action = playback_menu.addAction("Pattern Sequencer")
-        sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
+        playback_menu.addAction(
+            self._menu_action(
+                "&MIDI File", lambda: self.show_editor("midi_player"), "Ctrl+8"
+            )
+        )
+        playback_menu.addAction(
+            self._menu_action(
+                "&Arpeggiator", lambda: self.show_editor("arpeggio"), "Ctrl+9"
+            )
+        )
+        playback_menu.addAction(
+            self._menu_action(
+                "&Pattern Sequencer", lambda: self.show_editor("pattern"), "Ctrl+0"
+            )
+        )
 
     def _create_debug_menu(self) -> None:
         # --- Add debug menu
@@ -360,45 +412,49 @@ class JDXiWindow(QMainWindow):
         menubar = self.menuBar()
 
         # --- Help menu
-        self.help_menu = menubar.addMenu("Help")
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        self.help_menu.addAction(log_viewer_action)
-
-        # --- Add MIDI debugger action (SysEx decoder)
-        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._show_midi_debugger)
-        self.help_menu.addAction(midi_debugger_action)
-
-        # --- Add MIDI message monitor action
-        midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
-        self.help_menu.addAction(midi_monitor_action)
-
-        # --- Add About window action
-        about_help_action = QAction("About", self)
-        about_help_action.triggered.connect(self._show_about_help)
-        self.help_menu.addAction(about_help_action)
-
-        preferences_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS), "Preferences", self
+        self.help_menu = menubar.addMenu("&Help")
+        self.help_menu.addAction(
+            self._menu_action("&Log Viewer", self._show_log_viewer, "Ctrl+Shift+L")
         )
-        preferences_action.setStatusTip("Show the Preferences window")
-        preferences_action.triggered.connect(self.on_preferences)
-        self.help_menu.addAction(preferences_action)
-
-        check_updates_action = QAction("Check for Updates…", self)
-        check_updates_action.setStatusTip("Look for a newer release on GitHub")
-        check_updates_action.triggered.connect(self.on_check_for_updates)
-        self.help_menu.addAction(check_updates_action)
-
-        documentation_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS), "Documentation", self
+        self.help_menu.addAction(
+            self._menu_action(
+                "MIDI &SysEx Debugger", self._show_midi_debugger, "Ctrl+Shift+Y"
+            )
         )
-        documentation_action.setStatusTip(f"Show {__program__} documentation")
-        documentation_action.triggered.connect(self.on_documentation)
-
-        self.help_menu.addAction(documentation_action)
+        self.help_menu.addAction(
+            self._menu_action(
+                "MIDI &Monitor", self._show_midi_message_monitor, "Ctrl+Alt+M"
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action("&About", self._show_about_help, "Ctrl+Shift+A")
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "&Preferences",
+                self.on_preferences,
+                "Ctrl+,",
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS),
+                "Show the Preferences window",
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "Check for &Updates…",
+                self.on_check_for_updates,
+                "Ctrl+Alt+U",
+                status_tip="Look for a newer release on GitHub",
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "&Documentation",
+                self.on_documentation,
+                QKeySequence.StandardKey.HelpContents,
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS),
+                f"Show {__program__} documentation",
+            )
+        )
 
         # --- Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)

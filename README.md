@@ -266,8 +266,25 @@ python -m building.buildsys
 or ]
 ```
 .\building\scripts\build.ps1
-```x
+```
 
+converting wav files to midi
+
+```commandline
+cd ~/Downloads/separated/htdemucs/OxygeneV
+mkdir -p midi
+basic-pitch midi bass.flac --minimum-frequency 30 --maximum-frequency 400
+```
+
+```python
+import audioread; audioread.available_backends = lambda flush_cache=False: []
+from basic_pitch.inference import predict
+from basic_pitch import ICASSP_2022_MODEL_PATH
+_, midi, notes = predict('bass.flac', ICASSP_2022_MODEL_PATH, minimum_frequency=30, maximum_frequency=400)
+midi.write('midi/bass.mid'); print(len(notes), 'notes')
+"
+
+```
 
 
 ## 🙏 Credits

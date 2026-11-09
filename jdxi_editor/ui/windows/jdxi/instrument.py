@@ -1203,7 +1203,7 @@ class JDXiInstrument(JDXiWindow):
         # Get the File menu by finding the action
         file_menu = None
         for action in self.menuBar().actions():
-            if action.text() == "File":
+            if action.text().replace("&", "") == "File":
                 file_menu = action.menu()
                 break
 

@@ -17,6 +17,12 @@ Usage:
     python scripts/remap_midi.py file song.mid --out-dir out \
         --map 1:3 3:1 --track 4:2 --drop-track 5 --velocity 10:0.7
 
+    # A track by name onto the mono Analog part: overlaps resolved (lowest
+    # note wins when notes start together), its Digital program/bank select
+    # removed, every other track's program changes kept
+    python scripts/remap_midi.py file song.mid --out-dir out \
+        --track-name Bass:3 --mono 3 --keep-programs --strip-moved-programs
+
     Add --dry-run to print the report without writing anything.
 """
 
@@ -48,7 +54,14 @@ class RemapPlan:
     expect_names: dict[int, str] = field(default_factory=dict)
     velocity_scale: dict[int, float] = field(default_factory=dict)  # new channel
     strip_programs: bool = True  # program changes and bank selects
+    # With strip_programs off: still strip them on tracks moved to another
+    # channel (a Digital preset's bank select means nothing on the Analog part)
+    strip_moved_programs: bool = False
     strip_sysex: bool = True
+    track_names: dict[str, int] = field(default_factory=dict)  # track name -> channel
+    mono: set[int] = field(default_factory=set)  # channels made monophonic
+    transpose: dict[str, int] = field(default_factory=dict)  # track name -> semitones
+    layout: Optional[str] = None  # a MIDI file whose tracks' channels and programs to copy by name
     notes: list[str] = field(default_factory=list)  # printed with the report
 
 
@@ -153,14 +166,15 @@ def remap_track(
         if drop:
             removed["dropped track events"] += 1
             continue
-        if plan.strip_programs and (
+        old = msg.channel + 1
+        new = override if override is not ... else plan.channel_map.get(old, old)
+        strip = plan.strip_programs or (plan.strip_moved_programs and new != old)
+        if strip and (
             msg.type == "program_change"
             or (msg.type == "control_change" and msg.control in BANK_SELECT_CCS)
         ):
             removed["program/bank"] += 1
             continue
-        old = msg.channel + 1
-        new = override if override is not ... else plan.channel_map.get(old, old)
         msg = msg.copy(channel=new - 1)
         scale = plan.velocity_scale.get(new)
         if scale and msg.type == "note_on" and msg.velocity > 0:
@@ -173,6 +187,104 @@ def remap_track(
         out.append(msg.copy(time=at - last))
         last = at
     return out
+
+
+def layout_of(path: Path) -> dict[str, tuple[int, list[mido.Message]]]:
+    """Track name -> (channel 1-16, its program/bank/CC set-up messages
+    before the first note) from a template file."""
+    layout = {}
+    for track in mido.MidiFile(path).tracks:
+        name = track_name(track)
+        channel, setup = None, []
+        for msg in track:
+            if msg.type in ("note_on", "note_off"):
+                channel = msg.channel + 1 if channel is None else channel
+                break
+            if msg.type in ("program_change", "control_change"):
+                setup.append(msg.copy(time=0))
+                channel = msg.channel + 1 if channel is None else channel
+        if name and channel:
+            layout[name] = (channel, setup)
+    return layout
+
+
+def apply_layout(midi: mido.MidiFile, layout: dict, transpose: dict[str, int], report: list[str]) -> None:
+    """Give each track the template's channel and set-up messages at its
+    start (replacing its own program/bank selects), and transpose named
+    tracks."""
+    for index, track in enumerate(midi.tracks):
+        name = track_name(track)
+        shift = transpose.get(name, 0)
+        channel, setup = layout.get(name, (None, []))
+        if channel is None and not shift:
+            if layout and any(m.type == "note_on" for m in track):
+                report.append(f"track {name!r} is not in the layout: left as it is")
+            continue
+        events, now = [], 0
+        for msg in track:
+            now += msg.time
+            if channel and (
+                msg.type == "program_change" or (msg.type == "control_change" and msg.control in BANK_SELECT_CCS)
+            ):
+                continue
+            if channel and not msg.is_meta and hasattr(msg, "channel"):
+                msg = msg.copy(channel=channel - 1)
+            if shift and msg.type in ("note_on", "note_off"):
+                msg = msg.copy(note=max(0, min(127, msg.note + shift)))
+            order = 2 if msg.type == "end_of_track" else 0 if msg.is_meta else 1
+            events.append((now, order, msg))
+        events += [(0, 0.5, m.copy(channel=channel - 1)) for m in setup] if channel else []
+        events.sort(key=lambda e: (e[0], e[1]))
+        new, last = mido.MidiTrack(), 0
+        for at, _order, msg in events:
+            new.append(msg.copy(time=at - last))
+            last = at
+        midi.tracks[index] = new
+
+
+def make_monophonic(midi: mido.MidiFile, channel: int, removed: dict[str, int]) -> None:
+    """One note at a time on `channel` (1-16), across all tracks: of notes
+    starting together (within a 128th note) the lowest is kept, and a note
+    still sounding when the next starts ends there. Each note stays on its
+    own track."""
+    tolerance = max(1, midi.ticks_per_beat // 32)
+    notes = []  # (start, end, pitch, velocity, track)
+    others: list[list[tuple[int, mido.Message]]] = []
+    for index, track in enumerate(midi.tracks):
+        now, held, rest = 0, {}, []
+        for msg in track:
+            now += msg.time
+            if msg.type in ("note_on", "note_off") and msg.channel == channel - 1:
+                if msg.type == "note_on" and msg.velocity > 0:
+                    held.setdefault(msg.note, []).append((now, msg.velocity))
+                elif held.get(msg.note):
+                    start, velocity = held[msg.note].pop(0)
+                    notes.append((start, now, msg.note, velocity, index))
+                continue
+            rest.append((now, msg))
+        others.append(rest)
+    notes.sort(key=lambda n: (n[0], n[2]))
+    kept: list[list] = []
+    for start, end, pitch, velocity, index in notes:
+        if kept and start - kept[-1][0] <= tolerance:
+            removed["simultaneous notes (mono)"] += 1  # a higher note with the kept one
+            continue
+        if kept and kept[-1][1] > start:
+            kept[-1][1] = start
+            removed["overlaps trimmed (mono)"] += 1
+        kept.append([start, end, pitch, velocity, index])
+    for start, end, pitch, velocity, index in kept:
+        if end > start:
+            others[index].append((start, mido.Message("note_on", channel=channel - 1, note=pitch, velocity=velocity)))
+            others[index].append((end, mido.Message("note_off", channel=channel - 1, note=pitch, velocity=0)))
+    for index, events in enumerate(others):
+        # note-offs before note-ons at the same tick; end_of_track last
+        events.sort(key=lambda e: (e[0], e[1].type == "end_of_track", e[1].type == "note_on"))
+        track, last = mido.MidiTrack(), 0
+        for at, msg in events:
+            track.append(msg.copy(time=at - last))
+            last = at
+        midi.tracks[index] = track
 
 
 def channel_report(midi: mido.MidiFile) -> dict[int, dict[str, int]]:
@@ -202,10 +314,25 @@ def remap_file(plan: RemapPlan, source: Path) -> tuple[mido.MidiFile, list[str]]
             raise ValueError(
                 f"{source.name}: track {index} is {actual!r}, expected {expected!r}"
             )
+    if plan.track_names:
+        names = [track_name(t) for t in midi.tracks]
+        tracks = dict(plan.tracks)
+        for name, channel in plan.track_names.items():
+            if name not in names:
+                raise ValueError(f"{source.name}: no track named {name!r}")
+            tracks[names.index(name)] = channel
+        plan = RemapPlan(**{**plan.__dict__, "tracks": tracks})
     removed = {"program/bank": 0, "sysex": 0, "dropped track events": 0}
+    removed.update({"simultaneous notes (mono)": 0, "overlaps trimmed (mono)": 0})
     out = mido.MidiFile(type=midi.type, ticks_per_beat=midi.ticks_per_beat)
     for index, track in enumerate(midi.tracks):
         out.tracks.append(remap_track(track, index, plan, removed))
+    extra_lines: list[str] = []
+    if plan.layout or plan.transpose:
+        layout = layout_of(Path(plan.layout).expanduser()) if plan.layout else {}
+        apply_layout(out, layout, plan.transpose, extra_lines)
+    for channel in sorted(plan.mono):
+        make_monophonic(out, channel, removed)
 
     lines = [f"removed: " + ", ".join(f"{k} {v}" for k, v in removed.items() if v)]
     for ch, s in sorted(channel_report(out).items()):
@@ -216,7 +343,7 @@ def remap_file(plan: RemapPlan, source: Path) -> tuple[mido.MidiFile, list[str]]
         lines.append(
             f"ch{ch:>2} {part:<17} notes={s['notes']:5} max at once={s['poly']}{warn}"
         )
-    return out, lines + [f"note: {n}" for n in plan.notes]
+    return out, lines + extra_lines + [f"note: {n}" for n in plan.notes]
 
 
 def run(plans: list[RemapPlan], music_dir: Path, out_dir: Path, dry_run: bool) -> int:
@@ -278,7 +405,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     one.add_argument("--track", nargs="*", help="track to channel, e.g. 4:2")
     one.add_argument("--drop-track", nargs="*", type=int, default=[])
     one.add_argument("--velocity", nargs="*", help="channel:scale, e.g. 10:0.7")
+    one.add_argument("--track-name", nargs="*", help="track name to channel, e.g. Bass:3")
+    one.add_argument("--mono", nargs="*", type=int, default=[], help="channels to make monophonic, e.g. 3")
+    one.add_argument("--layout", help="copy each track's channel and program set-up, by track name, from this MIDI file")
+    one.add_argument("--transpose", nargs="*", help="track name to semitones, e.g. 'BassSynth 2:12'")
     one.add_argument("--keep-programs", action="store_true")
+    one.add_argument(
+        "--strip-moved-programs",
+        action="store_true",
+        help="with --keep-programs: still remove program/bank selects from tracks moved to another channel",
+    )
     one.add_argument("--keep-sysex", action="store_true")
 
     for p in (ox, one):
@@ -311,7 +447,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         tracks=tracks,
         velocity_scale=_pairs(args.velocity, float),
         strip_programs=not args.keep_programs,
+        strip_moved_programs=args.strip_moved_programs,
         strip_sysex=not args.keep_sysex,
+        track_names={k: int(v) for k, _, v in (t.rpartition(":") for t in args.track_name or [])},
+        mono=set(args.mono),
+        layout=args.layout,
+        transpose={k: int(v) for k, _, v in (t.rpartition(":") for t in args.transpose or [])},
     )
     return run([plan], source.parent, out_dir, args.dry_run)
 
