@@ -247,6 +247,15 @@ class MidiFilePlayer(SynthEditor):
         # Three panels, as the JD-Xi has a few large glossy ones: controls on
         # top, the timeline, transport and playback below. The groups inside a
         # panel draw as flat sections (see AppEditorStyle).
+        main_layout_items = [
+                (create_panel(header_widget), 0),
+                (self.midi_file, 0), 
+                (self.midi_file.midi_track_viewer, 1), 
+                (create_panel(centered_widget, self.playback_options), 0)
+            ]
+        for item, spacing in main_layout_items:
+            main_layout.addWidget(item, spacing)
+        """
         main_layout.addWidget(create_panel(header_widget))
         main_layout.addWidget(self.midi_file)
         main_layout.addWidget(
@@ -255,6 +264,7 @@ class MidiFilePlayer(SynthEditor):
         main_layout.addWidget(
             create_panel(centered_widget, self.playback_options)
         )
+        """
         # Add content to base widget
         container_layout = self.base_widget.get_container_layout()
         content_widget = create_widget_with_layout(main_layout)
