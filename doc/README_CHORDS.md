@@ -1127,6 +1127,95 @@ already does, so it adds little. Figure coverage is now the main limit.
 `cycles` finds only three figures in the recording (BassSynth, SeqSynth1
 and Organ), so the filler has little to work on.
 
+### The likelihood model: audio, repetition and MIDI noise
+
+`midi_parts/likelihood.py` scores every candidate at a figure step (the
+consensus pitch, rest, and whatever the MIDI plays there) with three terms,
+combined as a weighted sum of logs. The result is a score, not a calibrated
+probability.
+
+- **Audio:** the pitch model's score, softmaxed over the candidates. Only
+  the figure's own pitches have a model, so another pitch scores as silent.
+- **Repetition:** P(pitch | step), counted by expectation-maximisation. A
+  gap counts as each pitch in proportion to its audio. The repeat being
+  judged is left out, and a repair is never counted.
+- **Sequence (MIDI noise):** P(what the file has | the pitch played), with
+  misses, octave errors, extra notes and specific substitutions (B3 written
+  where G3 sounds), learned on cells whose audio is clear. The cell being
+  judged is left out of its own count.
+
+```bash
+python scripts/classify_midi_parts.py arpeggio-trial "oxygene5 2.mid" --track BassSynth \
+    --wav clean.wav --drop 0.2 --wrong 0.05 --octave 0.05 --extra 0.05 --model full
+```
+
+`--model audio|repeat|full` gives the three configurations. With `full`,
+the repetition and sequence weights are fitted on the trial, cross-fitted:
+each half of the repeats is judged with weights chosen on the other half.
+`--decoder best` picks the transposition rules or the repeat HMM by
+comparing each with the clean file. That makes it a diagnostic, not a
+result, so the default is `rules`.
+
+**BassSynth, 20% dropped plus 5% each of wrong pitches, octave errors and
+extra notes** (confirmed repairs, seeds 1 / 2):
+
+| Model | Recall | Precision | False repairs |
+|---|---|---|---|
+| current filler | 0.11 / 0.07 | 1.00 / 0.98 | 0 / 1 |
+| audio | 0.42 / 0.39 | 0.88 / 0.90 | 50 / 39 |
+| audio + repetition | 0.42 / 0.38 | 0.95 / 0.97 | 18 / 12 |
+| audio + repetition + sequence | 0.42 / 0.38 | 0.96 / 0.97 | 17 / 11 |
+
+The repetition term cuts false repairs by about two-thirds at the same
+recall. The sequence term adds a little. Before cross-fitting, it appeared
+to add more (15 / 9 false repairs), because its weights had been chosen on
+the answers. Confirmed deletions removed 72 / 74 of the 146 injected extra
+notes and no clean notes.
+
+**On Oxygène V's SeqSynth1** (the file before the `cycles` repair), the full
+model corrects the 8 G3 steps where the MIDI has B3 or D4 and confirms the
+3 missing G3s. It also deletes 9 notes sounding with a figure note (G2
+under G3, D4 or B3 with G3, E4 with C4). The trial supports deletions only
+for injected neighbours. Here the deleted pitches have no audio model, so
+each deletion rests on the kept note's evidence. Listen before trusting
+them.
+
+**The repeat HMM** (`--decoder hmm`) decodes, for each repeat, which
+transposition of the figure is playing or whether it has stopped. As first
+written, it read every repeat of every real figure as stopped. The stopped
+state scored 1 minus the top audio share and paid nothing for the MIDI, so
+it beat a correctly played repeat whenever the audio wasn't sharply peaked.
+On Oxygène V's SeqSynth1, repeat 5 plays G3 B♭3 C4 and the audio favours
+each at about 0.4, yet stopped won. A synthetic test with idealised audio
+(5.0 against 0) hid this. Now every state pays for both: stopped takes the
+share of a "none of these" option (the energy of the neighbouring
+semitones) and P(MIDI | stopped). The HMM now reads all three Oxygène
+figures, and all 17 trial figures, as one transposition playing throughout,
+with high confidence. That agrees with the rules, so the output is unchanged.
+`find_cycles` already splits a figure where its key changes for 8 or more
+repeats, so the HMM can only add something for a shorter key change inside
+one figure. Neither the trial nor Oxygène has one.
+
+**The template's pitch chain** learned only from notes on adjacent steps.
+BassSynth plays every other step, so the chain had no counts, stayed
+uniform (1/5) below its 0.25 bar, and the template made no candidates at
+all. The chain is now learned on successive notes up to a bar apart. Its
+pitch support is normalised over the chain's pitches, and the rhythm prior
+is back (the share of the 2 bars either side with a note at the same
+position; the beat when the track is shorter than that).
+
+| BassSynth, seeds 1 / 2 | Template inserts restored | Recall | Precision |
+|---|---|---|---|
+| 20% dropped, no template | — | 0.524 / 0.404 | 1.000 / 1.000 |
+| + first template (rhythm and nearby pitches) | 10 of 11 / 16 of 18 | 0.464 / 0.397 (older figures) | 0.996 / 0.991 |
+| + chain template as first written | 0 of 0 / 0 of 0 | 0.524 / 0.404 | 1.000 / 1.000 |
+| + chain template, fixed | 22 of 23 / 29 of 33 | 0.562 / 0.454 | 0.997 / 0.985 |
+| Mixed damage, full model + fixed template | 21 of 24 / 13 of 17 | 0.457 / 0.394 | 0.960 / 0.958 |
+
+With mixed damage the template is less precise (76–88% of its inserts are
+right), because the wrong and extra notes also corrupt the context it
+learns from.
+
 ## Tie notes: joining what a tremolo or phaser split
 
 A held synth note whose loudness swells and dips is transcribed as a run of

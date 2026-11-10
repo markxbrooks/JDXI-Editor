@@ -562,6 +562,13 @@ def main(argv: Optional[list[str]] = None) -> int:
     at = sub.add_parser("arpeggio-trial", help="drop a seeded share of a clean file's notes, back-fill them from its rendered audio, and score the fill")
     at.add_argument("clean", type=Path, help="a clean MIDI file (its notes are the ground truth; not modified)")
     at.add_argument("--drop", type=float, default=0.2, help="share of the chosen tracks' notes to delete (default 0.2)")
+    at.add_argument("--wrong", type=float, default=0.0, help="share of notes to move to another figure pitch or a neighbour")
+    at.add_argument("--octave", type=float, default=0.0, help="share of notes to shift by an octave")
+    at.add_argument("--extra", type=float, default=0.0, help="share of notes that gain an extra neighbour")
+    at.add_argument("--model", choices=("current", "audio", "repeat", "full"), default="current",
+                    help="current filler, audio only, audio plus repetition, or all three terms (default current)")
+    at.add_argument("--decoder", choices=("rules", "hmm", "best"), default="rules",
+                    help="split transpositions with the rules (default), the repeat HMM, or whichever matches the clean file better (in-sample: a diagnostic, not a result)")
     at.add_argument("--seed", type=int, default=1)
     at.add_argument("--track", nargs="*", help="tracks to damage and fill (default: all)")
     at.add_argument("--wav", type=Path, help="use this rendering of the clean file instead of rendering it")

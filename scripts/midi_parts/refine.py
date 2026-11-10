@@ -36,6 +36,8 @@ as in `cycles`; the onset is the step itself (the file is quantized).
 
 from __future__ import annotations
 
+import bisect
+
 import csv
 import math
 from collections import Counter, defaultdict
@@ -578,6 +580,11 @@ class FillCell:
     reason: str = ""
     damaged_conf: float = float("nan")  # A*S*R*T of the file as it stands, holes included
     transition: float = float("nan")  # P(this pitch | previous path pitch) from the played notes
+    repetition: float = float("nan")  # P(pitch | step), left-one-repeat-out, transcribed notes only
+    sequence: float = float("nan")  # P(MIDI | pitch) from the noise model; a term in the score
+    score: float = float("nan")  # weighted sum of the log terms; not a probability
+    rank: str = ""  # confirmed | probable when the likelihood model labelled the cell
+    proposals: tuple = ()  # one Proposal per candidate pitch, including rest
 
 
 def _timing(cyc: Cycle, phase: int, index: int) -> float:
@@ -850,6 +857,8 @@ def fill_figure(
     step: int,
     lag: float = 0.0,
     negatives: str = "pitches",
+    model: str = "current",
+    weights: tuple = (1.0, 1.0, 1.0),
 ) -> tuple[list[FillCell], dict, Optional[SequenceDecode]]:
     """Every cell of every consensus pitch of the figure, with its decision,
     the per-pitch models {(phase, pitch): PitchModel}, and the sequence
@@ -938,7 +947,18 @@ def fill_figure(
                         cell.decision = "review"
                         cell.reason = f"plays {name(differing[0])}; repeat {repeat_conf:.2f}, audio {audio:.2f}"
                 cells.append(cell)
-    return cells, models, decode_repeats(cyc, cells, models, played, features)
+    if model == "current":
+        return cells, models, decode_repeats(cyc, cells, models, played, features)
+    from midi_parts.likelihood import label_figure
+
+    def score_of(k, ph, p):
+        m = models.get((ph, p))
+        if m is None or not m.usable:
+            return 0.0
+        return float(m.score(features(k, ph, p)[0])[0])
+
+    label_figure(cyc, cells, played, n, score_of, weights)
+    return cells, models, None
 
 
 HOLD_SHIFT = 4  # a new transposition has to last this many repeats before it is its own piece
@@ -1073,6 +1093,101 @@ class FillResult:
     step: int
     sec: object
     sequences: list = field(default_factory=list)  # SequenceDecode, one per monophonic piece
+    weights: tuple = ()  # (audio, repetition, sequence) used by the likelihood model
+    decoder: str = "rules"  # rules | hmm, after a best-of comparison when the trial asked
+    decoder_scores: tuple = ()  # (rules true, rules false, hmm true, hmm false)
+    decodes: list = field(default_factory=list)  # FigureDecode, one per folded figure the HMM read
+    fold_weights: tuple = ()  # (even repeats' weights, odd repeats' weights) when cross-fitted
+
+
+def _score_cycles(cycles, clean_set, start: int, step: int) -> tuple[int, int]:
+    """How many consensus pitches of these pieces are the clean pitch at
+    that tick, and how many are not. Rests are not pitches, so they add
+    neither."""
+    true = false = 0
+    for cyc in cycles:
+        n = (cyc.last - cyc.first) // cyc.period if cyc.period else 0
+        for k in range(n):
+            for ph, cons in enumerate(cyc.pitches):
+                if len(cons) != 1:
+                    continue
+                tick = start + (cyc.first + k * cyc.period + ph) * step
+                if (cyc.track, tick, cons[0]) in clean_set:
+                    true += 1
+                else:
+                    false += 1
+    return true, false
+
+
+def _step_energy(spec, sec, start, step, lag, origin, period):
+    """energy(repeat, phase, pitch): mean log magnitude of that pitch over the step."""
+
+    def energy(k, ph, pitch):
+        if pitch is None or not 0 <= int(pitch) < spec.level.shape[1]:
+            return 0.0
+        t = origin + k * period + ph
+        t0 = sec(start + t * step) + lag
+        t1 = sec(start + (t + 1) * step) + lag
+        a = max(0, spec.frame(t0))
+        b = min(len(spec.level), max(a + 1, spec.frame(t1)))
+        return float(spec.level[a:b, int(pitch)].mean())
+
+    return energy
+
+
+def _hmm_cycles(cyc: Cycle, steps: dict, spec, sec, start, step, lag):
+    """Rebuild one figure from the Viterbi transpositions. A single run, or
+    a run shorter than four repeats, returns (None, decode): the rules'
+    cycle stays. The decode is still returned so the posterior can be read."""
+    from midi_parts.cycles import cycle_from_run
+    from midi_parts.likelihood import decode_figure, repeat_shifts
+
+    n = (cyc.last - cyc.first) // cyc.period
+    if n == 0 or not cyc.rows:
+        return None, None
+    observed = repeat_shifts(cyc.rows, cyc.median_pitch)
+    played = {}
+    for k in range(n):
+        for ph in range(cyc.period):
+            t = cyc.first + k * cyc.period + ph
+            played[(k, ph)] = tuple(sorted({x.pitch for x in steps.get(t, ())}))
+    decode = decode_figure(n, cyc.period, list(cyc.pitches), played, observed, _step_energy(spec, sec, start, step, lag, cyc.first, cyc.period))
+    if len(decode.pieces) <= 1:
+        return None, decode
+    built = []
+    for a, b, _shift in decode.pieces:
+        if b - a < 4:
+            return None, decode
+        origin = cyc.first + a * cyc.period
+        span = cyc.first + b * cyc.period
+        piece = cycle_from_run(
+            _steps_between(steps, origin, span), cyc.track, origin, span, cyc.period, source=cyc.source, min_repeats=4,
+        )
+        if piece is None or piece.first != origin or piece.last != span or piece.period != cyc.period:
+            return None, decode
+        built.append(piece)
+    return built, decode
+
+
+def _commit(cells, cyc, start, step, channel, vel, dur, out_notes, inserted, corrected) -> None:
+    """Apply one piece's decisions to the note list. Probable notes are
+    reported and not written. A confirmed deletion removes an extra note."""
+    for c in cells:
+        tick = start + c.step * step
+        if c.rank == "probable":
+            continue
+        if c.decision in ("insert", "confirmed"):
+            note = GridNote(cyc.track, tick, tick + max(1, int(round(dur[c.phase]))), c.pitch, max(1, int(round(vel[c.phase]))), channel)
+            out_notes.append(note)
+            inserted.append(note)
+        elif c.decision == "correct":
+            for x in out_notes:
+                if x.track == cyc.track and x.start == tick and x.pitch == c.replaces:
+                    x.pitch = c.pitch
+                    corrected.append(x)
+                    break
+        elif c.decision == "delete":
+            out_notes[:] = [x for x in out_notes if not (x.track == cyc.track and x.start == tick and x.pitch == c.replaces)]
 
 
 def ft_fill(
@@ -1085,6 +1200,11 @@ def ft_fill(
     exclude: frozenset = frozenset({"Ghost"}),
     negatives: str = "pitches",
     template: bool = False,
+    model: str = "current",
+    weights: tuple = (1.0, 1.0, 1.0),
+    fit_notes: Optional[list] = None,
+    decoder: str = "rules",
+    truth: Optional[list] = None,
 ) -> FillResult:
     """Find the figures in `source` as `cycles` does, place each step on the
     recording, decide every cell, and write the inserts and corrections to
@@ -1103,16 +1223,41 @@ def ft_fill(
     sec = lambda tick: _seconds(tick, tempo_map, tpb)
     lag = recording_lag(audio, [(sec(x.start), sec(x.end), x.pitch, x.velocity) for x in notes])
     by_track = _step_notes(notes, start, step)
-    cycles = []
-    for c in find_cycles(notes, start, step, bar // step, tracks=wanted):
-        folded = fold_cycle(c, by_track[c.track])
-        cycles.extend(split_transpositions(folded, by_track[folded.track]))
+    folded = [fold_cycle(c, by_track[c.track]) for c in find_cycles(notes, start, step, bar // step, tracks=wanted)]
+    truth_set = {(n.track, n.start, n.pitch) for n in truth} if truth else None
+    cycles, decodes = [], []
+    rules_true = rules_false = hmm_true = hmm_false = 0
+    compared, used_hmm = False, False
+    for cyc in folded:
+        rules = split_transpositions(cyc, by_track[cyc.track])
+        use, decode = rules, None
+        if decoder in ("hmm", "best"):
+            a, b = sec(start + cyc.first * step) + lag, sec(start + cyc.last * step) + lag
+            spec = ev.semitone_spectrogram(audio, max(0.0, a - 1.0), b + 1.0)
+            built, decode = _hmm_cycles(cyc, by_track[cyc.track], spec, sec, start, step, lag)
+            if decode is not None:
+                decodes.append(decode)
+            if decoder == "hmm" and built:
+                use, used_hmm = built, True
+            elif decoder == "best" and truth_set is not None:
+                compared = True
+                rt, rf = _score_cycles(rules, truth_set, start, step)
+                ht, hf = _score_cycles(built or rules, truth_set, start, step)
+                rules_true += rt
+                rules_false += rf
+                hmm_true += ht
+                hmm_false += hf
+                if built and (ht, -hf) > (rt, -rf):
+                    use, used_hmm = built, True
+        cycles.extend(use)
+    chosen = "hmm" if used_hmm else "rules"
     out_notes = [GridNote(**x.__dict__) for x in notes]
     inserted, corrected, all_cells, all_models, specs, sequences = [], [], [], [], [], []
+    staged = []
     for cyc in cycles:
         a, b = sec(start + cyc.first * step) + lag, sec(start + cyc.last * step) + lag
         spec = ev.semitone_spectrogram(audio, max(0.0, a - 1.0), b + 1.0)
-        cells, models, seq = fill_figure(spec, cyc, by_track[cyc.track], sec, start, step, lag, negatives)
+        cells, models, seq = fill_figure(spec, cyc, by_track[cyc.track], sec, start, step, lag, negatives, model, weights)
         specs.append(spec)
         all_cells += cells
         all_models.append(models)
@@ -1121,18 +1266,27 @@ def ft_fill(
         channel = next((x.channel for x in notes if x.track == cyc.track), 0)
         vel = cyc.velocity_median or cyc.velocity
         dur = cyc.length_median or cyc.length
-        for c in cells:
-            tick = start + c.step * step
-            if c.decision in ("insert", "confirmed"):
-                note = GridNote(cyc.track, tick, tick + max(1, int(round(dur[c.phase]))), c.pitch, max(1, int(round(vel[c.phase]))), channel)
-                out_notes.append(note)
-                inserted.append(note)
-            elif c.decision == "correct":
-                for x in out_notes:
-                    if x.track == cyc.track and x.start == tick and x.pitch == c.replaces:
-                        x.pitch = c.pitch
-                        corrected.append(x)
-                        break
+        if model == "current":
+            _commit(cells, cyc, start, step, channel, vel, dur, out_notes, inserted, corrected)
+        else:
+            staged.append((cyc, cells, channel, vel, dur))
+    fold_weights: tuple = ()
+    if model == "full" and fit_notes is not None:
+        from midi_parts.likelihood import apply_weights, fit_weights
+
+        # Cross-fitted: each half of the repeats is judged with weights chosen
+        # on the other half, so no cell is scored with weights picked using
+        # its own answer.
+        even = [c for c in all_cells if c.repeat >= 0 and c.repeat % 2 == 0]
+        odd = [c for c in all_cells if c.repeat >= 0 and c.repeat % 2 == 1]
+        w_even = fit_weights(odd, fit_notes, start, step)
+        w_odd = fit_weights(even, fit_notes, start, step)
+        apply_weights(even, w_even)
+        apply_weights(odd, w_odd)
+        fold_weights = (w_even, w_odd)
+        weights = tuple((a + b) / 2 for a, b in zip(w_even, w_odd))
+    for cyc, cells, channel, vel, dur in staged:
+        _commit(cells, cyc, start, step, channel, vel, dur, out_notes, inserted, corrected)
     if template:
         for track in sorted(wanted if wanted is not None else {x.track for x in notes}):
             mine = [x for x in notes if x.track == track and x.start >= start]
@@ -1156,19 +1310,25 @@ def ft_fill(
                     out_notes.append(note)
                     inserted.append(note)
     write_pattern_midi(source, out, out_notes, [], set(exclude))
-    return FillResult(all_cells, all_models, inserted, corrected, out_notes, lag, specs, cycles, start, step, sec, sequences)
+    scores = (rules_true, rules_false, hmm_true, hmm_false) if compared else ()
+    return FillResult(
+        all_cells, all_models, inserted, corrected, out_notes, lag, specs, cycles, start, step, sec, sequences, tuple(weights), chosen, scores, decodes,
+        fold_weights,
+    )
 
 
 # --- The per-time-point template: notes outside the figures -----------------------
 #
 # A figure gives a strong prior (the same step in the other repeats), but
 # about 40% of a sequenced part's notes fall outside any figure `cycles`
-# finds. For those, each empty step of a track gets a weaker prior from the
-# track's own context, and the audio decides with a stricter bar:
-# - rhythm: the share of the bars around (+-TEMPLATE_BARS) with a note at
-#   the same position in the bar;
-# - pitch: the share of the track's onsets around that play this pitch.
-# A candidate needs rhythm >= 0.5 and pitch >= 0.25. Its audio model is fitted
+# finds. For those, two priors from the track itself:
+# - rhythm: the share of the TEMPLATE_BARS bars either side with a note at
+#   the same position in the bar (at least TEMPLATE_RHYTHM);
+# - pitch: a chain over successive confident notes up to a bar apart,
+#   P(pitch | previous note) times P(next note | pitch) with add-one
+#   smoothing, normalised over the chain's pitches (a share of at least
+#   TEMPLATE_PITCH).
+# Its audio model is fitted
 # on the whole track (positives: the pitch where the track plays it;
 # negatives: its +-1 and +-2 neighbours there, and the pitch at steps where
 # the track plays something else and nothing sounds at the pitch), with the
@@ -1179,10 +1339,27 @@ def ft_fill(
 # octave, a twelfth or two octaves below sounds (its harmonics would explain
 # the energy).
 
-TEMPLATE_BARS = 2
-TEMPLATE_RHYTHM = 0.5
 TEMPLATE_PITCH = 0.25
 TEMPLATE_AUDIO = 0.9
+TEMPLATE_BARS = 2  # bars either side for the rhythm prior
+TEMPLATE_RHYTHM = 0.5  # share of those bars with a note at the same position
+
+
+def _rhythm_share(at: dict, t: int, bar_steps: int) -> float:
+    """The share of the TEMPLATE_BARS bars either side of step t with a note
+    at the same position in the bar. Only positions inside the track's span
+    count; when there are none (a track shorter than the window), the same
+    position in the beat is compared instead, over the same span of bars."""
+    first, last = min(at), max(at)
+    same_bar = [t + d * bar_steps for d in range(-TEMPLATE_BARS, TEMPLATE_BARS + 1) if d]
+    same_bar = [x for x in same_bar if first <= x <= last]
+    if not same_bar:
+        beat = max(1, bar_steps // 4)
+        reach = TEMPLATE_BARS * 4
+        same_bar = [t + d * beat for d in range(-reach, reach + 1) if d and first <= t + d * beat <= last]
+    if not same_bar:
+        return 0.0
+    return sum(1 for x in same_bar if at.get(x)) / len(same_bar)
 
 
 def template_fill(
@@ -1225,33 +1402,63 @@ def template_fill(
         neg += [features(t, p)[0] for t, ps in at.items() if p not in ps and p not in {q for q, _tr in sounding.get(t, ())}]
         mu, sd, direction, auc = fit_direction(np.array(pos), np.array(neg))
         models[p] = PitchModel(-1, p, mu, sd, direction, len(pos), len(neg), auc)
+    # Confident notes: transcribed, and not contradicted by a usable model.
+    # The chain is learned from those notes only. A hole adds no count.
+    from midi_parts.likelihood import PitchChain
+
+    confident: dict = {}
+    for t, ps in at.items():
+        if len(ps) != 1:
+            continue
+        p = next(iter(ps))
+        m = models.get(p)
+        if m is not None and not m.usable:
+            continue
+        if m is not None and m.usable:
+            cands = sorted(set(range(p - 2, p + 3)) | set(ps))
+            s = m.score(np.array([features(t, q)[0] for q in cands]))
+            e = np.exp(s - s.max())
+            if float(e[cands.index(p)] / e.sum()) < INSERT_AUDIO:
+                continue
+        confident[t] = p
+    # The chain is learned on successive confident notes up to a bar apart,
+    # not on adjacent steps: a part playing every other step (eighths on a
+    # sixteenth grid) has no two notes on adjacent steps, and an
+    # adjacent-step chain stays empty and uniform.
+    order = sorted(confident)
+    chain = PitchChain(sorted(set(confident.values())))
+    for a, b in zip(order, order[1:]):
+        if b - a <= bar_steps:
+            chain.add(confident[a], confident[b])
     cells = []
-    window = TEMPLATE_BARS * bar_steps
     for t in range(0, last):
         if t in covered or at.get(t):
             continue
-        near = [u for u in range(t - window, t + window + 1) if u != t and u in at]
-        same_pos = [u for u in range(t % bar_steps, last, bar_steps) if abs(u - t) <= window and u != t]
-        if not near or not same_pos:
+        i = bisect.bisect_left(order, t)
+        prev = confident[order[i - 1]] if i > 0 and t - order[i - 1] <= bar_steps else None
+        nxt = confident[order[i]] if i < len(order) and order[i] - t <= bar_steps else None
+        if prev is None and nxt is None:
             continue
-        rhythm = sum(1 for u in same_pos if at.get(u)) / len(same_pos)
+        # the chain says which pitch, not whether a note belongs here at all
+        rhythm = _rhythm_share(at, t, bar_steps)
         if rhythm < TEMPLATE_RHYTHM:
             continue
-        counts = Counter(q for u in near for q in at[u])
-        local = sorted(counts)
         here_sound = {q for q, _tr in sounding.get(t, ())}
-        for p in local:
-            share = counts[p] / len(near)
+        supports = {p: chain.support(prev, nxt, p) for p in chain.states}
+        total = sum(supports.values()) or 1.0
+        for p in chain.states:
+            support = supports[p] / total  # the pitch's share of the chain's prediction
             m = models.get(p)
-            if share < TEMPLATE_PITCH or m is None:
+            if support < TEMPLATE_PITCH or m is None:
                 continue
+            local = chain.states
             cands = sorted(set(local) | {p - 2, p - 1, p + 1, p + 2})
             s = m.score(np.array([features(t, q)[0] for q in cands]))
             e = np.exp(s - s.max())
             like = e / e.sum()
             audio = float(like[cands.index(p)])
             f0, t0 = features(t, p)
-            cell = FillCell(track, t, -1, -1, p, (), t0, "review", share * rhythm, audio, audio * share, m.auc, ev.evidence_score(f0))
+            cell = FillCell(track, t, -1, -1, p, (), t0, "review", rhythm, audio, audio * support, m.auc, ev.evidence_score(f0), sequence=support)
             below = [q for q in here_sound if p - q in (12, 19, 24)]
             if not m.usable:
                 cell.reason = f"AUC {m.auc:.2f}" if m.auc < REVIEW_AUC else "the audio is quieter where the MIDI plays it"
@@ -1430,15 +1637,45 @@ def trial(
     negatives: str = "pitches",
     plot: bool = True,
     template: bool = False,
+    wrong: float = 0.0,
+    octave: float = 0.0,
+    extra: float = 0.0,
+    model: str = "current",
+    decoder: str = "rules",
 ) -> tuple[TrialScore, FillResult]:
-    """Drop, fill from `wav`, score; write damaged.mid, deleted.csv,
-    ft-generated.mid, trial.txt (and the before/after images) into out."""
+    """Damage the clean file, fill from `wav`, score; write damaged.mid,
+    deleted.csv, ft-generated.mid, trial.txt (and the before/after images)
+    into out. `model` is current, audio, repeat, or full."""
     out.mkdir(parents=True, exist_ok=True)
-    deleted, clean_notes = drop_notes(clean, out / "damaged.mid", out / "deleted.csv", tracks, drop, seed)
-    res = ft_fill(wav, out / "damaged.mid", out / "ft-generated.mid", tracks, grid, from_bar, negatives=negatives, template=template)
+    if wrong or octave or extra:
+        from midi_parts.likelihood import apply_damage
+
+        deleted, clean_notes, _events = apply_damage(
+            clean, out / "damaged.mid", out / "damage.csv", tracks, drop, wrong, octave, extra, seed,
+        )
+        names = {i: next((m.name.strip() for m in t if m.type == "track_name"), "") for i, t in enumerate(mido.MidiFile(clean).tracks)}
+        with (out / "deleted.csv").open("w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["track", "start_tick", "pitch", "duration", "velocity"])
+            for x in sorted(deleted, key=lambda n: (n.track, n.start, n.pitch)):
+                w.writerow([names.get(x.track, x.track), x.start, x.pitch, x.end - x.start, x.velocity])
+    else:
+        deleted, clean_notes = drop_notes(clean, out / "damaged.mid", out / "deleted.csv", tracks, drop, seed)
+    weights = {"audio": (1.0, 0.0, 0.0), "repeat": (1.0, 1.0, 0.0), "full": (1.0, 1.0, 1.0)}.get(model, (1.0, 1.0, 1.0))
+    res = ft_fill(
+        wav, out / "damaged.mid", out / "ft-generated.mid", tracks, grid, from_bar,
+        negatives=negatives, template=template, model=model, weights=weights,
+        fit_notes=clean_notes if model == "full" else None,
+        decoder=decoder, truth=clean_notes if decoder == "best" else None,
+    )
     sc = score_trial(clean_notes, deleted, res.inserted, len(res.corrected))
     buckets, reasons = deletion_buckets(deleted, res)
     decisions = Counter(c.decision for c in res.cells)
+    from midi_parts.likelihood import repair_line, write_candidates
+
+    damaged_notes = _grid_notes(mido.MidiFile(out / "damaged.mid"), {"Ghost"})
+    if any(c.proposals for c in res.cells):
+        write_candidates(out / "candidates.csv", res.cells, res.weights)
     lines = [
         f"clean: {clean.name}",
         f"seed: {seed}",
@@ -1446,6 +1683,19 @@ def trial(
         f"tracks: {', '.join(tracks) if tracks else 'all'}",
         f"negatives: {negatives}",
         f"template: {'on' if template else 'off'}",
+        f"wrong: {wrong}",
+        f"octave: {octave}",
+        f"extra: {extra}",
+        f"model: {model}",
+        f"decoder: {res.decoder}" + (" (picked with the clean file: in-sample)" if decoder == "best" else ""),
+        (
+            f"weights: audio {res.weights[0]:.1f}, repetition {res.weights[1]:.1f}, sequence {res.weights[2]:.1f}"
+            if model != "current" and res.weights else "weights: current"
+        ),
+        *(
+            [f"weights cross-fitted: even repeats {res.fold_weights[0]}, odd repeats {res.fold_weights[1]}"]
+            if res.fold_weights else []
+        ),
         f"lag: {res.lag:+.3f} s",
         f"deleted: {sc.deleted}",
         f"inserted: {sc.inserted}",
@@ -1459,6 +1709,15 @@ def trial(
         _ablation_line("ablation audio", res, "audio", clean_notes, deleted),
         _ablation_line("ablation audio+repetition", res, "audio+repetition", clean_notes, deleted),
         _ablation_line("ablation audio+repetition+sequence", res, "audio+repetition+sequence", clean_notes, deleted),
+        repair_line("confirmed", res.cells, clean_notes, damaged_notes, res.start, res.step),
+        repair_line("probable", res.cells, clean_notes, damaged_notes, res.start, res.step),
+        *(
+            [
+                f"transposition rules: true {res.decoder_scores[0]}, false {res.decoder_scores[1]}",
+                f"transposition hmm: true {res.decoder_scores[2]}, false {res.decoder_scores[3]}",
+            ]
+            if res.decoder_scores else []
+        ),
         f"deleted outside a figure: {buckets['outside']}",
         f"deleted inside a figure, not the consensus: {buckets['not consensus']}",
         "deleted held for review: "
@@ -1500,7 +1759,10 @@ def run_arpeggio_trial(args) -> int:
     if not args.wav:
         render_clean(clean, wav, args.soundfont or SOUNDFONT, args.program)
         print(f"rendered: {wav}")
-    sc, res = trial(clean, wav, out, args.track, args.drop, args.seed, args.grid, args.from_bar, args.negatives, not args.no_plot, args.template)
+    sc, res = trial(
+        clean, wav, out, args.track, args.drop, args.seed, args.grid, args.from_bar, args.negatives,
+        not args.no_plot, args.template, args.wrong, args.octave, args.extra, args.model, args.decoder,
+    )
     print((out / "trial.txt").read_text().rstrip())
     print(f"written: {out / 'ft-generated.mid'}")
     return 0
