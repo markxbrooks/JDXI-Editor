@@ -163,9 +163,15 @@ def resolve_tone_midi(
         return None
 
     bank_msb, bank_lsb, midi_pc = preset_to_jdxi_bank_pc(msb, lsb, pc)
+    try:
+        bank = Bank(msb=bank_msb, lsb=bank_lsb)
+    except ValueError:
+        # A preset list with an out-of-range bank shows no MIDI info for that
+        # preset rather than stopping the editor from opening.
+        return None
     return MidiWireInfo(
         channel=channel,
-        bank=Bank(msb=bank_msb, lsb=bank_lsb),
+        bank=bank,
         program=midi_pc,
     )
 

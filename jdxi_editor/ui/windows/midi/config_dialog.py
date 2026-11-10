@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QVBoxLayout,
 )
 
@@ -52,6 +53,7 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     set_hardware_interface,
     set_sf2_path,
     set_use_soundfont_list,
+    soundfont_list_problem,
 )
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.layout.helper import add_round_button_from_spec
@@ -244,8 +246,9 @@ class MIDIConfigDialog(QDialog):
         self.use_soundfont_list = QCheckBox("Use SoundFont List")
         JDXi.UI.Theme.apply_button_mini_style(self.use_soundfont_list)
         self.use_soundfont_list.setToolTip(
-            "Use SoundFont drum names (GM percussion) for the Drums row "
-            "in the Pattern editor instead of built-in JD-Xi names"
+            "List the SoundFont's presets in the Digital, Analog and Drums "
+            "preset lists (and GM percussion names in the Pattern editor) "
+            "instead of the built-in JD-Xi presets. Needs the sf2utils package."
         )
         self.use_soundfont_list.setChecked(get_use_soundfont_list())
         self.use_soundfont_list.toggled.connect(self._on_soundfont_list_toggled)
@@ -448,6 +451,14 @@ class MIDIConfigDialog(QDialog):
         if sf_path and os.path.isfile(sf_path):
             set_sf2_path(sf_path)
         set_use_soundfont_list(checked)
+        problem = soundfont_list_problem() if checked else None
+        if problem:
+            log.warning(scope="MIDIConfigDialog", message=f"SoundFont list unavailable: {problem}")
+            QMessageBox.warning(
+                self,
+                "SoundFont List",
+                f"{problem}\n\nThe preset lists will stay as JD-Xi until this is fixed.",
+            )
 
     def _browse_sf2(self) -> None:
         start_dir = os.path.expanduser("~/SoundFonts")
