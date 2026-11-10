@@ -579,6 +579,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     at.add_argument("--negatives", choices=("pitches", "repeats"), default="pitches",
                     help="negatives for each pitch's model: the figure's other pitches at the step (default), or its own absences")
     at.add_argument("--template", action="store_true", help="also judge empty steps outside the figures, from the track's context and the audio")
+    at.add_argument("--local", type=int, help="repetition prior from this many repeats either side only (local consensus; default: the whole figure)")
+    at.add_argument("--harmony", action="store_true", help="hold back inserts and corrections whose pitch class the bar does not use")
+    at.add_argument("--lines", action="store_true", help="monophonic tracks: remove extra notes a semitone, tone or octave from the main note, and move octave errors (audio-checked)")
     at.add_argument("--no-plot", action="store_true")
     at.add_argument("--out-dir", type=Path)
     at.set_defaults(func=run_arpeggio_trial)

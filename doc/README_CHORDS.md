@@ -1216,6 +1216,56 @@ With mixed damage the template is less precise (76–88% of its inserts are
 right), because the wrong and extra notes also corrupt the context it
 learns from.
 
+### Heuristics: local consensus, the bar's harmony, and line rules
+
+Three options for `arpeggio-trial` (and `ft_fill`), all off by default:
+
+- `--local N`: the repetition prior counts only the N repeats either side,
+  so a figure that follows the chords is judged against the repeats over
+  the same chord.
+- `--harmony`: an insert or correction is held back when its pitch class
+  has less than 5% of the bar's note time across all tracks.
+- `--lines`: for a track that plays one note at a time on at least 90% of
+  its steps, outside the figures:
+  - an extra note a semitone, a tone or an octave from the main note is
+    removed;
+  - a note that leaps 10 or more semitones from both neighbours, and sits
+    within 7 of both an octave away, is moved by the octave.
+
+  Each change is checked against the audio and needs evidence about the
+  note it removes. A note whose own audio model hears it stays, and so does
+  a pitch the track plays at least twice within 2 bars either side: that
+  is part of the line (Oxygène V's SeqSynth1 alternates C4 and C5), not a
+  one-off error.
+
+**Benchmark:** Oxygène I, II, III, IV, VI, VI (alt) and V (the human
+sequence), all non-drum tracks, 20% dropped plus 5% each of wrong pitches,
+octave errors and extra notes, two seeds, full model plus template. The
+results are 7,994 damage events in all (`damage trials/heuristics scores.txt`):
+
+| Configuration | Fixed | Dropped notes | Wrong pitches | Octave errors | Extra notes | Clean notes broken | Notes invented |
+|---|---|---|---|---|---|---|---|
+| Best practice before | 1,437 | 870 | 162 | 179 | 226 | 29 | 114 |
+| `--local 4` | 1,291 | 866 | 120 | 138 | 167 | 4 | 85 |
+| `--local 8` | 1,428 | 870 | 159 | 175 | 224 | 23 | 108 |
+| `--harmony` | 1,355 | 804 | 155 | 170 | 226 | 28 | 105 |
+| `--lines`, first version | 2,048 | 870 | 164 | 344 | 670 | 99 | 181 |
+| `--lines` | 2,012 | 870 | 164 | 334 | 644 | 41 | 123 |
+| `--local 8 --lines` | 2,003 | 870 | 161 | 330 | 642 | 35 | 117 |
+
+- **Line rules:** fix 40% more damage, almost all of it extra notes and
+  octave errors, and reach the parts with no figures. Oxygène VI goes from
+  6 fixes to 89 and VI (alt) from 3 to 72, at 6 and 2 harmful edits; they
+  were not used to tune anything. The first version broke 99 clean notes,
+  mostly by "correcting" Oxygène V's C4–C5 alternation. The habit rule
+  brought that to 41.
+- **Local consensus:** a trade-off. A 4-repeat window removes most of the
+  harm in Oxygène IV (broken 13 → 2) but loses 146 fixes elsewhere; 8
+  repeats keeps the fixes and removes a little harm.
+- **The harmony gate:** costs more fixes than it saves and is best left
+  off. The bad corrections in Oxygène IV used pitches the bar does play.
+- **Recommended:** `--model full --template --local 8 --lines`.
+
 ## Tie notes: joining what a tremolo or phaser split
 
 A held synth note whose loudness swells and dips is transcribed as a run of

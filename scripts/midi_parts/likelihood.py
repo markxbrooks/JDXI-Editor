@@ -301,9 +301,12 @@ def _learn_noise(n: int, period: int, pitches: list, played: dict, audio: dict) 
     return noise, taught
 
 
-def label_figure(cyc, cells: list, played: dict, n: int, score_of, weights: tuple) -> None:
+def label_figure(cyc, cells: list, played: dict, n: int, score_of, weights: tuple, window: Optional[int] = None) -> None:
     """Fill `proposals` on every monophonic cell and apply `weights`. A piece
-    with a dyad is left as the per-pitch rules decided it."""
+    with a dyad is left as the per-pitch rules decided it. With `window`,
+    the repetition prior counts only the repeats within that many of the
+    cell's own (local consensus): a figure that follows the chords is then
+    judged against the repeats over the same chord, not the whole figure."""
     if any(len(ph) > 1 for ph in cyc.pitches):
         return
     period = cyc.period
@@ -328,12 +331,13 @@ def label_figure(cyc, cells: list, played: dict, n: int, score_of, weights: tupl
                 continue
             here = played.get((k, ph), ())
             states = list(raw[(k, ph)])
-            column = [played.get((j, ph), ()) for j in range(n)]
-            audios = [dist[(j, ph)] for j in range(n)]
+            lo, hi = (0, n) if window is None else (max(0, k - window), min(n, k + window + 1))
+            column = [played.get((j, ph), ()) for j in range(lo, hi)]
+            audios = [dist[(j, ph)] for j in range(lo, hi)]
             proposals = []
             for s in states:
                 audio_p = dist[(k, ph)].get(s, 0.0)
-                rep_p = em_prior(column, audios, states, k, s)
+                rep_p = em_prior(column, audios, states, k - lo, s)
                 seq_p = noise.prob(s, here, without=taught.get((k, ph)))
                 proposals.append(Proposal(s, audio_p, rep_p, seq_p, _log(audio_p), _log(rep_p), _log(seq_p)))
             cell.proposals = tuple(proposals)

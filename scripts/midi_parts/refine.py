@@ -859,6 +859,7 @@ def fill_figure(
     negatives: str = "pitches",
     model: str = "current",
     weights: tuple = (1.0, 1.0, 1.0),
+    window: Optional[int] = None,
 ) -> tuple[list[FillCell], dict, Optional[SequenceDecode]]:
     """Every cell of every consensus pitch of the figure, with its decision,
     the per-pitch models {(phase, pitch): PitchModel}, and the sequence
@@ -957,7 +958,7 @@ def fill_figure(
             return 0.0
         return float(m.score(features(k, ph, p)[0])[0])
 
-    label_figure(cyc, cells, played, n, score_of, weights)
+    label_figure(cyc, cells, played, n, score_of, weights, window)
     return cells, models, None
 
 
@@ -1205,11 +1206,17 @@ def ft_fill(
     fit_notes: Optional[list] = None,
     decoder: str = "rules",
     truth: Optional[list] = None,
+    window: Optional[int] = None,
+    harmony: bool = False,
+    lines: bool = False,
 ) -> FillResult:
     """Find the figures in `source` as `cycles` does, place each step on the
     recording, decide every cell, and write the inserts and corrections to
     `out` (source is not modified). With template, the empty steps outside
-    the figures are judged too (template_fill)."""
+    the figures are judged too (template_fill). `window` limits the
+    likelihood model's repetition prior to that many repeats either side;
+    `harmony` holds back writes whose pitch the bar does not use; `lines`
+    applies the monophonic-track rules (extra notes, octave errors)."""
     midi = mido.MidiFile(source)
     tpb = midi.ticks_per_beat
     bar, step = BEATS_PER_BAR * tpb, tpb * 4 // grid
@@ -1223,6 +1230,7 @@ def ft_fill(
     sec = lambda tick: _seconds(tick, tempo_map, tpb)
     lag = recording_lag(audio, [(sec(x.start), sec(x.end), x.pitch, x.velocity) for x in notes])
     by_track = _step_notes(notes, start, step)
+    profile = bar_harmony(notes, bar) if harmony else {}
     folded = [fold_cycle(c, by_track[c.track]) for c in find_cycles(notes, start, step, bar // step, tracks=wanted)]
     truth_set = {(n.track, n.start, n.pitch) for n in truth} if truth else None
     cycles, decodes = [], []
@@ -1257,7 +1265,7 @@ def ft_fill(
     for cyc in cycles:
         a, b = sec(start + cyc.first * step) + lag, sec(start + cyc.last * step) + lag
         spec = ev.semitone_spectrogram(audio, max(0.0, a - 1.0), b + 1.0)
-        cells, models, seq = fill_figure(spec, cyc, by_track[cyc.track], sec, start, step, lag, negatives, model, weights)
+        cells, models, seq = fill_figure(spec, cyc, by_track[cyc.track], sec, start, step, lag, negatives, model, weights, window)
         specs.append(spec)
         all_cells += cells
         all_models.append(models)
@@ -1267,6 +1275,8 @@ def ft_fill(
         vel = cyc.velocity_median or cyc.velocity
         dur = cyc.length_median or cyc.length
         if model == "current":
+            if harmony:
+                gate_harmony(cells, profile, start, step, bar)
             _commit(cells, cyc, start, step, channel, vel, dur, out_notes, inserted, corrected)
         else:
             staged.append((cyc, cells, channel, vel, dur))
@@ -1286,17 +1296,34 @@ def ft_fill(
         fold_weights = (w_even, w_odd)
         weights = tuple((a + b) / 2 for a, b in zip(w_even, w_odd))
     for cyc, cells, channel, vel, dur in staged:
+        if harmony:
+            gate_harmony(cells, profile, start, step, bar)
         _commit(cells, cyc, start, step, channel, vel, dur, out_notes, inserted, corrected)
-    if template:
-        for track in sorted(wanted if wanted is not None else {x.track for x in notes}):
-            mine = [x for x in notes if x.track == track and x.start >= start]
-            if not mine:
-                continue
-            covered = {t for c in cycles if c.track == track for t in range(c.first, c.last)}
-            a = sec(min(x.start for x in mine)) + lag
-            b = sec(max(x.end for x in mine)) + lag
-            spec = ev.semitone_spectrogram(audio, max(0.0, a - 1.0), b + 1.0)
+    for track in sorted(wanted if wanted is not None else {x.track for x in notes}) if (template or lines) else ():
+        mine = [x for x in notes if x.track == track and x.start >= start]
+        if not mine:
+            continue
+        covered = {t for c in cycles if c.track == track for t in range(c.first, c.last)}
+        a = sec(min(x.start for x in mine)) + lag
+        b = sec(max(x.end for x in mine)) + lag
+        spec = ev.semitone_spectrogram(audio, max(0.0, a - 1.0), b + 1.0)
+        if lines:
+            fixes = line_repairs(spec, track, notes, covered, sec, start, step, bar // step, lag)
+            all_cells += fixes
+            for c in fixes:
+                tick = start + c.step * step
+                if c.decision == "delete":
+                    out_notes[:] = [x for x in out_notes if not (x.track == track and x.start == tick and x.pitch == c.replaces)]
+                elif c.decision == "correct":
+                    for x in out_notes:
+                        if x.track == track and x.start == tick and x.pitch == c.replaces:
+                            x.pitch = c.pitch
+                            corrected.append(x)
+                            break
+        if template:
             cells, models = template_fill(spec, track, notes, covered, sec, start, step, bar // step, lag)
+            if harmony:
+                gate_harmony(cells, profile, start, step, bar)
             all_cells += cells
             all_models.append({(-1, p): m for p, m in models.items()})
             channel = next((x.channel for x in mine), 0)
@@ -1362,6 +1389,40 @@ def _rhythm_share(at: dict, t: int, bar_steps: int) -> float:
     return sum(1 for x in same_bar if at.get(x)) / len(same_bar)
 
 
+def track_pitch_models(spec: ev.SemitoneSpectrogram, track: int, notes: list, sec, start: int, step: int, lag: float = 0.0):
+    """(steps -> pitches of `track`, steps -> sounding (pitch, track) of all
+    tracks, features(step, pitch), {pitch: PitchModel}). One audio model per
+    pitch the track plays at least MIN_POSITIVES times. Positives: the pitch
+    where the track plays it. Negatives: its +-1 and +-2 neighbours there,
+    and the pitch at the track's other steps where nothing sounds at it."""
+    mine = [x for x in notes if x.track == track and x.start >= start]
+    at: dict = defaultdict(set)
+    for x in mine:
+        at[(x.start - start) // step].add(x.pitch)
+    sounding = _sounding(notes, start, step)
+    feats: dict = {}
+
+    def features(t, p):
+        if (t, p) not in feats:
+            t0, t1 = sec(start + t * step) + lag, sec(start + (t + 1) * step) + lag
+            feats[(t, p)] = placed_features(spec, p, t0, t1)
+        return feats[(t, p)]
+
+    models = {}
+    for p in sorted({q for ps in at.values() for q in ps}):
+        pos_t = [t for t, ps in at.items() if p in ps]
+        if len(pos_t) < MIN_POSITIVES:
+            continue
+        pos = [features(t, p)[0] for t in pos_t]
+        neg = [features(t, q)[0] for t in pos_t for q in (p - 2, p - 1, p + 1, p + 2) if q not in at[t]]
+        neg += [features(t, p)[0] for t, ps in at.items() if p not in ps and p not in {q for q, _tr in sounding.get(t, ())}]
+        if not neg:
+            continue
+        mu, sd, direction, auc = fit_direction(np.array(pos), np.array(neg))
+        models[p] = PitchModel(-1, p, mu, sd, direction, len(pos), len(neg), auc)
+    return at, sounding, features, models
+
+
 def template_fill(
     spec: ev.SemitoneSpectrogram,
     track: int,
@@ -1375,33 +1436,10 @@ def template_fill(
 ) -> tuple[list[FillCell], dict]:
     """Cells for the empty steps of `track` outside `covered` (steps inside
     figures), with insert or review decisions, and the per-pitch models."""
-    mine = [x for x in notes if x.track == track and x.start >= start]
-    if not mine:
+    at, sounding, features, models = track_pitch_models(spec, track, notes, sec, start, step, lag)
+    if not at:
         return [], {}
-    at: dict = defaultdict(set)
-    for x in mine:
-        at[(x.start - start) // step].add(x.pitch)
-    sounding = _sounding(notes, start, step)
     last = max(at) + 1
-    feats: dict = {}
-
-    def features(t, p):
-        if (t, p) not in feats:
-            t0, t1 = sec(start + t * step) + lag, sec(start + (t + 1) * step) + lag
-            feats[(t, p)] = placed_features(spec, p, t0, t1)
-        return feats[(t, p)]
-
-    # one audio model per pitch the track plays
-    models = {}
-    for p in sorted({q for ps in at.values() for q in ps}):
-        pos_t = [t for t, ps in at.items() if p in ps]
-        if len(pos_t) < MIN_POSITIVES:
-            continue
-        pos = [features(t, p)[0] for t in pos_t]
-        neg = [features(t, q)[0] for t in pos_t for q in (p - 2, p - 1, p + 1, p + 2) if q not in at[t]]
-        neg += [features(t, p)[0] for t, ps in at.items() if p not in ps and p not in {q for q, _tr in sounding.get(t, ())}]
-        mu, sd, direction, auc = fit_direction(np.array(pos), np.array(neg))
-        models[p] = PitchModel(-1, p, mu, sd, direction, len(pos), len(neg), auc)
     # Confident notes: transcribed, and not contradicted by a usable model.
     # The chain is learned from those notes only. A hole adds no count.
     from midi_parts.likelihood import PitchChain
@@ -1482,6 +1520,151 @@ def template_fill(
         if c.decision == "insert" and best[c.step] is not c:
             c.decision, c.reason = "review", "another pitch is likelier here"
     return cells, models
+
+
+# --- Heuristics: the bar's harmony, and line rules for monophonic tracks -----------
+#
+# Harmony gate: a pitch is written (insert or correction) only if its pitch
+# class has at least HARMONY_SHARE of the bar's note time, over every track.
+# A figure that follows the chords then cannot be "corrected" to a pitch
+# the bar does not use.
+#
+# Line rules, for a track that plays one note at a time on at least
+# MONO_SHARE of its steps, outside the figures:
+# - two notes at once a semitone, a tone or an octave apart: the extra is
+#   removed when the more frequent pitch's audio model prefers its own
+#   pitch by at least LINE_AUDIO;
+# - a note that leaps OCTAVE_JUMP or more from both neighbours (within a
+#   bar), when an octave away it sits within OCTAVE_NEAR of both, is moved
+#   by the octave when that pitch's model prefers it by at least LINE_AUDIO.
+# A note the track plays at least OCTAVE_HABIT times within OCTAVE_BARS bars
+# either side is part of the line (an octave-alternating figure such as
+# C4 C5 C4 C5), not a one-off octave error, and is not moved.
+# Either change also needs evidence about the note it removes: when that
+# pitch has a usable model of its own and it says the note sounds (at least
+# KEEP_AUDIO against the replacement), the note stays. An octave is the
+# hardest case for one model alone: the real note sits on the other's
+# second harmonic.
+
+HARMONY_SHARE = 0.05
+MONO_SHARE = 0.9
+LINE_AUDIO = 0.8
+OCTAVE_JUMP = 10
+OCTAVE_NEAR = 7
+ARTEFACT_INTERVALS = (1, 2, 12)
+KEEP_AUDIO = 0.5
+OCTAVE_HABIT = 2
+OCTAVE_BARS = 2
+
+
+def bar_harmony(notes: list, bar: int) -> dict:
+    """{bar index: Counter of pitch class -> ticks sounding in that bar}."""
+    out: dict = defaultdict(Counter)
+    for x in notes:
+        a = x.start
+        while a < x.end:
+            b = min(x.end, (a // bar + 1) * bar)
+            out[a // bar][x.pitch % 12] += b - a
+            a = b
+    return out
+
+
+def in_harmony(profile: dict, tick: int, pitch: int, bar: int) -> bool:
+    c = profile.get(tick // bar)
+    total = sum(c.values()) if c else 0
+    if not total:
+        return True  # nothing else sounds: no evidence either way
+    return c[pitch % 12] / total >= HARMONY_SHARE
+
+
+def gate_harmony(cells: list, profile: dict, start: int, step: int, bar: int) -> int:
+    """Hold back writes whose pitch the bar does not use. Returns how many."""
+    held = 0
+    for c in cells:
+        if c.decision not in ("insert", "confirmed", "correct") or getattr(c, "rank", "") == "probable":
+            continue
+        if not in_harmony(profile, start + c.step * step, c.pitch, bar):
+            c.decision, c.reason = "review", "outside the bar's harmony"
+            if hasattr(c, "rank"):
+                c.rank = ""
+            held += 1
+    return held
+
+
+def line_repairs(spec, track: int, notes: list, covered: set, sec, start: int, step: int, bar_steps: int, lag: float = 0.0) -> list:
+    """FillCells (phase -2) with decision delete, correct or review for a
+    monophonic track's extra notes and octave errors outside `covered`."""
+    at, _sounding_, features, models = track_pitch_models(spec, track, notes, sec, start, step, lag)
+    if not at:
+        return []
+    if sum(1 for ps in at.values() if len(ps) == 1) / len(at) < MONO_SHARE:
+        return []
+    common = Counter(p for ps in at.values() for p in ps)
+
+    def prefers(model_pitch, t, a, b) -> float:
+        m = models[model_pitch]
+        s = m.score(np.array([features(t, a)[0], features(t, b)[0]]))
+        e = np.exp(s - s.max())
+        return float(e[0] / e.sum())
+
+    def defended(removed, t, replacement) -> Optional[float]:
+        """The removed pitch's own model's share for itself, when it has a
+        usable model and that share is at least KEEP_AUDIO."""
+        m = models.get(removed)
+        if m is None or not m.usable:
+            return None
+        own = prefers(removed, t, removed, replacement)
+        return own if own >= KEEP_AUDIO else None
+
+    singles = sorted(t for t, ps in at.items() if len(ps) == 1)
+    cells = []
+    for t, ps in sorted(at.items()):
+        if t in covered:
+            continue
+        if len(ps) == 2:
+            a, b = sorted(ps, key=lambda q: (-common[q], q))  # a: the pitch the track plays more
+            m = models.get(a)
+            if abs(a - b) not in ARTEFACT_INTERVALS or m is None or not m.usable:
+                continue
+            share = prefers(a, t, a, b)
+            cell = FillCell(track, t, -2, -2, a, tuple(sorted(ps)), features(t, a)[1], "review", 0.0, share, share, m.auc, 0.0,
+                            replaces=b, reason=f"extra {name(b)}: audio {share:.2f}")
+            kept = defended(b, t, a) if share >= LINE_AUDIO else None
+            if share >= LINE_AUDIO and kept is None:
+                cell.decision, cell.reason = "delete", ""
+            elif kept is not None:
+                cell.reason = f"{name(b)}'s own model hears it ({kept:.2f})"
+            cells.append(cell)
+        elif len(ps) == 1:
+            p = next(iter(ps))
+            i = bisect.bisect_left(singles, t)
+            prev_t = singles[i - 1] if i > 0 else None
+            next_t = singles[i + 1] if i + 1 < len(singles) else None
+            if prev_t is None or next_t is None or t - prev_t > bar_steps or next_t - t > bar_steps:
+                continue
+            prev, nxt = next(iter(at[prev_t])), next(iter(at[next_t]))
+            if abs(p - prev) < OCTAVE_JUMP or abs(p - nxt) < OCTAVE_JUMP:
+                continue
+            reach = OCTAVE_BARS * bar_steps
+            if sum(1 for u, qs in at.items() if u != t and abs(u - t) <= reach and p in qs) >= OCTAVE_HABIT:
+                continue
+            for q in (p - 12, p + 12):
+                if abs(q - prev) > OCTAVE_NEAR or abs(q - nxt) > OCTAVE_NEAR:
+                    continue
+                m = models.get(q)
+                if m is None or not m.usable:
+                    break
+                share = prefers(q, t, q, p)
+                cell = FillCell(track, t, -2, -2, q, (p,), features(t, q)[1], "review", 0.0, share, share, m.auc, 0.0,
+                                replaces=p, reason=f"octave of {name(p)}: audio {share:.2f}")
+                kept = defended(p, t, q) if share >= LINE_AUDIO else None
+                if share >= LINE_AUDIO and kept is None:
+                    cell.decision, cell.reason = "correct", ""
+                elif kept is not None:
+                    cell.reason = f"{name(p)}'s own model hears it ({kept:.2f})"
+                cells.append(cell)
+                break
+    return cells
 
 
 # --- The trial: drop, fill, score ------------------------------------------------
@@ -1642,6 +1825,9 @@ def trial(
     extra: float = 0.0,
     model: str = "current",
     decoder: str = "rules",
+    window: Optional[int] = None,
+    harmony: bool = False,
+    lines: bool = False,
 ) -> tuple[TrialScore, FillResult]:
     """Damage the clean file, fill from `wav`, score; write damaged.mid,
     deleted.csv, ft-generated.mid, trial.txt (and the before/after images)
@@ -1667,6 +1853,7 @@ def trial(
         negatives=negatives, template=template, model=model, weights=weights,
         fit_notes=clean_notes if model == "full" else None,
         decoder=decoder, truth=clean_notes if decoder == "best" else None,
+        window=window, harmony=harmony, lines=lines,
     )
     sc = score_trial(clean_notes, deleted, res.inserted, len(res.corrected))
     buckets, reasons = deletion_buckets(deleted, res)
@@ -1687,6 +1874,11 @@ def trial(
         f"octave: {octave}",
         f"extra: {extra}",
         f"model: {model}",
+        f"local window: {window if window is not None else 'whole figure'}",
+        f"harmony gate: {'on' if harmony else 'off'}",
+        f"line rules: {'on' if lines else 'off'}",
+        f"held outside the bar's harmony: {sum(1 for c in res.cells if c.reason == 'outside the bar' + chr(39) + 's harmony')}",
+        f"line rules: extra notes removed {sum(1 for c in res.cells if c.phase == -2 and c.decision == 'delete')}, octaves moved {sum(1 for c in res.cells if c.phase == -2 and c.decision == 'correct')}, held {sum(1 for c in res.cells if c.phase == -2 and c.decision == 'review')}",
         f"decoder: {res.decoder}" + (" (picked with the clean file: in-sample)" if decoder == "best" else ""),
         (
             f"weights: audio {res.weights[0]:.1f}, repetition {res.weights[1]:.1f}, sequence {res.weights[2]:.1f}"
@@ -1762,6 +1954,7 @@ def run_arpeggio_trial(args) -> int:
     sc, res = trial(
         clean, wav, out, args.track, args.drop, args.seed, args.grid, args.from_bar, args.negatives,
         not args.no_plot, args.template, args.wrong, args.octave, args.extra, args.model, args.decoder,
+        args.local, args.harmony, args.lines,
     )
     print((out / "trial.txt").read_text().rstrip())
     print(f"written: {out / 'ft-generated.mid'}")

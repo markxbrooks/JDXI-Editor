@@ -182,3 +182,58 @@ def test_the_template_fills_a_gap_outside_any_figure_without_false_inserts(tmp_p
     # inside one long figure the template has nothing left to judge, and it never adds a wrong note
     assert with_tpl.restored >= base.restored and with_tpl.false_inserts == 0
     assert "template: on" in (tmp_path / "b" / "trial.txt").read_text()
+
+
+def test_the_harmony_gate_reads_each_bars_pitch_classes():
+    from midi_parts.patterns import GridNote
+
+    bar = 4 * TPB
+    notes = [GridNote(1, 0, bar, 60, 90, 0), GridNote(1, 0, bar, 67, 90, 0), GridNote(1, bar, 2 * bar, 62, 90, 0)]
+    profile = refine.bar_harmony(notes, bar)
+    assert refine.in_harmony(profile, 10, 72, bar)  # C is in bar 1
+    assert not refine.in_harmony(profile, 10, 61, bar)  # C# is not
+    assert not refine.in_harmony(profile, bar + 10, 60, bar)  # bar 2 is D only
+    assert refine.in_harmony(profile, 5 * bar, 61, bar)  # an empty bar gives no evidence
+
+
+def test_line_rules_remove_an_extra_note_and_move_an_octave_error(tmp_path):
+    # Eighths, six repeats: too few to be a figure, so only the line rules see it.
+    figure = [G, None, A_SHARP, None, C, None, None, None]
+    clean = [p for _ in range(6) for p in figure]
+    _midi_cells(tmp_path / "clean.mid", clean)
+    _wav_cells(tmp_path / "clean.wav", clean)
+    # damage: an extra B (a semitone above the B-flat) and C an octave up
+    midi = mido.MidiFile(tmp_path / "clean.mid")
+    extra_step, octave_step = 2 * 8 + 2, 3 * 8 + 4
+    notes = refine._grid_notes(midi, {"Ghost"})
+    from midi_parts.patterns import GridNote, write_pattern_midi
+
+    damaged = []
+    for n in notes:
+        if n.start == octave_step * STEP:
+            n = GridNote(n.track, n.start, n.end, C + 12, n.velocity, n.channel)
+        damaged.append(n)
+        if n.start == extra_step * STEP:
+            damaged.append(GridNote(n.track, n.start, n.end, A_SHARP + 1, n.velocity, n.channel))
+    write_pattern_midi(tmp_path / "clean.mid", tmp_path / "damaged.mid", damaged, [], {"Ghost"})
+    out = tmp_path / "out"
+    out.mkdir()
+    res = refine.ft_fill(tmp_path / "clean.wav", tmp_path / "damaged.mid", out / "ft.mid", ["Seq"], from_bar=1, lines=True)
+    fixed = {(n.start // STEP, n.pitch) for n in refine._grid_notes(mido.MidiFile(out / "ft.mid"), {"Ghost"})}
+    assert (extra_step, A_SHARP + 1) not in fixed and (extra_step, A_SHARP) in fixed
+    assert (octave_step, C) in fixed and (octave_step, C + 12) not in fixed
+    assert fixed == {(i, p) for i, p in enumerate(clean) if p is not None}  # nothing else changed
+
+
+def test_line_rules_leave_an_octave_alternating_figure_alone(tmp_path):
+    # C4 C5 C4 C5 ... is the line, not a run of octave errors (Oxygène V's SeqSynth1).
+    figure = [C, None, C + 12, None, C, None, C + 12, None]
+    clean = [p for _ in range(6) for p in figure]
+    _midi_cells(tmp_path / "clean.mid", clean)
+    _wav_cells(tmp_path / "clean.wav", clean)
+    out = tmp_path / "out"
+    out.mkdir()
+    res = refine.ft_fill(tmp_path / "clean.wav", tmp_path / "clean.mid", out / "ft.mid", ["Seq"], from_bar=1, lines=True)
+    assert not [c for c in res.cells if c.phase == -2 and c.decision != "review"]
+    fixed = {(n.start // STEP, n.pitch) for n in refine._grid_notes(mido.MidiFile(out / "ft.mid"), {"Ghost"})}
+    assert fixed == {(i, p) for i, p in enumerate(clean) if p is not None}
