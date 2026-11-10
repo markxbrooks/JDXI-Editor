@@ -878,7 +878,7 @@ class PlaylistEditor(QWidget):
                 "No Programs Available",
                 "All programs are already in this playlist.",
             )
-            return
+            # return
 
         # Create combo box with all available programs
         program_list = SearchableFilterableComboBox(
