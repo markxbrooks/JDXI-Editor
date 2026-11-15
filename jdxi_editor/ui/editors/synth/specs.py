@@ -31,13 +31,17 @@ def preset_match_text(text: str) -> str:
     """
     Normalize preset labels for keyword matching.
 
-    Strips a leading program index (e.g. ``001 - Power 3`` → ``power 3``).
+    Strips a leading program index (e.g. ``001 - Power 3`` → ``power 3``,
+    ``101: MKS-50 Bass1`` → ``mks-50 bass1``). The index has to go, otherwise it
+    is matched as a model number: ``101`` would detect an SH-101 and ``202`` an
+    MC-202.
     """
     text = text.strip()
-    if " - " in text:
-        head, _, tail = text.partition(" - ")
-        if head.strip().isdigit():
-            return tail.strip().lower()
+    for separator in (" - ", ":"):
+        if separator in text:
+            head, _, tail = text.partition(separator)
+            if head.strip().isdigit():
+                return tail.strip().lower()
     return text.lower()
 
 
@@ -432,3 +436,47 @@ ENGINE_KEYWORDS = {
     "mks": ["mks", "mks-50"],
     "mc": ["mc", "mc-202", "202"],
 }
+
+
+# ---------------------------------------------------------------------------
+# Image basename aliases
+# ---------------------------------------------------------------------------
+# The detected engine name (see ENGINE_KEYWORDS) is used to look up an icon
+# named "<engine>.png". The shipped artwork is not named consistently across
+# the resource folders (e.g. ``digital_synths/tb-303.png`` vs
+# ``analog_synths/tb303.png``), so each engine maps to every basename that may
+# carry its artwork, in order of preference.
+ENGINE_IMAGE_ALIASES: dict[str, tuple[str, ...]] = {
+    "jupiter": ("jupiter", "jp8", "jp-8", "jupiter8"),
+    "jp8": ("jp8", "jp-8", "jupiter8", "jupiter"),
+    "juno": ("juno",),
+    "jd": ("jd",),
+    "fm": ("fm",),
+    "tb": ("tb", "tb-303", "tb303"),
+    "mg": ("mg", "minimoog"),
+    "sh": ("sh", "sh-101", "sh101"),
+    "d-50": ("d-50", "d50"),
+    "vp-330": ("vp-330", "vp330"),
+    "mks": ("mks", "mks-50", "mks50"),
+    "mc": ("mc", "mc-202", "mc202"),
+}
+
+
+def engine_image_basenames(name: str) -> tuple[str, ...]:
+    """
+    Expand an engine/instrument name into the image basenames to try, in order.
+
+    :param name: Detected engine or instrument name (e.g. ``"tb"``).
+    :return: Candidate basenames without extension, most specific first.
+    """
+    if not name:
+        return ()
+    key = str(name).strip().lower()
+    if not key:
+        return ()
+    aliases = ENGINE_IMAGE_ALIASES.get(key)
+    if not aliases:
+        return (key,)
+    if key in aliases:
+        return aliases
+    return (key, *aliases)

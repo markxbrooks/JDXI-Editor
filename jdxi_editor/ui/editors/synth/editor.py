@@ -60,6 +60,7 @@ from jdxi_editor.ui.editors.synth.specs import (
     DRUM_KIT_SPECS,
     ENGINE_KEYWORDS,
     INSTRUMENT_FAMILY_SPECS,
+    engine_image_basenames,
     preset_match_text,
     InstrumentDescriptor,
 )
@@ -768,25 +769,14 @@ class SynthEditor(SynthBase):
                     name = descriptor.engine
 
         # Special handling: Check for specific engine names in raw_text that might not be detected
-        # This ensures "JP8" matches "jp8.png" even if engine is "jupiter"
-        text_lower = descriptor.raw_text.lower()
-        engine_name_patterns = {
-            "jp8": ["jp8", "jupiter8"],
-            "juno": ["juno", "jn"],
-            "jd": ["jd"],
-            "fm": ["fm"],
-            "tb": ["tb", "tb-303", "303"],
-            "mg": ["mg", "minimoog"],
-            "sh": ["sh", "sh-101", "101"],
-            "d-50": ["d-50", "d50"],
-            "vp-330": ["vp-330", "vp330"],
-            "mks": ["mks", "mks-50"],
-            "mc": ["mc", "mc-202", "202"],
-        }
+        # This ensures "JP8" matches "jp8.png" even if the family was detected first.
+        # ENGINE_KEYWORDS is the single source of truth here; the icon filename
+        # aliases (e.g. "tb" -> "tb-303.png") live in ENGINE_IMAGE_ALIASES.
+        text_lower = preset_match_text(descriptor.raw_text)
 
         # Check if any engine name pattern matches in the text (only for non-drum)
         if descriptor.category != "drum":
-            for engine_name, patterns in engine_name_patterns.items():
+            for engine_name, patterns in ENGINE_KEYWORDS.items():
                 if any(pattern in text_lower for pattern in patterns):
                     name = engine_name
                     break
@@ -907,6 +897,26 @@ class SynthEditor(SynthBase):
         )
         return None
 
+    def _name_image_paths(self, name: str) -> list:
+        """
+        Build the candidate image paths for an instrument/engine name.
+
+        Each name is expanded through its known filename aliases, so an engine
+        detected as ``tb`` matches ``tb.png``, ``tb-303.png``, ``tb303.png`` or
+        ``303.png`` depending on which artwork a resource folder ships.
+
+        :param name: Detected engine or instrument name (may be empty).
+        :return: list of absolute paths, most specific first.
+        """
+        return [
+            resource_path(
+                os.path.join(
+                    "resources", self.instrument_icon_folder, f"{basename}.png"
+                )
+            )
+            for basename in engine_image_basenames(name)
+        ]
+
     def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
         try:
             if not self.instrument_icon_folder:
@@ -930,15 +940,8 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-                # 2. Then try specific name image as fallback (e.g., "jd.png")
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # 2. Then try specific name images as fallback (e.g., "jd.png")
+                paths_to_try.extend(self._name_image_paths(name))
             # Special case: For guitar family, prioritize strat.png over other images
             # This ensures guitar presets (179-184) match strat.png
             elif type_ == "guitar":
@@ -950,15 +953,8 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-                # 2. Then try specific name image as fallback
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # 2. Then try specific name images as fallback
+                paths_to_try.extend(self._name_image_paths(name))
                 # 3. Finally try generic guitar.png as fallback
                 paths_to_try.append(
                     resource_path(
@@ -986,16 +982,9 @@ class SynthEditor(SynthBase):
                         )
                     )
             else:
-                # Default behavior: Try specific name image first, then generic type image
-                # 1. Try specific name image (e.g., "trem.png")
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # Default behavior: Try specific name images first, then generic type image
+                # 1. Try specific name images (e.g., "tb.png", "tb-303.png")
+                paths_to_try.extend(self._name_image_paths(name))
 
                 # 2. Try generic type image (e.g., "pad.png" if type_ is "pad")
                 if type_:
@@ -1016,9 +1005,18 @@ class SynthEditor(SynthBase):
                 message=f"Instrument icon folder: {self.instrument_icon_folder}",
             )
 
-            # Try primary path first, then secondary, etc.
-            primary_path = paths_to_try[0] if paths_to_try else None
-            secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
+            # Try every candidate in order, not just the first two: pick the
+            # first path that exists so later fallbacks (e.g. "guitar.png" or an
+            # aliased engine icon such as "tb-303.png") are not dropped.
+            existing = [path for path in paths_to_try if path and os.path.exists(path)]
+            if existing:
+                primary_path = existing[0]
+                secondary_path = existing[1] if len(existing) > 1 else None
+            else:
+                # Nothing matched; hand the first candidate over so
+                # load_and_set_image falls back to the default image.
+                primary_path = paths_to_try[0] if paths_to_try else None
+                secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
 
             return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:
