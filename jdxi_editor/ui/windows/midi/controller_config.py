@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.controller_map import FilterControl
 from jdxi_editor.midi.io.controller_settings import (
     default_filter_map,
@@ -71,6 +72,10 @@ CONTROL_LABELS = {
     FilterControl.ENV_DECAY: "Filter envelope decay",
     FilterControl.ENV_SUSTAIN: "Filter envelope sustain",
     FilterControl.ENV_RELEASE: "Filter envelope release",
+    FilterControl.EFFECT1_LEVEL: "Effect 1 level",
+    FilterControl.EFFECT2_LEVEL: "Effect 2 level",
+    FilterControl.DELAY_LEVEL: "Delay level",
+    FilterControl.REVERB_LEVEL: "Reverb level",
 }
 
 #: Which hardware control usually sends it, for the table
@@ -79,11 +84,14 @@ CONTROL_SOURCES = {
     FilterControl.RESONANCE: "Knob 2",
     FilterControl.KEYFOLLOW: "Knob 3",
     FilterControl.ENV_DEPTH: "Knob 4",
-    FilterControl.ENV_VELOCITY: "Knob 5",
     FilterControl.ENV_ATTACK: "Fader 1",
     FilterControl.ENV_DECAY: "Fader 2",
     FilterControl.ENV_SUSTAIN: "Fader 3",
     FilterControl.ENV_RELEASE: "Fader 4",
+    FilterControl.EFFECT1_LEVEL: "Knob 5",
+    FilterControl.EFFECT2_LEVEL: "Knob 6",
+    FilterControl.DELAY_LEVEL: "Knob 7",
+    FilterControl.REVERB_LEVEL: "Knob 8",
 }
 
 
@@ -110,6 +118,10 @@ class MidiControllerDialog(QMainWindow):
         self.cc_map: Dict[int, FilterControl] = (
             dict(filter_remote.cc_map) if filter_remote is not None else load_filter_map()
         )
+        # Dark editor chrome for this window only, as in the MIDI Config dialog.
+        # Not qdarktheme (apply_dark_theme / apply_theme("auto")): that restyles
+        # the whole application and replaces the editor's own stylesheet.
+        JDXi.UI.Theme.apply_editor_style(self)
         #: the control waiting for the next CC, while learning
         self._learning: Optional[FilterControl] = None
 

@@ -1208,7 +1208,9 @@ class JDXiInstrument(JDXiWindow):
         # Whatever was learnt in the MIDI Controller dialog, falling back to
         # the built-in MiniLab 3 map
         self.filter_remote = FilterRemote(
-            self._current_editor_tab, cc_map=load_filter_map()
+            self._current_editor_tab,
+            cc_map=load_filter_map(),
+            effects_editor=self._effects_editor,
         )
         self.external_controller.control_changed.connect(
             self._on_external_control_change,
@@ -1229,6 +1231,17 @@ class JDXiInstrument(JDXiWindow):
     ) -> None:
         """GUI-thread relay for MiniLab (etc.) control changes."""
         self.filter_remote.on_control_change(channel, control, value)
+
+    def _effects_editor(self) -> Optional[QWidget]:
+        """
+        The Effects editor, or None if it has not been opened.
+
+        Read directly rather than through get_existing_editor, which logs on
+        every call and this runs for every knob movement.
+
+        :return: Optional[QWidget]
+        """
+        return getattr(self, f"{EffectsCommonEditor.__name__.lower()}_instance", None)
 
     def _current_editor_tab(self) -> Optional[QWidget]:
         """

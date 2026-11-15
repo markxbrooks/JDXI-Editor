@@ -3,23 +3,30 @@ External MIDI controller maps
 =============================
 
 Routes control-change messages from a hardware controller (not the JD-Xi) to
-filter controls of the synth editor that is open.
+filter controls of the synth editor that is open, and to the effect levels that
+the JD-Xi's own right-hand knobs set.
 
 **Arturia MiniLab 3** (factory/User program, MIDI channel 1):
 
 ========  =====  ==============================
-Control   CC     JD-Xi filter control
+Control   CC     JD-Xi control
 ========  =====  ==============================
 Knob 1    74     Cutoff
 Knob 2    71     Resonance
 Knob 3    76     Cutoff key follow
 Knob 4    77     Envelope depth
-Knob 5    93     Envelope velocity sensitivity
+Knob 5    93     Effect 1 level
+Knob 6    18     Effect 2 level
+Knob 7    19     Delay level
+Knob 8    16     Reverb level
 Fader 1   82     Filter envelope attack
 Fader 2   83     Filter envelope decay
 Fader 3   85     Filter envelope sustain
 Fader 4   17     Filter envelope release
 ========  =====  ==============================
+
+Knobs 1-4 are the top row, 5-8 the bottom row. Envelope velocity sensitivity
+has no default control; assign one in the MIDI Controller dialog.
 
 If your MiniLab program sends other CC numbers, watch them in the MIDI
 Monitor and change :data:`MINILAB3_FILTER_MAP`. Every port the controller
@@ -40,7 +47,12 @@ from typing import Iterable, Optional
 
 
 class FilterControl(Enum):
-    """Filter controls a hardware controller can drive; values are parameter names."""
+    """
+    Controls a hardware controller can drive; values are parameter names.
+
+    Despite the name, this also covers the program effect levels
+    (:data:`EFFECT_CONTROLS`), which the Effects editor holds.
+    """
 
     CUTOFF = "FILTER_CUTOFF"
     RESONANCE = "FILTER_RESONANCE"
@@ -51,15 +63,33 @@ class FilterControl(Enum):
     ENV_DECAY = "FILTER_ENV_DECAY_TIME"
     ENV_SUSTAIN = "FILTER_ENV_SUSTAIN_LEVEL"
     ENV_RELEASE = "FILTER_ENV_RELEASE_TIME"
+    EFFECT1_LEVEL = "EFX1_LEVEL"
+    EFFECT2_LEVEL = "EFX2_LEVEL"
+    DELAY_LEVEL = "DELAY_LEVEL"
+    REVERB_LEVEL = "REVERB_LEVEL"
 
 
-#: MiniLab 3 CC number -> filter control (knobs 1-5, faders 1-4)
+#: Controls held by the Effects editor rather than a synth editor
+EFFECT_CONTROLS = frozenset(
+    {
+        FilterControl.EFFECT1_LEVEL,
+        FilterControl.EFFECT2_LEVEL,
+        FilterControl.DELAY_LEVEL,
+        FilterControl.REVERB_LEVEL,
+    }
+)
+
+
+#: MiniLab 3 CC number -> control (knobs 1-8, faders 1-4)
 MINILAB3_FILTER_MAP: dict[int, FilterControl] = {
     74: FilterControl.CUTOFF,
     71: FilterControl.RESONANCE,
     76: FilterControl.KEYFOLLOW,
     77: FilterControl.ENV_DEPTH,
-    93: FilterControl.ENV_VELOCITY,
+    93: FilterControl.EFFECT1_LEVEL,
+    18: FilterControl.EFFECT2_LEVEL,
+    19: FilterControl.DELAY_LEVEL,
+    16: FilterControl.REVERB_LEVEL,
     82: FilterControl.ENV_ATTACK,
     83: FilterControl.ENV_DECAY,
     85: FilterControl.ENV_SUSTAIN,

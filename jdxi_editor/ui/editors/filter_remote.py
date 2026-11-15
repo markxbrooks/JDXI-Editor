@@ -9,7 +9,8 @@ parameter to the JD-Xi exactly as if the slider had been dragged.
 
 The target is the Digital Synth editor's selected partial or the Analog Synth
 editor, whichever tab is showing; on any other tab the last synth editor shown
-keeps receiving.
+keeps receiving. Effect levels (:data:`EFFECT_CONTROLS`, the JD-Xi's right-hand
+knobs) always go to the Effects editor, whichever tab is showing.
 """
 
 from __future__ import annotations
@@ -19,7 +20,11 @@ from typing import Callable, Optional
 from decologr import Decologr as log
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.io.controller_map import MINILAB3_FILTER_MAP, FilterControl
+from jdxi_editor.midi.io.controller_map import (
+    EFFECT_CONTROLS,
+    MINILAB3_FILTER_MAP,
+    FilterControl,
+)
 from jdxi_editor.ui.widgets.slider.slider import Slider
 
 MIDI_MAX = 127
@@ -83,13 +88,17 @@ class FilterRemote:
         current_editor: Callable[[], Optional[QWidget]],
         cc_map: Optional[dict[int, FilterControl]] = None,
         channel: Optional[int] = None,
+        effects_editor: Optional[Callable[[], Optional[QWidget]]] = None,
     ) -> None:
         """
         :param current_editor: Callable returning the main editor's current tab
         :param cc_map: dict CC number -> FilterControl; defaults to the MiniLab 3 map
         :param channel: Optional[int] only accept this MIDI channel (0-15); None accepts all
+        :param effects_editor: Callable returning the Effects editor, or None if it
+            is not open; effect level controls are ignored without it
         """
         self.current_editor = current_editor
+        self.effects_editor = effects_editor
         self.cc_map = dict(MINILAB3_FILTER_MAP if cc_map is None else cc_map)
         self.channel = channel
         self._last_editor: Optional[QWidget] = None
@@ -111,9 +120,23 @@ class FilterRemote:
             self._last_editor = None
             return None
 
+    def effects_controls(self) -> Optional[dict]:
+        """
+        Controls of the Effects editor, which holds the effect levels.
+
+        :return: Optional[dict] AddressParameter -> widget, or None if it is not open
+        """
+        if self.effects_editor is None:
+            return None
+        try:
+            editor = self.effects_editor()
+            return editor.all_controls() if editor is not None else None
+        except RuntimeError:  # the Effects tab was closed
+            return None
+
     def on_control_change(self, channel: int, control: int, value: int) -> bool:
         """
-        Move the filter slider mapped to ``control``.
+        Move the filter or effect level slider mapped to ``control``.
 
         :param channel: int MIDI channel 0-15
         :param control: int CC number
@@ -125,10 +148,13 @@ class FilterRemote:
         filter_control = self.cc_map.get(control)
         if filter_control is None:
             return False
-        controls = self.target_controls()
+        if filter_control in EFFECT_CONTROLS:
+            controls, needed = self.effects_controls(), "the Effects editor"
+        else:
+            controls, needed = self.target_controls(), "a Digital or Analog Synth editor"
         if controls is None:
             log.message(
-                f"CC{control} ({filter_control.name}): open a Digital or Analog Synth editor",
+                f"CC{control} ({filter_control.name}): open {needed}",
                 scope=self.__class__.__name__,
                 silent=True,
             )
