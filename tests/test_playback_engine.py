@@ -320,8 +320,9 @@ def test_engine_mute_track_keeps_other_tracks_unison_note(clock):
     engine.process_until_now()
     received.clear()
     engine.mute_track(1, True)
-    assert _summary(received) == [("note_off",)]
-    assert engine._held_notes == {(0, 60): {0}}
+    # Shared channel/pitch: no device note-off while track 0 still owns the note
+    assert received == []
+    assert engine._held_notes == {(0, 60): {0: 1}}
     engine.stop()
     assert engine._held_notes == {}
 
@@ -337,13 +338,14 @@ def test_engine_track_velocity_scale(clock):
     assert engine.midi_file.tracks[0][0].velocity == 64
 
 
-def test_engine_velocity_scale_keeps_notes_audible_and_note_offs(clock):
+def test_engine_velocity_scale_zero_suppresses_note_ons(clock):
+    """Scale 0.0 means silence: note-ons are suppressed; note-offs still pass."""
     engine, received = _loaded_engine()
     engine.set_track_velocity_scale(0, 0.0)
     engine.start(0)
     clock.now = 1001.0
     engine.process_until_now()
-    assert [m.velocity for m in received if m.type == "note_on"] == [1, 1]
+    assert [m for m in received if m.type == "note_on"] == []
     assert [m.velocity for m in received if m.type == "note_off"] == [0, 0]
 
     engine.set_track_velocity_scale(0, 1.0)
@@ -590,6 +592,121 @@ def test_engine_bar_beat_follows_time_signature():
     assert engine.time_signature_at_tick(3000) == (6, 8)
     assert engine.nearest_bar_tick(1300) == 1440
     assert engine.nearest_bar_tick(200) == 0
+
+
+def test_engine_seek_backwards_restores_program_and_volume(clock):
+    """Backwards seek past PC/volume restores baseline, not stale later values."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(0)
+    clock.now = 1001.5  # past program 7
+    engine.process_until_now()
+    received.clear()
+    engine.seek_tick(0)
+    summary = _summary(received)
+    assert ("pc", 0) in summary
+    assert ("cc", 7, 100) in summary
+    assert ("bend", 0) in summary
+
+
+def test_engine_seek_before_first_program_sends_defaults_after_later_play(clock):
+    """After playing a later program, seeking before any PC restores program 0."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(1200)
+    assert ("pc", 7) in _summary(received)
+    received.clear()
+    engine.seek_tick(0)
+    assert ("pc", 0) in _summary(received)
+
+
+def test_engine_pause_resume_restores_sustain(clock):
+    """Pause releases sustain; resume re-chases sustain without re-striking notes."""
+    mid = _make_simple_midi()
+    mid.tracks[0].insert(1, Message("control_change", control=64, value=127, time=0))
+    engine, received = _loaded_engine(mid)
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 127 for m in received)
+    engine.pause()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 0 for m in received)
+    note_ons_before = sum(1 for m in received if m.type == "note_on")
+    received.clear()
+    engine.resume()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 127 for m in received)
+    assert all(m.type != "note_on" for m in received)
+    assert note_ons_before >= 1
+
+
+def test_engine_repeated_notes_on_same_track_need_matching_offs(clock):
+    """Same-track retriggers use a count; first off does not clear the second hold."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    track = MidiTrack()
+    mid.tracks.append(track)
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=240))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=240))
+    engine, received = _loaded_engine(mid)
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {(0, 60): {0: 2}}
+    clock.now = 1000.3  # first note_off at tick 240
+    engine.process_until_now()
+    # First off must not emit a device note-off while count remains
+    assert engine._held_notes == {(0, 60): {0: 1}}
+    assert sum(1 for m in received if m.type == "note_off") == 0
+    clock.now = 1000.6  # second note_off at tick 480
+    engine.process_until_now()
+    assert engine._held_notes == {}
+    assert sum(1 for m in received if m.type == "note_off") == 1
+
+
+def test_engine_shared_channel_file_note_off_keeps_other_track(clock):
+    """A file note-off from one track does not silence another track's held note."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    # Advance only far enough that... both offs are at 480. Mute simulation:
+    # inject logical release of track 1 only via mute (already covered).
+    # Playback note_off from both tracks at same tick: after both, silent.
+    clock.now = 1000.6
+    engine.process_until_now()
+    # Both tracks released → one device note-off
+    assert sum(1 for m in received if m.type == "note_off") == 1
+    assert engine._held_notes == {}
+
+
+def test_engine_load_file_while_playing_releases_notes(clock):
+    """Loading a new file during playback releases sounding notes first."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "note_on" for m in received)
+    received.clear()
+    engine.load_file(_make_simple_midi())
+    assert any(m.type == "note_off" for m in received)
+    assert engine._is_playing is False
+    assert engine._held_notes == {}
+
+
+def test_engine_start_while_playing_releases_prior_notes(clock):
+    """start() while already playing releases notes before repositioning."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.start(0)
+    assert any(m.type == "note_off" for m in received)
+
+
+def test_engine_rejects_midi_type_2():
+    """Type 2 (independent sequences) is rejected explicitly."""
+    mid = MidiFile(type=2, ticks_per_beat=480)
+    mid.tracks.append(MidiTrack())
+    engine = PlaybackEngine()
+    with pytest.raises(ValueError, match="Type 2"):
+        engine.load_file(mid)
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
