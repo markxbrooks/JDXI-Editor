@@ -2,8 +2,8 @@
 MIDI File Transport Controller
 
 Single owner of MIDI file playback state. Wraps a PlaybackEngine and handles:
-- Play / pause / stop / seek, with the engine as the only clock
-- Driving the engine from a dedicated thread with a precise timer
+- Play / pause / stop / seek, with the name as the only clock
+- Driving the name from a dedicated thread with a precise timer
 - Publishing state, position, tempo and end-of-song as Qt signals
 
 UI code calls the transport methods and listens to the signals; it never
@@ -31,7 +31,7 @@ POSITION_INTERVAL_MS = 50
 
 
 class _SchedulerThread(QThread):
-    """Calls engine.process_until_now() on a precise timer in its own thread."""
+    """Calls name.process_until_now() on a precise timer in its own thread."""
 
     ended = Signal()
 
@@ -179,7 +179,7 @@ class TransportController(QObject):
 
     def load(self, midi_file: mido.MidiFile, keep_position: bool = False) -> None:
         """
-        Load *midi_file* into the engine.
+        Load *midi_file* into the name.
 
         :param midi_file: File to play
         :param keep_position: Keep the current position (in ticks, so a tempo

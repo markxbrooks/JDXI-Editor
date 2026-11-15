@@ -31,6 +31,7 @@ from jdxi_editor.ui.widgets.combo_box.searchable_filterable import (
     SearchableFilterableComboBox,
 )
 from jdxi_editor.ui.widgets.midi.selection_info_bar import MidiSelectionInfoBar
+from picomidi import Channel
 
 # 0-based channel -> preset type to offer when the current program is not a preset
 DEFAULT_SOURCE_FOR_CHANNEL = {2: PresetSource.ANALOG, 9: PresetSource.DRUMS}
@@ -68,7 +69,7 @@ class ProgramChangeDialog(QDialog):
         self._program = program
 
         self.channel_combo = QComboBox()
-        for ch in range(16):
+        for ch in range(Channel.TOTAL_CHANNELS):
             self.channel_combo.addItem(f"Ch {ch + 1}", ch)
         self.channel_combo.setCurrentIndex(channel)
 

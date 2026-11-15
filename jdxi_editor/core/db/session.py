@@ -46,7 +46,7 @@ class DatabaseSession:
 
         self.db_path = db_path
 
-        # --- Create engine with SQLite-specific settings
+        # --- Create name with SQLite-specific settings
         self.engine = create_engine(
             f"sqlite:///{db_path}",
             connect_args={

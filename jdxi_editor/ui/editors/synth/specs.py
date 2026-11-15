@@ -429,52 +429,72 @@ INSTRUMENT_FAMILY_SPECS = [
 
 @dataclass
 class EngineKeywordSpec:
-    engine: str
+    name: str
     keywords: Iterable[str]
 
 
-ENGINE_KEYWORDS = {
-    "jupiter": ["jupiter", "jp8", "jupiter8"],
-    "fm": ["fm", "4op fm"],
-    "juno": ["juno", "jn"],
-    "jd": ["jd"],
-    "tb": ["tb", "tb-303", "303"],
-    "mg": ["mg", "minimoog"],
-    "sh": ["sh", "sh-101", "101"],
-    "d-50": ["d-50", "d50"],
-    "vp-330": ["vp-330", "vp330"],
-    "mks": ["mks", "mks-50"],
-    "mc": ["mc", "mc-202", "202"],
-}
+ENGINE_KEYWORDS: list[EngineKeywordSpec] = [
+    EngineKeywordSpec(name="jupiter", keywords=["jupiter", "jp8", "jupiter8"]),
+    EngineKeywordSpec(name="fm", keywords=["fm", "4op fm"]),
+    EngineKeywordSpec(name="juno", keywords=["juno", "jn"]),
+    EngineKeywordSpec(name="jd", keywords=["jd"]),
+    EngineKeywordSpec(name="tb", keywords=["tb", "tb-303", "303"]),
+    EngineKeywordSpec(name="mg", keywords=["mg", "minimoog"]),
+    EngineKeywordSpec(name="sh", keywords=["sh", "sh-101", "101"]),
+    EngineKeywordSpec(name="d-50", keywords=["d-50", "d50"]),
+    EngineKeywordSpec(name="vp-330", keywords=["vp-330", "vp330"]),
+    EngineKeywordSpec(name="mks", keywords=["mks", "mks-50"]),
+    EngineKeywordSpec(name="mc", keywords=["mc", "mc-202", "202"]),
+]
 
 
 # ---------------------------------------------------------------------------
 # Image basename aliases
 # ---------------------------------------------------------------------------
-# The detected engine name (see ENGINE_KEYWORDS) is used to look up an icon
-# named "<engine>.png". The shipped artwork is not named consistently across
-# the resource folders (e.g. ``digital_synths/tb-303.png`` vs
-# ``analog_synths/tb303.png``), so each engine maps to every basename that may
+
+
+@dataclass
+class EngineImageSpec:
+    """
+    Icon filenames that may carry an engine's artwork.
+
+    Note that ``basenames`` holds *filenames*, not keywords: keywords decide
+    which engine a preset belongs to (see :class:`EngineKeywordSpec`), while
+    these decide which file is drawn for it.
+    """
+
+    name: str
+    basenames: tuple[str, ...]
+
+
+# The detected engine (see ENGINE_KEYWORDS) is used to look up an icon named
+# "<engine>.png". The shipped artwork is not named consistently across the
+# resource folders (e.g. ``digital_synths/tb-303.png`` vs
+# ``analog_synths/tb303.png``), so each engine lists every basename that may
 # carry its artwork, in order of preference.
+ENGINE_IMAGE_SPECS: list[EngineImageSpec] = [
+    EngineImageSpec(name="jupiter", basenames=("jupiter", "jp8", "jp-8", "jupiter8")),
+    EngineImageSpec(name="jp8", basenames=("jp8", "jp-8", "jupiter8", "jupiter")),
+    EngineImageSpec(name="juno", basenames=("juno",)),
+    EngineImageSpec(name="jd", basenames=("jd",)),
+    EngineImageSpec(name="fm", basenames=("fm",)),
+    EngineImageSpec(name="tb", basenames=("tb", "tb-303", "tb303")),
+    EngineImageSpec(name="mg", basenames=("mg", "minimoog")),
+    EngineImageSpec(name="sh", basenames=("sh", "sh-101", "sh101")),
+    EngineImageSpec(name="d-50", basenames=("d-50", "d50")),
+    EngineImageSpec(name="vp-330", basenames=("vp-330", "vp330")),
+    EngineImageSpec(name="mks", basenames=("mks", "mks-50", "mks50")),
+    EngineImageSpec(name="mc", basenames=("mc", "mc-202", "mc202")),
+]
+
 ENGINE_IMAGE_ALIASES: dict[str, tuple[str, ...]] = {
-    "jupiter": ("jupiter", "jp8", "jp-8", "jupiter8"),
-    "jp8": ("jp8", "jp-8", "jupiter8", "jupiter"),
-    "juno": ("juno",),
-    "jd": ("jd",),
-    "fm": ("fm",),
-    "tb": ("tb", "tb-303", "tb303"),
-    "mg": ("mg", "minimoog"),
-    "sh": ("sh", "sh-101", "sh101"),
-    "d-50": ("d-50", "d50"),
-    "vp-330": ("vp-330", "vp330"),
-    "mks": ("mks", "mks-50", "mks50"),
-    "mc": ("mc", "mc-202", "mc202"),
+    spec.name: spec.basenames for spec in ENGINE_IMAGE_SPECS
 }
 
 
 def engine_image_basenames(name: str) -> tuple[str, ...]:
     """
-    Expand an engine/instrument name into the image basenames to try, in order.
+    Expand an engine or instrument name into the image basenames to try.
 
     :param name: Detected engine or instrument name (e.g. ``"tb"``).
     :return: Candidate basenames without extension, most specific first.
@@ -586,7 +606,7 @@ def preset_image_basenames(text: str) -> tuple[str, ...]:
     enough to give that preset its own image -- no table to update here.
 
     Only multi-word phrases are returned. A single word is far too broad to be
-    preset-specific ("bass", "lead"), and the engine and family lookups already
+    preset-specific ("bass", "lead"), and the name and family lookups already
     cover that case.
 
     :param text: Preset label, with or without its index.

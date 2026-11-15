@@ -43,5 +43,5 @@ CATEGORY_META: dict[str, CategoryMeta] = {
     TrackCategory.STRINGS: CategoryMeta(
         emoji="🎻", label="Strings", channel=3, engine="Analog Synth"
     ),
-    # TrackCategory.DRUMS: CategoryMeta(emoji="🥁", label="Drums", channel=10, engine="Drums")
+    # TrackCategory.DRUMS: CategoryMeta(emoji="🥁", label="Drums", channel=10, name="Drums")
 }

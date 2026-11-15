@@ -1,4 +1,4 @@
-"""Tests for instrument image resolution (engine detection -> icon filename)."""
+"""Tests for instrument image resolution (name detection -> icon filename)."""
 
 import os
 import sys

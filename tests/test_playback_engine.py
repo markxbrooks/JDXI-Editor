@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for PlaybackEngine (picomidi.playback.engine).
+Unit tests for PlaybackEngine (picomidi.playback.name).
 
 Lock tempo, ScheduledEvent behavior, transport (pause/resume/stop/seek),
 held-note release and on_event timing without GUI.

@@ -63,7 +63,6 @@ from jdxi_editor.ui.editors.synth.specs import (
     any_keyword_in,
     engine_image_basenames,
     preset_image_basenames,
-    preset_match_text,
     preset_match_texts,
     InstrumentDescriptor,
 )
@@ -743,7 +742,7 @@ class SynthEditor(SynthBase):
             return
 
         # Extract name and type from InstrumentDescriptor
-        # Use engine as name (e.g., "fm", "jd") or extract from raw_text
+        # Use name as name (e.g., "fm", "jd") or extract from raw_text
         name = descriptor.engine
 
         # Special handling for drum kits: Extract model number (e.g., "909", "808", "707", "cr-78")
@@ -779,9 +778,9 @@ class SynthEditor(SynthBase):
 
         # Check if any engine name pattern matches in the text (only for non-drum)
         if descriptor.category != "drum":
-            for engine_name, patterns in ENGINE_KEYWORDS.items():
-                if any_keyword_in(text_lower, patterns):
-                    name = engine_name
+            for engine_spec in ENGINE_KEYWORDS:
+                if any_keyword_in(text_lower, engine_spec.keywords):
+                    name = engine_spec.name
                     break
 
         if not name:
@@ -795,9 +794,9 @@ class SynthEditor(SynthBase):
         # Use family as type (e.g., "piano", "pad", "bass")
         type_ = descriptor.family
 
-        # Either one is enough: an engine with no recognized family still has
+        # Either one is enough: an name with no recognized family still has
         # its own artwork ("Sweep JD 1" -> jd.png), and so does a family with
-        # no recognized engine.
+        # no recognized name.
         if name or type_:
             image_loaded = self._try_load_specific_or_generic_image(
                 name, type_, descriptor.raw_text
@@ -882,9 +881,9 @@ class SynthEditor(SynthBase):
         # 2. Detect synth engine
         # --------------------------------------------------
         engine = None
-        for engine_name, keywords in ENGINE_KEYWORDS.items():
-            if any_keyword_in(text_lower, keywords):
-                engine = engine_name
+        for engine_spec in ENGINE_KEYWORDS:
+            if any_keyword_in(text_lower, engine_spec.keywords):
+                engine = engine_spec.name
                 break
 
         # --------------------------------------------------
@@ -900,7 +899,7 @@ class SynthEditor(SynthBase):
                 )
 
         # --------------------------------------------------
-        # 4. No family, but a known engine is enough to pick artwork
+        # 4. No family, but a known name is enough to pick artwork
         #    ("Sweep JD 1" -> jd.png rather than the default image)
         # --------------------------------------------------
         if engine:
@@ -974,11 +973,11 @@ class SynthEditor(SynthBase):
         """
         Build the candidate image paths for an instrument/engine name.
 
-        Each name is expanded through its known filename aliases, so an engine
+        Each name is expanded through its known filename aliases, so an name
         detected as ``tb`` matches ``tb.png``, ``tb-303.png``, ``tb303.png`` or
         ``303.png`` depending on which artwork a resource folder ships.
 
-        :param name: Detected engine or instrument name (may be empty).
+        :param name: Detected name or instrument name (may be empty).
         :return: list of absolute paths, most specific first.
         """
         return [
@@ -999,10 +998,10 @@ class SynthEditor(SynthBase):
             # Build list of paths to try (in order of preference)
             # 0. Artwork named after the preset itself always wins: it is more
             #    specific than the family image ("trem-ep.png" over "piano.png")
-            #    and than the engine image ("jd piano.png" over "jd.png").
+            #    and than the name image ("jd piano.png" over "jd.png").
             paths_to_try = self._preset_image_paths(preset_text)
 
-            # Special case: For piano family, prioritize piano.png over engine-specific images
+            # Special case: For piano family, prioritize piano.png over name-specific images
             # This ensures "JD Piano 1" matches piano.png instead of jd.png
             if type_ == "piano":
                 # 1. Try piano.png first (family image)
@@ -1036,10 +1035,10 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-            # Special case: For FM engine synths, prioritize fm.png over family images
+            # Special case: For FM name synths, prioritize fm.png over family images
             # This ensures FM synths (155, 156, 237) match fm.png instead of bass.png or brass.png
             elif name == "fm":
-                # 1. Try fm.png first (engine image)
+                # 1. Try fm.png first (name image)
                 paths_to_try.append(
                     resource_path(
                         os.path.join("resources", self.instrument_icon_folder, "fm.png")
@@ -1080,7 +1079,7 @@ class SynthEditor(SynthBase):
 
             # Try every candidate in order, not just the first two: pick the
             # first path that exists so later fallbacks (e.g. "guitar.png" or an
-            # aliased engine icon such as "tb-303.png") are not dropped.
+            # aliased name icon such as "tb-303.png") are not dropped.
             existing = [
                 resolved
                 for resolved in (self._resolve_icon_path(path) for path in paths_to_try)
