@@ -54,7 +54,13 @@ from PySide6.QtGui import (
     QMouseEvent,
     QShortcut,
 )
-from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
+from PySide6.QtWidgets import (
+    QApplication,
+    QMenu,
+    QMessageBox,
+    QProgressDialog,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
@@ -72,6 +78,7 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.external_controller import ExternalControllerInput
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.midi.playback.activity import DeviceRefresher, playback_activity
@@ -99,6 +106,7 @@ from jdxi_editor.ui.editors import (
     VocalFXEditor,
 )
 from jdxi_editor.ui.editors.config import EditorConfig
+from jdxi_editor.ui.editors.filter_remote import FilterRemote
 from jdxi_editor.ui.editors.digital.editor import (
     DigitalSynth2Editor,
 )
@@ -127,6 +135,9 @@ from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
 
 DOCUMENTATION_URL = "https://markxbrooks.github.io/JDXI-Editor/"
+
+#: How often to look for a hardware controller that was plugged in late
+CONTROLLER_RESCAN_MS = 3000
 from picomidi.constant import Midi
 from picoui.specs.widgets import MessageBoxSpec
 
@@ -156,6 +167,9 @@ class JDXiInstrument(JDXiWindow):
             self._show_midi_config()
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        self._splash_status("Looking for a MIDI controller...", 15)
+        self._init_external_controller()
+        self._splash_status("Loading editors...", 20)
         self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
         self.settings = QSettings("mabsoft", __package_name__)
@@ -386,6 +400,7 @@ class JDXiInstrument(JDXiWindow):
         try:
             # Wait for any USB recording threads to avoid "Destroyed while still running"
             self._wait_for_usb_recording_threads()
+            self.external_controller.close()
             self.midi_helper.close_ports()
             self._save_settings()
             event.accept()
@@ -1121,9 +1136,32 @@ class JDXiInstrument(JDXiWindow):
         self.log_viewer.raise_()
         log.message(scope="JDXiInstrument", message="Showing LogViewer window")
 
+    def _splash_status(self, message: str, progress: int) -> None:
+        """
+        Show startup progress on the splash screen, if it is still up.
+
+        Startup runs before the event loop, so the splash only repaints when
+        asked to; without this the first message stays up for the whole of it
+        and a slow start cannot be told from a hung one.
+
+        :param message: str what startup is doing now
+        :param progress: int progress bar value, 0-100
+        :return: None
+        """
+        if not (self.splash_status_label and self.splash_progress_bar):
+            return
+        self.splash_status_label.setText(message)
+        self.splash_progress_bar.setValue(progress)
+        QApplication.processEvents()
+
     def _show_midi_config(self) -> None:
         """Show MIDI configuration dialog"""
         try:
+            # The splash screen is frameless and always-on-top, so a modal
+            # dialog opened while it is up is hidden behind it: the application
+            # looks frozen on the splash's last message until it is answered.
+            if self.splash is not None and self.splash.isVisible():
+                self.splash.hide()
             dialog = MIDIConfigDialog(self.midi_helper, parent=self)
             dialog.exec()
 
@@ -1150,13 +1188,69 @@ class JDXiInstrument(JDXiWindow):
         self.midi_debugger.show()
         self.midi_debugger.raise_()
 
+    def _init_external_controller(self) -> None:
+        """
+        Listen to a hardware controller (Arturia MiniLab 3) on its own MIDI input.
+
+        Its knobs drive the open synth editor's filter and its faders the
+        filter envelope; see :mod:`jdxi_editor.midi.io.controller_map`.
+
+        Controller CCs arrive on the RtMidi thread. They must be queued to the
+        GUI thread — FilterRemote is not a QObject, so a direct
+        ``control_changed.connect(filter_remote.on_control_change)`` runs on
+        the MIDI thread and can deadlock during startup when ports open.
+
+        :return: None
+        """
+        self.external_controller = ExternalControllerInput(self)
+        self.filter_remote = FilterRemote(self._current_editor_tab)
+        self.external_controller.control_changed.connect(
+            self._on_external_control_change,
+            Qt.ConnectionType.QueuedConnection,
+        )
+        # Defer port open until the event loop is running so splash/UI can
+        # paint and any CC flood from the controller is queued, not inline.
+        QTimer.singleShot(0, self.external_controller.auto_connect)
+        # A controller switched on or plugged in after startup would otherwise
+        # never be found, since auto_connect only runs here
+        self.controller_rescan_timer = QTimer(self)
+        self.controller_rescan_timer.setInterval(CONTROLLER_RESCAN_MS)
+        self.controller_rescan_timer.timeout.connect(self.external_controller.rescan)
+        self.controller_rescan_timer.start()
+
+    def _on_external_control_change(
+        self, channel: int, control: int, value: int
+    ) -> None:
+        """GUI-thread relay for MiniLab (etc.) control changes."""
+        self.filter_remote.on_control_change(channel, control, value)
+
+    def _current_editor_tab(self) -> Optional[QWidget]:
+        """
+        The main editor's current tab, or None before the main editor exists.
+
+        :return: Optional[QWidget]
+        """
+        if self.main_editor is None:
+            return None
+        return self.main_editor.editor_tab_widget.currentWidget()
+
     def _show_midi_message_monitor(self) -> None:
         """Open MIDI message monitor window"""
+        # Pick up a controller plugged in since the last scan, so the monitor
+        # opens with it already listed
+        self.external_controller.rescan()
         if not self.midi_message_monitor:
             self.midi_message_monitor = MIDIMessageMonitor(
-                midi_helper=self.midi_helper, parent=self
+                midi_helper=self.midi_helper,
+                parent=self,
+                external_controller=self.external_controller,
             )
             self.midi_message_monitor.setAttribute(Qt.WA_DeleteOnClose)
+            # WA_DeleteOnClose deletes the window; drop the stale reference
+            # so the next open creates a new one instead of raising
+            self.midi_message_monitor.destroyed.connect(
+                lambda: setattr(self, "midi_message_monitor", None)
+            )
         self.midi_message_monitor.show()
         self.midi_message_monitor.raise_()
 

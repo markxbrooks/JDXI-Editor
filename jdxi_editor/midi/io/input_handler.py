@@ -191,10 +191,11 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-                log.error(
-                    f"Error in MIDI handler [{message.type}]: {type(ex).__name__}: {ex}",
-                    scope=self.__class__.__name__,
-                )
+            # message may still be the raw (bytes, delta) tuple here
+            log.error(
+                f"Error in MIDI handler [{message}]: {type(ex).__name__}: {ex}",
+                scope=self.__class__.__name__,
+            )
 
     def _emit_device_sysex_json(self, payload: str) -> None:
         """
@@ -284,11 +285,11 @@ class MidiInHandler(MidiIOController):
 
             if handler is None:
                 log.message(f"Unhandled MIDI message type: {message.type}")
-                return
+            else:
+                # Unified handler signature
+                handler(message, self.preset_data)
 
-            # Unified handler signature
-            handler(message, self.preset_data)
-
+            # Every message reaches the MIDI monitor, handled or not
             self.midi_message_incoming.emit(message)
 
         except Exception as ex:
