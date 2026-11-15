@@ -1,4 +1,6 @@
+import re
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Iterable, Optional
 
 
@@ -9,7 +11,7 @@ class InstrumentDescriptor:
     """
 
     category: str  # "synth" | "drum"
-    family: str  # e.g. "piano", "pad", "bass"
+    family: Optional[str]  # e.g. "piano", "pad", "bass"; None if unrecognized
     engine: Optional[str]  # e.g. "fm", "jd"
     raw_text: str  # original label (for logging/debug)
 
@@ -423,6 +425,14 @@ INSTRUMENT_FAMILY_SPECS = [
         ],
     ),
 ]
+
+
+@dataclass
+class EngineKeywordSpec:
+    engine: str
+    keywords: Iterable[str]
+
+
 ENGINE_KEYWORDS = {
     "jupiter": ["jupiter", "jp8", "jupiter8"],
     "fm": ["fm", "4op fm"],
@@ -480,3 +490,118 @@ def engine_image_basenames(name: str) -> tuple[str, ...]:
     if key in aliases:
         return aliases
     return (key, *aliases)
+
+
+# ---------------------------------------------------------------------------
+# Keyword matching
+# ---------------------------------------------------------------------------
+# Most keywords are matched as substrings on purpose: the JD-Xi truncates tone
+# names, so "S-SawStacLd1" has to be matched by "sawstac". Short keywords
+# cannot afford that -- "ep" would match "Sweep Pad 1" and "sh" would match
+# "WaveShapeLd1" -- so anything this short or shorter is matched on letter
+# boundaries instead. Digits may still sit next to it, so "tb" keeps matching
+# "Dist Flt TB1" and "101" keeps matching "SH-101 Bs".
+SHORT_KEYWORD_LENGTH = 3
+
+
+@lru_cache(maxsize=512)
+def _short_keyword_pattern(keyword: str) -> re.Pattern:
+    return re.compile(rf"(?<![a-z]){re.escape(keyword)}(?![a-z])")
+
+
+_CAMEL_SPLIT = (
+    re.compile(r"(?<=[a-z])(?=[A-Z])"),  # ResoPulseBs -> Reso Pulse Bs
+    re.compile(r"(?<=[A-Za-z])(?=\d)"),  # Bs1 -> Bs 1
+)
+
+
+def preset_match_texts(text: str) -> tuple[str, ...]:
+    """
+    Normalized forms of a preset label to match keywords against.
+
+    The JD-Xi runs tone names together to fit its display, and the two forms
+    pull in opposite directions: ``"S-SawStacLd1"`` needs the glued form for
+    the keyword ``sawstac``, while ``"ResoPulseBs1"`` needs the split form for
+    the keyword ``bs``. Both are returned, so a keyword matching either counts.
+
+    :param text: Preset label, with or without its index.
+    :return: The normalized label, plus its camel-case-split form when that
+        differs.
+    """
+    plain = preset_match_text(text)
+    split = text
+    for pattern in _CAMEL_SPLIT:
+        split = pattern.sub(" ", split)
+    split = preset_match_text(split)
+    return (plain,) if split == plain else (plain, split)
+
+
+def keyword_in(texts, keyword: str) -> bool:
+    """
+    Test whether *keyword* occurs in any of the normalized *texts*.
+
+    Keywords longer than :data:`SHORT_KEYWORD_LENGTH` match as substrings;
+    shorter ones have to sit on a letter boundary.
+
+    :param texts: Normalized preset text, or several forms of it (see
+        :func:`preset_match_texts`).
+    :param keyword: Keyword to look for, lower case.
+    :return: True when the keyword matches.
+    """
+    if isinstance(texts, str):
+        texts = (texts,)
+    keyword = keyword.lower()
+    if len(keyword) > SHORT_KEYWORD_LENGTH:
+        return any(keyword in text for text in texts)
+    pattern = _short_keyword_pattern(keyword)
+    return any(pattern.search(text) for text in texts)
+
+
+def any_keyword_in(texts, keywords: Iterable[str]) -> bool:
+    """
+    Test whether any of *keywords* occurs in *texts*.
+
+    :param texts: Normalized preset text, or several forms of it.
+    :param keywords: Keywords to look for.
+    :return: True when at least one keyword matches.
+    """
+    return any(keyword_in(texts, keyword) for keyword in keywords)
+
+
+# ---------------------------------------------------------------------------
+# Preset-specific artwork
+# ---------------------------------------------------------------------------
+_TRAILING_INDEX = re.compile(r"\s*\d+$")
+_JOINERS = (" ", "-", "_")
+
+
+def preset_image_basenames(text: str) -> tuple[str, ...]:
+    """
+    Candidate image basenames named after the preset itself.
+
+    The preset label, minus its index and trailing variant number, is offered
+    in the spellings artwork tends to use: ``"164: Trem EP 1"`` looks for
+    ``trem ep``, ``trem-ep``, ``trem_ep`` (and the same without punctuation).
+    Dropping a file named after a preset into the icon folder is therefore
+    enough to give that preset its own image -- no table to update here.
+
+    Only multi-word phrases are returned. A single word is far too broad to be
+    preset-specific ("bass", "lead"), and the engine and family lookups already
+    cover that case.
+
+    :param text: Preset label, with or without its index.
+    :return: Candidate basenames without extension, most specific first.
+    """
+    phrase = _TRAILING_INDEX.sub("", preset_match_text(text)).strip()
+    if not phrase:
+        return ()
+
+    candidates = []
+    for tokens in (phrase.split(), re.sub(r"[^a-z0-9\s]", "", phrase).split()):
+        if len(tokens) < 2:
+            continue
+        for joiner in _JOINERS:
+            candidate = joiner.join(tokens)
+            if candidate and candidate not in candidates:
+                candidates.append(candidate)
+    return tuple(candidates)
