@@ -237,3 +237,19 @@ def test_resetting_restores_the_built_in_map(dialog):
     assert dialog.cc_map == MINILAB3_FILTER_MAP
     assert dialog.remote.cc_map == MINILAB3_FILTER_MAP
     assert load_filter_map() == MINILAB3_FILTER_MAP
+
+
+def test_every_control_has_one_table_row_and_sources_match_defaults():
+    """The Mappings table covers each control once; a source means a default CC."""
+    from jdxi_editor.midi.io.controller_map import MINILAB3_FILTER_MAP, FilterControl
+    from jdxi_editor.ui.windows.midi.controller_config import (
+        CONTROL_SOURCES,
+        CONTROL_SPECS,
+    )
+
+    controls = [spec.control for spec in CONTROL_SPECS]
+    assert sorted(controls, key=lambda c: c.name) == sorted(
+        FilterControl, key=lambda c: c.name
+    )
+    assert set(CONTROL_SOURCES) == set(MINILAB3_FILTER_MAP.values())
+    assert len(set(CONTROL_SOURCES.values())) == len(CONTROL_SOURCES)

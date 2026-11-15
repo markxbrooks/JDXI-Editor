@@ -22,6 +22,7 @@ them right.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Optional
 
@@ -61,37 +62,47 @@ MONITOR_MAX_LINES = 500
 #: Entry in the port list meaning "every controller port, found automatically"
 AUTOMATIC_PORTS = "All controller ports (automatic)"
 
-#: Human-readable name for each filter control
-CONTROL_LABELS = {
-    FilterControl.CUTOFF: "Cutoff",
-    FilterControl.RESONANCE: "Resonance",
-    FilterControl.KEYFOLLOW: "Cutoff key follow",
-    FilterControl.ENV_DEPTH: "Envelope depth",
-    FilterControl.ENV_VELOCITY: "Envelope velocity sensitivity",
-    FilterControl.ENV_ATTACK: "Filter envelope attack",
-    FilterControl.ENV_DECAY: "Filter envelope decay",
-    FilterControl.ENV_SUSTAIN: "Filter envelope sustain",
-    FilterControl.ENV_RELEASE: "Filter envelope release",
-    FilterControl.EFFECT1_LEVEL: "Effect 1 level",
-    FilterControl.EFFECT2_LEVEL: "Effect 2 level",
-    FilterControl.DELAY_LEVEL: "Delay level",
-    FilterControl.REVERB_LEVEL: "Reverb level",
+
+@dataclass(frozen=True)
+class ControlLabelSpec:
+    """
+    How the Mappings table shows one control.
+
+    :param control: FilterControl the control
+    :param label: str human-readable name
+    :param source: str MiniLab 3 control that sends it by default, or "" if none
+    """
+
+    control: FilterControl
+    label: str
+    source: str = ""
+
+
+#: One row per control, in the order of the MiniLab 3 defaults
+CONTROL_SPECS: list[ControlLabelSpec] = [
+    ControlLabelSpec(FilterControl.CUTOFF, "Cutoff", source="Knob 1"),
+    ControlLabelSpec(FilterControl.RESONANCE, "Resonance", source="Knob 2"),
+    ControlLabelSpec(FilterControl.KEYFOLLOW, "Cutoff key follow", source="Knob 3"),
+    ControlLabelSpec(FilterControl.ENV_DEPTH, "Envelope depth", source="Knob 4"),
+    ControlLabelSpec(FilterControl.ENV_VELOCITY, "Envelope velocity sensitivity"),
+    ControlLabelSpec(FilterControl.ENV_ATTACK, "Filter envelope attack", source="Fader 1"),
+    ControlLabelSpec(FilterControl.ENV_DECAY, "Filter envelope decay", source="Fader 2"),
+    ControlLabelSpec(FilterControl.ENV_SUSTAIN, "Filter envelope sustain", source="Fader 3"),
+    ControlLabelSpec(FilterControl.ENV_RELEASE, "Filter envelope release", source="Fader 4"),
+    ControlLabelSpec(FilterControl.EFFECT1_LEVEL, "Effect 1 level", source="Knob 5"),
+    ControlLabelSpec(FilterControl.EFFECT2_LEVEL, "Effect 2 level", source="Knob 6"),
+    ControlLabelSpec(FilterControl.DELAY_LEVEL, "Delay level", source="Knob 7"),
+    ControlLabelSpec(FilterControl.REVERB_LEVEL, "Reverb level", source="Knob 8"),
+]
+
+#: Human-readable name for each control
+CONTROL_LABELS: Dict[FilterControl, str] = {
+    spec.control: spec.label for spec in CONTROL_SPECS
 }
 
 #: Which hardware control usually sends it, for the table
-CONTROL_SOURCES = {
-    FilterControl.CUTOFF: "Knob 1",
-    FilterControl.RESONANCE: "Knob 2",
-    FilterControl.KEYFOLLOW: "Knob 3",
-    FilterControl.ENV_DEPTH: "Knob 4",
-    FilterControl.ENV_ATTACK: "Fader 1",
-    FilterControl.ENV_DECAY: "Fader 2",
-    FilterControl.ENV_SUSTAIN: "Fader 3",
-    FilterControl.ENV_RELEASE: "Fader 4",
-    FilterControl.EFFECT1_LEVEL: "Knob 5",
-    FilterControl.EFFECT2_LEVEL: "Knob 6",
-    FilterControl.DELAY_LEVEL: "Knob 7",
-    FilterControl.REVERB_LEVEL: "Knob 8",
+CONTROL_SOURCES: Dict[FilterControl, str] = {
+    spec.control: spec.source for spec in CONTROL_SPECS if spec.source
 }
 
 
