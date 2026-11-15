@@ -78,6 +78,7 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.controller_settings import load_filter_map
 from jdxi_editor.midi.io.external_controller import ExternalControllerInput
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
@@ -129,6 +130,7 @@ from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
+from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
@@ -1203,7 +1205,11 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         self.external_controller = ExternalControllerInput(self)
-        self.filter_remote = FilterRemote(self._current_editor_tab)
+        # Whatever was learnt in the MIDI Controller dialog, falling back to
+        # the built-in MiniLab 3 map
+        self.filter_remote = FilterRemote(
+            self._current_editor_tab, cc_map=load_filter_map()
+        )
         self.external_controller.control_changed.connect(
             self._on_external_control_change,
             Qt.ConnectionType.QueuedConnection,
@@ -1233,6 +1239,23 @@ class JDXiInstrument(JDXiWindow):
         if self.main_editor is None:
             return None
         return self.main_editor.editor_tab_widget.currentWidget()
+
+    def _show_midi_controller_config(self) -> None:
+        """Open the hardware controller configuration window"""
+        # Pick up a controller plugged in since the last scan
+        self.external_controller.rescan()
+        if not self.midi_controller_config:
+            self.midi_controller_config = MidiControllerDialog(
+                external_controller=self.external_controller,
+                filter_remote=self.filter_remote,
+                parent=self,
+            )
+            self.midi_controller_config.setAttribute(Qt.WA_DeleteOnClose)
+            self.midi_controller_config.destroyed.connect(
+                lambda: setattr(self, "midi_controller_config", None)
+            )
+        self.midi_controller_config.show()
+        self.midi_controller_config.raise_()
 
     def _show_midi_message_monitor(self) -> None:
         """Open MIDI message monitor window"""

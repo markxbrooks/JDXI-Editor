@@ -74,6 +74,7 @@ class JDXiWindow(QMainWindow):
         self.log_viewer = None
         self.midi_debugger = None
         self.midi_message_monitor = None
+        self.midi_controller_config = None
         self.old_pos = None
         # JDXi.UI.Theme.apply_dark_theme()
         self.preset_helpers = None
@@ -310,6 +311,15 @@ class JDXiWindow(QMainWindow):
                 "&MIDI Configuration...",
                 self._show_midi_config,
                 "Ctrl+Shift+M",
+            )
+        )
+
+        edit_menu.addAction(
+            self._menu_action(
+                "MIDI &Controller...",
+                self._show_midi_controller_config,
+                "Ctrl+Shift+K",
+                status_tip="Set up a hardware controller to drive the filter",
             )
         )
 

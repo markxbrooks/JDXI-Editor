@@ -13,8 +13,12 @@ Classes:
 Features:
 ---------
 - Dark theme with a modern red-accented styling.
-- Automatically reads and displays the log file written by Decologr.
-- Refreshes periodically to show new log entries.
+- Automatically reads and displays the log file written by Decologr. Each run
+  writes a file named after the time it started, rotated at 1MB, so the file to
+  read is taken from the installed log handler rather than from a fixed path
+  (see :func:`resolve_log_file`).
+- Refreshes periodically to show new log entries, and follows the file across
+  rotation.
 - Provides a "Clear Log" button to reset the log digital.
 - Auto-scrolls to the bottom to show the latest entries.
 
@@ -25,13 +29,56 @@ Usage Example:
 
 """
 
+import logging
 from pathlib import Path
+from typing import Optional
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTextEdit
 
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
+
+
+def log_directory() -> Path:
+    """
+    Directory Decologr writes log files to.
+
+    :return: Path
+    """
+    return Path.home() / f".{__package_name__}" / "logs"
+
+
+def resolve_log_file(log_dir: Optional[Path] = None) -> Optional[Path]:
+    """
+    The log file currently being written.
+
+    Decologr names each run's file after the time it started
+    (``jdxi_editor-01Feb2026-10-32-09.log``) and rotates it at 1MB, so there is
+    no file at a fixed path to open. The handler installed by ``setup_logging``
+    knows the name, so it is asked first; failing that, the newest file in the
+    log directory is used, preferring one that is not a rotated backup.
+
+    :param log_dir: Optional[Path] directory to search; defaults to
+        :func:`log_directory`
+    :return: Optional[Path] the log file, or None if there is none
+    """
+    for handler in logging.getLogger().handlers:
+        base_filename = getattr(handler, "baseFilename", None)
+        if base_filename:
+            return Path(base_filename)
+
+    directory = log_directory() if log_dir is None else log_dir
+    try:
+        candidates = [path for path in directory.glob("*.log*") if path.is_file()]
+    except OSError:
+        return None
+    if not candidates:
+        return None
+    # Rotation renames the live file to "....log.1" and opens a new ".log", so
+    # a plain ".log" is the one being written to even when a backup is newer.
+    current = [path for path in candidates if path.suffix == ".log"]
+    return max(current or candidates, key=lambda path: path.stat().st_mtime)
 
 
 class LogViewer(QMainWindow):
@@ -43,9 +90,7 @@ class LogViewer(QMainWindow):
         # Apply dark theme styling
         self.setStyleSheet(JDXi.UI.Style.LOG_VIEWER)
 
-        # Determine log file path (Decologr writes to ~/.{package_name}/logs/{package_name}.log)
-        log_dir = Path.home() / f".{__package_name__}" / "logs"
-        self.log_file = log_dir / f"{__package_name__}.log"
+        self.log_file = resolve_log_file()
 
         # Track the last position we read from in the file
         self.last_position = 0
@@ -92,50 +137,79 @@ class LogViewer(QMainWindow):
 
     def load_log_file(self):
         """Load the entire log file into the text widget"""
-        if self.log_file.exists():
-            try:
-                with open(self.log_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    self.log_text.setPlainText(content)
-                    self.last_position = len(content)
-                    # Scroll to bottom
-                    cursor = self.log_text.textCursor()
-                    cursor.movePosition(cursor.MoveOperation.End)
-                    self.log_text.setTextCursor(cursor)
-            except Exception as e:
-                self.log_text.setPlainText(
-                    f"Error reading log file: {e}\n\nLog file path: {self.log_file}"
-                )
-        else:
+        if self.log_file is None or not self.log_file.exists():
+            self.log_text.setPlainText(self._no_log_file_message())
+            return
+        try:
+            with open(self.log_file, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+                self.log_text.setPlainText(content)
+                self.last_position = f.tell()
+                self._scroll_to_end()
+            self.setWindowTitle(f"Log Viewer - {self.log_file.name}")
+        except OSError as ex:
             self.log_text.setPlainText(
-                f"Log file not found.\n\nExpected location: {self.log_file}"
+                f"Error reading log file: {ex}\n\nLog file path: {self.log_file}"
             )
+
+    def _no_log_file_message(self) -> str:
+        """
+        What to show when there is no log file to read.
+
+        :return: str
+        """
+        directory = log_directory()
+        message = [
+            "No log file found.",
+            "",
+            f"Log directory: {directory}",
+        ]
+        if not directory.exists():
+            message.append("")
+            message.append("The directory does not exist yet; it is created when")
+            message.append("logging starts.")
+        return "\n".join(message)
+
+    def _scroll_to_end(self) -> None:
+        """
+        Scroll the view to the newest entry.
+
+        :return: None
+        """
+        cursor = self.log_text.textCursor()
+        cursor.movePosition(cursor.MoveOperation.End)
+        self.log_text.setTextCursor(cursor)
 
     def refresh_log_file(self):
         """Read new lines from the log file and append them"""
-        if not self.log_file.exists():
-            return
+        if self.log_file is None or not self.log_file.exists():
+            # The file is only named once per run, so a missing one means
+            # logging has only just started, or the file was rotated away
+            self.log_file = resolve_log_file()
+            if self.log_file is None:
+                return
+            self.last_position = 0
 
         try:
-            with open(self.log_file, "r", encoding="utf-8") as f:
-                # Seek to last position
+            # Rotation moves the file that was being read to "....log.1" and
+            # starts a new one, which is shorter: carry on reading from where
+            # the old file ended and nothing would ever appear again
+            if self.log_file.stat().st_size < self.last_position:
+                self.load_log_file()
+                return
+
+            with open(self.log_file, "r", encoding="utf-8", errors="replace") as f:
                 f.seek(self.last_position)
-                # Read new content
                 new_content = f.read()
                 if new_content:
-                    # Append new content
                     self.log_text.moveCursor(
                         self.log_text.textCursor().MoveOperation.End
                     )
                     self.log_text.insertPlainText(new_content)
-                    # Update position
                     self.last_position = f.tell()
-                    # Scroll to bottom
-                    cursor = self.log_text.textCursor()
-                    cursor.movePosition(cursor.MoveOperation.End)
-                    self.log_text.setTextCursor(cursor)
-        except Exception:
-            # Silently ignore errors (file might be locked or deleted)
+                    self._scroll_to_end()
+        except OSError:
+            # The file may be locked or have just been rotated away
             pass
 
     def toggle_refresh_mode(self):
