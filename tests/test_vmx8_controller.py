@@ -177,3 +177,77 @@ def test_status_information_is_shown_in_the_window(qapp, store):
         assert "Listening to: SINCO VMX8-Private" in dialog.information_text.toPlainText()
     finally:
         dialog.close()
+
+
+def _press(control: int, value: int = 127):
+    import mido
+
+    return mido.Message("control_change", channel=0, control=control, value=value)
+
+
+def test_transport_tab_shows_learns_and_applies_buttons(qapp, store):
+    from jdxi_editor.midi.io.controller_map import TransportAction
+    from jdxi_editor.midi.io.controller_settings import load_transport_specs
+    from jdxi_editor.midi.playback.transport_input import TransportInputMapper
+    from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
+
+    stops = []
+    # the MIDI File player's mapper, using the saved bindings
+    mapper = TransportInputMapper(on_stop=lambda: stops.append("stop"))
+    dialog = MidiControllerDialog(external_controller=StubController(VMX8))
+    try:
+        assert dialog.tabs.tabText(dialog.tabs.count() - 1) == "Transport"
+        assert dialog.transport_table.item(0, 1).text() == "Note 94, CC 52"  # Play
+        assert dialog.transport_table.item(2, 1).text() == "not set"  # Stop
+
+        dialog._on_message("SINCO VMX8-Private", _press(52))
+        assert dialog.last_transport_label.text() == "Last button: Play (CC 52)"
+
+        # learn: the next press (not its release) becomes a Stop button
+        dialog.start_transport_learn(TransportAction.STOP)
+        dialog._on_message("SINCO VMX8-Private", _press(57, 0))  # a release: ignored
+        assert dialog._learning_transport is TransportAction.STOP
+        dialog._on_message("SINCO VMX8-Private", _press(57))
+        assert dialog._learning_transport is None
+        assert dialog.transport_table.item(2, 1).text() == "CC 57"
+        assert ("cc", 57) in {(s.kind, s.number) for s in load_transport_specs(profile=VMX8)}
+
+        # the running player picks it up without a restart
+        mapper.handle_message(_press(57))
+        assert stops == ["stop"]
+
+        # a button does one thing: learning CC 52 for Pause takes it from Play
+        dialog.start_transport_learn(TransportAction.PAUSE)
+        dialog._on_message("SINCO VMX8-Private", _press(52))
+        assert dialog.transport_table.item(0, 1).text() == "Note 94"
+        assert dialog.transport_table.item(1, 1).text() == "Note 93, CC 53, CC 52"
+
+        dialog.clear_transport_action(TransportAction.PAUSE)
+        assert dialog.transport_table.item(1, 1).text() == "not set"
+
+        dialog.reset_transport()
+        assert tuple(dialog.transport_specs) == VMX8.transport
+        assert load_transport_specs(profile=VMX8) == VMX8.transport
+        assert dialog.transport_table.item(0, 1).text() == "Note 94, CC 52"
+
+        # browsing the MiniLab shows its own buttons
+        dialog.preset_combo.setCurrentIndex(dialog.preset_combo.findData("minilab3"))
+        assert dialog.transport_table.item(2, 1).text() == "CC 106"
+    finally:
+        dialog.close()
+
+
+def test_filter_learn_ignores_transport_learn_and_vice_versa(qapp, store):
+    from jdxi_editor.midi.io.controller_map import TransportAction
+    from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
+
+    dialog = MidiControllerDialog(external_controller=StubController(VMX8))
+    try:
+        dialog.start_learn(FilterControl.CUTOFF)
+        dialog.start_transport_learn(TransportAction.STOP)  # cancels the filter learn
+        assert dialog._learning is None
+        before = dict(dialog.cc_map)
+        dialog._on_message("SINCO VMX8-Private", _press(60))
+        assert dialog.cc_map == before  # the press went to the transport, not the filter
+    finally:
+        dialog.close()

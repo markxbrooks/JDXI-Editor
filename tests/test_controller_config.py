@@ -143,7 +143,7 @@ def test_an_unusable_stored_value_is_ignored(store):
 # ----------------------------------------------------------------------
 def test_the_dialog_has_the_three_tabs(dialog):
     tabs = [dialog.tabs.tabText(i) for i in range(dialog.tabs.count())]
-    assert tabs == ["Connection", "Monitor", "Mappings"]
+    assert tabs == ["Connection", "Monitor", "Mappings", "Transport"]
 
 
 def test_every_filter_control_has_a_row(dialog):
