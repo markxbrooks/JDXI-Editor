@@ -708,6 +708,82 @@ def test_engine_rejects_midi_type_2():
         engine.load_file(mid)
 
 
+def test_engine_wall_seconds_until_next_due(clock):
+    """Deadline helper reports delay to the next event and inf when stopped."""
+    import math
+
+    engine, _ = _loaded_engine()
+    assert engine.wall_seconds_until_next_due() == math.inf
+    engine.start(0)
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.0)  # note at t=0
+    clock.now = 1000.1
+    engine.process_until_now()
+    # Next musical event at 0.5 s; position 0.1 s → 0.4 s wall at speed 1
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.4, abs=1e-6)
+    engine.set_speed(2.0)
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.2, abs=1e-6)
+
+
+def _make_rpn_pitch_bend_sensitivity_midi():
+    """RPN 0,0 (pitch-bend sensitivity) = 12 semitones at tick 0; note later."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    track = MidiTrack()
+    mid.tracks.append(track)
+    track.append(MetaMessage("set_tempo", tempo=500000, time=0))
+    # Select RPN 0,0 then Data Entry MSB=12
+    track.append(Message("control_change", control=101, value=0, channel=0, time=0))
+    track.append(Message("control_change", control=100, value=0, channel=0, time=0))
+    track.append(Message("control_change", control=6, value=12, channel=0, time=0))
+    track.append(Message("control_change", control=38, value=0, channel=0, time=0))
+    # Null RPN
+    track.append(Message("control_change", control=101, value=127, channel=0, time=0))
+    track.append(Message("control_change", control=100, value=127, channel=0, time=0))
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=480))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=480))
+    return mid
+
+
+def _cc_seq(messages):
+    """Extract (control, value) pairs for control-change messages."""
+    return [
+        (m.control, m.value)
+        for m in messages
+        if m.type == "control_change"
+    ]
+
+
+def test_engine_seek_chases_rpn_in_order(clock):
+    """Seeking past an RPN restores select + data-entry in the correct order."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.start(600)
+    ccs = _cc_seq(received)
+    # RPN MSB/LSB, Data Entry MSB/LSB, then null RPN
+    assert ccs[:4] == [(101, 0), (100, 0), (6, 12), (38, 0)]
+    assert ccs[4:6] == [(101, 127), (100, 127)]
+
+
+def test_engine_seek_backwards_restores_rpn_default(clock):
+    """Backwards seek past pitch-bend sensitivity restores the GM default of 2."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.seek_tick(0)
+    ccs = _cc_seq(received)
+    assert (101, 0) in ccs and (100, 0) in ccs
+    assert (6, 2) in ccs  # default sensitivity
+    idx = ccs.index((101, 0))
+    assert ccs[idx : idx + 4] == [(101, 0), (100, 0), (6, 2), (38, 0)]
+
+
+def test_engine_rpn_chase_respects_cc_suppression(clock):
+    """suppress_control_changes skips RPN restoration."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.suppress_control_changes = True
+    engine.start(600)
+    assert _cc_seq(received) == []
+
+
 def test_engine_loop_multi_wrap_recovers_long_stall(clock):
     """A stall longer than two loop lengths keeps the remainder overshoot."""
     engine, received = _loaded_engine()

@@ -2,8 +2,8 @@
 MIDI File Transport Controller
 
 Single owner of MIDI file playback state. Wraps a PlaybackEngine and handles:
-- Play / pause / stop / seek, with the name as the only clock
-- Driving the name from a dedicated thread with a precise timer
+- Play / pause / stop / seek, with the engine as the only clock
+- Driving the engine from a deadline-based PlaybackScheduler thread
 - Publishing state, position, tempo and end-of-song as Qt signals
 
 UI code calls the transport methods and listens to the signals; it never
@@ -20,52 +20,13 @@ import threading
 from typing import Callable, Optional
 
 import mido
-from decologr import Decologr as log
-from PySide6.QtCore import QCoreApplication, QObject, Qt, QThread, QTimer, Signal
+from PySide6.QtCore import QCoreApplication, QObject, QTimer, Signal
 
 from jdxi_editor.midi.playback.activity import playback_activity
 from picomidi.playback.engine import PlaybackEngine, TransportState
+from picomidi.playback.scheduler import PlaybackScheduler
 
-SCHEDULER_INTERVAL_MS = 5
 POSITION_INTERVAL_MS = 50
-
-
-class _SchedulerThread(QThread):
-    """Calls name.process_until_now() on a precise timer in its own thread."""
-
-    ended = Signal()
-
-    def __init__(
-        self,
-        engine: PlaybackEngine,
-        lock: threading.RLock,
-        interval_ms: int,
-        parent: Optional[QObject] = None,
-    ):
-        super().__init__(parent)
-        self._engine = engine
-        self._lock = lock
-        self._interval_ms = interval_ms
-
-    def run(self) -> None:
-        """Run a timer owned by this thread until quit() is called."""
-        timer = QTimer()
-        timer.setTimerType(Qt.TimerType.PreciseTimer)
-        timer.setInterval(self._interval_ms)
-        timer.timeout.connect(self._tick, Qt.ConnectionType.DirectConnection)
-        timer.start()
-        self.exec()
-        timer.stop()
-
-    def _tick(self) -> None:
-        try:
-            with self._lock:
-                ended = self._engine.process_until_now()
-        except Exception as ex:
-            log.error(f"Error during MIDI playback: {ex}")
-            return
-        if ended:
-            self.ended.emit()
 
 
 class TransportController(QObject):
@@ -85,14 +46,18 @@ class TransportController(QObject):
     tempo_changed = Signal(int)
     finished = Signal()
     loop_changed = Signal()
+    # Cross-thread: scheduler thread -> Qt main thread for EOF handling
+    _scheduler_ended = Signal()
 
     def __init__(
         self,
         engine: Optional[PlaybackEngine] = None,
         send: Optional[Callable[[mido.Message], None]] = None,
         parent: Optional[QObject] = None,
-        scheduler_interval_ms: int = SCHEDULER_INTERVAL_MS,
         position_interval_ms: int = POSITION_INTERVAL_MS,
+        scheduler_max_sleep_s: float = 1.0,
+        # Kept for call-site compatibility; fixed-interval polling is gone.
+        scheduler_interval_ms: int = 5,
     ):
         """
         Initialize the transport.
@@ -100,10 +65,12 @@ class TransportController(QObject):
         :param engine: PlaybackEngine to drive. If not provided, creates one
         :param send: Callable that sends a mido.Message to the instrument
         :param parent: Optional QObject parent
-        :param scheduler_interval_ms: How often due events are sent
         :param position_interval_ms: How often position_changed is emitted while playing
+        :param scheduler_max_sleep_s: Cap on one scheduler wait between deadlines
+        :param scheduler_interval_ms: Ignored (legacy); deadlines replace polling
         """
         super().__init__(parent)
+        del scheduler_interval_ms  # legacy kw-only compatibility
         self.engine = engine or PlaybackEngine()
         self.send = send
         self.engine.on_event = self._on_engine_event
@@ -112,10 +79,11 @@ class TransportController(QObject):
         self._loaded = False
         self._last_state = self.engine.state
         self._last_tempo: Optional[int] = None
-        self._scheduler: Optional[_SchedulerThread] = None
-        self._scheduler_interval_ms = scheduler_interval_ms
+        self._scheduler: Optional[PlaybackScheduler] = None
+        self._scheduler_max_sleep_s = scheduler_max_sleep_s
         self._loop_range_ticks: Optional[tuple[int, int]] = None
 
+        self._scheduler_ended.connect(self._on_scheduler_ended)
         self._position_timer = QTimer(self)
         self._position_timer.setInterval(position_interval_ms)
         self._position_timer.timeout.connect(self._emit_position)
@@ -179,7 +147,7 @@ class TransportController(QObject):
 
     def load(self, midi_file: mido.MidiFile, keep_position: bool = False) -> None:
         """
-        Load *midi_file* into the name.
+        Load *midi_file* into the engine.
 
         :param midi_file: File to play
         :param keep_position: Keep the current position (in ticks, so a tempo
@@ -203,6 +171,7 @@ class TransportController(QObject):
                     self.engine.pause()
         self._loaded = True
         self._last_tempo = None
+        self._wake_scheduler()
         self._after_command()
         self.loop_changed.emit()
 
@@ -222,6 +191,7 @@ class TransportController(QObject):
                     self.engine.seek_tick(0)
                 self.engine.start(self.engine.start_tick)
         self._ensure_scheduler()
+        self._wake_scheduler()
         self._after_command()
         return True
 
@@ -229,6 +199,7 @@ class TransportController(QObject):
         """Pause, keeping the position; sounding notes are released."""
         with self._lock:
             self.engine.pause()
+        self._wake_scheduler()
         self._after_command()
 
     def toggle_play_pause(self) -> None:
@@ -245,12 +216,14 @@ class TransportController(QObject):
             if self._loaded:
                 self.engine.all_notes_off()
             self.engine.seek_tick(0)
+        self._wake_scheduler()
         self._after_command()
 
     def seek_seconds(self, seconds: float) -> None:
         """Move to *seconds* without changing the play/pause/stop state."""
         with self._lock:
             self.engine.seek_seconds(seconds)
+        self._wake_scheduler()
         self._after_command()
 
     def set_loop(
@@ -275,6 +248,7 @@ class TransportController(QObject):
                 )
             self.engine.set_loop(enabled, loop_range)
             self._loop_range_ticks = self.engine.loop_range
+        self._wake_scheduler()
         self.loop_changed.emit()
 
     def clear_loop_range(self) -> None:
@@ -282,6 +256,7 @@ class TransportController(QObject):
         with self._lock:
             self.engine.set_loop(self.engine.loop_enabled, None)
             self._loop_range_ticks = None
+        self._wake_scheduler()
         self.loop_changed.emit()
 
     def set_speed(self, speed: float) -> None:
@@ -289,12 +264,14 @@ class TransportController(QObject):
         with self._lock:
             self.engine.set_speed(speed)
         self._last_tempo = None  # Re-announce the tempo for the new speed
+        self._wake_scheduler()
         self._emit_position()
 
     def set_send_clock(self, enabled: bool) -> None:
         """Send MIDI clock, Start/Stop/Continue and Song Position Pointer."""
         with self._lock:
             self.engine.set_send_clock(enabled)
+        self._wake_scheduler()
 
     def panic(self) -> None:
         """Send note-offs and All Sound Off / All Notes Off on every channel."""
@@ -314,6 +291,7 @@ class TransportController(QObject):
                 self.engine.mute_track(track_index, track_index in muted_tracks)
             for channel in range(16):
                 self.engine.mute_channel(channel, channel in muted_channels)
+        self._wake_scheduler()
 
     def set_track_velocity_scales(self, scales: dict[int, float]) -> None:
         """
@@ -382,8 +360,7 @@ class TransportController(QObject):
         self._position_timer.stop()
         playback_activity().set_playing(self, False)
         if self._scheduler is not None:
-            self._scheduler.quit()
-            self._scheduler.wait()
+            self._scheduler.stop()
             self._scheduler = None
 
     # --- Internals ----------------------------------------------------------
@@ -393,13 +370,23 @@ class TransportController(QObject):
             self.send(msg)
 
     def _ensure_scheduler(self) -> None:
-        if self._scheduler is not None and self._scheduler.isRunning():
+        if self._scheduler is not None and self._scheduler.is_running:
             return
-        self._scheduler = _SchedulerThread(
-            self.engine, self._lock, self._scheduler_interval_ms
+        self._scheduler = PlaybackScheduler(
+            self.engine,
+            lock=self._lock,
+            on_ended=self._on_scheduler_ended_from_thread,
+            max_sleep_s=self._scheduler_max_sleep_s,
         )
-        self._scheduler.ended.connect(self._on_scheduler_ended)
         self._scheduler.start()
+
+    def _wake_scheduler(self) -> None:
+        if self._scheduler is not None:
+            self._scheduler.wake()
+
+    def _on_scheduler_ended_from_thread(self) -> None:
+        """EOF callback from the scheduler thread; marshal onto the Qt thread."""
+        self._scheduler_ended.emit()
 
     def _on_scheduler_ended(self) -> None:
         """End of file reached (queued from the scheduler thread)."""
