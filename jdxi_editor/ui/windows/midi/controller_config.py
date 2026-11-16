@@ -126,6 +126,8 @@ class MidiControllerDialog(QMainWindow):
         :param parent: Optional[QWidget] parent widget
         """
         super().__init__(parent)
+        self.preset_combo: QComboBox | None = None
+        self.port_combo: QComboBox | None = None
         self.setWindowTitle("MIDI Controller")
         self.setMinimumSize(640, 560)
         self.external_controller = external_controller
@@ -196,30 +198,29 @@ class MidiControllerDialog(QMainWindow):
 
         :return: QWidget
         """
+        connection, information_group, tab = self._create_connection_tab_widgets()
+
+        create_layout_with_items(parent=information_group, vertical=True, items=[self.information_text])
+        _layout = create_layout_with_items(parent=tab,
+                                           items=[connection, information_group],
+                                           vertical=True,
+                                           start_stretch=False,
+                                           end_stretch=False)
+        return tab
+
+    def _create_connection_tab_widgets(self) -> tuple[QGroupBox, QGroupBox, QWidget]:
+        """
+        _create_connection_tab_widgets
+
+        :return: tuple[QGroupBox, QWidget, QGroupBox]
+        """
         tab = QWidget()
         connection = QGroupBox("MIDI Connection")
+        self.status_label = QLabel("Not connected")
+        information_group = QGroupBox("MIDI Information")
 
-        self.preset_combo = QComboBox()
-        for profile in CONTROLLER_PROFILES:
-            self.preset_combo.addItem(profile.label, profile.profile_id)
-        self.preset_combo.setCurrentIndex(
-            max(0, self.preset_combo.findData(self.profile.profile_id))
-        )
-        self.preset_combo.currentIndexChanged.connect(
-            lambda _index: self.select_profile(self.preset_combo.currentData())
-        )
-        self.preset_combo.setToolTip(
-            "The controller whose mappings the Mappings tab shows and edits; "
-            "the one plugged in is selected when this window opens. Each "
-            "controller keeps its own learnt mappings."
-        )
-
-        self.port_combo = QComboBox()
-        self.port_combo.setMinimumWidth(260)
-        self.port_combo.setToolTip(
-            "Automatic listens to every port the controller exposes, which is "
-            "what you want unless you are using a different device."
-        )
+        self.create_preset_combo()
+        self.create_port_combo()
 
         action_items = self._create_action_item_buttons()
 
@@ -231,21 +232,45 @@ class MidiControllerDialog(QMainWindow):
                                            start_stretch=False,
                                            end_stretch=False)
 
-        self.status_label = QLabel("Not connected")
-
         _form = self._create_midi_controller_form(actions, connection)
         # update_status() writes here. The text edit must be added to the
         # group's own layout: a second layout on the group is rejected by Qt,
         # leaving the text edit parentless and never shown.
         self.information_text = create_text_edit(readonly=True)
-        information_group = QGroupBox("MIDI Information")
-        QVBoxLayout(information_group).addWidget(self.information_text)
-        _layout = create_layout_with_items(parent=tab,
-                                           items=[connection, information_group],
-                                           vertical=True,
-                                           start_stretch=False,
-                                           end_stretch=False)
-        return tab
+        return connection, information_group, tab
+
+    def create_port_combo(self):
+        self.port_combo = QComboBox()
+        self.port_combo.setMinimumWidth(260)
+        self.port_combo.setToolTip(
+            "Automatic listens to every port the controller exposes, which is "
+            "what you want unless you are using a different device."
+        )
+
+    def create_preset_combo(self):
+        self.preset_combo = QComboBox()
+        self._preset_combo_populate()
+        self._preset_combo_set_current_index()
+        self._preset_combo_current_index_changed_connect()
+        self.preset_combo.setToolTip(
+            "The controller whose mappings the Mappings tab shows and edits; "
+            "the one plugged in is selected when this window opens. Each "
+            "controller keeps its own learnt mappings."
+        )
+
+    def _preset_combo_current_index_changed_connect(self):
+        self.preset_combo.currentIndexChanged.connect(
+            lambda _index: self.select_profile(self.preset_combo.currentData())
+        )
+
+    def _preset_combo_set_current_index(self):
+        self.preset_combo.setCurrentIndex(
+            max(0, self.preset_combo.findData(self.profile.profile_id))
+        )
+
+    def _preset_combo_populate(self):
+        for profile in CONTROLLER_PROFILES:
+            self.preset_combo.addItem(profile.label, profile.profile_id)
 
     def _create_action_item_buttons(self) -> list[Any]:
         """_create_action_item_buttons"""
@@ -315,8 +340,6 @@ class MidiControllerDialog(QMainWindow):
         :return: QWidget
         """
         tab = QWidget()
-        layout = QVBoxLayout(tab)
-
         self.mappings_table = QTableWidget()
         self.mappings_table.setColumnCount(4)
         self.mappings_table.setHorizontalHeaderLabels(
@@ -328,26 +351,27 @@ class MidiControllerDialog(QMainWindow):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         self.mappings_table.verticalHeader().setVisible(False)
-        layout.addWidget(self.mappings_table)
-
         hint = QLabel(
             "Press Learn, then move the knob or fader you want for that "
             "control. Mappings are saved as you set them."
         )
         hint.setWordWrap(True)
-        layout.addWidget(hint)
 
-        bar = QHBoxLayout()
         self.cancel_learn_button = QPushButton("Cancel Learn")
         self.cancel_learn_button.clicked.connect(self.cancel_learn)
         self.cancel_learn_button.setEnabled(False)
-        bar.addWidget(self.cancel_learn_button)
-        bar.addStretch()
+
         reset = QPushButton("Reset to Defaults")
         reset.clicked.connect(self.reset_mappings)
-        bar.addWidget(reset)
-        layout.addLayout(bar)
 
+        bar = create_layout_with_items(vertical=False, items=[self.cancel_learn_button, reset])
+
+        _layout = create_layout_with_items(parent=tab,
+                                           vertical=True,
+                                           items=[self.mappings_table, hint, bar],
+                                           start_stretch=False,
+                                           end_stretch=False,
+                                           middle_stretch=False)
         self._build_mappings_table()
         return tab
 
@@ -361,6 +385,7 @@ class MidiControllerDialog(QMainWindow):
         controls = list(FilterControl)
         self.mappings_table.setRowCount(len(controls))
         for row, control in enumerate(controls):
+
             name = QTableWidgetItem(CONTROL_LABELS.get(control, control.name))
             name.setFlags(name.flags() & ~Qt.ItemIsEditable)
             self.mappings_table.setItem(row, 0, name)
