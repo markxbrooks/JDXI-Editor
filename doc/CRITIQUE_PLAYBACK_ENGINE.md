@@ -1249,3 +1249,483 @@ The next logical step is to implement Phase 1 against your actual `PlaybackEngin
 Would you like me to work through that implementation as a minimal, testable patch?
 
 🎹Review Phase 1 MIDI implementationTap to set up
+
+# Post Review Phase 1-4
+
+# **PlaybackEngine — technical review**
+
+**This is a substantial improvement over the previous version.** The engine now has a much stronger foundation: periodic controller snapshots, per-track repeated-note accounting, pause/resume controller chasing, explicit Type 2 rejection, track transformations, and deadline-based scheduling.
+
+However, I would not yet consider the implementation fully reliable for live MIDI playback. There are several remaining state-management problems, particularly around controller chasing, output-state tracking, and changing track arrangements during playback.
+
+My overall assessment: **good architectural progress, but a few important correctness defects remain before I would build further features on top of it.**
+
+## **1. What has improved**
+
+| Area                 | Assessment                                                        |
+| -------------------- | ----------------------------------------------------------------- |
+| Event scheduling     | Good: merged absolute-tick timeline and cached event times        |
+| Tempo map            | Good: segment-wise conversion                                     |
+| Controller snapshots | Good improvement for seek performance                             |
+| Repeated notes       | Improved: per-track outstanding note counts                       |
+| Pause/resume         | Improved: controller chase without restarting notes               |
+| Lifecycle cleanup    | Improved: release notes during reset and file loading             |
+| MIDI clock           | Improved: incremental pulse scheduling                            |
+| Looping              | Improved: handles scheduler overshoot across multiple loops       |
+| Track arrangement    | Useful additions: transpose, channel mapping, velocity and volume |
+| MIDI Type 2          | Correctly rejected rather than incorrectly merged                 |
+
+The snapshot implementation is particularly worthwhile. `_controller_state_before()` now starts from a preceding snapshot and replays only the remaining events, rather than scanning the entire event history.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+Pasted markdown(20261116-043828).md
+
+
+
+The repeated-note accounting is also a meaningful improvement: `_held_notes` now records outstanding note-on counts per track rather than simply recording whether a track owns a pitch.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+Pasted markdown(20261116-043828).md
+
+
+
+## **2. Important correctness issues**
+
+These are the areas I would address before considering Phase 1 complete.
+
+### **2.1 Controller chasing loses information when tracks share a channel**
+
+High priority
+
+This is probably the most significant remaining issue.
+
+The controller-state representation is:
+
+```
+state: dict[tuple, tuple[int, int]]
+```
+
+The key is effectively:
+
+```
+("cc", channel, controller)
+```
+
+and the value contains:
+
+```
+(value, track_index)
+```
+
+Consequently, only the last event for a given channel/controller combination survives. This is reasonable if you are modelling the final state of a channel, but it becomes problematic when track muting or channel remapping is involved.
+
+Consider:
+
+| Tick | Track   | Channel | CC7 volume |
+| ---- | ------- | ------- | ---------- |
+| 100  | Track A | 1       | 100        |
+| 200  | Track B | 1       | 70         |
+| 300  | Track A | 1       | 90         |
+
+At tick 250, Track B owns the latest state. At tick 350, Track A owns it.
+
+Now mute Track A and seek to tick 350.
+
+The current implementation finds Track A's value of 90, discards it because Track A is muted, and has no retained record of Track B's earlier value of 70.
+
+The resulting controller state is wrong.
+
+This follows directly from the single-value-per-key snapshot representation and the filtering in `_chase()`.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+Pasted markdown(20261116-043828).md
+
+
+
+**Recommendation**
+
+Retain controller history independently for each track and source channel, then resolve the effective output-channel state after applying:
+
+1. Track mute.
+2. Channel remapping.
+3. Event ordering.
+4. Controller suppression.
+
+For example, the internal representation could be conceptually:
+
+```
+(track_index, source_channel, controller) -> value
+```
+
+The final output state is then resolved from the eligible track states.
+
+This also needs to account for two tracks being remapped onto the same output channel.
+
+I would fix this before extending the controller-chase functionality.
+
+### **2.2 Clearing the sent-controller cache does not reset the synthesizer**
+
+High priority
+
+There is a fundamental distinction between:
+
+- What the engine believes it has sent.
+- What the external synthesizer actually remembers.
+
+`stop()` releases notes and then clears both controller caches:
+
+```
+self._sent_controllers.clear()self._sent_param_entries.clear()
+```
+
+Pasted markdown(20261116-043828).md
+
+However, the MIDI device is not reset.
+
+A synthesizer will generally retain its program, bank, volume, expression, pitch bend and other controller settings after receiving note-offs.
+
+The next playback therefore starts with an external device that may have a non-default state, while the engine assumes it is at baseline.
+
+There is a related problem in `start()`:
+
+```
+if start_tick > 0:    self._chase()
+```
+
+Starting at tick zero does not chase or establish the initial controller state.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+
+
+Consider:
+
+1. Play a file that sets channel volume to 40.
+2. Stop playback.
+3. Start another file at tick zero.
+4. The new file does not set channel volume until tick 500.
+
+The second file can begin playing at volume 40, even if its intended initial state is the normal baseline.
+
+**Recommendation**
+
+Do not equate clearing an internal cache with resetting external MIDI state.
+
+I would introduce an explicit output-state validity policy:
+
+```
+class OutputState:    known: bool    controllers: ...
+```
+
+Then choose one of two approaches:
+
+- Preserve the last-sent state across transport stops, provided the same output device remains connected.
+- Explicitly establish a known baseline when starting a new file or invalidating the output state.
+
+Also, make starting at tick zero establish the appropriate initial state.
+
+This is a particularly important issue for JDXI Editor, where the hardware synthesizer retains state between playback operations.
+
+### **2.3 Internal state is updated before the MIDI message is actually sent**
+
+High priority
+
+In `_dispatch()`, the engine updates note and controller tracking before calling `on_event`:
+
+```
+self._track_sounding(sounding)key = self._chase_key(msg)if key is not None:    self._sent_controllers[key] = self._chase_value(msg)
+```
+
+Only later does it call:
+
+```
+if self.on_event and send_msg is not None:    self.on_event(send_msg)
+```
+
+Pasted markdown(20261116-043828).md
+
+This creates two problems.
+
+**First: no callback**
+
+If `on_event` is unset, the engine still records notes as sounding and controllers as sent, despite no MIDI messages having been delivered.
+
+**Second: callback failure**
+
+If the callback raises an exception or the MIDI output fails, the engine has already committed its internal state.
+
+For example:
+
+- Engine records a note-on.
+- MIDI output fails to send it.
+- Engine later sends a note-off during cleanup.
+
+The internal model and the actual synthesizer are now inconsistent.
+
+**Recommendation**
+
+Introduce a single output boundary:
+
+```
+def _emit(self, message: mido.Message) -> bool:    ...
+```
+
+The engine should distinguish:
+
+- Desired playback state.
+- State successfully delivered to the output.
+
+Only commit output-state changes after successful delivery.
+
+For a more robust implementation, I would keep the existing logical note ownership separately from the state believed to exist on the external device.
+
+This is the point at which the earlier proposed distinction between `desired_state` and `output_state` becomes particularly valuable.
+
+### **2.4 Changing transpose or channel mapping can leave hanging notes**
+
+High priority
+
+The new arrangement methods are useful, but their current implementations only change dictionaries.
+
+For example:
+
+```
+def set_track_transpose(self, track_index, semitones):    ...    self._track_transposes[track_index] = semitones
+```
+
+Pasted markdown(20261116-043828).md
+
+Suppose:
+
+1. Track 2 plays MIDI note 60.
+2. You change its transpose to +12.
+3. The original note-off for MIDI note 60 arrives.
+
+The note-off is transformed into note 72, while the synthesizer is still holding note 60.
+
+The original note can remain sounding.
+
+The same problem exists with channel remapping: a note-on can be sent on one channel and its corresponding note-off on another.
+
+
+
+Pasted markdown(20261116-043828).md
+
+Pasted markdown(20261116-043828).md
+
+
+
+**Recommendation**
+
+When changing either setting:
+
+1. Release notes owned by that track using their existing output channel and pitch.
+2. Apply the new arrangement.
+3. Re-establish the track's applicable controller state if necessary.
+4. Allow subsequent note events to use the new arrangement.
+
+This is essential if these controls are exposed interactively in the MIDI player.
+
+### **2.5 Pause can leave events due before the pause undispatched**
+
+The pause implementation freezes the current wall-clock position:
+
+```
+self._hold_position()self._set_state(TransportState.PAUSED)self.release_held_notes()
+```
+
+Pasted markdown(20261116-043828).md
+
+However, `_hold_position()` does not process any events that became due since the last call to `process_until_now()`.
+
+Imagine a 10 ms scheduling interval:
+
+- An event becomes due at 100 ms.
+- The last scheduler call was at 95 ms.
+- The user pauses at 102 ms.
+- The engine freezes at 102 ms without dispatching the 100 ms event.
+
+On resume, the event is now overdue and may be sent immediately.
+
+This is a small timing discrepancy, but it is worth defining the intended semantics.
+
+**Recommendation**
+
+Before freezing playback, process all events due up to the captured pause position, or explicitly define pause as freezing the event cursor rather than the continuous playback clock.
+
+I favour processing due events first, then releasing notes.
+
+## **3. Additional issues worth addressing**
+
+These are not all blockers, but they deserve attention.
+
+| Priority | Issue                                          | Why it matters                                                                                         |
+| -------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Medium   | `start()` does not clamp `start_tick`          | Unlike `seek_tick()`, it accepts positions outside the file's valid range                              |
+| Medium   | Track mute does not recompute controller state | Muting a track can leave its last CC/program settings affecting other tracks                           |
+| Medium   | RPN/NRPN state restoration                     | Unknown NRPN values cannot necessarily be restored when seeking backwards                              |
+| Medium   | Channel remapping collisions                   | Multiple source channels mapped to one output channel need a well-defined controller precedence policy |
+| Medium   | Event ordering at identical ticks              | Stable track order is deterministic, but the precedence policy should be documented                    |
+| Medium   | Message mutability                             | Some messages passed to `on_event` are the original stored event messages                              |
+| Low      | MIDI clock alignment                           | Verify Start/Continue, Song Position Pointer and the first clock pulse against real hardware           |
+| Low      | Song Position Pointer alignment loop           | `_send_song_position()` can iterate through many clock ticks for a large position                      |
+
+A couple of these deserve more explanation.
+
+### **Controller state after muting**
+
+`mute_track()` releases the track's notes but does not chase the remaining unmuted controller state:
+
+```
+self._muted_tracks.add(track_index)self.release_held_notes(track_index=track_index)
+```
+
+The controller state is only restored when a track is unmuted.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+
+
+This can leave a muted track's last volume, pan, pitch bend or program setting affecting another track sharing that channel.
+
+I would recompute the effective channel state after both mute and unmute operations.
+
+### **Message mutability**
+
+`_apply_arrange()` returns the original message when no transformation is required. Some messages therefore reach `on_event` without being copied.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+
+
+A callback that modifies a message can inadvertently modify the event retained in `self.events`.
+
+I would consistently pass a copy across the output boundary.
+
+### **RPN/NRPN**
+
+The RPN implementation is considerably more sophisticated than a typical MIDI player. It correctly recognises that parameter changes require ordered selection and Data Entry messages.&#x20;
+
+Pasted markdown(20261116-043828).md
+
+
+
+However, the engine cannot generically restore every possible NRPN value when moving backwards if the destination state contains no value for a parameter previously sent to the device.
+
+Known RPN defaults help, but arbitrary NRPN state needs an explicit policy. In some cases, the engine cannot know how to restore the synthesizer without device-specific knowledge.
+
+I would document this limitation rather than pretend the chase is universally reversible.
+
+## **4. Architectural assessment**
+
+The class is now doing quite a lot.
+
+It currently owns:
+
+- MIDI file loading and event compilation.
+- Tempo and time-signature maps.
+- Event scheduling.
+- Transport state.
+- Loop management.
+- MIDI clock generation.
+- Controller-state reconstruction.
+- RPN/NRPN handling.
+- Note ownership.
+- Track muting and channel muting.
+- Track arrangement and velocity processing.
+- Output dispatch.
+
+At 1,323 lines, it is approaching the point where changes to one subsystem can unintentionally affect another.
+
+I would not split it into many small classes just to reduce the line count. Instead, I would extract the components that have genuinely independent responsibilities.
+
+**Suggested structure**
+
+**PlaybackEngine**
+
+Public API and orchestration
+
+**MidiTimeline**
+
+Events, tempo map, time signatures, snapshots
+
+**PlaybackTransport**
+
+Position, speed, pause, seek, looping
+
+**MidiPlaybackState**
+
+Note ownership, controller state, RPN/NRPN
+
+**MidiOutput**
+
+Dispatch, output cache, filtering, delivery
+
+**PlaybackScheduler**
+
+Deadline calculation and external scheduling
+
+The most important separation is between `MidiPlaybackState` and `MidiOutput`.
+
+The engine needs to know what should be sounding, but it also needs a reliable record of what has actually been delivered to the synthesizer. Those are different responsibilities.
+
+I would retain the current public `PlaybackEngine` API while extracting these internals incrementally.
+
+## **5. What I would implement next**
+
+I would resist adding more features until the following work is complete.
+
+**Recommended implementation order**
+
+1. **Fix controller-state reconstruction**
+
+   Preserve per-track controller history and resolve effective state after mute and remapping.
+2. **Fix output-state validity**
+
+   Ensure stopping, restarting and loading files cannot leave stale synthesizer state.
+3. **Separate logical state from delivered state**
+
+   Make output-state updates dependent on successful dispatch.
+4. **Make arrangement changes safe**
+
+   Release existing notes before changing transpose or channel mappings.
+5. **Make pause timing deterministic**
+
+   Resolve overdue events before freezing the transport.
+6. **Add regression tests**
+
+   Test shared-channel controller changes, mute/unmute, restart at tick zero, failed output callbacks, and live transpose/channel changes.
+
+## **6. Tests I would consider essential**
+
+| Test                                      | Expected result                                                   |
+| ----------------------------------------- | ----------------------------------------------------------------- |
+| Restart at tick zero after changing CC7   | Correct initial volume                                            |
+| Stop and start another file               | No stale program or controller state                              |
+| Mute latest controller-owning track       | Earlier eligible track state restored                             |
+| Two tracks share a channel and controller | Deterministic effective state                                     |
+| Remap a track while a note is held        | Old channel/pitch released                                        |
+| Transpose a track while a note is held    | Old pitch released                                                |
+| Pause just after an event deadline        | No overdue event unexpectedly dispatched after resume             |
+| No output callback installed              | No false claim that messages were delivered                       |
+| Output callback raises an exception       | Output-state cache remains consistent                             |
+| Seek backwards after RPN/NRPN changes     | Known parameters restored; unknown limitations handled explicitly |
+
+## **Final verdict**
+
+Strong improvement
+
+The new version has addressed several weaknesses in the original design. The event timeline, snapshot-based seeking, note counts, and deadline calculation are all sensible improvements.
+
+However, **the controller-state model and the output-state model are still not sufficiently robust**. Those are more important than performance optimisations at this stage.
+
+My recommendation is to keep the current architecture for now and make a focused correctness patch rather than immediately undertaking a large refactor.
+
+In particular, I would prioritise the following design decision:
+
+> Treat the MIDI device as an external stateful system. Track what the file intends, what the engine logically owns, and what the engine has successfully delivered to the device as three distinct things.
+
+That distinction will make the playback engine considerably more reliable, especially when controlling an external synthesizer such as the JD-Xi.

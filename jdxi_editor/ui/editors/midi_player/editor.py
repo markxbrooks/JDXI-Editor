@@ -39,6 +39,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import (
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.playback.state import MidiPlaybackState
 from jdxi_editor.midi.playback.transport import TransportController
+from jdxi_editor.midi.playback.transport_input import TransportInputMapper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.style.editor_style import mark_editor_body
@@ -198,6 +199,17 @@ class MidiFilePlayer(SynthEditor):
         track_viewer.ruler.marker_delete_requested.connect(self._delete_program_change)
         track_viewer.ruler.marker_edit_requested.connect(self._edit_program_change)
         self.transport_controller.loop_changed.connect(self._on_transport_loop_changed)
+        self.transport_input = TransportInputMapper(
+            on_play=self.midi_playback_start,
+            on_pause=self.transport_controller.pause,
+            on_stop=self.midi_playback_stop,
+            on_record=self._toggle_usb_recording,
+            seek_seconds=self.transport_controller.seek_seconds,
+            get_position=lambda: self.transport_controller.position_seconds,
+            get_duration=lambda: self.transport_controller.duration_seconds,
+            parent=self,
+        )
+        self._connect_transport_input()
         self.specs = self._build_specs()
         self.ui_init()
         self.transport.set_state(self.transport_controller.state)
@@ -1890,8 +1902,44 @@ class MidiFilePlayer(SynthEditor):
         self.usb_recorder.recorder.stop_recording()
         log.message("MIDI playback stopped and reset to beginning")
 
+    def _connect_transport_input(self) -> None:
+        """Listen to MiniLab (etc.) note pads via the instrument's controller input."""
+        controller = getattr(self.parent, "external_controller", None)
+        if controller is None:
+            return
+        controller.message_received.connect(
+            self.transport_input.handle_controller_message,
+            Qt.ConnectionType.QueuedConnection,
+        )
+
+    def _toggle_usb_recording(self) -> None:
+        """Record pad: start or stop USB capture when save-recording is enabled."""
+        recorder = self.usb_recorder.recorder
+        thread = getattr(recorder, "usb_recording_thread", None)
+        if thread is not None and getattr(thread, "isRunning", lambda: False)():
+            recorder.stop_recording()
+            return
+        if not self.is_midi_ready():
+            return
+        remaining = (
+            self.transport_controller.duration_seconds
+            - self.transport_controller.position_seconds
+        )
+        self.usb_recorder.start_recording(
+            duration_seconds=max(0.0, remaining) / max(self.transport_controller.speed, 1e-9)
+        )
+
     def closeEvent(self, event: QCloseEvent) -> None:
         """Ensure the playback thread is stopped before widget destruction."""
+        self.transport_input.stop_hold()
+        controller = getattr(self.parent, "external_controller", None)
+        if controller is not None:
+            try:
+                controller.message_received.disconnect(
+                    self.transport_input.handle_controller_message
+                )
+            except (RuntimeError, TypeError):
+                pass
         self.transport_controller.shutdown()
         super().closeEvent(event)
 

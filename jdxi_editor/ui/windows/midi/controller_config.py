@@ -14,6 +14,10 @@ ElMo's MIDI Control tab:
   the number from the next knob that moves. Changes are saved to QSettings and
   applied to the running :class:`~jdxi_editor.ui.editors.filter_remote.FilterRemote`
   straight away, so a knob works the moment it is learnt.
+- **Transport** — which buttons play, pause, stop, record, rewind and fast
+  forward the MIDI File player. **Learn** adds the next button pressed (a note
+  or a CC); an action can have several, e.g. the VMX8's note and CC modes.
+  Saved per controller, and picked up by the player straight away.
 
 The CC numbers a MiniLab 3 sends depend on the program loaded on the device,
 so the built-in map is only a starting point; Learn is the reliable way to get
@@ -50,12 +54,20 @@ from jdxi_editor.midi.io.controller_map import (
     MINILAB3,
     ControllerProfile,
     FilterControl,
+    TransportAction,
+    TransportSpec,
     profile_by_id,
 )
 from jdxi_editor.midi.io.controller_settings import (
+    clear_transport_specs,
     default_filter_map,
     load_filter_map,
+    load_transport_specs,
     save_filter_map,
+    save_transport_specs,
+)
+from jdxi_editor.midi.playback.transport_input import (
+    notify_transport_bindings_changed,
 )
 from jdxi_editor.ui.style import JDXiUIStyle
 from picoui.helpers.layout import create_layout_with_items
@@ -107,6 +119,16 @@ CONTROL_LABELS: Dict[FilterControl, str] = {
     spec.control: spec.label for spec in CONTROL_SPECS
 }
 
+#: Human-readable name for each transport action, in table order
+TRANSPORT_LABELS: Dict[TransportAction, str] = {
+    TransportAction.PLAY: "Play",
+    TransportAction.PAUSE: "Pause",
+    TransportAction.STOP: "Stop",
+    TransportAction.RECORD: "Record",
+    TransportAction.REWIND: "Rewind (hold)",
+    TransportAction.FAST_FORWARD: "Fast forward (hold)",
+}
+
 #: Which MiniLab 3 control sends each one by default (from midi_controllers.json)
 CONTROL_SOURCES: Dict[FilterControl, str] = dict(MINILAB3.sources)
 
@@ -146,6 +168,12 @@ class MidiControllerDialog(QMainWindow):
         JDXi.UI.Theme.apply_editor_style(self)
         #: the control waiting for the next CC, while learning
         self._learning: Optional[FilterControl] = None
+        #: transport buttons of the controller being edited
+        self.transport_specs: list[TransportSpec] = list(
+            load_transport_specs(profile=self.profile)
+        )
+        #: the transport action waiting for the next button press, while learning
+        self._learning_transport: Optional[TransportAction] = None
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -185,7 +213,8 @@ class MidiControllerDialog(QMainWindow):
         tab_dict: dict[Callable, str] = {
             self._connection_tab: "Connection",
             self._monitor_tab: "Monitor",
-            self._mappings_tab: "Mappings"
+            self._mappings_tab: "Mappings",
+            self._transport_tab: "Transport",
         }
         return tab_dict
 
@@ -406,6 +435,103 @@ class MidiControllerDialog(QMainWindow):
             self.learn_buttons[control] = button
             self.mappings_table.setCellWidget(row, 3, button)
 
+    def _transport_tab(self) -> QWidget:
+        """
+        The tab assigning controller buttons to the MIDI File player's transport.
+
+        :return: QWidget
+        """
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+
+        self.transport_table = QTableWidget()
+        self.transport_table.setColumnCount(4)
+        self.transport_table.setHorizontalHeaderLabels(["Action", "Buttons", "", ""])
+        header = self.transport_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.transport_table.verticalHeader().setVisible(False)
+        layout.addWidget(self.transport_table)
+
+        hint = QLabel(
+            "Press Learn, then press the controller button for that action; it "
+            "is added to the action's buttons (a note or a CC). Clear removes "
+            "them. The MIDI File player uses changes straight away."
+        )
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+
+        self.last_transport_label = QLabel("Last button: none yet")
+        layout.addWidget(self.last_transport_label)
+
+        bar = QHBoxLayout()
+        self.cancel_transport_learn_button = QPushButton("Cancel Learn")
+        self.cancel_transport_learn_button.clicked.connect(self.cancel_transport_learn)
+        self.cancel_transport_learn_button.setEnabled(False)
+        bar.addWidget(self.cancel_transport_learn_button)
+        bar.addStretch()
+        reset = QPushButton("Reset to Defaults")
+        reset.clicked.connect(self.reset_transport)
+        bar.addWidget(reset)
+        layout.addLayout(bar)
+
+        self._build_transport_table()
+        return tab
+
+    def _build_transport_table(self) -> None:
+        """
+        One row per transport action, with its buttons, Learn and Clear.
+
+        :return: None
+        """
+        self.transport_learn_buttons: Dict[TransportAction, QPushButton] = {}
+        actions = list(TRANSPORT_LABELS)
+        self.transport_table.setRowCount(len(actions))
+        for row, action in enumerate(actions):
+            name = QTableWidgetItem(TRANSPORT_LABELS[action])
+            name.setFlags(name.flags() & ~Qt.ItemIsEditable)
+            self.transport_table.setItem(row, 0, name)
+
+            buttons = QTableWidgetItem(self._transport_text(action))
+            buttons.setFlags(buttons.flags() & ~Qt.ItemIsEditable)
+            self.transport_table.setItem(row, 1, buttons)
+
+            learn = QPushButton("Learn")
+            learn.clicked.connect(
+                lambda _checked=False, a=action: self.start_transport_learn(a)
+            )
+            self.transport_learn_buttons[action] = learn
+            self.transport_table.setCellWidget(row, 2, learn)
+
+            clear = QPushButton("Clear")
+            clear.clicked.connect(
+                lambda _checked=False, a=action: self.clear_transport_action(a)
+            )
+            self.transport_table.setCellWidget(row, 3, clear)
+
+    def _transport_text(self, action: TransportAction) -> str:
+        """
+        The buttons that trigger ``action``, as shown in the table.
+
+        :param action: TransportAction
+        :return: str e.g. "Note 94, CC 52", or "not set"
+        """
+        labels = [spec.label for spec in self.transport_specs if spec.action is action]
+        return ", ".join(labels) if labels else "not set"
+
+    def _refresh_transport_column(self) -> None:
+        """
+        Redraw the Buttons column.
+
+        :return: None
+        """
+        for row, action in enumerate(TRANSPORT_LABELS):
+            item = self.transport_table.item(row, 1)
+            if item is not None:
+                item.setText(self._transport_text(action))
+
     def _source_text(self, control: FilterControl) -> str:
         """
         The hardware control that sends ``control`` by default, for the table.
@@ -436,8 +562,11 @@ class MidiControllerDialog(QMainWindow):
         :return: None
         """
         self.cancel_learn()
+        self.cancel_transport_learn()
         self.profile = profile_by_id(profile_id)
         self.cc_map = load_filter_map(profile=self.profile)
+        self.transport_specs = list(load_transport_specs(profile=self.profile))
+        self._refresh_transport_column()
         if self._is_live_profile() and self.filter_remote is not None:
             self.filter_remote.cc_map = dict(self.cc_map)
         for row, control in enumerate(FilterControl):
@@ -575,6 +704,12 @@ class MidiControllerDialog(QMainWindow):
         """
         timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         self._append_monitor_line(f"{timestamp} [{port_name}] {message}")
+        self._show_transport_press(message)
+        if self._learning_transport is not None:
+            spec = self._spec_from_press(self._learning_transport, message)
+            if spec is not None:
+                self.assign_transport(spec)
+            return
         if getattr(message, "type", None) != "control_change":
             return
         self.last_cc_label.setText(
@@ -608,6 +743,7 @@ class MidiControllerDialog(QMainWindow):
         :return: None
         """
         self.cancel_learn()
+        self.cancel_transport_learn()
         self._learning = control
         button = self.learn_buttons.get(control)
         if button is not None:
@@ -686,6 +822,121 @@ class MidiControllerDialog(QMainWindow):
             if item is not None:
                 item.setText(self._cc_text(control))
 
+    # ------------------------------------------------------------------
+    # Transport
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _spec_from_press(action: TransportAction, message: object) -> Optional[TransportSpec]:
+        """
+        The transport button ``message`` presses, bound to ``action``.
+
+        :param action: TransportAction
+        :param message: mido.Message
+        :return: Optional[TransportSpec] None if ``message`` is not a button press
+            (a release, or neither a note-on nor a CC)
+        """
+        kind = getattr(message, "type", None)
+        if kind == "note_on" and message.velocity > 0:
+            return TransportSpec(action, "note", message.channel, message.note)
+        if kind == "control_change" and message.value >= 64:
+            return TransportSpec(action, "cc", message.channel, message.control)
+        return None
+
+    def _show_transport_press(self, message: object) -> None:
+        """
+        Name the transport action a button press triggers, if any.
+
+        :param message: mido.Message
+        :return: None
+        """
+        spec = next((s for s in self.transport_specs if s.matches(message)), None)
+        if spec is not None:
+            self.last_transport_label.setText(
+                f"Last button: {TRANSPORT_LABELS[spec.action]} ({spec.label})"
+            )
+
+    def start_transport_learn(self, action: TransportAction) -> None:
+        """
+        Add the next button pressed as a trigger for ``action``.
+
+        :param action: TransportAction
+        :return: None
+        """
+        self.cancel_learn()
+        self.cancel_transport_learn()
+        self._learning_transport = action
+        button = self.transport_learn_buttons.get(action)
+        if button is not None:
+            button.setText("Press it...")
+        self.cancel_transport_learn_button.setEnabled(True)
+
+    def cancel_transport_learn(self) -> None:
+        """
+        Stop waiting for a transport button.
+
+        :return: None
+        """
+        if self._learning_transport is not None:
+            button = self.transport_learn_buttons.get(self._learning_transport)
+            if button is not None:
+                button.setText("Learn")
+        self._learning_transport = None
+        self.cancel_transport_learn_button.setEnabled(False)
+
+    def assign_transport(self, spec: TransportSpec) -> None:
+        """
+        Add ``spec`` to its action's buttons, taking it from any other action.
+
+        A button can only do one thing, so it is removed from the others.
+
+        :param spec: TransportSpec
+        :return: None
+        """
+        same_button = (spec.kind, spec.channel, spec.number)
+        self.transport_specs = [
+            s for s in self.transport_specs
+            if (s.kind, s.channel, s.number) != same_button
+        ] + [spec]
+        self.cancel_transport_learn()
+        self.apply_transport()
+        log.message(
+            f"Transport {spec.action.name} <- {spec.label}",
+            scope=self.__class__.__name__,
+        )
+
+    def clear_transport_action(self, action: TransportAction) -> None:
+        """
+        Remove every button bound to ``action``.
+
+        :param action: TransportAction
+        :return: None
+        """
+        self.cancel_transport_learn()
+        self.transport_specs = [s for s in self.transport_specs if s.action is not action]
+        self.apply_transport()
+
+    def reset_transport(self) -> None:
+        """
+        Go back to the selected controller's built-in transport buttons.
+
+        :return: None
+        """
+        self.cancel_transport_learn()
+        clear_transport_specs(profile=self.profile)
+        self.transport_specs = list(self.profile.transport)
+        self._refresh_transport_column()
+        notify_transport_bindings_changed()
+
+    def apply_transport(self) -> None:
+        """
+        Save the transport buttons and tell the MIDI File player.
+
+        :return: None
+        """
+        save_transport_specs(self.transport_specs, profile=self.profile)
+        self._refresh_transport_column()
+        notify_transport_bindings_changed()
+
     def closeEvent(self, event) -> None:
         """
         Stop the status timer and any learn in progress.
@@ -694,5 +945,6 @@ class MidiControllerDialog(QMainWindow):
         :return: None
         """
         self.cancel_learn()
+        self.cancel_transport_learn()
         self._status_timer.stop()
         event.accept()

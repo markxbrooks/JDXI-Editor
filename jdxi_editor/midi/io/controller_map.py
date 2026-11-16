@@ -13,8 +13,8 @@ rather than written here:
   (the Arturia MiniLab 3 and the SINCO VMX8);
 * ``~/.jdxi_editor/midi_controllers.json`` (:func:`user_config_path`) is the
   user's copy, written on first start by :func:`install_user_config`. A
-  controller in it replaces the built-in one with the same ``id``; a new ``id``
-  adds a controller.
+  controller in it overrides the keys it gives of the built-in one with the
+  same ``id``; a new ``id`` adds a controller.
 
 Set the environment variable ``JDXI_EDITOR_MIDI_CONTROLLERS`` to read another
 user file, or to an empty string to use the built-in controllers only.
@@ -30,11 +30,14 @@ A controller entry looks like::
       "port_names": ["minilab"],
       "secondary_port_names": ["din thru", "mcu", "hui", "alv"],
       "single_port": false,
-      "mappings": [{"cc": 74, "control": "CUTOFF", "source": "Knob 1"}, ...]
+      "mappings": [{"cc": 74, "control": "CUTOFF", "source": "Knob 1"}, ...],
+      "transport": [{"action": "PLAY", "cc": 107}, {"action": "PAUSE", "note": 93}]
     }
 
 ``control`` is a :class:`FilterControl` name and ``source`` the physical knob
-or fader, shown in the MIDI Controller dialog.
+or fader, shown in the MIDI Controller dialog. ``transport`` lists the
+controller's transport buttons (:class:`TransportAction` names), each sending a
+``cc`` or a ``note``, with an optional ``channel`` (0 = MIDI channel 1).
 
 Example
 -------
@@ -55,7 +58,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -98,6 +101,92 @@ EFFECT_CONTROLS = frozenset(
 )
 
 
+class TransportAction(Enum):
+    """Transport commands a hardware controller's buttons can request."""
+
+    PLAY = auto()
+    PAUSE = auto()
+    STOP = auto()
+    RECORD = auto()
+    REWIND = auto()
+    FAST_FORWARD = auto()
+
+
+@dataclass(frozen=True)
+class TransportSpec:
+    """
+    One transport button of a controller, as ``midi_controllers.json`` lists it.
+
+    :param action: TransportAction what the button does
+    :param kind: str ``"cc"`` (press 127 / release 0) or ``"note"`` (note on / off)
+    :param channel: int MIDI channel as mido numbers it (0 = MIDI channel 1)
+    :param number: int CC or note number 0-127
+    """
+
+    action: TransportAction
+    kind: str
+    channel: int
+    number: int
+
+    @classmethod
+    def from_dict(cls, entry: dict) -> "TransportSpec":
+        """
+        Build a button from one ``transport`` entry, e.g. ``{"action": "PLAY", "cc": 52}``.
+
+        :param entry: dict with ``action``, one of ``cc`` / ``note``, and
+            optionally ``channel`` (default 0)
+        :return: TransportSpec
+        :raises KeyError: if the action is unknown or neither ``cc`` nor ``note`` is given
+        :raises ValueError: if a number is outside its MIDI range
+        """
+        kind = next((k for k in ("cc", "note") if k in entry), None)
+        if kind is None:
+            raise KeyError("transport entry needs 'cc' or 'note'")
+        number, channel = int(entry[kind]), int(entry.get("channel", 0))
+        if not (0 <= number <= 127 and 0 <= channel <= 15):
+            raise ValueError(f"{kind} {number} / channel {channel} out of range")
+        return cls(TransportAction[entry["action"]], kind, channel, number)
+
+    def to_dict(self) -> dict:
+        """
+        This button as a ``transport`` entry, the inverse of :meth:`from_dict`.
+
+        :return: dict e.g. ``{"action": "PLAY", "cc": 52, "channel": 0}``
+        """
+        return {"action": self.action.name, self.kind: self.number, "channel": self.channel}
+
+    @property
+    def label(self) -> str:
+        """
+        What the button sends, for display.
+
+        :return: str e.g. ``"CC 52"``, ``"Note 94"`` or ``"CC 52 (ch 2)"``
+        """
+        text = f"{'CC' if self.kind == 'cc' else 'Note'} {self.number}"
+        return text if self.channel == 0 else f"{text} (ch {self.channel + 1})"
+
+    def matches(self, message: object) -> bool:
+        """
+        Whether ``message`` is a press of this button.
+
+        :param message: mido.Message
+        :return: bool True for a note-on with velocity, or a CC of 64 or more
+        """
+        if getattr(message, "channel", None) != self.channel:
+            return False
+        if self.kind == "cc":
+            return (
+                getattr(message, "type", None) == "control_change"
+                and message.control == self.number
+                and message.value >= 64
+            )
+        return (
+            getattr(message, "type", None) == "note_on"
+            and message.note == self.number
+            and message.velocity > 0
+        )
+
+
 @dataclass(frozen=True)
 class ControllerProfile:
     """
@@ -113,6 +202,7 @@ class ControllerProfile:
     :param cc_map: dict CC number -> FilterControl defaults
     :param sources: dict FilterControl -> physical control that sends it, e.g.
         "Knob 1"; controls whose source is unknown are left out
+    :param transport: tuple[TransportSpec, ...] its transport buttons
     """
 
     profile_id: str
@@ -122,6 +212,7 @@ class ControllerProfile:
     single_port: bool = False
     cc_map: dict[int, FilterControl] = field(default_factory=dict)
     sources: dict[FilterControl, str] = field(default_factory=dict)
+    transport: tuple[TransportSpec, ...] = ()
 
     @classmethod
     def from_dict(cls, entry: dict) -> "ControllerProfile":
@@ -129,7 +220,7 @@ class ControllerProfile:
         Build a profile from one ``controllers`` entry of the JSON config.
 
         :param entry: dict with ``id``, ``label``, ``port_names`` and ``mappings``,
-            and optionally ``secondary_port_names`` and ``single_port``
+            and optionally ``secondary_port_names``, ``single_port`` and ``transport``
         :return: ControllerProfile
         :raises KeyError: if a required key or a control name is unknown
         :raises ValueError: if a CC number is not 0-127
@@ -155,6 +246,9 @@ class ControllerProfile:
             single_port=bool(entry.get("single_port", False)),
             cc_map=cc_map,
             sources=sources,
+            transport=tuple(
+                TransportSpec.from_dict(t) for t in entry.get("transport", ())
+            ),
         )
 
     def matches(self, port_name: str) -> bool:
@@ -205,6 +299,38 @@ def user_config_path() -> Optional[Path]:
     return Path(override).expanduser() if override else None
 
 
+def read_entries(path: Path) -> list[dict]:
+    """
+    The raw ``controllers`` entries of one JSON config file.
+
+    :param path: Path JSON file with a ``controllers`` list
+    :return: list[dict] in file order
+    :raises OSError: if the file cannot be read
+    :raises ValueError: if it is not valid JSON
+    """
+    return list(json.loads(path.read_text(encoding="utf-8")).get("controllers", []))
+
+
+def _parse(entries: Iterable[dict], origin: object) -> list[ControllerProfile]:
+    """
+    Profiles from raw entries; an entry that cannot be read is logged and skipped.
+
+    :param entries: Iterable[dict] raw controller entries
+    :param origin: object where they came from, for the log
+    :return: list[ControllerProfile]
+    """
+    profiles = []
+    for entry in entries:
+        try:
+            profiles.append(ControllerProfile.from_dict(entry))
+        except (KeyError, ValueError, TypeError, AttributeError) as ex:
+            log.warning(
+                f"{origin}: skipping controller {entry.get('id', '?')!r}: {ex!r}",
+                scope="controller_map",
+            )
+    return profiles
+
+
 def read_profiles(path: Path) -> list[ControllerProfile]:
     """
     The controllers in one JSON config file.
@@ -217,41 +343,39 @@ def read_profiles(path: Path) -> list[ControllerProfile]:
     :raises OSError: if the file cannot be read
     :raises ValueError: if it is not valid JSON
     """
-    profiles = []
-    for entry in json.loads(path.read_text(encoding="utf-8")).get("controllers", []):
-        try:
-            profiles.append(ControllerProfile.from_dict(entry))
-        except (KeyError, ValueError, TypeError, AttributeError) as ex:
-            log.warning(
-                f"{path}: skipping controller {entry.get('id', '?')!r}: {ex!r}",
-                scope="controller_map",
-            )
-    return profiles
+    return _parse(read_entries(path), path)
 
 
 def load_controller_profiles(
     user_path: Optional[Path] = None,
 ) -> tuple[ControllerProfile, ...]:
     """
-    The built-in controllers, replaced or extended by the user's config.
+    The built-in controllers, overridden or extended by the user's config.
+
+    A user entry with a built-in ``id`` overrides only the keys it has: an
+    older copy without ``transport`` still gets the built-in transport buttons.
 
     :param user_path: Optional[Path] user config; defaults to :func:`user_config_path`
     :return: tuple[ControllerProfile, ...] built-in order first, then new user ones
     """
-    profiles = {p.profile_id: p for p in read_profiles(BUILTIN_CONFIG_PATH)}
+    entries = {e["id"]: e for e in read_entries(BUILTIN_CONFIG_PATH)}
     path = user_config_path() if user_path is None else user_path
     if path is not None:
         try:
-            user_profiles = read_profiles(path)
+            user_entries = read_entries(path)
         except FileNotFoundError:
-            user_profiles = []
+            user_entries = []
         except (OSError, ValueError) as ex:
             log.warning(
                 f"Ignoring controller config {path}: {ex!r}", scope="controller_map"
             )
-            user_profiles = []
-        profiles.update((p.profile_id, p) for p in user_profiles)
-    return tuple(profiles.values())
+            user_entries = []
+        for entry in user_entries:
+            try:
+                entries[entry["id"]] = {**entries.get(entry["id"], {}), **entry}
+            except (KeyError, TypeError) as ex:
+                log.warning(f"{path}: skipping entry: {ex!r}", scope="controller_map")
+    return tuple(_parse(entries.values(), path or BUILTIN_CONFIG_PATH))
 
 
 def install_user_config(path: Optional[Path] = None) -> Optional[Path]:

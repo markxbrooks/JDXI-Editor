@@ -87,3 +87,26 @@ def test_environment_variable_chooses_or_disables_the_user_file(monkeypatch, tmp
     assert user_config_path() == tmp_path / "c.json"
     monkeypatch.delenv(CONFIG_ENV_VAR)
     assert user_config_path().parts[-2:] == (".jdxi_editor", "midi_controllers.json")
+
+
+def test_older_user_copy_keeps_the_builtin_transport_buttons(tmp_path):
+    """A copy written before transport support overrides only what it lists."""
+    builtin = json.loads(BUILTIN_CONFIG_PATH.read_text())
+    for entry in builtin["controllers"]:
+        entry.pop("transport")
+    entry["mappings"] = [{"cc": 7, "control": "CUTOFF"}]  # the VMX8 entry, edited
+    user = tmp_path / "midi_controllers.json"
+    user.write_text(json.dumps(builtin))
+    vmx8 = {p.profile_id: p for p in load_controller_profiles(user)}["vmx8"]
+    assert vmx8.cc_map == {7: FilterControl.CUTOFF}
+    assert vmx8.transport == VMX8.transport
+    assert {(t.kind, t.number) for t in vmx8.transport} >= {("cc", 52), ("note", 94)}
+
+
+def test_bad_transport_entry_skips_only_that_controller(tmp_path):
+    user = _write(
+        tmp_path / "t.json",
+        [{"id": "vmx8", "transport": [{"action": "EJECT", "cc": 60}]}],
+    )
+    ids = [p.profile_id for p in load_controller_profiles(user)]
+    assert ids == ["minilab3"]
