@@ -24,10 +24,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable, Any
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QMargins
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
@@ -40,18 +40,27 @@ from PySide6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
-    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
 
 from jdxi_editor.core.jdxi import JDXi
-from jdxi_editor.midi.io.controller_map import FilterControl
+from jdxi_editor.midi.io.controller_map import (
+    CONTROLLER_PROFILES,
+    MINILAB3,
+    ControllerProfile,
+    FilterControl,
+    profile_by_id,
+)
 from jdxi_editor.midi.io.controller_settings import (
     default_filter_map,
     load_filter_map,
     save_filter_map,
 )
+from jdxi_editor.ui.style import JDXiUIStyle
+from picoui.helpers.layout import create_layout_with_items
+from picoui.specs.widgets import ButtonSpec
+from picoui.widget.helper import create_label, create_text_edit, create_button_from_spec
 
 #: How often the connection status is refreshed
 STATUS_INTERVAL_MS = 1000
@@ -70,29 +79,27 @@ class ControlLabelSpec:
 
     :param control: FilterControl the control
     :param label: str human-readable name
-    :param source: str MiniLab 3 control that sends it by default, or "" if none
     """
 
     control: FilterControl
     label: str
-    source: str = ""
 
 
 #: One row per control, in the order of the MiniLab 3 defaults
 CONTROL_SPECS: list[ControlLabelSpec] = [
-    ControlLabelSpec(FilterControl.CUTOFF, "Cutoff", source="Knob 1"),
-    ControlLabelSpec(FilterControl.RESONANCE, "Resonance", source="Knob 2"),
-    ControlLabelSpec(FilterControl.KEYFOLLOW, "Cutoff key follow", source="Knob 3"),
-    ControlLabelSpec(FilterControl.ENV_DEPTH, "Envelope depth", source="Knob 4"),
+    ControlLabelSpec(FilterControl.CUTOFF, "Cutoff"),
+    ControlLabelSpec(FilterControl.RESONANCE, "Resonance"),
+    ControlLabelSpec(FilterControl.KEYFOLLOW, "Cutoff key follow"),
+    ControlLabelSpec(FilterControl.ENV_DEPTH, "Envelope depth"),
     ControlLabelSpec(FilterControl.ENV_VELOCITY, "Envelope velocity sensitivity"),
-    ControlLabelSpec(FilterControl.ENV_ATTACK, "Filter envelope attack", source="Fader 1"),
-    ControlLabelSpec(FilterControl.ENV_DECAY, "Filter envelope decay", source="Fader 2"),
-    ControlLabelSpec(FilterControl.ENV_SUSTAIN, "Filter envelope sustain", source="Fader 3"),
-    ControlLabelSpec(FilterControl.ENV_RELEASE, "Filter envelope release", source="Fader 4"),
-    ControlLabelSpec(FilterControl.EFFECT1_LEVEL, "Effect 1 level", source="Knob 5"),
-    ControlLabelSpec(FilterControl.EFFECT2_LEVEL, "Effect 2 level", source="Knob 6"),
-    ControlLabelSpec(FilterControl.DELAY_LEVEL, "Delay level", source="Knob 7"),
-    ControlLabelSpec(FilterControl.REVERB_LEVEL, "Reverb level", source="Knob 8"),
+    ControlLabelSpec(FilterControl.ENV_ATTACK, "Filter envelope attack"),
+    ControlLabelSpec(FilterControl.ENV_DECAY, "Filter envelope decay"),
+    ControlLabelSpec(FilterControl.ENV_SUSTAIN, "Filter envelope sustain"),
+    ControlLabelSpec(FilterControl.ENV_RELEASE, "Filter envelope release"),
+    ControlLabelSpec(FilterControl.EFFECT1_LEVEL, "Effect 1 level"),
+    ControlLabelSpec(FilterControl.EFFECT2_LEVEL, "Effect 2 level"),
+    ControlLabelSpec(FilterControl.DELAY_LEVEL, "Delay level"),
+    ControlLabelSpec(FilterControl.REVERB_LEVEL, "Reverb level"),
 ]
 
 #: Human-readable name for each control
@@ -100,20 +107,18 @@ CONTROL_LABELS: Dict[FilterControl, str] = {
     spec.control: spec.label for spec in CONTROL_SPECS
 }
 
-#: Which hardware control usually sends it, for the table
-CONTROL_SOURCES: Dict[FilterControl, str] = {
-    spec.control: spec.source for spec in CONTROL_SPECS if spec.source
-}
+#: Which MiniLab 3 control sends each one by default (from midi_controllers.json)
+CONTROL_SOURCES: Dict[FilterControl, str] = dict(MINILAB3.sources)
 
 
 class MidiControllerDialog(QMainWindow):
     """Set up the hardware controller that drives the filter."""
 
     def __init__(
-        self,
-        external_controller=None,
-        filter_remote=None,
-        parent: Optional[QWidget] = None,
+            self,
+            external_controller=None,
+            filter_remote=None,
+            parent: Optional[QWidget] = None,
     ) -> None:
         """
         :param external_controller: ExternalControllerInput the controller input
@@ -125,9 +130,13 @@ class MidiControllerDialog(QMainWindow):
         self.setMinimumSize(640, 560)
         self.external_controller = external_controller
         self.filter_remote = filter_remote
+        #: controller whose mappings are being edited; starts as the connected one
+        self.profile: ControllerProfile = self.connected_profile()
         #: CC -> FilterControl being edited
         self.cc_map: Dict[int, FilterControl] = (
-            dict(filter_remote.cc_map) if filter_remote is not None else load_filter_map()
+            dict(filter_remote.cc_map)
+            if filter_remote is not None
+            else load_filter_map(profile=self.profile)
         )
         # Dark editor chrome for this window only, as in the MIDI Config dialog.
         # Not qdarktheme (apply_dark_theme / apply_theme("auto")): that restyles
@@ -138,30 +147,45 @@ class MidiControllerDialog(QMainWindow):
 
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
 
-        title = QLabel("MIDI Controller")
-        title.setObjectName("TitleLabel")
-        layout.addWidget(title)
-
-        self.tabs = QTabWidget()
-        layout.addWidget(self.tabs)
-        self.tabs.addTab(self._connection_tab(), "Connection")
-        self.tabs.addTab(self._monitor_tab(), "Monitor")
-        self.tabs.addTab(self._mappings_tab(), "Mappings")
-
+        title = create_label(label="MIDI Controller", object_name="TitleLabel", margin=2, style_sheet=JDXiUIStyle.LABEL)
+        self._create_tab_widget()
         if self.external_controller is not None:
             self.external_controller.message_received.connect(self._on_message)
             self.external_controller.ports_changed.connect(
                 lambda _ports: self.refresh_ports()
             )
-
+        _layout = create_layout_with_items(parent=central,
+                                           items=[title, self.tabs],
+                                           vertical=True,
+                                           start_stretch=False,
+                                           end_stretch=False,
+                                           spacing=2,
+                                           margins=QMargins(2, 2, 2, 2))
         self.refresh_ports()
         self.update_status()
+        self._status_timer: QTimer | None = None
+        self._timer_init()
+
+    def _timer_init(self):
         self._status_timer = QTimer(self)
         self._status_timer.setInterval(STATUS_INTERVAL_MS)
         self._status_timer.timeout.connect(self.update_status)
         self._status_timer.start()
+
+    def _create_tab_widget(self):
+        self.tabs = QTabWidget()
+        tab_dict = self.build_tabs_dict()
+        for tab_func, label in tab_dict.items():
+            self.tabs.addTab(tab_func(), label)
+
+    def build_tabs_dict(self) -> dict[Callable[[...], Any], str]:
+        tab_dict: dict[Callable, str] = {
+            self._connection_tab: "Connection",
+            self._monitor_tab: "Monitor",
+            self._mappings_tab: "Mappings"
+        }
+        return tab_dict
 
     # ------------------------------------------------------------------
     # Tabs
@@ -173,18 +197,22 @@ class MidiControllerDialog(QMainWindow):
         :return: QWidget
         """
         tab = QWidget()
-        layout = QVBoxLayout(tab)
-
         connection = QGroupBox("MIDI Connection")
-        form = QFormLayout(connection)
 
         self.preset_combo = QComboBox()
-        self.preset_combo.addItem("Arturia MiniLab 3", "minilab3")
-        self.preset_combo.setToolTip(
-            "The CC numbers this controller is expected to send. "
-            "Learn them on the Mappings tab if your device sends others."
+        for profile in CONTROLLER_PROFILES:
+            self.preset_combo.addItem(profile.label, profile.profile_id)
+        self.preset_combo.setCurrentIndex(
+            max(0, self.preset_combo.findData(self.profile.profile_id))
         )
-        form.addRow("Controller preset:", self.preset_combo)
+        self.preset_combo.currentIndexChanged.connect(
+            lambda _index: self.select_profile(self.preset_combo.currentData())
+        )
+        self.preset_combo.setToolTip(
+            "The controller whose mappings the Mappings tab shows and edits; "
+            "the one plugged in is selected when this window opens. Each "
+            "controller keeps its own learnt mappings."
+        )
 
         self.port_combo = QComboBox()
         self.port_combo.setMinimumWidth(260)
@@ -192,31 +220,61 @@ class MidiControllerDialog(QMainWindow):
             "Automatic listens to every port the controller exposes, which is "
             "what you want unless you are using a different device."
         )
-        form.addRow("MIDI Port:", self.port_combo)
 
-        actions = QHBoxLayout()
-        self.refresh_button = QPushButton("Refresh Ports")
-        self.refresh_button.clicked.connect(self.refresh_ports)
-        actions.addWidget(self.refresh_button)
-        self.connect_button = QPushButton("Connect")
-        self.connect_button.clicked.connect(self.connect_controller)
-        actions.addWidget(self.connect_button)
-        self.disconnect_button = QPushButton("Disconnect")
-        self.disconnect_button.clicked.connect(self.disconnect_controller)
-        actions.addWidget(self.disconnect_button)
-        form.addRow("Actions:", actions)
+        action_items = self._create_action_item_buttons()
+
+        self.refresh_button = action_items[0]
+        self.connect_button = action_items[1]
+        self.disconnect_button = action_items[2]
+
+        actions = create_layout_with_items(items=action_items,
+                                           start_stretch=False,
+                                           end_stretch=False)
 
         self.status_label = QLabel("Not connected")
-        form.addRow("Status:", self.status_label)
-        layout.addWidget(connection)
 
-        information = QGroupBox("MIDI Information")
-        information_layout = QVBoxLayout(information)
-        self.information_text = QTextEdit()
-        self.information_text.setReadOnly(True)
-        information_layout.addWidget(self.information_text)
-        layout.addWidget(information)
+        _form = self._create_midi_controller_form(actions, connection)
+        # update_status() writes here. The text edit must be added to the
+        # group's own layout: a second layout on the group is rejected by Qt,
+        # leaving the text edit parentless and never shown.
+        self.information_text = create_text_edit(readonly=True)
+        information_group = QGroupBox("MIDI Information")
+        QVBoxLayout(information_group).addWidget(self.information_text)
+        _layout = create_layout_with_items(parent=tab,
+                                           items=[connection, information_group],
+                                           vertical=True,
+                                           start_stretch=False,
+                                           end_stretch=False)
         return tab
+
+    def _create_action_item_buttons(self) -> list[Any]:
+        """_create_action_item_buttons"""
+        actions_specs = self.create_action_button_specs()
+        action_items = []
+        for spec in actions_specs:
+            item = create_button_from_spec(spec)
+            action_items.append(item)
+        return action_items
+
+    def create_action_button_specs(self) -> list[ButtonSpec]:
+        """create_action_button_specs"""
+        self.refresh_button_spec = ButtonSpec(label="Refresh Ports", slot=self.refresh_ports)
+        self.connect_button_spec = ButtonSpec(label="Connect", slot=self.connect_controller)
+        self.disconnect_button_spec = ButtonSpec(label="Disconnect", slot=self.disconnect_controller)
+        actions_specs = [
+            self.refresh_button_spec,
+            self.connect_button_spec,
+            self.disconnect_button_spec
+        ]
+        return actions_specs
+
+    def _create_midi_controller_form(self, actions: QHBoxLayout | QVBoxLayout, connection: QGroupBox):
+        form = QFormLayout(connection)
+        form.addRow("Controller preset:", self.preset_combo)
+        form.addRow("MIDI Port:", self.port_combo)
+        form.addRow("Actions:", actions)
+        form.addRow("Status:", self.status_label)
+        return form
 
     def _monitor_tab(self) -> QWidget:
         """
@@ -225,27 +283,29 @@ class MidiControllerDialog(QMainWindow):
         :return: QWidget
         """
         tab = QWidget()
-        layout = QVBoxLayout(tab)
+
         hint = QLabel(
             "Every message received from the controller. Move a knob or fader "
             "to see the port, channel and CC number it sends."
         )
         hint.setWordWrap(True)
-        layout.addWidget(hint)
 
-        self.monitor_text = QTextEdit()
-        self.monitor_text.setReadOnly(True)
-        self.monitor_text.setLineWrapMode(QTextEdit.NoWrap)
-        layout.addWidget(self.monitor_text)
+        self.monitor_text = create_text_edit(readonly=True)
 
-        bar = QHBoxLayout()
         clear = QPushButton("Clear")
         clear.clicked.connect(self.monitor_text.clear)
-        bar.addWidget(clear)
-        bar.addStretch()
         self.last_cc_label = QLabel("Last CC: none yet")
-        bar.addWidget(self.last_cc_label)
-        layout.addLayout(bar)
+        bar = create_layout_with_items(vertical=False, items=[clear, self.last_cc_label],
+                                       start_stretch=False,
+                                       middle_stretch=True,
+                                       end_stretch=False)
+
+        _layout = create_layout_with_items(parent=tab,
+                                           items=[hint,
+                                                  self.monitor_text, bar],
+                                           vertical=True,
+                                           start_stretch=False,
+                                           end_stretch=False)
         return tab
 
     def _mappings_tab(self) -> QWidget:
@@ -305,7 +365,7 @@ class MidiControllerDialog(QMainWindow):
             name.setFlags(name.flags() & ~Qt.ItemIsEditable)
             self.mappings_table.setItem(row, 0, name)
 
-            source = QTableWidgetItem(CONTROL_SOURCES.get(control, ""))
+            source = QTableWidgetItem(self._source_text(control))
             source.setFlags(source.flags() & ~Qt.ItemIsEditable)
             self.mappings_table.setItem(row, 1, source)
 
@@ -320,6 +380,55 @@ class MidiControllerDialog(QMainWindow):
             )
             self.learn_buttons[control] = button
             self.mappings_table.setCellWidget(row, 3, button)
+
+    def _source_text(self, control: FilterControl) -> str:
+        """
+        The hardware control that sends ``control`` by default, for the table.
+
+        Taken from the profile's ``source`` entries in ``midi_controllers.json``;
+        blank where the physical control is not known (as for the VMX8, whose
+        map is translated, not measured).
+
+        :param control: FilterControl
+        :return: str e.g. "Knob 1", or ""
+        """
+        return self.profile.sources.get(control, "")
+
+    def connected_profile(self) -> ControllerProfile:
+        """
+        Profile of the controller plugged in, or the MiniLab 3 if none is.
+
+        :return: ControllerProfile
+        """
+        profile = getattr(self.external_controller, "profile", None)
+        return profile if isinstance(profile, ControllerProfile) else MINILAB3
+
+    def select_profile(self, profile_id: Optional[str]) -> None:
+        """
+        Show and edit the mappings of another controller.
+
+        :param profile_id: Optional[str] ControllerProfile id
+        :return: None
+        """
+        self.cancel_learn()
+        self.profile = profile_by_id(profile_id)
+        self.cc_map = load_filter_map(profile=self.profile)
+        if self._is_live_profile() and self.filter_remote is not None:
+            self.filter_remote.cc_map = dict(self.cc_map)
+        for row, control in enumerate(FilterControl):
+            item = self.mappings_table.item(row, 1)
+            if item is not None:
+                item.setText(self._source_text(control))
+        self._refresh_cc_column()
+        self.update_status()
+
+    def _is_live_profile(self) -> bool:
+        """
+        Whether the profile being edited is the one the running remote uses.
+
+        :return: bool
+        """
+        return self.profile.profile_id == self.connected_profile().profile_id
 
     def _cc_text(self, control: FilterControl) -> str:
         """
@@ -510,23 +619,24 @@ class MidiControllerDialog(QMainWindow):
 
     def reset_mappings(self) -> None:
         """
-        Go back to the built-in MiniLab 3 map.
+        Go back to the selected controller's built-in map.
 
         :return: None
         """
         self.cancel_learn()
-        self.cc_map = default_filter_map()
+        self.cc_map = default_filter_map(self.profile)
         self._refresh_cc_column()
         self.apply_mappings()
 
     def apply_mappings(self) -> None:
         """
-        Save the map and hand it to the running filter remote.
+        Save the map and, if it is the connected controller's, hand it to the
+        running filter remote.
 
         :return: None
         """
-        save_filter_map(self.cc_map)
-        if self.filter_remote is not None:
+        save_filter_map(self.cc_map, profile=self.profile)
+        if self.filter_remote is not None and self._is_live_profile():
             self.filter_remote.cc_map = dict(self.cc_map)
         self.update_status()
 

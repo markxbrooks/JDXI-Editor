@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "about": "Hardware MIDI controllers that drive the JD-Xi Editor. Copy this file to ~/.jdxi_editor/midi_controllers.json (the editor does so on first start) and edit it there: a controller with the same id replaces the built-in one, a new id adds a controller. 'control' is a FilterControl name: CUTOFF, RESONANCE, KEYFOLLOW, ENV_DEPTH, ENV_VELOCITY, ENV_ATTACK, ENV_DECAY, ENV_SUSTAIN, ENV_RELEASE, EFFECT1_LEVEL, EFFECT2_LEVEL, DELAY_LEVEL, REVERB_LEVEL. 'source' names the physical knob or fader for the MIDI Controller dialog. Port names are matched case-insensitively as substrings. Mappings learnt in the dialog are kept separately and take precedence.",
+  "controllers": [
+    {
+      "id": "minilab3",
+      "label": "Arturia MiniLab 3",
+      "notes": "Factory/User program, MIDI channel 1. Knobs 1-4 are the top row, 5-8 the bottom row. Which port carries the knobs depends on the device's mode, so every port is listened to; secondary ports only rank below the main one.",
+      "port_names": ["minilab"],
+      "secondary_port_names": ["din thru", "mcu", "hui", "alv"],
+      "single_port": false,
+      "mappings": [
+        {"cc": 74, "control": "CUTOFF", "source": "Knob 1"},
+        {"cc": 71, "control": "RESONANCE", "source": "Knob 2"},
+        {"cc": 76, "control": "KEYFOLLOW", "source": "Knob 3"},
+        {"cc": 77, "control": "ENV_DEPTH", "source": "Knob 4"},
+        {"cc": 93, "control": "EFFECT1_LEVEL", "source": "Knob 5"},
+        {"cc": 18, "control": "EFFECT2_LEVEL", "source": "Knob 6"},
+        {"cc": 19, "control": "DELAY_LEVEL", "source": "Knob 7"},
+        {"cc": 16, "control": "REVERB_LEVEL", "source": "Knob 8"},
+        {"cc": 82, "control": "ENV_ATTACK", "source": "Fader 1"},
+        {"cc": 83, "control": "ENV_DECAY", "source": "Fader 2"},
+        {"cc": 85, "control": "ENV_SUSTAIN", "source": "Fader 3"},
+        {"cc": 17, "control": "ENV_RELEASE", "source": "Fader 4"}
+      ]
+    },
+    {
+      "id": "vmx8",
+      "label": "SINCO VMX8",
+      "notes": "Translated from the MiniLab 3 map through ElMo's presets (elmo/midi/presets.py): MiniLab CC -> ElMo function -> ElMo VMX8 CC. CCs 32-39 are translations (zoom, rotation_x/y/z, translate_x/y, connolly_transparency, connolly_probe_radius); 40-43 are assigned, because MiniLab CCs 93, 16, 82 and 83 drive nothing in ElMo. ElMo's VMX8 preset is a placeholder, not measured: check these in the MIDI Monitor and fill in 'source'. The VMX8 repeats every message on its Private and Master ports, so only one port is opened.",
+      "port_names": ["sinco", "vmx8"],
+      "secondary_port_names": ["master"],
+      "single_port": true,
+      "mappings": [
+        {"cc": 32, "control": "CUTOFF"},
+        {"cc": 33, "control": "RESONANCE"},
+        {"cc": 34, "control": "KEYFOLLOW"},
+        {"cc": 35, "control": "ENV_DEPTH"},
+        {"cc": 36, "control": "EFFECT2_LEVEL"},
+        {"cc": 37, "control": "DELAY_LEVEL"},
+        {"cc": 38, "control": "ENV_SUSTAIN"},
+        {"cc": 39, "control": "ENV_RELEASE"},
+        {"cc": 40, "control": "ENV_ATTACK"},
+        {"cc": 41, "control": "ENV_DECAY"},
+        {"cc": 42, "control": "EFFECT1_LEVEL"},
+        {"cc": 43, "control": "REVERB_LEVEL"}
+      ]
+    }
+  ]
+}

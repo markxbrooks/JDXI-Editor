@@ -19,11 +19,31 @@ from typing import Dict, Optional
 from decologr import Decologr as log
 from PySide6.QtCore import QSettings
 
-from jdxi_editor.midi.io.controller_map import MINILAB3_FILTER_MAP, FilterControl
+from jdxi_editor.midi.io.controller_map import (
+    MINILAB3,
+    ControllerProfile,
+    FilterControl,
+)
 from jdxi_editor.project import __organization_name__, __program__
 
-#: QSettings group holding one key per mapped control
+#: QSettings group holding one key per mapped control (MiniLab 3; other
+#: controllers use :func:`mapping_group`)
 MAPPING_GROUP = "midi_controller/mapping"
+
+
+def mapping_group(profile: ControllerProfile = MINILAB3) -> str:
+    """
+    QSettings group for ``profile``'s learnt mappings.
+
+    The MiniLab 3 keeps the original group, so mappings learnt before other
+    controllers were supported still load.
+
+    :param profile: ControllerProfile
+    :return: str settings group
+    """
+    if profile.profile_id == MINILAB3.profile_id:
+        return MAPPING_GROUP
+    return f"midi_controller/{profile.profile_id}/mapping"
 
 
 def _settings() -> QSettings:
@@ -35,16 +55,21 @@ def _settings() -> QSettings:
     return QSettings(__organization_name__, __program__)
 
 
-def default_filter_map() -> Dict[int, FilterControl]:
+def default_filter_map(
+    profile: ControllerProfile = MINILAB3,
+) -> Dict[int, FilterControl]:
     """
-    The built-in MiniLab 3 map.
+    The built-in map of ``profile``.
 
+    :param profile: ControllerProfile defaults to the MiniLab 3
     :return: dict CC number -> FilterControl
     """
-    return dict(MINILAB3_FILTER_MAP)
+    return dict(profile.cc_map)
 
 
-def load_filter_map(settings: Optional[QSettings] = None) -> Dict[int, FilterControl]:
+def load_filter_map(
+    settings: Optional[QSettings] = None, profile: ControllerProfile = MINILAB3
+) -> Dict[int, FilterControl]:
     """
     The stored mapping, falling back to the built-in one per control.
 
@@ -53,62 +78,74 @@ def load_filter_map(settings: Optional[QSettings] = None) -> Dict[int, FilterCon
 
     :param settings: Optional[QSettings] store to read; defaults to the
         application's own
+    :param profile: ControllerProfile whose mappings and defaults to use
     :return: dict CC number -> FilterControl
     """
     store = _settings() if settings is None else settings
+    group = mapping_group(profile)
     mapping: Dict[int, FilterControl] = {}
     for control in FilterControl:
-        value = store.value(f"{MAPPING_GROUP}/{control.name}")
+        value = store.value(f"{group}/{control.name}")
         cc = _as_cc(value)
         if cc is None:
-            cc = _default_cc(control)
+            cc = _default_cc(control, profile)
         if cc is not None:
             mapping[cc] = control
     return mapping
 
 
 def save_filter_map(
-    mapping: Dict[int, FilterControl], settings: Optional[QSettings] = None
+    mapping: Dict[int, FilterControl],
+    settings: Optional[QSettings] = None,
+    profile: ControllerProfile = MINILAB3,
 ) -> None:
     """
-    Store ``mapping``, replacing whatever was there.
+    Store ``mapping`` for ``profile``, replacing whatever was there.
 
     :param mapping: dict CC number -> FilterControl
     :param settings: Optional[QSettings] store to write; defaults to the
         application's own
+    :param profile: ControllerProfile the mapping belongs to
     :return: None
     """
     store = _settings() if settings is None else settings
-    store.remove(MAPPING_GROUP)
+    group = mapping_group(profile)
+    store.remove(group)
     for cc, control in mapping.items():
-        store.setValue(f"{MAPPING_GROUP}/{control.name}", int(cc))
+        store.setValue(f"{group}/{control.name}", int(cc))
     store.sync()
     log.message(
         f"Saved {len(mapping)} controller mappings", scope="controller_settings"
     )
 
 
-def clear_filter_map(settings: Optional[QSettings] = None) -> None:
+def clear_filter_map(
+    settings: Optional[QSettings] = None, profile: ControllerProfile = MINILAB3
+) -> None:
     """
-    Forget the stored mapping, so the built-in one is used again.
+    Forget ``profile``'s stored mapping, so its built-in one is used again.
 
     :param settings: Optional[QSettings] store to clear; defaults to the
         application's own
+    :param profile: ControllerProfile whose mapping to forget
     :return: None
     """
     store = _settings() if settings is None else settings
-    store.remove(MAPPING_GROUP)
+    store.remove(mapping_group(profile))
     store.sync()
 
 
-def _default_cc(control: FilterControl) -> Optional[int]:
+def _default_cc(
+    control: FilterControl, profile: ControllerProfile = MINILAB3
+) -> Optional[int]:
     """
-    The built-in CC number for ``control``.
+    ``profile``'s built-in CC number for ``control``.
 
     :param control: FilterControl
+    :param profile: ControllerProfile
     :return: Optional[int]
     """
-    return next((cc for cc, c in MINILAB3_FILTER_MAP.items() if c is control), None)
+    return next((cc for cc, c in profile.cc_map.items() if c is control), None)
 
 
 def _as_cc(value: object) -> Optional[int]:

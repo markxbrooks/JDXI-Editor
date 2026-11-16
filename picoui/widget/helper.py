@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialogButtonBox,
                                QDoubleSpinBox, QFileDialog, QFormLayout,
                                QGroupBox, QHBoxLayout, QLabel, QLineEdit,
                                QPushButton, QScrollArea, QSpinBox, QTabWidget,
-                               QVBoxLayout, QWidget, QLayout)
+                               QTextEdit, QVBoxLayout, QWidget, QLayout)
 
 from picoui.dimensions import Dimensions
 from picoui.helpers import (create_layout_with_items, create_row_with_widgets,
@@ -168,20 +168,39 @@ def create_button_from_spec(spec: ButtonSpec) -> QPushButton:
     return create_button(spec=spec)
 
 
+def create_label(
+    label: str = "",
+    object_name: str | None = None,
+    style_sheet: str | None = None,
+    margin: int | None = None,
+    parent: QtWidgets.QWidget | None = None,
+) -> QLabel:
+    """Create a QLabel with optional object name, stylesheet, and contents margin."""
+    widget = QLabel(label, parent)
+    if object_name:
+        widget.setObjectName(object_name)
+    if style_sheet:
+        style = style_sheet
+        if "background" not in style.lower():
+            style = f"background: transparent; {style}"
+        widget.setStyleSheet(style)
+    if margin is not None:
+        widget.setContentsMargins(margin, margin, margin, margin)
+    return widget
+
+
 def create_label_from_spec(
     spec: LabelSpec, parent: QtWidgets.QWidget | None = None
 ) -> QLabel:
     """Create a QLabel from a LabelSpec."""
-    label = QLabel(spec.label or "", parent)
-    if spec.object_name:
-        label.setObjectName(spec.object_name)
+    label = create_label(
+        label=spec.label or "",
+        object_name=spec.object_name,
+        style_sheet=spec.style,
+        parent=parent,
+    )
     if spec.dimensions is not None:
         label.setFixedSize(*spec.dimensions.to_tuple())
-    if spec.style is not None:
-        style = spec.style
-        if "background" not in style.lower():
-            style = f"background: transparent; {style}"
-        label.setStyleSheet(style)
     if spec.alignment is not None:
         label.setAlignment(spec.alignment)
     if spec.word_wrap:
@@ -195,6 +214,16 @@ def create_label_from_spec(
     if spec.slot is not None:
         label.mousePressEvent = lambda event, slot=spec.slot: slot()
     return label
+
+
+def create_text_edit(
+    readonly: bool = False,
+    parent: QtWidgets.QWidget | None = None,
+) -> QTextEdit:
+    """Create a QTextEdit, optionally read-only."""
+    edit = QTextEdit(parent)
+    edit.setReadOnly(readonly)
+    return edit
 
 
 def create_group_with_items(

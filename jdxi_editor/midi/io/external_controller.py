@@ -33,7 +33,11 @@ import rtmidi
 from decologr import Decologr as log
 from PySide6.QtCore import QObject, QTimer, Signal
 
-from jdxi_editor.midi.io.controller_map import find_controller_ports
+from jdxi_editor.midi.io.controller_map import (
+    ControllerProfile,
+    detect_profile,
+    find_controller_ports,
+)
 
 # How often the GUI thread drains messages queued by RtMidi callbacks.
 _PUMP_INTERVAL_MS = 5
@@ -93,6 +97,18 @@ class ExternalControllerInput(QObject):
         :return: bool
         """
         return bool(self._inputs)
+
+    @property
+    def profile(self) -> Optional[ControllerProfile]:
+        """
+        The supported controller being listened to or, before any port is
+        open, the one that is plugged in.
+
+        :return: Optional[ControllerProfile] None if no supported controller is connected
+        """
+        return detect_profile(self.port_names) or detect_profile(
+            self.available_ports()
+        )
 
     def available_ports(self) -> list[str]:
         """

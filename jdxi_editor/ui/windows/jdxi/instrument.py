@@ -78,6 +78,11 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.controller_map import (
+    MINILAB3,
+    ControllerProfile,
+    install_user_config,
+)
 from jdxi_editor.midi.io.controller_settings import load_filter_map
 from jdxi_editor.midi.io.external_controller import ExternalControllerInput
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
@@ -1204,17 +1209,23 @@ class JDXiInstrument(JDXiWindow):
 
         :return: None
         """
+        # ~/.jdxi_editor/midi_controllers.json, for the user to edit
+        install_user_config()
         self.external_controller = ExternalControllerInput(self)
-        # Whatever was learnt in the MIDI Controller dialog, falling back to
-        # the built-in MiniLab 3 map
+        # Whatever was learnt in the MIDI Controller dialog for the controller
+        # that is plugged in, falling back to that controller's built-in map
         self.filter_remote = FilterRemote(
             self._current_editor_tab,
-            cc_map=load_filter_map(),
+            cc_map=load_filter_map(profile=self._controller_profile()),
             effects_editor=self._effects_editor,
         )
         self.external_controller.control_changed.connect(
             self._on_external_control_change,
             Qt.ConnectionType.QueuedConnection,
+        )
+        # Swapping one controller for another (MiniLab 3 <-> VMX8) swaps maps
+        self.external_controller.ports_changed.connect(
+            lambda _ports: self._apply_controller_profile()
         )
         # Defer port open until the event loop is running so splash/UI can
         # paint and any CC flood from the controller is queued, not inline.
@@ -1225,6 +1236,26 @@ class JDXiInstrument(JDXiWindow):
         self.controller_rescan_timer.setInterval(CONTROLLER_RESCAN_MS)
         self.controller_rescan_timer.timeout.connect(self.external_controller.rescan)
         self.controller_rescan_timer.start()
+
+    def _controller_profile(self) -> ControllerProfile:
+        """
+        Profile of the connected controller, or the MiniLab 3 if none is.
+
+        :return: ControllerProfile
+        """
+        return self.external_controller.profile or MINILAB3
+
+    def _apply_controller_profile(self) -> None:
+        """
+        Give the filter remote the map of the controller now connected.
+
+        :return: None
+        """
+        profile = self._controller_profile()
+        self.filter_remote.cc_map = load_filter_map(profile=profile)
+        log.message(
+            f"External controller map: {profile.label}", scope="JDXiInstrument"
+        )
 
     def _on_external_control_change(
         self, channel: int, control: int, value: int

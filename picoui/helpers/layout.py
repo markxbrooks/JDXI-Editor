@@ -92,6 +92,7 @@ def create_layout_with_items(
     items: List[LayoutItem | None] | None = None,
     vertical: bool = False,
     start_stretch: bool = True,
+    middle_stretch: bool = False,
     end_stretch: bool = True,
     spacing: Optional[int] = None,
     margins: Optional[Union[QMargins, tuple] ] = None,
@@ -103,6 +104,7 @@ def create_layout_with_items(
     :param items: List of widgets or layouts to add.
     :param vertical: If True, use QVBoxLayout; else QHBoxLayout.
     :param start_stretch: Add stretch before widgets.
+    :param middle_stretch: Add stretch after each widget.
     :param end_stretch: Add stretch after widgets.
     :param spacing: Optional spacing between items.
     :param margins: Optional layout margins.
@@ -112,7 +114,7 @@ def create_layout_with_items(
     container_layout = create_layout(vertical=vertical, parent=parent)
     if start_stretch:
         container_layout.addStretch()
-    add_items_to_layout(container_layout, items)
+    add_items_to_layout(container_layout, items, middle_stretch)
     if end_stretch:
         container_layout.addStretch()
     if spacing is not None:
@@ -126,7 +128,8 @@ def create_layout_with_items(
 
 
 def add_items_to_layout(container_layout: QVBoxLayout | QHBoxLayout,
-                        items: list[QWidget | QHBoxLayout | QVBoxLayout | QProgressBar | QFormLayout | None] | None):
+                        items: list[QWidget | QHBoxLayout | QVBoxLayout | QProgressBar | QFormLayout | None] | None,
+                        stretch: bool = False):
     """Add items to layout"""
     if items is not None:
         for item in items:
@@ -136,6 +139,8 @@ def add_items_to_layout(container_layout: QVBoxLayout | QHBoxLayout,
                 container_layout.addLayout(item)
             else:
                 container_layout.addWidget(item)
+            if stretch:
+                container_layout.addStretch(True)
 
 
 def create_row_with_widgets(widgets: List[QWidget], spacing: int = 4) -> QHBoxLayout:

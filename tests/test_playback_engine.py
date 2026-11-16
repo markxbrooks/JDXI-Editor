@@ -708,5 +708,92 @@ def test_engine_rejects_midi_type_2():
         engine.load_file(mid)
 
 
+def test_engine_loop_multi_wrap_recovers_long_stall(clock):
+    """A stall longer than two loop lengths keeps the remainder overshoot."""
+    engine, received = _loaded_engine()
+    engine.set_loop(True, (0, 480))  # 0.5 s loop
+    engine.start(0)
+    # 1.3 s past start → cross end at 0.5 and 1.0; remainder 0.3 into third pass
+    clock.now = 1001.3
+    assert engine.process_until_now() is False
+    assert engine.state == TransportState.PLAYING
+    assert engine.position_seconds == pytest.approx(0.3, abs=1e-6)
+    assert sum(1 for m in received if m.type == "note_on" and m.note == 60) >= 1
+
+
+def test_engine_transpose_shifts_notes_and_release_pitch(clock):
+    """Transpose +12 shifts sounding notes; release uses the sounding pitch."""
+    engine, received = _loaded_engine()
+    engine.set_track_transpose(0, 12)
+    engine.start(0)
+    engine.process_until_now()
+    assert [(m.type, m.note) for m in received if m.type == "note_on"] == [
+        ("note_on", 72)
+    ]
+    assert engine._held_notes == {(0, 72): {0: 1}}
+    engine.stop()
+    assert (received[-1].type, received[-1].note) == ("note_off", 72)
+    assert engine._held_notes == {}
+
+
+def test_engine_transpose_out_of_range_suppresses_note(clock):
+    """Notes that leave 0–127 after transpose are not sent."""
+    engine, received = _loaded_engine()
+    engine.set_track_transpose(0, 80)  # 60+80 = 140
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert [m for m in received if m.type.startswith("note")] == []
+
+
+def test_engine_channel_remap_and_mute_follow_output(clock):
+    """Remapped notes use the output channel; channel mute follows that channel."""
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.start(0)
+    engine.process_until_now()
+    assert all(m.channel == 3 for m in received if hasattr(m, "channel"))
+    assert engine._held_notes == {(3, 60): {0: 1}}
+
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.mute_channel(3, True)
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert received == []
+
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.mute_channel(0, True)  # file channel muted, output is 3
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "note_on" and m.channel == 3 for m in received)
+
+
+def test_engine_track_volume_stacks_with_velocity_scale(clock):
+    """Track volume multiplies velocity after velocity scale."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.set_track_velocity_scale(0, 0.5)
+    engine.set_track_volume(0, 0.5)
+    engine.mute_track(1, True)
+    engine.start(0)
+    engine.process_until_now()
+    ons = [m for m in received if m.type == "note_on"]
+    assert len(ons) == 1
+    assert ons[0].velocity == 16  # 64 * 0.5 * 0.5
+
+
+def test_engine_track_volume_zero_suppresses_note_ons(clock):
+    """Volume 0.0 suppresses note-ons; note-offs still pass."""
+    engine, received = _loaded_engine()
+    engine.set_track_volume(0, 0.0)
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert [m for m in received if m.type == "note_on"] == []
+    assert [m for m in received if m.type == "note_off"]
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

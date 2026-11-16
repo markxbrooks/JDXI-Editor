@@ -328,6 +328,47 @@ class TransportController(QObject):
                     track_index, scales.get(track_index, 1.0)
                 )
 
+    def set_track_volumes(self, volumes: dict[int, float]) -> None:
+        """
+        Set tracks' overall note-on levels (0.0–1.0); next notes only.
+
+        :param volumes: 0-based track index -> level (absent = 1.0)
+        """
+        with self._lock:
+            track_count = len(self.engine.midi_file.tracks) if self._loaded else 0
+            for track_index in range(track_count):
+                self.engine.set_track_volume(
+                    track_index, volumes.get(track_index, 1.0)
+                )
+
+    def set_track_transposes(self, semitones: dict[int, int]) -> None:
+        """
+        Transpose tracks by semitones; takes effect on the next notes.
+
+        :param semitones: 0-based track index -> offset (absent = 0)
+        """
+        with self._lock:
+            track_count = len(self.engine.midi_file.tracks) if self._loaded else 0
+            for track_index in range(track_count):
+                self.engine.set_track_transpose(
+                    track_index, semitones.get(track_index, 0)
+                )
+
+    def set_track_channel_maps(
+        self, channels: dict[int, Optional[int]]
+    ) -> None:
+        """
+        Remap tracks to output MIDI channels; None restores the file channel.
+
+        :param channels: 0-based track index -> channel 0–15 or None
+        """
+        with self._lock:
+            track_count = len(self.engine.midi_file.tracks) if self._loaded else 0
+            for track_index in range(track_count):
+                self.engine.set_track_channel_map(
+                    track_index, channels.get(track_index)
+                )
+
     def set_suppression(self, program_changes: bool, control_changes: bool) -> None:
         """Choose whether program changes / control changes in the file are sent."""
         with self._lock:
