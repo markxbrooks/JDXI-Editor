@@ -515,11 +515,21 @@ class MidiControllerDialog(QMainWindow):
         self.connect_button.setEnabled(controller is not None)
         self.disconnect_button.setEnabled(connected)
 
-        available = controller.available_ports() if controller is not None else []
+        available_ports = controller.available_ports() if controller is not None else []
+        self.information_text_update(available_ports, ports)
+
+    def information_text_update(self, available_ports: list[Any] | Any, ports: list[Any] | Any):
+        """
+        information_text_update
+
+        :param available_ports:
+        :param ports:
+        :return:
+        """
         self.information_text.setPlainText(
             "\n".join(
                 [
-                    f"Available ports: {len(available)}",
+                    f"Available ports: {len(available_ports)}",
                     f"Listening to: {', '.join(ports) if ports else 'nothing'}",
                     f"Mapped controls: {len(self.cc_map)}",
                     f"Filter controls: {len(list(FilterControl))}",
