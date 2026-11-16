@@ -283,13 +283,13 @@ class MidiControllerDialog(QMainWindow):
 
     def create_action_button_specs(self) -> list[ButtonSpec]:
         """create_action_button_specs"""
-        self.refresh_button_spec = ButtonSpec(label="Refresh Ports", slot=self.refresh_ports)
-        self.connect_button_spec = ButtonSpec(label="Connect", slot=self.connect_controller)
-        self.disconnect_button_spec = ButtonSpec(label="Disconnect", slot=self.disconnect_controller)
+        refresh_button_spec = ButtonSpec(label="Refresh Ports", slot=self.refresh_ports)
+        connect_button_spec = ButtonSpec(label="Connect", slot=self.connect_controller)
+        disconnect_button_spec = ButtonSpec(label="Disconnect", slot=self.disconnect_controller)
         actions_specs = [
-            self.refresh_button_spec,
-            self.connect_button_spec,
-            self.disconnect_button_spec
+            refresh_button_spec,
+            connect_button_spec,
+            disconnect_button_spec
         ]
         return actions_specs
 
