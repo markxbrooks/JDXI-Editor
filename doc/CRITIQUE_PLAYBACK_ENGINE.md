@@ -1585,7 +1585,7 @@ self._muted_tracks.add(track_index)self.release_held_notes(track_index=track_ind
 
 The controller state is only restored when a track is unmuted.&#x20;
 
-Pasted markdown(20261116-043828).md
+Pasted markdown(20261116-043828).mdF
 
 
 
