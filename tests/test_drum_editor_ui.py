@@ -74,12 +74,12 @@ def test_glossy_panels_survive_the_main_editor_host():
     In the app every editor sits in MainEditor's QTabWidget, and MainEditor is
     itself an editor body: the editors' panels must stay glossy black there.
     """
-    from PySide6.QtWidgets import QGroupBox
-
     from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
     from jdxi_editor.ui.editors.main import MainEditor
     from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
+    from jdxi_editor.ui.style.rack_skin import set_active_skin
 
+    set_active_skin("glossy_black", remember=False)
     host = MainEditor()
     digital = DigitalSynthEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
     player = MidiFilePlayer(midi_helper=MagicMock(), preset_helper=MagicMock())
@@ -96,15 +96,11 @@ def test_glossy_panels_survive_the_main_editor_host():
 
         host.editor_tab_widget.setCurrentWidget(player)
         _APP.processEvents()
-        def outermost(group):
-            parent = group.parentWidget()
-            while parent is not None and parent is not player:
-                if isinstance(parent, QGroupBox):
-                    return False
-                parent = parent.parentWidget()
-            return True
+        from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
-        panel = next(g for g in player.findChildren(QGroupBox) if outermost(g))
+        panels = player.findChildren(RackPanel)
+        assert panels
+        panel = panels[0]
         assert _lightness_at(host, panel, panel.width() // 2, panel.height() - 10) < 25
     finally:
         host.close()
@@ -166,26 +162,26 @@ def test_mixer_is_laid_out_like_a_kit(drum_editor):
     icons = [l for l in mixer.findChildren(QLabel) if l.pixmap() and not l.pixmap().isNull()]
     assert len(icons) == 27  # every strip shows its drum (or keyboard) icon
     assert mixer.title_label.isVisible()  # the Drum Kit Mixer display
-    # Display and every strip sit inside the one glossy panel
-    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+    # Display and every strip sit inside the one rack panel
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
-    assert mixer.panel.property(SHEEN_PROPERTY)
+    assert isinstance(mixer.panel, RackPanel)
     assert mixer.panel.isAncestorOf(mixer.title_label)
     assert all(mixer.panel.isAncestorOf(s) for s in mixer.mixer_sliders.values())
 
 
 def test_arpeggiator_controls_sit_on_a_glossy_panel():
     """The Arpeggiator's switches, combos and sliders are on one glossy panel; no empty tab strip."""
-    from PySide6.QtWidgets import QComboBox, QGroupBox
+    from PySide6.QtWidgets import QComboBox
 
     from jdxi_editor.ui.editors.arpeggio.arpeggio import ArpeggioEditor
-    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
     editor = ArpeggioEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
     try:
-        _APP.processEvents()  # sheen marking runs once the editor is built
+        _APP.processEvents()
         combos = editor.findChildren(QComboBox)
-        panels = [g for g in editor.findChildren(QGroupBox) if g.property(SHEEN_PROPERTY)]
+        panels = editor.findChildren(RackPanel)
         assert combos and any(all(p.isAncestorOf(c) for c in combos) for p in panels)
         assert editor.editor_helper.get_tab_widget().isHidden()
     finally:
@@ -196,11 +192,11 @@ def test_arpeggiator_controls_sit_on_a_glossy_panel():
 def test_program_mixer_sits_on_a_glossy_panel():
     """The Program editor's Mixer Level Settings are a section on their own glossy panel."""
     from jdxi_editor.ui.editors.program.editor import ProgramEditor
-    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
     editor = ProgramEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
     try:
-        assert editor.mixer_panel.property(SHEEN_PROPERTY)
+        assert isinstance(editor.mixer_panel, RackPanel)
         assert editor.mixer_panel.isAncestorOf(editor.mixer_widget.mixer_group)
     finally:
         editor.close()

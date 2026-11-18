@@ -73,6 +73,7 @@ from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
+from jdxi_editor.ui.widgets.rack import RackPanel
 from jdxi_editor.ui.windows.midi.helpers.sysex_decode import (
     decode_parameter_dump,
     frame_sysex,
@@ -130,7 +131,9 @@ class MIDIDebugger(QMainWindow):
 
         # Create central widget
         central = QWidget()
-        self.setCentralWidget(central)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(central))
         layout = QVBoxLayout(central)
 
         # Tab widget: SysEx and CC/PC

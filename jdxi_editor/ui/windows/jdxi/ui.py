@@ -45,6 +45,7 @@ from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
+from jdxi_editor.ui.widgets.rack import RackStatusBar
 from jdxi_editor.ui.windows.jdxi.containers import (
     add_digital_display,
     add_effects_container,
@@ -111,6 +112,10 @@ class JDXiWindow(QMainWindow):
         self._load_digital_font()
 
         # --- Create UI
+        # The bottom strip is part of the instrument, ears and all. It has to
+        # be installed before anything asks for statusBar(): setStatusBar
+        # deletes the bar it replaces, and everything inside it with it.
+        self.setStatusBar(RackStatusBar(self))
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
@@ -252,10 +257,36 @@ class JDXiWindow(QMainWindow):
             action.setCheckable(True)
             action.setChecked(skin_id == current)
             action.triggered.connect(
-                lambda _checked=False, chosen=skin_id: set_active_skin(chosen)
+                lambda _checked=False, chosen=skin_id: self._apply_skin(chosen)
             )
             group.addAction(action)
             submenu.addAction(action)
+
+    def _apply_skin(self, skin_id: str) -> None:
+        """
+        Wear ``skin_id`` everywhere: chrome, and the picture of the instrument.
+
+        The instrument is drawn once into a pixmap, so it has to be drawn
+        again; the chrome follows the skin by itself.
+
+        :param skin_id: str a key of rack_skin.SKINS
+        :return: None
+        """
+        from jdxi_editor.ui.style.rack_skin import set_active_skin
+
+        set_active_skin(skin_id)
+        self.refresh_instrument_image()
+        self.apply_keyboard_area_skin()
+
+    def refresh_instrument_image(self) -> None:
+        """
+        Draw the instrument again in the current skin.
+
+        :return: None
+        """
+        if getattr(self, "image_label", None) is None:
+            return
+        self.image_label.setPixmap(draw_instrument_pixmap())
 
     def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
@@ -513,10 +544,30 @@ class JDXiWindow(QMainWindow):
         # --- Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        # Keyboard area: the same matte body colour as around the panel
-        from jdxi_editor.ui.image.instrument import BODY_COLOR
+        self.apply_keyboard_area_skin()
 
-        status_bar.setStyleSheet(f"background-color: {BODY_COLOR};")
+    def apply_keyboard_area_skin(self) -> None:
+        """
+        Dress the keyboard area in the active skin.
+
+        The wheels, indicators and keys sit on the instrument's body, so the
+        strip behind them is the skin's body colour, as it is around the
+        panel above.
+
+        :return: None
+        """
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        skin = active_skin()
+        self.statusBar().setStyleSheet(
+            f"QStatusBar {{ background-color: {skin.chassis.body}; }}"
+            f"QStatusBar QLabel {{ color: {skin.foreground.text}; }}"
+        )
+        if getattr(self, "piano_keyboard", None) is not None:
+            self.piano_keyboard.apply_skin()
+        status_bar = self.statusBar()
+        if isinstance(status_bar, RackStatusBar):
+            status_bar.apply_skin()
 
     def _build_status_layout(self) -> None:
         layout = QVBoxLayout()

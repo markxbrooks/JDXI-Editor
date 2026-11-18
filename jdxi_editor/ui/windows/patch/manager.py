@@ -66,6 +66,7 @@ from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.midi_player.editor import MidiFilePlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.style import JDXiUIDimensions
+from jdxi_editor.ui.widgets.rack import RackPanel
 from picoui.specs.widgets import FileSelectionMode, FileSelectionSpec
 
 
@@ -149,7 +150,9 @@ class PatchManager(QMainWindow):
         layout.addLayout(button_layout)
 
         # Set central widget
-        self.setCentralWidget(main_widget)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(main_widget))
         self.json_composer = JDXiJSONComposer()
 
     def _browse_file(self):

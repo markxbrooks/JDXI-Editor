@@ -263,11 +263,13 @@ class MidiFilePlayer(SynthEditor):
         # top, the timeline, transport and playback below. The groups inside a
         # panel draw as flat sections (see AppEditorStyle).
 
+        # Two rack panels, cheeks included: the title and automation above
+        # the timeline, and the transport below it. The timeline stays flush.
         main_layout_items = [
                 (create_panel(header_widget), 0),
-                (self.midi_file, 0), 
-                (self.midi_file.midi_track_viewer, 1), 
-                (create_panel(centered_widget, self.playback_options), 0)
+                (self.midi_file, 0),
+                (self.midi_file.midi_track_viewer, 1),
+                (create_panel(centered_widget, self.playback_options), 0),
             ]
         for item, stretch in main_layout_items:
             main_layout.addWidget(item, stretch)

@@ -9,7 +9,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtCore import QRectF, Qt  # noqa: E402
-from PySide6.QtGui import QImage, QPainter  # noqa: E402
+from PySide6.QtGui import QColor, QImage, QPainter  # noqa: E402
 from PySide6.QtWidgets import QApplication, QLabel  # noqa: E402
 
 from jdxi_editor.ui.style import rack_skin  # noqa: E402
@@ -91,8 +91,13 @@ def face_colour(skin) -> str:
 def test_the_skins_are_offered():
     assert list(SKINS) == [
         "glossy_black",
+        "jdxi_red",
+        "jdxi_white",
         "jdxi_rack",
         "tr808",
+        "tb303",
+        "tr909",
+        "jupiter8",
         "brushed_70s",
         "ivory_walnut",
     ]
@@ -103,15 +108,20 @@ def test_lettering_is_legible_on_every_faceplate(qapp):
     Near-white lettering on satin aluminium was 1.96:1, which is why a skin
     carries its own foreground: a faceplate has to be legible whatever it is
     made of.
+
+    The body is checked as well as the panel. Lettering appears on both --
+    the keyboard area's labels sit on the body -- and checking only the
+    panel let the TB-303 ship at 3.88:1 against its own chassis.
     """
     for skin in SKINS.values():
-        face = face_colour(skin)
-        with subtest_name(skin):
-            assert contrast(skin.foreground.text, face) >= 4.5
-            assert contrast(skin.foreground.text_secondary, face) >= 3.0
+        surfaces = {"face": face_colour(skin), "body": skin.chassis.body}
+        for where, colour in surfaces.items():
+            with subtest_name(skin, where):
+                assert contrast(skin.foreground.text, colour) >= 4.5
+                assert contrast(skin.foreground.text_secondary, colour) >= 3.0
 
 
-def subtest_name(skin):
+def subtest_name(skin, where: str = ""):
     """Name the skin in a failure, without needing pytest-subtests."""
     import contextlib
 
@@ -120,15 +130,103 @@ def subtest_name(skin):
         try:
             yield
         except AssertionError as error:
-            raise AssertionError(f"{skin.skin_id}: {error}") from None
+            label = f"{skin.skin_id} ({where})" if where else skin.skin_id
+            raise AssertionError(f"{label}: {error}") from None
 
     return named()
 
 
+def face_signature(skin) -> tuple:
+    """
+    Several points across the faceplate, not just its middle.
+
+    Two skins can share a centre and still look nothing alike: the red
+    JD-Xi is the glossy panel with the body showing at its edge.
+    """
+    image = QImage(120, 80, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 119, 79))
+    painter.end()
+    points = ((60, 40), (60, 2), (60, 77), (2, 40), (117, 40), (20, 20))
+    return tuple(image.pixelColor(x, y).name() for x, y in points)
+
+
 def test_each_face_is_distinct(qapp):
     # The complaint that started this: two skins that render the same
-    faces = {skin.skin_id: face_colour(skin) for skin in SKINS.values()}
+    faces = {skin.skin_id: face_signature(skin) for skin in SKINS.values()}
     assert len(set(faces.values())) == len(faces), faces
+
+
+def test_the_303_wears_its_step_keyboard(qapp):
+    """The step buttons are a keyboard on the machine, so they are here too."""
+    from jdxi_editor.ui.style.rack_skin import Tb303Skin
+
+    skin = Tb303Skin()
+    image = QImage(560, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 559, 59))
+    painter.end()
+
+    # Along the top of the band the black keys alternate with ivory ones;
+    # below them the keys are all ivory
+    row = [image.pixelColor(x, 56).name() for x in range(10, 550, 5)]
+    assert skin.key_black.lower() in row
+    assert skin.key_ivory.lower() in row
+    bottom = {image.pixelColor(x, 58).name() for x in range(10, 550, 5)}
+    assert skin.key_black.lower() not in bottom
+
+
+def test_the_jupiter_wears_its_header_bar_and_patch_buttons(qapp):
+    """
+    The red section bar is the JP-8's signature, so it takes the whole top
+    edge; the patch buttons are separate keys, not a continuous stripe.
+    """
+    from jdxi_editor.ui.style.rack_skin import Jupiter8Skin
+
+    skin = Jupiter8Skin()
+    image = QImage(360, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 359, 59))
+    painter.end()
+
+    header = [image.pixelColor(x, 1).name() for x in (20, 180, 340)]
+    assert header == [skin.header_color.lower()] * 3
+
+    # The panel shows between the buttons, which is what makes them buttons
+    band = [image.pixelColor(x, 57).name() for x in range(4, 356, 2)]
+    assert any(colour.lower() in band for colour in skin.button_colors)
+    assert "#1a1a1a" in band
+
+
+def test_the_909_wears_its_step_buttons_and_lights(qapp):
+    """Cream buttons in fours, each with a light above it, lit on the downbeat."""
+    from jdxi_editor.ui.style.rack_skin import Tr909Skin
+
+    skin = Tr909Skin()
+    image = QImage(640, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 639, 59))
+    painter.end()
+
+    step = 640 / skin.steps
+    buttons = [
+        image.pixelColor(int((index + 0.5) * step), 57).name()
+        for index in range(skin.steps)
+    ]
+    assert buttons == [skin.button_color.lower()] * skin.steps
+
+    lights = [
+        image.pixelColor(int((index + 0.5) * step), 54).name()
+        for index in range(skin.steps)
+    ]
+    lit = [index for index, colour in enumerate(lights)
+           if colour == skin.led_color.lower()]
+    assert lit == [0, 4, 8, 12]
 
 
 def test_the_808_wears_its_step_buttons(qapp):
@@ -208,12 +306,19 @@ def test_each_skin_carries_its_own_display_palette():
     texts = {skin.skin_id: skin.lcd.text for skin in SKINS.values()}
     assert texts == {
         "glossy_black": "#FF6A00",   # the JD-Xi's orange on dark red
+        "jdxi_red": "#FF6A00",       # the same machine, so the same display
+        "jdxi_white": "#FF6A00",     # and so is this one
         "jdxi_rack": "#CFEEFF",      # the rack unit's blue backlit screen
         "tr808": "#FF4A33",          # the 808's red step LEDs
+        "tb303": "#FF1F10",          # the 303's red LED numerals
+        "tr909": "#FF3A20",          # the 909's red LED display
+        "jupiter8": "#FF2A14",       # the JP-8's patch number display
         "brushed_70s": "#5BFF9B",    # a green fluorescent display
         "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }
-    assert len(set(texts.values())) == len(texts)
+    # Displays are not unique across skins and should not be: the red JD-Xi
+    # has the same screen as the black one. What keeps the skins apart is
+    # their faceplates (see test_each_face_is_distinct).
 
 
 def test_setting_the_active_skin(qapp):
@@ -250,6 +355,33 @@ def test_the_stylesheet_image_is_named_after_the_skin(qapp):
 # ----------------------------------------------------------------------
 # The panel
 # ----------------------------------------------------------------------
+def test_rack_ears_follow_the_skin(qapp):
+    """A strip grows ears with a rack skin and loses them with the default."""
+    from PySide6.QtWidgets import QLabel
+
+    from jdxi_editor.ui.style.rack_skin import JdxiRackSkin
+    from jdxi_editor.ui.widgets.rack.ears import RackEars
+
+    set_active_skin("jdxi_rack", remember=False)
+    strip = RackEars(QLabel("content"))
+    ears = JdxiRackSkin().ear_width
+    assert strip.layout().contentsMargins().left() == ears
+    assert strip.layout().contentsMargins().right() == ears
+
+    set_active_skin("glossy_black", remember=False)
+    assert strip.layout().contentsMargins().left() == 0
+    assert strip.layout().contentsMargins().right() == 0
+
+    set_active_skin("jdxi_rack", remember=False)
+    strip.resize(240, 80)
+    image = QImage(strip.size(), QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    strip.render(image)
+    # The ear is metal; the middle, past the ear, is not that same pixel.
+    assert image.pixelColor(4, 40).alpha() > 0
+    assert image.pixelColor(4, 40) != image.pixelColor(ears + 8, 40)
+
+
 def test_the_panel_gives_its_margins_to_the_skin(qapp):
     panel = RackPanel(QLabel("content"), skin="jdxi_rack")
     margins = panel.layout().contentsMargins()
@@ -356,9 +488,9 @@ def test_switching_survives_widgets_whose_update_takes_an_index(qapp):
 
 def test_the_jdxi_skin_is_recognisable_without_a_rack_panel(qapp):
     """
-    Its ears can only be drawn by a RackPanel, so the stripe has to be part
-    of the face: otherwise the skin is identical to the plain glossy one
-    everywhere the faceplate arrives as a stylesheet image.
+    Ears are drawn by a widget, never by the nine-slice, so the stripe has to
+    be part of the face: otherwise the skin is identical to the plain glossy
+    one everywhere the faceplate arrives as a stylesheet image.
     """
     from jdxi_editor.ui.style.rack_skin import JdxiRackSkin
 
@@ -386,6 +518,215 @@ def QColorRGB(name: str) -> tuple:
 
     colour = QColor(name)
     return colour.red(), colour.green(), colour.blue()
+
+
+def test_brushed_metal_prints_ink_and_mounts_its_controls(qapp):
+    """
+    The brushed plate silkscreens its section titles and shades idle buttons
+    as caps. Other skins keep the red section rule, and a lit button stays red.
+    """
+    from jdxi_editor.ui.style.editor_style import AppEditorStyle, CHASSIS_MARKER
+    from jdxi_editor.ui.style.factory import active_round_button_style
+    from jdxi_editor.ui.style.jdxi import JDXiUIStyle
+    from jdxi_editor.ui.style.rack_skin import DARK_LETTERING
+
+    set_active_skin("brushed_70s", remember=False)
+    chassis = AppEditorStyle.editor_stylesheet()
+    chassis = chassis[chassis.index(CHASSIS_MARKER) :]
+    assert "QGroupBox::title" in chassis
+    assert DARK_LETTERING.text in chassis
+    assert DARK_LETTERING.rule in chassis
+    assert "stop:0 #4A4A46" in chassis
+    cap = active_round_button_style()
+    assert cap == JDXiUIStyle.BUTTON_ROUND_CAP
+    assert "#E04435" not in cap.split("QPushButton:checked")[0]
+    assert "border_pressed" in cap or ":checked" in cap
+
+    set_active_skin("glossy_black", remember=False)
+    chassis = AppEditorStyle.editor_stylesheet()
+    chassis = chassis[chassis.index(CHASSIS_MARKER) :]
+    assert "QGroupBox::title" not in chassis
+    assert active_round_button_style() == JDXiUIStyle.BUTTON_ROUND
+
+
+def test_the_body_and_tabs_follow_the_skin(qapp):
+    """
+    The skin reaches past the panels: the body the editors are mounted on,
+    and the tabs standing on it, are the skin's too.
+    """
+    from jdxi_editor.ui.style.editor_style import AppEditorStyle, CHASSIS_MARKER
+
+    for skin in SKINS.values():
+        set_active_skin(skin, remember=False)
+        sheet = AppEditorStyle.editor_stylesheet()
+        chassis = sheet[sheet.index(CHASSIS_MARKER) :]
+        assert skin.chassis.body in chassis, skin.skin_id
+        assert skin.chassis.surface_alt in chassis, skin.skin_id
+        assert skin.chassis.accent in chassis, skin.skin_id
+
+
+def test_the_drawn_instrument_follows_the_skin(qapp):
+    """The picture of the JD-Xi wears the same faceplate as the editors."""
+    from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
+
+    def instrument_colours() -> tuple:
+        image = draw_instrument_pixmap().toImage()
+        body = image.pixelColor(3, 3)
+        panel = image.pixelColor(250, 120)
+        return body.name(), panel.name()
+
+    set_active_skin("glossy_black", remember=False)
+    dark_body, dark_panel = instrument_colours()
+    set_active_skin("tr909", remember=False)
+    light_body, light_panel = instrument_colours()
+
+    assert dark_body != light_body
+    assert dark_panel != light_panel
+    # the light skin really is light, rather than merely different
+    assert QColor(light_panel).lightness() > QColor(dark_panel).lightness() + 100
+
+
+def test_a_skin_may_drop_the_sheen(qapp):
+    """
+    The instrument's right-hand panel is drawn without the reflection, as on
+    the JD-Xi, so the faceplate has to be paintable either way.
+    """
+    def render(sheen: bool) -> QImage:
+        image = QImage(120, 60, QImage.Format.Format_ARGB32)
+        image.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(image)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        RackSkin().paint_face(painter, QRectF(0.5, 0.5, 119, 59), sheen=sheen)
+        painter.end()
+        return image
+
+    assert render(True) != render(False)
+    # every skin accepts the flag, whether or not it has a reflection to drop
+    for skin in SKINS.values():
+        image = QImage(60, 40, QImage.Format.Format_ARGB32)
+        painter = QPainter(image)
+        skin.paint_face(painter, QRectF(0.5, 0.5, 59, 39), sheen=False)
+        painter.end()
+
+
+def test_the_keyboard_area_follows_the_skin(qapp):
+    """
+    The wheels, indicators and keys sit on the instrument's body, so the
+    strip behind them is the skin's too, and its lettering is silkscreen.
+    """
+    from PySide6.QtWidgets import QMainWindow
+
+    from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
+    from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
+
+    class Window(QMainWindow):
+        apply_keyboard_area_skin = JDXiWindow.apply_keyboard_area_skin
+
+        def __init__(self):
+            super().__init__()
+            self.piano_keyboard = PianoKeyboard(parent=self)
+            self.statusBar().addPermanentWidget(self.piano_keyboard)
+
+    window = Window()
+    try:
+        for skin in SKINS.values():
+            set_active_skin(skin, remember=False)
+            window.apply_keyboard_area_skin()
+            assert skin.chassis.body in window.statusBar().styleSheet(), skin.skin_id
+            label = window.piano_keyboard.drum_labels[0].styleSheet()
+            assert skin.foreground.text_secondary in label, skin.skin_id
+    finally:
+        window.close()
+
+
+def test_the_tool_windows_are_rack_mounted(qapp):
+    """The monitor, the controller dialog and the log viewer wear a faceplate."""
+    from jdxi_editor.ui.widgets.rack import RackPanel
+    from jdxi_editor.ui.widgets.viewer.log import LogViewer
+    from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
+    from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
+
+    for factory in (MIDIMessageMonitor, MidiControllerDialog, LogViewer):
+        window = factory()
+        try:
+            assert isinstance(window.centralWidget(), RackPanel), factory.__name__
+        finally:
+            window.close()
+
+
+def test_the_keyboard_strip_wears_the_skins_ears(qapp):
+    """
+    The strip along the bottom is part of the instrument, so it takes the
+    ears too -- and none at all from a skin that declares none.
+    """
+    from jdxi_editor.ui.widgets.rack import RackStatusBar
+
+    bar = RackStatusBar()
+    try:
+        for skin in SKINS.values():
+            set_active_skin(skin, remember=False)
+            bar.apply_skin()
+            margins = bar.contentsMargins()
+            assert margins.left() == skin.ear_width, skin.skin_id
+            assert margins.right() == skin.ear_width, skin.skin_id
+
+        def strip() -> QImage:
+            bar.resize(300, 60)
+            image = QImage(300, 60, QImage.Format.Format_ARGB32)
+            image.fill(Qt.GlobalColor.transparent)
+            bar.render(image)
+            return image
+
+        set_active_skin("ivory_walnut", remember=False)
+        bar.apply_skin()
+        walnut = strip().pixelColor(4, 30)
+        set_active_skin("glossy_black", remember=False)
+        bar.apply_skin()
+        plain = strip().pixelColor(4, 30)
+        # the walnut cheek is there, and the skin without ears draws none
+        assert walnut != plain
+        assert walnut.red() > walnut.blue() + 30, walnut.name()
+    finally:
+        bar.close()
+
+
+def test_widgets_added_to_the_rack_status_bar_stay_alive(qapp):
+    """
+    The Instrument window installs its status bar before filling it.
+
+    setStatusBar deletes the bar it replaces; adding the MIDI indicators
+    first and replacing the bar afterwards left them as live Python objects
+    over dead C++ ones, and the window crashed on the next set_state.
+    Installing first means nothing is ever replaced.
+    """
+    from PySide6.QtWidgets import QMainWindow
+
+    from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
+    from jdxi_editor.ui.widgets.rack import RackStatusBar
+
+    window = QMainWindow()
+    window.setStatusBar(RackStatusBar(window))
+    indicator = LEDIndicator()
+    window.statusBar().addPermanentWidget(indicator)
+    qapp.processEvents()
+
+    indicator.set_state(True)  # the call that crashed
+    assert indicator.parent() is not None
+    window.close()
+
+
+def test_the_window_installs_its_status_bar_before_filling_it(qapp):
+    """
+    The ordering cannot be exercised here -- the window's menu calls methods
+    its subclass defines -- so the constructor is read instead. It is a
+    constraint between two lines, and this is what guards it.
+    """
+    import inspect
+
+    from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
+
+    source = inspect.getsource(JDXiWindow.__init__)
+    assert source.index("setStatusBar") < source.index("_create_status_bar()")
 
 
 def test_the_display_follows_the_skin(qapp):

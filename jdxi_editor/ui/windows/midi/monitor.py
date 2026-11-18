@@ -23,6 +23,7 @@ from PySide6.QtWidgets import QMainWindow, QTextEdit, QVBoxLayout, QWidget
 from jdxi_editor.midi.io.external_controller import ExternalControllerInput
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.theme import ThemeManager
+from jdxi_editor.ui.widgets.rack import RackPanel
 
 
 class MIDIMessageMonitor(QMainWindow):
@@ -45,7 +46,9 @@ class MIDIMessageMonitor(QMainWindow):
 
         # Create central widget
         central = QWidget()
-        self.setCentralWidget(central)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(central))
         layout = QVBoxLayout(central)
 
         # Create log view

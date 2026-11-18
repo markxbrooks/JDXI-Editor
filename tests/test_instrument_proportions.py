@@ -21,6 +21,23 @@ from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 
 
+@pytest.fixture
+def default_skin():
+    """
+    The JD-Xi's own finish.
+
+    The instrument is drawn in whichever skin is chosen, which for a test is
+    whatever happens to be saved in the user's settings, so a test about the
+    JD-Xi's own look has to pin it.
+    """
+    from jdxi_editor.ui.style import rack_skin
+
+    saved = rack_skin._active
+    rack_skin._active = rack_skin.SKINS["glossy_black"]
+    yield rack_skin._active
+    rack_skin._active = saved
+
+
 @pytest.fixture(scope="module")
 def window():
     """
@@ -75,7 +92,7 @@ def test_bottom_row_sits_on_the_panel_edge(window):
         assert edge - 20 <= bottom(widget) <= edge, widget
 
 
-def test_finish_matte_body_and_glossy_panel():
+def test_finish_matte_body_and_glossy_panel(default_skin):
     from PySide6.QtGui import QColor
 
     from jdxi_editor.ui.image.instrument import PANEL_INSET

@@ -94,14 +94,49 @@ class Foreground:
     rule: str
 
 
+@dataclass(frozen=True)
+class Chassis:
+    """
+    The body the panels are mounted on, and the control surfaces on it.
+
+    The faceplate is only part of a skin: behind it is the instrument's body,
+    and standing on it are the tabs, lists and fields. Those stay dark even
+    on a pale skin -- they are the electronics, not the chassis -- so they
+    are given here rather than derived from the faceplate.
+
+    :param body: str the matte body behind the panels
+    :param surface: str control surfaces (selected tab, lists, menus)
+    :param surface_alt: str quieter control surfaces (unselected tabs)
+    :param border: str outlines between them
+    :param accent: str the skin's own accent, for the selected tab's underline
+    """
+
+    body: str
+    surface: str
+    surface_alt: str
+    border: str
+    accent: str
+
+
+#: The JD-Xi's matte black body and the application's dark controls
+DARK_CHASSIS = Chassis(
+    body="#2C2C2C",
+    surface="#202020",
+    surface_alt="#292929",
+    border="#383838",
+    accent="#E04435",
+)
+
+
 #: What the dark skins use: the application's own colours
 LIGHT_LETTERING = Foreground(
     text="#E6E6E6", text_secondary="#999999", rule="#3A3A3C"
 )
 
-#: Silkscreen on a pale faceplate
+#: Silkscreen on a pale faceplate. The secondary ink is dark enough to hold
+#: up on the body as well as the panel, which is a shade deeper.
 DARK_LETTERING = Foreground(
-    text="#1E1E1C", text_secondary="#46453F", rule="#7A7A77"
+    text="#1E1E1C", text_secondary="#3A3935", rule="#7A7A77"
 )
 
 
@@ -141,6 +176,33 @@ LED_RED_LCD = LcdPalette(
     text_dim="#B3301F",
 )
 
+#: The TB-303's red LED numerals, harder and purer than the 808's
+LED_303_LCD = LcdPalette(
+    bg_edge="#140604",
+    bg_mid="#2A0A06",
+    bg_glow="#49100A",
+    text="#FF1F10",
+    text_dim="#A81608",
+)
+
+#: The TR-909's red LED display, in its dark neutral bezel
+LED_909_LCD = LcdPalette(
+    bg_edge="#0E0D0D",
+    bg_mid="#241513",
+    bg_glow="#3E1A15",
+    text="#FF3A20",
+    text_dim="#AD2412",
+)
+
+#: The Jupiter-8's patch number display
+LED_JP8_LCD = LcdPalette(
+    bg_edge="#100706",
+    bg_mid="#270C08",
+    bg_glow="#43130D",
+    text="#FF2A14",
+    text_dim="#A81B0C",
+)
+
 #: A green fluorescent display, as 1970s rack gear had
 VINTAGE_GREEN_LCD = LcdPalette(
     bg_edge="#07140C",
@@ -161,12 +223,27 @@ class RackSkin:
     """
 
     skin_id = "glossy_black"
-    label = "Glossy Black"
+    label = "JD-Xi Black"
     ear_width = 0
     bezel = 7
     rail_height = 0
     lcd = ROLAND_LCD
     foreground = LIGHT_LETTERING
+    chassis = DARK_CHASSIS
+    #: the glossy material, top to bottom: a skin can be the same panel in a
+    #: different plastic or metal by declaring these alone
+    face_stops = ((0.0, 22, 22, 24), (0.5, 10, 10, 11), (1.0, 4, 4, 5))
+    #: the rim drawn round the panel
+    face_rim = "#000000"
+    #: the highlight along its top edge, as r, g, b, a
+    face_highlight = (255, 255, 255, 28)
+    #: the diagonal reflection's strength, near and far
+    sheen_strength = (22, 6)
+    #: Section titles printed in the faceplate's ink, rather than the accent.
+    #: The JD-Xi's own panels keep their red rules.
+    ink_legends = False
+    #: Buttons shaded as caps, and fields as wells milled into the plate.
+    mounted_controls = False
 
     def content_margins(self) -> QMargins:
         """
@@ -216,24 +293,50 @@ class RackSkin:
                 ),
             )
 
-    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
         """
         A shiny black plastic panel: deep gradient, diagonal sheen, soft rim.
 
         :param painter: QPainter
         :param rect: QRectF the panel's area
+        :param sheen: bool draw the diagonal reflection; the instrument's
+            right-hand panel is drawn without it, as on the JD-Xi
         :return: None
         """
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        gradient.setColorAt(0, QColor(22, 22, 24))
-        gradient.setColorAt(0.5, QColor(10, 10, 11))
-        gradient.setColorAt(1, QColor(4, 4, 5))
+        for position, red, green, blue in self.face_stops:
+            gradient.setColorAt(position, QColor(red, green, blue))
         path = QPainterPath()
         path.addRoundedRect(rect, 3, 3)
         painter.fillPath(path, gradient)
 
         # The light falls across the panel from the top right, as on the
         # Instrument window's panel
+        if sheen:
+            self._paint_sheen(painter, rect, path)
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(self.face_rim), 1))
+        painter.drawPath(path)
+        painter.setPen(QPen(QColor(*self.face_highlight), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 3, rect.top() + 1),
+            QPointF(rect.right() - 3, rect.top() + 1),
+        )
+
+    def _paint_sheen(
+        self, painter: QPainter, rect: QRectF, path: QPainterPath
+    ) -> None:
+        """
+        The diagonal reflection across the glossy panel.
+
+        :param painter: QPainter
+        :param rect: QRectF the panel's area
+        :param path: QPainterPath the panel's outline, to clip against
+        :return: None
+        """
         painter.save()
         painter.setClipPath(path)
         reflection = QPolygonF(
@@ -244,22 +347,14 @@ class RackSkin:
                 rect.bottomLeft(),
             ]
         )
+        near, far = self.sheen_strength
         shine = QLinearGradient(rect.topLeft(), rect.bottomRight())
-        shine.setColorAt(0, QColor(255, 255, 255, 22))
-        shine.setColorAt(1, QColor(255, 255, 255, 6))
+        shine.setColorAt(0, QColor(255, 255, 255, near))
+        shine.setColorAt(1, QColor(255, 255, 255, far))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(shine)
         painter.drawPolygon(reflection)
         painter.restore()
-
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(QColor(0, 0, 0), 1))
-        painter.drawPath(path)
-        painter.setPen(QPen(QColor(255, 255, 255, 28), 1))
-        painter.drawLine(
-            QPointF(rect.left() + 3, rect.top() + 1),
-            QPointF(rect.right() - 3, rect.top() + 1),
-        )
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         """
@@ -313,8 +408,9 @@ class JdxiRackSkin(RackSkin):
     already leaves free -- and, more importantly, it is what makes the skin
     recognisable: the faceplate reaches an editor's groups as a nine-slice
     image whose top and bottom edges are drawn unstretched, so anything in
-    them appears on every panel in the application, while the ears can only
-    ever be drawn by a RackPanel.
+    them appears on every panel in the application. The ears are not part of
+    that image -- a nine-slice would stretch them -- so a RackPanel or a
+    RackEars strip draws them itself.
     """
 
     skin_id = "jdxi_rack"
@@ -324,12 +420,18 @@ class JdxiRackSkin(RackSkin):
     rail_height = 0
     lcd = JDXV_BLUE_LCD
     #: the illuminated red of the stripe (AppEditorStyle.ACCENT)
+    chassis = Chassis(
+        body="#2A2C30", surface="#202225", surface_alt="#292C30",
+        border="#3A3D42", accent="#E04435",
+    )
     rail_color = "#E04435"
     #: thickness of that stripe, within the nine-slice bottom edge
     #: (editor_style.SHEEN_SLICE_BOTTOM), leaving room for the rim below it
     rail_thickness = 4
 
-    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
         path = QPainterPath()
         path.addRoundedRect(rect, 3, 3)
         painter.save()
@@ -387,12 +489,13 @@ class JdxiRackSkin(RackSkin):
             self.paint_screw(painter, QPointF(x, y), 4.0, QColor(118, 124, 132))
 
 
-#: Satin aluminium: highlight, base and shadow down the face
+#: Satin aluminium, warmed toward the champagne of 1970s anodizing:
+#: highlight, base and shadow down the face
 ALUMINIUM = (
-    (0.0, 197, 197, 193),   # #C5C5C1 highlight
-    (0.30, 174, 174, 171),
-    (0.62, 166, 166, 163),  # #A6A6A3 base
-    (1.0, 119, 120, 117),   # #777875 shadow
+    (0.0, 209, 197, 181),   # #D1C5B5 highlight
+    (0.30, 186, 174, 159),
+    (0.62, 178, 166, 151),  # #B2A697 base
+    (1.0, 131, 120, 105),   # #837869 shadow
 )
 
 #: The JDXV's dark gunmetal faceplate
@@ -451,9 +554,9 @@ class Brushed70sSkin(RackSkin):
     """
     Satin-finished aluminium with a green display, as 1970s rack gear had.
 
-    The panel is a shallow bevel: lit along its top edge, shadowed along its
-    bottom, with the grain kept faint enough that the metal reads by its
-    gradient rather than by its texture.
+    The panel is a bevel: lit along its top edge, shadowed along its bottom,
+    with the grain kept faint enough that the metal reads by its gradient
+    rather than by its texture. Legends are ink, and red is reserved for lamps.
     """
 
     skin_id = "brushed_70s"
@@ -465,12 +568,20 @@ class Brushed70sSkin(RackSkin):
     # Near-white lettering on satin aluminium is 1.96:1, well under the 4.5:1
     # that body text needs: this faceplate has to be written on in ink
     foreground = DARK_LETTERING
+    ink_legends = True
+    mounted_controls = True
+    chassis = Chassis(
+        body="#968C7A", surface="#212120", surface_alt="#2C2C2A",
+        border="#4A4A47", accent="#E04435",
+    )
     #: the chassis, for anything wanting to match it
-    base_color = "#A6A6A3"
-    highlight_color = "#C5C5C1"
-    shadow_color = "#777875"
+    base_color = "#B2A697"
+    highlight_color = "#D1C5B5"
+    shadow_color = "#837869"
 
-    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
         path = QPainterPath()
         path.addRoundedRect(rect, 2, 2)
         painter.save()
@@ -478,47 +589,48 @@ class Brushed70sSkin(RackSkin):
         height = max(1, int(round(rect.height())))
         painter.drawTiledPixmap(rect, _brushed_tile(height, ALUMINIUM))
 
-        # A shallow bevel: the light catches the top edge and leaves the
-        # bottom in shadow, which is what gives a flat fill its depth
-        painter.setPen(QPen(QColor(222, 222, 218), 1))
+        # A lip with some thickness: the light catches the top edge and
+        # leaves the bottom in shadow. Two pixels, so it survives inside
+        # the unstretched rim of the panel image.
+        painter.setPen(QPen(QColor(236, 226, 206), 2))
         painter.drawLine(
-            QPointF(rect.left() + 1, rect.top() + 0.5),
-            QPointF(rect.right() - 1, rect.top() + 0.5),
+            QPointF(rect.left() + 1, rect.top() + 1),
+            QPointF(rect.right() - 1, rect.top() + 1),
         )
-        painter.setPen(QPen(QColor(236, 236, 232, 120), 1))
+        painter.setPen(QPen(QColor(248, 240, 224, 150), 2))
         painter.drawLine(
-            QPointF(rect.left() + 1, rect.top() + 1.5),
-            QPointF(rect.right() - 1, rect.top() + 1.5),
+            QPointF(rect.left() + 1, rect.top() + 3.5),
+            QPointF(rect.right() - 1, rect.top() + 3.5),
         )
-        painter.setPen(QPen(QColor(94, 95, 92), 1))
+        painter.setPen(QPen(QColor(92, 78, 62), 2))
         painter.drawLine(
-            QPointF(rect.left() + 1, rect.bottom() - 1.5),
-            QPointF(rect.right() - 1, rect.bottom() - 1.5),
+            QPointF(rect.left() + 1, rect.bottom() - 2),
+            QPointF(rect.right() - 1, rect.bottom() - 2),
         )
-        painter.setPen(QPen(QColor(70, 71, 69, 140), 1))
+        painter.setPen(QPen(QColor(58, 48, 40, 170), 2))
         painter.drawLine(
-            QPointF(rect.left() + 1, rect.bottom() - 2.5),
-            QPointF(rect.right() - 1, rect.bottom() - 2.5),
+            QPointF(rect.left() + 1, rect.bottom() - 4.5),
+            QPointF(rect.right() - 1, rect.bottom() - 4.5),
         )
         painter.restore()
 
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(QColor(88, 89, 86), 1))
+        painter.setPen(QPen(QColor(96, 84, 70), 1))
         painter.drawPath(path)
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         gradient = QLinearGradient(rect.topLeft(), rect.topRight())
-        gradient.setColorAt(0, QColor(138, 138, 134))
-        gradient.setColorAt(1, QColor(170, 170, 166))
+        gradient.setColorAt(0, QColor(150, 140, 124))
+        gradient.setColorAt(1, QColor(182, 172, 154))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(90, 90, 88), 1))
+        painter.setPen(QPen(QColor(102, 90, 74), 1))
         painter.drawRect(rect)
         if rect.height() < 34:
             return
         x = rect.center().x()
         for y in (rect.top() + 12, rect.bottom() - 12):
-            self.paint_screw(painter, QPointF(x, y), 4.5, QColor(205, 205, 200))
+            self.paint_screw(painter, QPointF(x, y), 4.5, QColor(214, 204, 186))
 
 
 #: Walnut, as used for the end cheeks of studio gear
@@ -526,6 +638,36 @@ WALNUT = ((0.0, 122, 78, 44), (0.5, 96, 59, 32), (1.0, 74, 44, 24))
 
 #: The darker wood of a TR-808's side panels
 TEAK = ((0.0, 104, 66, 34), (0.5, 82, 51, 26), (1.0, 60, 37, 19))
+
+
+@lru_cache(maxsize=4)
+def _pebble_tile(size: int, color: str, grain: int = 10) -> QPixmap:
+    """
+    A tile of textured matte paint, as on a Jupiter-8's panel.
+
+    Unlike the brushed tile the speckle runs in no direction, which is what
+    separates a moulded painted surface from a machined one.
+
+    :param size: int tile edge in px
+    :param color: str the paint's colour
+    :param grain: int strength of the speckle
+    :return: QPixmap square tile, which repeats in both directions
+    """
+    tile = QPixmap(size, size)
+    painter = QPainter(tile)
+    painter.fillRect(0, 0, size, size, QColor(color))
+    noise = Random(23)  # the same moulding every run
+    for y in range(size):
+        for x in range(size):
+            if noise.random() < 0.55:
+                continue
+            shade = 255 if noise.random() < 0.45 else 0
+            painter.setPen(
+                QPen(QColor(shade, shade, shade, noise.randint(1, grain)), 1)
+            )
+            painter.drawPoint(x, y)
+    painter.end()
+    return tile
 
 
 @lru_cache(maxsize=4)
@@ -577,10 +719,16 @@ class IvoryWalnutSkin(RackSkin):
         text="#22201C", text_secondary="#5F584C", rule="#B9AE99"
     )
     #: the walnut pinstripe along the bottom, this skin's signature
+    chassis = Chassis(
+        body="#CFC7B6", surface="#241F18", surface_alt="#2F2920",
+        border="#5A5043", accent="#684022",
+    )
     stripe_color = "#684022"
     stripe_thickness = 2
 
-    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
         path = QPainterPath()
         path.addRoundedRect(rect, 2, 2)
         painter.save()
@@ -651,12 +799,18 @@ class Tr808Skin(RackSkin):
         text="#E8E4DA", text_secondary="#A09A8E", rule="#4A4B4D"
     )
     #: the Roland orange of the lettering and the rule under it
+    chassis = Chassis(
+        body="#232426", surface="#1C1D1F", surface_alt="#27282B",
+        border="#3A3B3E", accent="#E8622A",
+    )
     accent_color = "#E8622A"
     #: the four step-button colours, left to right
     step_colors = ("#E33B2E", "#EE7B2C", "#EFC93F", "#EDE9DC")
     step_band = 4
 
-    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
         path = QPainterPath()
         path.addRoundedRect(rect, 2, 2)
         painter.save()
@@ -708,13 +862,489 @@ class Tr808Skin(RackSkin):
         painter.drawRect(rect)
 
 
+class Tb303Skin(RackSkin):
+    """
+    The TB-303 Bass Line: the silver box, orange knob line, red LED numerals
+    and the little keyboard of step buttons along the bottom.
+
+    Its faceplate is flat painted metal rather than brushed, which is what
+    separates it from the satin aluminium skin at a glance; the keyboard
+    band separates it from everything else. Both live in the face, so they
+    reach every panel rather than only a RackPanel.
+    """
+
+    skin_id = "tb303"
+    label = "TB-303"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = LED_303_LCD
+    foreground = Foreground(
+        text="#1E1E1C", text_secondary="#35342F", rule="#6E7472"
+    )
+    #: the orange of the Bass Line knobs
+    chassis = Chassis(
+        body="#8A8F8D", surface="#232524", surface_alt="#2E312F",
+        border="#4A4E4C", accent="#E87328",
+    )
+    accent_color = "#E87328"
+    #: the step buttons' keyboard: ivory keys, black keys, and their shadow
+    key_ivory = "#E6E3D8"
+    key_black = "#1A1A1A"
+    #: height of that keyboard, within the nine-slice bottom edge
+    key_band = 5
+    #: keyboards drawn across the source image, before it is stretched
+    key_octaves = 4
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        # Flat painted metal: a cool grey, no grain
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(168, 173, 171))
+        gradient.setColorAt(0.45, QColor(142, 148, 146))
+        gradient.setColorAt(1.0, QColor(110, 116, 114))
+        painter.fillRect(rect, gradient)
+
+        painter.setPen(QPen(QColor(206, 210, 208), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 0.5),
+            QPointF(rect.right() - 1, rect.top() + 0.5),
+        )
+        # The orange line the knobs stand on
+        painter.setPen(QPen(QColor(self.accent_color), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 2.5),
+            QPointF(rect.right() - 1, rect.top() + 2.5),
+        )
+
+        self.paint_keyboard(
+            painter,
+            QRectF(
+                rect.left(),
+                rect.bottom() - self.key_band,
+                rect.width(),
+                self.key_band,
+            ),
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(74, 78, 77), 1))
+        painter.drawPath(path)
+
+    def paint_keyboard(self, painter: QPainter, rect: QRectF) -> None:
+        """
+        The step buttons, laid out as the keyboard they are on the machine.
+
+        :param painter: QPainter
+        :param rect: QRectF the band along the bottom of the face
+        :return: None
+        """
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(self.key_ivory))
+        painter.drawRect(rect)
+
+        whites = 7 * self.key_octaves
+        key = rect.width() / whites
+        painter.setPen(QPen(QColor(120, 118, 110), 1))
+        for index in range(1, whites):
+            x = rect.left() + index * key
+            painter.drawLine(QPointF(x, rect.top()), QPointF(x, rect.bottom()))
+
+        # Black keys sit over the gaps after C, D, F, G and A
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(self.key_black))
+        for octave in range(self.key_octaves):
+            for white in (0, 1, 3, 4, 5):
+                centre = rect.left() + (octave * 7 + white + 1) * key
+                painter.drawRect(
+                    QRectF(
+                        centre - key * 0.3,
+                        rect.top(),
+                        key * 0.6,
+                        rect.height() * 0.62,
+                    )
+                )
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A painted metal cheek, matching the box."""
+        gradient = QLinearGradient(rect.topLeft(), rect.topRight())
+        gradient.setColorAt(0, QColor(126, 132, 130))
+        gradient.setColorAt(1, QColor(152, 158, 156))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.fillRect(rect, gradient)
+        painter.setPen(QPen(QColor(72, 76, 75), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 11, rect.bottom() - 11):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(182, 188, 186))
+
+
+class Tr909Skin(RackSkin):
+    """
+    The TR-909: a light grey box with blue silkscreen, dark end cheeks, and
+    the sixteen cream step buttons with a red LED over each one.
+
+    That row of buttons and lights is the machine's face, so it goes in the
+    faceplate's bottom edge and appears on every panel. The steps are drawn
+    in fours, as they are grouped on the hardware.
+    """
+
+    skin_id = "tr909"
+    label = "TR-909"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = LED_909_LCD
+    foreground = Foreground(
+        text="#1E1E1C", text_secondary="#35342F", rule="#9A9A95"
+    )
+    #: the blue of the 909's silkscreen groupings
+    chassis = Chassis(
+        body="#9A9A95", surface="#232423", surface_alt="#2E2F2E",
+        border="#4C4D4B", accent="#2C6AB0",
+    )
+    accent_color = "#2C6AB0"
+    #: the step buttons, their lights, and the strip they sit in
+    button_color = "#E8E6DC"
+    led_color = "#FF3A20"
+    led_off_color = "#3A1410"
+    strip_color = "#4A4A47"
+    #: height of the button row and of the lights above it
+    button_band = 4
+    led_band = 2
+    #: sixteen steps, in four groups of four
+    steps = 16
+    steps_per_group = 4
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        # Light grey painted steel, flat
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(214, 214, 209))
+        gradient.setColorAt(0.45, QColor(198, 198, 193))
+        gradient.setColorAt(1.0, QColor(168, 168, 163))
+        painter.fillRect(rect, gradient)
+
+        painter.setPen(QPen(QColor(238, 238, 234), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 0.5),
+            QPointF(rect.right() - 1, rect.top() + 0.5),
+        )
+        # The blue rule the groups are printed against
+        painter.setPen(QPen(QColor(self.accent_color), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 2.5),
+            QPointF(rect.right() - 1, rect.top() + 2.5),
+        )
+
+        self.paint_steps(
+            painter,
+            QRectF(
+                rect.left(),
+                rect.bottom() - (self.button_band + self.led_band),
+                rect.width(),
+                self.button_band + self.led_band,
+            ),
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(104, 104, 100), 1))
+        painter.drawPath(path)
+
+    def paint_steps(self, painter: QPainter, rect: QRectF) -> None:
+        """
+        The step buttons, each under its own light.
+
+        :param painter: QPainter
+        :param rect: QRectF the band along the bottom of the face
+        :return: None
+        """
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(self.strip_color))
+        painter.drawRect(rect)
+
+        step = rect.width() / self.steps
+        lights = rect.top()
+        buttons = rect.top() + self.led_band
+        for index in range(self.steps):
+            left = rect.left() + index * step
+            # A wider gap every four steps, as the hardware groups them
+            gap = 1.6 if index % self.steps_per_group == 0 else 0.8
+            body = QRectF(left + gap, buttons, step - gap * 2, self.button_band)
+            painter.setBrush(QColor(self.button_color))
+            painter.drawRect(body)
+            # The light sits over the button, lit on the downbeat of each group
+            lit = index % self.steps_per_group == 0
+            painter.setBrush(
+                QColor(self.led_color if lit else self.led_off_color)
+            )
+            painter.drawRect(
+                QRectF(
+                    left + step * 0.3, lights, max(1.0, step * 0.4), self.led_band
+                )
+            )
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A dark moulded cheek, as the 909 has at each end."""
+        gradient = QLinearGradient(rect.topLeft(), rect.topRight())
+        gradient.setColorAt(0, QColor(62, 62, 60))
+        gradient.setColorAt(1, QColor(44, 44, 42))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.fillRect(rect, gradient)
+        painter.setPen(QPen(QColor(22, 22, 21), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 11, rect.bottom() - 11):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(128, 128, 124))
+
+
+class Jupiter8Skin(RackSkin):
+    """
+    The Jupiter-8: a textured near-black panel under bold red section bars,
+    with the run of coloured patch buttons along the bottom.
+
+    The red header bar is what the eye remembers of a JP-8, so it takes the
+    whole of the faceplate's top edge rather than the hairline the other
+    skins draw there, and the patch buttons are discrete keys with gaps
+    rather than a continuous stripe.
+    """
+
+    skin_id = "jupiter8"
+    label = "Jupiter-8"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = LED_JP8_LCD
+    foreground = LIGHT_LETTERING
+    chassis = Chassis(
+        body="#1F1F1F", surface="#1A1A1A", surface_alt="#252525",
+        border="#3A3A3A", accent="#E03A20",
+    )
+    #: the red of the section headers
+    header_color = "#E03A20"
+    #: how much of the top edge that bar takes (editor_style.SHEEN_SLICE_TOP)
+    header_band = 3
+    #: the patch buttons, in the order they run across the panel
+    button_colors = (
+        "#D8392A",  # red
+        "#E8762A",  # orange
+        "#E8C02A",  # yellow
+        "#E4E0D6",  # white
+        "#3FA85A",  # green
+        "#2F7FD0",  # blue
+    )
+    button_band = 4
+    buttons = 18
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        # Textured matte paint, not the gloss of the default skin
+        painter.drawTiledPixmap(rect, _pebble_tile(64, "#282828"))
+        shade = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        shade.setColorAt(0.0, QColor(255, 255, 255, 10))
+        shade.setColorAt(1.0, QColor(0, 0, 0, 40))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(shade)
+        painter.drawRect(rect)
+
+        # The section header bar across the top
+        painter.setBrush(QColor(self.header_color))
+        painter.drawRect(
+            QRectF(rect.left(), rect.top(), rect.width(), self.header_band)
+        )
+        painter.setPen(QPen(QColor(12, 12, 12), 1))
+        painter.drawLine(
+            QPointF(rect.left(), rect.top() + self.header_band + 0.5),
+            QPointF(rect.right(), rect.top() + self.header_band + 0.5),
+        )
+
+        self.paint_buttons(
+            painter,
+            QRectF(
+                rect.left(),
+                rect.bottom() - self.button_band,
+                rect.width(),
+                self.button_band,
+            ),
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(10, 10, 10), 1))
+        painter.drawPath(path)
+
+    def paint_buttons(self, painter: QPainter, rect: QRectF) -> None:
+        """
+        The patch buttons: separate keys with the panel showing between them.
+
+        :param painter: QPainter
+        :param rect: QRectF the band along the bottom of the face
+        :return: None
+        """
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(26, 26, 26))
+        painter.drawRect(rect)
+        step = rect.width() / self.buttons
+        for index in range(self.buttons):
+            painter.setBrush(
+                QColor(self.button_colors[index % len(self.button_colors)])
+            )
+            painter.drawRect(
+                QRectF(
+                    rect.left() + index * step + step * 0.16,
+                    rect.top() + 1,
+                    step * 0.68,
+                    rect.height() - 1,
+                )
+            )
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A black moulded end cheek."""
+        painter.drawTiledPixmap(rect, _pebble_tile(64, "#1C1C1C"))
+        painter.setPen(QPen(QColor(8, 8, 8), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 11, rect.bottom() - 11):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(96, 96, 96))
+
+
+class RedJdxiSkin(RackSkin):
+    """
+    The red JD-Xi: the same glossy black control panel, set into a scarlet
+    body instead of the matte black one.
+
+    What changes is almost all chassis rather than faceplate -- the body
+    around the panels, the keyboard strip, the lettering on them -- so the
+    panel keeps the thin red edge the hardware shows where the inset meets
+    the body, which is also what tells this skin's faceplate apart from the
+    plain glossy one.
+    """
+
+    skin_id = "jdxi_red"
+    label = "JD-Xi Red"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = ROLAND_LCD
+    foreground = Foreground(
+        text="#FFFFFF", text_secondary="#F3D3D1", rule="#8A2A26"
+    )
+    chassis = Chassis(
+        body="#D81F1C", surface="#1A1A1A", surface_alt="#262626",
+        border="#8A2A26", accent="#FF5247",
+    )
+    #: the body showing around the inset panel
+    rim_color = "#D81F1C"
+    rim_width = 2
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        super().paint_face(painter, rect, sheen=sheen)
+        pen = QPen(QColor(self.rim_color), self.rim_width)
+        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(pen)
+        inset = self.rim_width / 2
+        painter.drawRoundedRect(rect.adjusted(inset, inset, -inset, -inset), 2, 2)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A cheek of the red body."""
+        gradient = QLinearGradient(rect.topLeft(), rect.topRight())
+        gradient.setColorAt(0, QColor(196, 28, 25))
+        gradient.setColorAt(1, QColor(168, 24, 21))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.fillRect(rect, gradient)
+        painter.setPen(QPen(QColor(96, 14, 12), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 11, rect.bottom() - 11):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(214, 214, 210))
+
+
+class WhiteJdxiSkin(RackSkin):
+    """
+    The white JD-Xi: a silver control panel set into a white body.
+
+    The panel is the same glossy construction as the default skin -- the
+    gradient, the diagonal reflection, the rim and the top highlight -- in
+    light metal instead of black plastic, so it is declared as colours
+    rather than painted again. The sheen is stronger than the black panel's,
+    because a bright surface returns more of the light that falls on it.
+    """
+
+    skin_id = "jdxi_white"
+    label = "JD-Xi White"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = ROLAND_LCD
+    foreground = DARK_LETTERING
+    chassis = Chassis(
+        body="#EFEFEC", surface="#1E1E1E", surface_alt="#2A2A2A",
+        border="#B8B8B2", accent="#E04435",
+    )
+    face_stops = ((0.0, 226, 231, 235), (0.5, 208, 213, 217), (1.0, 184, 190, 195))
+    face_rim = "#8E979B"
+    face_highlight = (255, 255, 255, 200)
+    sheen_strength = (60, 12)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A cheek of the white body."""
+        gradient = QLinearGradient(rect.topLeft(), rect.topRight())
+        gradient.setColorAt(0, QColor(228, 228, 224))
+        gradient.setColorAt(1, QColor(246, 246, 243))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.fillRect(rect, gradient)
+        painter.setPen(QPen(QColor(174, 174, 168), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 11, rect.bottom() - 11):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(150, 152, 150))
+
+
 #: Every skin, by id, in the order they are offered
 SKINS: Dict[str, RackSkin] = {
     skin.skin_id: skin
     for skin in (
         RackSkin(),
+        RedJdxiSkin(),
+        WhiteJdxiSkin(),
         JdxiRackSkin(),
         Tr808Skin(),
+        Tb303Skin(),
+        Tr909Skin(),
+        Jupiter8Skin(),
         Brushed70sSkin(),
         IvoryWalnutSkin(),
     )
@@ -830,8 +1460,14 @@ def _restyle_application() -> None:
         clear()
 
     from jdxi_editor.ui.style.editor_style import CHASSIS_MARKER, chassis_rules
+    from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 
     chassis = chassis_rules()
+    mounted = active_skin().mounted_controls
+    cap = JDXiUIStyle.BUTTON_ROUND_CAP
+    flat = JDXiUIStyle.BUTTON_ROUND
+    desired_cap = cap if mounted else flat
+    previous_cap = flat if mounted else cap
 
     def repoint(sheet: str) -> str:
         """The same stylesheet, with this skin's panel image and lettering."""
@@ -846,9 +1482,18 @@ def _restyle_application() -> None:
 
     if "gloss_panel_" in (application.styleSheet() or ""):
         application.setStyleSheet(repoint(application.styleSheet()))
+    from jdxi_editor.ui.widgets.rack.ears import RackEars
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
     for widget in application.allWidgets():
+        if isinstance(widget, RackEars):
+            widget.apply_skin()
+        elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
+            widget.refresh_skin()
         sheet = widget.styleSheet()
-        if sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
+        if sheet == previous_cap:
+            widget.setStyleSheet(desired_cap)
+        elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
             widget.setStyleSheet(repoint(sheet))
         # QWidget.update explicitly: an item view overrides update() with one
         # that demands a model index, and would raise on a bare call

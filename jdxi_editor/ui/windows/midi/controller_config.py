@@ -70,6 +70,7 @@ from jdxi_editor.midi.playback.transport_input import (
     notify_transport_bindings_changed,
 )
 from jdxi_editor.ui.style import JDXiUIStyle
+from jdxi_editor.ui.widgets.rack import RackPanel
 from picoui.helpers.layout import create_layout_with_items
 from picoui.specs.widgets import ButtonSpec
 from picoui.widget.helper import create_label, create_text_edit, create_button_from_spec
@@ -176,7 +177,9 @@ class MidiControllerDialog(QMainWindow):
         self._learning_transport: Optional[TransportAction] = None
 
         central = QWidget()
-        self.setCentralWidget(central)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(central))
 
         title = create_label(label="MIDI Controller", object_name="TitleLabel", margin=2, style_sheet=JDXiUIStyle.LABEL)
         self._create_tab_widget()

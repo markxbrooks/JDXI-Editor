@@ -43,6 +43,27 @@ from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 
+def drum_label_style(color: str) -> str:
+    """
+    The style of the drum labels above the keys, in ``color``.
+
+    They sit on the instrument's body, so they are silkscreen and have to
+    follow the skin: a fixed grey disappears on a pale chassis.
+
+    :param color: str the lettering colour
+    :return: str stylesheet for one label
+    """
+    return f"""
+                QLabel {{
+                    color: {color};
+                    font-size: 7px;
+                    font-family: monospace;
+                    padding: 2px;
+                    min-width: 30px;
+                }}
+            """
+
+
 class PianoKeyboard(QWidget):
     """Widget containing a row of piano keys styled like JD-Xi"""
 
@@ -78,11 +99,13 @@ class PianoKeyboard(QWidget):
         labels_layout.setContentsMargins(1, 1, 1, 1)
 
         # Create and style labels
+        self.drum_labels = []
         for text in DRUM_LABELS:
             label = QLabel(text)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setStyleSheet(JDXi.UI.Style.KEYBOARD_DRUM_LABELS)
+            self.drum_labels.append(label)
             labels_layout.addWidget(label)
+        self.apply_skin()
 
         labels_layout.addStretch()
         main_layout.addLayout(labels_layout)
@@ -105,6 +128,18 @@ class PianoKeyboard(QWidget):
         self._create_keys(keyboard_widget)
 
         main_layout.addWidget(keyboard_widget)
+
+    def apply_skin(self) -> None:
+        """
+        Letter the drum labels in the active skin's silkscreen.
+
+        :return: None
+        """
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        style = drum_label_style(active_skin().foreground.text_secondary)
+        for label in self.drum_labels:
+            label.setStyleSheet(style)
 
     def _create_keys(self, keyboard_widget: QWidget) -> None:
         """

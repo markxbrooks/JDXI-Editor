@@ -185,6 +185,17 @@ class JDXiUIStyle:
         ACCENT_HOVER,
         ACCENT_PRESSED,
     )
+    # The same cap, turned: lighter along the top. Used when the skin mounts
+    # its controls (the brushed plate). The checked fill is the one above.
+    BUTTON_ROUND_CAP = generate_button_style(
+        BACKGROUND,
+        BORDER,
+        BUTTON_ROUND_RADIUS,
+        FOREGROUND,
+        ACCENT_HOVER,
+        ACCENT_PRESSED,
+        cap=True,
+    )
     BORDER_PRESSED = "#2D2D2D"
     BUTTON_ROUND_SELECTED = generate_button_style(
         BACKGROUND,

@@ -33,7 +33,6 @@ from jdxi_editor.ui.editors.drum.mixer.lane import MixerLane
 from jdxi_editor.ui.editors.drum.mixer.spec import DRUM_MIXER_LANE_ROWS
 from jdxi_editor.ui.editors.program.channel_strip import ChannelStrip
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
-from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.section_base import SectionBaseWidget
 from jdxi_editor.ui.widgets.slider import Slider
@@ -143,9 +142,7 @@ class DrumKitMixerSection(SectionBaseWidget):
         # contents and centred; the families inside it draw as flat sections.
         # The scroll area around it only scrolls in a window smaller than the kit.
         self.panel = create_panel(self.title_label, kit_widget)
-        self.panel.setContentsMargins(12, 12, 12, 12)
         self.panel.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        mark_sheen(self.panel)
         page = QWidget()
         page_layout = QHBoxLayout(page)
         page_layout.setContentsMargins(0, 0, 0, 0)

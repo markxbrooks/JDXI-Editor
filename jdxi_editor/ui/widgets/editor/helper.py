@@ -246,7 +246,9 @@ def create_button_with_tooltip(tooltip: str) -> QPushButton:
         JDXi.UI.Dimensions.BUTTON_ROUND.WIDTH, JDXi.UI.Dimensions.BUTTON_ROUND.HEIGHT
     )
     button.setCheckable(True)
-    button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
+    button.setStyleSheet(active_round_button_style())
     button.setToolTip(tooltip)
     return button
 

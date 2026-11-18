@@ -135,7 +135,9 @@ def add_favorite_button_container(central_widget):
     favorite_button.setFixedSize(30, 30)
     favorite_button.setCheckable(True)
     # --- Style the button with brighter hover/border_pressed/selected  states
-    favorite_button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
+    favorite_button.setStyleSheet(active_round_button_style())
     favorite_button.setToolTip("Favorite: Mark current settings as a favorite")
     row.addLayout(favourite_button_column)
     favourite_button_column.addWidget(favourite_button_label)

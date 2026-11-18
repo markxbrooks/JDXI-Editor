@@ -38,6 +38,7 @@ from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTextEdit
 
 from jdxi_editor.project import __package_name__
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
+from jdxi_editor.ui.widgets.rack import RackPanel
 
 
 def log_directory() -> Path:
@@ -125,7 +126,9 @@ class LogViewer(QMainWindow):
         layout.addLayout(button_layout)
 
         # Set central widget
-        self.setCentralWidget(main_widget)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(main_widget))
 
         # Load initial log content
         self.load_log_file()

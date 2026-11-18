@@ -61,7 +61,9 @@ def create_button_row(
     if slot is not None:
         button.clicked.connect(slot)
 
-    button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
+    button.setStyleSheet(active_round_button_style())
     button.setToolTip(tooltip)
 
     row.addWidget(button)
