@@ -391,12 +391,16 @@ class RackSkin:
         """
         A rack screw: a slotted head, for skins whose ears carry them.
 
+        The painter is restored afterwards. The head is a filled ellipse, and
+        a brush left set is what painted a whole cheek in the screw's colour.
+
         :param painter: QPainter
         :param centre: QPointF middle of the screw
         :param radius: float screw radius in px
         :param tint: QColor the metal's colour
         :return: None
         """
+        painter.save()
         painter.setPen(QPen(QColor(0, 0, 0, 160), 1))
         painter.setBrush(tint)
         painter.drawEllipse(centre, radius, radius)
@@ -405,6 +409,40 @@ class RackSkin:
             QPointF(centre.x() - radius * 0.55, centre.y()),
             QPointF(centre.x() + radius * 0.55, centre.y()),
         )
+        painter.restore()
+
+    def outline_ear(
+        self,
+        painter: QPainter,
+        rect: QRectF,
+        rim: QColor,
+        screw: Optional[QColor] = None,
+        radius: float = 4.0,
+        inset: float = 12,
+    ) -> None:
+        """
+        Stroke a cheek and, when it is tall enough, its screws.
+
+        The stroke does not fill. Each cheek is painted in turn, and a brush
+        still set from the first cheek's screws would fill the second.
+
+        :param painter: QPainter
+        :param rect: QRectF the cheek
+        :param rim: QColor the outline
+        :param screw: Optional[QColor] the screw head; none leaves the cheek bare
+        :param radius: float screw radius in px
+        :param inset: float how far the screws sit in from the top and bottom
+        :return: None
+        """
+        painter.save()
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(rim, 1))
+        painter.drawRect(rect)
+        if screw is not None and rect.height() >= 34:
+            x = rect.center().x()
+            for y in (rect.top() + inset, rect.bottom() - inset):
+                self.paint_screw(painter, QPointF(x, y), radius, screw)
+        painter.restore()
 
 
 class JdxiRackSkin(RackSkin):
@@ -645,13 +683,9 @@ class Brushed70sSkin(RackSkin):
         gradient.setColorAt(1, QColor(166, 166, 163))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(119, 120, 117), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 12, rect.bottom() - 12):
-            self.paint_screw(painter, QPointF(x, y), 4.5, QColor(197, 197, 193))
+        self.outline_ear(
+            painter, rect, QColor(119, 120, 117), QColor(197, 197, 193), radius=4.5
+        )
 
 
 #: Walnut, as used for the end cheeks of studio gear
@@ -794,13 +828,9 @@ class IvoryWalnutSkin(RackSkin):
         """A walnut end cheek rather than a rack ear."""
         height = max(1, int(round(rect.height())))
         painter.drawTiledPixmap(rect, _wood_tile(height, WALNUT))
-        painter.setPen(QPen(QColor(48, 28, 14), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 12, rect.bottom() - 12):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(196, 186, 168))
+        self.outline_ear(
+            painter, rect, QColor(48, 28, 14), QColor(196, 186, 168)
+        )
 
 
 class Tr808Skin(RackSkin):
@@ -882,8 +912,7 @@ class Tr808Skin(RackSkin):
         """A teak side panel, as the 808 has."""
         height = max(1, int(round(rect.height())))
         painter.drawTiledPixmap(rect, _wood_tile(height, TEAK))
-        painter.setPen(QPen(QColor(30, 18, 9), 1))
-        painter.drawRect(rect)
+        self.outline_ear(painter, rect, QColor(30, 18, 9))
 
 
 class Tb303Skin(RackSkin):
@@ -1003,13 +1032,9 @@ class Tb303Skin(RackSkin):
         gradient.setColorAt(1, QColor(152, 158, 156))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(72, 76, 75), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 11, rect.bottom() - 11):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(182, 188, 186))
+        self.outline_ear(
+            painter, rect, QColor(72, 76, 75), QColor(182, 188, 186), inset=11
+        )
 
 
 class Tr909Skin(RackSkin):
@@ -1131,13 +1156,9 @@ class Tr909Skin(RackSkin):
         gradient.setColorAt(1, QColor(44, 44, 42))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(22, 22, 21), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 11, rect.bottom() - 11):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(128, 128, 124))
+        self.outline_ear(
+            painter, rect, QColor(22, 22, 21), QColor(128, 128, 124), inset=11
+        )
 
 
 class Jupiter8Skin(RackSkin):
@@ -1247,15 +1268,17 @@ class Jupiter8Skin(RackSkin):
             )
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
-        """A black moulded end cheek."""
-        painter.drawTiledPixmap(rect, _pebble_tile(64, "#1C1C1C"))
-        painter.setPen(QPen(QColor(8, 8, 8), 1))
+        """A silver end cheek, the same metal on both sides."""
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(208, 208, 204))
+        gradient.setColorAt(0.5, QColor(188, 188, 184))
+        gradient.setColorAt(1.0, QColor(168, 168, 164))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(gradient)
         painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 11, rect.bottom() - 11):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(96, 96, 96))
+        self.outline_ear(
+            painter, rect, QColor(96, 96, 92), QColor(120, 120, 116), inset=11
+        )
 
 
 class RedJdxiSkin(RackSkin):
@@ -1305,13 +1328,9 @@ class RedJdxiSkin(RackSkin):
         gradient.setColorAt(1, QColor(168, 24, 21))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(96, 14, 12), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 11, rect.bottom() - 11):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(214, 214, 210))
+        self.outline_ear(
+            painter, rect, QColor(96, 14, 12), QColor(214, 214, 210), inset=11
+        )
 
 
 class WhiteJdxiSkin(RackSkin):
@@ -1348,13 +1367,9 @@ class WhiteJdxiSkin(RackSkin):
         gradient.setColorAt(1, QColor(246, 246, 243))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(174, 174, 168), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 11, rect.bottom() - 11):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(150, 152, 150))
+        self.outline_ear(
+            painter, rect, QColor(174, 174, 168), QColor(150, 152, 150), inset=11
+        )
 
 
 class Juno106Skin(RackSkin):
@@ -1415,13 +1430,7 @@ class Juno106Skin(RackSkin):
         """A mahogany end cheek, with the dark screws the Juno uses."""
         height = max(1, int(round(rect.height())))
         painter.drawTiledPixmap(rect, _wood_tile(height, JUNO_WOOD))
-        painter.setPen(QPen(QColor(62, 32, 16), 1))
-        painter.drawRect(rect)
-        if rect.height() < 34:
-            return
-        x = rect.center().x()
-        for y in (rect.top() + 12, rect.bottom() - 12):
-            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(36, 32, 28))
+        self.outline_ear(painter, rect, QColor(62, 32, 16), QColor(36, 32, 28))
 
 
 #: Every skin, by id, in the order they are offered

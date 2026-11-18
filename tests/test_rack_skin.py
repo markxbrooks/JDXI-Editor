@@ -209,14 +209,41 @@ def test_the_juno_wears_its_bars_and_wooden_cheeks(qapp):
         skin.blue_bar.lower()
     ] * 3
 
-    cheek = QImage(24, 80, QImage.Format.Format_ARGB32)
-    cheek.fill(Qt.GlobalColor.transparent)
-    painter = QPainter(cheek)
-    skin.paint_ear(painter, QRectF(0.5, 0.5, 23, 79))
+    panel = QImage(400, 160, QImage.Format.Format_ARGB32)
+    panel.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(panel)
+    skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
     painter.end()
-    wood = cheek.pixelColor(8, 40)
-    assert wood.red() > wood.green() > wood.blue()
-    assert wood.red() > wood.blue() + 40
+    left = panel.pixelColor(8, 40)
+    right = panel.pixelColor(390, 40)
+    assert left.red() > left.green() > left.blue()
+    assert left.red() > left.blue() + 40
+    # The two cheeks are the same plank. A leaked screw brush once painted
+    # the right one nearly black.
+    assert abs(left.red() - right.red()) <= 8
+    assert abs(left.green() - right.green()) <= 8
+    assert abs(left.blue() - right.blue()) <= 8
+
+
+def test_both_cheeks_are_the_same_material(qapp):
+    """
+    A screw used to leave its brush set, and the next cheek's outline filled
+    with that colour. Every skin's two cheeks are the same material.
+    """
+    for skin in SKINS.values():
+        if not skin.ear_width:
+            continue
+        image = QImage(400, 160, QImage.Format.Format_ARGB32)
+        image.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(image)
+        skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
+        painter.end()
+        # The middle of each cheek, clear of the screws at the top and bottom
+        left = image.pixelColor(skin.ear_width // 2, 80)
+        right = image.pixelColor(399 - skin.ear_width // 2, 80)
+        for channel in ("red", "green", "blue"):
+            gap = abs(getattr(left, channel)() - getattr(right, channel)())
+            assert gap <= 12, f"{skin.skin_id} {channel} {left.name()} {right.name()}"
 
 
 def test_the_jupiter_wears_its_header_bar_and_patch_buttons(qapp):
@@ -240,6 +267,19 @@ def test_the_jupiter_wears_its_header_bar_and_patch_buttons(qapp):
     band = [image.pixelColor(x, 57).name() for x in range(4, 356, 2)]
     assert any(colour.lower() in band for colour in skin.button_colors)
     assert "#1a1a1a" in band
+
+    panel = QImage(400, 80, QImage.Format.Format_ARGB32)
+    panel.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(panel)
+    skin.paint(painter, QRectF(0.5, 0.5, 399, 79))
+    painter.end()
+    left = panel.pixelColor(6, 40)
+    right = panel.pixelColor(392, 40)
+    for cheek in (left, right):
+        channels = (cheek.red(), cheek.green(), cheek.blue())
+        assert max(channels) - min(channels) <= 12
+        assert min(channels) >= 150
+    assert abs(left.red() - right.red()) <= 12
 
 
 def test_the_909_wears_its_step_buttons_and_lights(qapp):
@@ -720,13 +760,19 @@ def test_the_keyboard_strip_wears_the_skins_ears(qapp):
 
         set_active_skin("ivory_walnut", remember=False)
         bar.apply_skin()
-        walnut = strip().pixelColor(4, 30)
+        painted = strip()
+        walnut = painted.pixelColor(4, 30)
+        other = painted.pixelColor(290, 30)
         set_active_skin("glossy_black", remember=False)
         bar.apply_skin()
         plain = strip().pixelColor(4, 30)
         # the walnut cheek is there, and the skin without ears draws none
         assert walnut != plain
         assert walnut.red() > walnut.blue() + 30, walnut.name()
+        # both ends are the same walnut, not the screw colour on the right
+        assert abs(walnut.red() - other.red()) <= 12
+        assert abs(walnut.green() - other.green()) <= 12
+        assert other.red() > other.blue() + 30, other.name()
     finally:
         bar.close()
 

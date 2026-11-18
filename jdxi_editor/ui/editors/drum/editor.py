@@ -66,7 +66,7 @@ if TYPE_CHECKING:
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtWidgets import QGroupBox, QTabWidget
+from PySide6.QtWidgets import QGroupBox, QSizePolicy, QTabWidget
 
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
@@ -130,7 +130,17 @@ class DrumCommonEditor(SynthEditor):
         )
         self.presets_parts_tab_widget = QTabWidget()
 
-        main_layout.addWidget(self.presets_parts_tab_widget)
+        from jdxi_editor.ui.editors.helpers.widgets import create_panel
+        from jdxi_editor.ui.style.editor_style import mark_flat
+
+        # Presets, parts and the mixer share one faceplate, cheeks included.
+        mark_flat(self.presets_parts_tab_widget)
+        face = create_panel(self.presets_parts_tab_widget)
+        face.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        face.layout().setStretch(0, 1)
+        main_layout.addWidget(face)
 
         instrument_widget = QWidget()
         instrument_vrow_layout = QVBoxLayout(instrument_widget)

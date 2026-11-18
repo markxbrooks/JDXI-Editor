@@ -89,8 +89,14 @@ def test_glossy_panels_survive_the_main_editor_host():
     host.show()
     _APP.processEvents()
     try:
-        pane = digital.tab_widget
-        glossy = _lightness_at(host, pane, pane.width() // 2, pane.height() - 30)
+        from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
+        face = next(
+            panel
+            for panel in digital.findChildren(RackPanel)
+            if panel.isAncestorOf(digital.tab_widget)
+        )
+        glossy = _lightness_at(host, face, face.width() // 2, face.height() - 10)
         matte = _lightness_at(host, digital, 8, digital.height() // 2)
         assert glossy < 25 < matte
 
@@ -123,17 +129,58 @@ def test_only_outermost_panels_get_the_sheen():
     from PySide6.QtWidgets import QGroupBox
 
     from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
-    from jdxi_editor.ui.style.editor_style import SHEEN_PROPERTY
+    from jdxi_editor.ui.style.editor_style import FLAT_PROPERTY, SHEEN_PROPERTY
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
     editor = DigitalSynthEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
     try:
         _APP.processEvents()  # marking runs once the editor is built
-        assert editor.tab_widget.property(SHEEN_PROPERTY)
+        # The tabs lie on a rack faceplate, so the pane itself stays flat
+        assert editor.tab_widget.property(FLAT_PROPERTY)
+        assert any(
+            isinstance(parent, RackPanel)
+            for parent in _ancestors(editor.tab_widget)
+        )
         nested = [g for g in editor.tab_widget.findChildren(QGroupBox)]
         assert nested and not any(g.property(SHEEN_PROPERTY) for g in nested)
     finally:
         editor.close()
         editor.deleteLater()
+
+
+def _ancestors(widget):
+    parent = widget.parentWidget()
+    while parent is not None:
+        yield parent
+        parent = parent.parentWidget()
+
+
+def test_the_synth_editors_wear_cheeks(drum_editor):
+    """Digital, Analog and Drums each sit on a rack faceplate."""
+    from jdxi_editor.ui.editors.analog.editor import AnalogSynthEditor
+    from jdxi_editor.ui.editors.digital.editor import (
+        DigitalSynth2Editor,
+        DigitalSynthEditor,
+    )
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
+    digital = DigitalSynthEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    digital_2 = DigitalSynth2Editor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    analog = AnalogSynthEditor(midi_helper=MagicMock(), preset_helper=MagicMock())
+    try:
+        for editor, tabs in (
+            (digital, digital.tab_widget),
+            (digital_2, digital_2.tab_widget),
+            (analog, analog.tab_widget),
+            (drum_editor, drum_editor.presets_parts_tab_widget),
+        ):
+            assert any(
+                isinstance(parent, RackPanel) for parent in _ancestors(tabs)
+            ), type(editor).__name__
+    finally:
+        for editor in (digital, digital_2, analog):
+            editor.close()
+            editor.deleteLater()
 
 
 def test_mixer_is_laid_out_like_a_kit(drum_editor):
