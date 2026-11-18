@@ -57,8 +57,92 @@ def render(widget, width=400, height=120) -> QImage:
 # ----------------------------------------------------------------------
 # Skins
 # ----------------------------------------------------------------------
-def test_the_three_skins_are_offered():
-    assert list(SKINS) == ["glossy_black", "jdxi_rack", "brushed_70s"]
+def relative_luminance(colour: str) -> float:
+    """WCAG relative luminance of a #rrggbb colour."""
+    channels = []
+    for index in (1, 3, 5):
+        value = int(colour[index : index + 2], 16) / 255
+        channels.append(
+            value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
+        )
+    red, green, blue = channels
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+
+def contrast(first: str, second: str) -> float:
+    """WCAG contrast ratio between two colours."""
+    lighter, darker = sorted(
+        (relative_luminance(first), relative_luminance(second)), reverse=True
+    )
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def face_colour(skin) -> str:
+    """The middle of the skin's faceplate, as #rrggbb."""
+    image = QImage(80, 80, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 79, 79))
+    painter.end()
+    return image.pixelColor(40, 40).name()
+
+
+def test_the_skins_are_offered():
+    assert list(SKINS) == [
+        "glossy_black",
+        "jdxi_rack",
+        "tr808",
+        "brushed_70s",
+        "ivory_walnut",
+    ]
+
+
+def test_lettering_is_legible_on_every_faceplate(qapp):
+    """
+    Near-white lettering on satin aluminium was 1.96:1, which is why a skin
+    carries its own foreground: a faceplate has to be legible whatever it is
+    made of.
+    """
+    for skin in SKINS.values():
+        face = face_colour(skin)
+        with subtest_name(skin):
+            assert contrast(skin.foreground.text, face) >= 4.5
+            assert contrast(skin.foreground.text_secondary, face) >= 3.0
+
+
+def subtest_name(skin):
+    """Name the skin in a failure, without needing pytest-subtests."""
+    import contextlib
+
+    @contextlib.contextmanager
+    def named():
+        try:
+            yield
+        except AssertionError as error:
+            raise AssertionError(f"{skin.skin_id}: {error}") from None
+
+    return named()
+
+
+def test_each_face_is_distinct(qapp):
+    # The complaint that started this: two skins that render the same
+    faces = {skin.skin_id: face_colour(skin) for skin in SKINS.values()}
+    assert len(set(faces.values())) == len(faces), faces
+
+
+def test_the_808_wears_its_step_buttons(qapp):
+    """The run of step colours is in the face, so it reaches every panel."""
+    from jdxi_editor.ui.style.rack_skin import Tr808Skin
+
+    skin = Tr808Skin()
+    image = QImage(200, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 199, 59))
+    painter.end()
+    band = [image.pixelColor(x, 57).name() for x in (25, 75, 125, 175)]
+    assert band == [colour.lower() for colour in skin.step_colors]
 
 
 def test_the_default_skin_is_the_panel_it_replaced(qapp):
@@ -123,9 +207,11 @@ def test_each_skin_carries_its_own_display_palette():
     # green fluorescent one: no two skins share a display
     texts = {skin.skin_id: skin.lcd.text for skin in SKINS.values()}
     assert texts == {
-        "glossy_black": "#FF6A00",
-        "jdxi_rack": "#CFEEFF",
-        "brushed_70s": "#5BFF9B",
+        "glossy_black": "#FF6A00",   # the JD-Xi's orange on dark red
+        "jdxi_rack": "#CFEEFF",      # the rack unit's blue backlit screen
+        "tr808": "#FF4A33",          # the 808's red step LEDs
+        "brushed_70s": "#5BFF9B",    # a green fluorescent display
+        "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }
     assert len(set(texts.values())) == len(texts)
 
