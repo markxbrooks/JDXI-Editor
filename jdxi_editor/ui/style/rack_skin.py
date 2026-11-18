@@ -254,6 +254,10 @@ class RackSkin:
     ink_legends = False
     #: Buttons shaded as caps, and fields as wells milled into the plate.
     mounted_controls = False
+    #: MIDI lanes drawn as punched cards on wood.
+    punched_cards = False
+    #: Wood behind those lanes. None uses the studio walnut.
+    lane_wood = None
 
     def content_margins(self) -> QMargins:
         """
@@ -625,6 +629,7 @@ class Brushed70sSkin(RackSkin):
     foreground = DARK_LETTERING
     ink_legends = True
     mounted_controls = True
+    punched_cards = True
     chassis = Chassis(
         body="#8A8A87", surface="#101010", surface_alt="#191919",
         border="#4A4A47", accent="#E04435",
@@ -1433,6 +1438,89 @@ class Juno106Skin(RackSkin):
         self.outline_ear(painter, rect, QColor(62, 32, 16), QColor(36, 32, 28))
 
 
+#: The Minimoog's cabinet, taken from the lit rail: a honey walnut
+MINI_WOOD = ((0.0, 206, 156, 112), (0.45, 186, 128, 86), (1.0, 140, 88, 52))
+
+#: The Minimoog has no screen. The editor's display takes the cream of the
+#: legends printed on its black panel.
+MINI_LCD = LcdPalette(
+    bg_edge="#12100E",
+    bg_mid="#1E1A16",
+    bg_glow="#2C261E",
+    text="#F4E6C8",
+    text_dim="#A89878",
+)
+
+
+class MiniMoogSkin(RackSkin):
+    """
+    The Minimoog: a matte black panel set in a walnut cabinet.
+
+    The cabinet is the wood at each end and the lip above and below the
+    panel. Its lanes are punched cards, on this cabinet's own wood.
+    """
+
+    skin_id = "minimoog"
+    label = "Mini Moog"
+    ear_width = 18
+    bezel = 6
+    #: The wooden rail under the panel
+    rail_height = 8
+    lcd = MINI_LCD
+    foreground = LIGHT_LETTERING
+    punched_cards = True
+    lane_wood = MINI_WOOD
+    chassis = Chassis(
+        body="#241C16", surface="#141210", surface_alt="#1C1916",
+        border="#3A322C", accent="#E06A32",
+    )
+    #: How much of the top slice is the cabinet lip, inside SHEEN_SLICE_TOP
+    lip = 4
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(36, 34, 32))
+        gradient.setColorAt(0.55, QColor(22, 20, 18))
+        gradient.setColorAt(1.0, QColor(12, 10, 9))
+        painter.fillRect(rect, gradient)
+
+        height = max(1, int(round(rect.height())))
+        painter.drawTiledPixmap(
+            QRectF(rect.left(), rect.top(), rect.width(), self.lip),
+            _wood_tile(height, MINI_WOOD),
+        )
+        painter.setPen(QPen(QColor(48, 28, 16), 1))
+        painter.drawLine(
+            QPointF(rect.left(), rect.top() + self.lip),
+            QPointF(rect.right(), rect.top() + self.lip),
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(8, 7, 6), 1))
+        painter.drawPath(path)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A cabinet cheek. The sides are plain wood, with no rack screws."""
+        height = max(1, int(round(rect.height())))
+        painter.drawTiledPixmap(rect, _wood_tile(height, MINI_WOOD))
+        self.outline_ear(painter, rect, QColor(110, 64, 32))
+
+    def paint_rail(self, painter: QPainter, rect: QRectF) -> None:
+        """The wooden rail under the panel, the same plank as the cheeks."""
+        span = max(1, int(round(rect.bottom())))
+        painter.drawTiledPixmap(rect, _wood_tile(span, MINI_WOOD))
+        painter.setPen(QPen(QColor(48, 28, 16), 1))
+        painter.drawLine(rect.topLeft(), rect.topRight())
+
+
 #: Every skin, by id, in the order they are offered
 SKINS: Dict[str, RackSkin] = {
     skin.skin_id: skin
@@ -1446,6 +1534,7 @@ SKINS: Dict[str, RackSkin] = {
         Tr909Skin(),
         Jupiter8Skin(),
         Juno106Skin(),
+        MiniMoogSkin(),
         Brushed70sSkin(),
         IvoryWalnutSkin(),
     )
@@ -1583,11 +1672,12 @@ def _restyle_application() -> None:
 
     if "gloss_panel_" in (application.styleSheet() or ""):
         application.setStyleSheet(repoint(application.styleSheet()))
+    from jdxi_editor.ui.widgets.midi.track_viewer import MidiTrackViewer
     from jdxi_editor.ui.widgets.rack.ears import RackEars
     from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
     for widget in application.allWidgets():
-        if isinstance(widget, RackEars):
+        if isinstance(widget, (RackEars, MidiTrackViewer)):
             widget.apply_skin()
         elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
             widget.refresh_skin()

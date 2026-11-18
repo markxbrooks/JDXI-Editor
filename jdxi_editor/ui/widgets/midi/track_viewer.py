@@ -8,6 +8,7 @@ import mido
 import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import QPoint, Qt, QEvent, QTimer, Signal
+from PySide6.QtGui import QPainter, QPaintEvent
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -27,10 +28,25 @@ from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.slider.track_velocity import TrackVelocitySlider
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
-from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
+from jdxi_editor.ui.widgets.midi.track import (
+    MidiTrackWidget,
+    lane_wood_tile,
+    punched_cards,
+)
 from jdxi_editor.ui.widgets.midi.utils import build_tick_to_seconds, get_first_channel
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMetaMessageType, MidoMessageType
+
+
+class _TrackList(QWidget):
+    """The list behind the lanes. A punched-card skin paints it in wood."""
+
+    def paintEvent(self, _event: QPaintEvent) -> None:
+        if not punched_cards():
+            return
+        painter = QPainter(self)
+        painter.drawTiledPixmap(self.rect(), lane_wood_tile(self.height()))
+        painter.end()
 
 
 class MidiTrackViewer(QWidget):
@@ -83,7 +99,7 @@ class MidiTrackViewer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         # Scrollable content widget
-        self.scroll_content = QWidget()
+        self.scroll_content = _TrackList()
         scroll_layout = QVBoxLayout(self.scroll_content)
         scroll_layout.setSpacing(0)
         scroll_layout.setContentsMargins(0, 0, 0, 0)
@@ -149,6 +165,38 @@ class MidiTrackViewer(QWidget):
         main_layout.addWidget(self.track_zoom_slider)
 
         self.setLayout(main_layout)
+        self.apply_skin()
+
+    def apply_skin(self) -> None:
+        """
+        Show the wood behind the cards when this skin punches them.
+
+        :return: None
+        """
+        clear = "background: transparent;"
+        if punched_cards():
+            self.scroll_area.setAutoFillBackground(False)
+            self.scroll_area.viewport().setAutoFillBackground(False)
+            self.scroll_content.setAutoFillBackground(False)
+            self.scroll_area.setStyleSheet(
+                f"QScrollArea {{ {clear} border: none; }}"
+            )
+            self.scroll_area.viewport().setStyleSheet(clear)
+        else:
+            self.scroll_area.setStyleSheet("")
+            self.scroll_area.viewport().setStyleSheet("")
+        for widget in self.midi_track_widgets.values():
+            widget.refresh_skin()
+        self.scroll_content.update()
+        self.update()
+
+    def paintEvent(self, _event: QPaintEvent) -> None:
+        """The wood continues under the zoom control, around the list."""
+        if not punched_cards():
+            return
+        painter = QPainter(self)
+        painter.drawTiledPixmap(self.rect(), lane_wood_tile(self.height()))
+        painter.end()
 
     def clear(self):
         """Clear the MIDI track view and reset state."""

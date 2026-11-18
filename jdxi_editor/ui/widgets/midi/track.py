@@ -19,6 +19,35 @@ from jdxi_editor.ui.widgets.midi.utils import (
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMessageType
 
+#: Card stock, and the holes punched through it
+CARD = QColor(255, 255, 255)
+PUNCH = QColor(16, 16, 16)
+PUNCH_MUTED = QColor(150, 150, 150)
+
+
+def punched_cards() -> bool:
+    """
+    This skin draws each lane as a punched card on wood.
+
+    :return: bool
+    """
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    return active_skin().punched_cards
+
+
+def lane_wood_tile(height: int):
+    """
+    The wood behind the cards. A skin may name its own cabinet.
+
+    :param height: int tile height in px
+    :return: QPixmap
+    """
+    from jdxi_editor.ui.style.rack_skin import WALNUT, _wood_tile, active_skin
+
+    stops = active_skin().lane_wood or WALNUT
+    return _wood_tile(max(1, int(height)), stops)
+
 
 class MidiTrackWidget(QWidget):
     """
@@ -59,6 +88,7 @@ class MidiTrackWidget(QWidget):
         self.muted_tracks = set()  # Set of muted channels
         self.cached_pixmap = None
         self.cached_width = 0
+        self._cached_card: Optional[bool] = None
         self.tick_to_seconds = tick_to_seconds
         self.playhead_norm: Optional[float] = None  # 0..1, None hides it
         self.selected = False  # Brighter note fill / outline when selected
@@ -187,9 +217,15 @@ class MidiTrackWidget(QWidget):
         if not self.track_data:
             return
 
-        if self.cached_pixmap is None or self.cached_width != self.width():
+        card = punched_cards()
+        if (
+            self.cached_pixmap is None
+            or self.cached_width != self.width()
+            or self._cached_card != card
+        ):
             self.cached_pixmap = self.render_track_to_pixmap()
             self.cached_width = self.width()
+            self._cached_card = card
 
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.cached_pixmap)
@@ -240,12 +276,25 @@ class MidiTrackWidget(QWidget):
         """
         width = self.width()
         height = self.height()
+        card = punched_cards()
         pixmap = QPixmap(width, height)
-        pixmap.fill(QColor(JDXi.UI.MidiPlayer.BACKGROUND))
+        pixmap.fill(
+            Qt.GlobalColor.transparent if card else QColor(JDXi.UI.MidiPlayer.BACKGROUND)
+        )
 
         painter = QPainter(pixmap)
-        painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.SURFACE_ALT)))
-        painter.drawLine(0, height - 1, width, height - 1)  # row separator
+        if card:
+            # A white card on the wood, with a hair of the wood showing around it
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(CARD)
+            painter.drawRect(QRectF(0, 2, width, height - 4))
+            if self.selected:
+                painter.setPen(QPen(PUNCH, 1))
+                painter.setBrush(Qt.BrushStyle.NoBrush)
+                painter.drawRect(QRectF(0.5, 2.5, width - 1, height - 5))
+        else:
+            painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.SURFACE_ALT)))
+            painter.drawLine(0, height - 1, width, height - 1)  # row separator
 
         notes = self.track_data["notes"]
         channels = self.track_data["channels"]
@@ -255,22 +304,23 @@ class MidiTrackWidget(QWidget):
         muted = self.muted or any(
             self._is_channel_muted(channel) for channel in channels
         )
-        channel = next(iter(channels))
-        # Copy: the colour table is shared by every track
-        base = QColor(MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150)))
+        if not card:
+            channel = next(iter(channels))
+            # Copy: the colour table is shared by every track
+            base = QColor(MIDI_CHANNEL_COLORS.get(channel, QColor(100, 100, 255, 150)))
 
-        band = QColor(base)
-        band.setAlpha(18 if muted else 40)
-        band_left = notes[0][0] * width
-        band_right = max(end for _, end, _, _ in notes) * width
-        band_rect = QRectF(band_left, 1, max(2.0, band_right - band_left), height - 3)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(band)
-        painter.drawRoundedRect(band_rect, 3, 3)
-        if self.selected:
-            painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.TEXT), 1))
-            painter.setBrush(Qt.BrushStyle.NoBrush)
+            band = QColor(base)
+            band.setAlpha(18 if muted else 40)
+            band_left = notes[0][0] * width
+            band_right = max(end for _, end, _, _ in notes) * width
+            band_rect = QRectF(band_left, 1, max(2.0, band_right - band_left), height - 3)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(band)
             painter.drawRoundedRect(band_rect, 3, 3)
+            if self.selected:
+                painter.setPen(QPen(QColor(JDXi.UI.MidiPlayer.TEXT), 1))
+                painter.setBrush(Qt.BrushStyle.NoBrush)
+                painter.drawRoundedRect(band_rect, 3, 3)
 
         low, high = self.track_data["pitch_range"]
         span = max(high - low, self.MIN_PITCH_SPAN)
@@ -285,19 +335,32 @@ class MidiTrackWidget(QWidget):
             if x > width or x + w < 0:
                 continue  # off screen
             y = self.LANE_PADDING + (1 - (pitch - low) / span) * (usable - note_height)
-            color = QColor(base)
-            if muted:
-                color.setAlpha(60)
+            if card:
+                # A hole punched in the card. Mute fades the hole, not its colour.
+                painter.setBrush(PUNCH_MUTED if muted else PUNCH)
             else:
-                # Louder notes are more opaque
-                color.setAlpha(min(255, 110 + velocity))
-                if self.selected:
-                    color = color.lighter(130)
-            painter.setBrush(color)
+                color = QColor(base)
+                if muted:
+                    color.setAlpha(60)
+                else:
+                    # Louder notes are more opaque
+                    color.setAlpha(min(255, 110 + velocity))
+                    if self.selected:
+                        color = color.lighter(130)
+                painter.setBrush(color)
             painter.drawRect(QRectF(x, y, w, note_height))
 
         painter.end()
         return pixmap
+
+    def refresh_skin(self) -> None:
+        """
+        Draw the lane again for the skin now in use.
+
+        :return: None
+        """
+        self.cached_pixmap = None
+        self.update()
 
     def change_track_channel(self, track_index: int, new_channel: int) -> None:
         """

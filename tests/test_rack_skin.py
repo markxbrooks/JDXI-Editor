@@ -99,6 +99,7 @@ def test_the_skins_are_offered():
         "tr909",
         "jupiter8",
         "juno106",
+        "minimoog",
         "brushed_70s",
         "ivory_walnut",
     ]
@@ -223,6 +224,42 @@ def test_the_juno_wears_its_bars_and_wooden_cheeks(qapp):
     assert abs(left.red() - right.red()) <= 8
     assert abs(left.green() - right.green()) <= 8
     assert abs(left.blue() - right.blue()) <= 8
+
+
+def test_the_minimoog_is_a_black_panel_in_a_walnut_cabinet(qapp):
+    """Matte black between a wooden lip, wooden cheeks, and a wooden rail."""
+    from jdxi_editor.ui.style.rack_skin import SKINS, MiniMoogSkin
+
+    skin = MiniMoogSkin()
+    assert {s.skin_id for s in SKINS.values() if s.punched_cards} == {
+        "brushed_70s",
+        "minimoog",
+    }
+
+    face = QImage(360, 80, QImage.Format.Format_ARGB32)
+    face.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(face)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 359, 79))
+    painter.end()
+    lip = face.pixelColor(180, 1)
+    panel = face.pixelColor(180, 40)
+    assert lip.red() > lip.green() > lip.blue()
+    assert lip.red() > lip.blue() + 40
+    assert panel.lightness() < 40
+
+    image = QImage(400, 160, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
+    painter.end()
+    left = image.pixelColor(8, 40)
+    right = image.pixelColor(390, 40)
+    rail = image.pixelColor(200, 155)
+    for wood in (left, right, rail):
+        assert wood.red() > wood.green() > wood.blue(), wood.name()
+        assert wood.red() > wood.blue() + 40, wood.name()
+    assert abs(left.red() - right.red()) <= 8
+    assert image.pixelColor(200, 40).lightness() < 40
 
 
 def test_both_cheeks_are_the_same_material(qapp):
@@ -394,6 +431,7 @@ def test_each_skin_carries_its_own_display_palette():
         "tr909": "#FF3A20",          # the 909's red LED display
         "jupiter8": "#FF2A14",       # the JP-8's patch number display
         "juno106": "#C5D8EA",        # a cool grey-blue, the Juno has no screen
+        "minimoog": "#F4E6C8",       # cream legends, the Mini has no screen
         "brushed_70s": "#5BFF9B",    # a green fluorescent display
         "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }
