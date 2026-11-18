@@ -154,6 +154,12 @@ class TestInstrumentImageResolution(unittest.TestCase):
     def test_sh_101_preset_uses_the_sh_101_image(self):
         self.assertEqual(resolve("digital_synths", "131: SH-101 Bs"), "sh-101.png")
 
+    def test_mks_50_preset_uses_the_mks_50_image(self):
+        # The instrument combo labels this preset "101 - MKS-50 Bass1".
+        for preset in ("101 - MKS-50 Bass1", "101: MKS-50 Bass1", "MKS-50 Bass1"):
+            with self.subTest(preset=preset):
+                self.assertEqual(resolve("digital_synths", preset), "mks-50.png")
+
     def test_preset_named_artwork_beats_the_family_image(self):
         # "trem-ep.png" is more specific than "piano.png" for the piano family.
         self.assertEqual(resolve("digital_synths", "164: Trem EP 1"), "trem-ep.png")

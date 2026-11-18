@@ -443,7 +443,7 @@ ENGINE_KEYWORDS: list[EngineKeywordSpec] = [
     EngineKeywordSpec(name="sh", keywords=["sh", "sh-101", "101"]),
     EngineKeywordSpec(name="d-50", keywords=["d-50", "d50"]),
     EngineKeywordSpec(name="vp-330", keywords=["vp-330", "vp330"]),
-    EngineKeywordSpec(name="mks", keywords=["mks", "mks-50"]),
+    EngineKeywordSpec(name="mks-50", keywords=["mks-50", "mks50", "mks"]),
     EngineKeywordSpec(name="mc", keywords=["mc", "mc-202", "202"]),
 ]
 
@@ -483,7 +483,7 @@ ENGINE_IMAGE_SPECS: list[EngineImageSpec] = [
     EngineImageSpec(name="sh", basenames=("sh", "sh-101", "sh101")),
     EngineImageSpec(name="d-50", basenames=("d-50", "d50")),
     EngineImageSpec(name="vp-330", basenames=("vp-330", "vp330")),
-    EngineImageSpec(name="mks", basenames=("mks", "mks-50", "mks50")),
+    EngineImageSpec(name="mks-50", basenames=("mks-50", "mks50", "mks")),
     EngineImageSpec(name="mc", basenames=("mc", "mc-202", "mc202")),
 ]
 
