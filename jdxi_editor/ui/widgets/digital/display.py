@@ -100,9 +100,9 @@ class DigitalDisplay(DigitalDisplayBase):
         )
         oct_text = f"Oct {self.current_octave:+}" if self.current_octave else "Oct 0"
 
-        orange = QColor(AppEditorStyle.LCD_ORANGE)
-        dim = QColor(AppEditorStyle.LCD_ORANGE_DIM)
-        glow_color = QColor(AppEditorStyle.LCD_ORANGE_DIM)
+        orange = QColor(self.lcd.text)
+        dim = QColor(self.lcd.text_dim)
+        glow_color = QColor(self.lcd.text_dim)
         glow_color.setAlpha(90)
 
         offsets = [(-1, -1), (1, -1), (-1, 1), (1, 1)]

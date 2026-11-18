@@ -232,6 +232,31 @@ class JDXiWindow(QMainWindow):
         action.triggered.connect(slot)
         return action
 
+    def _add_skin_menu(self, menu) -> None:
+        """
+        A "Rack Skin" submenu: the faceplate the panels and displays wear.
+
+        :param menu: QMenu the menu to add the submenu to
+        :return: None
+        """
+        from PySide6.QtGui import QActionGroup
+
+        from jdxi_editor.ui.style.rack_skin import SKINS, active_skin, set_active_skin
+
+        submenu = menu.addMenu("Rack &Skin")
+        group = QActionGroup(self)
+        group.setExclusive(True)
+        current = active_skin().skin_id
+        for skin_id, skin in SKINS.items():
+            action = QAction(skin.label, self)
+            action.setCheckable(True)
+            action.setChecked(skin_id == current)
+            action.triggered.connect(
+                lambda _checked=False, chosen=skin_id: set_active_skin(chosen)
+            )
+            group.addAction(action)
+            submenu.addAction(action)
+
     def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
 
@@ -322,6 +347,10 @@ class JDXiWindow(QMainWindow):
                 status_tip="Set up a hardware controller to drive the filter",
             )
         )
+
+        edit_menu.addSeparator()
+
+        self._add_skin_menu(edit_menu)
 
         edit_menu.addSeparator()
 

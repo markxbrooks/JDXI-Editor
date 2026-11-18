@@ -43,6 +43,9 @@ BODY_PROPERTY = "jdxiBody"  # set on an editor's root widget (see mark_editor_bo
 FLAT_PROPERTY = "jdxiFlat"  # set on a tab stack nested in a glossy panel (see mark_flat)
 SHEEN_PROPERTY = "jdxiSheen"  # set on an editor's outermost panels (see mark_sheen_panels)
 SHEEN_SLICE = 3  # px of the panel image kept unstretched at each edge (rim, top highlight)
+# The bottom edge keeps more, so a skin can put a stripe there and have it
+# drawn at its own size rather than squashed with the stretched middle
+SHEEN_SLICE_BOTTOM = 6
 GLOSS_GRADIENT = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1,"
     " stop:0 #161618, stop:0.5 #0A0A0B, stop:1 #050506)"
@@ -82,28 +85,42 @@ def mark_editor_body(widget) -> None:
     widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
 
-def _gloss_panel_file(width: int = 1000, height: int = 420) -> str:
+@lru_cache(maxsize=None)
+def gloss_panel_file(width: int = 1000, height: int = 420) -> str:
     """
-    The Instrument window's glossy panel (gradient, diagonal sheen, rim and
-    top highlight) as PNG, for stylesheet border-image on editor panels.
+    The active skin's faceplate as PNG, for stylesheet border-image on editor
+    panels.
+
+    The default skin is the Instrument window's glossy panel (gradient,
+    diagonal sheen, rim and top highlight), so this is unchanged until another
+    skin is chosen; see :mod:`jdxi_editor.ui.style.rack_skin`.
     """
+    from PySide6.QtCore import QRectF, Qt
+    from PySide6.QtGui import QImage, QPainter
+
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    skin = active_skin()
     folder = Path(tempfile.gettempdir()) / "jdxi_editor_icons"
     folder.mkdir(parents=True, exist_ok=True)
-    path = folder / f"gloss_panel_{width}x{height}.png"
-    if not path.exists():
-        from PySide6.QtCore import QRectF, Qt
-        from PySide6.QtGui import QImage, QPainter
-
-        from jdxi_editor.ui.image.instrument import draw_gloss_panel
-
-        image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
-        image.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(image)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        draw_gloss_panel(painter, QRectF(0.5, 0.5, width - 1, height - 1), sheen=True)
-        painter.end()
-        image.save(str(path))
+    # The skin is part of the name, so one skin cannot read another's image
+    # back out of the folder
+    path = folder / f"gloss_panel_{skin.skin_id}_{width}x{height}.png"
+    # Always rendered, never reused from disk: the file outlives the run, so
+    # a skin whose painting changed would otherwise keep serving the old
+    # image for ever. The lru_cache already keeps it to once per skin per run.
+    image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    skin.paint_face(painter, QRectF(0.5, 0.5, width - 1, height - 1))
+    painter.end()
+    image.save(str(path))
     return path.as_posix()
+
+
+#: The previous name, kept for anything still calling it
+_gloss_panel_file = gloss_panel_file
 
 
 def mark_sheen_panels(editor) -> None:
@@ -266,6 +283,13 @@ class AppEditorStyle:
         hover = cls.ACCENT_HOVER if accent is None else accent
         # Section chrome uses metallic red for selected tab underline (digital path)
         section = accent or cls.METALLIC_RED
+        # The panel behind an editor's outermost groups comes from the active
+        # skin, which also says how much of its edge must not be stretched
+        # Every skin keeps its rim inside the same slice, so switching skin is
+        # only a change of image (see rack_skin._restyle_application)
+        panel_slice = SHEEN_SLICE
+        panel_slice_bottom = SHEEN_SLICE_BOTTOM
+        panel_image = gloss_panel_file()
         return f"""
         /* JD-Xi finish: the editor's root is the rough matte body; panels
            (group boxes, tab panes) are glossy black; everything between is
@@ -379,8 +403,8 @@ class AppEditorStyle:
         QGroupBox[{SHEEN_PROPERTY}="true"],
         QTabWidget[{SHEEN_PROPERTY}="true"]::pane {{
             background: transparent;
-            border-width: {SHEEN_SLICE}px;
-            border-image: url({_gloss_panel_file()}) {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} stretch stretch;
+            border-width: {panel_slice}px {panel_slice}px {panel_slice_bottom}px {panel_slice}px;
+            border-image: url({panel_image}) {panel_slice} {panel_slice} {panel_slice_bottom} {panel_slice} stretch stretch;
         }}
         /* A tab stack marked flat (mark_flat) sits on the glossy panel
            around it. Marked explicitly: a descendant selector would also

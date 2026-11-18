@@ -1001,9 +1001,23 @@ class SynthEditor(SynthBase):
             #    and than the name image ("jd piano.png" over "jd.png").
             paths_to_try = self._preset_image_paths(preset_text)
 
+            # PCM samples belong to the fictional JDXV, so its artwork comes
+            # ahead of the family picture ("E. Grand" -> jdxv.png, not
+            # piano.png; "Bright Strat" -> jdxv.png, not strat.png). A file
+            # named after the preset itself still wins, above.
+            if name == "jdxv":
+                paths_to_try.extend(self._name_image_paths(name))
+                if type_:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{type_}.png"
+                            )
+                        )
+                    )
             # Special case: For piano family, prioritize piano.png over name-specific images
             # This ensures "JD Piano 1" matches piano.png instead of jd.png
-            if type_ == "piano":
+            elif type_ == "piano":
                 # 1. Try piano.png first (family image)
                 paths_to_try.append(
                     resource_path(

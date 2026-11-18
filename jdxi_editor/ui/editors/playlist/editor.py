@@ -43,14 +43,13 @@ from jdxi_editor.ui.editors.helpers.preset import (
     load_digital_cheat_preset_on_analog,
 )
 from jdxi_editor.ui.editors.playlist.progress import PlaylistProgressWidget
-from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.editors.helpers.widgets import (
-    create_panel,
     create_jdxi_button,
     create_jdxi_row,
 )
 from jdxi_editor.ui.style import JDXiUIDimensions, JDXiUIStyle
 from jdxi_editor.ui.widgets.combo_box import SearchableFilterableComboBox
+from jdxi_editor.ui.widgets.rack import RackPanel
 from jdxi_editor.ui.widgets.delegates.midi_file import MidiFileDelegate
 from jdxi_editor.ui.widgets.delegates.play_button import PlayButtonDelegate
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
@@ -177,9 +176,10 @@ class PlaylistEditor(QWidget):
         # Now playing: song n of N, its progress and the playlist's
         self.playlist_progress = PlaylistProgressWidget()
         self.playlist_progress.song_clicked.connect(self._play_song)
-        # ... on a glossy black panel, like the other editors' displays
-        self.playlist_progress_panel = create_panel(self.playlist_progress)
-        mark_sheen(self.playlist_progress_panel)
+        # ... on a rack faceplate, like the other editors' displays. The
+        # default skin is that same glossy black panel; the Rack Skin setting
+        # swaps it for the JD-Xi rackmount or brushed metal faceplate.
+        self.playlist_progress_panel = RackPanel(self.playlist_progress)
         layout.addWidget(self.playlist_progress_panel)
 
         # Create playlist programs table

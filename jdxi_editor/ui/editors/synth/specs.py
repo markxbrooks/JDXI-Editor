@@ -445,6 +445,48 @@ ENGINE_KEYWORDS: list[EngineKeywordSpec] = [
     EngineKeywordSpec(name="vp-330", keywords=["vp-330", "vp330"]),
     EngineKeywordSpec(name="mks-50", keywords=["mks-50", "mks50", "mks"]),
     EngineKeywordSpec(name="mc", keywords=["mc", "mc-202", "202"]),
+    # JDXV is a fictional instrument for the JD-Xi's own PCM samples: the
+    # acoustic and sampled voices that are not an emulation of another
+    # machine. It has to stay last so JP-8, Juno, FM, JD, and the rest keep
+    # their artwork when a name contains both ("JD Piano", "FM E. Piano",
+    # "JP8 Strings", "Voc:VP-330").
+    EngineKeywordSpec(
+        name="jdxv",
+        keywords=[
+            "grand",
+            "wurly",
+            "clav",
+            "vibraphone",
+            "harp",
+            "steel drum",
+            "e. organ",
+            "e.organ",
+            "house org",
+            "organ bell",
+            "bell 1",
+            "bell 2",
+            "guitar",
+            "gtr",
+            "strat",
+            "sitar",
+            "ac. bass",
+            "fingerd bs",
+            "picked bass",
+            "fretless bs",
+            "slap bass",
+            "strings 1",
+            "tuned winds",
+            "syn vox",
+            "voc:",
+            "orch hit",
+            "philly hit",
+            "house hit",
+            "o'skool hit",
+            "punch hit",
+            "tao hit",
+            "fx",
+        ],
+    ),
 ]
 
 
@@ -485,6 +527,7 @@ ENGINE_IMAGE_SPECS: list[EngineImageSpec] = [
     EngineImageSpec(name="vp-330", basenames=("vp-330", "vp330")),
     EngineImageSpec(name="mks-50", basenames=("mks-50", "mks50", "mks")),
     EngineImageSpec(name="mc", basenames=("mc", "mc-202", "mc202")),
+    EngineImageSpec(name="jdxv", basenames=("jdxv",)),
 ]
 
 ENGINE_IMAGE_ALIASES: dict[str, tuple[str, ...]] = {

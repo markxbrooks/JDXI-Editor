@@ -181,8 +181,40 @@ class TestInstrumentImageResolution(unittest.TestCase):
         self.assertEqual(resolve("digital_synths", "054: WaveShapeLd1"), "lead.png")
 
     def test_strat_is_not_strings(self):
-        # "str" used to match inside "Strat".
-        self.assertEqual(resolve("digital_synths", "180: Bright Strat"), "strat.png")
+        # "str" used to match inside "Strat". The tone is a PCM guitar, so it
+        # belongs to the JDXV rather than the strings family.
+        self.assertEqual(resolve("digital_synths", "180: Bright Strat"), "jdxv.png")
+
+    def test_pcm_presets_use_the_jdxv_image(self):
+        for preset in (
+            "157: Ac. Bass",
+            "163: E. Grand 1",
+            "169: Clav",
+            "170: 70's E. Organ",
+            "173: Bell 1",
+            "179: Ac. Guitar",
+            "185: E. Sitar",
+            "046: Strings 1",
+            "190: Tuned Winds1",
+            "196: Syn Vox 1",
+            "200: Orch Hit",
+            "246: Voc:Ensemble",
+            "187: FX 1",
+        ):
+            with self.subTest(preset=preset):
+                self.assertEqual(resolve("digital_synths", preset), "jdxv.png")
+
+    def test_modeled_presets_are_not_the_jdxv(self):
+        # A vintage engine, or a synth tone that only shares a PCM word, keeps
+        # its own picture.
+        self.assertEqual(resolve("digital_synths", "001: JP8 Strings1"), "jp8.png")
+        self.assertEqual(resolve("digital_synths", "042: Organ Pad"), "pad.png")
+        self.assertEqual(resolve("digital_synths", "043: Bell Pad"), "pad.png")
+        self.assertEqual(resolve("digital_synths", "142: Organ Bass 1"), "bass.png")
+        # Piano artwork still wins over the FM engine for this tone.
+        self.assertEqual(resolve("digital_synths", "165: FM E. Piano 1"), "piano.png")
+        self.assertEqual(resolve("digital_synths", "164: Trem EP 1"), "trem-ep.png")
+        self.assertNotEqual(resolve("digital_synths", "199: VP-330 Chr"), "jdxv.png")
 
     def test_run_together_name_still_resolves(self):
         self.assertEqual(resolve("digital_synths", "049: S-SawStacLd1"), "lead.png")
