@@ -183,6 +183,11 @@ def test_arpeggiator_controls_sit_on_a_glossy_panel():
         combos = editor.findChildren(QComboBox)
         panels = editor.findChildren(RackPanel)
         assert combos and any(all(p.isAncestorOf(c) for c in combos) for p in panels)
+        title = editor.editor_helper.get_title_label()
+        image = editor.editor_helper.get_image_label()
+        title_panels = [p for p in panels if p.isAncestorOf(title)]
+        assert title_panels and title_panels[0].isAncestorOf(image)
+        assert not any(title_panels[0].isAncestorOf(c) for c in combos)
         assert editor.editor_helper.get_tab_widget().isHidden()
     finally:
         editor.close()

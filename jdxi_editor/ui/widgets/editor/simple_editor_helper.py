@@ -52,9 +52,11 @@ Usage Example:
 from typing import Literal, Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGridLayout, QGroupBox, QHBoxLayout, QLabel, QTabWidget
+from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QLabel, QTabWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
+from jdxi_editor.ui.style.editor_style import mark_flat
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 
@@ -133,12 +135,12 @@ class SimpleEditorHelper:
 
     def _setup_content_layout(self) -> None:
         """Setup centered content with title/image and tab or grid widget"""
-        # Create title group box
-        title_group_box = QGroupBox()
-        title_group_layout = QHBoxLayout()
-        title_group_box.setLayout(title_group_layout)
-        title_group_layout.addWidget(self.title_label)
-        title_group_layout.addWidget(self.image_label)
+        # Title and instrument image share one faceplate, cheeks included
+        title_row = QWidget()
+        title_row_layout = QHBoxLayout(title_row)
+        title_row_layout.setContentsMargins(0, 0, 0, 0)
+        title_row_layout.addWidget(self.title_label)
+        title_row_layout.addWidget(self.image_label)
 
         # Create centered content widget
         centered_content = QWidget()
@@ -146,7 +148,7 @@ class SimpleEditorHelper:
         main_row_hlayout.addStretch()
         self.rows_layout = QVBoxLayout()
         main_row_hlayout.addLayout(self.rows_layout)
-        self.rows_layout.addWidget(title_group_box)
+        self.rows_layout.addWidget(create_panel(title_row))
 
         if self.layout_mode == "grid":
             # 2x2 grid: row0 = EFX1|EFX2, row1 = Delay|Reverb
@@ -157,6 +159,9 @@ class SimpleEditorHelper:
             # Tabbed layout (default)
             self.tab_widget = QTabWidget()
             JDXi.UI.Theme.apply_tabs_style(self.tab_widget)
+            # Pages are the faceplates. The pane stays a flat strip under the tabs
+            # so it does not draw a second sheen around them.
+            mark_flat(self.tab_widget)
             self.rows_layout.addWidget(self.tab_widget)
 
         main_row_hlayout.addStretch()

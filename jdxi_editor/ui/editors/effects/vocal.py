@@ -51,12 +51,13 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.address.factory import create_vocal_fx_address
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.editors.effects.data import VocalEffectsData
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+# from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.ui.widgets.group import WidgetGroups
 from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -84,6 +85,7 @@ class VocalFXEditor(BasicEditor):
         self.base_widget.setup_scrollable_content()
 
         # Use SimpleEditorHelper for standardized title/image/tab setup
+        from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
         self.editor_helper = SimpleEditorHelper(
             editor=self,
             base_widget=self.base_widget,
@@ -307,7 +309,7 @@ class VocalFXEditor(BasicEditor):
             form_layout.addRow(w)
         layout.addWidget(form_widget)
         layout.addStretch()
-        return common_section
+        return create_panel(common_section)
 
     def _update_vocal_effect_stack(self, index: int) -> None:
         """Switch Vocoder & Auto Pitch stack to the page for the selected effect type."""
@@ -343,8 +345,9 @@ class VocalFXEditor(BasicEditor):
 
         container = QWidget()
         layout = QVBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.vocal_effect_stack)
-        return container
+        return create_panel(container)
 
     def _build_vocal_effect_layout_spec(self) -> WidgetLayoutSpec:
         """Build layout spec for Vocal FX tab (Vocoder settings)."""
@@ -442,7 +445,7 @@ class VocalFXEditor(BasicEditor):
             form_layout.addRow(w)
         layout.addWidget(form_widget)
         layout.addStretch()
-        return mixer_section
+        return create_panel(mixer_section)
 
     def _build_auto_pitch_layout_spec(self) -> WidgetLayoutSpec:
         """Build layout spec for Auto Pitch tab."""

@@ -212,6 +212,16 @@ VINTAGE_GREEN_LCD = LcdPalette(
     text_dim="#2E9960",
 )
 
+#: The Juno-106 has no screen of its own; the editor's display takes the
+#: cool grey-blue of the panel rather than another machine's orange or red
+JUNO_LCD = LcdPalette(
+    bg_edge="#101418",
+    bg_mid="#1A222C",
+    bg_glow="#243448",
+    text="#C5D8EA",
+    text_dim="#7A94AE",
+)
+
 
 class RackSkin:
     """
@@ -489,13 +499,14 @@ class JdxiRackSkin(RackSkin):
             self.paint_screw(painter, QPointF(x, y), 4.0, QColor(118, 124, 132))
 
 
-#: Satin aluminium, warmed toward the champagne of 1970s anodizing:
-#: highlight, base and shadow down the face
+#: Satin aluminium, a neutral grey-silver: highlight, base and shadow down
+#: the face. The channels stay within a few points of each other, so the
+#: metal reads as silver rather than as bronze.
 ALUMINIUM = (
-    (0.0, 209, 197, 181),   # #D1C5B5 highlight
-    (0.30, 186, 174, 159),
-    (0.62, 178, 166, 151),  # #B2A697 base
-    (1.0, 131, 120, 105),   # #837869 shadow
+    (0.0, 197, 197, 193),   # #C5C5C1 highlight
+    (0.30, 184, 184, 181),
+    (0.62, 166, 166, 163),  # #A6A6A3 base
+    (1.0, 119, 120, 117),   # #777875 shadow
 )
 
 #: The JDXV's dark gunmetal faceplate
@@ -509,7 +520,9 @@ GRAIN_SATIN = 13
 
 
 @lru_cache(maxsize=8)
-def _brushed_tile(height: int, stops: tuple, grain: int = GRAIN_SATIN) -> QPixmap:
+def _brushed_tile(
+    height: int, stops: tuple, grain: int = GRAIN_SATIN, coverage: float = 1.0
+) -> QPixmap:
     """
     A tile of horizontally brushed metal, drawn once and reused.
 
@@ -521,12 +534,14 @@ def _brushed_tile(height: int, stops: tuple, grain: int = GRAIN_SATIN) -> QPixma
     exact two-row repeat reads as scan lines, while varying the strength
     along the surface, with the occasional brighter scratch, reads as
     brushed metal. The jitter is seeded, so the surface is the same every
-    run.
+    run. ``coverage`` of 1 draws every row; a lower value leaves most rows
+    as bare metal, so the grain only shows up close. Callers that pass 1
+    keep the previous stroke pattern.
 
     :param height: int tile height in px
     :param stops: tuple of (position, red, green, blue) down the face
     :param grain: int strength of the brushing
-    :param width: int tile width in px
+    :param coverage: float share of rows that take a stroke, in 0..1
     :return: QPixmap tile
     """
     width = 64
@@ -542,6 +557,8 @@ def _brushed_tile(height: int, stops: tuple, grain: int = GRAIN_SATIN) -> QPixma
         strength = noise.uniform(0.35, 1.0)
         if noise.random() < 0.06:  # an occasional deeper scratch
             strength = 1.6
+        elif coverage < 1.0 and noise.random() > coverage:
+            continue
         alpha = max(1, round(grain * strength))
         shade = 255 if noise.random() < 0.5 else 0
         painter.setPen(QPen(QColor(shade, shade, shade, alpha), 1))
@@ -571,13 +588,13 @@ class Brushed70sSkin(RackSkin):
     ink_legends = True
     mounted_controls = True
     chassis = Chassis(
-        body="#968C7A", surface="#212120", surface_alt="#2C2C2A",
+        body="#8A8A87", surface="#101010", surface_alt="#191919",
         border="#4A4A47", accent="#E04435",
     )
     #: the chassis, for anything wanting to match it
-    base_color = "#B2A697"
-    highlight_color = "#D1C5B5"
-    shadow_color = "#837869"
+    base_color = "#A6A6A3"
+    highlight_color = "#C5C5C1"
+    shadow_color = "#777875"
 
     def paint_face(
         self, painter: QPainter, rect: QRectF, sheen: bool = True
@@ -587,27 +604,31 @@ class Brushed70sSkin(RackSkin):
         painter.save()
         painter.setClipPath(path)
         height = max(1, int(round(rect.height())))
-        painter.drawTiledPixmap(rect, _brushed_tile(height, ALUMINIUM))
+        # Grain about 70% quieter than GRAIN_SATIN, and only on some rows,
+        # so the brushing shows up close and the gradient carries the metal.
+        painter.drawTiledPixmap(
+            rect, _brushed_tile(height, ALUMINIUM, grain=4, coverage=0.35)
+        )
 
         # A lip with some thickness: the light catches the top edge and
         # leaves the bottom in shadow. Two pixels, so it survives inside
         # the unstretched rim of the panel image.
-        painter.setPen(QPen(QColor(236, 226, 206), 2))
+        painter.setPen(QPen(QColor(230, 230, 226), 2))
         painter.drawLine(
             QPointF(rect.left() + 1, rect.top() + 1),
             QPointF(rect.right() - 1, rect.top() + 1),
         )
-        painter.setPen(QPen(QColor(248, 240, 224, 150), 2))
+        painter.setPen(QPen(QColor(242, 242, 238, 150), 2))
         painter.drawLine(
             QPointF(rect.left() + 1, rect.top() + 3.5),
             QPointF(rect.right() - 1, rect.top() + 3.5),
         )
-        painter.setPen(QPen(QColor(92, 78, 62), 2))
+        painter.setPen(QPen(QColor(119, 120, 117), 2))
         painter.drawLine(
             QPointF(rect.left() + 1, rect.bottom() - 2),
             QPointF(rect.right() - 1, rect.bottom() - 2),
         )
-        painter.setPen(QPen(QColor(58, 48, 40, 170), 2))
+        painter.setPen(QPen(QColor(90, 91, 88, 170), 2))
         painter.drawLine(
             QPointF(rect.left() + 1, rect.bottom() - 4.5),
             QPointF(rect.right() - 1, rect.bottom() - 4.5),
@@ -615,22 +636,22 @@ class Brushed70sSkin(RackSkin):
         painter.restore()
 
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(QColor(96, 84, 70), 1))
+        painter.setPen(QPen(QColor(119, 120, 117), 1))
         painter.drawPath(path)
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         gradient = QLinearGradient(rect.topLeft(), rect.topRight())
-        gradient.setColorAt(0, QColor(150, 140, 124))
-        gradient.setColorAt(1, QColor(182, 172, 154))
+        gradient.setColorAt(0, QColor(138, 138, 135))
+        gradient.setColorAt(1, QColor(166, 166, 163))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
-        painter.setPen(QPen(QColor(102, 90, 74), 1))
+        painter.setPen(QPen(QColor(119, 120, 117), 1))
         painter.drawRect(rect)
         if rect.height() < 34:
             return
         x = rect.center().x()
         for y in (rect.top() + 12, rect.bottom() - 12):
-            self.paint_screw(painter, QPointF(x, y), 4.5, QColor(214, 204, 186))
+            self.paint_screw(painter, QPointF(x, y), 4.5, QColor(197, 197, 193))
 
 
 #: Walnut, as used for the end cheeks of studio gear
@@ -638,6 +659,9 @@ WALNUT = ((0.0, 122, 78, 44), (0.5, 96, 59, 32), (1.0, 74, 44, 24))
 
 #: The darker wood of a TR-808's side panels
 TEAK = ((0.0, 104, 66, 34), (0.5, 82, 51, 26), (1.0, 60, 37, 19))
+
+#: The Juno-106's end cheeks: a redder, sunlit mahogany than the walnut above
+JUNO_WOOD = ((0.0, 176, 102, 52), (0.45, 146, 78, 38), (1.0, 102, 50, 24))
 
 
 @lru_cache(maxsize=4)
@@ -1333,6 +1357,73 @@ class WhiteJdxiSkin(RackSkin):
             self.paint_screw(painter, QPointF(x, y), 4.0, QColor(150, 152, 150))
 
 
+class Juno106Skin(RackSkin):
+    """
+    The Juno-106: a matte slate panel, a red bar and a blue bar along the
+    top, and wooden end cheeks.
+
+    The bars are the coloured section rules across the machine, so they take
+    the faceplate's top edge, which the nine-slice keeps at its own size.
+    The cheeks are the wood at each end, drawn as the ears.
+    """
+
+    skin_id = "juno106"
+    label = "Juno-106"
+    ear_width = 18
+    bezel = 6
+    rail_height = 0
+    lcd = JUNO_LCD
+    foreground = LIGHT_LETTERING
+    chassis = Chassis(
+        body="#2E3236", surface="#141618", surface_alt="#1E2226",
+        border="#4A4E52", accent="#D4202A",
+    )
+    #: the red and blue section rules, top to bottom
+    red_bar = "#D4202A"
+    blue_bar = "#2F6FBE"
+    #: each bar's thickness, together inside editor_style.SHEEN_SLICE_TOP
+    bar = 2
+
+    def paint_face(
+        self, painter: QPainter, rect: QRectF, sheen: bool = True
+    ) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(62, 66, 70))
+        gradient.setColorAt(0.55, QColor(54, 58, 62))
+        gradient.setColorAt(1.0, QColor(44, 48, 52))
+        painter.fillRect(rect, gradient)
+
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(self.red_bar))
+        painter.drawRect(QRectF(rect.left(), rect.top(), rect.width(), self.bar))
+        painter.setBrush(QColor(self.blue_bar))
+        painter.drawRect(
+            QRectF(rect.left(), rect.top() + self.bar, rect.width(), self.bar)
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(18, 20, 22), 1))
+        painter.drawPath(path)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A mahogany end cheek, with the dark screws the Juno uses."""
+        height = max(1, int(round(rect.height())))
+        painter.drawTiledPixmap(rect, _wood_tile(height, JUNO_WOOD))
+        painter.setPen(QPen(QColor(62, 32, 16), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 12, rect.bottom() - 12):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(36, 32, 28))
+
+
 #: Every skin, by id, in the order they are offered
 SKINS: Dict[str, RackSkin] = {
     skin.skin_id: skin
@@ -1345,6 +1436,7 @@ SKINS: Dict[str, RackSkin] = {
         Tb303Skin(),
         Tr909Skin(),
         Jupiter8Skin(),
+        Juno106Skin(),
         Brushed70sSkin(),
         IvoryWalnutSkin(),
     )

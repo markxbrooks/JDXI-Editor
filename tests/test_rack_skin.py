@@ -98,6 +98,7 @@ def test_the_skins_are_offered():
         "tb303",
         "tr909",
         "jupiter8",
+        "juno106",
         "brushed_70s",
         "ivory_walnut",
     ]
@@ -119,6 +120,17 @@ def test_lettering_is_legible_on_every_faceplate(qapp):
             with subtest_name(skin, where):
                 assert contrast(skin.foreground.text, colour) >= 4.5
                 assert contrast(skin.foreground.text_secondary, colour) >= 3.0
+
+
+def test_brushed_metal_is_neutral_silver(qapp):
+    """The satin face is grey-silver, so a later warm-up toward bronze fails."""
+    colour = QColor(face_colour(SKINS["brushed_70s"]))
+    channels = (colour.red(), colour.green(), colour.blue())
+    assert max(channels) - min(channels) <= 8
+    assert 140 <= colour.lightness() <= 210
+    body = QColor(SKINS["brushed_70s"].chassis.body)
+    body_channels = (body.red(), body.green(), body.blue())
+    assert max(body_channels) - min(body_channels) <= 8
 
 
 def subtest_name(skin, where: str = ""):
@@ -177,6 +189,34 @@ def test_the_303_wears_its_step_keyboard(qapp):
     assert skin.key_ivory.lower() in row
     bottom = {image.pixelColor(x, 58).name() for x in range(10, 550, 5)}
     assert skin.key_black.lower() not in bottom
+
+
+def test_the_juno_wears_its_bars_and_wooden_cheeks(qapp):
+    """A red bar over a blue bar on the slate, and mahogany where the ears are."""
+    from jdxi_editor.ui.style.rack_skin import Juno106Skin
+
+    skin = Juno106Skin()
+    image = QImage(360, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 359, 59))
+    painter.end()
+
+    assert [image.pixelColor(x, 1).name() for x in (20, 180, 340)] == [
+        skin.red_bar.lower()
+    ] * 3
+    assert [image.pixelColor(x, 3).name() for x in (20, 180, 340)] == [
+        skin.blue_bar.lower()
+    ] * 3
+
+    cheek = QImage(24, 80, QImage.Format.Format_ARGB32)
+    cheek.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(cheek)
+    skin.paint_ear(painter, QRectF(0.5, 0.5, 23, 79))
+    painter.end()
+    wood = cheek.pixelColor(8, 40)
+    assert wood.red() > wood.green() > wood.blue()
+    assert wood.red() > wood.blue() + 40
 
 
 def test_the_jupiter_wears_its_header_bar_and_patch_buttons(qapp):
@@ -313,6 +353,7 @@ def test_each_skin_carries_its_own_display_palette():
         "tb303": "#FF1F10",          # the 303's red LED numerals
         "tr909": "#FF3A20",          # the 909's red LED display
         "jupiter8": "#FF2A14",       # the JP-8's patch number display
+        "juno106": "#C5D8EA",        # a cool grey-blue, the Juno has no screen
         "brushed_70s": "#5BFF9B",    # a green fluorescent display
         "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }
