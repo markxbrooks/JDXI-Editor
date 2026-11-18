@@ -234,7 +234,7 @@ class JDXiWindow(QMainWindow):
 
     def _add_skin_menu(self, menu) -> None:
         """
-        A "Rack Skin" submenu: the faceplate the panels and displays wear.
+        A "Skin" submenu: the faceplate the panels and displays wear.
 
         :param menu: QMenu the menu to add the submenu to
         :return: None
@@ -243,7 +243,7 @@ class JDXiWindow(QMainWindow):
 
         from jdxi_editor.ui.style.rack_skin import SKINS, active_skin, set_active_skin
 
-        submenu = menu.addMenu("Rack &Skin")
+        submenu = menu.addMenu("&Skin")
         group = QActionGroup(self)
         group.setExclusive(True)
         current = active_skin().skin_id

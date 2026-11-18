@@ -74,6 +74,37 @@ class LcdPalette:
     text_dim: str
 
 
+@dataclass(frozen=True)
+class Foreground:
+    """
+    Lettering printed on the faceplate, and the rules drawn between it.
+
+    The chassis and the controls are different surfaces: the silkscreen on a
+    pale faceplate has to be dark, while the buttons and fields sitting in it
+    keep their own dark surfaces and light text. Only the chassis is covered
+    here, which is why a light skin does not simply invert the whole UI.
+
+    :param text: str labels and group text on the faceplate
+    :param text_secondary: str quieter labels on the faceplate
+    :param rule: str hairlines drawn on the faceplate
+    """
+
+    text: str
+    text_secondary: str
+    rule: str
+
+
+#: What the dark skins use: the application's own colours
+LIGHT_LETTERING = Foreground(
+    text="#E6E6E6", text_secondary="#999999", rule="#3A3A3C"
+)
+
+#: Silkscreen on a pale faceplate
+DARK_LETTERING = Foreground(
+    text="#1E1E1C", text_secondary="#46453F", rule="#7A7A77"
+)
+
+
 #: The JD-Xi's orange-on-dark-red display
 ROLAND_LCD = LcdPalette(
     bg_edge="#1A0A0A",
@@ -90,6 +121,24 @@ JDXV_BLUE_LCD = LcdPalette(
     bg_glow="#1557BF",
     text="#CFEEFF",
     text_dim="#7FB4E6",
+)
+
+#: Warm amber on near-black, as on painted studio gear
+AMBER_LCD = LcdPalette(
+    bg_edge="#120E08",
+    bg_mid="#241A0C",
+    bg_glow="#3A2810",
+    text="#FFB545",
+    text_dim="#B87A28",
+)
+
+#: The red LEDs of a TR-808's step buttons
+LED_RED_LCD = LcdPalette(
+    bg_edge="#120807",
+    bg_mid="#2A100C",
+    bg_glow="#431711",
+    text="#FF4A33",
+    text_dim="#B3301F",
 )
 
 #: A green fluorescent display, as 1970s rack gear had
@@ -117,6 +166,7 @@ class RackSkin:
     bezel = 7
     rail_height = 0
     lcd = ROLAND_LCD
+    foreground = LIGHT_LETTERING
 
     def content_margins(self) -> QMargins:
         """
@@ -412,6 +462,9 @@ class Brushed70sSkin(RackSkin):
     bezel = 6
     rail_height = 0
     lcd = VINTAGE_GREEN_LCD
+    # Near-white lettering on satin aluminium is 1.96:1, well under the 4.5:1
+    # that body text needs: this faceplate has to be written on in ink
+    foreground = DARK_LETTERING
     #: the chassis, for anything wanting to match it
     base_color = "#A6A6A3"
     highlight_color = "#C5C5C1"
@@ -468,10 +521,203 @@ class Brushed70sSkin(RackSkin):
             self.paint_screw(painter, QPointF(x, y), 4.5, QColor(205, 205, 200))
 
 
+#: Walnut, as used for the end cheeks of studio gear
+WALNUT = ((0.0, 122, 78, 44), (0.5, 96, 59, 32), (1.0, 74, 44, 24))
+
+#: The darker wood of a TR-808's side panels
+TEAK = ((0.0, 104, 66, 34), (0.5, 82, 51, 26), (1.0, 60, 37, 19))
+
+
+@lru_cache(maxsize=4)
+def _wood_tile(height: int, stops: tuple) -> QPixmap:
+    """
+    A tile of wood, the grain running along the cheek.
+
+    :param height: int tile height in px
+    :param stops: tuple of (position, red, green, blue) through the wood
+    :return: QPixmap 64px wide tile
+    """
+    width = 64
+    tile = QPixmap(width, height)
+    painter = QPainter(tile)
+    gradient = QLinearGradient(0, 0, 0, height)
+    for position, red, green, blue in stops:
+        gradient.setColorAt(position, QColor(red, green, blue))
+    painter.fillRect(0, 0, width, height, gradient)
+    noise = Random(11)  # the same plank every run
+    for y in range(height):
+        if noise.random() < 0.45:  # grain is sparse, not every row
+            continue
+        if noise.random() < 0.6:
+            shade = QColor(40, 22, 10, noise.randint(18, 48))
+        else:
+            shade = QColor(190, 140, 90, 22)
+        painter.setPen(QPen(shade, 1))
+        painter.drawLine(0, y, width, y)
+    painter.end()
+    return tile
+
+
+class IvoryWalnutSkin(RackSkin):
+    """
+    Ivory painted steel with walnut end cheeks, as on 1970s studio gear.
+
+    The one pale faceplate in the set, which is why :class:`Foreground`
+    exists: its lettering is ink rather than near-white, while the controls
+    standing on it keep their dark surfaces.
+    """
+
+    skin_id = "ivory_walnut"
+    label = "Ivory & Walnut"
+    ear_width = 18
+    bezel = 6
+    rail_height = 0
+    lcd = AMBER_LCD
+    foreground = Foreground(
+        text="#22201C", text_secondary="#5F584C", rule="#B9AE99"
+    )
+    #: the walnut pinstripe along the bottom, this skin's signature
+    stripe_color = "#684022"
+    stripe_thickness = 2
+
+    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(243, 238, 227))
+        gradient.setColorAt(0.45, QColor(232, 225, 210))
+        gradient.setColorAt(1.0, QColor(208, 199, 181))
+        painter.fillRect(rect, gradient)
+
+        painter.setPen(QPen(QColor(255, 253, 248), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 0.5),
+            QPointF(rect.right() - 1, rect.top() + 0.5),
+        )
+        painter.setPen(QPen(QColor(168, 158, 140), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.bottom() - 3.5),
+            QPointF(rect.right() - 1, rect.bottom() - 3.5),
+        )
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(self.stripe_color))
+        painter.drawRect(
+            QRectF(
+                rect.left(),
+                rect.bottom() - self.stripe_thickness,
+                rect.width(),
+                self.stripe_thickness,
+            )
+        )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(150, 140, 122), 1))
+        painter.drawPath(path)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A walnut end cheek rather than a rack ear."""
+        height = max(1, int(round(rect.height())))
+        painter.drawTiledPixmap(rect, _wood_tile(height, WALNUT))
+        painter.setPen(QPen(QColor(48, 28, 14), 1))
+        painter.drawRect(rect)
+        if rect.height() < 34:
+            return
+        x = rect.center().x()
+        for y in (rect.top() + 12, rect.bottom() - 12):
+            self.paint_screw(painter, QPointF(x, y), 4.0, QColor(196, 186, 168))
+
+
+class Tr808Skin(RackSkin):
+    """
+    The TR-808: matte charcoal, orange silkscreen, teak cheeks, and the
+    step-button run of red, orange, yellow and white along the bottom.
+
+    That run of colour is the machine, so it goes in the face rather than in
+    chrome around it: the bottom edge of the nine-slice is drawn on every
+    panel in the application, where ears and rails never appear.
+    """
+
+    skin_id = "tr808"
+    label = "TR-808"
+    ear_width = 14
+    bezel = 6
+    rail_height = 0
+    lcd = LED_RED_LCD
+    foreground = Foreground(
+        text="#E8E4DA", text_secondary="#A09A8E", rule="#4A4B4D"
+    )
+    #: the Roland orange of the lettering and the rule under it
+    accent_color = "#E8622A"
+    #: the four step-button colours, left to right
+    step_colors = ("#E33B2E", "#EE7B2C", "#EFC93F", "#EDE9DC")
+    step_band = 4
+
+    def paint_face(self, painter: QPainter, rect: QRectF) -> None:
+        path = QPainterPath()
+        path.addRoundedRect(rect, 2, 2)
+        painter.save()
+        painter.setClipPath(path)
+
+        # Matte charcoal, cooler and flatter than the glossy panel
+        gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        gradient.setColorAt(0.0, QColor(52, 53, 56))
+        gradient.setColorAt(0.5, QColor(42, 43, 45))
+        gradient.setColorAt(1.0, QColor(33, 34, 36))
+        painter.fillRect(rect, gradient)
+
+        # The orange rule printed under the machine's name
+        painter.setPen(QPen(QColor(70, 71, 74), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 0.5),
+            QPointF(rect.right() - 1, rect.top() + 0.5),
+        )
+        painter.setPen(QPen(QColor(self.accent_color), 1))
+        painter.drawLine(
+            QPointF(rect.left() + 1, rect.top() + 2.5),
+            QPointF(rect.right() - 1, rect.top() + 2.5),
+        )
+
+        # The step buttons, in their four colours across the bottom
+        painter.setPen(Qt.PenStyle.NoPen)
+        width = rect.width() / len(self.step_colors)
+        for index, colour in enumerate(self.step_colors):
+            painter.setBrush(QColor(colour))
+            painter.drawRect(
+                QRectF(
+                    rect.left() + index * width,
+                    rect.bottom() - self.step_band,
+                    width,
+                    self.step_band,
+                )
+            )
+        painter.restore()
+
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(16, 17, 18), 1))
+        painter.drawPath(path)
+
+    def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
+        """A teak side panel, as the 808 has."""
+        height = max(1, int(round(rect.height())))
+        painter.drawTiledPixmap(rect, _wood_tile(height, TEAK))
+        painter.setPen(QPen(QColor(30, 18, 9), 1))
+        painter.drawRect(rect)
+
+
 #: Every skin, by id, in the order they are offered
 SKINS: Dict[str, RackSkin] = {
     skin.skin_id: skin
-    for skin in (RackSkin(), JdxiRackSkin(), Brushed70sSkin())
+    for skin in (
+        RackSkin(),
+        JdxiRackSkin(),
+        Tr808Skin(),
+        Brushed70sSkin(),
+        IvoryWalnutSkin(),
+    )
 }
 
 #: The skin in use; None until first asked for, then read from settings
@@ -583,18 +829,26 @@ def _restyle_application() -> None:
     if callable(clear):
         clear()
 
+    from jdxi_editor.ui.style.editor_style import CHASSIS_MARKER, chassis_rules
+
+    chassis = chassis_rules()
+
     def repoint(sheet: str) -> str:
-        """The same stylesheet, pointing at the new skin's image."""
-        return _PANEL_IMAGE.sub(
+        """The same stylesheet, with this skin's panel image and lettering."""
+        sheet = _PANEL_IMAGE.sub(
             lambda match: Path(gloss_panel_file(*_size(match.group("size")))).name,
             sheet,
         )
+        # The chassis block is last, so it can be replaced wholesale; rewriting
+        # colours in place would catch the controls' text as well
+        marker = sheet.find(CHASSIS_MARKER)
+        return sheet if marker < 0 else sheet[:marker] + chassis
 
     if "gloss_panel_" in (application.styleSheet() or ""):
         application.setStyleSheet(repoint(application.styleSheet()))
     for widget in application.allWidgets():
         sheet = widget.styleSheet()
-        if sheet and "gloss_panel_" in sheet:
+        if sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
             widget.setStyleSheet(repoint(sheet))
         # QWidget.update explicitly: an item view overrides update() with one
         # that demands a model index, and would raise on a bare call

@@ -46,6 +46,10 @@ SHEEN_SLICE = 3  # px of the panel image kept unstretched at each edge (rim, top
 # The bottom edge keeps more, so a skin can put a stripe there and have it
 # drawn at its own size rather than squashed with the stretched middle
 SHEEN_SLICE_BOTTOM = 6
+# Marks the trailing block of the stylesheet that belongs to the skin: the
+# lettering printed on the faceplate. Kept last so it overrides the rules
+# above it, and so switching skin can rewrite it without touching the rest.
+CHASSIS_MARKER = "/* chassis lettering */"
 GLOSS_GRADIENT = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1,"
     " stop:0 #161618, stop:0.5 #0A0A0B, stop:1 #050506)"
@@ -121,6 +125,26 @@ def gloss_panel_file(width: int = 1000, height: int = 420) -> str:
 
 #: The previous name, kept for anything still calling it
 _gloss_panel_file = gloss_panel_file
+
+
+def chassis_rules() -> str:
+    """
+    The lettering printed on the active skin's faceplate.
+
+    Only labels and group text are covered: buttons, fields and lists are
+    control surfaces standing on the panel, and keep their own dark
+    backgrounds with light text whatever the chassis is made of. A pale skin
+    therefore needs this rather than an inverted palette.
+
+    :return: str stylesheet rules, led by :data:`CHASSIS_MARKER`
+    """
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    foreground = active_skin().foreground
+    return (
+        f"{CHASSIS_MARKER}\n"
+        f"        QLabel, QGroupBox {{ color: {foreground.text}; }}"
+    )
 
 
 def mark_sheen_panels(editor) -> None:
@@ -290,6 +314,7 @@ class AppEditorStyle:
         panel_slice = SHEEN_SLICE
         panel_slice_bottom = SHEEN_SLICE_BOTTOM
         panel_image = gloss_panel_file()
+        chassis = chassis_rules()
         return f"""
         /* JD-Xi finish: the editor's root is the rough matte body; panels
            (group boxes, tab panes) are glossy black; everything between is
@@ -463,6 +488,7 @@ class AppEditorStyle:
         QScrollBar::add-page, QScrollBar::sub-page {{
             background: none;
         }}
+        {chassis}
         """
 
 
