@@ -395,7 +395,13 @@ class Brushed70sSkin(RackSkin):
 
 
 #: The Juno-106's end cheeks: a redder, sunlit mahogany than the walnut above
-JUNO_WOOD = ((0.0, 176, 102, 52), (0.45, 146, 78, 38), (1.0, 102, 50, 24))
+JUNO_WOOD = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(176, 102, 52)),
+        GradientStop(0.45, QColor(146, 78, 38)),
+        GradientStop(1.0, QColor(102, 50, 24)),
+    )
+)
 
 
 class IvoryWalnutSkin(RackSkin):
@@ -995,7 +1001,13 @@ class WhiteJdxiSkin(RackSkin):
         body="#EFEFEC", surface="#1E1E1E", surface_alt="#2A2A2A",
         border="#B8B8B2", accent="#E04435",
     )
-    face_stops = ((0.0, 226, 231, 235), (0.5, 208, 213, 217), (1.0, 184, 190, 195))
+    face_stops = GradientColorStops(
+        (
+            GradientStop(0.0, QColor(226, 231, 235)),
+            GradientStop(0.5, QColor(208, 213, 217)),
+            GradientStop(1.0, QColor(184, 190, 195)),
+        )
+    )
     face_rim = "#8E979B"
     face_highlight = (255, 255, 255, 200)
     sheen_strength = (60, 12)
@@ -1074,7 +1086,13 @@ class Juno106Skin(RackSkin):
 
 
 #: The Minimoog's cabinet, taken from the lit rail: a honey walnut
-MINI_WOOD = ((0.0, 206, 156, 112), (0.45, 186, 128, 86), (1.0, 140, 88, 52))
+MINI_WOOD = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(206, 156, 112)),
+        GradientStop(0.45, QColor(186, 128, 86)),
+        GradientStop(1.0, QColor(140, 88, 52)),
+    )
+)
 
 #: The Minimoog has no screen. The editor's display takes the cream of the
 #: legends printed on its black panel.
@@ -1655,11 +1673,22 @@ class Arp2600Skin(PatchCordsMixin, RackSkin):
         border="#45494D", accent="#E0302A",
     )
     #: the painted panel, top to bottom
-    panel_stops = ((0.0, 50, 53, 57), (0.5, 42, 45, 48), (1.0, 33, 35, 38))
+    panel_stops = GradientColorStops(
+        (
+            GradientStop(0.0, QColor(50, 53, 57)),
+            GradientStop(0.5, QColor(42, 45, 48)),
+            GradientStop(1.0, QColor(33, 35, 38)),
+        )
+    )
     #: the white printing
     print_color = "#E6E8EA"
     #: the black case
-    case_stops = ((0.0, 30, 31, 33), (1.0, 14, 15, 16))
+    case_stops = GradientColorStops(
+        (
+            GradientStop(0.0, QColor(30, 31, 33)),
+            GradientStop(1.0, QColor(14, 15, 16)),
+        )
+    )
     #: patch cords over the grilles: white like the printing on the left,
     #: ARP orange on the right
     cable_colors = ("#D9DBDD", "#E07A26")
@@ -1673,8 +1702,7 @@ class Arp2600Skin(PatchCordsMixin, RackSkin):
         painter.save()
         painter.setClipPath(path)
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        for position, red, green, blue in self.panel_stops:
-            gradient.setColorAt(position, QColor(red, green, blue))
+        apply_gradient_stops(gradient, self.panel_stops)
         painter.fillRect(rect, gradient)
         ink = QColor(self.print_color)
         # The white box round the section, as round each module's title
@@ -1699,8 +1727,7 @@ class Arp2600Skin(PatchCordsMixin, RackSkin):
             gradient = QLinearGradient(rect.topLeft(), rect.topRight())
         else:
             gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        for position, red, green, blue in self.case_stops:
-            gradient.setColorAt(position, QColor(red, green, blue))
+        apply_gradient_stops(gradient, self.case_stops)
         painter.fillRect(rect, gradient)
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
@@ -1710,9 +1737,9 @@ class Arp2600Skin(PatchCordsMixin, RackSkin):
         grille = rect.adjusted(4, 6, -4, -6)
         if grille.width() > 4 and grille.height() > 8:
             # Holes punched in the charcoal panel, as on the hardware
-            red, green, blue = self.panel_stops[1][1:]
+            # the panel's middle shade
             painter.setPen(QPen(QColor(8, 8, 9), 1))
-            painter.setBrush(QColor(red, green, blue))
+            painter.setBrush(self.panel_stops.stops[1].color)
             painter.drawRoundedRect(grille, 2, 2)
             painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(QColor(4, 4, 5))

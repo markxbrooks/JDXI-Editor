@@ -12,19 +12,30 @@ from random import Random
 
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPen, QPixmap
 
+from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
+
 
 #: Satin aluminium, a neutral grey-silver: highlight, base and shadow down
 #: the face. The channels stay within a few points of each other, so the
 #: metal reads as silver rather than as bronze.
-ALUMINIUM = (
-    (0.0, 197, 197, 193),   # #C5C5C1 highlight
-    (0.30, 184, 184, 181),
-    (0.62, 166, 166, 163),  # #A6A6A3 base
-    (1.0, 119, 120, 117),   # #777875 shadow
+ALUMINIUM = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(197, 197, 193)),  # #C5C5C1 highlight
+        GradientStop(0.30, QColor(184, 184, 181)),
+        GradientStop(0.62, QColor(166, 166, 163)),  # #A6A6A3 base
+        GradientStop(1.0, QColor(119, 120, 117)),  # #777875 shadow
+    )
 )
 
 #: The JDXV's dark gunmetal faceplate
-GUNMETAL = ((0.0, 62, 66, 72), (0.35, 52, 55, 61), (0.6, 44, 47, 52), (1.0, 32, 34, 38))
+GUNMETAL = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(62, 66, 72)),
+        GradientStop(0.35, QColor(52, 55, 61)),
+        GradientStop(0.6, QColor(44, 47, 52)),
+        GradientStop(1.0, QColor(32, 34, 38)),
+    )
+)
 
 #: Strength of the brushing. Real satin metal scatters light far more softly
 #: than a drawn line per row: anything much above this reads as corduroy
@@ -35,7 +46,10 @@ GRAIN_SATIN = 13
 
 @lru_cache(maxsize=8)
 def brushed_tile(
-    height: int, stops: tuple, grain: int = GRAIN_SATIN, coverage: float = 1.0
+    height: int,
+    stops: GradientColorStops,
+    grain: int = GRAIN_SATIN,
+    coverage: float = 1.0,
 ) -> QPixmap:
     """
     A tile of horizontally brushed metal, drawn once and reused.
@@ -53,7 +67,7 @@ def brushed_tile(
     keep the previous stroke pattern.
 
     :param height: int tile height in px
-    :param stops: tuple of (position, red, green, blue) down the face
+    :param stops: GradientColorStops the metal's shading down the face
     :param grain: int strength of the brushing
     :param coverage: float share of rows that take a stroke, in 0..1
     :return: QPixmap tile
@@ -62,8 +76,7 @@ def brushed_tile(
     tile = QPixmap(width, height)
     painter = QPainter(tile)
     gradient = QLinearGradient(0, 0, 0, height)
-    for position, red, green, blue in stops:
-        gradient.setColorAt(position, QColor(red, green, blue))
+    apply_gradient_stops(gradient, stops)
     painter.fillRect(0, 0, width, height, gradient)
 
     noise = Random(7)  # the same surface every run
@@ -82,10 +95,22 @@ def brushed_tile(
 
 
 #: Walnut, as used for the end cheeks of studio gear
-WALNUT = ((0.0, 122, 78, 44), (0.5, 96, 59, 32), (1.0, 74, 44, 24))
+WALNUT = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(122, 78, 44)),
+        GradientStop(0.5, QColor(96, 59, 32)),
+        GradientStop(1.0, QColor(74, 44, 24)),
+    )
+)
 
 #: The darker wood of a TR-808's side panels
-TEAK = ((0.0, 104, 66, 34), (0.5, 82, 51, 26), (1.0, 60, 37, 19))
+TEAK = GradientColorStops(
+    (
+        GradientStop(0.0, QColor(104, 66, 34)),
+        GradientStop(0.5, QColor(82, 51, 26)),
+        GradientStop(1.0, QColor(60, 37, 19)),
+    )
+)
 
 
 @lru_cache(maxsize=4)
@@ -119,20 +144,19 @@ def pebble_tile(size: int, color: str, grain: int = 10) -> QPixmap:
 
 
 @lru_cache(maxsize=4)
-def wood_tile(height: int, stops: tuple) -> QPixmap:
+def wood_tile(height: int, stops: GradientColorStops) -> QPixmap:
     """
     A tile of wood, the grain running along the cheek.
 
     :param height: int tile height in px
-    :param stops: tuple of (position, red, green, blue) through the wood
+    :param stops: GradientColorStops the colour through the wood
     :return: QPixmap 64px wide tile
     """
     width = 64
     tile = QPixmap(width, height)
     painter = QPainter(tile)
     gradient = QLinearGradient(0, 0, 0, height)
-    for position, red, green, blue in stops:
-        gradient.setColorAt(position, QColor(red, green, blue))
+    apply_gradient_stops(gradient, stops)
     painter.fillRect(0, 0, width, height, gradient)
     noise = Random(11)  # the same plank every run
     for y in range(height):

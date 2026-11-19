@@ -30,7 +30,7 @@ from PySide6.QtGui import QColor, QGradient
 ColorLike = Union[QColor, str]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class GradientStop:
     """
     One stop of a gradient.
@@ -54,6 +54,19 @@ class GradientStop:
         # Frozen: set through object, once, while being built
         object.__setattr__(self, "position", float(self.position))
         object.__setattr__(self, "color", color)
+
+    # QColor is not hashable, so a stop is compared and hashed by its
+    # position and RGBA value: tiles drawn from a gradient are cached by it
+    def _key(self) -> tuple:
+        return (self.position, self.color.rgba())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GradientStop):
+            return NotImplemented
+        return self._key() == other._key()
+
+    def __hash__(self) -> int:
+        return hash(self._key())
 
 
 @dataclass(frozen=True)

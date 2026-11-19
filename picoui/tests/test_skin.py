@@ -133,11 +133,14 @@ def test_the_base_skin_paints_an_opaque_face():
     assert image.pixelColor(100, 40).alpha() == 255
 
 
+GREY = GradientColorStops((GradientStop(0.0, QColor(200, 200, 200)), GradientStop(1.0, QColor(120, 120, 120))))
+
+
 def test_textures_are_cached_and_the_same_every_time():
     assert wood_tile(40, WALNUT) is wood_tile(40, WALNUT)
-    first = brushed_tile(30, ((0.0, 200, 200, 200), (1.0, 120, 120, 120))).toImage()
+    first = brushed_tile(30, GREY).toImage()
     brushed_tile.cache_clear()
-    again = brushed_tile(30, ((0.0, 200, 200, 200), (1.0, 120, 120, 120))).toImage()
+    again = brushed_tile(30, GREY).toImage()
     assert first == again
 
 
@@ -185,3 +188,11 @@ def test_gradient_stops_are_position_colour_pairs_in_order():
 def test_bad_gradients_are_refused(build):
     with pytest.raises(ValueError):
         build()
+
+
+
+def test_equal_gradients_share_a_cached_tile():
+    """Stops compare by value, so an equal gradient built anew hits the cache."""
+    again = GradientColorStops((GradientStop(0.0, "#C8C8C8"), GradientStop(1.0, "#787878")))
+    assert again == GREY and hash(again) == hash(GREY)
+    assert brushed_tile(30, again) is brushed_tile(30, GREY)

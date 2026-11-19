@@ -22,6 +22,7 @@ from typing import Optional
 from PySide6.QtCore import QMargins, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPolygonF
 
+from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
 from picoui.skin.palette import DARK_CHASSIS, DEFAULT_LCD, LIGHT_LETTERING
 
 
@@ -46,7 +47,13 @@ class Skin:
     chassis = DARK_CHASSIS
     #: the glossy material, top to bottom: a skin can be the same panel in a
     #: different plastic or metal by declaring these alone
-    face_stops = ((0.0, 22, 22, 24), (0.5, 10, 10, 11), (1.0, 4, 4, 5))
+    face_stops = GradientColorStops(
+        (
+            GradientStop(0.0, QColor(22, 22, 24)),
+            GradientStop(0.5, QColor(10, 10, 11)),
+            GradientStop(1.0, QColor(4, 4, 5)),
+        )
+    )
     #: the rim drawn round the panel
     face_rim = "#000000"
     #: the highlight along its top edge, as r, g, b, a
@@ -128,8 +135,7 @@ class Skin:
         :return: None
         """
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        for position, red, green, blue in self.face_stops:
-            gradient.setColorAt(position, QColor(red, green, blue))
+        apply_gradient_stops(gradient, self.face_stops)
         path = QPainterPath()
         path.addRoundedRect(rect, 3, 3)
         painter.fillPath(path, gradient)
