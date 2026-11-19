@@ -1257,6 +1257,117 @@ class Mc101Skin(RackSkin):
         self.outline_ear(painter, rect, QColor(6, 6, 7))
 
 
+class PatchCordsMixin:
+    """
+    Patch cords on a skin's cheeks: jacks, with a cable looped between two
+    of them (or, on a very short strip, hanging off one), bowed toward the
+    outer edge so it clears the panel. Each cheek's cable takes its colour
+    from :attr:`cable_colors` by side (``ear_side``, set by ``paint_ears``):
+    the first on the left, the second on the right.
+
+    Mixed into a skin before its base class; the skin's ``paint_ear`` paints
+    its own cheek and then calls :meth:`paint_patch_cord`.
+    """
+
+    #: cables: left cheek, right cheek (and any more the skin uses)
+    cable_colors = ("#D23A2E", "#E8B828")
+    #: cable thickness, px
+    cable_width = 3.6
+    #: below this height a cheek holds one jack, with the cable hanging off
+    #: it; above it, two jacks with the cable looped between them
+    loop_height = 28
+
+    def jack_points(self, rect: QRectF) -> list:
+        """
+        Centres of the jacks on a cheek: a pair to loop a cable between, or
+        on a very short strip a single jack.
+        """
+        x = rect.center().x()
+        if rect.height() < self.loop_height:
+            return [QPointF(x, rect.top() + rect.height() * 0.4)]
+        # Closer to the ends on a tall cheek; on a short strip (the MIDI
+        # player's bands, the status bar) far enough apart for both jacks
+        spread = 0.2 if rect.height() >= 90 else 0.27
+        return [
+            QPointF(x, rect.top() + rect.height() * spread),
+            QPointF(x, rect.top() + rect.height() * (1.0 - spread)),
+        ]
+
+    def jack_radius(self, rect: QRectF) -> float:
+        """Smaller jacks on a short strip, so a pair still fits."""
+        return max(2.5, min(rect.width() * 0.3, rect.height() * 0.17))
+
+    def paint_patch_cord(self, painter: QPainter, rect: QRectF) -> None:
+        """Jacks on the cheek ``rect``, and this side's cable between them."""
+        painter.save()
+        jacks = self.jack_points(rect)
+        radius = self.jack_radius(rect)
+        for jack in jacks:
+            self.paint_jack(painter, jack, radius / 0.3)
+        left_cheek = self.ear_side == "left"
+        colour = QColor(self.cable_colors[0 if left_cheek else 1])
+        # Bowed toward the outer edge, so the cable clears the panel
+        bow = rect.left() + 1.5 if left_cheek else rect.right() - 1.5
+        width = min(self.cable_width, max(2.0, rect.height() * 0.09))
+        if len(jacks) == 2:
+            reach = (jacks[1].y() - jacks[0].y()) * 0.25
+            cable = QPainterPath(jacks[0])
+            cable.cubicTo(
+                QPointF(bow, jacks[0].y() + reach),
+                QPointF(bow, jacks[1].y() - reach),
+                jacks[1],
+            )
+        else:
+            # One jack: the cable hangs off it and out of the strip
+            cable = QPainterPath(jacks[0])
+            cable.cubicTo(
+                QPointF(bow, jacks[0].y()),
+                QPointF(bow, rect.bottom()),
+                QPointF(bow, rect.bottom() + 2.0),
+            )
+        painter.save()
+        painter.setClipRect(rect)
+        self.paint_cable(painter, cable, colour, width=width)
+        painter.restore()
+        for jack in jacks:
+            self.paint_plug(painter, jack, radius / 0.3, colour)
+        painter.restore()
+
+    @staticmethod
+    def paint_jack(painter: QPainter, centre: QPointF, width: float) -> None:
+        """A jack socket: a silver nut round a black hole."""
+        radius = max(3.0, width * 0.3)
+        painter.setPen(QPen(QColor(20, 20, 20), 1))
+        painter.setBrush(QColor(150, 150, 146))
+        painter.drawEllipse(centre, radius, radius)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(4, 4, 4))
+        painter.drawEllipse(centre, radius * 0.45, radius * 0.45)
+
+    @staticmethod
+    def paint_plug(painter: QPainter, centre: QPointF, width: float, colour: QColor) -> None:
+        """The plug in a jack, in its cable's colour."""
+        radius = max(2.4, width * 0.2)
+        painter.setPen(QPen(colour.darker(160), 1))
+        painter.setBrush(colour)
+        painter.drawEllipse(centre, radius, radius)
+
+    @staticmethod
+    def paint_cable(painter: QPainter, path: QPainterPath, colour: QColor, width: float = 3.0) -> None:
+        """A cable: a dark edge, its colour, and a thin highlight."""
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        for pen_colour, pen_width in (
+            (colour.darker(220), width + 1.4),
+            (colour, width),
+            (colour.lighter(150), max(0.8, width * 0.3)),
+        ):
+            pen = QPen(pen_colour, pen_width)
+            pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+            painter.setPen(pen)
+            painter.drawPath(path)
+
+
+
 #: The MS-20 has no screen. The editor's display takes the white of the
 #: lettering printed on its black panel, on a cold dark ground.
 ICE_LCD = LcdPalette(
@@ -1268,7 +1379,7 @@ ICE_LCD = LcdPalette(
 )
 
 
-class Ms20Skin(RackSkin):
+class Ms20Skin(PatchCordsMixin, RackSkin):
     """
     The Korg MS-20: a matte black panel with its sections boxed in white
     lines, and patch cables.
@@ -1302,15 +1413,6 @@ class Ms20Skin(RackSkin):
     cable_colors = ("#D23A2E", "#E8B828", "#2F6FD0")
     #: the cheeks and rail: dark grey plate
     plate_color = "#262626"
-    #: cable thickness, px
-    cable_width = 3.6
-
-    def paint(self, painter: QPainter, rect: QRectF) -> None:
-        # The cheeks are told apart by where the panel starts, not by x == 0:
-        # a panel is rarely at the window's edge
-        self._panel_left = rect.left()
-        super().paint(painter, rect)
-
     def paint_face(
         self, painter: QPainter, rect: QRectF, sheen: bool = True
     ) -> None:
@@ -1328,40 +1430,12 @@ class Ms20Skin(RackSkin):
         painter.setPen(QPen(QColor(6, 6, 6), 1))
         painter.drawPath(path)
 
-    # --- The patch bay ------------------------------------------------------
-
-    def jack_points(self, rect: QRectF) -> list:
-        """Centres of the jacks on a cheek: one, or a pair to loop a cable."""
-        x = rect.center().x()
-        if rect.height() < 90:
-            return [QPointF(x, rect.top() + rect.height() * 0.5)]
-        return [
-            QPointF(x, rect.top() + rect.height() * 0.2),
-            QPointF(x, rect.top() + rect.height() * 0.8),
-        ]
-
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         """A patch bay: jacks on a dark plate, with a cable looped outward."""
         painter.save()
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, QColor(self.plate_color))
-        jacks = self.jack_points(rect)
-        for jack in jacks:
-            self.paint_jack(painter, jack, rect.width())
-        left_cheek = abs(rect.left() - getattr(self, "_panel_left", rect.left())) < 0.5
-        colour = QColor(self.cable_colors[0 if left_cheek else 1])
-        if len(jacks) == 2:
-            # Bowed toward the outer edge, so the cable clears the panel
-            bow = rect.left() + 1.5 if left_cheek else rect.right() - 1.5
-            cable = QPainterPath(jacks[0])
-            cable.cubicTo(
-                QPointF(bow, jacks[0].y() + rect.height() * 0.08),
-                QPointF(bow, jacks[1].y() - rect.height() * 0.08),
-                jacks[1],
-            )
-            self.paint_cable(painter, cable, colour, width=self.cable_width)
-            for jack in jacks:
-                self.paint_plug(painter, jack, rect.width(), colour)
+        self.paint_patch_cord(painter, rect)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.setPen(QPen(QColor(8, 8, 8), 1))
         painter.drawRect(rect)
@@ -1398,40 +1472,6 @@ class Ms20Skin(RackSkin):
             self.paint_jack(painter, point, self.ear_width * 0.75)
             self.paint_plug(painter, point, self.ear_width * 0.75, colour)
         painter.restore()
-
-    @staticmethod
-    def paint_jack(painter: QPainter, centre: QPointF, width: float) -> None:
-        """A jack socket: a silver nut round a black hole."""
-        radius = max(3.0, width * 0.3)
-        painter.setPen(QPen(QColor(20, 20, 20), 1))
-        painter.setBrush(QColor(150, 150, 146))
-        painter.drawEllipse(centre, radius, radius)
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(QColor(4, 4, 4))
-        painter.drawEllipse(centre, radius * 0.45, radius * 0.45)
-
-    @staticmethod
-    def paint_plug(painter: QPainter, centre: QPointF, width: float, colour: QColor) -> None:
-        """The plug in a jack, in its cable's colour."""
-        radius = max(2.4, width * 0.2)
-        painter.setPen(QPen(colour.darker(160), 1))
-        painter.setBrush(colour)
-        painter.drawEllipse(centre, radius, radius)
-
-    @staticmethod
-    def paint_cable(painter: QPainter, path: QPainterPath, colour: QColor, width: float = 3.0) -> None:
-        """A cable: a dark edge, its colour, and a thin highlight."""
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        for pen_colour, pen_width in (
-            (colour.darker(220), width + 1.4),
-            (colour, width),
-            (colour.lighter(150), max(0.8, width * 0.3)),
-        ):
-            pen = QPen(pen_colour, pen_width)
-            pen.setCapStyle(Qt.PenCapStyle.RoundCap)
-            painter.setPen(pen)
-            painter.drawPath(path)
-
 
 #: The SH-101 has no screen, only red LEDs over its sequencer and arpeggio
 #: keys; the editor's display takes those
@@ -1557,28 +1597,31 @@ def _editor_settings_store() -> Optional[QSettingsStore]:
     return QSettingsStore(__organization_name__, __program__, SKIN_SETTING)
 
 
-#: The ARP 2600 has no screen. The editor's display is a cool pale blue on
-#: black, taken from the panel's own blue-grey.
+#: The ARP 2600 has no screen. The editor's display takes the white of the
+#: legends printed on its dark panel, on black.
 ARP_LCD = LcdPalette(
-    bg_edge="#0A0D10",
-    bg_mid="#121820",
-    bg_glow="#1B2430",
-    text="#CFE0EA",
-    text_dim="#7D93A3",
+    bg_edge="#0A0B0C",
+    bg_mid="#141618",
+    bg_glow="#1E2124",
+    text="#E8EAEC",
+    text_dim="#9A9FA4",
 )
 
 
-class Arp2600Skin(RackSkin):
+class Arp2600Skin(PatchCordsMixin, RackSkin):
     """
-    The ARP 2600: a light blue-grey painted panel in a black tolex case, with
-    a speaker built into the case at each side.
+    The ARP 2600: a dark charcoal panel printed in white, in a black case,
+    with its speakers behind perforated grilles, and patch cords looped over
+    them as on the MS-20's cheeks (white on the left, orange on the right).
 
-    The speakers are the cheeks: a grille in the tolex either side of the
-    panel. The case's tolex also runs under the panel as a rail. The panel is
-    pale, so, like the brushed-metal skin, its legends are printed in ink and
-    its buttons and fields are shaded as caps and wells to stay legible on
-    it. The thin rule pair along the top is the panel's printed signal-flow
-    line, inside the sharp top edge of the panel image.
+    The panel's look is its printing: white legends, white boxes round the
+    module titles and white signal-flow lines between them. Editor panels
+    get a white box and the printed flow line along the top, inside the
+    sharp edges of the panel image (so section titles print in that white,
+    ink_legends). On the hardware the speaker grilles are in the panel's
+    lower corners; here they are the cheeks either side, the one place on a
+    rack panel nothing else sits. The case's black base runs under the panel
+    as a rail, and its red power lamp is the accent.
     """
 
     skin_id = "arp2600"
@@ -1587,20 +1630,23 @@ class Arp2600Skin(RackSkin):
     bezel = 6
     rail_height = 6
     lcd = ARP_LCD
-    foreground = DARK_LETTERING
+    foreground = Foreground(
+        text="#F0F0EE", text_secondary="#B9BCBF", rule="#6A6E72"
+    )
     ink_legends = True
-    mounted_controls = True
     chassis = Chassis(
-        body="#A9B0B4", surface="#16191C", surface_alt="#22262A",
-        border="#5C6469", accent="#E2761F",
+        body="#1B1C1E", surface="#111213", surface_alt="#1C1E20",
+        border="#45494D", accent="#E0302A",
     )
     #: the painted panel, top to bottom
-    panel_stops = ((0.0, 196, 204, 209), (0.5, 184, 192, 197), (1.0, 164, 172, 177))
-    #: the printed signal-flow line, and ARP's orange
-    print_color = "#2B3236"
-    accent_color = "#E2761F"
-    #: the black tolex case
-    tolex_color = "#1C1C1C"
+    panel_stops = ((0.0, 50, 53, 57), (0.5, 42, 45, 48), (1.0, 33, 35, 38))
+    #: the white printing
+    print_color = "#E6E8EA"
+    #: the black case
+    case_stops = ((0.0, 30, 31, 33), (1.0, 14, 15, 16))
+    #: patch cords over the grilles: white like the printing on the left,
+    #: ARP orange on the right
+    cable_colors = ("#D9DBDD", "#E07A26")
 
     def paint_face(
         self, painter: QPainter, rect: QRectF, sheen: bool = True
@@ -1613,56 +1659,68 @@ class Arp2600Skin(RackSkin):
         for position, red, green, blue in self.panel_stops:
             gradient.setColorAt(position, QColor(red, green, blue))
         painter.fillRect(rect, gradient)
-        # The signal-flow line printed along the top, and an orange keyline
-        painter.setPen(QPen(QColor(self.print_color), 1))
+        ink = QColor(self.print_color)
+        # The white box round the section, as round each module's title
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(ink, 1))
+        painter.drawRect(rect.adjusted(1.5, 1.5, -1.5, -2.5))
+        # The printed signal-flow line, inside the sharp top edge
+        faint = QColor(ink)
+        faint.setAlpha(150)
+        painter.setPen(QPen(faint, 1))
         painter.drawLine(
-            QPointF(rect.left() + 3, rect.top() + 2.5),
-            QPointF(rect.right() - 3, rect.top() + 2.5),
-        )
-        painter.setPen(QPen(QColor(self.accent_color), 1))
-        painter.drawLine(
-            QPointF(rect.left() + 3, rect.top() + 4.0),
-            QPointF(rect.right() - 3, rect.top() + 4.0),
+            QPointF(rect.left() + 4, rect.top() + 4.0),
+            QPointF(rect.right() - 4, rect.top() + 4.0),
         )
         painter.restore()
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(QColor(110, 118, 123), 1))
+        painter.setPen(QPen(QColor(8, 8, 9), 1))
         painter.drawPath(path)
 
-    def _paint_tolex(self, painter: QPainter, rect: QRectF) -> None:
-        painter.drawTiledPixmap(rect, _pebble_tile(32, self.tolex_color, grain=18))
+    def _paint_case(self, painter: QPainter, rect: QRectF, horizontal: bool) -> None:
+        if horizontal:
+            gradient = QLinearGradient(rect.topLeft(), rect.topRight())
+        else:
+            gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        for position, red, green, blue in self.case_stops:
+            gradient.setColorAt(position, QColor(red, green, blue))
+        painter.fillRect(rect, gradient)
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
-        """A built-in speaker: a perforated grille set in the tolex."""
+        """A speaker grille: a field of round holes in the black case."""
         painter.save()
-        self._paint_tolex(painter, rect)
+        self._paint_case(painter, rect, horizontal=True)
         grille = rect.adjusted(4, 6, -4, -6)
         if grille.width() > 4 and grille.height() > 8:
-            painter.setPen(QPen(QColor(8, 8, 8), 1))
-            painter.setBrush(QColor(34, 35, 36))
-            painter.drawRoundedRect(grille, 3, 3)
+            # Holes punched in the charcoal panel, as on the hardware
+            red, green, blue = self.panel_stops[1][1:]
+            painter.setPen(QPen(QColor(8, 8, 9), 1))
+            painter.setBrush(QColor(red, green, blue))
+            painter.drawRoundedRect(grille, 2, 2)
             painter.setPen(Qt.PenStyle.NoPen)
-            painter.setBrush(QColor(78, 80, 82))
-            step = 3.0
-            y = grille.top() + 2.5
+            painter.setBrush(QColor(4, 4, 5))
+            step = 3.2
+            y = grille.top() + 1.6
             row = 0
-            while y < grille.bottom() - 1.5:
-                x = grille.left() + 2.5 + (step / 2 if row % 2 else 0.0)
-                while x < grille.right() - 1.5:
-                    painter.drawEllipse(QPointF(x, y), 0.7, 0.7)
+            while y < grille.bottom() - 1.0:
+                x = grille.left() + 1.6 + (step / 2 if row % 2 else 0.0)
+                while x < grille.right() - 1.0:
+                    painter.drawEllipse(QPointF(x, y), 1.0, 1.0)
                     x += step
                 y += step
                 row += 1
+        # A patch cord looped over the grille, as on the MS-20's cheeks
+        self.paint_patch_cord(painter, rect)
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(QColor(6, 6, 6), 1))
+        painter.setPen(QPen(QColor(4, 4, 5), 1))
         painter.drawRect(rect)
         painter.restore()
 
     def paint_rail(self, painter: QPainter, rect: QRectF) -> None:
-        """The tolex of the case, under the panel."""
+        """The case's black base, under the panel."""
         painter.save()
-        self._paint_tolex(painter, rect)
-        painter.setPen(QPen(QColor(6, 6, 6), 1))
+        self._paint_case(painter, rect, horizontal=False)
+        painter.setPen(QPen(QColor(4, 4, 5), 1))
         painter.drawLine(rect.topLeft(), rect.topRight())
         painter.restore()
 

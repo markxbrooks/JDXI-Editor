@@ -462,37 +462,86 @@ def test_the_sh101_comes_in_three_colours_round_one_panel(qapp):
     assert len(panels) == 1  # one panel, three bodies
 
 
-def test_the_arp2600_is_a_pale_panel_between_speakers(qapp):
+def test_the_arp2600_is_a_dark_panel_printed_in_white(qapp):
     """
-    A light blue-grey panel printed in ink, between speaker grilles set in
-    black tolex, with the tolex running under it.
+    A dark charcoal panel boxed and lined in white, between speaker grilles
+    in the black case with patch cords looped over them, and the case's base
+    under it.
     """
     from jdxi_editor.ui.style.rack_skin import SKINS
 
     skin = SKINS["arp2600"]
-    assert skin.ink_legends and skin.mounted_controls  # legible on a pale plate
+    assert skin.ink_legends  # section titles printed in the panel's white
+    assert not skin.mounted_controls  # a dark panel needs no caps and wells
     image = QImage(400, 160, QImage.Format.Format_ARGB32)
     image.fill(Qt.GlobalColor.transparent)
     painter = QPainter(image)
     skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
     painter.end()
-    panel = image.pixelColor(200, 70)
-    assert panel.lightness() > 150 and panel.blue() > panel.red()  # pale blue-grey
-    # The grille: dark, with lighter perforations
+    assert image.pixelColor(200, 70).lightness() < 70  # dark charcoal
+    # The grille, on the inner side of the cheek (the cord bows outward):
+    # holes darker than the plate they are punched in
+    ear = skin.ear_width
     grille = [image.pixelColor(x, y).lightness()
-              for x in range(6, skin.ear_width - 6) for y in range(60, 100)]
-    assert max(grille) < 110 and max(grille) - min(grille) > 15
-    # The tolex rail under the panel
-    assert image.pixelColor(200, 160 - skin.rail_height // 2).lightness() < 60
-    # The printed line and the orange keyline in the face's sharp top edge
+              for x in range(ear // 2 + 1, ear - 5) for y in range(60, 100)]
+    assert max(grille) < 60 and max(grille) - min(grille) > 8
+
+    # Patch cords over the grilles: white on the left, orange on the right
+    def has(colour_hex, x0, x1):
+        target = QColor(colour_hex)
+        return any(
+            abs(image.pixelColor(x, y).red() - target.red()) < 30
+            and abs(image.pixelColor(x, y).green() - target.green()) < 30
+            and abs(image.pixelColor(x, y).blue() - target.blue()) < 30
+            for x in range(x0, x1) for y in range(10, 150)
+        )
+
+    white, orange = skin.cable_colors
+    assert has(white, 0, ear) and not has(orange, 0, ear)
+    assert has(orange, 400 - ear, 400) and not has(white, 400 - ear, 400)
+    assert image.pixelColor(200, 160 - skin.rail_height // 2).lightness() < 40  # the base
+    # The white box and printed line, in the face's sharp top edge
     face = QImage(300, 80, QImage.Format.Format_ARGB32)
     face.fill(Qt.GlobalColor.transparent)
     painter = QPainter(face)
     skin.paint_face(painter, QRectF(0.5, 0.5, 299, 79))
     painter.end()
-    top = [face.pixelColor(150, y) for y in range(1, 5)]
-    assert any(c.lightness() < 80 for c in top)
-    assert any(c.red() > 200 and c.blue() < 90 for c in top)
+    top = [face.pixelColor(150, y).lightness() for y in range(1, 5)]
+    assert max(top) > 180
+    assert face.pixelColor(150, 40).lightness() < 70
+
+
+@pytest.mark.parametrize("height", [24, 34, 50, 80])
+def test_the_ms20_cheeks_carry_cables_on_short_strips(qapp, height):
+    """
+    The MIDI player's bands and the status bar are short: each cheek still
+    shows its cable (looped between two jacks, or hanging off one), red on
+    the left and yellow on the right wherever the strip sits.
+    """
+    from jdxi_editor.ui.style.rack_skin import Ms20Skin
+
+    skin = Ms20Skin()
+    image = QImage(460, height + 20, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    skin.paint_ears(painter, QRectF(30.5, 10.5, 400, height))
+    painter.end()
+
+    def has(colour_hex, x0, x1):
+        target = QColor(colour_hex)
+        return any(
+            abs(image.pixelColor(x, y).red() - target.red()) < 30
+            and abs(image.pixelColor(x, y).green() - target.green()) < 30
+            and abs(image.pixelColor(x, y).blue() - target.blue()) < 30
+            for x in range(x0, x1) for y in range(10, 10 + height)
+        )
+
+    red, yellow, _blue = skin.cable_colors
+    ear = skin.ear_width
+    assert has(red, 30, 30 + ear) and not has(yellow, 30, 30 + ear)
+    assert has(yellow, 430 - ear, 431) and not has(red, 430 - ear, 431)
+    assert len(skin.jack_points(QRectF(0, 0, ear, height))) == (2 if height >= skin.loop_height else 1)
 
 
 def test_the_808_wears_its_step_buttons(qapp):
@@ -586,7 +635,7 @@ def test_each_skin_carries_its_own_display_palette():
         "sh101_grey": "#FF4E3A",     # the SH-101's red LEDs, no screen
         "sh101_red": "#FF4E3A",      # the same machine in another colour
         "sh101_blue": "#FF4E3A",
-        "arp2600": "#CFE0EA",        # the 2600's blue-grey, no screen
+        "arp2600": "#E8EAEC",        # the 2600's white legends, no screen
         "brushed_70s": "#5BFF9B",    # a green fluorescent display
         "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }

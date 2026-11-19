@@ -57,16 +57,5 @@ class RackStatusBar(QStatusBar):
         if not painter.isActive():
             return
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        area = QRectF(self.rect())
-        skin.paint_ear(
-            painter, QRectF(area.left(), area.top(), skin.ear_width, area.height())
-        )
-        skin.paint_ear(
-            painter,
-            QRectF(
-                area.right() - skin.ear_width,
-                area.top(),
-                skin.ear_width,
-                area.height(),
-            ),
-        )
+        # Both ends, each told which side it is
+        skin.paint_ears(painter, QRectF(self.rect()))
