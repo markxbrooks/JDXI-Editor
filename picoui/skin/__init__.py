@@ -5,6 +5,8 @@ Reusable skins for Qt applications: the look of a panel as an object.
 - :class:`Skin` -- the base: margins, faceplate, ears, rail, screws
 - :class:`LcdPalette`, :class:`Foreground`, :class:`Chassis` -- its colours
 - :mod:`picoui.skin.textures` -- brushed metal, wood and moulded materials
+- :class:`GradientStop`, :class:`GradientColorStops` -- gradients as data,
+  applied with :func:`apply_gradient_stops`
 - :class:`SkinRegistry` -- the skins offered, the active one, the saved
   choice, and listeners told when it changes
 - :class:`RackPanel`, :class:`RackEars` -- widgets that wear a skin
@@ -15,6 +17,7 @@ with :func:`set_default_registry`, and restyles itself in a listener.
 """
 
 from picoui.skin.base import Skin
+from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
 from picoui.skin.palette import (
     DARK_CHASSIS,
     DARK_LETTERING,
@@ -33,6 +36,9 @@ from picoui.skin.registry import (
 
 __all__ = [
     "Skin",
+    "GradientStop",
+    "GradientColorStops",
+    "apply_gradient_stops",
     "LcdPalette",
     "Foreground",
     "Chassis",

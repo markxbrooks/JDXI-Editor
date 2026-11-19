@@ -14,6 +14,8 @@ from PySide6.QtGui import QColor, QImage, QPainter
 from PySide6.QtWidgets import QApplication, QLabel
 
 from picoui.skin import (
+    GradientColorStops,
+    GradientStop,
     LcdPalette,
     Skin,
     SkinRegistry,
@@ -154,3 +156,32 @@ def test_paint_ears_tells_each_cheek_its_side():
     Sided().paint_ears(painter, QRectF(50, 0, 100, 30))
     painter.end()
     assert sides == [("left", 50), ("right", 140)]
+
+
+def test_gradient_stops_are_position_colour_pairs_in_order():
+    from PySide6.QtGui import QLinearGradient
+
+    from picoui.skin import GradientColorStops, GradientStop, apply_gradient_stops
+
+    metal = GradientColorStops((
+        GradientStop(0.0, "#8A8A87"),
+        GradientStop(0.35, QColor("#B8B8B4")),
+        GradientStop(0.65, "#A6A6A3"),
+        GradientStop(1.0, "#777875"),
+    ))
+    gradient = QLinearGradient(0, 0, 0, 10)
+    apply_gradient_stops(gradient, metal)
+    assert [(round(p, 2), c.name()) for p, c in gradient.stops()] == [
+        (0.0, "#8a8a87"), (0.35, "#b8b8b4"), (0.65, "#a6a6a3"), (1.0, "#777875")
+    ]
+
+
+@pytest.mark.parametrize("build", [
+    lambda: GradientStop(1.5, "#000000"),             # off the gradient
+    lambda: GradientStop(0.5, "not a colour"),
+    lambda: GradientColorStops((GradientStop(0.0, "#000000"),)),  # only one
+    lambda: GradientColorStops((GradientStop(0.8, "#000000"), GradientStop(0.2, "#FFFFFF"))),
+])
+def test_bad_gradients_are_refused(build):
+    with pytest.raises(ValueError):
+        build()

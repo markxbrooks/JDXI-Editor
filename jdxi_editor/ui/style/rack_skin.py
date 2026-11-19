@@ -66,6 +66,11 @@ from picoui.skin import (  # noqa: F401  re-exported: the editor imports them fr
     SkinRegistry,
     set_default_registry,
 )
+from picoui.skin.gradient import (  # noqa: F401
+    GradientColorStops,
+    GradientStop,
+    apply_gradient_stops,
+)
 from picoui.skin.textures import (  # noqa: F401
     ALUMINIUM,
     GRAIN_SATIN,
@@ -290,6 +295,15 @@ class JdxiRackSkin(RackSkin):
             self.paint_screw(painter, QPointF(x, y), 4.0, QColor(118, 124, 132))
 
 
+#: The brushed-aluminium cheeks, shading across from their outer edge
+BRUSHED_70S_COLOR_STOPS = GradientColorStops(
+    stops=(
+        GradientStop(0.0, QColor(138, 138, 135)),
+        GradientStop(1.0, QColor(166, 166, 163)),
+    )
+)
+
+
 class Brushed70sSkin(RackSkin):
     """
     Satin-finished aluminium with a green display, as 1970s rack gear had.
@@ -372,8 +386,7 @@ class Brushed70sSkin(RackSkin):
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         gradient = QLinearGradient(rect.topLeft(), rect.topRight())
-        gradient.setColorAt(0, QColor(138, 138, 135))
-        gradient.setColorAt(1, QColor(166, 166, 163))
+        apply_gradient_stops(gradient, BRUSHED_70S_COLOR_STOPS)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.fillRect(rect, gradient)
         self.outline_ear(

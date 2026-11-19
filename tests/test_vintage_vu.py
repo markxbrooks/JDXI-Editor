@@ -64,8 +64,10 @@ def _darkest_near(image, point, sx, sy, radius=3):
 
 
 def test_the_vintage_skins_have_vintage_meters():
-    # The Mini Moog, and the brushed-metal 1970s rack gear
-    assert {s.skin_id for s in SKINS.values() if s.vintage_vu} == {"minimoog", "brushed_70s"}
+    # The Mini Moog, the brushed-metal 1970s rack gear, and the ARP 2600
+    assert {s.skin_id for s in SKINS.values() if s.vintage_vu} == {
+        "minimoog", "brushed_70s", "arp2600"
+    }
 
 
 def test_the_vu_scale_is_aligned_to_minus_18_dbfs():
