@@ -594,6 +594,14 @@ class Tb303Skin(RackSkin):
     key_band = 5
     #: keyboards drawn across the source image, before it is stretched
     key_octaves = 4
+    #: flat painted metal: a cool grey, no grain, top to bottom
+    panel_stops = GradientColorStops(
+        (
+            GradientStop(0.0, QColor(168, 173, 171)),
+            GradientStop(0.45, QColor(142, 148, 146)),
+            GradientStop(1.0, QColor(110, 116, 114)),
+        )
+    )
 
     def paint_face(
         self, painter: QPainter, rect: QRectF, sheen: bool = True
@@ -605,9 +613,7 @@ class Tb303Skin(RackSkin):
 
         # Flat painted metal: a cool grey, no grain
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-        gradient.setColorAt(0.0, QColor(168, 173, 171))
-        gradient.setColorAt(0.45, QColor(142, 148, 146))
-        gradient.setColorAt(1.0, QColor(110, 116, 114))
+        apply_gradient_stops(gradient, self.panel_stops)
         painter.fillRect(rect, gradient)
 
         painter.setPen(QPen(QColor(206, 210, 208), 1))
