@@ -311,6 +311,9 @@ class Brushed70sSkin(RackSkin):
     ink_legends = True
     mounted_controls = True
     punched_cards = True
+    #: Backlit analogue VU meters on the Audio Monitor, as 1970s studio
+    #: gear had
+    vintage_vu = True
     chassis = Chassis(
         body="#8A8A87", surface="#101010", surface_alt="#191919",
         border="#4A4A47", accent="#E04435",
@@ -1647,6 +1650,7 @@ class Arp2600Skin(PatchCordsMixin, RackSkin):
     #: patch cords over the grilles: white like the printing on the left,
     #: ARP orange on the right
     cable_colors = ("#D9DBDD", "#E07A26")
+    vintage_vu = True
 
     def paint_face(
         self, painter: QPainter, rect: QRectF, sheen: bool = True
