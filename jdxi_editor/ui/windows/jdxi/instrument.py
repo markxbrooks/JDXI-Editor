@@ -134,6 +134,7 @@ from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from jdxi_editor.ui.windows.audio.monitor import AudioMonitorWindow
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
@@ -1320,6 +1321,17 @@ class JDXiInstrument(JDXiWindow):
             )
         self.midi_message_monitor.show()
         self.midi_message_monitor.raise_()
+
+    def _show_audio_monitor(self) -> None:
+        """Open the oscilloscope, VU meters, and spectrum."""
+        if not self.audio_monitor:
+            self.audio_monitor = AudioMonitorWindow(parent=self)
+            self.audio_monitor.setAttribute(Qt.WA_DeleteOnClose)
+            self.audio_monitor.destroyed.connect(
+                lambda: setattr(self, "audio_monitor", None)
+            )
+        self.audio_monitor.show()
+        self.audio_monitor.raise_()
 
     def _show_program_editor(self, _) -> None:
         """Open the ProgramEditor when the digital digital is clicked."""

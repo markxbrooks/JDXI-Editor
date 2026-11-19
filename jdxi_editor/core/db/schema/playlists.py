@@ -116,6 +116,8 @@ class PlaylistItem(Base):
     position = Column(Integer, nullable=False)
     midi_file_path = Column(Text)
     cheat_preset_id = Column(String)
+    # Cover image of the song (album art), shown in the playlist and while it plays
+    artwork_path = Column(Text)
 
     # Timestamps
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -139,6 +141,7 @@ class PlaylistItem(Base):
             "position": self.position,
             "midi_file_path": self.midi_file_path,
             "cheat_preset_id": self.cheat_preset_id,
+            "artwork_path": self.artwork_path,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -162,5 +165,6 @@ class PlaylistItem(Base):
             position=data["position"],
             midi_file_path=data.get("midi_file_path"),
             cheat_preset_id=data.get("cheat_preset_id"),
+            artwork_path=data.get("artwork_path"),
             created_at=created_at or datetime.utcnow(),
         )

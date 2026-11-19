@@ -8,7 +8,7 @@ import mido
 import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import QPoint, Qt, QEvent, QTimer, Signal
-from PySide6.QtGui import QPainter, QPaintEvent
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -87,6 +87,7 @@ class MidiTrackViewer(QWidget):
         self.track_channel_spins: dict[int, MidiSpinBox] = {}
         self._track_part_labels: dict[int, QLabel] = {}
         self._track_icon_labels: dict[int, QLabel] = {}
+        self._track_number_labels: dict[int, QLabel] = {}
         # Channel edits wait CHANNEL_EDIT_DELAY_MS so repeated clicks merge
         self._pending_channels: dict[int, int] = {}
         self._channel_edit_timer = QTimer(self)
@@ -187,8 +188,39 @@ class MidiTrackViewer(QWidget):
             self.scroll_area.viewport().setStyleSheet("")
         for widget in self.midi_track_widgets.values():
             widget.refresh_skin()
+        self._style_track_headers()
         self.scroll_content.update()
         self.update()
+
+    def _header_text_colors(self) -> tuple:
+        """
+        Text and caption colours of the track headers. On the skin's own
+        backing (walnut, or brushed metal) they are that skin's lettering,
+        so a pale caption does not vanish on silver; otherwise the player's.
+
+        :return: (text, secondary) colours
+        """
+        mp = JDXi.UI.MidiPlayer
+        if punched_cards():
+            from jdxi_editor.ui.style.rack_skin import active_skin
+
+            ink = active_skin().foreground
+            return ink.text, ink.text_secondary
+        return mp.TEXT, mp.TEXT_SECONDARY
+
+    def _style_track_headers(self) -> None:
+        """Colour the track numbers, names and captions for the backing."""
+        mp = JDXi.UI.MidiPlayer
+        text, secondary = self._header_text_colors()
+        for label in self._track_number_labels.values():
+            label.setStyleSheet(f"color: {secondary}; font-size: {mp.FONT_TRACK_SECONDARY};")
+        for edit in self._track_name_edits.values():
+            edit.setStyleSheet(mp.track_name_stylesheet(text))
+            palette = edit.palette()  # the "Unnamed" placeholder
+            palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(secondary))
+            edit.setPalette(palette)
+        for label in self._track_part_labels.values():
+            label.setStyleSheet(mp.track_secondary_stylesheet(secondary))
 
     def paintEvent(self, _event: QPaintEvent) -> None:
         """The wood continues under the zoom control, around the list."""
@@ -220,6 +252,7 @@ class MidiTrackViewer(QWidget):
         self.track_channel_spins.clear()
         self._track_part_labels.clear()
         self._track_icon_labels.clear()
+        self._track_number_labels.clear()
         self._pending_channels.clear()
         self._draggable_rows.clear()
 
@@ -850,6 +883,7 @@ class MidiTrackViewer(QWidget):
         self._track_name_edits = {}
         self._track_part_labels = {}
         self._track_icon_labels = {}
+        self._track_number_labels = {}
         self.track_mute_buttons = {}
         self.track_solo_buttons = {}
         tick_to_seconds = build_tick_to_seconds(midi_file)
@@ -895,6 +929,7 @@ class MidiTrackViewer(QWidget):
                 f"color: {mp.TEXT_SECONDARY}; font-size: {mp.FONT_TRACK_SECONDARY};"
             )
             top_row.addWidget(track_number_label)
+            self._track_number_labels[i] = track_number_label
 
             icon_label = QLabel()
             icon_label.setPixmap(pixmap)
@@ -1009,6 +1044,7 @@ class MidiTrackViewer(QWidget):
             self.channel_controls_vlayout.addWidget(draggable_row)
 
         self.channel_controls_vlayout.addStretch()
+        self._style_track_headers()
         self._apply_muted_tracks_to_widgets()
         self._sync_track_mute_solo_buttons()
         self.fit_tracks_to_view()

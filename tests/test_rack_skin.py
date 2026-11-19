@@ -39,10 +39,10 @@ def restore_active_skin():
     QSettings, so the same test passes or fails depending on which skin they
     last chose.
     """
-    saved = rack_skin._active
-    rack_skin._active = rack_skin.SKINS["glossy_black"]
+    saved = rack_skin.active_skin()
+    rack_skin.REGISTRY.set_active("glossy_black", remember=False, notify=False)
     yield
-    rack_skin._active = saved
+    rack_skin.REGISTRY.set_active(saved, remember=False, notify=False)
 
 
 def render(widget, width=400, height=120) -> QImage:
@@ -100,6 +100,12 @@ def test_the_skins_are_offered():
         "jupiter8",
         "juno106",
         "minimoog",
+        "mc101",
+        "ms20",
+        "sh101_grey",
+        "sh101_red",
+        "sh101_blue",
+        "arp2600",
         "brushed_70s",
         "ivory_walnut",
     ]
@@ -346,6 +352,149 @@ def test_the_909_wears_its_step_buttons_and_lights(qapp):
     assert lit == [0, 4, 8, 12]
 
 
+def test_the_mc101_wears_its_lit_step_pads(qapp):
+    """Sixteen pads in four coloured groups on matte black, first of each brightest."""
+    from jdxi_editor.ui.style.rack_skin import Mc101Skin
+
+    skin = Mc101Skin()
+    image = QImage(640, 60, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 639, 59))
+    painter.end()
+
+    step = 640 / skin.steps
+    pads = [image.pixelColor(int((i + 0.5) * step), 56).name() for i in range(skin.steps)]
+    assert pads == [skin.pad_color(i) for i in range(skin.steps)]
+    assert [pads[i] for i in (0, 4, 8, 12)] == [c.lower() for c in skin.pad_colors]
+    for i in range(skin.steps):
+        if i % 4:
+            assert QColor(pads[i]).value() < QColor(pads[i - i % 4]).value()
+    # The body is matte black, and the screen is white on black
+    assert image.pixelColor(320, 30).lightness() < 40
+    assert QColor(skin.lcd.bg_edge).lightness() == 0
+    assert skin.chassis.accent.lower() == skin.pad_colors[0].lower()
+
+
+def test_the_ms20_is_boxed_in_white_with_patch_cables(qapp):
+    """
+    A black panel in a white section box; patch cables on the rack panels,
+    looped on each cheek and sagging along the rail, clear of the content.
+    """
+    from jdxi_editor.ui.style.rack_skin import Ms20Skin
+
+    skin = Ms20Skin()
+    face = QImage(300, 120, QImage.Format.Format_ARGB32)
+    face.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(face)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 299, 119))
+    painter.end()
+    assert face.pixelColor(150, 60).lightness() < 40  # matte black
+    # The white box sits in the image's sharp top edge (SHEEN_SLICE_TOP)
+    assert any(face.pixelColor(150, y).lightness() > 150 for y in range(1, 5))
+
+    # Painted away from the image's edge, as a panel in a window is: the
+    # cheeks must still get their own cables
+    image = QImage(420, 220, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.translate(10, 10)
+    skin.paint(painter, QRectF(10.5, 10.5, 399, 199))
+    painter.end()
+    image = image.copy(20, 20, 400, 200)
+
+    def near(colour_hex, x0, x1, y0, y1):
+        target = QColor(colour_hex)
+        return any(
+            abs(image.pixelColor(x, y).red() - target.red()) < 30
+            and abs(image.pixelColor(x, y).green() - target.green()) < 30
+            and abs(image.pixelColor(x, y).blue() - target.blue()) < 30
+            for x in range(x0, x1) for y in range(y0, y1)
+        )
+
+    red, yellow, blue = skin.cable_colors
+    ear, rail = skin.ear_width, skin.rail_height
+    assert near(red, 0, ear, 20, 180)  # looped on the left cheek
+    assert near(yellow, 400 - ear, 400, 20, 180)  # and on the right
+    assert near(blue, ear, 400 - ear, 200 - rail, 200)  # sagging along the rail
+    # Nothing of the cables reaches the content area
+    margins = skin.content_margins()
+    for colour in skin.cable_colors:
+        assert not near(colour, margins.left() + 2, 400 - margins.right() - 2,
+                        margins.top() + 2, 200 - margins.bottom() - 2)
+
+
+def test_the_sh101_comes_in_three_colours_round_one_panel(qapp):
+    """
+    Grey, red and blue bodies round the same dark panel: the rim, the front
+    lip, the sides and the chassis take the body colour; the panel does not.
+    """
+    from jdxi_editor.ui.style.rack_skin import SKINS
+
+    skins = [SKINS[i] for i in ("sh101_grey", "sh101_red", "sh101_blue")]
+    assert len({s.body_color for s in skins}) == 3
+
+    def render(skin):
+        image = QImage(400, 160, QImage.Format.Format_ARGB32)
+        image.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(image)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
+        painter.end()
+        return image
+
+    def close(colour, hex_colour, tolerance=40):
+        target = QColor(hex_colour)
+        return (abs(colour.red() - target.red()) + abs(colour.green() - target.green())
+                + abs(colour.blue() - target.blue())) <= tolerance
+
+    panels = set()
+    for skin in skins:
+        image = render(skin)
+        middle = image.pixelColor(200, 80)
+        assert middle.lightness() < 45  # the dark slider panel
+        panels.add(middle.name())
+        assert close(image.pixelColor(skin.ear_width // 2, 80), skin.body_color)  # the side
+        face_left = skin.ear_width
+        assert close(image.pixelColor(200, 1), skin.body_color, 90)  # the rim
+        assert skin.chassis.body == skin.body_color
+        assert not close(image.pixelColor(face_left + 40, 80), skin.body_color)
+    assert len(panels) == 1  # one panel, three bodies
+
+
+def test_the_arp2600_is_a_pale_panel_between_speakers(qapp):
+    """
+    A light blue-grey panel printed in ink, between speaker grilles set in
+    black tolex, with the tolex running under it.
+    """
+    from jdxi_editor.ui.style.rack_skin import SKINS
+
+    skin = SKINS["arp2600"]
+    assert skin.ink_legends and skin.mounted_controls  # legible on a pale plate
+    image = QImage(400, 160, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    skin.paint(painter, QRectF(0.5, 0.5, 399, 159))
+    painter.end()
+    panel = image.pixelColor(200, 70)
+    assert panel.lightness() > 150 and panel.blue() > panel.red()  # pale blue-grey
+    # The grille: dark, with lighter perforations
+    grille = [image.pixelColor(x, y).lightness()
+              for x in range(6, skin.ear_width - 6) for y in range(60, 100)]
+    assert max(grille) < 110 and max(grille) - min(grille) > 15
+    # The tolex rail under the panel
+    assert image.pixelColor(200, 160 - skin.rail_height // 2).lightness() < 60
+    # The printed line and the orange keyline in the face's sharp top edge
+    face = QImage(300, 80, QImage.Format.Format_ARGB32)
+    face.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(face)
+    skin.paint_face(painter, QRectF(0.5, 0.5, 299, 79))
+    painter.end()
+    top = [face.pixelColor(150, y) for y in range(1, 5)]
+    assert any(c.lightness() < 80 for c in top)
+    assert any(c.red() > 200 and c.blue() < 90 for c in top)
+
+
 def test_the_808_wears_its_step_buttons(qapp):
     """The run of step colours is in the face, so it reaches every panel."""
     from jdxi_editor.ui.style.rack_skin import Tr808Skin
@@ -432,6 +581,12 @@ def test_each_skin_carries_its_own_display_palette():
         "jupiter8": "#FF2A14",       # the JP-8's patch number display
         "juno106": "#C5D8EA",        # a cool grey-blue, the Juno has no screen
         "minimoog": "#F4E6C8",       # cream legends, the Mini has no screen
+        "mc101": "#F2F5F7",          # the MC-101's white OLED
+        "ms20": "#E6EEF0",           # the MS-20's white lettering, no screen
+        "sh101_grey": "#FF4E3A",     # the SH-101's red LEDs, no screen
+        "sh101_red": "#FF4E3A",      # the same machine in another colour
+        "sh101_blue": "#FF4E3A",
+        "arp2600": "#CFE0EA",        # the 2600's blue-grey, no screen
         "brushed_70s": "#5BFF9B",    # a green fluorescent display
         "ivory_walnut": "#FFB545",   # warm amber on painted studio gear
     }

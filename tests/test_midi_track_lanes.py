@@ -104,9 +104,20 @@ def test_punched_card_lanes(skin_id):
         QApplication.processEvents()
         shot = viewer.grab().toImage()
         viewer.close()
-        wood = shot.pixelColor(shot.width() // 2, shot.height() // 3)
-        assert wood.red() > wood.blue() + 30
-        assert wood.red() > wood.green()
+        viewer.set_midi_file(_file())
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        ink = active_skin().foreground
+        assert ink.text in viewer._track_name_edits[1].styleSheet()
+        assert ink.text_secondary in viewer._track_part_labels[1].styleSheet()
+        backing = shot.pixelColor(shot.width() // 2, shot.height() // 3)
+        if skin_id == "minimoog":  # the cabinet's walnut
+            assert backing.red() > backing.blue() + 30
+            assert backing.red() > backing.green()
+        else:  # the faceplate's satin aluminium: neutral silver, not wood
+            channels = (backing.red(), backing.green(), backing.blue())
+            assert max(channels) - min(channels) <= 10, backing.name()
+            assert backing.lightness() > 100, backing.name()
     finally:
         set_active_skin(previous, remember=False)
 

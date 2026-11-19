@@ -96,12 +96,13 @@ class MidiPlayerStyle(AppEditorStyle):
         """
 
     @classmethod
-    def track_name_stylesheet(cls) -> str:
+    def track_name_stylesheet(cls, text: str = None) -> str:
+        """:param text: the name's colour; the player's own text colour if None"""
         return f"""
         QLineEdit {{
             background-color: transparent;
             border: none;
-            color: {cls.TEXT};
+            color: {text or cls.TEXT};
             font-size: {cls.FONT_TRACK_NAME};
             font-weight: 600;
         }}
@@ -156,10 +157,11 @@ class MidiPlayerStyle(AppEditorStyle):
         """
 
     @classmethod
-    def track_secondary_stylesheet(cls) -> str:
+    def track_secondary_stylesheet(cls, text: str = None) -> str:
+        """:param text: the caption's colour; the player's own if None"""
         return f"""
         QLabel {{
-            color: {cls.TEXT_SECONDARY};
+            color: {text or cls.TEXT_SECONDARY};
             font-size: {cls.FONT_TRACK_SECONDARY};
         }}
         """

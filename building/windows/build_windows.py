@@ -23,6 +23,7 @@ try:
         __program__,
         __author__,
     )
+    from jdxi_editor.bundle_imports import pyinstaller_args
 except ImportError:
     # Fallback if running from different location
     sys.path.insert(0, str(SCRIPT_DIR.parent.parent))
@@ -32,6 +33,7 @@ except ImportError:
         __program__,
         __author__,
     )
+    from jdxi_editor.bundle_imports import pyinstaller_args
 
 # Build configuration
 APP_NAME = "JD-Xi Editor.exe"
@@ -118,6 +120,7 @@ def build_with_pyinstaller():
             "-w",
             "-i", str(icon_file),
             "--hidden-import", "numpy",
+            *pyinstaller_args(),
             "--additional-hooks-dir=.",
             "--paths=env/Lib/site-packages",
             "--noupx",

@@ -22,12 +22,16 @@ try:
         __program__,
         __author__,
     )
+    from jdxi_editor.bundle_imports import pyinstaller_args
 except ImportError:
     # Will be set from context
     __version__ = "0.0.0"
     __package_name__ = "jdxi_editor"
     __program__ = "JD-Xi Editor"
     __author__ = "Mark Brooks"
+
+    def pyinstaller_args() -> list[str]:
+        return []
 
 # Build configuration
 APP_NAME = "jdxi-editor"
@@ -133,6 +137,7 @@ def build_with_pyinstaller(project_root):
         "--hidden-import=pubsub",
         "--hidden-import=pubsub.core",
         "--hidden-import=decologr",
+        *pyinstaller_args(),
         # Collect submodules
         "--collect-submodules=jdxi_editor",
         "--collect-data=jdxi_editor",

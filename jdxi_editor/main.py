@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+import jdxi_editor.bundle_imports  # noqa: F401  fluidsynth, sounddevice, lilypond
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.log.message import log_message
 from jdxi_editor.project import __organization_name__, __program__, __version__

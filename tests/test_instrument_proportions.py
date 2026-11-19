@@ -32,10 +32,12 @@ def default_skin():
     """
     from jdxi_editor.ui.style import rack_skin
 
-    saved = rack_skin._active
-    rack_skin._active = rack_skin.SKINS["glossy_black"]
-    yield rack_skin._active
-    rack_skin._active = saved
+    # Set without restyling the application (notify=False): only the drawing
+    # under test needs the skin
+    saved = rack_skin.active_skin()
+    skin = rack_skin.REGISTRY.set_active("glossy_black", remember=False, notify=False)
+    yield skin
+    rack_skin.REGISTRY.set_active(saved, remember=False, notify=False)
 
 
 @pytest.fixture(scope="module")

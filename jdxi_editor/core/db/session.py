@@ -80,16 +80,20 @@ class DatabaseSession:
         )
 
     def create_indexes(self):
-        """Create database indexes for better query performance."""
-        indexes = [
-            Index("idx_playlist_items_playlist_id", PlaylistItem.playlist_id),
-            Index("idx_playlist_items_program_id", PlaylistItem.program_id),
-            Index(
-                "idx_playlist_items_position",
-                PlaylistItem.playlist_id,
-                PlaylistItem.position,
-            ),
+        """Create database indexes for better query performance.
+
+        An Index attaches itself to the table definition, which is shared by
+        every session in the process. Building new ones on each call left
+        duplicates there, and the next session's create_tables() on a new
+        database failed with "index ... already exists". Existing ones are
+        reused instead."""
+        attached = {ix.name: ix for ix in PlaylistItem.__table__.indexes}
+        specs = [
+            ("idx_playlist_items_playlist_id", (PlaylistItem.playlist_id,)),
+            ("idx_playlist_items_program_id", (PlaylistItem.program_id,)),
+            ("idx_playlist_items_position", (PlaylistItem.playlist_id, PlaylistItem.position)),
         ]
+        indexes = [attached.get(name) or Index(name, *columns) for name, columns in specs]
 
         for index in indexes:
             try:
@@ -98,9 +102,38 @@ class DatabaseSession:
                 log.warning(f"Could not create index {index.name}: {ex}")
 
     def create_tables(self):
-        """Create all database tables."""
+        """Create all database tables, and add columns that newer versions
+        introduced to tables made by older ones."""
         Base.metadata.create_all(bind=self.engine)
+        self.add_missing_columns()
         log.info(f"Database tables created at {self.db_path}")
+
+    def add_missing_columns(self) -> list:
+        """Upgrade an older database in place: add each optional (nullable)
+        column of the models that its tables lack. create_all() makes missing
+        tables but never changes existing ones. Returns "table.column" for
+        each column added."""
+        from sqlalchemy import inspect, text
+
+        added = []
+        inspector = inspect(self.engine)
+        existing_tables = set(inspector.get_table_names())
+        with self.engine.begin() as conn:
+            for table in Base.metadata.sorted_tables:
+                if table.name not in existing_tables:
+                    continue
+                have = {c["name"] for c in inspector.get_columns(table.name)}
+                for column in table.columns:
+                    if column.name in have or not column.nullable or column.primary_key:
+                        continue
+                    col_type = column.type.compile(dialect=self.engine.dialect)
+                    conn.execute(
+                        text(f'ALTER TABLE "{table.name}" ADD COLUMN "{column.name}" {col_type}')
+                    )
+                    added.append(f"{table.name}.{column.name}")
+        for name in added:
+            log.info(f"Database upgraded: added column {name}")
+        return added
 
     @contextmanager
     def get_session(self):

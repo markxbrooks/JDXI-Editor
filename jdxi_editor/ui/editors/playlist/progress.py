@@ -12,9 +12,10 @@ from typing import Optional
 
 from PySide6.QtCore import QEvent, QRectF, Qt, Signal
 from PySide6.QtGui import QColor, QLinearGradient, QMouseEvent, QPainter, QPen
-from PySide6.QtWidgets import QLabel, QProgressBar, QToolTip, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QToolTip, QWidget
 
 from jdxi_editor.ui.common import JDXi, QVBoxLayout
+from jdxi_editor.ui.editors.playlist.artwork import artwork_pixmap
 from jdxi_editor.ui.editors.midi_player.utils import format_time
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 
@@ -25,6 +26,7 @@ PLAYED_BOTTOM = QColor("#660000")
 UNPLAYED = QColor("#333333")
 UNPLAYED_BORDER = QColor("#444444")
 CURRENT_BORDER = QColor("#ff6a6a")
+ARTWORK_SIZE = 96  # px, the now-playing cover
 
 
 class PlaylistSegmentBar(QWidget):
@@ -128,6 +130,7 @@ class PlaylistProgressWidget(QWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self._titles: list[str] = []
+        self._artwork: list[Optional[str]] = []  # cover image per song
         self._current: Optional[int] = None
         self._duration = 0.0
         self._paused = False
@@ -143,12 +146,23 @@ class PlaylistProgressWidget(QWidget):
         self.next_label = QLabel()
         self.next_label.setStyleSheet(JDXi.UI.Style.STYLE_FOREGROUND)
 
-        layout = QVBoxLayout(self)
+        # The playing song's cover (the first song's while stopped); hidden
+        # when the song has none
+        self.artwork_label = QLabel()
+        self.artwork_label.setFixedSize(ARTWORK_SIZE, ARTWORK_SIZE)
+        self.artwork_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.artwork_label.hide()
+
+        info = QVBoxLayout()
+        info.setContentsMargins(0, 0, 0, 0)
+        info.addWidget(self.display)
+        info.addWidget(self.song_bar)
+        info.addWidget(self.segments)
+        info.addWidget(self.next_label)
+        layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.display)
-        layout.addWidget(self.song_bar)
-        layout.addWidget(self.segments)
-        layout.addWidget(self.next_label)
+        layout.addWidget(self.artwork_label, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addLayout(info, 1)
         self.show_stopped()
 
     # --- Playlist -------------------------------------------------------------
@@ -163,6 +177,31 @@ class PlaylistProgressWidget(QWidget):
             self._show_idle(self._status)
         else:
             self._refresh()
+
+    def set_artwork(self, paths: list) -> None:
+        """Each song's cover image path (None for none), in play order."""
+        self._artwork = list(paths)
+        self._show_artwork()
+
+    def _show_artwork(self) -> None:
+        index = self._current if self._current is not None else 0
+        path = self._artwork[index] if 0 <= index < len(self._artwork) else None
+        pixmap = artwork_pixmap(path, ARTWORK_SIZE)
+        if pixmap is None:
+            self.artwork_label.clear()
+            self.artwork_label.hide()
+            self.artwork_label.setToolTip("")
+        else:
+            self.artwork_label.setPixmap(pixmap)
+            self.artwork_label.setToolTip(path)
+            self.artwork_label.show()
+
+    @property
+    def artwork_shown(self) -> Optional[str]:
+        """Path of the cover on show, or None."""
+        if not self.artwork_label.isVisibleTo(self):
+            return None
+        return self.artwork_label.toolTip() or None
 
     # --- Playback -------------------------------------------------------------
 
@@ -220,6 +259,7 @@ class PlaylistProgressWidget(QWidget):
         self.next_label.setText(
             f"First: {self._titles[0]}" if self._titles else "No songs with a MIDI file"
         )
+        self._show_artwork()
 
     # --- Text -----------------------------------------------------------------
 
@@ -238,3 +278,4 @@ class PlaylistProgressWidget(QWidget):
         self.next_label.setText(
             f"Up next: {self._titles[following]}" if following < count else "Last song"
         )
+        self._show_artwork()

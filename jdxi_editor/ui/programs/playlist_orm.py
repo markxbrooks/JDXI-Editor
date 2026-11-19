@@ -56,6 +56,48 @@ class PlaylistORM:
             log.error(traceback.format_exc())
             return None
 
+    def duplicate_playlist(self, playlist_id: int, new_name: str) -> Optional[int]:
+        """
+        Copy a playlist under a new name, with its description and every item
+        (program, MIDI file, cheat preset) in the same order.
+
+        :param playlist_id: Playlist to copy
+        :param new_name: Name of the copy (playlist names are unique)
+        :return: The new playlist's ID, or None if it could not be created
+        """
+        try:
+            with self.db_session.get_session() as session:
+                source = session.query(PlayList).filter_by(id=playlist_id).first()
+                if not source:
+                    log.error(scope="PlaylistORM", message=f"Playlist {playlist_id} not found")
+                    return None
+                copy = PlayList(name=new_name, description=source.description)
+                session.add(copy)
+                session.flush()
+                items = (
+                    session.query(PlaylistItem)
+                    .filter_by(playlist_id=playlist_id)
+                    .order_by(PlaylistItem.position)
+                    .all()
+                )
+                for position, item in enumerate(items, start=1):
+                    session.add(
+                        PlaylistItem(
+                            playlist_id=copy.id,
+                            program_id=item.program_id,
+                            position=position,
+                            midi_file_path=item.midi_file_path,
+                            cheat_preset_id=item.cheat_preset_id,
+                            artwork_path=item.artwork_path,
+                        )
+                    )
+                new_id = copy.id
+                log.info(scope="PlaylistORM", message=f"✅ Duplicated playlist {playlist_id} as '{new_name}' ({new_id})")
+                return new_id
+        except Exception as e:
+            log.error(scope="PlaylistORM", message=f"❌ Failed to duplicate playlist {playlist_id}: {e}")
+            return None
+
     def get_all_playlists(self) -> List[Dict]:
         """
         Get all playlists.
@@ -224,21 +266,31 @@ class PlaylistORM:
             log.error(traceback.format_exc())
             return False
 
-    def remove_program_from_playlist(self, playlist_id: int, program_id: str) -> bool:
+    @staticmethod
+    def _find_item(session, playlist_id: int, program_id: str, item_id: Optional[int]):
+        """The playlist item to act on. A program can be in a playlist more than
+        once (one entry per MIDI file), so `item_id` picks the exact entry; without
+        it, the first entry for the program is used (older callers)."""
+        query = session.query(PlaylistItem).filter_by(playlist_id=playlist_id)
+        if item_id is not None:
+            return query.filter_by(id=item_id).first()
+        return query.filter_by(program_id=program_id).order_by(PlaylistItem.position).first()
+
+    def remove_program_from_playlist(
+        self, playlist_id: int, program_id: str, item_id: Optional[int] = None
+    ) -> bool:
         """
         Remove a program from a playlist.
 
         :param playlist_id: Playlist ID
         :param program_id: Program ID
+        :param item_id: Playlist item ID, to remove one specific entry when the
+            program is in the playlist more than once
         :return: True if successful, False otherwise
         """
         try:
             with self.db_session.get_session() as session:
-                item = (
-                    session.query(PlaylistItem)
-                    .filter_by(playlist_id=playlist_id, program_id=program_id)
-                    .first()
-                )
+                item = self._find_item(session, playlist_id, program_id, item_id)
                 if item:
                     session.delete(item)
                     log.info(
@@ -252,6 +304,45 @@ class PlaylistORM:
                 f"❌Failed to remove program {program_id} from playlist {playlist_id}: {e}",
                 scope="PlaylistORM",
             )
+            import traceback
+
+            log.error(traceback.format_exc())
+            return False
+
+    def reorder_playlist(self, playlist_id: int, item_ids: List[int]) -> bool:
+        """
+        Save a new order for a playlist: `item_ids` lists every item of the
+        playlist, first to last, and positions become 1..N in that order.
+        Playback follows these positions, so the order shown and the order
+        played stay the same.
+
+        Positions are rewritten in two passes (first to temporary negative
+        values) so that swapping two entries never clashes with a uniqueness
+        rule on (playlist, program, position) in older databases.
+
+        :param playlist_id: Playlist ID
+        :param item_ids: Playlist item IDs in their new order
+        :return: True if saved; False if the list isn't exactly the playlist's items
+        """
+        try:
+            with self.db_session.get_session() as session:
+                items = session.query(PlaylistItem).filter_by(playlist_id=playlist_id).all()
+                by_id = {item.id: item for item in items}
+                if len(item_ids) != len(by_id) or set(item_ids) != set(by_id):
+                    log.warning(
+                        scope="PlaylistORM",
+                        message=f"Reorder of playlist {playlist_id} ignored: the item list does not match its items",
+                    )
+                    return False
+                for temp, item in enumerate(items, start=1):
+                    item.position = -temp
+                session.flush()
+                for position, item_id in enumerate(item_ids, start=1):
+                    by_id[item_id].position = position
+                log.info(scope="PlaylistORM", message=f"✅ Reordered playlist {playlist_id}")
+                return True
+        except Exception as e:
+            log.error(scope="PlaylistORM", message=f"❌ Failed to reorder playlist {playlist_id}: {e}")
             import traceback
 
             log.error(traceback.format_exc())
@@ -285,9 +376,13 @@ class PlaylistORM:
 
                     result.append(
                         {
+                            "item_id": item.id,
+                            "position": item.position,
+                            "program_id": item.program_id,
                             "program": program,
                             "midi_file_path": item.midi_file_path,
                             "cheat_preset_id": item.cheat_preset_id,
+                            "artwork_path": item.artwork_path,
                         }
                     )
                 return result
@@ -302,7 +397,11 @@ class PlaylistORM:
             return []
 
     def update_playlist_item_midi_file(
-        self, playlist_id: int, program_id: str, midi_file_path: Optional[str]
+        self,
+        playlist_id: int,
+        program_id: str,
+        midi_file_path: Optional[str],
+        item_id: Optional[int] = None,
     ) -> bool:
         """
         Update the MIDI file path for a playlist item.
@@ -310,15 +409,13 @@ class PlaylistORM:
         :param playlist_id: Playlist ID
         :param program_id: Program ID
         :param midi_file_path: Path to MIDI file (or None to clear)
+        :param item_id: Playlist item ID (the exact entry when the program is
+            used more than once)
         :return: True if successful, False otherwise
         """
         try:
             with self.db_session.get_session() as session:
-                item = (
-                    session.query(PlaylistItem)
-                    .filter_by(playlist_id=playlist_id, program_id=program_id)
-                    .first()
-                )
+                item = self._find_item(session, playlist_id, program_id, item_id)
                 if item:
                     item.midi_file_path = midi_file_path
                     log.info(
@@ -337,8 +434,45 @@ class PlaylistORM:
             log.error(traceback.format_exc())
             return False
 
+    def update_playlist_item_artwork(
+        self, playlist_id: int, item_id: int, artwork_path: Optional[str] = None
+    ) -> bool:
+        """
+        Set the cover image of one playlist entry.
+
+        :param playlist_id: Playlist ID
+        :param item_id: Playlist item ID
+        :param artwork_path: Image file path, or None to clear
+        :return: True if the entry was found and updated
+        """
+        try:
+            with self.db_session.get_session() as session:
+                item = (
+                    session.query(PlaylistItem)
+                    .filter_by(id=item_id, playlist_id=playlist_id)
+                    .first()
+                )
+                if not item:
+                    return False
+                item.artwork_path = artwork_path or None
+                log.info(
+                    f"✅ Updated artwork for playlist {playlist_id}, item {item_id}",
+                    scope="PlaylistORM",
+                )
+                return True
+        except Exception as e:
+            log.error(
+                f"❌ Failed to update artwork for playlist {playlist_id}, item {item_id}: {e}",
+                scope="PlaylistORM",
+            )
+            return False
+
     def update_playlist_item_cheat_preset(
-        self, playlist_id: int, program_id: str, cheat_preset_id: Optional[str] = None
+        self,
+        playlist_id: int,
+        program_id: str,
+        cheat_preset_id: Optional[str] = None,
+        item_id: Optional[int] = None,
     ) -> bool:
         """
         Update the cheat preset ID for a playlist item.
@@ -346,15 +480,13 @@ class PlaylistORM:
         :param playlist_id: Playlist ID
         :param program_id: Program ID
         :param cheat_preset_id: Cheat preset ID (e.g., "113") or None to clear
+        :param item_id: Playlist item ID (the exact entry when the program is
+            used more than once)
         :return: True if updated, False otherwise
         """
         try:
             with self.db_session.get_session() as session:
-                item = (
-                    session.query(PlaylistItem)
-                    .filter_by(playlist_id=playlist_id, program_id=program_id)
-                    .first()
-                )
+                item = self._find_item(session, playlist_id, program_id, item_id)
                 if item:
                     item.cheat_preset_id = cheat_preset_id
                     log.info(

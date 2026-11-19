@@ -7,6 +7,7 @@ from pathlib import Path
 # in jdxi_editor or dependencies can exceed Python's default recursion limit
 sys.setrecursionlimit(5000)
 
+from jdxi_editor.bundle_imports import HIDDEN_IMPORTS
 from setuptools import setup, find_packages
 
 # run with
@@ -32,7 +33,7 @@ DATA_FILES = [
 ]  # Include any additional files your app needs
 OPTIONS = {
     'packages': ['jdxi_editor', 'rtmidi', 'decologr', 'picomidi', 'qtawesome',
-                 '_sounddevice_data'],
+                 '_sounddevice_data', 'cffi', 'music21.lily'],
     'argv_emulation': False,
     'iconfile': 'jdxi_icon_512.icns',  # Path to the .icns file
     'includes': ['PySide6',
@@ -52,9 +53,7 @@ OPTIONS = {
                  'qtawesome',     # Icon library
                  'qtawesome.iconic_font',  # Ensure PySide6 is bundled
                  'PySide6.QtNetwork',  # update check (GitHub Releases)
-                 'fluidsynth',  # pyfluidsynth: FluidSynth MIDI synth (use includes; fluidsynth pkg shadows .py)
-                 'sounddevice',  # FluidSynth audio output device selection
-                 '_sounddevice'],  # sounddevice CFFI extension
+                 *HIDDEN_IMPORTS],
     "excludes": [
                  'Image',
                  "Carbon",

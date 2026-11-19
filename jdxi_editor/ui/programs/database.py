@@ -92,6 +92,7 @@ class ProgramDatabase:
                     position INTEGER NOT NULL,
                     midi_file_path TEXT,
                     cheat_preset_id TEXT,
+                    artwork_path TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
                     FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
@@ -116,6 +117,12 @@ class ProgramDatabase:
                 )
             except sqlite3.OperationalError:
                 # Column already exists, ignore
+                pass
+
+            # Add artwork_path column if it doesn't exist (migration for existing databases)
+            try:
+                conn.execute("ALTER TABLE playlist_items ADD COLUMN artwork_path TEXT")
+            except sqlite3.OperationalError:
                 pass
 
             # Create indexes for playlist_items
@@ -369,15 +376,38 @@ class ProgramDatabase:
             playlist_id, program_id, position
         )
 
-    def remove_program_from_playlist(self, playlist_id: int, program_id: str) -> bool:
+    def remove_program_from_playlist(
+        self, playlist_id: int, program_id: str, item_id: Optional[int] = None
+    ) -> bool:
         """
         Remove a program from a playlist.
 
         :param playlist_id: Playlist ID
         :param program_id: Program ID
+        :param item_id: Playlist item ID (one entry when the program is used more than once)
         :return: True if successful, False otherwise
         """
-        return self.playlist_orm.remove_program_from_playlist(playlist_id, program_id)
+        return self.playlist_orm.remove_program_from_playlist(playlist_id, program_id, item_id)
+
+    def duplicate_playlist(self, playlist_id: int, new_name: str) -> Optional[int]:
+        """
+        Copy a playlist (description and items, in order) under a new name.
+
+        :param playlist_id: Playlist to copy
+        :param new_name: Name of the copy
+        :return: The new playlist's ID, or None
+        """
+        return self.playlist_orm.duplicate_playlist(playlist_id, new_name)
+
+    def reorder_playlist(self, playlist_id: int, item_ids: List[int]) -> bool:
+        """
+        Save a new order for a playlist (every item ID, first to last).
+
+        :param playlist_id: Playlist ID
+        :param item_ids: Playlist item IDs in their new order
+        :return: True if saved
+        """
+        return self.playlist_orm.reorder_playlist(playlist_id, item_ids)
 
     def get_playlist_programs(self, playlist_id: int) -> List[Dict]:
         """
@@ -391,7 +421,11 @@ class ProgramDatabase:
         )
 
     def update_playlist_item_midi_file(
-        self, playlist_id: int, program_id: str, midi_file_path: str
+        self,
+        playlist_id: int,
+        program_id: str,
+        midi_file_path: str,
+        item_id: Optional[int] = None,
     ) -> bool:
         """
         Update the MIDI file path for a playlist item.
@@ -399,14 +433,19 @@ class ProgramDatabase:
         :param playlist_id: Playlist ID
         :param program_id: Program ID
         :param midi_file_path: Path to MIDI file (or None to clear)
+        :param item_id: Playlist item ID (the exact entry when the program is used more than once)
         :return: True if successful, False otherwise
         """
         return self.playlist_orm.update_playlist_item_midi_file(
-            playlist_id, program_id, midi_file_path if midi_file_path else None
+            playlist_id, program_id, midi_file_path if midi_file_path else None, item_id
         )
 
     def update_playlist_item_cheat_preset(
-        self, playlist_id: int, program_id: str, cheat_preset_id: Optional[str] = None
+        self,
+        playlist_id: int,
+        program_id: str,
+        cheat_preset_id: Optional[str] = None,
+        item_id: Optional[int] = None,
     ) -> bool:
         """
         Update the cheat preset ID for a playlist item.
@@ -414,10 +453,19 @@ class ProgramDatabase:
         :param playlist_id: Playlist ID
         :param program_id: Program ID
         :param cheat_preset_id: Cheat preset ID (e.g., "113") or None to clear
+        :param item_id: Playlist item ID (the exact entry when the program is used more than once)
         :return: True if updated, False otherwise
         """
         return self.playlist_orm.update_playlist_item_cheat_preset(
-            playlist_id, program_id, cheat_preset_id
+            playlist_id, program_id, cheat_preset_id, item_id
+        )
+
+    def update_playlist_item_artwork(
+        self, playlist_id: int, item_id: int, artwork_path: Optional[str] = None
+    ) -> bool:
+        """Set (or clear, with None) the cover image of one playlist entry."""
+        return self.playlist_orm.update_playlist_item_artwork(
+            playlist_id, item_id, artwork_path or None
         )
 
     def migrate_from_json(self, json_file: Path) -> int:

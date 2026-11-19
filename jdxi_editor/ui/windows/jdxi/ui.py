@@ -75,6 +75,7 @@ class JDXiWindow(QMainWindow):
         self.log_viewer = None
         self.midi_debugger = None
         self.midi_message_monitor = None
+        self.audio_monitor = None
         self.midi_controller_config = None
         self.old_pos = None
         # JDXi.UI.Theme.apply_dark_theme()
@@ -468,6 +469,10 @@ class JDXiWindow(QMainWindow):
         midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.debug_menu.addAction(midi_monitor_action)
 
+        audio_monitor_action = QAction("Audio Monitor", self)
+        audio_monitor_action.triggered.connect(self._show_audio_monitor)
+        self.debug_menu.addAction(audio_monitor_action)
+
         # --- Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
@@ -494,6 +499,11 @@ class JDXiWindow(QMainWindow):
         self.help_menu.addAction(
             self._menu_action(
                 "MIDI &Monitor", self._show_midi_message_monitor, "Ctrl+Alt+M"
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "Audio &Monitor", self._show_audio_monitor, "Ctrl+Alt+A"
             )
         )
         self.help_menu.addAction(
@@ -781,6 +791,9 @@ class JDXiWindow(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_midi_message_monitor(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_audio_monitor(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_log_viewer(self):

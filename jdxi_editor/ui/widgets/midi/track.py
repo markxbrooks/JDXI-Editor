@@ -27,7 +27,7 @@ PUNCH_MUTED = QColor(150, 150, 150)
 
 def punched_cards() -> bool:
     """
-    This skin draws each lane as a punched card on wood.
+    This skin draws each lane as a punched card, on its own backing.
 
     :return: bool
     """
@@ -38,15 +38,15 @@ def punched_cards() -> bool:
 
 def lane_wood_tile(height: int):
     """
-    The wood behind the cards. A skin may name its own cabinet.
+    What the cards lie on: the skin's own backing (its cabinet wood, or
+    brushed metal on the metal skin).
 
     :param height: int tile height in px
     :return: QPixmap
     """
-    from jdxi_editor.ui.style.rack_skin import WALNUT, _wood_tile, active_skin
+    from jdxi_editor.ui.style.rack_skin import active_skin
 
-    stops = active_skin().lane_wood or WALNUT
-    return _wood_tile(max(1, int(height)), stops)
+    return active_skin().lane_backing(height)
 
 
 class MidiTrackWidget(QWidget):

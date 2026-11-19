@@ -332,9 +332,11 @@ class PatchReadSession(QObject):
 
         requests = [s.request_hex for s in self._sections]
         # Fire RQ1s off the UI thread (same as data_request)
+        # Asked for explicitly, so sent even with automatic requests off
         threading.Thread(
             target=send_with_delay,
             args=(self._midi_helper, requests),
+            kwargs={"force": True},
             daemon=True,
         ).start()
         self._timer.start(self._timeout_ms)

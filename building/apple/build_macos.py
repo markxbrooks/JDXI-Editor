@@ -153,7 +153,9 @@ def check_dependencies():
     # Install py2app and setuptools so py2app has pkg_resources and we avoid Errno 17 duplicate dist-info
     # - setuptools 70.3: has pkg_resources; 71+ causes duplicate dist-info copy; 75+ removes pkg_resources
     # - py2app<0.28.9: 0.28.9 errors when dist has install_requires
-    # - sounddevice: bundled by setup.py, but only in the optional "soundfont" extra
+    # - sounddevice: a project dependency, reinstalled here so py2app can see it
+    #   even if the environment was synced before it was required.
+    #   setup.py includes it, FluidSynth, and music21.lily from bundle_imports.
     # (uv sync removes these again; they are reinstalled on every build)
     pip_install = run_command(
         pip_command(
