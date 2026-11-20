@@ -85,6 +85,45 @@ def test_is_newer(candidate, current, newer):
 
 
 @pytest.mark.parametrize(
+    "candidate, current, newer",
+    [
+        # a candidate's whole purpose is that its testers move on to the
+        # finished release, so this is the case that matters
+        ("1.0.0", "1.0.0rc1", True),
+        ("1.0.0rc2", "1.0.0rc1", True),
+        # ... and nobody on a finished release is sent back to a candidate
+        ("1.0.0rc1", "1.0.0", False),
+        ("1.0.0rc1", "1.0.0rc1", False),
+        ("0.9.9", "1.0.0rc1", False),
+        # alpha before beta before release candidate
+        ("1.0.0b1", "1.0.0a1", True),
+        ("1.0.0rc1", "1.0.0b9", True),
+        # the separators PEP 440 allows
+        ("1.0.0-rc.2", "1.0.0rc1", True),
+        ("1.0.0rc1", "1.0.0-rc.2", False),
+    ],
+)
+def test_is_newer_orders_pre_releases(candidate, current, newer):
+    """1.0.0rc1 < 1.0.0rc2 < 1.0.0, as PEP 440 orders them."""
+    assert upd.is_newer(candidate, current) is newer
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("1.0.0rc1", ((1, 0, 0), 0, 2, 1)),
+        ("v1.0.0", ((1, 0, 0), 1, 0, 0)),
+        ("1.0.0a3", ((1, 0, 0), 0, 0, 3)),
+        ("1.0.0-beta.2", ((1, 0, 0), 0, 1, 2)),
+        ("1.0.0rc", ((1, 0, 0), 0, 2, 0)),
+        ("x", None),
+    ],
+)
+def test_version_key(text, expected):
+    assert upd.version_key(text) == expected
+
+
+@pytest.mark.parametrize(
     "kind, asset",
     [
         (upd.MACOS, "JD-Xi_Editor_0.9.9_MacOS_Universal.pkg"),

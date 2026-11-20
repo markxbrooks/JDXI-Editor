@@ -81,13 +81,53 @@ def parse_version(text: str) -> Optional[tuple[int, ...]]:
     return tuple(int(part) for part in match.group(1).split("."))
 
 
+#: how a pre-release marker ranks: alpha before beta before release candidate
+_PRE_RANK = {"a": 0, "alpha": 0, "b": 1, "beta": 1, "c": 2, "rc": 2, "pre": 2}
+
+#: a release, optionally followed by a pre-release marker: 1.0.0rc1, 1.0.0-rc.1
+_VERSION = re.compile(
+    r"^\s*[vV]?(?P<release>\d+(?:\.\d+)*)"
+    # longest first: "b" would otherwise win against "beta" and swallow it,
+    # leaving the number in "1.0.0-beta.2" unread
+    r"(?:[-_.]?(?P<pre>alpha|beta|pre|rc|a|b|c)[-_.]?(?P<num>\d+)?)?",
+    re.IGNORECASE,
+)
+
+
+def version_key(text: str) -> Optional[tuple]:
+    """
+    A comparable key that orders pre-releases before their own release.
+
+    ``1.0.0rc1 < 1.0.0rc2 < 1.0.0``, as PEP 440 orders them, so a tester
+    running a candidate is still offered the final build. ``parse_version``
+    cannot do this: it reads the numbers only, which makes 1.0.0rc1 and 1.0.0
+    indistinguishable.
+
+    :param text: str a version or tag, e.g. "v1.0.0rc1"
+    :return: tuple | None (release, is_final, pre rank, pre number), or None
+    """
+    match = _VERSION.match(text or "")
+    if not match:
+        return None
+    release = tuple(int(part) for part in match.group("release").split("."))
+    pre = (match.group("pre") or "").lower()
+    if not pre:
+        # 1 sorts a finished release after every candidate for it
+        return (release, 1, 0, 0)
+    return (release, 0, _PRE_RANK.get(pre, 2), int(match.group("num") or 0))
+
+
 def is_newer(candidate: str, current: str) -> bool:
     """True if candidate is a later version than current (0.9.10 > 0.9.9)."""
-    new, old = parse_version(candidate), parse_version(current)
+    new, old = version_key(candidate), version_key(current)
     if new is None or old is None:
         return False
-    width = max(len(new), len(old))
-    return new + (0,) * (width - len(new)) > old + (0,) * (width - len(old))
+    # 1.0 and 1.0.0 are the same release, so pad before comparing
+    new_release, old_release = new[0], old[0]
+    width = max(len(new_release), len(old_release))
+    new = (new_release + (0,) * (width - len(new_release)),) + new[1:]
+    old = (old_release + (0,) * (width - len(old_release)),) + old[1:]
+    return new > old
 
 
 def install_kind() -> str:

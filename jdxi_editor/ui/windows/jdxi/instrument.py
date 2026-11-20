@@ -50,6 +50,7 @@ from PySide6.QtGui import (
     QAction,
     QCloseEvent,
     QDesktopServices,
+    QGuiApplication,
     QKeySequence,
     QMouseEvent,
     QShortcut,
@@ -1164,6 +1165,17 @@ class JDXiInstrument(JDXiWindow):
 
     def _show_midi_config(self) -> None:
         """Show MIDI configuration dialog"""
+        # Offscreen there is nobody to answer a modal dialog, so exec() below
+        # would block for ever. __init__ opens this dialog whenever a JD-Xi was
+        # not auto-connected, which is always the case on a CI runner, under
+        # the test suite, and in scripts/check_installed.py. The editor goes on
+        # starting with MIDI unconfigured, which is what those callers check.
+        if QGuiApplication.platformName() == "offscreen":
+            log.message(
+                scope="JDXiInstrument",
+                message="Offscreen: skipping the MIDI configuration dialog",
+            )
+            return
         try:
             # The splash screen is frameless and always-on-top, so a modal
             # dialog opened while it is up is hidden behind it: the application

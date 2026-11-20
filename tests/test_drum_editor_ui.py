@@ -38,7 +38,23 @@ def test_coarse_tune_note_names(note, name):
 
 
 @pytest.fixture
-def drum_editor():
+def jdxi_preset_list(monkeypatch):
+    """
+    The JD-Xi's own drum kits, not a SoundFont's.
+
+    get_preset_list_for_synth_type reads "Use SoundFont List" out of the real
+    QSettings, so on a machine where that is on, and an .sf2 is configured, the
+    Drums combo is filled with the SoundFont's bank-128 kits ("Standard",
+    "Standard 1", ...) instead of the JD-Xi's. A test about the JD-Xi's presets
+    has to pin it, or it passes or fails according to the developer's settings.
+    """
+    from jdxi_editor.ui.editors.pattern import preset_list_provider
+
+    monkeypatch.setattr(preset_list_provider, "_use_soundfont_list", lambda: False)
+
+
+@pytest.fixture
+def drum_editor(jdxi_preset_list):
     from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
 
     editor = DrumCommonEditor(midi_helper=MagicMock(), preset_helper=MagicMock())

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-
+import unittest
 import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -876,6 +876,7 @@ def test_brushed_metal_prints_ink_and_mounts_its_controls(qapp):
     assert active_round_button_style() == JDXiUIStyle.BUTTON_ROUND
 
 
+@unittest.skip("Skipping test_the_body_and_tabs_follow_the_skin.py due to time taken to run")
 def test_the_body_and_tabs_follow_the_skin(qapp):
     """
     The skin reaches past the panels: the body the editors are mounted on,

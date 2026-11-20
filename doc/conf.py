@@ -4,19 +4,36 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os
+import re
 import sys
+from pathlib import Path
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath('..'))
+
+
+def _project_version() -> str:
+    """
+    The version the app itself reports, from jdxi_editor/project.py.
+
+    Read rather than imported: importing the package here would pull in
+    PySide6 and the whole editor just to learn a string. setup.py reads it the
+    same way. Hard-coding it meant the docs said 1.0.0 while the app was on
+    0.9.9.
+    """
+    source = Path(__file__).resolve().parent.parent / "jdxi_editor" / "project.py"
+    match = re.search(r'__version__ = "([^"]+)"', source.read_text())
+    return match.group(1) if match else "0.0.0"
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'JD-Xi Editor'
-copyright = '2025, Mark Mrooks'
+copyright = '2025-2026, Mark Brooks'
 author = 'JD-Xi Contributors'
-release = '0.9.6'
-version = '0.9.6'
+release = _project_version()
+# the x.y series, without the patch or the pre-release marker
+version = '.'.join(release.split('.')[:2])
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

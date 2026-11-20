@@ -167,8 +167,10 @@ def run_inno_setup(project_root):
     inno_exe = Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe")
     if not inno_exe.exists():
         raise FileNotFoundError(f"Inno Setup compiler not found: {inno_exe}")
-    cmd = [str(inno_exe), str(iss_file)]
-    log.message("Running Inno Setup...")
+    # The version belongs to jdxi_editor/project.py: without this the .iss
+    # fallback is used and every installer is stamped with the same number
+    cmd = [str(inno_exe), f"/DMyAppVersion={VERSION}", str(iss_file)]
+    log.message(f"Running Inno Setup (version {VERSION})...")
     subprocess.run(cmd, check=True)
 
 

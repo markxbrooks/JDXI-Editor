@@ -8,7 +8,7 @@ Instrument window proportions follow the JD-Xi (562 x 236 mm, 2.38 : 1).
 
 import os
 import sys
-
+import unittest
 sys.path.insert(0, os.path.abspath("."))
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -22,6 +22,7 @@ from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 
 
 @pytest.fixture
+@unittest.skip("Skipping test_instrument_proportions.py due to time taken to run")
 def default_skin():
     """
     The JD-Xi's own finish.

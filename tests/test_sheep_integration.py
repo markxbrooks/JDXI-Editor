@@ -122,49 +122,49 @@ class TestSheepIntegration(unittest.TestCase):
         print(f"Found {len(tempo_messages)} tempo changes in MIDI file")
     
     def test_buffer_refill_with_real_midi_file(self):
-        """Test that the transport loads the name with sheep.mid."""
+        """Test that the transport loads the engine with sheep.mid."""
         self.player.transport_controller.load(self.player.midi_state.file)
 
         # Engine should have events after load
         self.assertGreater(len(self.player.playback_engine.events), 0,
-                          "No events in playback name from sheep.mid")
+                          "No events in playback engine from sheep.mid")
 
         print(f"Engine has {len(self.player.playback_engine.events)} events from sheep.mid")
         self.assertGreater(len(self.player.playback_engine._tempo_map), 0,
-                          "No tempo map in name")
+                          "No tempo map in the engine")
         print(f"Engine has {len(self.player.playback_engine._tempo_map)} tempo entries")
     
     def test_tempo_change_timing_calculation(self):
-        """Test that name has tempo map and can compute time from ticks."""
+        """Test that the engine has a tempo map and can compute time from ticks."""
         self.player.transport_controller.load(self.player.midi_state.file)
 
         engine = self.player.playback_engine
-        self.assertGreater(len(engine._tempo_map), 0, "No tempo map in name")
+        self.assertGreater(len(engine._tempo_map), 0, "No tempo map in the engine")
 
-        # Use name's segment-wise time
+        # Use the engine's segment-wise time
         for tick, tempo in sorted(engine._tempo_map.items())[:5]:
             time_sec = engine._tick_to_seconds(tick)
             bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
             print(f"  Tick {tick}, Tempo {tempo} ({bpm:.1f} BPM), Time {time_sec:.2f}s")
     
     def test_transport_drives_player_engine(self):
-        """The transport controller drives the player's playback name."""
+        """The transport controller drives the player's playback engine."""
         self.player.transport_controller.load(self.player.midi_state.file)
 
         engine = self.player.playback_engine
-        self.assertIs(self.player.transport_controller.name, engine)
+        self.assertIs(self.player.transport_controller.engine, engine)
         self.assertGreater(len(engine.events), 0)
         self.assertGreater(engine.duration_seconds, 0.0)
         print(f"Engine has {len(engine.events)} events, {engine.duration_seconds:.1f}s")
 
     def test_playback_simulation_with_real_timing(self):
-        """Test simulated playback by driving the name directly."""
+        """Test simulated playback by driving the engine directly."""
         self.player.transport_controller.load(self.player.midi_state.file)
         engine = self.player.playback_engine
         engine.start(0)
 
         tempo_changes_in_buffer = [(t, tempo) for t, tempo in engine._tempo_map.items() if t > 0]
-        print(f"Found {len(tempo_changes_in_buffer)} tempo changes in name (excluding tick 0)")
+        print(f"Found {len(tempo_changes_in_buffer)} tempo changes in the engine (excluding tick 0)")
 
         start_time = time.time()
         end_time = start_time + 2.0  # Run 2 seconds
