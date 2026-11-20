@@ -2,6 +2,48 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.0rc1] — 2026-11-19
+
+The first candidate for 1.0. Everything a user can see is listed under 0.9.9
+below; this tag adds no features. It exists so installation and JD-Xi hardware
+can be exercised before 1.0, and the app stays **Beta** until that has
+happened: on the machine this was cut from, the MIDI inputs were empty, so
+identity, a program read and write, digital, analog, drums, effects, a
+pattern, and playback to a JD-Xi are all still unverified. Please report what
+you find.
+
+### Fixed
+
+- **picomidi**: Required `>=0.3.0`. The MIDI player's transport imports
+  `picomidi.playback.scheduler` and calls the engine's per-track volume,
+  transpose, and channel map, none of which exist in picomidi 0.2.0. The floor
+  said `>=0.2.0`, so a fresh install resolved to 0.2.0 and the **main window
+  did not import at all**. Only the released 0.9.9 was unaffected.
+- **Update check**: A pre-release is now ordered before its own release, so
+  `1.0.0rc1 < 1.0.0rc2 < 1.0.0`. The version was read as numbers only, which
+  made 1.0.0rc1 and 1.0.0 indistinguishable: a candidate's testers would never
+  have been offered the finished build.
+- **Windows installer**: Stamped with the project's version. `jdxi_editor.iss`
+  carried a hard-coded `0.9.6`, so every installer since has been mislabelled.
+- **Documentation**: The Sphinx build reads the version from
+  `jdxi_editor/project.py`. It claimed `1.0.0` while the app was on 0.9.9.
+- **Offscreen startup**: The MIDI configuration dialog is skipped when there
+  is no display. `__init__` opens it whenever a JD-Xi was not auto-connected,
+  and `exec()` had nobody to answer it, so the test suite and
+  `scripts/check_installed.py` hung instead of finishing.
+
+### Known issues
+
+- **`pip install` on Apple Silicon macOS** fails building PyAudio: PyPI has no
+  macOS arm64 wheel, and on macOS 26/27 the source build cannot link against
+  the newest SDK. The `.dmg` and `.pkg` bundle PyAudio and are unaffected.
+  Build from a checkout with `SDKROOT` pinned to an older SDK — see
+  `deps/wheels/README.md`. Recording will move to `sounddevice`, which needs no
+  compiler, in a later candidate.
+- **The `.deb` version** is `1.0.0rc1`, which dpkg orders *after* `1.0.0`, so
+  `apt` will not upgrade a candidate to the finished release. Reinstall rather
+  than upgrade.
+
 # [0.9.9] — 2026-11
 
 The notes below are everything a user can see since 0.9.8. This build stays **Beta**. A 1.0.0rc1 tag waits on a pass with a connected JD-Xi. On this machine the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
