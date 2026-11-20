@@ -2,6 +2,9 @@
 picoui.skin.render
 Painting from the specs in :mod:`picoui.skin.spec`.
 
+The specs are plain data; their colours are RGBA tuples, and this is where
+they become QColors, at the point each one is painted.
+
 :func:`paint_face`, :func:`paint_ear` and :func:`paint_rail` draw a whole
 faceplate, cheek or rail. They are built on three dispatchers, which pick the
 painter for each spec by its type: :func:`paint_fill` for materials,
@@ -22,7 +25,8 @@ from typing import List
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen
 
-from picoui.skin.gradient import apply_gradient_stops
+from picoui.skin.gradient import RGBA
+from picoui.skin.qt import apply_gradient_stops
 from picoui.skin.spec import (
     Band,
     BrushedFill,
@@ -50,6 +54,11 @@ from picoui.skin.textures import GRAIN_SATIN, brushed_tile, pebble_tile, wood_ti
 #: Screws are left off a cheek shorter than this: they would not read as
 #: screws
 MIN_SCREW_HEIGHT = 34
+
+
+def _q(color: RGBA) -> QColor:
+    """A spec's colour, an RGBA tuple, as the QColor a painter takes."""
+    return QColor(*color)
 
 
 def _tile_height(rect: QRectF) -> int:
@@ -96,12 +105,14 @@ def _(material: WoodFill, painter: QPainter, rect: QRectF) -> None:
 
 @paint_fill.register
 def _(material: SolidFill, painter: QPainter, rect: QRectF) -> None:
-    painter.fillRect(rect, material.color)
+    painter.fillRect(rect, _q(material.color))
 
 
 @paint_fill.register
 def _(material: PebbleFill, painter: QPainter, rect: QRectF) -> None:
-    tile = pebble_tile(material.size, material.color, material.grain)
+    # the tile is cached by its colour as text, which is what it is drawn from
+    colour = "#{:02X}{:02X}{:02X}".format(*material.color[:3])
+    tile = pebble_tile(material.size, colour, material.grain)
     painter.drawTiledPixmap(rect, tile)
 
 
@@ -135,7 +146,7 @@ def _(band: Band, painter: QPainter, rect: QRectF) -> None:
     width = rect.width() / len(band.colors)
     painter.setPen(Qt.PenStyle.NoPen)
     for index, color in enumerate(band.colors):
-        painter.setBrush(color)
+        painter.setBrush(_q(color))
         painter.drawRect(
             QRectF(rect.left() + index * width, top, width, band.thickness)
         )
@@ -172,7 +183,7 @@ def _(band: MaterialBand, painter: QPainter, rect: QRectF) -> None:
 @paint_decoration.register
 def _(rule: Rule, painter: QPainter, rect: QRectF) -> None:
     y = rect.top() + rule.offset if rule.edge == "top" else rect.bottom() - rule.offset
-    painter.setPen(QPen(rule.color, rule.width))
+    painter.setPen(QPen(_q(rule.color), rule.width))
     painter.drawLine(
         QPointF(rect.left() + rule.inset, y), QPointF(rect.right() - rule.inset, y)
     )
@@ -180,7 +191,7 @@ def _(rule: Rule, painter: QPainter, rect: QRectF) -> None:
 
 @paint_decoration.register
 def _(rim: InsetRim, painter: QPainter, rect: QRectF) -> None:
-    pen = QPen(rim.color, rim.width)
+    pen = QPen(_q(rim.color), rim.width)
     pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
     painter.setBrush(Qt.BrushStyle.NoBrush)
     painter.setPen(pen)
@@ -219,7 +230,7 @@ def paint_screw(painter: QPainter, centre: QPointF, radius: float, tint: QColor)
 def _(frame: Frame, painter: QPainter, rect: QRectF) -> None:
     left, top, right, bottom = frame.inset
     painter.setBrush(Qt.BrushStyle.NoBrush)
-    painter.setPen(QPen(frame.color, frame.width))
+    painter.setPen(QPen(_q(frame.color), frame.width))
     painter.drawRect(rect.adjusted(left, top, -right, -bottom))
 
 
@@ -241,18 +252,18 @@ def _(keyboard: Keyboard, painter: QPainter, rect: QRectF) -> None:
     top = _band_top(rect, keyboard.edge, keyboard.offset, keyboard.thickness)
     strip = QRectF(rect.left(), top, rect.width(), keyboard.thickness)
     painter.setPen(Qt.PenStyle.NoPen)
-    painter.setBrush(keyboard.ivory)
+    painter.setBrush(_q(keyboard.ivory))
     painter.drawRect(strip)
 
     whites = 7 * keyboard.octaves
     key = strip.width() / whites
-    painter.setPen(QPen(keyboard.divider, 1))
+    painter.setPen(QPen(_q(keyboard.divider), 1))
     for index in range(1, whites):
         x = strip.left() + index * key
         painter.drawLine(QPointF(x, strip.top()), QPointF(x, strip.bottom()))
 
     painter.setPen(Qt.PenStyle.NoPen)
-    painter.setBrush(keyboard.black)
+    painter.setBrush(_q(keyboard.black))
     half = keyboard.black_width / 2
     for octave in range(keyboard.octaves):
         for white in _BLACK_AFTER:
@@ -271,7 +282,7 @@ def _(keyboard: Keyboard, painter: QPainter, rect: QRectF) -> None:
 def _(row: StepButtons, painter: QPainter, rect: QRectF) -> None:
     top = _band_top(rect, row.edge, row.offset, row.thickness)
     painter.setPen(Qt.PenStyle.NoPen)
-    painter.setBrush(row.background)
+    painter.setBrush(_q(row.background))
     painter.drawRect(QRectF(rect.left(), top, rect.width(), row.thickness))
 
     step = rect.width() / row.count
@@ -283,11 +294,11 @@ def _(row: StepButtons, painter: QPainter, rect: QRectF) -> None:
         first = index % row.group == 0
         gap = row.group_gap if first and row.group_gap is not None else row.gap
         gap += step * row.gap_fraction
-        painter.setBrush(row.colors[index % len(row.colors)])
+        painter.setBrush(_q(row.colors[index % len(row.colors)]))
         painter.drawRect(QRectF(left + gap, buttons, step - gap * 2, height))
         if lights is not None:
             lit = index % lights.every == 0
-            painter.setBrush(lights.on if lit else lights.off)
+            painter.setBrush(_q(lights.on if lit else lights.off))
             painter.drawRect(
                 QRectF(left + step * 0.3, top, max(1.0, step * 0.4), lights.height)
             )
@@ -379,7 +390,7 @@ def _(cord: PatchCord, painter: QPainter, rect: QRectF, side: str) -> None:
     for jack in jacks:
         paint_jack(painter, jack, size)
     left_cheek = side != "right"
-    colour = cord.colors[0 if left_cheek else 1]
+    colour = _q(cord.colors[0 if left_cheek else 1])
     # Bowed toward the outer edge, so the cable clears the panel
     bow = rect.left() + 1.5 if left_cheek else rect.right() - 1.5
     width = min(cord.width, max(2.0, rect.height() * 0.09))
@@ -413,11 +424,11 @@ def _(grille: Grille, painter: QPainter, rect: QRectF, side: str) -> None:
     plate = rect.adjusted(inset_x, inset_y, -inset_x, -inset_y)
     if plate.width() <= 4 or plate.height() <= 8:
         return  # too small to read as a grille
-    painter.setPen(QPen(grille.rim, 1))
-    painter.setBrush(grille.plate)
+    painter.setPen(QPen(_q(grille.rim), 1))
+    painter.setBrush(_q(grille.plate))
     painter.drawRoundedRect(plate, 2, 2)
     painter.setPen(Qt.PenStyle.NoPen)
-    painter.setBrush(grille.holes)
+    painter.setBrush(_q(grille.holes))
     pitch, radius = grille.pitch, grille.hole_radius
     y = plate.top() + pitch / 2
     row = 0
@@ -447,12 +458,13 @@ def _(cable: SaggingCable, painter: QPainter, rect: QRectF, side: str) -> None:
     )
     painter.save()
     painter.setClipRect(rect)
-    paint_cable(painter, path, cable.color, width=cable.width)
+    colour = _q(cable.color)
+    paint_cable(painter, path, colour, width=cable.width)
     painter.restore()
     # Plugged in at each end
     for point in (start, end):
         paint_jack(painter, point, cable.jack_size)
-        paint_plug(painter, point, cable.jack_size, cable.color)
+        paint_plug(painter, point, cable.jack_size, colour)
 
 
 # --- Face and ear -----------------------------------------------------------
@@ -464,7 +476,7 @@ def paint_face(face: FaceSpec, painter: QPainter, rect: QRectF) -> None:
     rounded outline, then the rim, then any overlays.
 
     A face without a material is the base skin's glossy panel, which
-    :class:`~picoui.skin.base.Skin` paints itself; only its overlays are
+    :class:`~picoui.skin.base.JDXiSkin` paints itself; only its overlays are
     drawn here (see :func:`paint_overlays`).
 
     :param face: FaceSpec with a material
@@ -483,7 +495,7 @@ def paint_face(face: FaceSpec, painter: QPainter, rect: QRectF) -> None:
 
     if face.rim is not None:
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(face.rim, 1))
+        painter.setPen(QPen(_q(face.rim), 1))
         painter.drawPath(path)
     paint_overlays(face, painter, rect)
 
@@ -518,22 +530,22 @@ def paint_ear(
     paint_fill(ear.material, painter, rect)
     if ear.wash is not None:
         painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(ear.wash)
+        painter.setBrush(_q(ear.wash))
         painter.drawRect(rect)
     if ear.seam is not None:
-        painter.setPen(QPen(ear.seam, 1))
+        painter.setPen(QPen(_q(ear.seam), 1))
         inner = rect.right() if side == "left" else rect.left()
         painter.drawLine(QPointF(inner, rect.top()), QPointF(inner, rect.bottom()))
     for detail in ear.details:
         paint_detail(detail, painter, rect, side)
     if ear.rim is not None:
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.setPen(QPen(ear.rim, 1))
+        painter.setPen(QPen(_q(ear.rim), 1))
         painter.drawRect(rect)
     if ear.screw is not None and rect.height() >= MIN_SCREW_HEIGHT:
         x = rect.center().x()
         for y in (rect.top() + ear.screw_inset, rect.bottom() - ear.screw_inset):
-            paint_screw(painter, QPointF(x, y), ear.screw_radius, ear.screw)
+            paint_screw(painter, QPointF(x, y), ear.screw_radius, _q(ear.screw))
     painter.restore()
 
 
@@ -549,7 +561,7 @@ def paint_rail(rail: RailSpec, painter: QPainter, rect: QRectF) -> None:
     painter.save()
     paint_fill(rail.material, painter, rect)
     if rail.line is not None:
-        painter.setPen(QPen(rail.line, 1))
+        painter.setPen(QPen(_q(rail.line), 1))
         painter.drawLine(rect.topLeft(), rect.topRight())
     for detail in rail.details:
         paint_detail(detail, painter, rect, "rail")

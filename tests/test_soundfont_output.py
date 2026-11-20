@@ -12,7 +12,9 @@ from jdxi_editor.audio.audio_snapshot import SAMPLE_RATE
 from jdxi_editor.audio.soundfont_output import (
     BLOCK_FRAMES,
     SoundfontOutput,
+    chosen_output,
     copy_s16,
+    opened_output_name,
     output_devices,
 )
 
@@ -43,6 +45,27 @@ def test_the_device_list_keeps_outputs_and_their_indexes():
     assert output_devices(module=None) == []
     live = output_devices()
     assert all(isinstance(name, str) and isinstance(index, int) for name, index in live)
+
+
+def test_a_current_output_wins_and_an_unknown_one_falls_back():
+    labels = ["External Headphones", "MacBook Pro Speakers"]
+    assert chosen_output("External Headphones", "", labels) == "External Headphones"
+    assert (
+        chosen_output("External Headphones", "MacBook Pro Speakers", labels)
+        == "External Headphones"
+    )
+    assert chosen_output("", "MacBook Pro Speakers", labels) == "MacBook Pro Speakers"
+    assert chosen_output("Gone", "Also gone", labels) == ""
+    assert chosen_output("(Default)", "MacBook Pro Speakers", labels) == ""
+
+
+def test_the_status_name_comes_from_the_stream_device():
+    devices = [("External Headphones", 1), ("MacBook Pro Speakers", 3)]
+    player = SoundfontOutput(threading.RLock())
+    player._stream = type("Stream", (), {"device": 1})()
+    assert player.opened_device() == 1
+    assert opened_output_name(player.opened_device(), devices) == "External Headphones"
+    assert opened_output_name(None, devices) == ""
 
 
 def test_start_opens_the_chosen_index_without_starting_the_synth_driver():

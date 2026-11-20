@@ -208,7 +208,7 @@ class PlaylistEditor(QWidget):
         self.playlist_progress = PlaylistProgressWidget()
         self.playlist_progress.song_clicked.connect(self._play_song)
         # ... on a rack faceplate, like the other editors' displays. The
-        # default skin is that same glossy black panel; the Rack Skin setting
+        # default skin is that same glossy black panel; the Rack JDXiSkin setting
         # swaps it for the JD-Xi rackmount or brushed metal faceplate.
         self.playlist_progress_panel = RackPanel(self.playlist_progress)
         layout.addWidget(self.playlist_progress_panel)

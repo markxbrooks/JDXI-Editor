@@ -6,9 +6,9 @@ The look of a panel, as an object: the faceplate painted behind the content,
 any rack ears beside it, and the palette its display picks up.
 
 A skin owns chrome only, never layout. The room it is allowed to take is the
-three numbers it declares -- :attr:`RackSkin.ear_width`, :attr:`RackSkin.bezel`
-and :attr:`RackSkin.rail_height` -- which
-:meth:`RackSkin.content_margins` turns into the margins
+three numbers it declares -- :attr:`JDXiSkin.ear_width`, :attr:`JDXiSkin.bezel`
+and :attr:`JDXiSkin.rail_height` -- which
+:meth:`JDXiSkin.content_margins` turns into the margins
 :class:`~jdxi_editor.ui.widgets.rack.panel.RackPanel` sets on its layout.
 Everything left over belongs to the content, so a skin cannot quietly grow.
 
@@ -25,13 +25,13 @@ A skin drives three things:
 - the colours of the LCD widgets, so a brushed aluminium faceplate is not left
   with a Roland-orange display.
 
-The reusable part -- the :class:`~picoui.skin.Skin` base, its palettes and
+The reusable part -- the :class:`~picoui.skin.JDXiSkin` base, its palettes and
 textures, the :class:`~picoui.skin.SkinRegistry` and the RackPanel / RackEars
 widgets -- lives in :mod:`picoui.skin`. This module holds the editor's own
 skins, its :data:`REGISTRY` of them, and the restyling the editor needs when
 the skin changes (the registry's listener).
 
-Adding one means subclassing :class:`RackSkin`, declaring those three numbers
+Adding one means subclassing :class:`JDXiSkin`, declaring those three numbers
 and its look -- a :class:`~picoui.skin.spec.FaceSpec` as ``face`` and an
 :class:`~picoui.skin.spec.EarSpec` as ``ear`` -- then adding it to
 :data:`REGISTRY`. The machine details are specs too (the TB-303's keyboard,
@@ -89,11 +89,8 @@ from picoui.skin.spec import (  # noqa: F401
     Wash,
     WoodFill,
 )
-from picoui.skin.gradient import (  # noqa: F401
-    GradientColorStops,
-    GradientStop,
-    apply_gradient_stops,
-)
+from picoui.skin.gradient import GradientColorStops, GradientStop
+from picoui.skin.qt import rgba
 from picoui.skin.textures import (  # noqa: F401
     ALUMINIUM,
     GRAIN_SATIN,
@@ -105,8 +102,13 @@ from picoui.skin.textures import (  # noqa: F401
     wood_tile as _wood_tile,
 )
 
+
 #: QSettings key holding the chosen skin's id
 SKIN_SETTING = "ui/skin"
+
+#: The editor's illuminated red (AppEditorStyle.ACCENT): the accent of the
+#: skins whose machines have no colour of their own to lend
+EDITOR_ACCENT = "#E04435"
 
 
 #: The JD-Xi's orange-on-dark-red display
@@ -225,12 +227,12 @@ class LaneStyle:
 PLAIN_LANES = LaneStyle()
 
 
-class RackSkin(Skin):
+class JDXiSkin(Skin):
     """
     The JD-Xi's shiny black panel, and the base every editor skin extends.
 
     The painting, margins and palette machinery are picoui's
-    :class:`~picoui.skin.Skin`; what is added here is the JD-Xi's own display
+    :class:`~picoui.skin.JDXiSkin`; what is added here is the JD-Xi's own display
     and the editor's features a skin chooses: its :attr:`meter` style on the
     Audio Monitor and its :attr:`lanes` in the MIDI player.
     """
@@ -246,13 +248,13 @@ class RackSkin(Skin):
 #: The JDXV's lit chamfer, from the top edge down
 JDXV_CHAMFER = GradientColorStops(
     (
-        GradientStop(0.0, QColor(126, 132, 140)),
-        GradientStop(1.0, QColor(74, 78, 85)),
+        GradientStop(0.0, (126, 132, 140)),
+        GradientStop(1.0, (74, 78, 85)),
     )
 )
 
 
-class JdxiRackSkin(RackSkin):
+class JdxiRackSkin(JDXiSkin):
     """
     The JD-Xi as a 1U rack unit, after the JDXV: brushed gunmetal rather than
     the shiny black plastic, a lit chamfer along the top, a red stripe along
@@ -275,11 +277,11 @@ class JdxiRackSkin(RackSkin):
     rail_height = 0
     lcd = JDXV_BLUE_LCD
     #: the illuminated red of the stripe (AppEditorStyle.ACCENT)
+    rail_color = EDITOR_ACCENT
     chassis = Chassis(
         body="#2A2C30", surface="#202225", surface_alt="#292C30",
-        border="#3A3D42", accent="#E04435",
+        border="#3A3D42", accent=rail_color,
     )
-    rail_color = "#E04435"
     #: thickness of that stripe, within the nine-slice bottom edge
     #: (editor_style.SHEEN_SLICE_BOTTOM), leaving room for the rim below it
     rail_thickness = 4
@@ -307,16 +309,24 @@ class JdxiRackSkin(RackSkin):
     )
 
 
+#: The satin aluminium's shades, by role: the faceplate's highlight, base
+#: and shadow (the stops of picoui's ALUMINIUM), and the darker metal of the
+#: chassis and the cheeks' outer edge
+SATIN_HIGHLIGHT = "#C5C5C1"
+SATIN_BASE = "#A6A6A3"
+SATIN_SHADOW = "#777875"
+SATIN_DARK = "#8A8A87"
+
 #: The brushed-aluminium cheeks, shading across from their outer edge
 BRUSHED_70S_COLOR_STOPS = GradientColorStops(
     stops=(
-        GradientStop(0.0, QColor(138, 138, 135)),
-        GradientStop(1.0, QColor(166, 166, 163)),
+        GradientStop(0.0, SATIN_DARK),
+        GradientStop(1.0, SATIN_BASE),
     )
 )
 
 
-class Brushed70sSkin(RackSkin):
+class Brushed70sSkin(JDXiSkin):
     """
     Satin-finished aluminium with a green display, as 1970s rack gear had.
 
@@ -341,13 +351,13 @@ class Brushed70sSkin(RackSkin):
     #: The cards lie on the same satin aluminium as the faceplate, not wood
     lanes = LaneStyle(cards=True, backing=BrushedFill(ALUMINIUM, grain=4, coverage=0.35))
     chassis = Chassis(
-        body="#8A8A87", surface="#101010", surface_alt="#191919",
-        border="#4A4A47", accent="#E04435",
+        body=SATIN_DARK, surface="#101010", surface_alt="#191919",
+        border="#4A4A47", accent=EDITOR_ACCENT,
     )
     #: the chassis, for anything wanting to match it
-    base_color = "#A6A6A3"
-    highlight_color = "#C5C5C1"
-    shadow_color = "#777875"
+    base_color = SATIN_BASE
+    highlight_color = SATIN_HIGHLIGHT
+    shadow_color = SATIN_SHADOW
     face = FaceSpec(
         # Grain about 70% quieter than GRAIN_SATIN, and only on some rows,
         # so the brushing shows up close and the gradient carries the metal.
@@ -358,15 +368,15 @@ class Brushed70sSkin(RackSkin):
         decorations=(
             Rule("top", 1, (230, 230, 226), width=2),
             Rule("top", 3.5, (242, 242, 238, 150), width=2),
-            Rule("bottom", 2, (119, 120, 117), width=2),
+            Rule("bottom", 2, shadow_color, width=2),
             Rule("bottom", 4.5, (90, 91, 88, 170), width=2),
         ),
-        rim=(119, 120, 117),
+        rim=shadow_color,
     )
     ear = EarSpec(
         GradientFill(BRUSHED_70S_COLOR_STOPS, direction="horizontal"),
-        rim=(119, 120, 117),
-        screw=(197, 197, 193),
+        rim=shadow_color,
+        screw=highlight_color,
         screw_radius=4.5,
     )
 
@@ -374,9 +384,9 @@ class Brushed70sSkin(RackSkin):
 #: The Juno-106's end cheeks: a redder, sunlit mahogany than the walnut above
 JUNO_WOOD = GradientColorStops(
     (
-        GradientStop(0.0, QColor(176, 102, 52)),
-        GradientStop(0.45, QColor(146, 78, 38)),
-        GradientStop(1.0, QColor(102, 50, 24)),
+        GradientStop(0.0, (176, 102, 52)),
+        GradientStop(0.45, (146, 78, 38)),
+        GradientStop(1.0, (102, 50, 24)),
     )
 )
 
@@ -384,14 +394,14 @@ JUNO_WOOD = GradientColorStops(
 #: Ivory painted steel, top to bottom
 IVORY_PAINT = GradientColorStops(
     (
-        GradientStop(0.0, QColor(243, 238, 227)),
-        GradientStop(0.45, QColor(232, 225, 210)),
-        GradientStop(1.0, QColor(208, 199, 181)),
+        GradientStop(0.0, (243, 238, 227)),
+        GradientStop(0.45, (232, 225, 210)),
+        GradientStop(1.0, (208, 199, 181)),
     )
 )
 
 
-class IvoryWalnutSkin(RackSkin):
+class IvoryWalnutSkin(JDXiSkin):
     """
     Ivory painted steel with walnut end cheeks, as on 1970s studio gear.
 
@@ -410,16 +420,18 @@ class IvoryWalnutSkin(RackSkin):
         text="#22201C", text_secondary="#5F584C", rule="#B9AE99"
     )
     #: the walnut pinstripe along the bottom, this skin's signature
+    stripe_color = "#684022"
     chassis = Chassis(
         body="#CFC7B6", surface="#241F18", surface_alt="#2F2920",
-        border="#5A5043", accent="#684022",
+        border="#5A5043", accent=stripe_color,
     )
-    stripe_color = "#684022"
     stripe_thickness = 2
+    #: where the panel's top edge catches the light
+    highlight_color = (255, 253, 248)
     face = FaceSpec(
         material=GradientFill(IVORY_PAINT),
         decorations=(
-            Rule("top", 0.5, (255, 253, 248)),
+            Rule("top", 0.5, highlight_color),
             Rule("bottom", 3.5, (168, 158, 140)),
             Band("bottom", stripe_thickness, (stripe_color,)),
         ),
@@ -431,14 +443,14 @@ class IvoryWalnutSkin(RackSkin):
 #: The TR-808's matte charcoal, top to bottom
 TR808_CHARCOAL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(52, 53, 56)),
-        GradientStop(0.5, QColor(42, 43, 45)),
-        GradientStop(1.0, QColor(33, 34, 36)),
+        GradientStop(0.0, (52, 53, 56)),
+        GradientStop(0.5, (42, 43, 45)),
+        GradientStop(1.0, (33, 34, 36)),
     )
 )
 
 
-class Tr808Skin(RackSkin):
+class Tr808Skin(JDXiSkin):
     """
     The TR-808: matte charcoal, orange silkscreen, teak cheeks, and the
     step-button run of red, orange, yellow and white along the bottom.
@@ -458,11 +470,11 @@ class Tr808Skin(RackSkin):
         text="#E8E4DA", text_secondary="#A09A8E", rule="#4A4B4D"
     )
     #: the Roland orange of the lettering and the rule under it
+    accent_color = "#E8622A"
     chassis = Chassis(
         body="#232426", surface="#1C1D1F", surface_alt="#27282B",
-        border="#3A3B3E", accent="#E8622A",
+        border="#3A3B3E", accent=accent_color,
     )
-    accent_color = "#E8622A"
     #: the four step-button colours, left to right
     step_colors = ("#E33B2E", "#EE7B2C", "#EFC93F", "#EDE9DC")
     step_band = 4
@@ -484,13 +496,13 @@ class Tr808Skin(RackSkin):
 #: The TB-303's painted cheeks, across from their outer edge
 TB303_CHEEK = GradientColorStops(
     (
-        GradientStop(0.0, QColor(126, 132, 130)),
-        GradientStop(1.0, QColor(152, 158, 156)),
+        GradientStop(0.0, (126, 132, 130)),
+        GradientStop(1.0, (152, 158, 156)),
     )
 )
 
 
-class Tb303Skin(RackSkin):
+class Tb303Skin(JDXiSkin):
     """
     The TB-303 Bass Line: the silver box, orange knob line, red LED numerals
     and the little keyboard of step buttons along the bottom.
@@ -511,11 +523,11 @@ class Tb303Skin(RackSkin):
         text="#1E1E1C", text_secondary="#35342F", rule="#6E7472"
     )
     #: the orange of the Bass Line knobs
+    accent_color = "#E87328"
     chassis = Chassis(
         body="#8A8F8D", surface="#232524", surface_alt="#2E312F",
-        border="#4A4E4C", accent="#E87328",
+        border="#4A4E4C", accent=accent_color,
     )
-    accent_color = "#E87328"
     #: the step buttons' keyboard: ivory keys, black keys, and their shadow
     key_ivory = "#E6E3D8"
     key_black = "#1A1A1A"
@@ -526,15 +538,17 @@ class Tb303Skin(RackSkin):
     #: flat painted metal: a cool grey, no grain, top to bottom
     panel_stops = GradientColorStops(
         (
-            GradientStop(0.0, QColor(168, 173, 171)),
-            GradientStop(0.45, QColor(142, 148, 146)),
-            GradientStop(1.0, QColor(110, 116, 114)),
+            GradientStop(0.0, (168, 173, 171)),
+            GradientStop(0.45, (142, 148, 146)),
+            GradientStop(1.0, (110, 116, 114)),
         )
     )
+    #: where the panel's top edge catches the light
+    highlight_color = (206, 210, 208)
     face = FaceSpec(
         material=GradientFill(panel_stops),
         decorations=(
-            Rule("top", 0.5, (206, 210, 208)),
+            Rule("top", 0.5, highlight_color),
             # The orange line the knobs stand on
             Rule("top", 2.5, accent_color),
             # The step buttons, laid out as the keyboard they are
@@ -553,22 +567,22 @@ class Tb303Skin(RackSkin):
 #: The TR-909's light grey painted steel, top to bottom
 TR909_STEEL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(214, 214, 209)),
-        GradientStop(0.45, QColor(198, 198, 193)),
-        GradientStop(1.0, QColor(168, 168, 163)),
+        GradientStop(0.0, (214, 214, 209)),
+        GradientStop(0.45, (198, 198, 193)),
+        GradientStop(1.0, (168, 168, 163)),
     )
 )
 
 #: Its dark moulded cheeks, across from their outer edge
 TR909_CHEEK = GradientColorStops(
     (
-        GradientStop(0.0, QColor(62, 62, 60)),
-        GradientStop(1.0, QColor(44, 44, 42)),
+        GradientStop(0.0, (62, 62, 60)),
+        GradientStop(1.0, (44, 44, 42)),
     )
 )
 
 
-class Tr909Skin(RackSkin):
+class Tr909Skin(JDXiSkin):
     """
     The TR-909: a light grey box with blue silkscreen, dark end cheeks, and
     the sixteen cream step buttons with a red LED over each one.
@@ -588,11 +602,11 @@ class Tr909Skin(RackSkin):
         text="#1E1E1C", text_secondary="#35342F", rule="#9A9A95"
     )
     #: the blue of the 909's silkscreen groupings
+    accent_color = "#2C6AB0"
     chassis = Chassis(
         body="#9A9A95", surface="#232423", surface_alt="#2E2F2E",
-        border="#4C4D4B", accent="#2C6AB0",
+        border="#4C4D4B", accent=accent_color,
     )
-    accent_color = "#2C6AB0"
     #: the step buttons, their lights, and the strip they sit in
     button_color = "#E8E6DC"
     led_color = "#FF3A20"
@@ -604,11 +618,13 @@ class Tr909Skin(RackSkin):
     #: sixteen steps, in four groups of four
     steps = 16
     steps_per_group = 4
+    #: where the panel's top edge catches the light
+    highlight_color = (238, 238, 234)
     face = FaceSpec(
         # Light grey painted steel, flat
         material=GradientFill(TR909_STEEL),
         decorations=(
-            Rule("top", 0.5, (238, 238, 234)),
+            Rule("top", 0.5, highlight_color),
             # The blue rule the groups are printed against
             Rule("top", 2.5, accent_color),
             # The step buttons, each under its own light, with a wider gap
@@ -638,13 +654,25 @@ class Tr909Skin(RackSkin):
         screw_inset=11,
     )
 
-#: The TR-1000's display, taken in the panel's warm white on charcoal. The
-#: colours of this skin are an interpretation, not sampled from the hardware.
+#: The TR-1000's colours that more than one part shares. They are an
+#: interpretation of the machine, not sampled from the hardware.
+#: The warm white of its lettering, which its display takes too
+TR1000_LETTERING = "#F0EEE8"
+#: The red of its top rule and of the chassis accent
+TR1000_ACCENT = "#E64A32"
+#: The rule between sections, and the chassis border
+TR1000_RULE = "#484B4E"
+#: The dark cheeks, lit edge and shadowed edge; the lit one is also the
+#: strip behind the step buttons, the deep one the chassis surface
+TR1000_CHEEK_LIGHT = "#35383B"
+TR1000_CHEEK_DEEP = "#25282B"
+
+#: The TR-1000's display: its lettering on charcoal
 TR1000_LCD = LcdPalette(
     bg_edge="#0F1011",
     bg_mid="#1B1D1F",
     bg_glow="#2A2D30",
-    text="#F0EEE8",
+    text=TR1000_LETTERING,
     text_dim="#9A9893",
 )
 
@@ -660,13 +688,13 @@ TR1000_PANEL = GradientColorStops(
 #: Its dark cheeks, across from their outer edge
 TR1000_CHEEK = GradientColorStops(
     (
-        GradientStop(0.0, "#35383B"),
-        GradientStop(1.0, "#25282B"),
+        GradientStop(0.0, TR1000_CHEEK_LIGHT),
+        GradientStop(1.0, TR1000_CHEEK_DEEP),
     )
 )
 
 
-class Tr1000Skin(RackSkin):
+class Tr1000Skin(JDXiSkin):
     """
     The TR-1000: a modern rhythm machine in mid grey, with dark cheeks, a
     red rule and the sixteen step buttons with a light over each one.
@@ -682,33 +710,42 @@ class Tr1000Skin(RackSkin):
     rail_height = 0
     lcd = TR1000_LCD
     foreground = Foreground(
-        text="#F0EEE8", text_secondary="#CFCDC7", rule="#484B4E"
+        text=TR1000_LETTERING, text_secondary="#CFCDC7", rule=TR1000_RULE
     )
     chassis = Chassis(
-        body="#626568", surface="#25282B", surface_alt="#303336",
-        border="#484B4E", accent="#E64A32",
+        body="#626568", surface=TR1000_CHEEK_DEEP, surface_alt="#303336",
+        border=TR1000_RULE, accent=TR1000_ACCENT,
     )
+    #: where the panel's top edge catches the light
+    highlight_color = "#96999B"
+    #: the step buttons and the lights over them, as on the TR-909
+    button_color = "#E6E3DB"
+    led_color = "#F04430"
+    led_off_color = "#351914"
     #: the step row: lights above the buttons, inside the nine-slice bottom
     #: edge (editor_style.SHEEN_SLICE_BOTTOM)
     led_band = 2
     button_band = 4
     steps = 16
+    steps_per_group = 4
     face = FaceSpec(
         material=GradientFill(TR1000_PANEL),
         decorations=(
-            Rule("top", 0.5, "#96999B"),
-            Rule("top", 2.5, "#E64A32"),
+            Rule("top", 0.5, highlight_color),
+            Rule("top", 2.5, TR1000_ACCENT),
             StepButtons(
                 led_band + button_band,
                 steps,
-                ("#E6E3DB",),
-                "#35383B",
-                group=4,
+                (button_color,),
+                TR1000_CHEEK_LIGHT,
+                group=steps_per_group,
                 gap=0.8,
                 group_gap=1.6,
                 # below the lights, not over them
                 button_top=led_band,
-                lights=StepLights(led_band, "#F04430", "#351914"),
+                lights=StepLights(
+                    led_band, led_color, led_off_color, every=steps_per_group
+                ),
             ),
         ),
         rim="#383B3E",
@@ -724,22 +761,22 @@ class Tr1000Skin(RackSkin):
 #: The light falling down the Jupiter-8's textured panel
 JP8_SHADE = GradientColorStops(
     (
-        GradientStop(0.0, QColor(255, 255, 255, 10)),
-        GradientStop(1.0, QColor(0, 0, 0, 40)),
+        GradientStop(0.0, (255, 255, 255, 10)),
+        GradientStop(1.0, (0, 0, 0, 40)),
     )
 )
 
 #: Its silver end cheeks, top to bottom
 JP8_CHEEK = GradientColorStops(
     (
-        GradientStop(0.0, QColor(208, 208, 204)),
-        GradientStop(0.5, QColor(188, 188, 184)),
-        GradientStop(1.0, QColor(168, 168, 164)),
+        GradientStop(0.0, (208, 208, 204)),
+        GradientStop(0.5, (188, 188, 184)),
+        GradientStop(1.0, (168, 168, 164)),
     )
 )
 
 
-class Jupiter8Skin(RackSkin):
+class Jupiter8Skin(JDXiSkin):
     """
     The Jupiter-8: a textured near-black panel under bold red section bars,
     with the run of coloured patch buttons along the bottom.
@@ -757,12 +794,12 @@ class Jupiter8Skin(RackSkin):
     rail_height = 0
     lcd = LED_JP8_LCD
     foreground = LIGHT_LETTERING
-    chassis = Chassis(
-        body="#1F1F1F", surface="#1A1A1A", surface_alt="#252525",
-        border="#3A3A3A", accent="#E03A20",
-    )
     #: the red of the section headers
     header_color = "#E03A20"
+    chassis = Chassis(
+        body="#1F1F1F", surface="#1A1A1A", surface_alt="#252525",
+        border="#3A3A3A", accent=header_color,
+    )
     #: how much of the top edge that bar takes (editor_style.SHEEN_SLICE_TOP)
     header_band = 3
     #: the patch buttons, in the order they run across the panel
@@ -807,13 +844,13 @@ class Jupiter8Skin(RackSkin):
 #: The red JD-Xi's body, across a cheek from its outer edge
 JDXI_RED_BODY = GradientColorStops(
     (
-        GradientStop(0.0, QColor(196, 28, 25)),
-        GradientStop(1.0, QColor(168, 24, 21)),
+        GradientStop(0.0, (196, 28, 25)),
+        GradientStop(1.0, (168, 24, 21)),
     )
 )
 
 
-class RedJdxiSkin(RackSkin):
+class RedJdxiSkin(JDXiSkin):
     """
     The red JD-Xi: the same glossy black control panel, set into a scarlet
     body instead of the matte black one.
@@ -831,15 +868,18 @@ class RedJdxiSkin(RackSkin):
     bezel = 6
     rail_height = 0
     lcd = ROLAND_LCD
+    #: the scarlet body, and the darker red of the rules and borders on it
+    body_color = "#D81F1C"
+    rule_color = "#8A2A26"
     foreground = Foreground(
-        text="#FFFFFF", text_secondary="#F3D3D1", rule="#8A2A26"
+        text="#FFFFFF", text_secondary="#F3D3D1", rule=rule_color
     )
     chassis = Chassis(
-        body="#D81F1C", surface="#1A1A1A", surface_alt="#262626",
-        border="#8A2A26", accent="#FF5247",
+        body=body_color, surface="#1A1A1A", surface_alt="#262626",
+        border=rule_color, accent="#FF5247",
     )
     #: the body showing around the inset panel
-    rim_color = "#D81F1C"
+    rim_color = body_color
     rim_width = 2
     #: the glossy panel, with the red body showing round it
     face = FaceSpec(overlays=(InsetRim(rim_color, rim_width, radius=2),))
@@ -851,16 +891,17 @@ class RedJdxiSkin(RackSkin):
         screw_inset=11,
     )
 
+
 #: The white JD-Xi's body, across a cheek from its outer edge
 JDXI_WHITE_BODY = GradientColorStops(
     (
-        GradientStop(0.0, QColor(228, 228, 224)),
-        GradientStop(1.0, QColor(246, 246, 243)),
+        GradientStop(0.0, (228, 228, 224)),
+        GradientStop(1.0, (246, 246, 243)),
     )
 )
 
 
-class WhiteJdxiSkin(RackSkin):
+class WhiteJdxiSkin(JDXiSkin):
     """
     The white JD-Xi: a silver control panel set into a white body.
 
@@ -880,13 +921,13 @@ class WhiteJdxiSkin(RackSkin):
     foreground = DARK_LETTERING
     chassis = Chassis(
         body="#EFEFEC", surface="#1E1E1E", surface_alt="#2A2A2A",
-        border="#B8B8B2", accent="#E04435",
+        border="#B8B8B2", accent=EDITOR_ACCENT,
     )
     face_stops = GradientColorStops(
         (
-            GradientStop(0.0, QColor(226, 231, 235)),
-            GradientStop(0.5, QColor(208, 213, 217)),
-            GradientStop(1.0, QColor(184, 190, 195)),
+            GradientStop(0.0, (226, 231, 235)),
+            GradientStop(0.5, (208, 213, 217)),
+            GradientStop(1.0, (184, 190, 195)),
         )
     )
     face_rim = "#8E979B"
@@ -903,14 +944,14 @@ class WhiteJdxiSkin(RackSkin):
 #: The Juno-106's matte slate panel, top to bottom
 JUNO_SLATE = GradientColorStops(
     (
-        GradientStop(0.0, QColor(62, 66, 70)),
-        GradientStop(0.55, QColor(54, 58, 62)),
-        GradientStop(1.0, QColor(44, 48, 52)),
+        GradientStop(0.0, (62, 66, 70)),
+        GradientStop(0.55, (54, 58, 62)),
+        GradientStop(1.0, (44, 48, 52)),
     )
 )
 
 
-class Juno106Skin(RackSkin):
+class Juno106Skin(JDXiSkin):
     """
     The Juno-106: a matte slate panel, a red bar and a blue bar along the
     top, and wooden end cheeks.
@@ -927,13 +968,13 @@ class Juno106Skin(RackSkin):
     rail_height = 0
     lcd = JUNO_LCD
     foreground = LIGHT_LETTERING
-    chassis = Chassis(
-        body="#2E3236", surface="#141618", surface_alt="#1E2226",
-        border="#4A4E52", accent="#D4202A",
-    )
     #: the red and blue section rules, top to bottom
     red_bar = "#D4202A"
     blue_bar = "#2F6FBE"
+    chassis = Chassis(
+        body="#2E3236", surface="#141618", surface_alt="#1E2226",
+        border="#4A4E52", accent=red_bar,
+    )
     #: each bar's thickness, together inside editor_style.SHEEN_SLICE_TOP
     bar = 2
     face = FaceSpec(
@@ -947,12 +988,13 @@ class Juno106Skin(RackSkin):
     #: A mahogany end cheek, with the dark screws the Juno uses
     ear = EarSpec(WoodFill(JUNO_WOOD), rim=(62, 32, 16), screw=(36, 32, 28))
 
+
 #: The Minimoog's cabinet, taken from the lit rail: a honey walnut
 MINI_WOOD = GradientColorStops(
     (
-        GradientStop(0.0, QColor(206, 156, 112)),
-        GradientStop(0.45, QColor(186, 128, 86)),
-        GradientStop(1.0, QColor(140, 88, 52)),
+        GradientStop(0.0, (206, 156, 112)),
+        GradientStop(0.45, (186, 128, 86)),
+        GradientStop(1.0, (140, 88, 52)),
     )
 )
 
@@ -970,14 +1012,14 @@ MINI_LCD = LcdPalette(
 #: The Minimoog's black panel, top to bottom
 MINI_PANEL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(36, 34, 32)),
-        GradientStop(0.55, QColor(22, 20, 18)),
-        GradientStop(1.0, QColor(12, 10, 9)),
+        GradientStop(0.0, (36, 34, 32)),
+        GradientStop(0.55, (22, 20, 18)),
+        GradientStop(1.0, (12, 10, 9)),
     )
 )
 
 
-class MiniMoogSkin(RackSkin):
+class MiniMoogSkin(JDXiSkin):
     """
     The Minimoog: a matte black panel set in a walnut cabinet.
 
@@ -1002,11 +1044,13 @@ class MiniMoogSkin(RackSkin):
     )
     #: How much of the top slice is the cabinet lip, inside SHEEN_SLICE_TOP
     lip = 4
+    #: the dark seam where the wood meets the panel, above and below it
+    seam_color = "#301C10"
     face = FaceSpec(
         material=GradientFill(MINI_PANEL),
         decorations=(
             MaterialBand("top", lip, WoodFill(MINI_WOOD)),
-            Rule("top", lip, (48, 28, 16), inset=0),
+            Rule("top", lip, seam_color, inset=0),
         ),
         rim=(8, 7, 6),
     )
@@ -1017,7 +1061,7 @@ class MiniMoogSkin(RackSkin):
         """The wooden rail under the panel, the same plank as the cheeks."""
         span = max(1, int(round(rect.bottom())))
         painter.drawTiledPixmap(rect, _wood_tile(span, MINI_WOOD))
-        painter.setPen(QPen(QColor(48, 28, 16), 1))
+        painter.setPen(QPen(QColor(self.seam_color), 1))
         painter.drawLine(rect.topLeft(), rect.topRight())
 
 
@@ -1034,18 +1078,20 @@ OLED_LCD = LcdPalette(
 #: The MC-101's matte black moulding, top to bottom
 MC101_BODY = GradientColorStops(
     (
-        GradientStop(0.0, QColor(40, 41, 44)),
-        GradientStop(0.5, QColor(30, 31, 34)),
-        GradientStop(1.0, QColor(22, 23, 25)),
+        GradientStop(0.0, (40, 41, 44)),
+        GradientStop(0.5, (30, 31, 34)),
+        GradientStop(1.0, (22, 23, 25)),
     )
 )
 
+#: The MC-101's sides: darkest at each edge, where they turn away from the light
+MC101_SIDE_EDGE = "#141517"
 #: Its rounded sides, across the curve
 MC101_SIDE = GradientColorStops(
     (
-        GradientStop(0.0, QColor(20, 21, 23)),
-        GradientStop(0.5, QColor(34, 35, 38)),
-        GradientStop(1.0, QColor(20, 21, 23)),
+        GradientStop(0.0, MC101_SIDE_EDGE),
+        GradientStop(0.5, "#222326"),
+        GradientStop(1.0, MC101_SIDE_EDGE),
     )
 )
 
@@ -1070,7 +1116,7 @@ def group_colors(colors, per_group: int, count: int, dim: int = 190) -> tuple:
     return tuple(result)
 
 
-class Mc101Skin(RackSkin):
+class Mc101Skin(JDXiSkin):
     """
     The MC-101 groovebox: a compact matte black body, a white OLED, and the
     sixteen backlit step pads along its front edge.
@@ -1089,13 +1135,14 @@ class Mc101Skin(RackSkin):
     rail_height = 0
     lcd = OLED_LCD
     foreground = LIGHT_LETTERING
-    chassis = Chassis(
-        body="#18191B", surface="#0E0F10", surface_alt="#1B1C1F",
-        border="#36383C", accent="#18C8E8",
-    )
     #: the pads' lit colours, one per group of four steps
     pad_colors = ("#18C8E8", "#F23C8C", "#FFB000", "#5ADC3C")
-    #: an unlit pad, and the slot the pads sit in
+    chassis = Chassis(
+        body="#18191B", surface="#0E0F10", surface_alt="#1B1C1F",
+        border="#36383C", accent=pad_colors[0],
+    )
+    #: an unlit pad, and the slot the pads sit in, whose black also
+    #: outlines the body
     pad_off_color = "#2A2C30"
     slot_color = "#060607"
     #: the pad row's height, inside editor_style.SHEEN_SLICE_BOTTOM
@@ -1122,11 +1169,11 @@ class Mc101Skin(RackSkin):
                 button_top=1,
             ),
         ),
-        rim=(6, 6, 7),
+        rim=slot_color,
         radius=3,
     )
     #: The rounded side of the body, in the same matte black
-    ear = EarSpec(GradientFill(MC101_SIDE, direction="horizontal"), rim=(6, 6, 7))
+    ear = EarSpec(GradientFill(MC101_SIDE, direction="horizontal"), rim=slot_color)
 
     def pad_color(self, index: int) -> str:
         """The colour step `index` is lit in: its group's, dimmer off the beat."""
@@ -1146,14 +1193,14 @@ ICE_LCD = LcdPalette(
 #: The MS-20's matte black panel, top to bottom
 MS20_PANEL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(34, 34, 34)),
-        GradientStop(0.5, QColor(24, 24, 24)),
-        GradientStop(1.0, QColor(16, 16, 16)),
+        GradientStop(0.0, (34, 34, 34)),
+        GradientStop(0.5, (24, 24, 24)),
+        GradientStop(1.0, (16, 16, 16)),
     )
 )
 
 
-class Ms20Skin(RackSkin):
+class Ms20Skin(JDXiSkin):
     """
     The Korg MS-20: a matte black panel with its sections boxed in white
     lines, and patch cables.
@@ -1177,16 +1224,18 @@ class Ms20Skin(RackSkin):
     foreground = Foreground(
         text="#F2F2F0", text_secondary="#B4B4B0", rule="#5A5A58"
     )
+    #: cables: left cheek, right cheek, and the one along the rail
+    cable_colors = ("#D23A2E", "#E8B828", "#2F6FD0")
     chassis = Chassis(
         body="#1C1C1C", surface="#101010", surface_alt="#1A1A1A",
-        border="#444444", accent="#D23A2E",
+        border="#444444", accent=cable_colors[0],
     )
     #: the white section outline
     section_line = "#E4E4E0"
-    #: cables: left cheek, right cheek, and the one along the rail
-    cable_colors = ("#D23A2E", "#E8B828", "#2F6FD0")
     #: the cheeks and rail: dark grey plate
     plate_color = "#262626"
+    #: the dark edge of the cheeks and the rail
+    edge_color = "#080808"
     #: cable thickness, px, and the height below which a cheek holds one
     #: jack rather than a looped pair
     cable_width = 3.6
@@ -1201,13 +1250,13 @@ class Ms20Skin(RackSkin):
     ear = EarSpec(
         SolidFill(plate_color),
         details=(PatchCord(cable_colors[:2], cable_width, loop_height),),
-        rim=(8, 8, 8),
+        rim=edge_color,
     )
     #: A slim rail under the panel, with a cable sagging along it, plugged
     #: in at the foot of each cheek
     rail = RailSpec(
         SolidFill(plate_color),
-        line=(8, 8, 8),
+        line=edge_color,
         details=(
             SaggingCable(
                 cable_colors[2],
@@ -1232,14 +1281,14 @@ SH101_LED_LCD = LcdPalette(
 #: The SH-101's dark slider panel, top to bottom; the same in every body
 SH101_PANEL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(44, 45, 47)),
-        GradientStop(0.5, QColor(32, 33, 35)),
-        GradientStop(1.0, QColor(22, 23, 24)),
+        GradientStop(0.0, (44, 45, 47)),
+        GradientStop(0.5, (32, 33, 35)),
+        GradientStop(1.0, (22, 23, 24)),
     )
 )
 
 
-class Sh101Skin(RackSkin):
+class Sh101Skin(JDXiSkin):
     """
     The SH-101: a dark matte control panel set in a coloured plastic body.
 
@@ -1283,13 +1332,13 @@ class Sh101Skin(RackSkin):
             # The dark slider panel: matte, a soft fall-off
             material=GradientFill(SH101_PANEL),
             # The body's front lip, inside the image's sharp bottom edge
-            decorations=(Band("bottom", self.lip, (body.darker(115),)),),
+            decorations=(Band("bottom", self.lip, (rgba(body.darker(115)),)),),
             rim=None,
             radius=3,
             overlays=(
                 # The plastic round the panel, and where it catches the light
-                InsetRim(body, self.rim_width, radius=2),
-                Rule("top", 0.5, body.lighter(135), inset=3),
+                InsetRim(rgba(body), self.rim_width, radius=2),
+                Rule("top", 0.5, rgba(body.lighter(135)), inset=3),
             ),
         )
         # A side of the moulded body, rounded off toward its outer edge
@@ -1297,14 +1346,14 @@ class Sh101Skin(RackSkin):
             GradientFill(
                 GradientColorStops(
                     (
-                        GradientStop(0.0, body.darker(118)),
-                        GradientStop(0.5, body),
-                        GradientStop(1.0, body.darker(118)),
+                        GradientStop(0.0, rgba(body.darker(118))),
+                        GradientStop(0.5, rgba(body)),
+                        GradientStop(1.0, rgba(body.darker(118))),
                     )
                 ),
                 direction="horizontal",
             ),
-            rim=body.darker(170),
+            rim=rgba(body.darker(170)),
         )
 
 class Sh101RedSkin(Sh101Skin):
@@ -1343,7 +1392,7 @@ ARP_LCD = LcdPalette(
 )
 
 
-class Arp2600Skin(RackSkin):
+class Arp2600Skin(JDXiSkin):
     """
     The ARP 2600: a dark charcoal panel printed in white, in a black case,
     with its speakers behind perforated grilles, and patch cords looped over
@@ -1376,18 +1425,23 @@ class Arp2600Skin(RackSkin):
     #: the painted panel, top to bottom
     panel_stops = GradientColorStops(
         (
-            GradientStop(0.0, QColor(50, 53, 57)),
-            GradientStop(0.5, QColor(42, 45, 48)),
-            GradientStop(1.0, QColor(33, 35, 38)),
+            GradientStop(0.0, (50, 53, 57)),
+            GradientStop(0.5, (42, 45, 48)),
+            GradientStop(1.0, (33, 35, 38)),
         )
     )
     #: the white printing
     print_color = "#E6E8EA"
+    #: the outline of the panel and of the grilles
+    rim_color = "#080809"
+    #: the case's deepest black: its edges, and what shows through the
+    #: grilles' holes
+    case_shadow = "#040405"
     #: the black case
     case_stops = GradientColorStops(
         (
-            GradientStop(0.0, QColor(30, 31, 33)),
-            GradientStop(1.0, QColor(14, 15, 16)),
+            GradientStop(0.0, (30, 31, 33)),
+            GradientStop(1.0, (14, 15, 16)),
         )
     )
     #: patch cords over the grilles: white like the printing on the left,
@@ -1406,81 +1460,81 @@ class Arp2600Skin(RackSkin):
             # printing's white, fainter
             Rule("top", 4.0, (230, 232, 234, 150), inset=4),
         ),
-        rim=(8, 8, 9),
+        rim=rim_color,
     )
     #: A speaker grille in the black case: holes punched in the charcoal
     #: panel (its middle shade), with a patch cord looped over it
     ear = EarSpec(
         GradientFill(case_stops, direction="horizontal"),
         details=(
-            Grille(panel_stops.stops[1].color, (4, 4, 5), (8, 8, 9)),
+            Grille(panel_stops.stops[1].color, case_shadow, rim_color),
             PatchCord(cable_colors, cable_width, loop_height),
         ),
-        rim=(4, 4, 5),
+        rim=case_shadow,
     )
     #: The case's black base, under the panel
-    rail = RailSpec(GradientFill(case_stops), line=(4, 4, 5))
+    rail = RailSpec(GradientFill(case_stops), line=case_shadow)
 
 #: The editor's skins, in the order they are offered; the default registry,
 #: which RackPanel and RackEars follow. Changing skin restyles the editor
 #: (see _restyle_application, the registry's listener).
 REGISTRY = SkinRegistry(
-    (        RackSkin(),
-        RedJdxiSkin(),
-        WhiteJdxiSkin(),
-        JdxiRackSkin(),
-        Tr808Skin(),
-        Tb303Skin(),
-        Tr909Skin(),
-        Tr1000Skin(),
-        Jupiter8Skin(),
-        Juno106Skin(),
-        MiniMoogSkin(),
-        Mc101Skin(),
-        Ms20Skin(),
-        Sh101Skin(),
-        Sh101RedSkin(),
-        Sh101BlueSkin(),
-        Arp2600Skin(),
-        Brushed70sSkin(),
-        IvoryWalnutSkin(),
-    
-    ),
+    (JDXiSkin(),
+     RedJdxiSkin(),
+     WhiteJdxiSkin(),
+     JdxiRackSkin(),
+     Tr808Skin(),
+     Tb303Skin(),
+     Tr909Skin(),
+     Tr1000Skin(),
+     Jupiter8Skin(),
+     Juno106Skin(),
+     MiniMoogSkin(),
+     Mc101Skin(),
+     Ms20Skin(),
+     Sh101Skin(),
+     Sh101RedSkin(),
+     Sh101BlueSkin(),
+     Arp2600Skin(),
+     Brushed70sSkin(),
+     IvoryWalnutSkin(),
+
+     ),
     default_id="glossy_black",
     store=_editor_settings_store(),
 )
 set_default_registry(REGISTRY)
 
 #: Every skin, by id, in the order they are offered (the registry's own dict)
-SKINS: Dict[str, RackSkin] = REGISTRY.skins
+SKINS: Dict[str, JDXiSkin] = REGISTRY.skins
 
 
-def skin_by_id(skin_id: Optional[str]) -> RackSkin:
+def skin_by_id(skin_id: Optional[str]) -> JDXiSkin:
     """
     The skin ``skin_id`` names, falling back to the default.
 
     :param skin_id: Optional[str] a key of :data:`SKINS`
-    :return: RackSkin
+    :return: JDXiSkin
     """
     return REGISTRY.get(skin_id)
 
 
-def active_skin() -> RackSkin:
+def active_skin() -> JDXiSkin:
     """
     The skin everything is drawn with.
 
-    :return: RackSkin
+    :return: JDXiSkin
     """
     return REGISTRY.active()
 
 
-def set_active_skin(skin: "str | RackSkin", *, remember: bool = True) -> RackSkin:
+def set_active_skin(skin: "str | JDXiSkin", *, remember: bool = True) -> JDXiSkin:
     """
     Change the skin, and restyle the running application.
 
-    :param skin: str | RackSkin the skin, or its id
+    :param skin: str | JDXiSkin the skin, or its id
     :param remember: bool store the choice for next time
-    :return: RackSkin the skin now in use
+    :return: JDXiSkin the skin now in use
     """
     return REGISTRY.set_active(skin, remember=remember)
 
@@ -1489,7 +1543,7 @@ def set_active_skin(skin: "str | RackSkin", *, remember: bool = True) -> RackSki
 _PANEL_IMAGE = re.compile(r"gloss_panel_[A-Za-z0-9_]+_(?P<size>\d+x\d+)\.png")
 
 
-def _restyle_application(_skin: Optional[RackSkin] = None) -> None:
+def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
     """
     Repoint the chrome at the new skin's panel image.
 

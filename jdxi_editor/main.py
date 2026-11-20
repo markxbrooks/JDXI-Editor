@@ -143,6 +143,12 @@ def main() -> None:
         progress_bar.setValue(10)
         app.processEvents()
 
+        # --- The user's own skins (~/.jdxi_editor/skins/*.toml), before the
+        # window builds its JDXiSkin menu and wears the remembered skin
+        from jdxi_editor.ui.style.user_skins import load_user_skins
+
+        load_user_skins()
+
         # --- Create window and pass splash screen components
         window = JDXiInstrument(
             splash=splash, progress_bar=progress_bar, status_label=status_label

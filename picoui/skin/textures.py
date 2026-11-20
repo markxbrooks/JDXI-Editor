@@ -12,7 +12,8 @@ from random import Random
 
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPen, QPixmap
 
-from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
+from picoui.skin.gradient import GradientColorStops, GradientStop
+from picoui.skin.qt import apply_gradient_stops
 
 
 #: Satin aluminium, a neutral grey-silver: highlight, base and shadow down
@@ -20,20 +21,20 @@ from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradien
 #: metal reads as silver rather than as bronze.
 ALUMINIUM = GradientColorStops(
     (
-        GradientStop(0.0, QColor(197, 197, 193)),  # #C5C5C1 highlight
-        GradientStop(0.30, QColor(184, 184, 181)),
-        GradientStop(0.62, QColor(166, 166, 163)),  # #A6A6A3 base
-        GradientStop(1.0, QColor(119, 120, 117)),  # #777875 shadow
+        GradientStop(0.0, (197, 197, 193)),  # #C5C5C1 highlight
+        GradientStop(0.30, (184, 184, 181)),
+        GradientStop(0.62, (166, 166, 163)),  # #A6A6A3 base
+        GradientStop(1.0, (119, 120, 117)),  # #777875 shadow
     )
 )
 
 #: The JDXV's dark gunmetal faceplate
 GUNMETAL = GradientColorStops(
     (
-        GradientStop(0.0, QColor(62, 66, 72)),
-        GradientStop(0.35, QColor(52, 55, 61)),
-        GradientStop(0.6, QColor(44, 47, 52)),
-        GradientStop(1.0, QColor(32, 34, 38)),
+        GradientStop(0.0, (62, 66, 72)),
+        GradientStop(0.35, (52, 55, 61)),
+        GradientStop(0.6, (44, 47, 52)),
+        GradientStop(1.0, (32, 34, 38)),
     )
 )
 
@@ -97,18 +98,18 @@ def brushed_tile(
 #: Walnut, as used for the end cheeks of studio gear
 WALNUT = GradientColorStops(
     (
-        GradientStop(0.0, QColor(122, 78, 44)),
-        GradientStop(0.5, QColor(96, 59, 32)),
-        GradientStop(1.0, QColor(74, 44, 24)),
+        GradientStop(0.0, (122, 78, 44)),
+        GradientStop(0.5, (96, 59, 32)),
+        GradientStop(1.0, (74, 44, 24)),
     )
 )
 
 #: The darker wood of a TR-808's side panels
 TEAK = GradientColorStops(
     (
-        GradientStop(0.0, QColor(104, 66, 34)),
-        GradientStop(0.5, QColor(82, 51, 26)),
-        GradientStop(1.0, QColor(60, 37, 19)),
+        GradientStop(0.0, (104, 66, 34)),
+        GradientStop(0.5, (82, 51, 26)),
+        GradientStop(1.0, (60, 37, 19)),
     )
 )
 

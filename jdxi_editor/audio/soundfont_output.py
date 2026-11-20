@@ -82,6 +82,47 @@ def output_devices(module=_INSTALLED) -> list[tuple[str, int]]:
     return labelled
 
 
+def chosen_output(current: str, saved: str, labels: list[str]) -> str:
+    """
+    Which output label to put back after the combo is rebuilt.
+
+    The label on screen wins, then the saved name. ``""`` means the
+    default output. An explicit ``(Default)`` stays the default, so a
+    saved device does not replace it.
+
+    :param current: str the label showing before the rebuild
+    :param saved: str the stored preference
+    :param labels: list device labels, without the default entry
+    :return: str a label from ``labels``, or ``""`` for the default
+    """
+    if current in labels:
+        return current
+    if current == "(Default)":
+        return ""
+    if saved in labels:
+        return saved
+    return ""
+
+
+def opened_output_name(device_index: Optional[int], devices: list[tuple[str, int]]) -> str:
+    """
+    The name of the output a stream actually opened.
+
+    Looked up from the device index the stream reports, so a default
+    combo entry cannot rename it.
+
+    :param device_index: Optional[int]
+    :param devices: list of ``(name, index)``
+    :return: str the name, or ``""`` when the index is unknown
+    """
+    if isinstance(device_index, bool) or not isinstance(device_index, int):
+        return ""
+    for name, index in devices:
+        if index == device_index:
+            return name
+    return ""
+
+
 def copy_s16(pcm: np.ndarray, out: np.ndarray) -> None:
     """
     Convert interleaved int16 stereo into a float32 ``(frames, 2)`` buffer.
@@ -248,6 +289,22 @@ class SoundfontOutput:
             self.midi_port = None
             log.warning(f"SoundFont MIDI port not available: {ex}")
         return sfid
+
+    def opened_device(self) -> Optional[int]:
+        """
+        The output index the stream opened, or None when it is closed.
+
+        :return: Optional[int]
+        """
+        stream = self._stream
+        if stream is None:
+            return None
+        device = getattr(stream, "device", None)
+        if isinstance(device, tuple):
+            device = device[-1] if device else None
+        if isinstance(device, bool) or not isinstance(device, int):
+            return None
+        return int(device)
 
     def stop(self) -> None:
         """

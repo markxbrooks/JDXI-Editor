@@ -182,7 +182,7 @@ def test_step_buttons_take_their_colours_in_turn_with_lights_over_them():
 
 
 def test_frame_and_wash():
-    shade = GradientColorStops((GradientStop(0.0, QColor(0, 0, 0, 0)), GradientStop(1.0, QColor(0, 0, 0, 255))))
+    shade = GradientColorStops((GradientStop(0.0, (0, 0, 0, 0)), GradientStop(1.0, (0, 0, 0, 255))))
     image = _paint(
         lambda p, r: render.paint_face(_face(Wash(shade), Frame(RED, (5, 5, 5, 5))), p, r),
         100, 100,

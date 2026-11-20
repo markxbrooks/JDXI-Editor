@@ -240,21 +240,32 @@ class JDXiWindow(QMainWindow):
 
     def _add_skin_menu(self, menu) -> None:
         """
-        A "Skin" submenu: the faceplate the panels and displays wear.
+        A "JDXiSkin" submenu: the faceplate the panels and displays wear, the
+        Skin Editor, and the folder of the user's own skins.
 
         :param menu: QMenu the menu to add the submenu to
         :return: None
         """
+        self._skin_submenu = menu.addMenu("&JDXiSkin")
+        self._populate_skin_menu()
+
+    def _populate_skin_menu(self) -> None:
+        """
+        Fill the JDXiSkin submenu, again after a skin is added.
+
+        :return: None
+        """
         from PySide6.QtGui import QActionGroup
 
-        from jdxi_editor.ui.style.rack_skin import SKINS, active_skin, set_active_skin
+        from jdxi_editor.ui.style.rack_skin import SKINS, active_skin
 
-        submenu = menu.addMenu("&Skin")
-        group = QActionGroup(self)
+        submenu = self._skin_submenu
+        submenu.clear()
+        group = QActionGroup(submenu)
         group.setExclusive(True)
         current = active_skin().skin_id
         for skin_id, skin in SKINS.items():
-            action = QAction(skin.label, self)
+            action = QAction(skin.label, submenu)
             action.setCheckable(True)
             action.setChecked(skin_id == current)
             action.triggered.connect(
@@ -262,22 +273,71 @@ class JDXiWindow(QMainWindow):
             )
             group.addAction(action)
             submenu.addAction(action)
+        submenu.addSeparator()
+        submenu.addAction(
+            self._menu_action(
+                "Skin &Editor...",
+                self._show_skin_editor,
+                status_tip="Make a skin of your own from any skin",
+            )
+        )
+        submenu.addAction(
+            self._menu_action(
+                "Open User Skins &Folder",
+                self._open_user_skins_folder,
+                status_tip="Where your skin files are kept",
+            )
+        )
 
-    def _apply_skin(self, skin_id: str) -> None:
+    def _apply_skin(self, skin, remember: bool = True) -> None:
         """
-        Wear ``skin_id`` everywhere: chrome, and the picture of the instrument.
+        Wear ``skin`` everywhere: chrome, and the picture of the instrument.
 
         The instrument is drawn once into a pixmap, so it has to be drawn
         again; the chrome follows the skin by itself.
 
-        :param skin_id: str a key of rack_skin.SKINS
+        :param skin: str | JDXiSkin a key of rack_skin.SKINS, or a skin (one
+            the Skin Editor is trying on)
+        :param remember: bool store the choice for next time
         :return: None
         """
         from jdxi_editor.ui.style.rack_skin import set_active_skin
 
-        set_active_skin(skin_id)
+        set_active_skin(skin, remember=remember)
         self.refresh_instrument_image()
         self.apply_keyboard_area_skin()
+
+    def _show_skin_editor(self) -> None:
+        """Open the Skin Editor, or bring it forward."""
+        from jdxi_editor.ui.windows.skin.editor import SkinEditorWindow
+
+        editor = getattr(self, "skin_editor", None)
+        if editor is None:
+            editor = SkinEditorWindow(
+                parent=self,
+                wear=lambda skin, remember: self._apply_skin(skin, remember=remember),
+                saved=self._skin_saved,
+            )
+            editor.setAttribute(Qt.WA_DeleteOnClose)
+            editor.destroyed.connect(lambda: setattr(self, "skin_editor", None))
+            self.skin_editor = editor
+        editor.show()
+        editor.raise_()
+
+    def _skin_saved(self, skin) -> None:
+        """A skin saved in the Skin Editor: offer it, and wear it."""
+        self._apply_skin(skin.skin_id)
+        self._populate_skin_menu()
+
+    def _open_user_skins_folder(self) -> None:
+        """Show the folder of the user's skin files, making it if need be."""
+        from PySide6.QtCore import QUrl
+        from PySide6.QtGui import QDesktopServices
+
+        from jdxi_editor.ui.style.user_skins import USER_SKIN_DIR
+
+        USER_SKIN_DIR.mkdir(parents=True, exist_ok=True)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(USER_SKIN_DIR)))
 
     def refresh_instrument_image(self) -> None:
         """

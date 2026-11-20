@@ -27,6 +27,14 @@ from picoui.skin.widgets import RackEars, RackPanel
 
 _APP = QApplication.instance() or QApplication([])
 
+import picoui.skin.gradient as _gradient_module  # noqa: E402
+
+GRADIENT_FILE = _gradient_module.__file__
+
+import picoui.skin.spec as _spec_module  # noqa: E402
+
+SPEC_FILE = _spec_module.__file__
+
 
 class Plain(Skin):
     skin_id, label = "plain", "Plain"
@@ -133,7 +141,7 @@ def test_the_base_skin_paints_an_opaque_face():
     assert image.pixelColor(100, 40).alpha() == 255
 
 
-GREY = GradientColorStops((GradientStop(0.0, QColor(200, 200, 200)), GradientStop(1.0, QColor(120, 120, 120))))
+GREY = GradientColorStops((GradientStop(0.0, (200, 200, 200)), GradientStop(1.0, (120, 120, 120))))
 
 
 def test_textures_are_cached_and_the_same_every_time():
@@ -168,7 +176,7 @@ def test_gradient_stops_are_position_colour_pairs_in_order():
 
     metal = GradientColorStops((
         GradientStop(0.0, "#8A8A87"),
-        GradientStop(0.35, QColor("#B8B8B4")),
+        GradientStop(0.35, (184, 184, 180)),
         GradientStop(0.65, "#A6A6A3"),
         GradientStop(1.0, "#777875"),
     ))
@@ -182,6 +190,9 @@ def test_gradient_stops_are_position_colour_pairs_in_order():
 @pytest.mark.parametrize("build", [
     lambda: GradientStop(1.5, "#000000"),             # off the gradient
     lambda: GradientStop(0.5, "not a colour"),
+    lambda: GradientStop(0.5, "#FF000080"),           # #AARRGGBB or #RRGGBBAA?
+    lambda: GradientStop(0.5, (256, 0, 0)),           # off the scale
+    lambda: GradientStop(0.5, (1.0, 0.5, 0.0)),       # 0-1 floats, as OpenGL takes
     lambda: GradientColorStops((GradientStop(0.0, "#000000"),)),  # only one
     lambda: GradientColorStops((GradientStop(0.8, "#000000"), GradientStop(0.2, "#FFFFFF"))),
 ])
@@ -189,6 +200,43 @@ def test_bad_gradients_are_refused(build):
     with pytest.raises(ValueError):
         build()
 
+
+
+def test_gradients_and_specs_are_plain_data_without_qt():
+    """
+    A gradient and a whole face or ear spec build, compare and hash with no
+    Qt imported: Qt only meets them when they are painted.
+    """
+    import subprocess
+    import sys
+
+    code = (
+        "import sys\n"
+        "from picoui.skin.gradient import GradientColorStops, GradientStop\n"
+        "from picoui.skin.spec import (Band, EarSpec, FaceSpec, GradientFill,\n"
+        "    PatchCord, Rule, SolidFill, StepButtons, StepLights)\n"
+        "g = GradientColorStops((GradientStop(0, '#000000'), GradientStop(1, (255, 255, 255, 128))))\n"
+        "assert g.stops[1].color == (255, 255, 255, 128) and hash(g)\n"
+        "face = FaceSpec(GradientFill(g), (Rule('top', 0.5, '#FF0000'),\n"
+        "    StepButtons(6, 16, ('#E8E6DC',), (74, 74, 71), lights=StepLights(2, '#FF3A20', '#3A1410'))),\n"
+        "    rim=(6, 6, 6))\n"
+        "ear = EarSpec(SolidFill('#262626'), details=(PatchCord(('#D23A2E', '#E8B828')),), rim='#080808')\n"
+        "assert face.rim == (6, 6, 6, 255) and face.decorations[0].color == (255, 0, 0, 255)\n"
+        "assert hash(face) and hash(ear) and face == FaceSpec(GradientFill(g), face.decorations, rim='#060606')\n"
+        "assert not any(m.startswith('PySide6') for m in sys.modules), 'Qt was imported'\n"
+    )
+    # picoui.skin's own __init__ imports the widgets' Qt; load the two
+    # modules alone
+    loader = (
+        "import importlib.util, sys, types\n"
+        "pkg = types.ModuleType('picoui'); pkg.__path__ = []; sys.modules['picoui'] = pkg\n"
+        "sub = types.ModuleType('picoui.skin'); sub.__path__ = []; sys.modules['picoui.skin'] = sub\n"
+        "for name, path in (('gradient', %r), ('spec', %r)):\n"
+        "    spec = importlib.util.spec_from_file_location('picoui.skin.' + name, path)\n"
+        "    mod = importlib.util.module_from_spec(spec); sys.modules['picoui.skin.' + name] = mod\n"
+        "    spec.loader.exec_module(mod)\n"
+    ) % (GRADIENT_FILE, SPEC_FILE)
+    subprocess.run([sys.executable, "-c", loader + code], check=True)
 
 
 def test_equal_gradients_share_a_cached_tile():

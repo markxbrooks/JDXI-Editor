@@ -18,7 +18,7 @@ from jdxi_editor.ui.style.rack_skin import (  # noqa: E402
     SKINS,
     Brushed70sSkin,
     JdxiRackSkin,
-    RackSkin,
+    JDXiSkin,
     active_skin,
     set_active_skin,
     skin_by_id,
@@ -580,7 +580,7 @@ def test_the_default_skin_is_the_panel_it_replaced(qapp):
         return image
 
     original = render_face(lambda p, r: draw_gloss_panel(p, r, sheen=True))
-    skinned = render_face(RackSkin().paint_face)
+    skinned = render_face(JDXiSkin().paint_face)
     assert original == skinned
 
 
@@ -591,7 +591,7 @@ def test_an_unknown_skin_falls_back_to_the_default():
 
 def test_the_default_skin_claims_no_more_room_than_the_old_panel():
     # The glossy panel is a drop-in: 7px of bezel, no ears, no stripe
-    margins = RackSkin().content_margins()
+    margins = JDXiSkin().content_margins()
     assert (margins.left(), margins.top(), margins.right(), margins.bottom()) == (
         7,
         7,
@@ -651,7 +651,7 @@ def test_each_skin_carries_its_own_display_palette():
 def test_setting_the_active_skin(qapp):
     set_active_skin("brushed_70s", remember=False)
     assert active_skin().skin_id == "brushed_70s"
-    set_active_skin(RackSkin(), remember=False)
+    set_active_skin(JDXiSkin(), remember=False)
     assert active_skin().skin_id == "glossy_black"
 
 
@@ -835,7 +835,7 @@ def test_the_jdxi_skin_is_recognisable_without_a_rack_panel(qapp):
         (c.red(), c.green(), c.blue()) == rail for c in bottom_rows(JdxiRackSkin())
     )
     assert not any(
-        (c.red(), c.green(), c.blue()) == rail for c in bottom_rows(RackSkin())
+        (c.red(), c.green(), c.blue()) == rail for c in bottom_rows(JDXiSkin())
     )
 
 
@@ -923,7 +923,7 @@ def test_a_skin_may_drop_the_sheen(qapp):
         image.fill(Qt.GlobalColor.transparent)
         painter = QPainter(image)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        RackSkin().paint_face(painter, QRectF(0.5, 0.5, 119, 59), sheen=sheen)
+        JDXiSkin().paint_face(painter, QRectF(0.5, 0.5, 119, 59), sheen=sheen)
         painter.end()
         return image
 
@@ -1089,3 +1089,13 @@ def test_meter_and_lane_styles_are_chosen_separately_from_the_material(qapp):
     assert isinstance(brushed.lanes.backing, BrushedFill)
     assert isinstance(mini.lanes.backing, WoodFill)
     assert not arp.lanes.cards
+
+
+def test_the_skins_borrow_the_editors_own_accent():
+    """EDITOR_ACCENT is the editor's illuminated red, not a copy that can drift."""
+    from jdxi_editor.ui.style.editor_style import AppEditorStyle
+    from jdxi_editor.ui.style.rack_skin import EDITOR_ACCENT
+
+    assert EDITOR_ACCENT == AppEditorStyle.ACCENT
+    for skin_id in ("jdxi_rack", "jdxi_white", "brushed_70s"):
+        assert SKINS[skin_id].chassis.accent == EDITOR_ACCENT

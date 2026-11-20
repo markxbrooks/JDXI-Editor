@@ -10,10 +10,10 @@ listener with the new skin; that is where an application restyles itself,
 so the registry knows nothing about any one application's stylesheets.
 
 Example:
-    >>> from picoui.skin import Skin, SkinRegistry
-    >>> class Red(Skin):
+    >>> from picoui.skin import JDXiSkin, SkinRegistry
+    >>> class Red(JDXiSkin):
     ...     skin_id, label = "red", "Red"
-    >>> registry = SkinRegistry([Skin(), Red()], default_id="default")
+    >>> registry = SkinRegistry([JDXiSkin(), Red()], default_id="default")
     >>> seen = []
     >>> registry.add_listener(lambda skin: seen.append(skin.skin_id))
     >>> registry.set_active("red").label
@@ -75,18 +75,31 @@ class SkinRegistry:
         :param store: where the choice is remembered; None remembers nothing
         """
         self.skins: Dict[str, Skin] = {}
-        for skin in skins:
-            self.register(skin)
         self.default_id = default_id
         self.store = store
         self._active: Optional[Skin] = None
+        # The stored choice, while it names a skin not registered yet (one
+        # loaded later, such as a user's skin from a file)
+        self._wanted: Optional[str] = None
         self._listeners: List[Listener] = []
+        for skin in skins:
+            self.register(skin)
 
     # --- The skins ----------------------------------------------------------
 
     def register(self, skin: Skin) -> Skin:
-        """Offer `skin` (replacing one with the same id); returns it."""
+        """
+        Offer `skin` (replacing one with the same id); returns it.
+
+        If the stored choice named this skin before it was registered, it
+        becomes the active skin now, so a skin loaded after start-up (from
+        a user's file) is still the one remembered. Listeners are not told:
+        this happens while the application starts.
+        """
         self.skins[skin.skin_id] = skin
+        if self._active is not None and skin.skin_id in (self._active.skin_id, self._wanted):
+            self._active = skin
+            self._wanted = None
         return skin
 
     def ids(self) -> List[str]:
@@ -113,7 +126,10 @@ class SkinRegistry:
     def active(self) -> Skin:
         """The skin in use: the stored choice the first time, else the default."""
         if self._active is None:
-            self._active = self.get(self.store.load() if self.store else None)
+            stored = self.store.load() if self.store else None
+            self._active = self.get(stored)
+            if stored and str(stored) not in self.skins:
+                self._wanted = str(stored)
         return self._active
 
     def set_active(
@@ -127,6 +143,7 @@ class SkinRegistry:
         :return: the skin now in use
         """
         self._active = self.resolve(skin)
+        self._wanted = None
         if remember and self.store is not None:
             self.store.save(self._active.skin_id)
         if notify:

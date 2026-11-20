@@ -4,10 +4,13 @@ What a faceplate and its cheeks look like, as data.
 
 A skin can describe its face and ears with these instead of painting them:
 a material to fill with, the decorations printed or moulded on top (edge
-bands, rules), a rim, and for an ear its screws. The specs say nothing about
-QPainter; :mod:`picoui.skin.render` turns them into painting, and
-:class:`~picoui.skin.base.Skin` calls it when a skin declares
-:attr:`~picoui.skin.base.Skin.face` or :attr:`~picoui.skin.base.Skin.ear`.
+bands, rules), a rim, and for an ear its screws. The specs are plain data,
+with no Qt in them: every colour is kept as an ``(r, g, b, a)`` tuple (see
+:mod:`picoui.skin.gradient`), so a skin's look can be declared, compared,
+hashed or loaded from a file without a QApplication.
+:mod:`picoui.skin.render` turns them into painting, and
+:class:`~picoui.skin.base.JDXiSkin` calls it when a skin declares
+:attr:`~picoui.skin.base.JDXiSkin.face` or :attr:`~picoui.skin.base.JDXiSkin.ear`.
 
 Every spec is a frozen dataclass, so a skin's look is a value: two skins can
 share one, and :func:`dataclasses.replace` makes a variant.
@@ -25,6 +28,8 @@ Example:
     ... )
     >>> face.decorations[0].edge
     'bottom'
+    >>> face.rim
+    (16, 17, 18, 255)
 
 The machine details that make a skin recognisable are specs too, so any
 skin can use them: a :class:`Keyboard` of step keys, a row of
@@ -43,43 +48,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Tuple, Union
 
-from PySide6.QtGui import QColor
+from picoui.skin.gradient import ColorValue, GradientColorStops, parse_color
 
-from picoui.skin.gradient import GradientColorStops
-
-#: A colour as a skin may write it: "#RRGGBB", an (r, g, b[, a]) tuple, or
-#: a QColor
-ColorSpec = Union[str, Tuple[int, ...], QColor]
+#: A colour as a skin may write it: "#RRGGBB", (r, g, b) or (r, g, b, a),
+#: each 0-255. Every spec keeps it as an RGBA tuple.
+ColorSpec = ColorValue
 
 EDGES = ("top", "bottom")
 DIRECTIONS = ("vertical", "horizontal")
 
 
-def to_qcolor(value: ColorSpec) -> QColor:
-    """
-    A QColor from any :data:`ColorSpec`.
-
-    :param value: ColorSpec the colour
-    :return: QColor
-    :raises ValueError: if it is not a colour
-    """
-    if isinstance(value, QColor):
-        color = QColor(value)
-    elif isinstance(value, tuple):
-        color = QColor(*value)
-    else:
-        color = QColor(value)
-    if not color.isValid():
-        raise ValueError(f"Not a colour: {value!r}")
-    return color
-
-
 def _set_colors(spec: object, *names: str) -> None:
-    """Turn the named fields of a frozen spec into QColors, once, when built."""
+    """Turn the named fields of a frozen spec into RGBA tuples, once, when built."""
     for name in names:
         value = getattr(spec, name)
         if value is not None:
-            object.__setattr__(spec, name, to_qcolor(value))
+            object.__setattr__(spec, name, parse_color(value))
 
 
 def _check_edge(edge: str) -> None:
@@ -156,17 +140,17 @@ class PebbleFill:
     Textured matte paint, speckled in no direction (see
     :func:`picoui.skin.textures.pebble_tile`).
 
-    :param color: str the paint, as "#RRGGBB"
+    :param color: ColorSpec the paint
     :param size: int px of the repeating tile
     :param grain: int strength of the speckle
     """
 
-    color: str
+    color: ColorSpec
     size: int = 64
     grain: int = 10
 
     def __post_init__(self) -> None:
-        to_qcolor(self.color)  # refuse what is not a colour; kept as text for the tile cache
+        _set_colors(self, "color")
 
 
 Material = Union[GradientFill, BrushedFill, WoodFill, SolidFill, PebbleFill]
@@ -196,7 +180,7 @@ class Band:
 
     def __post_init__(self) -> None:
         _check_edge(self.edge)
-        colors = tuple(to_qcolor(color) for color in self.colors)
+        colors = tuple(parse_color(color) for color in self.colors)
         if not colors:
             raise ValueError("A band needs at least one colour")
         object.__setattr__(self, "colors", colors)
@@ -415,7 +399,7 @@ class StepButtons:
         _check_edge(self.edge)
         if self.count < 1 or self.group < 1:
             raise ValueError("Step buttons need a count and a group of at least one")
-        colors = tuple(to_qcolor(color) for color in self.colors)
+        colors = tuple(parse_color(color) for color in self.colors)
         if not colors:
             raise ValueError("Step buttons need at least one colour")
         object.__setattr__(self, "colors", colors)
@@ -447,7 +431,7 @@ class PatchCord:
     loop_height: float = 28.0
 
     def __post_init__(self) -> None:
-        colors = tuple(to_qcolor(color) for color in self.colors)
+        colors = tuple(parse_color(color) for color in self.colors)
         if len(colors) != 2:
             raise ValueError("A patch cord needs a colour for each cheek")
         object.__setattr__(self, "colors", colors)

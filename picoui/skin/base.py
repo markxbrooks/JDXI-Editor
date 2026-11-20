@@ -5,15 +5,15 @@ any rack ears beside it, a rail under it, and the palette its display and
 lettering pick up.
 
 A skin owns chrome only, never layout. The room it may take is the three
-numbers it declares -- :attr:`Skin.ear_width`, :attr:`Skin.bezel` and
-:attr:`Skin.rail_height` -- which :meth:`Skin.content_margins` turns into the
+numbers it declares -- :attr:`JDXiSkin.ear_width`, :attr:`JDXiSkin.bezel` and
+:attr:`JDXiSkin.rail_height` -- which :meth:`JDXiSkin.content_margins` turns into the
 margins a :class:`~picoui.skin.widgets.RackPanel` gives its layout, so a skin
 cannot quietly grow.
 
 The base is a shiny black panel. A new skin subclasses it and declares those
 numbers and its palette. Its look is declared too where it can be: a
-:class:`~picoui.skin.spec.FaceSpec` as :attr:`Skin.face` and an
-:class:`~picoui.skin.spec.EarSpec` as :attr:`Skin.ear`, which
+:class:`~picoui.skin.spec.FaceSpec` as :attr:`JDXiSkin.face` and an
+:class:`~picoui.skin.spec.EarSpec` as :attr:`JDXiSkin.ear`, which
 :mod:`picoui.skin.render` paints. What a spec cannot describe is painted by
 overriding a hook (``paint_face``, ``paint_ear``, ``paint_rail``); see
 :mod:`picoui.skin.textures` for materials.
@@ -27,7 +27,8 @@ from PySide6.QtCore import QMargins, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPolygonF
 
 from picoui.skin import render
-from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
+from picoui.skin.gradient import GradientColorStops, GradientStop
+from picoui.skin.qt import apply_gradient_stops
 from picoui.skin.palette import DARK_CHASSIS, DEFAULT_LCD, LIGHT_LETTERING
 from picoui.skin.spec import EarSpec, FaceSpec, RailSpec
 
@@ -55,9 +56,9 @@ class Skin:
     #: different plastic or metal by declaring these alone
     face_stops = GradientColorStops(
         (
-            GradientStop(0.0, QColor(22, 22, 24)),
-            GradientStop(0.5, QColor(10, 10, 11)),
-            GradientStop(1.0, QColor(4, 4, 5)),
+            GradientStop(0.0, (22, 22, 24)),
+            GradientStop(0.5, (10, 10, 11)),
+            GradientStop(1.0, (4, 4, 5)),
         )
     )
     #: the rim drawn round the panel

@@ -1,0 +1,94 @@
+# A user skin: the TR-1000, written as a file instead of code.
+#
+# Copy a file like this into ~/.jdxi_editor/skins/ and restart the editor:
+# it appears in the JDXiSkin menu. Colours are "#RRGGBB" or [r, g, b(, a)];
+# "$name" uses a colour from [colors]. The format is described in
+# picoui/skin/loader.py and jdxi_editor/ui/style/user_skins.py.
+#
+# To change only part of a built-in skin, start from it instead:
+#
+#     [skin]
+#     id = "blue_909"
+#     label = "TR-909 Blue"
+#     based_on = "tr909"
+#     [chassis]
+#     accent = "#2F6FD0"
+
+[skin]
+id = "tr1000_user"
+label = "TR-1000 (from file)"
+ear_width = 14
+bezel = 6
+rail_height = 0
+meter = "bars"            # or "needles", "vintage_vu"
+
+[colors]
+lettering = "#F0EEE8"     # the lettering, and the display's text
+accent = "#E64A32"        # the top rule, and the chassis accent
+rule = "#484B4E"          # rules between sections, and the chassis border
+cheek_light = "#35383B"   # the cheeks' lit edge, and the strip behind the steps
+cheek_deep = "#25282B"    # the cheeks' shadowed edge, and the chassis surface
+
+[gradients]
+panel = [[0.0, "#777A7D"], [0.5, "#66696C"], [1.0, "#55585B"]]
+cheek = [[0.0, "$cheek_light"], [1.0, "$cheek_deep"]]
+
+[lcd]
+bg_edge = "#0F1011"
+bg_mid = "#1B1D1F"
+bg_glow = "#2A2D30"
+text = "$lettering"
+text_dim = "#9A9893"
+
+[foreground]
+text = "$lettering"
+text_secondary = "#CFCDC7"
+rule = "$rule"
+
+[chassis]
+body = "#626568"
+surface = "$cheek_deep"
+surface_alt = "#303336"
+border = "$rule"
+accent = "$accent"
+
+[face]
+material = { type = "gradient", stops = "panel" }
+rim = "#383B3E"
+
+# where the panel's top edge catches the light
+[[face.decorations]]
+type = "rule"
+edge = "top"
+offset = 0.5
+color = "#96999B"
+
+[[face.decorations]]
+type = "rule"
+edge = "top"
+offset = 2.5
+color = "$accent"
+
+# sixteen step buttons in fours, a light over each, lit on each group's first
+[[face.decorations]]
+type = "step_buttons"
+thickness = 6
+count = 16
+colors = ["#E6E3DB"]
+background = "$cheek_light"
+group = 4
+gap = 0.8
+group_gap = 1.6
+button_top = 2
+lights = { height = 2, on = "#F04430", off = "#351914", every = 4 }
+
+[ear]
+material = { type = "gradient", stops = "cheek", direction = "horizontal" }
+rim = "#1D2022"
+screw = "#8B8E90"
+screw_inset = 11
+
+# The MIDI player's lanes: plain here. For punched cards on wood:
+#   [lanes]
+#   cards = true
+#   backing = { type = "wood", stops = "walnut" }

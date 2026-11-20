@@ -46,6 +46,8 @@ from PySide6.QtWidgets import (
 from jdxi_editor.audio.soundfont_output import (
     MIDI_PORT_NAME,
     SoundfontOutput,
+    chosen_output,
+    opened_output_name,
     output_devices,
     sounddevice_available,
 )
@@ -120,6 +122,7 @@ class MIDIConfigDialog(QDialog):
         # FluidSynth runtime state (optional), shared with MIDI input forwarding.
         self.fs = getattr(midi_helper, "soundfont_synth", None)
         self.sfid = getattr(midi_helper, "soundfont_sfid", None)
+        self._refreshing_outputs = False
         self.sf2_path = ""
         self._create_ui()
         # Prefill SoundFont path: prefer saved path, else default if file exists
@@ -246,13 +249,16 @@ class MIDIConfigDialog(QDialog):
         self.use_soundfont_list.toggled.connect(self._on_soundfont_list_toggled)
         synth_layout.addWidget(self.use_soundfont_list)
 
-        # Hardware Interface (audio output device for FluidSynth)
+        # Audio output for FluidSynth, distinct from the MIDI Output port
         hw_row = QHBoxLayout()
-        hw_row.addWidget(QLabel("Hardware Interface:"))
+        hw_row.addWidget(QLabel("Audio output:"))
         self.hardware_interface_combo = QComboBox()
         self.hardware_interface_combo.setToolTip(
-            "Audio output device for FluidSynth playback. "
-            "Requires sounddevice (pip install sounddevice)."
+            "Where FluidSynth plays. Changing this while it is running "
+            "reopens that output."
+        )
+        self.hardware_interface_combo.currentIndexChanged.connect(
+            self._on_audio_output_changed
         )
         self._refresh_hardware_devices()
         hw_row.addWidget(self.hardware_interface_combo)
@@ -371,16 +377,39 @@ class MIDIConfigDialog(QDialog):
 
     def _refresh_hardware_devices(self, event=None):
         """refresh hardware devices"""
-        self.hardware_interface_combo.clear()
-        if not sounddevice_available():
-            self.hardware_interface_combo.addItem("(sounddevice not installed)", None)
+        combo = self.hardware_interface_combo
+        current = combo.currentText()
+        self._refreshing_outputs = True
+        try:
+            combo.clear()
+            if not sounddevice_available():
+                combo.addItem("(sounddevice not installed)", None)
+                return
+            devices = _get_output_devices()
+            combo.addItem("(Default)", None)
+            for display_name, device_index in devices:
+                combo.addItem(display_name, device_index)
+            chosen = chosen_output(
+                current,
+                get_hardware_interface(),
+                [name for name, _index in devices],
+            )
+            idx = combo.findText(chosen) if chosen else 0
+            combo.setCurrentIndex(idx if idx >= 0 else 0)
+        finally:
+            self._refreshing_outputs = False
+
+    def _on_audio_output_changed(self, index: int) -> None:
+        """Remember the output, and reopen it when playback is already running."""
+        if self._refreshing_outputs or index < 0:
             return
-        self.hardware_interface_combo.addItem("(Default)", None)
-        for display_name, device_index in _get_output_devices():
-            self.hardware_interface_combo.addItem(display_name, device_index)
-        saved = get_hardware_interface()
-        idx = self.hardware_interface_combo.findText(saved)
-        self.hardware_interface_combo.setCurrentIndex(idx if idx >= 0 else 0)
+        name = self.hardware_interface_combo.currentText()
+        if name in ("(Default)", "(sounddevice not installed)", ""):
+            set_hardware_interface("")
+        else:
+            set_hardware_interface(name)
+        if self.fs is not None:
+            self._start_fluidsynth()
 
     def _on_input_combo_changed(self) -> None:
         """On input ComboBox changed, set the DigitalTitle text."""
@@ -497,12 +526,16 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.soundfont_sfid = sfid
         self.fs = player.synth
         self.sfid = sfid
+        where = opened_output_name(player.opened_device(), output_devices())
+        where = where or "the default output"
         if player.midi_port is not None:
             self.fs_status.setText(
-                f"FluidSynth: started · MIDI Output '{MIDI_PORT_NAME}' available"
+                f"FluidSynth: started on {where} · MIDI Output '{MIDI_PORT_NAME}' available"
             )
         else:
-            self.fs_status.setText("FluidSynth: started (no MIDI port on this system)")
+            self.fs_status.setText(
+                f"FluidSynth: started on {where} (no MIDI port on this system)"
+            )
         # The SoundFont's MIDI port has just appeared
         self._refresh_ports_keeping_selection()
 
