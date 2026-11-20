@@ -138,3 +138,38 @@ def test_a_skin_tried_on_comes_off_when_the_editor_closes_unsaved(editor):
     editor._try_on()
     editor.close()
     assert editor.worn == [("my_tr_909", False), ("tr909", False)]
+
+
+def test_a_decorations_colour_writes_out_the_list_and_changes_only_that(editor):
+    base = REGISTRY.get("tr909").face.decorations
+    accent_rule = ("face", "decorations", 1, ("color",))
+    assert editor._detail_buttons[accent_rule].color() == "#2C6AB0"
+    lit = ("face", "decorations", 2, ("lights", "on"))
+    assert lit in editor._detail_buttons
+
+    editor._detail_edited(accent_rule, "#E64A32")
+    editor._build()
+    written = editor.tables()["face"]["decorations"]
+    assert len(written) == len(base) and written[1]["color"] == "#E64A32"
+    shown = editor.preview.panel.skin.face.decorations
+    assert shown[1].color == (230, 74, 50, 255)
+    assert shown[0] == base[0] and shown[2] == base[2]  # the rest as they were
+    assert editor._resets[("face", "decorations")].isEnabled()
+
+    editor._detail_edited(lit, "#30F040")  # a second change edits the written list
+    editor._build()
+    assert editor.preview.panel.skin.face.decorations[2].lights.on == (48, 240, 64, 255)
+    assert editor.preview.panel.skin.face.decorations[1].color == (230, 74, 50, 255)
+
+    editor._reset("face", "decorations")
+    editor._build()
+    assert "face" not in editor.tables()
+    assert editor.preview.panel.skin.face.decorations == base
+
+
+def test_the_details_rows_follow_the_skin(editor):
+    editor.new_skin("glossy_black")
+    shape_glossy = editor._details_shape
+    editor.new_skin("tr909")
+    assert editor._details_shape != shape_glossy
+    assert {slot[:2] for slot in editor._detail_buttons} == {("face", "decorations")}

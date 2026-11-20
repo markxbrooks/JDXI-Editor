@@ -43,9 +43,12 @@ dependencies = [
     "darkdetect",
     "SQLAlchemy>=2.0",
     "decologr",
-    # 0.2.0: the first release that ships picomidi's subpackages (core,
-    # playback, sysex, ...); 0.1.2 contains the top-level package only
-    "picomidi>=0.2.0",
+    # 0.3.0: the first release that ships picomidi.playback.scheduler and
+    # PlaybackEngine.set_track_volume / set_track_transpose /
+    # set_track_channel_map, which jdxi_editor/midi/playback/transport.py
+    # imports and calls. 0.2.0 ships the subpackages (core, playback, sysex,
+    # ...) but not those, so the main window will not import against it.
+    "picomidi>=0.3.0",
     "pyfluidsynth",
     # Audio monitor and FluidSynth device selection. The PortAudio binaries
     # ship inside this package and have to be present when the app is frozen.

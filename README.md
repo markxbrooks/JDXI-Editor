@@ -23,7 +23,9 @@
 - **Vocal Effects Editor**: Vocoder and Auto-Pitch with polymorphic UI.
 - **Pattern Editor**: 4×16 step sequencer with MIDI load/save, part muting, and USB recording.
 - **MIDI File Player**: Load MIDI files, classify tracks, assign channels, play with JD-Xi or FluidSynth.
-- **SoundFont Support**: Use .sf2/.sf3 for playback without hardware.
+- **SoundFont Support**: Use .sf2/.sf3 for playback without hardware. The Audio output menu chooses the device FluidSynth plays through.
+- **Audio Monitor**: Oscilloscope, stereo meters, and a spectrum from an audio **input**. It does not hear the SoundFont.
+- **Rack skins**: A JDXiSkin menu of instrument faces, plus TOML skins you keep in `~/.jdxi_editor/skins/`.
 - **MIDI Debugger**: Monitor and debug MIDI messages efficiently.
 
 ---
@@ -61,15 +63,11 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 ## 🚀 Getting Started
 
 
-### MacOS 🖥️
-There is a new build for MacOS Sequoia. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
+### Desktop builds
 
-### Windows 📦
-There is a new build for Windows. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
+Mac, Windows, and Linux builds are attached to the GitHub release whose tag matches the version in the app (`jdxi_editor/project.py`, currently 0.9.9). Download that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
 
-### Linux 📦
-There is a new build for Linux. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
-
+1.0.0rc1 is the next candidate tag. It is not cut yet. The app stays Beta until a connected JD-Xi has been exercised (identity, a program read and write, digital, analog, drums, effects, a pattern, and MIDI playback). The notes for what that candidate contains are under 0.9.9 in [CHANGELOG.md](CHANGELOG.md).
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
@@ -81,7 +79,9 @@ $ python -m pip install JDXI-Editor
 $ jdxi-editor
 ```
 
-PyAudio needs the PortAudio library: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`, before the `pip install`. The FluidSynth player needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`).
+PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window. 6.10 and 6.11 have not been tried; leave the pin alone until the window opens cleanly on them.
+
+PyAudio needs the PortAudio library before `pip install`: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`. SoundFont playback needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The Audio Monitor listens to an input through sounddevice, which brings its own PortAudio; it does not tap the SoundFont output.
 
 To run from a checkout instead (for development):
 

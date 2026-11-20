@@ -3,7 +3,27 @@
 All notable changes to JDXI-Editor are documented in this file.
 
 # [0.9.9] — 2026-11
-Bumping version for PyPi
+
+The notes below are everything a user can see since 0.9.8. This build stays **Beta**. A 1.0.0rc1 tag waits on a pass with a connected JD-Xi. On this machine the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
+
+### Rack skins
+
+- **JDXiSkin menu**: The window wears a rack skin. Built-ins include Glossy Black, JD-Xi Red, JD-Xi White, JD-Xi Rack, TR-808, TB-303, TR-909, TR-1000, Jupiter-8, Juno-106, Mini Moog, MC-101, MS-20, SH-101 (grey, red, blue), ARP 2600, Brushed Metal, and Ivory Walnut.
+- **User skins**: A TOML file in `~/.jdxi_editor/skins/` appears in the same menu. `doc/skins/tr1000_user.toml` is an example. The Skin Editor starts a file from any built-in skin. A skin can ask the Audio Monitor for bar meters, needles, or a vintage VU, and can draw MIDI lanes as punched cards.
+
+### Audio
+
+- **Audio Monitor**: Oscilloscope, stereo bar meters, and a spectrum, from an **input** device. It does not hear SoundFont playback. Needles are drawn only when the active skin asks for them.
+- **SoundFont output**: FluidSynth renders samples and sounddevice plays them. MIDI Configuration has an **Audio output** menu. "(Default)" is the system output (the speakers, when those are the Mac's default). Changing the menu while FluidSynth is running reopens that device, and the status names the output PortAudio opened. A short note from `TimGM6mb.sf2` opened the system default (`Mark's AirPods #5`, index 1), `MacBook Pro Speakers` (index 4), and `Multi-Output Device` (index 9). No USB interface was connected. The monitor's input path was left alone.
+
+### Playback, playlists, and install
+
+- **Playlists**: Add, remove, and reorder files, with artwork and playback progress.
+- **MIDI tools**: Phrase finding, track classification, trimming, and remap, beside the existing player.
+- **Update check**: Once a day, against GitHub Releases, for a build that matches this install.
+- **PySide6**: Required `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 are untested.
+- **picomidi**: Required `>=0.3.0`. The MIDI player's transport uses `picomidi.playback.scheduler` and the engine's per-track volume, transpose, and channel map, none of which are in picomidi 0.2.0; against 0.2.0 the main window does not import at all.
+- **Frozen builds**: FluidSynth, sounddevice (and its PortAudio binaries), and music21's LilyPond support are declared for PyInstaller and py2app. A `pip install` still needs system PortAudio (PyAudio) and a FluidSynth install for SoundFont playback.
 
 # [0.9.8] — 2026-11
 

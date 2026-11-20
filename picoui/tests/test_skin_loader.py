@@ -158,3 +158,24 @@ def test_a_stored_choice_waits_for_a_skin_loaded_later():
     later = skin_from_data({"skin": {"id": "later"}})
     registry.register(later)
     assert registry.active() is later
+
+
+def test_a_spec_written_as_a_table_loads_as_the_same_spec():
+    from picoui.skin.spec import Band, Grille, Keyboard, PatchCord, StepButtons, StepLights, Wash
+    from picoui.skin.writer import dumps, spec_table
+
+    resolver = loader.Resolver({}, loader.BUILTIN_GRADIENTS)
+    decorations = (
+        Rule("top", 2.5, (230, 74, 50, 128)),
+        Band("bottom", 3, ("#111111", "#222222")),
+        Keyboard(10, 3, "#F0F0E8", "#101010"),
+        StepButtons(6, 16, ("#E6E3DB",), "#35383B", group=4, lights=StepLights(2, "#F04430", "#351914")),
+        Wash(loader.GradientColorStops((loader.GradientStop(0, (0, 0, 0, 0)), loader.GradientStop(1, (0, 0, 0, 90))))),
+    )
+    details = (PatchCord(("#FF0000", "#0000FF")), Grille("#333333", "#000000", "#555555"))
+    assert spec_table(decorations[0]) == {"type": "rule", "edge": "top", "offset": 2.5, "color": [230, 74, 50, 128]}
+    text = dumps({"face": {"decorations": [spec_table(d) for d in decorations]},
+                  "ear": {"details": [spec_table(d) for d in details]}})
+    data = tomllib.loads(text)
+    assert resolver.field("decorations", data["face"]["decorations"], "face") == decorations
+    assert resolver.field("details", data["ear"]["details"], "ear") == details

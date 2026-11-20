@@ -10,8 +10,15 @@ save it as a user skin (``~/.jdxi_editor/skins/<id>.toml``, see
 The window edits the skin file's tables directly, the same tables a file
 holds. A field left alone is inherited from the skin it is based on, and is
 not written; a field you change is written, and its reset button (↺) takes
-it out again. Parts the form does not show -- a face's decorations, named
-colours -- are kept as they are when an existing file is opened and saved.
+it out again. Parts the form does not show -- named colours, gradients, a
+decoration's sizes -- are kept as they are when an existing file is opened
+and saved.
+
+The colours of the panel's decorations (rules, step buttons, a keyboard) and
+of the cheeks' and rail's details (patch cords, grilles, cables) are offered
+too. A file can only replace such a list, not change one item of it, so the
+first colour changed writes the inherited list out whole; its ↺ takes the
+whole list out again.
 """
 
 from __future__ import annotations
@@ -50,7 +57,8 @@ from picoui.skin import Skin, SkinFileError
 from picoui.skin.loader import read_skin_file
 from picoui.skin.spec import GradientFill
 from picoui.skin.widgets import RackPanel
-from picoui.skin.writer import dumps
+from picoui.skin.gradient import parse_color
+from picoui.skin.writer import color_value, dumps, spec_table
 
 from jdxi_editor.ui.style.rack_skin import REGISTRY, MeterStyle, active_skin
 from jdxi_editor.ui.style.user_skins import (
@@ -96,6 +104,63 @@ LANE_CHOICES: List[Tuple[str, Optional[Dict[str, Any]]]] = [
     ("Punched cards on brushed aluminium", {"cards": True, "backing": {"type": "brushed", "stops": "aluminium", "grain": 4, "coverage": 0.35}}),
     ("Punched cards on gunmetal", {"cards": True, "backing": {"type": "brushed", "stops": "gunmetal", "grain": 10}}),
 ]
+
+#: The lists of decorations and details whose colours the form offers:
+#: (table, key, heading)
+DETAIL_LISTS = [
+    ("face", "decorations", "Panel decorations"),
+    ("face", "overlays", "Panel overlays"),
+    ("ear", "details", "Cheek details"),
+    ("rail", "details", "Rail details"),
+]
+
+#: What each decoration or detail is called in the form, by its file ``type``
+DETAIL_NAMES = {
+    "band": "Band", "gradient_band": "Shaded band", "material_band": "Material band",
+    "rule": "Rule", "inset_rim": "Inset outline", "frame": "Frame", "wash": "Wash",
+    "keyboard": "Keyboard", "step_buttons": "Step buttons", "patch_cord": "Patch cord",
+    "grille": "Grille", "sagging_cable": "Cable",
+}
+
+#: What each colour field is called in the form
+DETAIL_COLOR_NAMES = {
+    "color": "Colour", "background": "Background", "ivory": "White keys",
+    "black": "Black keys", "divider": "Key dividers", "plate": "Plate",
+    "holes": "Holes", "rim": "Outline", "on": "Light, lit", "off": "Light, unlit",
+}
+
+#: One colour in a decoration or detail: (table, key, index, path), where
+#: path leads to it in the item's table, as ("color",), ("colors", 1) or
+#: ("lights", "on")
+DetailSlot = Tuple[str, str, int, Tuple[Any, ...]]
+
+
+def detail_slots(item: Any) -> List[Tuple[Tuple[Any, ...], str, Any]]:
+    """The colours of a decoration or detail: (path, label, rgba) each."""
+    table = spec_table(item)
+    slots = []
+    for name, value in table.items():
+        if name == "colors":
+            colors = getattr(item, "colors")
+            names = ("Left", "Right") if table["type"] == "patch_cord" else None
+            for i, rgba in enumerate(colors):
+                label = names[i] if names else ("Colour" if len(colors) == 1 else f"Colour {i + 1}")
+                slots.append((("colors", i), label, rgba))
+        elif name == "lights":
+            for key in ("on", "off"):
+                slots.append((("lights", key), DETAIL_COLOR_NAMES[key], getattr(item.lights, key)))
+        elif name in DETAIL_COLOR_NAMES and name not in ("on", "off"):
+            slots.append(((name,), DETAIL_COLOR_NAMES[name], getattr(item, name)))
+    return slots
+
+
+def detail_title(item: Any) -> str:
+    """ "Rule (top)": what a decoration or detail is, and where."""
+    kind = spec_table(item)["type"]
+    title = DETAIL_NAMES.get(kind, kind.replace("_", " ").capitalize())
+    edge = getattr(item, "edge", None)
+    return f"{title} ({edge})" if edge else title
+
 
 #: The sizes the form offers: key, label, largest value
 SIZE_FIELDS = [("ear_width", "Cheek width", 40), ("bezel", "Bezel", 20), ("rail_height", "Rail height", 30)]
@@ -279,6 +344,7 @@ class SkinEditorWindow(QMainWindow):
             self._form.addWidget(self._palette_group(table, title))
         self._form.addWidget(self._face_group())
         self._form.addWidget(self._ear_group())
+        self._form.addWidget(self._details_group())
         self._form.addWidget(self._features_group())
         self._form.addStretch(1)
         scroll = QScrollArea()
@@ -409,6 +475,17 @@ class SkinEditorWindow(QMainWindow):
             button.colorChosen.connect(lambda _c: self._write_ear_material())
             layout.addRow(label, button)
         return group
+
+    def _details_group(self) -> QGroupBox:
+        """
+        The colours of the panel's decorations and the cheeks' and rail's
+        details; its rows are made to fit the skin (see :meth:`_fill_details`).
+        """
+        self.details_group = QGroupBox("Decorations and details")
+        self._details_layout = QFormLayout(self.details_group)
+        self._details_shape: Optional[tuple] = None
+        self._detail_buttons: Dict[DetailSlot, ColorButton] = {}
+        return self.details_group
 
     def _features_group(self) -> QGroupBox:
         group = QGroupBox("Audio Monitor and MIDI player")
@@ -553,6 +630,38 @@ class SkinEditorWindow(QMainWindow):
         }
         self._changed()
 
+    def _detail_edited(self, slot: DetailSlot, color: str) -> None:
+        """
+        A decoration's or detail's colour changed. A list inherited from the
+        skin it is based on is written out whole first, as a file can only
+        replace a list, then the one colour is changed in it.
+        """
+        if self._updating or self._skin is None:
+            return
+        table, key, index, path = slot
+        values = self._table(table)
+        if key not in values:
+            values[key] = [spec_table(item) for item in getattr(getattr(self._skin, table), key)]
+        item = values[key][index]
+        for step in path[:-1]:
+            item = item[step]
+        # Keep a colour's transparency: the picker gives only "#RRGGBB"
+        current = self._detail_color(slot)
+        alpha = current[3] if current is not None else 255
+        item[path[-1]] = color_value(parse_color(color)[:3] + (alpha,))
+        self._changed()
+
+    def _detail_color(self, slot: DetailSlot):
+        """The colour a slot shows now, as RGBA, or None."""
+        if self._skin is None:
+            return None
+        table, key, index, path = slot
+        part = getattr(self._skin, table, None)
+        items = getattr(part, key, ()) if part is not None else ()
+        if index >= len(items):
+            return None
+        return next((rgba for p, _label, rgba in detail_slots(items[index]) if p == path), None)
+
     # --- Building the skin, and showing it ------------------------------------
 
     def _build(self, refresh_form: bool = False) -> None:
@@ -624,6 +733,9 @@ class SkinEditorWindow(QMainWindow):
             self.repaint_ear.setChecked("material" in self._data.get("ear", {}))
             self.repaint_ear.setEnabled(skin.ear_width > 0)
             self._fill_stops(self.ear_stops, ear_material, skin.chassis.body, self.repaint_ear.isChecked())
+            self._fill_details(skin)
+            for (table, key), reset in self._resets.items():
+                reset.setEnabled(key in self._data.get(table, {}))
             self.meter.setCurrentIndex(max(0, self.meter.findData(head.get("meter"))))
             lanes = self._data.get("lanes")
             index = next((i for i, (_t, table) in enumerate(LANE_CHOICES) if table == lanes), 0)
@@ -631,6 +743,64 @@ class SkinEditorWindow(QMainWindow):
             self.meter.setItemText(0, f"Inherit ({skin.meter.value.replace('_', ' ')})")
         finally:
             self._updating = False
+
+    def _fill_details(self, skin: Skin) -> None:
+        """
+        A row per colour of each decoration and detail the skin has, under a
+        heading per list; remade only when the skin's lists change shape.
+        """
+        lists = []
+        for table, key, heading in DETAIL_LISTS:
+            part = getattr(skin, table, None)
+            items = tuple(getattr(part, key, ()) or ()) if part is not None else ()
+            if items:
+                lists.append((table, key, heading, items))
+        shape = tuple(
+            (table, key, tuple((detail_title(item), tuple(p for p, _l, _c in detail_slots(item))) for item in items))
+            for table, key, _heading, items in lists
+        )
+        if shape != self._details_shape:
+            self._details_shape = shape
+            self._make_detail_rows(lists)
+        for slot, button in self._detail_buttons.items():
+            rgba = self._detail_color(slot)
+            if rgba is not None:
+                button.set_color(rgba)
+
+    def _make_detail_rows(self, lists) -> None:
+        layout = self._details_layout
+        while layout.rowCount():
+            layout.removeRow(0)
+        for key in [k for k in self._resets if k in {(t, n) for t, n, _h in DETAIL_LISTS}]:
+            del self._resets[key]
+        self._detail_buttons = {}
+        self.details_group.setVisible(bool(lists))
+        for table, key, heading, items in lists:
+            title = QLabel(f"<b>{heading}</b>")
+            reset = QToolButton(text="↺")
+            reset.setToolTip("Inherit these from the skin it is based on")
+            reset.clicked.connect(lambda _c=False, t=table, k=key: self._reset(t, k))
+            self._resets[(table, key)] = reset
+            header = QWidget()
+            row = QHBoxLayout(header)
+            row.setContentsMargins(0, 6, 0, 0)
+            row.addWidget(title, 1)
+            row.addWidget(reset)
+            layout.addRow(header)
+            for index, item in enumerate(items):
+                slots = detail_slots(item)
+                if not slots:
+                    note = QLabel("shaded; change it in the file")
+                    note.setEnabled(False)
+                    layout.addRow(detail_title(item), note)
+                    continue
+                layout.addRow(QLabel(detail_title(item)))
+                for path, label, _rgba in slots:
+                    slot = (table, key, index, path)
+                    button = ColorButton()
+                    button.colorChosen.connect(lambda color, s=slot: self._detail_edited(s, color))
+                    self._detail_buttons[slot] = button
+                    layout.addRow(f"    {label}", button)
 
     def _fill_based_on(self, based_on: Optional[str]) -> None:
         self.based_on.clear()

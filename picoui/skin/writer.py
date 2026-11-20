@@ -24,10 +24,17 @@ Example:
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import math
 import re
-from typing import Any, List, Mapping
+from typing import Any, Dict, List, Mapping
+
+from picoui.skin.gradient import GradientColorStops, parse_color
+from picoui.skin.loader import COLOR_FIELDS, DECORATIONS, DETAILS, MATERIALS
+
+#: Each spec class's ``type`` name in a file
+_TYPE_NAMES = {cls: name for kinds in (MATERIALS, DECORATIONS, DETAILS) for name, cls in kinds.items()}
 
 #: The order a skin file's tables are written in; any others follow
 TABLE_ORDER = (
@@ -83,6 +90,68 @@ def _table(name: str, table: Mapping[str, Any], lines: List[str]) -> None:
             for k, v in item.items():
                 lines.append(f"{_key(k)} = {_value(v)}")
             lines.append("")
+
+
+def color_value(rgba: Any) -> Any:
+    """
+    A colour as a file writes it: "#RRGGBB", or [r, g, b, a] when it is
+    not opaque (a file refuses 8-digit hex).
+    """
+    rgba = parse_color(rgba)
+    if rgba[3] == 255:
+        return "#{:02X}{:02X}{:02X}".format(*rgba[:3])
+    return list(rgba)
+
+
+def _gradient_value(stops: GradientColorStops) -> list:
+    return [[float(stop.position), color_value(stop.color)] for stop in stops.stops]
+
+
+def _field_value(name: str, value: Any) -> Any:
+    if isinstance(value, GradientColorStops):
+        return _gradient_value(value)
+    if name in ("material", "backing"):
+        return spec_table(value)
+    if name == "lights":
+        return spec_table(value, typed=False)
+    if name in ("decorations", "overlays", "details"):
+        return [spec_table(item) for item in value]
+    if name in COLOR_FIELDS:
+        return color_value(value)
+    if name == "colors":
+        return [color_value(item) for item in value]
+    if isinstance(value, tuple):
+        return list(value)
+    return value
+
+
+def spec_table(spec: Any, typed: bool = True) -> Dict[str, Any]:
+    """
+    A spec as the table a skin file gives for it, the inverse of
+    :class:`picoui.skin.loader.Resolver`: its ``type`` (for a material,
+    decoration or detail) and every field that differs from its default.
+
+    >>> from picoui.skin.spec import Rule
+    >>> spec_table(Rule("top", 2.5, "#E64A32"))
+    {'type': 'rule', 'edge': 'top', 'offset': 2.5, 'color': '#E64A32'}
+
+    :param spec: a spec from :mod:`picoui.skin.spec`
+    :param typed: False for a nested table without a ``type`` (step lights)
+    :return: dict
+    """
+    table: Dict[str, Any] = {}
+    if typed:
+        name = _TYPE_NAMES.get(type(spec))
+        if name is None:
+            raise TypeError(f"A skin file has no type for {type(spec).__name__}")
+        table["type"] = name
+    for field in dataclasses.fields(spec):
+        value = getattr(spec, field.name)
+        has_default = field.default is not dataclasses.MISSING
+        if (has_default and value == field.default) or value is None:
+            continue  # TOML has no None, and a default needs no writing
+        table[field.name] = _field_value(field.name, value)
+    return table
 
 
 def dumps(data: Mapping[str, Mapping[str, Any]]) -> str:
