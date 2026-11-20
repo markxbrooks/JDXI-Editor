@@ -35,7 +35,13 @@ fi
 APP_NAME="JD-Xi Editor.app"
 DMG_NAME="JD-Xi_Editor_0.9.3_MacOS_Universal.dmg"
 VOLUME_NAME="JDXI Editor"
-VENV_PATH="${PROJECT_ROOT}/venv"
+# This project's virtualenv is .venv; older checkouts used venv. Take
+# whichever exists so the script does not stop before it starts.
+if [[ -d "${PROJECT_ROOT}/.venv" ]]; then
+    VENV_PATH="${PROJECT_ROOT}/.venv"
+else
+    VENV_PATH="${PROJECT_ROOT}/venv"
+fi
 SRC_DIR="${PROJECT_ROOT}/dist/${APP_NAME}"
 BUILD_DIR="${PROJECT_ROOT}/jdxi_dmg/JDXI-Editor"
 
