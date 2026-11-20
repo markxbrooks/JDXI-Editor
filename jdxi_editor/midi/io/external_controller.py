@@ -33,6 +33,7 @@ import rtmidi
 from decologr import Decologr as log
 from PySide6.QtCore import QObject, QTimer, Signal
 
+from jdxi_editor.midi.io.backend import open_rtmidi
 from jdxi_editor.midi.io.controller_map import (
     ControllerProfile,
     detect_profile,
@@ -69,7 +70,7 @@ class ExternalControllerInput(QObject):
         self._parsers: dict[str, mido.Parser] = {}
         #: kept for listing ports, so rescanning does not open a MIDI client
         #: of its own every few seconds
-        self._probe = rtmidi.MidiIn()
+        self._probe = open_rtmidi(rtmidi.MidiIn, "controller probe")
         #: main controller port, or None; also the port reported to the monitor
         self.port_name: Optional[str] = None
         #: (port, mido.Message) written by the RtMidi thread, read by the GUI pump
@@ -258,7 +259,7 @@ class ExternalControllerInput(QObject):
         """
         if port_name in self._inputs:
             return True
-        midi_in = rtmidi.MidiIn()
+        midi_in = open_rtmidi(rtmidi.MidiIn, "controller")
         try:
             midi_in.open_port(midi_in.get_ports().index(port_name))
         except (ValueError, rtmidi.RtMidiError) as ex:

@@ -1088,8 +1088,10 @@ dependencies = [
     { name = "pyside6" },
     { name = "python-rtmidi" },
     { name = "qtawesome" },
+    { name = "sounddevice" },
     { name = "sqlalchemy", version = "2.0.58", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sqlalchemy", version = "2.1.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.optional-dependencies]
@@ -1100,6 +1102,7 @@ dev = [
     { name = "isort" },
     { name = "mypy" },
     { name = "pytest" },
+    { name = "soundfile" },
 ]
 plots = [
     { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -1122,7 +1125,7 @@ requires-dist = [
     { name = "music21" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "numpy" },
-    { name = "picomidi", specifier = ">=0.2.0" },
+    { name = "picomidi", specifier = ">=0.3.0" },
     { name = "pillow" },
     { name = "pyaudio" },
     { name = "pyfluidsynth" },
@@ -1132,8 +1135,11 @@ requires-dist = [
     { name = "python-rtmidi", specifier = ">=1.5.8" },
     { name = "qtawesome" },
     { name = "sf2utils", marker = "extra == 'soundfont'", specifier = ">=1.0.0" },
+    { name = "sounddevice", specifier = ">=0.4.0" },
     { name = "sounddevice", marker = "extra == 'soundfont'", specifier = ">=0.4.0" },
+    { name = "soundfile", marker = "extra == 'dev'" },
     { name = "sqlalchemy", specifier = ">=2.0" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=1.1.0" },
 ]
 provides-extras = ["dev", "plots", "soundfont"]
 
@@ -1927,11 +1933,11 @@ wheels = [
 
 [[package]]
 name = "picomidi"
-version = "0.2.0"
+version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b8/71/61434047d257613395cd3470b8bf92b19e3790ac96845a85536f12c83937/picomidi-0.2.0.tar.gz", hash = "sha256:5879515dd20e6e466779e01f641fbbe00233f576cbf55d323275b46d65193552", size = 50153, upload-time = "2026-11-07T01:09:58.327Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/ad/b393bdc85f51e1dc8255cc9647898010bd0511fd56383084b8f21d8f1ddd/picomidi-0.3.0.tar.gz", hash = "sha256:5836be6cbf18d4418286d7d4c0f9841df55a53ffeee424e3361296f99d277812", size = 59958, upload-time = "2026-11-20T04:41:40.65Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/9b/4341e906c03434920c9e3f4976caae2cf4132fb08e66d155b3b5ff47beed/picomidi-0.2.0-py3-none-any.whl", hash = "sha256:fd570d266678e7c0b23b2b3560f59ab075dcdee937d44c1a1109940d77e24e1a", size = 67269, upload-time = "2026-11-07T01:09:56.992Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/7a/1dcbd98c4dae0a07bc69b7559b95b75227b649c1d22a0ee4baba5165d24a/picomidi-0.3.0-py3-none-any.whl", hash = "sha256:603527695cbada1f44dc066ef499fe0eff5c20c838de5b9235957a020b54165c", size = 77564, upload-time = "2026-11-20T04:41:39.547Z" },
 ]
 
 [[package]]
@@ -2411,6 +2417,28 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/88/a1/d19dd9889cd4bce2e233c4fac007cd8daaf5b9fe6e6a5d432cf17be0b807/sounddevice-0.5.5-py3-none-win32.whl", hash = "sha256:1234cc9b4c9df97b6cbe748146ae0ec64dd7d6e44739e8e42eaa5b595313a103", size = 317765, upload-time = "2026-01-23T18:36:39.047Z" },
     { url = "https://files.pythonhosted.org/packages/c3/0e/002ed7c4c1c2ab69031f78989d3b789fee3a7fba9e586eb2b81688bf4961/sounddevice-0.5.5-py3-none-win_amd64.whl", hash = "sha256:cfc6b2c49fb7f555591c78cb8ecf48d6a637fd5b6e1db5fec6ed9365d64b3519", size = 365324, upload-time = "2026-01-23T18:36:40.496Z" },
     { url = "https://files.pythonhosted.org/packages/4e/39/a61d4b83a7746b70d23d9173be688c0c6bfc7173772344b7442c2c155497/sounddevice-0.5.5-py3-none-win_arm64.whl", hash = "sha256:3861901ddd8230d2e0e8ae62ac320cdd4c688d81df89da036dcb812f757bb3e6", size = 317115, upload-time = "2026-01-23T18:36:42.235Z" },
+]
+
+[[package]]
+name = "soundfile"
+version = "0.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cffi" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d2/db/949331952a6fb1c5b12e9de80fd08747966c2039d1a61db4764fbd3981c2/soundfile-0.14.0.tar.gz", hash = "sha256:ba1c1a2d618bca5c406647c83b89f07cc8810fa506a50622a6993ba130c1de11", size = 47842, upload-time = "2026-06-06T08:58:47.869Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/d1/5e338af9ca6ed0786cd5bb03f6d60de1c325728c1189014f3b59aae7403c/soundfile-0.14.0-py2.py3-none-any.whl", hash = "sha256:8ba81ae3a89fd5ab3bef8a8eb481fbbe794e806309675a89b4df48b8d31908a8", size = 26799, upload-time = "2026-06-06T08:58:33.269Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/72/c6b21e58d3113596e7e8de0a08d6f1d95173492cfbca0a4db14148cbba2a/soundfile-0.14.0-py2.py3-none-macosx_10_9_x86_64.whl", hash = "sha256:19be05428da76ed61a4cad29b8e4bcf43a3e5c100089d2ec81dc961eed1b0dd4", size = 1144568, upload-time = "2026-06-06T08:58:35.231Z" },
+    { url = "https://files.pythonhosted.org/packages/63/7a/dfdd6f8c748988427119f75eb860a3cedd858d1aea1fe28f39ad8559ef22/soundfile-0.14.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:d828d35a059626da52f1415b5faee610aeab393319cb3fc4a9aef47b619fc14c", size = 1103726, upload-time = "2026-06-06T08:58:37.948Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/f8/fc39fad6f879633461d27394cd1ddaf1f769ffa0597dca35872f51b16461/soundfile-0.14.0-py2.py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:e85724a90bc99a6e8062c0b4ddf725f53b2a3b70afd4da875e9d2cfc4e92f377", size = 1238050, upload-time = "2026-06-06T08:58:39.932Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/a2/70fd4432b924684c372df8b0a45708c36c057ef3596c9eb53e0a806b980b/soundfile-0.14.0-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:1e38bac1853412871318e82a1ba69a8be677619b56025bbfcccdb41b6cafe82d", size = 1315963, upload-time = "2026-06-06T08:58:41.716Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/34/c9e80783d83eab739a9531fdee03675d53e0bf1b2ccb4bb3af5844675046/soundfile-0.14.0-py2.py3-none-win32.whl", hash = "sha256:0a6ae43c50c71b4e020cc55382925cb89451c1ed1a0c3d0f5d802da269226849", size = 902199, upload-time = "2026-06-06T08:58:43.289Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/97/b39c18ac1df45e755ca22b8b00e872929da5d107998a207a5e4ac831bfda/soundfile-0.14.0-py2.py3-none-win_amd64.whl", hash = "sha256:299491d3499460fb1b74bb4bd78b57ffc2d243a5fafa7b6ec1b264875c78453e", size = 1021480, upload-time = "2026-06-06T08:58:45.016Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/83/55c65e61cf457805ce2ec157c1c6ae17715d0851aa2374422de0538838ca/soundfile-0.14.0-py2.py3-none-win_arm64.whl", hash = "sha256:e090704718e124e7c844695236f1fce8d18a5e761eaf7c82dfcd124620805f98", size = 888858, upload-time = "2026-06-06T08:58:46.593Z" },
 ]
 
 [[package]]
