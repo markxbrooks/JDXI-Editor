@@ -12,6 +12,7 @@ from PySide6.QtCore import QRectF, Qt  # noqa: E402
 from PySide6.QtGui import QColor, QImage, QPainter  # noqa: E402
 from PySide6.QtWidgets import QApplication, QLabel  # noqa: E402
 
+from picoui.skin import render as skin_render  # noqa: E402
 from jdxi_editor.ui.style import rack_skin  # noqa: E402
 from jdxi_editor.ui.style.rack_skin import (  # noqa: E402
     SKINS,
@@ -97,6 +98,7 @@ def test_the_skins_are_offered():
         "tr808",
         "tb303",
         "tr909",
+        "tr1000",
         "jupiter8",
         "juno106",
         "minimoog",
@@ -237,7 +239,7 @@ def test_the_minimoog_is_a_black_panel_in_a_walnut_cabinet(qapp):
     from jdxi_editor.ui.style.rack_skin import SKINS, MiniMoogSkin
 
     skin = MiniMoogSkin()
-    assert {s.skin_id for s in SKINS.values() if s.punched_cards} == {
+    assert {s.skin_id for s in SKINS.values() if s.lanes.cards} == {
         "brushed_70s",
         "minimoog",
     }
@@ -541,7 +543,8 @@ def test_the_ms20_cheeks_carry_cables_on_short_strips(qapp, height):
     ear = skin.ear_width
     assert has(red, 30, 30 + ear) and not has(yellow, 30, 30 + ear)
     assert has(yellow, 430 - ear, 431) and not has(red, 430 - ear, 431)
-    assert len(skin.jack_points(QRectF(0, 0, ear, height))) == (2 if height >= skin.loop_height else 1)
+    jacks = skin_render.jack_points(QRectF(0, 0, ear, height), skin.loop_height)
+    assert len(jacks) == (2 if height >= skin.loop_height else 1)
 
 
 def test_the_808_wears_its_step_buttons(qapp):
@@ -627,6 +630,7 @@ def test_each_skin_carries_its_own_display_palette():
         "tr808": "#FF4A33",          # the 808's red step LEDs
         "tb303": "#FF1F10",          # the 303's red LED numerals
         "tr909": "#FF3A20",          # the 909's red LED display
+        "tr1000": "#F0EEE8",         # warm white on charcoal
         "jupiter8": "#FF2A14",       # the JP-8's patch number display
         "juno106": "#C5D8EA",        # a cool grey-blue, the Juno has no screen
         "minimoog": "#F4E6C8",       # cream legends, the Mini has no screen
@@ -1066,3 +1070,22 @@ def test_the_display_follows_the_skin(qapp):
     assert title.lcd.text == "#5BFF9B"
     set_active_skin("glossy_black", remember=False)
     assert title.lcd.text == "#FF6A00"
+
+
+def test_meter_and_lane_styles_are_chosen_separately_from_the_material(qapp):
+    """
+    Any skin can take any meter or lanes: the Brushed 70s and the ARP 2600
+    share the vintage VU meters, though one is aluminium and one black, and
+    the Brushed 70s lays its punched cards on metal, the Minimoog on wood.
+    """
+    from picoui.skin import BrushedFill, WoodFill
+    from jdxi_editor.ui.style.rack_skin import LaneStyle, MeterStyle
+
+    for skin in SKINS.values():
+        assert isinstance(skin.meter, MeterStyle)
+        assert isinstance(skin.lanes, LaneStyle)
+    brushed, arp, mini = (SKINS[i] for i in ("brushed_70s", "arp2600", "minimoog"))
+    assert brushed.meter == arp.meter == MeterStyle.VINTAGE_VU
+    assert isinstance(brushed.lanes.backing, BrushedFill)
+    assert isinstance(mini.lanes.backing, WoodFill)
+    assert not arp.lanes.cards

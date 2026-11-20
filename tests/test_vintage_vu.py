@@ -17,7 +17,7 @@ from PySide6.QtWidgets import QApplication
 _APP = QApplication.instance() or QApplication([])
 
 from jdxi_editor.audio.audio_snapshot import DB_FLOOR  # noqa: E402
-from jdxi_editor.ui.style.rack_skin import SKINS, active_skin, set_active_skin  # noqa: E402
+from jdxi_editor.ui.style.rack_skin import SKINS, MeterStyle, active_skin, set_active_skin  # noqa: E402
 from jdxi_editor.ui.widgets.audio.analog_vu import (  # noqa: E402
     EXPLANATION,
     LED_OFF,
@@ -65,7 +65,7 @@ def _darkest_near(image, point, sx, sy, radius=3):
 
 def test_the_vintage_skins_have_vintage_meters():
     # The Mini Moog, the brushed-metal 1970s rack gear, and the ARP 2600
-    assert {s.skin_id for s in SKINS.values() if s.vintage_vu} == {
+    assert {s.skin_id for s in SKINS.values() if s.meter == MeterStyle.VINTAGE_VU} == {
         "minimoog", "brushed_70s", "arp2600"
     }
 

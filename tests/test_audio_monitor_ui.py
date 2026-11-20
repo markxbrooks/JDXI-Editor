@@ -20,7 +20,7 @@ from jdxi_editor.audio.audio_snapshot import (  # noqa: E402
     WAVEFORM_COLUMNS,
     AudioSnapshot,
 )
-from jdxi_editor.ui.style.rack_skin import active_skin  # noqa: E402
+from jdxi_editor.ui.style.rack_skin import MeterStyle, active_skin  # noqa: E402
 from jdxi_editor.ui.widgets.audio.audio_monitor import AudioMonitor  # noqa: E402
 from jdxi_editor.ui.widgets.audio.oscilloscope import (  # noqa: E402
     Oscilloscope,
@@ -126,8 +126,8 @@ def test_a_full_bar_reaches_zero_and_red_is_only_at_the_clip():
 
 def test_needles_draw_when_the_skin_asks():
     skin = active_skin()
-    previous = skin.needle_meters
-    skin.needle_meters = True
+    previous = skin.meter
+    skin.meter = MeterStyle.NEEDLES
     meter = None
     try:
         lcd = skin.lcd
@@ -143,7 +143,7 @@ def test_needles_draw_when_the_skin_asks():
         overload = needle_tip(origin.x(), origin.y(), radius * ARC_RADIUS, -1.5)
         assert _near(image, overload[0], overload[1], sx, sy, QColor(224, 68, 53), radius=6)
     finally:
-        skin.needle_meters = previous
+        skin.meter = previous
         if meter is not None:
             meter.close()
 

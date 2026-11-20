@@ -7,6 +7,9 @@ Reusable skins for Qt applications: the look of a panel as an object.
 - :mod:`picoui.skin.textures` -- brushed metal, wood and moulded materials
 - :class:`GradientStop`, :class:`GradientColorStops` -- gradients as data,
   applied with :func:`apply_gradient_stops`
+- :class:`FaceSpec`, :class:`EarSpec` and their materials and decorations
+  (:mod:`picoui.skin.spec`) -- a faceplate and its cheeks as data, painted by
+  :mod:`picoui.skin.render`
 - :class:`SkinRegistry` -- the skins offered, the active one, the saved
   choice, and listeners told when it changes
 - :class:`RackPanel`, :class:`RackEars` -- widgets that wear a skin
@@ -27,6 +30,29 @@ from picoui.skin.palette import (
     Foreground,
     LcdPalette,
 )
+from picoui.skin.spec import (
+    Band,
+    BrushedFill,
+    Frame,
+    Grille,
+    Keyboard,
+    PatchCord,
+    PebbleFill,
+    RailSpec,
+    SaggingCable,
+    SolidFill,
+    StepButtons,
+    StepLights,
+    Wash,
+    EarSpec,
+    FaceSpec,
+    GradientBand,
+    GradientFill,
+    InsetRim,
+    MaterialBand,
+    Rule,
+    WoodFill,
+)
 from picoui.skin.registry import (
     QSettingsStore,
     SkinRegistry,
@@ -46,6 +72,27 @@ __all__ = [
     "DARK_LETTERING",
     "DEFAULT_LCD",
     "LIGHT_LETTERING",
+    "FaceSpec",
+    "Frame",
+    "Grille",
+    "Keyboard",
+    "PatchCord",
+    "PebbleFill",
+    "RailSpec",
+    "SaggingCable",
+    "SolidFill",
+    "StepButtons",
+    "StepLights",
+    "Wash",
+    "EarSpec",
+    "GradientFill",
+    "BrushedFill",
+    "WoodFill",
+    "Band",
+    "GradientBand",
+    "Rule",
+    "InsetRim",
+    "MaterialBand",
     "SkinRegistry",
     "QSettingsStore",
     "default_registry",

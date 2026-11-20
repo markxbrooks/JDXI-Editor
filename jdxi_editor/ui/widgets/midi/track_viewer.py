@@ -30,7 +30,7 @@ from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
 from jdxi_editor.ui.widgets.midi.track import (
     MidiTrackWidget,
-    lane_wood_tile,
+    paint_lane_backing,
     punched_cards,
 )
 from jdxi_editor.ui.widgets.midi.utils import build_tick_to_seconds, get_first_channel
@@ -45,7 +45,7 @@ class _TrackList(QWidget):
         if not punched_cards():
             return
         painter = QPainter(self)
-        painter.drawTiledPixmap(self.rect(), lane_wood_tile(self.height()))
+        paint_lane_backing(painter, self.rect())
         painter.end()
 
 
@@ -227,7 +227,7 @@ class MidiTrackViewer(QWidget):
         if not punched_cards():
             return
         painter = QPainter(self)
-        painter.drawTiledPixmap(self.rect(), lane_wood_tile(self.height()))
+        paint_lane_backing(painter, self.rect())
         painter.end()
 
     def clear(self):

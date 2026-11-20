@@ -10,9 +10,13 @@ numbers it declares -- :attr:`Skin.ear_width`, :attr:`Skin.bezel` and
 margins a :class:`~picoui.skin.widgets.RackPanel` gives its layout, so a skin
 cannot quietly grow.
 
-The base is a shiny black panel. A new skin subclasses it, declares those
-numbers and its palette, and overrides a paint hook or two (``paint_face``,
-``paint_ear``, ``paint_rail``); see :mod:`picoui.skin.textures` for materials.
+The base is a shiny black panel. A new skin subclasses it and declares those
+numbers and its palette. Its look is declared too where it can be: a
+:class:`~picoui.skin.spec.FaceSpec` as :attr:`Skin.face` and an
+:class:`~picoui.skin.spec.EarSpec` as :attr:`Skin.ear`, which
+:mod:`picoui.skin.render` paints. What a spec cannot describe is painted by
+overriding a hook (``paint_face``, ``paint_ear``, ``paint_rail``); see
+:mod:`picoui.skin.textures` for materials.
 """
 
 from __future__ import annotations
@@ -22,8 +26,10 @@ from typing import Optional
 from PySide6.QtCore import QMargins, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPolygonF
 
+from picoui.skin import render
 from picoui.skin.gradient import GradientColorStops, GradientStop, apply_gradient_stops
 from picoui.skin.palette import DARK_CHASSIS, DEFAULT_LCD, LIGHT_LETTERING
+from picoui.skin.spec import EarSpec, FaceSpec, RailSpec
 
 
 class Skin:
@@ -64,6 +70,15 @@ class Skin:
     ink_legends = False
     #: Buttons shaded as caps, and fields as wells milled into the plate
     mounted_controls = False
+    #: The faceplate as data. None, or a spec without a material, is the
+    #: glossy panel above; a spec's overlays are drawn over either.
+    face: Optional[FaceSpec] = None
+    #: The ears as data. None leaves :meth:`paint_ear` to paint them, which
+    #: the base skin does not.
+    ear: Optional[EarSpec] = None
+    #: The rail as data, painted in the :attr:`rail_height` below the
+    #: content. None leaves :meth:`paint_rail` to paint it.
+    rail: Optional[RailSpec] = None
 
     def content_margins(self) -> QMargins:
         """
@@ -126,12 +141,30 @@ class Skin:
         self, painter: QPainter, rect: QRectF, sheen: bool = True
     ) -> None:
         """
-        A shiny black plastic panel: deep gradient, diagonal sheen, soft rim.
+        The faceplate this skin's :attr:`face` describes, or, without one,
+        a shiny black plastic panel: deep gradient, diagonal sheen, soft rim.
 
         :param painter: QPainter
         :param rect: QRectF the panel's area
         :param sheen: bool draw the diagonal reflection; the instrument's
             right-hand panel is drawn without it, as on the JD-Xi
+        :return: None
+        """
+        face = self.face
+        if face is not None and face.material is not None:
+            render.paint_face(face, painter, rect)
+            return
+        self._paint_glossy(painter, rect, sheen)
+        if face is not None:
+            render.paint_overlays(face, painter, rect)
+
+    def _paint_glossy(self, painter: QPainter, rect: QRectF, sheen: bool) -> None:
+        """
+        The glossy panel, in :attr:`face_stops`.
+
+        :param painter: QPainter
+        :param rect: QRectF the panel's area
+        :param sheen: bool draw the diagonal reflection
         :return: None
         """
         gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
@@ -186,21 +219,26 @@ class Skin:
 
     def paint_ear(self, painter: QPainter, rect: QRectF) -> None:
         """
-        Paint one rack ear. The default skin has none.
+        Paint one rack ear, as :attr:`ear` describes. The default skin has
+        none.
 
         :param painter: QPainter
         :param rect: QRectF the ear's area
         :return: None
         """
+        if self.ear is not None:
+            render.paint_ear(self.ear, painter, rect, side=self.ear_side)
 
     def paint_rail(self, painter: QPainter, rect: QRectF) -> None:
         """
-        Paint the accent stripe. The default skin has none.
+        Paint the rail, as :attr:`rail` describes. The default skin has none.
 
         :param painter: QPainter
-        :param rect: QRectF the stripe's area
+        :param rect: QRectF the rail's area
         :return: None
         """
+        if self.rail is not None:
+            render.paint_rail(self.rail, painter, rect)
 
     @staticmethod
     def paint_screw(
@@ -218,16 +256,7 @@ class Skin:
         :param tint: QColor the metal's colour
         :return: None
         """
-        painter.save()
-        painter.setPen(QPen(QColor(0, 0, 0, 160), 1))
-        painter.setBrush(tint)
-        painter.drawEllipse(centre, radius, radius)
-        painter.setPen(QPen(QColor(0, 0, 0, 120), 1))
-        painter.drawLine(
-            QPointF(centre.x() - radius * 0.55, centre.y()),
-            QPointF(centre.x() + radius * 0.55, centre.y()),
-        )
-        painter.restore()
+        render.paint_screw(painter, centre, radius, tint)
 
     def outline_ear(
         self,

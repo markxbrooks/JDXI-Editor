@@ -1,9 +1,9 @@
 """
 Stereo meters.
 
-The default drawing is two horizontal bars on one dB scale. A skin that sets
-needle_meters draws the circular dials instead, and one that sets vintage_vu
-draws a pair of backlit analogue VU meters (see analog_vu).
+The skin's ``meter`` style chooses the drawing: two horizontal bars on one dB
+scale (MeterStyle.BARS, the default), circular dials (NEEDLES), or a pair of
+backlit analogue VU meters (VINTAGE_VU, see analog_vu).
 """
 
 import math
@@ -14,7 +14,7 @@ from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from jdxi_editor.audio.audio_snapshot import DB_FLOOR, clip_db
-from jdxi_editor.ui.style.rack_skin import active_skin
+from jdxi_editor.ui.style.rack_skin import MeterStyle, active_skin
 from jdxi_editor.ui.widgets.audio.analog_vu import EXPLANATION, paint_vintage_meters
 
 #: -60 dB points up and to the left; 0 dB points up and to the right
@@ -292,9 +292,13 @@ class VUMeter(QWidget):
         painter.drawLine(origin, QPointF(*tip))
 
 
+def _meter_style() -> MeterStyle:
+    return getattr(active_skin(), "meter", MeterStyle.BARS)
+
+
 def _needles() -> bool:
-    return bool(getattr(active_skin(), "needle_meters", False))
+    return _meter_style() == MeterStyle.NEEDLES
 
 
 def _vintage() -> bool:
-    return bool(getattr(active_skin(), "vintage_vu", False))
+    return _meter_style() == MeterStyle.VINTAGE_VU

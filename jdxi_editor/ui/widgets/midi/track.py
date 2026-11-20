@@ -33,20 +33,22 @@ def punched_cards() -> bool:
     """
     from jdxi_editor.ui.style.rack_skin import active_skin
 
-    return active_skin().punched_cards
+    return active_skin().lanes.cards
 
 
-def lane_wood_tile(height: int):
+def paint_lane_backing(painter, rect) -> None:
     """
-    What the cards lie on: the skin's own backing (its cabinet wood, or
-    brushed metal on the metal skin).
+    Fill ``rect`` with what the cards lie on: the skin's own backing (its
+    cabinet wood, or brushed metal on the metal skin).
 
-    :param height: int tile height in px
-    :return: QPixmap
+    :param painter: QPainter
+    :param rect: QRect | QRectF the area behind the cards
+    :return: None
     """
+    from picoui.skin.render import paint_fill
     from jdxi_editor.ui.style.rack_skin import active_skin
 
-    return active_skin().lane_backing(height)
+    paint_fill(active_skin().lanes.backing, painter, QRectF(rect))
 
 
 class MidiTrackWidget(QWidget):
