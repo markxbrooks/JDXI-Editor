@@ -1556,6 +1556,7 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
 
     :return: None
     """
+    from shiboken6 import isValid
     from PySide6.QtWidgets import QApplication, QWidget
 
     application = QApplication.instance()
@@ -1602,7 +1603,12 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
         # a window closed moments ago is destroyed on Qt's side while the
         # Python wrapper waits for the garbage collector. Touching one then
         # raises RuntimeError at best and takes the process down at worst, and
-        # one dead widget must not stop the rest being restyled.
+        # one dead widget must not stop the rest being restyled. isValid asks
+        # shiboken whether the C++ object is still there, which is cheaper and
+        # safer than provoking the error and catching it; the try below stays
+        # for the window where a widget dies between the check and the call.
+        if not isValid(widget):
+            continue
         try:
             if isinstance(widget, (RackEars, MidiTrackViewer)):
                 widget.apply_skin()
