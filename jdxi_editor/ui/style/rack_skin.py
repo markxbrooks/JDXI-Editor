@@ -1598,18 +1598,26 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
     from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
     for widget in application.allWidgets():
-        if isinstance(widget, (RackEars, MidiTrackViewer)):
-            widget.apply_skin()
-        elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
-            widget.refresh_skin()
-        sheet = widget.styleSheet()
-        if sheet == previous_cap:
-            widget.setStyleSheet(desired_cap)
-        elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
-            widget.setStyleSheet(repoint(sheet))
-        # QWidget.update explicitly: an item view overrides update() with one
-        # that demands a model index, and would raise on a bare call
-        QWidget.update(widget)
+        # allWidgets() can hand back a widget whose C++ half has already gone:
+        # a window closed moments ago is destroyed on Qt's side while the
+        # Python wrapper waits for the garbage collector. Touching one then
+        # raises RuntimeError at best and takes the process down at worst, and
+        # one dead widget must not stop the rest being restyled.
+        try:
+            if isinstance(widget, (RackEars, MidiTrackViewer)):
+                widget.apply_skin()
+            elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
+                widget.refresh_skin()
+            sheet = widget.styleSheet()
+            if sheet == previous_cap:
+                widget.setStyleSheet(desired_cap)
+            elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
+                widget.setStyleSheet(repoint(sheet))
+            # QWidget.update explicitly: an item view overrides update() with
+            # one that demands a model index, and would raise on a bare call
+            QWidget.update(widget)
+        except RuntimeError:
+            continue
 
 
 def _size(size: str) -> tuple:
