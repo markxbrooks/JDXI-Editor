@@ -4,7 +4,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import soundfile as sf
+import pytest
+
+# Skip rather than fail collection when the dev extra is not installed:
+# a module-level import of an undeclared package takes the whole run down
+sf = pytest.importorskip("soundfile")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 

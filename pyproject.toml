@@ -61,7 +61,12 @@ dependencies = [
 [project.optional-dependencies]
 soundfont = ["sf2utils>=1.0.0", "sounddevice>=0.4.0"]
 plots = ["matplotlib"]
-dev = ["pytest>=8", "mypy", "black", "isort", "flake8"]
+# soundfile: tests/test_refine.py, test_audio_evidence.py and
+# test_arpeggio_refine.py write a WAV to tmp_path and read it back. Its
+# wheels bundle libsndfile for macOS, Linux and Windows, so no system
+# package is needed. Undeclared, it was present only as a transitive
+# dependency of a local librosa install, and CI failed at collection.
+dev = ["pytest>=8", "mypy", "black", "isort", "flake8", "soundfile"]
 
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"

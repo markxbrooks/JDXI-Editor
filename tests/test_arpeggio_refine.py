@@ -7,7 +7,9 @@ from pathlib import Path
 import mido
 import numpy as np
 import pytest
-import soundfile as sf
+# Skip rather than fail collection when the dev extra is not installed:
+# a module-level import of an undeclared package takes the whole run down
+sf = pytest.importorskip("soundfile")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
