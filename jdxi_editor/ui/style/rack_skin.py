@@ -1609,6 +1609,8 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
         # for the window where a widget dies between the check and the call.
         if not isValid(widget):
             continue
+        if not isValid(widget):
+            continue
         try:
             if isinstance(widget, (RackEars, MidiTrackViewer)):
                 widget.apply_skin()

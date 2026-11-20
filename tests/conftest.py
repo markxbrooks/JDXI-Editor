@@ -42,4 +42,7 @@ def _destroy_leftover_windows():
             # the C++ object is already gone
             continue
     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    # Deliver what the module left queued (QTimer.singleShot and the like)
+    # now, so a callback that outlives its widget fails in this module's
+    # teardown rather than inside an unrelated test that happens to run next
     app.processEvents()
