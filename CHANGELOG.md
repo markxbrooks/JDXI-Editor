@@ -2,6 +2,30 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.0rc2] — 2026-11-19
+
+Replaces 1.0.0rc1, which never reached PyPI: its tag predated the fix below,
+and the release checks failed. No new features; the hardware caveats under
+1.0.0rc1 still apply.
+
+### Fixed
+
+- **The editor starts without a MIDI backend.** python-rtmidi raises when it
+  cannot reach the platform's MIDI service (on Linux, whenever `/dev/snd/seq`
+  is absent: containers, minimal installs, CI runners). The editor now treats
+  that as "no ports" and opens, instead of exiting with a traceback from
+  `_rtmidi`.
+
+### Tests
+
+- `librosa` is declared in the `dev` extra: the refine, audio-evidence,
+  arpeggio and likelihood tests import it and failed without it.
+- The tests that read the local `tests/sheep.mid` are marked `slow` and skip
+  when it is absent, as the other sheep tests already did.
+- The pattern loop test allows a CI runner's scheduling jitter on each beat
+  (+-0.1 s) while still failing a dropped or doubled beat, and holds the
+  median gap to the tempo.
+
 # [1.0.0rc1] — 2026-11-19
 
 The first candidate for 1.0. Everything a user can see is listed under 0.9.9

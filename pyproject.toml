@@ -66,7 +66,10 @@ plots = ["matplotlib"]
 # wheels bundle libsndfile for macOS, Linux and Windows, so no system
 # package is needed. Undeclared, it was present only as a transitive
 # dependency of a local librosa install, and CI failed at collection.
-dev = ["pytest>=8", "mypy", "black", "isort", "flake8", "soundfile"]
+# librosa: the same tests reach scripts/midi_parts/evidence.py, which imports
+# it (constant-Q evidence); undeclared, they failed on the runners with
+# ModuleNotFoundError.
+dev = ["pytest>=8", "mypy", "black", "isort", "flake8", "soundfile", "librosa"]
 
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"

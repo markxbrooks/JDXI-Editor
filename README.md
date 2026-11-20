@@ -67,7 +67,7 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 
 Mac, Windows, and Linux builds are attached to the GitHub release whose tag matches the version in the app (`jdxi_editor/project.py`, currently 0.9.9). Download that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
 
-1.0.0rc1 is the current candidate for 1.0. It adds no features over 0.9.9; it is there so installation and JD-Xi hardware can be exercised before 1.0 is called stable, and the app stays Beta until that has happened (identity, a program read and write, digital, analog, drums, effects, a pattern, and MIDI playback). What it contains, and what is known to be wrong with it, are under 1.0.0rc1 in [CHANGELOG.md](CHANGELOG.md).
+1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9; it is there so installation and JD-Xi hardware can be exercised before 1.0 is called stable, and the app stays Beta until that has happened (identity, a program read and write, digital, analog, drums, effects, a pattern, and MIDI playback). What it contains, and what is known to be wrong with it, are under 1.0.0rc2 and 1.0.0rc1 in [CHANGELOG.md](CHANGELOG.md).
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
