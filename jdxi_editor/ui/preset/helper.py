@@ -34,6 +34,14 @@ import threading
 from decologr import Decologr as log
 from PySide6.QtCore import QObject, Signal
 
+#: The only Bank Select MSBs the JD-Xi has for its tones: SuperNATURAL
+#: digital (95), analog (94) and drum kits (86) -- the complete set found in
+#: jdxi_editor/ui/preset/tone/*/list.py. A SoundFont's preset list carries GM
+#: banks instead (MSB 0, LSB 0, and a GM program number), because it describes
+#: the .sf2 FluidSynth plays, not the instrument. Sent to a JD-Xi those pick a
+#: bank it does not have, and it answers with an error.
+JDXI_TONE_BANK_MSB = frozenset({86, 94, 95})
+
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
 from jdxi_editor.log.midi_info import log_midi_info
@@ -152,6 +160,27 @@ class JDXiPresetHelper(QObject):
 
         if pc is None:
             log.message("Program Change value is None, aborting.")
+            return
+
+        # The preset list is a SoundFont's when "Use SoundFont List" is on, and
+        # its banks are the .sf2's, not the JD-Xi's. Sending those to the
+        # instrument errors it, so say so plainly and send nothing rather than
+        # putting a bank it has never heard of on the wire. The values come
+        # from the preset data as floats or strings, hence the conversion.
+        try:
+            bank = int(float(msb))
+        except (TypeError, ValueError):
+            bank = None
+        if bank not in JDXI_TONE_BANK_MSB:
+            log.warning(
+                scope="PresetHelper",
+                message=(
+                    f"Bank MSB {msb} is not a JD-Xi tone bank "
+                    f"{sorted(JDXI_TONE_BANK_MSB)}, so nothing was sent. This "
+                    f"preset list is a SoundFont's: turn off 'Use SoundFont "
+                    f"List' in MIDI Configuration to play the JD-Xi's own tones."
+                ),
+            )
             return
 
         # Convert to JD-Xi bank format (LSB 65 for presets 129-256)
