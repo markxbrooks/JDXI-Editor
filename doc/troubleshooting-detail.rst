@@ -1,5 +1,5 @@
-Troubleshooting
-===============
+Common Issues
+=============
 
 No JD-Xi MIDI ports appear
 --------------------------

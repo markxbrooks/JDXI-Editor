@@ -3,8 +3,8 @@ Editor Windows
 
 The Editor Windows are the sophisticated command centers of JDXI-Editor—comprehensive, specialized interfaces that provide deep, granular control over every aspect of your Roland JD-Xi synthesizer.
 
-Available Editors
-=================
+Core Editors
+============
 
 * :doc:`JDXi Instrument Window <instrument>` - The main instrument interface and control center
 * :doc:`Editor Windows Overview <editor>` - Comprehensive guide to all specialized editors

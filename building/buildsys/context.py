@@ -19,7 +19,7 @@ class BuildContext:
         if sys.platform == "win32":
             python = self.project_root / "venv" / "Scripts" / "python.exe"
         else:
-            python = self.project_root / "venv" / "bin" / "python"
+            python = self.project_root / ".venv" / "bin" / "python"
 
         if not python.exists():
             raise RuntimeError("Virtualenv missing")
