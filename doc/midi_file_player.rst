@@ -1,58 +1,45 @@
 MIDI File Player
 ================
 
-The **MIDI File Player** provides playback of MIDI files through the Roland JD-Xi or through FluidSynth (SoundFont) when no hardware is connected. It includes track classification, channel assignment, and integration with the Pattern Editor.
+The MIDI File Player loads Standard MIDI Files and plays them through the
+selected MIDI output. That output can be a connected JD-Xi or FluidSynth when
+software playback is configured. The player also provides track
+classification, channel assignment, and a path into the Pattern Editor.
 
-What is the MIDI File Player?
-==============================
+Load and route a file
+---------------------
 
-The MIDI File Player loads standard MIDI files (.mid, .midi) and routes tracks to the JD-Xi's four parts: Digital 1 (Ch 1), Digital 2 (Ch 2), Analog (Ch 3), and Drums (Ch 10). You can classify tracks automatically, assign channels, and load the current file into the Pattern Editor for step editing.
+1. Open a ``.mid`` or ``.midi`` file from the File menu, or drag it into the
+   player.
+2. Check each track's channel in its header. **Detect Drums** and **Classify
+   Tracks** can help propose assignments; assignments can be changed in the
+   track list.
+3. **Apply Presets** inserts JD-Xi presets for the selected channels. Confirm
+   those choices on the instrument before playback.
+4. Select the intended MIDI output and start playback.
 
-Core Features
-=============
+The default JD-Xi part mapping is channel 1 (Digital 1), channel 2 (Digital
+2), channel 3 (Analog), and channel 10 (Drums). Automatic classification is
+heuristic, so inspect channels and track names before sending a file to the
+instrument.
 
-**MIDI Playback**
-   - **Load files**: Open .mid or .midi files via File menu or drag-and-drop
-   - **Playback control**: Play, pause, stop, and seek
-   - **JD-Xi playback**: Routes MIDI to the connected synthesizer
-   - **FluidSynth playback**: When no JD-Xi is connected, uses FluidSynth with a SoundFont (.sf2/.sf3) for software playback
+Use FluidSynth
+--------------
 
-**Track Classification**
-   - **Detect Drums**: Identifies drum tracks and assigns them to MIDI Channel 10
-   - **Classify Tracks**: Classifies non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)
-   - **Apply Presets**: Applies channel presets for JD-Xi part routing
-   - Track names and channels edited in the track list apply immediately
+In **MIDI Configuration**, enable **Enable FluidSynth for local playback**,
+select a SoundFont (SF2/SF3), select an audio output, and use **Start** or
+**Test Note** to confirm sound. **Use SoundFont List** additionally uses
+SoundFont preset names in supported preset lists; it is separate from simply
+playing through FluidSynth. See :doc:`installation` for optional package
+dependencies and :doc:`known-issues` for the distinction between software
+playback and hardware verification.
 
-**Channel Assignment**
-   - Channels 1, 2, 3 map to Digital 1, Digital 2, Analog
-   - Channel 10 maps to Drums
-   - Drag-and-drop track reordering and channel assignment in the track list
+Pattern Editor integration
+--------------------------
 
-**Pattern Editor Integration**
-   - **Load into Pattern Editor**: Loads the current MIDI file into the Pattern Sequencer for step editing
+Use **Load into Pattern Editor** to transfer the loaded MIDI file for step
+editing. Save the edited pattern from the Pattern Editor as a MIDI file.
+Pattern export does not save a JD-Xi patch or a copy of the instrument's
+memory.
 
-**Format Support**
-   - Standard MIDI Files: .mid, .midi
-   - MIDI Type 0 and Type 1
-
-SoundFont Playback
-==================
-
-When **Enable FluidSynth for local playback** is enabled in MIDI Configuration (and no JD-Xi is connected), the MIDI File Player uses FluidSynth with a configured SoundFont for playback. This allows you to play MIDI files without hardware.
-
-See :doc:`features-and-usage` for SoundFont configuration (path, preset list, etc.).
-
-Workflow
-========
-
-1. **Load a MIDI file**: File → Open… or drag-and-drop
-2. **Assign channels** (optional): use **Detect Drums** and **Classify Tracks**, or set a track's
-   channel in its header; changes apply immediately. **Apply Presets** inserts JD-Xi presets per channel
-3. **Play**: Start playback; audio goes to JD-Xi or FluidSynth
-4. **Edit in Pattern Editor** (optional): Use **Load into Pattern Editor** to edit the file in the Pattern Sequencer
-
-.. figure:: images/jdxi-midi-editor.png
-   :alt: MIDI File Player - Track Classification and Playback
-   :width: 60%
-
-   MIDI File Player - Track Classification and Playback
+For the complete workflow and routing notes, see :doc:`playing-midi-files`.
