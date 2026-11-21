@@ -4,6 +4,8 @@ All notable changes to JDXI-Editor are documented in this file.
 
 # [1.0.0rc2] — 2026-11-19
 
+The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).
+
 Replaces 1.0.0rc1, which never reached PyPI: its tag predated the fix below,
 and the release checks failed. No new features; the hardware caveats under
 1.0.0rc1 still apply.
@@ -70,7 +72,7 @@ you find.
 
 # [0.9.9] — 2026-11
 
-The notes below are everything a user can see since 0.9.8. This build stays **Beta**. A 1.0.0rc1 tag waits on a pass with a connected JD-Xi. On this machine the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
+The notes below are everything a user can see since 0.9.8. This build stays **Beta**. 1.0.0rc1 and 1.0.0rc2 now exist; the hardware pass they were cut to allow has still not been run. On the machine this was written from, the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
 
 ### Rack skins
 

@@ -65,9 +65,13 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 
 ### Desktop builds
 
-Mac, Windows, and Linux builds are attached to the GitHub release whose tag matches the version in the app (`jdxi_editor/project.py`, currently 0.9.9). Download that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
+The app version is **1.0.0rc2** (`jdxi_editor/project.py`). Download the assets on that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases) when the tag has them. 1.0.0rc1 and 1.0.0rc2 were tagged without downloadable files, so those tags have no `.dmg`, installer, or `.deb`. Install from PyPI with the steps below, or check out the tag and follow [Building](doc/building.md). What the candidate contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
 
-1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9; it is there so installation and JD-Xi hardware can be exercised before 1.0 is called stable, and the app stays Beta until that has happened (identity, a program read and write, digital, analog, drums, effects, a pattern, and MIDI playback). What it contains, and what is known to be wrong with it, are under 1.0.0rc2 and 1.0.0rc1 in [CHANGELOG.md](CHANGELOG.md).
+1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9. The app stays Beta until a connected JD-Xi has been exercised.
+
+### A JD-Xi, and playback without one
+
+MIDI Configuration chooses the JD-Xi's input and output. Identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to the instrument are still unverified. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont. A playlist cheat preset is sent on the Analog part.
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
@@ -79,9 +83,9 @@ $ python -m pip install JDXI-Editor
 $ jdxi-editor
 ```
 
-PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window. 6.10 and 6.11 have not been tried; leave the pin alone until the window opens cleanly on them.
+PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 have not been tried.
 
-PyAudio needs the PortAudio library before `pip install`: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`. SoundFont playback needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The Audio Monitor listens to an input through sounddevice, which brings its own PortAudio; it does not tap the SoundFont output.
+`pip install` on Apple Silicon macOS cannot build PyAudio: PyPI has no arm64 wheel, and the source build fails against the newest SDK. A frozen `.dmg` or `.pkg` bundles PyAudio. A checkout follows [deps/wheels/README.md](deps/wheels/README.md). On other machines, install PortAudio before `pip install`: macOS `brew install portaudio`, Debian/Ubuntu `sudo apt install portaudio19-dev`. SoundFont playback needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to the finished release. Reinstall instead.
 
 To run from a checkout instead (for development):
 
@@ -98,11 +102,12 @@ $ python -m jdxi_editor.main
 
 ## Features and Usage
 
-See **[Features and Usage](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/features-and-usage.md)** for:
+See **[Features and Usage](doc/features-and-usage.md)** for:
 
-- **Recent changes** — Arpeggiator SysEx sync, Effects Editor, Vocal Effects
-- **Patch loading and saving** — .jsz, .msz, .json, .syx formats; save/load flow
-- **SoundFont usage** — FluidSynth for playback, preset list from .sf2/.sf3
+- **Patch loading and saving** — `.jsz`, `.msz`, `.json`, and `.syx`. Loading a patch sends it to the instrument.
+- **SoundFont usage** — FluidSynth playback, and the preset list read from an `.sf2` or `.sf3`.
+
+Caveats for this candidate are in **[Known issues](doc/known-issues.md)**.
 
 ---
 
@@ -215,94 +220,37 @@ JDXI-Editor provides preset selection, synth editing, drum part customization, e
 ### 💡 Contribute and Share Feedback
 JDXI-Editor is a growing project! 
 - ⭐ Star this repository to support its development.
-- 🛠️ Contribute features or report issues via [GitHub Issues](https://github.com/markxbrooks/JDXI-Editor/issues).
+- 🛠️ Contribute features or report issues via [GitHub Issues](https://github.com/markxbrooks/JDXI-Editor/issues). See [CONTRIBUTING.md](CONTRIBUTING.md) for tests and builds.
 
 ---
 
 ## Building
 
+Packages are built from a checkout. Notes, the Linux command, a sample build log, and the research snippets live in [doc/building.md](doc/building.md).
+
+Mac disk image:
+
 ```bash
-python -m building.buildsys 2>&1 | head -50
-
-Building on: linux
-Project root: /home/brooks/PycharmProjects/JDXI-Editor
-╭─────────── linux builder ────────────╮
-│  linux builder Application Starting  │
-╰──────────────────────────────────────╯
-[02/10/26 23:12:10] INFO                        ℹ️ linux builder starting up with log file /home/brooks/.linux builder/logs/linux builder-10Feb2026-23-12-10.log...                                                         
-                    INFO                        ℹ️ 🎹 JD-Xi Editor v0.9.6 - Linux Build System                                                                                                                              
-                    INFO                        ℹ️ ==================================================                                                                                                                       
-                    INFO                        ℹ️                                                                                                                                                                          
-                             🧹 Cleaning previous builds...                                                                                                                                                                
-                    INFO                        ℹ️                                                                                                                                                                          
-                             📦 Building with PyInstaller...                                                                                                                                                               
-                    INFO                        ℹ️   This may take a few minutes... 
-```
-
-Mac .dmg package
-```commandline
 python3 -m building.buildsys --dmg
 ```
 
-Mac .app
-```commandline
+Mac application:
+
+```bash
 python3 -m building.buildsys --app
 ```
 
-Mac .pkg
-```commandline
+Mac installer package:
+
+```bash
 python3 -m building.buildsys --pkg
 ```
 
-Linux .deb or .Appimage
-```commandline
-python3 -m building.buildsys # builds both with no flag
-```
+Windows:
 
-Windows 
-```commandline
-python -m building.buildsys
-```
-or ]
-```
+```powershell
 .\building\scripts\build.ps1
 ```
-
-converting wav files to midi
-
-```commandline
-cd ~/Downloads/separated/htdemucs/OxygeneV
-mkdir -p midi
-basic-pitch midi bass.flac --minimum-frequency 30 --maximum-frequency 400
-```
-
-```python
-import audioread; audioread.available_backends = lambda flush_cache=False: []
-from basic_pitch.inference import predict
-from basic_pitch import ICASSP_2022_MODEL_PATH
-_, midi, notes = predict('bass.flac', ICASSP_2022_MODEL_PATH, minimum_frequency=30, maximum_frequency=400)
-midi.write('midi/bass.mid'); print(len(notes), 'notes')
-"
-
-```
-
-
-## Arpeggio trial
-
-`arpeggio-trial` damages a clean MIDI file and asks the filler to repair it from a rendering of that file. The clean file is the ground truth and is not modified.
-
-```bash
-python scripts/classify_midi_parts.py arpeggio-trial clean.mid --wav clean.wav --track BassSynth \
-  --drop 0.2 --wrong 0.05 --octave 0.05 --extra 0.05 --model full --seed 1
-```
-
-`--drop` deletes notes. `--wrong` moves a note onto another frequent pitch or a neighbour, `--octave` shifts it by an octave, and `--extra` adds a neighbour beside it. The shares are disjoint. `--model` is `current` (the existing filler), `audio`, `repeat` (audio plus the repetition prior), or `full` (those two plus the MIDI noise term). `--decoder` is `rules`, `hmm`, or `best` (default): the repeat HMM's hidden state is the figure's transposition, or stopped, and `best` keeps whichever segmentation matches the clean file on more pitches. `trial.txt` reports both scores, plus precision, recall and false repairs separately for confirmed and probable notes. Probable notes are counted and not written. `candidates.csv` carries each candidate's audio, repetition, sequence and score. The score is a weighted sum of logs.
-
-Outside any figure, an empty step takes its pitch prior from a chain learned on the track's confident notes, `P(pitch | previous) × P(next | pitch)`. The audio bar is unchanged.
-
-On a rendered G3–B♭3–C4 loop (64 repeats, 20% deletion, seed 1) the current filler, audio, repeat and full each restored 35 of 38 notes, precision 1.000, no false repairs. The audio term already clears the write bar on that rendering, so the extra terms do not change the count. With 10 missing B♭3s and 4 steps written as D4, audio, repeat and full each corrected all 4 and restored 8 of the holes: 12 of 14, recall 0.857, precision 1.000. Where the audio term prefers D4 and the repeats plus a learned B♭3→D4 confusion prefer B♭3, the full score corrects the D4 and audio alone keeps it.
-
-The earlier BassSynth drop trial, from the current filler, was recall 0.45 and 0.37 at precision 1.00 (seeds 1 and 2). That recording is not in this repo, so those two numbers were not remeasured here.
 
 ## 🙏 Credits
 
