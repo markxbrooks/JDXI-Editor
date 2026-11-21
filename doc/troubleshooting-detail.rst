@@ -22,8 +22,7 @@ Verify that **MIDI Output** points to the JD-Xi and that **Request data from
 the JD-Xi** is enabled. The checkbox controls automatic data requests when
 editors open, on program changes, and on refresh. An explicit **Read** action
 still sends a request. Try one editor and one parameter first. See
-:doc:`known-issues` for the current unverified hardware areas in this release
-candidate.
+:doc:`known-issues` for the hardware-suite result in this release candidate.
 
 No audio from FluidSynth
 ------------------------

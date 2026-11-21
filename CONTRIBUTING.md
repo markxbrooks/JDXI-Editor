@@ -10,7 +10,13 @@ From a checkout, with the `dev` extra installed:
 python -m pytest
 ```
 
-That command skips tests marked `slow`, and it also skips a `hardware` marker. Nothing in the suite uses `hardware` yet. The marker is reserved for a connected JD-Xi. `tests/sheep.mid` is a local file and is not in the repository; the tests that read it are marked `slow` and skip when it is absent. Run the slow set with:
+That command skips tests marked `slow` and `hardware`. The hardware tests are in [tests/test_jdxi_hardware.py](tests/test_jdxi_hardware.py). They open a connected JD-Xi, and every test in that file skips when either JD-Xi port is missing. That suite has passed on a connected JD-Xi; the result is in [doc/known-issues.md](doc/known-issues.md). Run them with:
+
+```bash
+python -m pytest -m hardware
+```
+
+`tests/sheep.mid` is a local file and is not in the repository; the tests that read it are marked `slow` and skip when it is absent. Run the slow set with:
 
 ```bash
 python -m pytest -m slow

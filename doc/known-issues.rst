@@ -2,22 +2,21 @@ Release Candidate Status and Known Issues
 =========================================
 
 JD-Xi Editor |release| is a release candidate. The package metadata still
-classifies the project as Beta. A release candidate is available for
-evaluation; it does not mean that hardware workflows have passed a complete
-release qualification.
+classifies the project as Beta.
 
 Hardware verification
 ---------------------
 
-A stable end-to-end pass with a connected JD-Xi has not been completed for
-this candidate. The following hardware workflows remain unverified:
+``python -m pytest -m hardware`` passed on a connected JD-Xi. That run covered:
 
-* Device identity and MIDI port selection.
-* Program read and write.
-* Digital, Analog, and Drum editing.
-* Effects and Arpeggiator editing.
-* Pattern playback to the instrument.
-* MIDI playback to the instrument and recording.
+* Device identity.
+* Temporary program, digital, analog, drum, effect, and arpeggio reads.
+* One temporary digital byte, written and then restored.
+* A one-bar playback to the instrument.
+* A recording capture from the JD-Xi audio input.
+
+Nothing in that run was skipped. The same result is in
+``doc/known-issues.md``.
 
 SoundFont playback can run without a JD-Xi when FluidSynth is configured. It
 does not verify hardware parameter reads/writes, and it does not provide a
@@ -64,7 +63,8 @@ workflows; saving a pattern does not create a patch backup.
 Before a stable release
 -----------------------
 
-Complete the hardware pass above on each platform the release claims to
-support, publish an issue list for anything still unverified, and attach and
-install-test the intended release artifacts. See :doc:`contributing` for the
-automated and manual checks described by this repository.
+The hardware suite above has passed on one connected JD-Xi. A stable release
+still needs that pass on each platform the release claims to support, an
+issue list for anything that fails, and the intended release artifacts
+attached and install-tested. See :doc:`contributing` for the automated and
+manual checks described by this repository.

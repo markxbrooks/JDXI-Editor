@@ -43,6 +43,6 @@ they are starting points, not a substitute for checking the track headers.
 When multiple tracks share a channel, MIDI channel-level messages and note
 state can affect more than one track.
 
-Supported input is Standard MIDI File Type 0 and Type 1. Review
-:doc:`known-issues` before relying on a release candidate for hardware
-playback or recording.
+Supported input is Standard MIDI File Type 0 and Type 1. A one-bar playback
+and a recording capture passed in the hardware suite. See
+:doc:`known-issues` for that result and the other release-candidate limits.

@@ -57,5 +57,5 @@ channel conventions; check the track assignments before playback.
 
 Use **Load into Pattern Editor** to transfer a file into the step editor. The
 Pattern Editor can save its edited pattern as a MIDI file. For details and
-current hardware caveats, see :doc:`playing-midi-files` and
+the hardware-suite result, see :doc:`playing-midi-files` and
 :doc:`known-issues`.

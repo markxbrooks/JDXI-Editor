@@ -67,11 +67,11 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 
 The app version is **1.0.0rc2** (`jdxi_editor/project.py`). Download the assets on that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases) when the tag has them. 1.0.0rc1 and 1.0.0rc2 were tagged without downloadable files, so those tags have no `.dmg`, installer, or `.deb`. Install from PyPI with the steps below, or check out the tag and follow [Building](doc/building.md). What the candidate contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
 
-1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9. The app stays Beta until a connected JD-Xi has been exercised.
+1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9. The app stays Beta. The hardware suite has been run on a connected JD-Xi; the result is in [Known issues](doc/known-issues.md).
 
 ### A JD-Xi, and playback without one
 
-MIDI Configuration chooses the JD-Xi's input and output. Identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to the instrument are still unverified. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont. A playlist cheat preset is sent on the Analog part.
+MIDI Configuration chooses the JD-Xi's input and output. `python -m pytest -m hardware` passed on a connected JD-Xi: identity, temporary program, digital, analog, drum, effect, and arpeggio reads, one restored temporary digital byte, a one-bar playback, and a recording capture. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont. A playlist cheat preset is sent on the Analog part.
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:

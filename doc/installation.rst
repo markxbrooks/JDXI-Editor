@@ -8,9 +8,9 @@ install rather than copying a versioned filename from an older guide.
 
 .. warning::
 
-   JD-Xi Editor |release| is a release candidate. See :doc:`known-issues` for
-   current hardware verification status, installation limitations, and patch
-   handling caveats.
+   JD-Xi Editor |release| is a release candidate. ``python -m pytest -m hardware``
+   has passed on a connected JD-Xi. See :doc:`known-issues` for that result,
+   installation limitations, and patch handling caveats.
 
 Requirements
 ------------

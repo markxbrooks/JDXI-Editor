@@ -28,4 +28,4 @@ Next steps
 * :doc:`installation` for release, PyPI, and source installation.
 * :doc:`usage` for MIDI configuration and basic workflows.
 * :doc:`playing-midi-files` for MIDI playback and Pattern Editor workflows.
-* :doc:`known-issues` before relying on release-candidate hardware behavior.
+* :doc:`known-issues` for the hardware-suite result and the other release-candidate limits.

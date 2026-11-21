@@ -7,8 +7,13 @@ All notable changes to JDXI-Editor are documented in this file.
 The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).
 
 Replaces 1.0.0rc1, which never reached PyPI: its tag predated the fix below,
-and the release checks failed. No new features; the hardware caveats under
-1.0.0rc1 still apply.
+and the release checks failed. No new features.
+
+`python -m pytest -m hardware` has since passed on a connected JD-Xi:
+identity, temporary program, digital, analog, drum, effect, and arpeggio
+reads, one restored temporary digital byte, a one-bar playback, and a
+recording capture. The same result is in
+[doc/known-issues.md](doc/known-issues.md). The app stays **Beta**.
 
 ### Fixed
 
@@ -32,11 +37,10 @@ and the release checks failed. No new features; the hardware caveats under
 
 The first candidate for 1.0. Everything a user can see is listed under 0.9.9
 below; this tag adds no features. It exists so installation and JD-Xi hardware
-can be exercised before 1.0, and the app stays **Beta** until that has
-happened: on the machine this was cut from, the MIDI inputs were empty, so
-identity, a program read and write, digital, analog, drums, effects, a
-pattern, and playback to a JD-Xi are all still unverified. Please report what
-you find.
+can be exercised before 1.0. On the machine this tag was cut from, the MIDI
+inputs were empty, so identity, a program read and write, digital, analog,
+drums, effects, a pattern, and playback to a JD-Xi had not been run. That
+pass is recorded under 1.0.0rc2. The app stays **Beta**.
 
 ### Fixed
 
@@ -72,7 +76,7 @@ you find.
 
 # [0.9.9] — 2026-11
 
-The notes below are everything a user can see since 0.9.8. This build stays **Beta**. 1.0.0rc1 and 1.0.0rc2 now exist; the hardware pass they were cut to allow has still not been run. On the machine this was written from, the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
+The notes below are everything a user can see since 0.9.8. This build stays **Beta**. 1.0.0rc1 and 1.0.0rc2 now exist. The hardware pass they were cut to allow has been run: `python -m pytest -m hardware` passed on a connected JD-Xi, and the result is under 1.0.0rc2 and in [doc/known-issues.md](doc/known-issues.md).
 
 ### Rack skins
 

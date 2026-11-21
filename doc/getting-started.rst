@@ -4,7 +4,8 @@ Getting Started
 JD-Xi Editor is a desktop companion for editing JD-Xi sounds and working with
 MIDI files. A connected instrument is required for sending and reading JD-Xi
 parameters. Some MIDI-file playback is also available through FluidSynth and a
-SoundFont without the hardware; see :doc:`known-issues` for current
+SoundFont without the hardware. ``python -m pytest -m hardware`` has passed
+on a connected JD-Xi; see :doc:`known-issues` for that result and the other
 limitations.
 
 1. :doc:`installation` — install a release build, the Python package, or the

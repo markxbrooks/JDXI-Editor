@@ -54,8 +54,10 @@ wheel in a clean environment to verify that the application opens.
 Manual hardware release pass
 ----------------------------
 
-Automated tests cannot establish reliable communication with a physical
-instrument. For each platform being claimed, record the OS/version,
+``python -m pytest -m hardware`` opens a connected JD-Xi. That suite has
+passed once: identity, temporary-area reads, one restored digital byte, a
+one-bar playback, and a recording capture. Tests skip when either JD-Xi port
+is missing. For each platform being claimed, record the OS/version,
 architecture, JD-Xi firmware, and MIDI connection method, then check:
 
 * The editor detects the JD-Xi input and output ports.

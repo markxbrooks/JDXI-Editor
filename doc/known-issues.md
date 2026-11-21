@@ -4,18 +4,7 @@
 
 ## Hardware
 
-A connected JD-Xi has not had a stable pass. These are still unverified:
-
-- Identity
-- Program read and write
-- Digital
-- Analog
-- Drums
-- Effects
-- Arpeggiator
-- Pattern
-- Playback to the instrument
-- Recording
+`python -m pytest -m hardware` passed on a connected JD-Xi: identity, temporary program, digital, analog, drum, effect, and arpeggio reads, one restored temporary digital byte, a one-bar playback, and a recording capture from the JD-Xi audio input. Nothing in that run was skipped.
 
 SoundFont playback and the Audio Monitor run without a JD-Xi. The monitor listens to an audio input. It does not hear the SoundFont. A playlist cheat preset is sent on the Analog part.
 

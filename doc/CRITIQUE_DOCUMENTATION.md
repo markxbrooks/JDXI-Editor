@@ -38,7 +38,7 @@
   Both are prereleases in GitHub’s model. The critiquer should distinguish prerelease status from a stable release and avoid calling RC2 published as a normal release.
 
 - **It says the project is near 1.0 because only enhancement issues are open.**  
-  `1.0.0rc1` documents unverified hardware behavior, and the `1.0.0rc2` changelog is explicit that no stable hardware pass has happened. Open issues alone are not a sufficient release-readiness criterion.
+  `1.0.0rc1` documented unverified hardware behavior. `python -m pytest -m hardware` has since passed on a connected JD-Xi; the result is in `doc/known-issues.md`. Open issues alone are not a sufficient release-readiness criterion.
 
 - **The stable desktop-download claim is stale.**  
   The README says builds correspond to version `0.9.9`, while the repository is in the `1.0.0rc2` cycle. Stable assets are listed for old versions, but release-page availability is time-sensitive and should be verified immediately before release rather than hard-coded.
@@ -75,7 +75,7 @@ The critique should also address these documentation areas:
 4. **Testing and hardware verification**
    - The test suite is declared in `pyproject.toml`, but no test coverage or pass/failure badge is documented.
    - Slow, hardware, and local-file tests are not explained in the README or contributor guide.
-   - There is no hardware-test checklist for SysEx reads/writes, Identity, Digital, Analog, drums, effects, arpeggiator, pattern editing, playback, and recording.
+   - The hardware suite is `tests/test_jdxi_hardware.py`. `python -m pytest -m hardware` has passed on a connected JD-Xi: identity, temporary-area reads, one restored digital byte, a one-bar playback, and a recording capture. `CONTRIBUTING.md` explains how to run it.
 
 5. **Developer documentation**
    - There is no clear `CONTRIBUTING.md`.
