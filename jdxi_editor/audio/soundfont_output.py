@@ -6,7 +6,19 @@ own audio driver is left closed, so a device name never has to match
 CoreAudio's list.
 """
 
+import re
+import sys
 import threading
+from ctypes import (
+    CDLL,
+    POINTER,
+    Structure,
+    byref,
+    c_uint32,
+    c_void_p,
+    cast,
+    create_string_buffer,
+)
 from typing import Callable, Optional
 
 import numpy as np
@@ -102,6 +114,210 @@ def chosen_output(current: str, saved: str, labels: list[str]) -> str:
     if saved in labels:
         return saved
     return ""
+
+
+def output_device_for(
+    index: Optional[int],
+    devices: list[tuple[str, int]],
+    *,
+    platform: Optional[str] = None,
+    transport_type: Optional[Callable[[str], Optional[str]]] = None,
+) -> Optional[int]:
+    """
+    The sounddevice index to open.
+
+    On macOS the built-in output is opened as the system default (``None``),
+    so CoreAudio follows the headphone jack. Every other selected device
+    keeps its index. ``None`` stays the default on every platform.
+
+    :param index: Optional[int] chosen sounddevice index
+    :param devices: list of ``(label, index)``
+    :param platform: str override for tests; the running OS otherwise
+    :param transport_type: Callable name -> CoreAudio transport, or None to
+        read it. ``"bltn"`` is the built-in output
+    :return: Optional[int]
+    """
+    if index is None:
+        return None
+    system = sys.platform if platform is None else platform
+    if system != "darwin":
+        return index
+    name = next((label for label, device_index in devices if device_index == index), "")
+    lookup = _coreaudio_transport if transport_type is None else transport_type
+    try:
+        kind = lookup(name)
+    except Exception:
+        kind = None
+    if kind == _TRANSPORT_BUILTIN or (kind is None and _builtin_output_name(name)):
+        return None
+    return index
+
+
+def default_output_route() -> Optional[tuple]:
+    """
+    ``(device id, data source)`` of the macOS default output.
+
+    The data source changes when the headphone jack is plugged or unplugged
+    on the same device. ``None`` off macOS, or when CoreAudio cannot be read.
+
+    :return: Optional[tuple]
+    """
+    if sys.platform != "darwin":
+        return None
+    try:
+        device = _coreaudio_default_output()
+        if device is None:
+            return None
+        return (device, _coreaudio_data_source(device))
+    except Exception:
+        return None
+
+
+_BUILTIN_OUTPUT_NAMES = {"macbook pro speakers", "external headphones"}
+_INDEX_SUFFIX = re.compile(r" \(\d+\)$")
+
+# CoreAudio four-character selectors.
+_SCOPE_GLOBAL = 0x676C6F62  # 'glob'
+_SCOPE_OUTPUT = 0x6F757470  # 'outp'
+_ELEMENT_MAIN = 0
+_SYSTEM_OBJECT = 1
+_PROP_DEVICES = 0x64657623  # 'dev#'
+_PROP_DEFAULT_OUTPUT = 0x644F7574  # 'dOut'
+_PROP_NAME = 0x6E616D65  # 'name'
+_PROP_TRANSPORT = 0x7472616E  # 'tran'
+_PROP_DATA_SOURCE = 0x73737263  # 'ssrc'
+_PROP_STREAMS = 0x73746D23  # 'stm#'
+_TRANSPORT_BUILTIN = "bltn"
+
+
+class _AudioAddress(Structure):
+    _fields_ = [
+        ("selector", c_uint32),
+        ("scope", c_uint32),
+        ("element", c_uint32),
+    ]
+
+
+_coreaudio = None
+
+
+def _coreaudio_library():
+    """CoreAudio, loaded once. None when the framework cannot be opened."""
+    global _coreaudio
+    if _coreaudio is False:
+        return None
+    if _coreaudio is None:
+        try:
+            library = CDLL("/System/Library/Frameworks/CoreAudio.framework/CoreAudio")
+            library.AudioObjectGetPropertyData.argtypes = [
+                c_uint32,
+                POINTER(_AudioAddress),
+                c_uint32,
+                c_void_p,
+                POINTER(c_uint32),
+                c_void_p,
+            ]
+            library.AudioObjectGetPropertyData.restype = c_uint32
+            _coreaudio = library
+        except Exception:
+            _coreaudio = False
+            return None
+    return _coreaudio
+
+
+def _audio_property(obj: int, selector: int, scope: int, size: int):
+    """``(ok, buffer)`` for one CoreAudio property."""
+    library = _coreaudio_library()
+    if library is None:
+        return False, None
+    address = _AudioAddress(selector, scope, _ELEMENT_MAIN)
+    stored = c_uint32(size)
+    buffer = create_string_buffer(size)
+    status = library.AudioObjectGetPropertyData(
+        c_uint32(obj), byref(address), 0, None, byref(stored), buffer
+    )
+    if status != 0:
+        return False, None
+    return True, (buffer, stored.value)
+
+
+def _unindexed_name(label: str) -> str:
+    """A device label without the `` (index)`` added for a repeated name."""
+    return _INDEX_SUFFIX.sub("", label or "")
+
+
+def _builtin_output_name(label: str) -> bool:
+    """True for the built-in speaker and headphone-jack names."""
+    return _unindexed_name(label).casefold() in _BUILTIN_OUTPUT_NAMES
+
+
+def _coreaudio_outputs() -> list[tuple[int, str]]:
+    """Output devices as ``(CoreAudio id, name)``."""
+    ok, payload = _audio_property(_SYSTEM_OBJECT, _PROP_DEVICES, _SCOPE_GLOBAL, 4096)
+    if not ok:
+        return []
+    buffer, size = payload
+    count = size // 4
+    if count <= 0:
+        return []
+    ids = list(cast(buffer, POINTER(c_uint32 * count)).contents)
+    found = []
+    for device_id in ids:
+        streams, _stream_size = _audio_property(device_id, _PROP_STREAMS, _SCOPE_OUTPUT, 64)
+        if not streams:
+            continue
+        named, name_payload = _audio_property(device_id, _PROP_NAME, _SCOPE_GLOBAL, 256)
+        if not named:
+            continue
+        name = name_payload[0].value.decode("utf-8", "replace")
+        if name:
+            found.append((int(device_id), name))
+    return found
+
+
+def _coreaudio_transport(label: str) -> Optional[str]:
+    """
+    CoreAudio transport of the output named *label* (``bltn``, ``usb ``, …).
+
+    ``None`` when it cannot be read, or when several outputs share the name
+    and disagree.
+
+    :param label: str sounddevice label
+    :return: Optional[str]
+    """
+    name = _unindexed_name(label)
+    if not name:
+        return None
+    kinds = set()
+    for device_id, device_name in _coreaudio_outputs():
+        if device_name != name:
+            continue
+        ok, payload = _audio_property(device_id, _PROP_TRANSPORT, _SCOPE_GLOBAL, 4)
+        if not ok:
+            continue
+        value = cast(payload[0], POINTER(c_uint32)).contents.value
+        kinds.add(value.to_bytes(4, "big").decode("ascii", "replace"))
+    if len(kinds) == 1:
+        return kinds.pop()
+    return None
+
+
+def _coreaudio_default_output() -> Optional[int]:
+    ok, payload = _audio_property(_SYSTEM_OBJECT, _PROP_DEFAULT_OUTPUT, _SCOPE_GLOBAL, 4)
+    if not ok:
+        return None
+    return int(cast(payload[0], POINTER(c_uint32)).contents.value)
+
+
+def _coreaudio_data_source(device: int) -> bytes:
+    """The output data source (``ispk``, ``hdpn``), or empty when it has none."""
+    ok, payload = _audio_property(device, _PROP_DATA_SOURCE, _SCOPE_OUTPUT, 4)
+    if not ok:
+        return b""
+    value = cast(payload[0], POINTER(c_uint32)).contents.value
+    if value == 0:
+        return b""
+    return value.to_bytes(4, "big")
 
 
 def opened_output_name(device_index: Optional[int], devices: list[tuple[str, int]]) -> str:
@@ -234,6 +450,13 @@ class SoundfontOutput:
         #: audible gap. Counted in the callback, reported on stop.
         self.underflows = 0
         self._switch_interval: Optional[float] = None
+        #: The chosen output was the system default or the built-in jack, so a
+        #: later change of that route reopens the stream.
+        self.follows_default = False
+        self._route: Optional[tuple] = None
+        self._sf_path = ""
+        self._requested_device: Optional[int] = None
+        self.on_reopened: Optional[Callable[[], None]] = None
 
     def start(
         self,
@@ -247,7 +470,8 @@ class SoundfontOutput:
         Load a SoundFont and open the output.
 
         An output that is already open is stopped first. ``device`` None
-        is the default output.
+        is the default output. On macOS the built-in output is opened the
+        same way, so the headphone jack follows the system route.
 
         :param sf_path: str
         :param device: Optional[int] sounddevice index
@@ -259,6 +483,9 @@ class SoundfontOutput:
         :return: int SoundFont id
         """
         self.stop()
+        self._sf_path = sf_path
+        self._requested_device = device
+        resolved = output_device_for(device, output_devices())
         synth = (synth_factory or _new_synth)()
         self.synth = synth
         try:
@@ -274,9 +501,11 @@ class SoundfontOutput:
                 dtype="float32",
                 blocksize=BLOCK_FRAMES,
                 latency=OUTPUT_LATENCY,
-                device=device,
+                device=resolved,
                 callback=self._callback,
             )
+            self.follows_default = resolved is None
+            self._route = default_output_route() if self.follows_default else None
             self.underflows = 0
             self._hand_over_sooner()
             self._stream.start()
@@ -289,6 +518,31 @@ class SoundfontOutput:
             self.midi_port = None
             log.warning(f"SoundFont MIDI port not available: {ex}")
         return sfid
+
+    def reopen(self) -> int:
+        """
+        Open the same SoundFont on the route chosen last time.
+
+        Used when the macOS default output changes underneath a stream that
+        is following it.
+
+        :return: int SoundFont id
+        """
+        return self.start(self._sf_path, self._requested_device)
+
+    def take_route_change(self) -> bool:
+        """
+        True once when the followed system route has changed.
+
+        :return: bool
+        """
+        if not self.follows_default or self._stream is None:
+            return False
+        route = default_output_route()
+        if route is None or route == self._route:
+            return False
+        self._route = route
+        return True
 
     def opened_device(self) -> Optional[int]:
         """
@@ -312,6 +566,8 @@ class SoundfontOutput:
 
         :return: None
         """
+        self.follows_default = False
+        self._route = None
         port, self.midi_port = self.midi_port, None
         if port is not None:
             try:

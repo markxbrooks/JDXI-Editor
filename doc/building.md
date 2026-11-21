@@ -40,7 +40,7 @@ or:
 python -m building.buildsys
 ```
 
-Apple Silicon checkouts that compile PyAudio follow [deps/wheels/README.md](../deps/wheels/README.md).
+SoundFont playback needs FluidSynth. Recording and playback use sounddevice, whose wheels include PortAudio.
 
 ## A sample Linux log
 

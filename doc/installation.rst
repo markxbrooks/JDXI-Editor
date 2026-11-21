@@ -20,10 +20,11 @@ the test suite on Python 3.10, 3.11, and 3.12 on Linux, and on Python 3.11 on
 macOS and Windows. This is the tested CI matrix, not a guarantee for every
 later Python version or distribution.
 
-The application depends on Qt (PySide6), RtMidi, PyAudio, FluidSynth bindings,
-and other packages. The supported PySide6 range is ``>=6.8.1.1,<6.10``; 6.10
-and 6.11 have not been verified, and 6.12 is known to crash when the main
-window handles outgoing MIDI in a queued slot.
+The application depends on Qt (PySide6), RtMidi, FluidSynth bindings,
+and sounddevice. sounddevice's wheels include PortAudio. The supported
+PySide6 range is ``>=6.8.1.1,<6.10``; 6.10 and 6.11 have not been verified,
+and 6.12 is known to crash when the main window handles outgoing MIDI in a
+queued slot.
 
 Install a release build
 -----------------------
@@ -53,15 +54,10 @@ other Python applications.
    python -m pip install JDXI-Editor
    jdxi-editor
 
-On macOS, PyAudio does not currently have a PyPI wheel for Apple Silicon, so
-pip may try and fail to build it from source. Prefer a frozen macOS release
-asset when available. The source-build workaround is documented in
-``deps/wheels/README.md`` in the repository.
-
-On Linux, PyAudio may need PortAudio development headers before installation.
-For Debian or Ubuntu, install them with ``sudo apt install portaudio19-dev``.
-Other distributions may use a differently named PortAudio development
-package.
+SoundFont playback needs FluidSynth installed on the system (``brew install
+fluid-synth`` on macOS, ``sudo apt install fluidsynth`` on Debian or Ubuntu,
+or the Windows DLLs shipped with a frozen build). Recording and SoundFont
+output use sounddevice, whose wheels include PortAudio.
 
 Install from source
 -------------------

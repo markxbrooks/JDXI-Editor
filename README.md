@@ -16,6 +16,7 @@
 ## 🎛️ Features of JDXI-Editor for Roland JD-Xi Synthesizer
 - **On-Screen Keyboard**: Easily play and test sounds from your JD-Xi.
 - **Preset Selection with Search**: Quickly find and load presets.
+- **Playlist Cheat Preset**: When playing a playlist entry, this option sends the selected Digital Synth tone's bank select and Program Change to the Analog Synth MIDI channel (channel 3), about two seconds after the entry's normal program change. It selects a tone on that channel; it does not copy patch data into the Analog Synth.
 - **Octave Shifting**: Adjust octave ranges for precise sound control.
 - **Digital & Analog Synth Editors**: Edit JD-Xi's digital and analog synths directly.
 - **Drum Part Editor**: Customize drum sounds and patterns 🥁.
@@ -71,7 +72,7 @@ The app version is **1.0.0rc2** (`jdxi_editor/project.py`). Download the assets 
 
 ### A JD-Xi, and playback without one
 
-MIDI Configuration chooses the JD-Xi's input and output. `python -m pytest -m hardware` passed on a connected JD-Xi: identity, temporary program, digital, analog, drum, effect, and arpeggio reads, one restored temporary digital byte, a one-bar playback, and a recording capture. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont. A playlist cheat preset is sent on the Analog part.
+MIDI Configuration chooses the JD-Xi's input and output. `python -m pytest -m hardware` passed on a connected JD-Xi: identity, temporary program, digital, analog, drum, effect, and arpeggio reads, one restored temporary digital byte, a one-bar playback, and a recording capture. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont.
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
@@ -85,7 +86,7 @@ $ jdxi-editor
 
 PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 have not been tried.
 
-`pip install` on Apple Silicon macOS cannot build PyAudio: PyPI has no arm64 wheel, and the source build fails against the newest SDK. A frozen `.dmg` or `.pkg` bundles PyAudio. A checkout follows [deps/wheels/README.md](deps/wheels/README.md). On other machines, install PortAudio before `pip install`: macOS `brew install portaudio`, Debian/Ubuntu `sudo apt install portaudio19-dev`. SoundFont playback needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to the finished release. Reinstall instead.
+Recording and SoundFont playback use sounddevice, whose wheels include PortAudio. SoundFont playback also needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to the finished release. Reinstall instead.
 
 To run from a checkout instead (for development):
 

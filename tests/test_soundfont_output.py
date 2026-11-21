@@ -15,6 +15,7 @@ from jdxi_editor.audio.soundfont_output import (
     chosen_output,
     copy_s16,
     opened_output_name,
+    output_device_for,
     output_devices,
 )
 
@@ -57,6 +58,81 @@ def test_a_current_output_wins_and_an_unknown_one_falls_back():
     assert chosen_output("", "MacBook Pro Speakers", labels) == "MacBook Pro Speakers"
     assert chosen_output("Gone", "Also gone", labels) == ""
     assert chosen_output("(Default)", "MacBook Pro Speakers", labels) == ""
+
+
+def test_a_builtin_output_follows_the_system_route():
+    devices = [
+        ("MacBook Pro Speakers", 3),
+        ("External Headphones", 2),
+        ("Mark's AirPods", 1),
+        ("Multi-Output Device", 9),
+    ]
+
+    def transport(name):
+        if "MacBook" in name or name == "External Headphones":
+            return "bltn"
+        if "AirPods" in name:
+            return "blue"
+        return "grup"
+
+    assert output_device_for(None, devices, platform="darwin", transport_type=transport) is None
+    assert output_device_for(3, devices, platform="darwin", transport_type=transport) is None
+    assert output_device_for(2, devices, platform="darwin", transport_type=transport) is None
+    assert output_device_for(1, devices, platform="darwin", transport_type=transport) == 1
+    assert output_device_for(9, devices, platform="darwin", transport_type=transport) == 9
+    assert output_device_for(3, devices, platform="linux", transport_type=transport) == 3
+    assert output_device_for(1, devices, platform="win32", transport_type=transport) == 1
+
+
+def test_a_builtin_name_is_the_fallback_when_transport_cannot_be_read():
+    devices = [("MacBook Pro Speakers (10)", 10), ("USB Audio", 4)]
+    unknown = lambda _name: None
+    assert output_device_for(10, devices, platform="darwin", transport_type=unknown) is None
+    assert output_device_for(4, devices, platform="darwin", transport_type=unknown) == 4
+    assert output_device_for(10, devices, platform="linux", transport_type=unknown) == 10
+
+
+def test_start_opens_the_builtin_output_as_the_default(monkeypatch):
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_device_for",
+        lambda index, devices: None if index == 3 else index,
+    )
+    opened = {}
+
+    def factory(**kwargs):
+        opened.update(kwargs)
+        return _Stream()
+
+    player = SoundfontOutput(threading.RLock())
+    player.start(
+        "piano.sf2",
+        3,
+        stream_factory=factory,
+        synth_factory=lambda: _Synth([]),
+        midi_port_factory=lambda synth: None,
+    )
+    try:
+        assert opened["device"] is None
+        assert player.follows_default
+    finally:
+        player.stop()
+    assert not player.follows_default
+
+
+def test_a_followed_route_change_is_reported_once(monkeypatch):
+    routes = iter([(1, b"hdpn"), (1, b"hdpn")])
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.default_output_route",
+        lambda: next(routes),
+    )
+    player = SoundfontOutput(threading.RLock())
+    player.follows_default = True
+    player._stream = object()
+    player._route = (1, b"ispk")
+    assert player.take_route_change()
+    assert not player.take_route_change()
+    player.follows_default = False
+    assert not player.take_route_change()
 
 
 def test_the_status_name_comes_from_the_stream_device():

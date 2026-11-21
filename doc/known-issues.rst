@@ -34,10 +34,6 @@ Installation compatibility
 * PySide6 is constrained to ``>=6.8.1.1,<6.10``. Version 6.12 is known to
   crash in the main window's queued outgoing-MIDI path. Versions 6.10 and
   6.11 have not been verified.
-* On Apple Silicon, ``pip install`` may fail while building PyAudio because
-  there is no macOS arm64 wheel on PyPI. Prefer a frozen release build when
-  one is available. The repository's ``deps/wheels/README.md`` documents a
-  workaround for building from source.
 * Release candidate tags may not have downloadable files attached. Check the
   release page for actual assets before choosing that installation method.
 

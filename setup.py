@@ -99,6 +99,6 @@ setup(
     packages=find_packages(include=["jdxi_editor*", "picoui*"]),
     # No install_requires: the dependency list lives in pyproject.toml. The
     # copy that used to be here had drifted (it asked for qtpy, which the app
-    # does not import, and was missing numpy, music21, SQLAlchemy, PyAudio,
+    # does not import, and was missing numpy, music21, SQLAlchemy, and
     # pyqtdarktheme, darkdetect, and the tomli backport).
 )

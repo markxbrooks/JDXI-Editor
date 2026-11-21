@@ -42,11 +42,8 @@ Python installation fails
 * Keep PySide6 within the declared ``>=6.8.1.1,<6.10`` range. Version 6.12 is
   known to crash in a queued MIDI-output path; 6.10 and 6.11 have not been
   verified.
-* On Debian/Ubuntu, install ``portaudio19-dev`` before pip installation if
-  PyAudio cannot build. Other Linux distributions use their own package name.
-* On Apple Silicon, prefer a frozen macOS release build when available:
-  PyAudio has no macOS arm64 wheel on PyPI and its source build may fail with
-  the newest SDK. See :doc:`installation` for the source-workaround reference.
+* SoundFont playback needs FluidSynth. Recording uses sounddevice, which
+  ships PortAudio in its wheel.
 
 Patch appears different after loading
 -------------------------------------
