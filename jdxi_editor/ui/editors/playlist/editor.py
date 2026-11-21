@@ -755,14 +755,14 @@ class PlaylistEditor(QWidget):
             # The same program can be in a playlist several times (one entry per
             # MIDI file), so each row is tied to its playlist item, not the program
             item_id = item_data.get("item_id")
-            program_id = program.id if isinstance(program, JDXiProgram) else None
+            program_id = getattr(program, "id", None) if program is not None else None
             if program_id:
                 bank_letter = program_id[0]
                 try:
                     program_number = str(int(program_id[1:3])) if len(program_id) >= 3 else ""
                 except ValueError:
                     program_number = ""
-                program_name = program.name or ""
+                program_name = getattr(program, "name", None) or ""
             else:
                 bank_letter = ""
                 program_number = ""

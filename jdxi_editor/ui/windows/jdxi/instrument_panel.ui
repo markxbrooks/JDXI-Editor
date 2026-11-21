@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InstrumentPanel</class>
+ <widget class="QWidget" name="InstrumentPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>230</height>
+   </rect>
+  </property>
+  <widget class="QWidget" name="display_host">
+   <property name="geometry">
+    <rect>
+     <x>35</x>
+     <y>50</y>
+     <width>210</width>
+     <height>70</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="title_host">
+   <property name="geometry">
+    <rect>
+     <x>35</x>
+     <y>15</y>
+     <width>200</width>
+     <height>50</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="octave_arp_host">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>125</y>
+     <width>240</width>
+     <height>100</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="program_host">
+   <property name="geometry">
+    <rect>
+     <x>385</x>
+     <y>30</y>
+     <width>150</width>
+     <height>80</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="tone_host">
+   <property name="geometry">
+    <rect>
+     <x>385</x>
+     <y>90</y>
+     <width>150</width>
+     <height>80</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="parts_host">
+   <property name="geometry">
+    <rect>
+     <x>255</x>
+     <y>15</y>
+     <width>180</width>
+     <height>220</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="sliders_host">
+   <property name="geometry">
+    <rect>
+     <x>515</x>
+     <y>15</y>
+     <width>360</width>
+     <height>140</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="effects_host">
+   <property name="geometry">
+    <rect>
+     <x>910</x>
+     <y>15</y>
+     <width>80</width>
+     <height>120</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="sequencer_host">
+   <property name="geometry">
+    <rect>
+     <x>535</x>
+     <y>166</y>
+     <width>500</width>
+     <height>80</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="favorite_host">
+   <property name="geometry">
+    <rect>
+     <x>505</x>
+     <y>169</y>
+     <width>34</width>
+     <height>52</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

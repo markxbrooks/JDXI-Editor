@@ -8,15 +8,8 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWi
 from jdxi_editor.core.jdxi import JDXi
 
 
-def add_program_container(central_widget, create_program_buttons_row):
-    """add program container"""
-    program_container = QWidget(central_widget)
-    program_container.setGeometry(
-        JDXi.UI.Dimensions.PROGRAM.X,
-        JDXi.UI.Dimensions.PROGRAM.Y,
-        JDXi.UI.Dimensions.PROGRAM.WIDTH,
-        JDXi.UI.Dimensions.PROGRAM.HEIGHT,
-    )
+def add_program_container(program_container: QWidget, create_program_buttons_row):
+    """add the program buttons to ``program_container``"""
     program_container_layout = QVBoxLayout(program_container)
     program_container_layout.setSpacing(4)
 

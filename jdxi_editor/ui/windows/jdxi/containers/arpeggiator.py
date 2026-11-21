@@ -23,16 +23,9 @@ def _add_label(grid: QGridLayout, text: str, row: int, col: int):
     grid.addWidget(label, row, col)
 
 
-def add_octave_and_arp_buttons(container: QWidget, send_octave: Callable):
-    """Add octave and arpeggiator controls on a single aligned grid."""
+def add_octave_and_arp_buttons(root: QWidget, send_octave: Callable):
+    """Add octave and arpeggiator controls to ``root`` on a single aligned grid."""
 
-    root = QWidget(container)
-    root.setGeometry(
-        JDXi.UI.Dimensions.OCTAVE.X,
-        JDXi.UI.Dimensions.OCTAVE.Y,
-        JDXi.UI.Dimensions.OCTAVE.WIDTH + JDXi.UI.Dimensions.ARPEGGIATOR.WIDTH,
-        max(JDXi.UI.Dimensions.OCTAVE.HEIGHT, JDXi.UI.Dimensions.ARPEGGIATOR.HEIGHT),
-    )
     root.setStyleSheet("background: transparent;")
 
     grid = QGridLayout(root)

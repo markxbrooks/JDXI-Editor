@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>jdxi_instrument.png</file>
+  </qresource>
+</RCC>
