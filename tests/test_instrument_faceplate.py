@@ -15,7 +15,7 @@ from itertools import combinations
 from unittest.mock import Mock
 
 import pytest
-from PySide6.QtCore import QRect
+from PySide6.QtCore import QCoreApplication, QEvent, QRect
 from PySide6.QtWidgets import QApplication, QLabel, QSlider, QWidget
 
 _APP = QApplication.instance() or QApplication([])
@@ -60,7 +60,7 @@ def _window() -> QWidget:
     return window
 
 
-@pytest.fixture(params=WIDTHS, ids=lambda width: f"{width}px")
+@pytest.fixture(scope="module", params=WIDTHS, ids=lambda width: f"{width}px")
 def shown(request):
     """A faceplate shown at an instrument width, and the window it fills."""
     window = _window()
@@ -74,7 +74,9 @@ def shown(request):
     face.close()
     face.deleteLater()
     window.deleteLater()
-    _APP.processEvents()
+    # Outside an event loop deleteLater waits for this; left alive, every
+    # later skin change restyles these panels too
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
 
 
 def _rect(widget: QWidget, face: QWidget) -> QRect:
