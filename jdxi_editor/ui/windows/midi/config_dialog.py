@@ -29,7 +29,7 @@ import os
 
 import qtawesome as qta
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import QObject, Qt, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -104,6 +104,49 @@ def _get_output_devices() -> list[tuple[str, int]]:
     :return: list
     """
     return output_devices()
+
+
+class _SoundfontRouteWatch(QObject):
+    """Reopen a SoundFont that follows the system output when that route changes."""
+
+    def __init__(self, helper):
+        super().__init__(helper)
+        self._helper = helper
+        self._busy = False
+        self._timer = QTimer(self)
+        self._timer.setInterval(1000)
+        self._timer.timeout.connect(self._check)
+
+    def sync(self) -> None:
+        """Run while the open SoundFont is following the system output."""
+        player = getattr(self._helper, "soundfont_output", None)
+        if player is not None and player.follows_default and player._stream is not None:
+            if not self._timer.isActive():
+                self._timer.start()
+        else:
+            self._timer.stop()
+
+    def _check(self) -> None:
+        if self._busy:
+            return
+        player = getattr(self._helper, "soundfont_output", None)
+        if player is None or not player.follows_default:
+            self._timer.stop()
+            return
+        if not player.take_route_change():
+            return
+        self._busy = True
+        try:
+            player.reopen()
+            self._helper.soundfont_synth = player.synth
+            self._helper.soundfont_sfid = player.sfid
+            callback = player.on_reopened
+            if callback is not None:
+                callback()
+        except Exception as ex:
+            log.error(f"SoundFont output did not follow the new route: {ex}")
+        finally:
+            self._busy = False
 
 
 class MIDIConfigDialog(QDialog):
@@ -526,6 +569,17 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.soundfont_sfid = sfid
         self.fs = player.synth
         self.sfid = sfid
+        player.on_reopened = self._note_opened_output
+        self._note_opened_output()
+        self._ensure_route_watch()
+        # The SoundFont's MIDI port has just appeared
+        self._refresh_ports_keeping_selection()
+
+    def _note_opened_output(self) -> None:
+        """Name the output PortAudio actually opened."""
+        player = getattr(self.midi_helper, "soundfont_output", None)
+        if player is None:
+            return
         where = opened_output_name(player.opened_device(), output_devices())
         where = where or "the default output"
         if player.midi_port is not None:
@@ -536,8 +590,19 @@ class MIDIConfigDialog(QDialog):
             self.fs_status.setText(
                 f"FluidSynth: started on {where} (no MIDI port on this system)"
             )
-        # The SoundFont's MIDI port has just appeared
-        self._refresh_ports_keeping_selection()
+
+    def _ensure_route_watch(self) -> None:
+        watch = getattr(self.midi_helper, "_soundfont_route_watch", None)
+        if watch is None:
+            watch = _SoundfontRouteWatch(self.midi_helper)
+            self.midi_helper._soundfont_route_watch = watch
+        watch.sync()
+
+    def closeEvent(self, event):
+        player = getattr(self.midi_helper, "soundfont_output", None)
+        if player is not None and player.on_reopened == self._note_opened_output:
+            player.on_reopened = None
+        super().closeEvent(event)
 
     def _refresh_ports_keeping_selection(self) -> None:
         """Re-list the ports (the SoundFont's comes and goes with FluidSynth),
@@ -563,6 +628,7 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.soundfont_sfid = None
         self.fs = None
         self.sfid = None
+        self._ensure_route_watch()
 
     def _stop_fluidsynth(self) -> None:
         try:

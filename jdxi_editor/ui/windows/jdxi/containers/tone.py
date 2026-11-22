@@ -6,16 +6,9 @@ from jdxi_editor.ui.widgets.editor.helper import create_layout_with_items
 
 
 def add_tone_container(
-    central_widget, create_tone_buttons_horizontal_layout, previous_tone, next_tone
+    tone_container: QWidget, create_tone_buttons_horizontal_layout, previous_tone, next_tone
 ):
-    """For tone buttons"""
-    tone_container = QWidget(central_widget)
-    tone_container.setGeometry(
-        JDXi.UI.Dimensions.TONE.X,
-        JDXi.UI.Dimensions.TONE.Y,
-        JDXi.UI.Dimensions.TONE.WIDTH,
-        JDXi.UI.Dimensions.TONE.HEIGHT,
-    )
+    """For tone buttons, in ``tone_container``"""
     tone_container.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
     tone_container_layout = QVBoxLayout(tone_container)
     tone_container_layout.setSpacing(3)

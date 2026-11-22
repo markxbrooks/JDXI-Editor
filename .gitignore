@@ -51,6 +51,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+doc/*
 
 # PyInstaller
 #  Usually these files are written by address python script from address template

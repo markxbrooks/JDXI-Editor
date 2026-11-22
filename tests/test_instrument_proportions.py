@@ -78,10 +78,10 @@ def test_panel_image_is_the_panel():
 def test_proportions_match_the_jdxi(window):
     panel = window.centralWidget().height()
     keys = window.statusBar().height()
-    assert panel == JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT
+    assert panel == JDXi.UI.Dimensions.INSTRUMENT.panel_height_for(window.width())
     ratio = window.width() / (panel + keys)
     assert 2.30 <= ratio <= 2.50  # JD-Xi 2.38
-    assert 0.52 <= panel / (panel + keys) <= 0.60
+    assert 0.52 <= panel / (panel + keys) <= 0.62  # 0.60 on the Reverb top view
 
 
 def test_bottom_row_sits_on_the_panel_edge(window):
@@ -91,8 +91,18 @@ def test_bottom_row_sits_on_the_panel_edge(window):
         return widget.mapTo(panel, widget.rect().bottomLeft()).y()
 
     edge = panel.height()
-    for widget in [*window.sequencer_buttons, window.octave_down, window.key_hold_button, window.favorite_button]:
+    for widget in [
+        *window.sequencer_buttons,
+        window.octave_down,
+        window.key_hold_button,
+        window.favorite_button,
+    ]:
         assert edge - 20 <= bottom(widget) <= edge, widget
+    favorite = window.favorite_button
+    first_step = window.sequencer_buttons[0]
+    assert favorite.mapTo(panel, favorite.rect().topRight()).x() <= first_step.mapTo(
+        panel, first_step.rect().topLeft()
+    ).x()
 
 
 def test_finish_matte_body_and_glossy_panel(default_skin):

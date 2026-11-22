@@ -1621,9 +1621,20 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
                 widget.setStyleSheet(desired_cap)
             elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
                 widget.setStyleSheet(repoint(sheet))
-            # QWidget.update explicitly: an item view overrides update() with
-            # one that demands a model index, and would raise on a bare call
-            QWidget.update(widget)
+        except RuntimeError:
+            continue
+
+    # Repaint by window rather than by widget. Setting a stylesheet already
+    # schedules the widget's own repaint, and a window repaints its children,
+    # so touching every widget in the application only multiplies the chances
+    # of reaching one that is being torn down. QWidget.update explicitly: an
+    # item view overrides update() with one that demands a model index, and
+    # would raise on a bare call.
+    for window in application.topLevelWidgets():
+        if not isValid(window):
+            continue
+        try:
+            QWidget.update(window)
         except RuntimeError:
             continue
 

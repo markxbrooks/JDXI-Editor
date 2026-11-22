@@ -9,15 +9,8 @@ from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 from picoui.specs.widgets import ButtonSpec
 
 
-def add_effects_container(central_widget, open_vocal_fx, open_effects):
-    """Effects button in top row"""
-    fx_container = QWidget(central_widget)
-    fx_container.setGeometry(
-        JDXi.UI.Dimensions.EFFECTS.X,
-        JDXi.UI.Dimensions.EFFECTS.Y,
-        JDXi.UI.Dimensions.EFFECTS.WIDTH,
-        JDXi.UI.Dimensions.EFFECTS.HEIGHT,
-    )
+def add_effects_container(fx_container: QWidget, open_vocal_fx, open_effects):
+    """Effects buttons in the top row, in ``fx_container``"""
     fx_layout = QVBoxLayout(fx_container)
     vocal_effects_row, vocal_effects_button = create_button_row(
         ButtonSpec(label="Vocoder", slot=open_vocal_fx),

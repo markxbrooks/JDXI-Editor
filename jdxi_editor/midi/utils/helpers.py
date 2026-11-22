@@ -76,7 +76,7 @@ def start_recording(
     usb_recorder: USBRecorder,
     file_duration_seconds: float,
     usb_file_output_name: str,
-    recording_rate: int,
+    recording_rate: str,
     selected_index: int,
 ) -> None:
     """
@@ -85,7 +85,7 @@ def start_recording(
     :param usb_file_output_name: str
     :param file_duration_seconds: float
     :param usb_recorder: USBRecorder
-    :param recording_rate: int
+    :param recording_rate: str 16-bit PCM (``int16``)
     :param selected_index: int
     :return: None
 
@@ -105,7 +105,7 @@ def start_recording(
             duration=file_duration_seconds + 10,
             output_file=usb_file_output_name,
             recording_rate=recording_rate,
-            # --- e.g. pyaudio.paInt16
+            # --- 16-bit PCM ("int16")
         )
         thread.recording_finished.connect(on_usb_recording_finished)
         thread.recording_error.connect(on_usb_recording_error)

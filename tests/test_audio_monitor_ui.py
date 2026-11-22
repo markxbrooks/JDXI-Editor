@@ -230,11 +230,15 @@ def test_round_start_and_stop_buttons(monkeypatch):
     """Start lights while listening; the round Stop button stops."""
     from jdxi_editor.audio.audio_source import InputDeviceSource
 
+    # Before the widget is built: it disables Start when sounddevice cannot
+    # be imported, and a disabled button ignores click(). Patching afterwards
+    # passes only where sounddevice happens to be installed.
+    monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
     monitor = AudioMonitor()
     monkeypatch.setattr(monitor.source, "start", lambda device=None: None)
     monkeypatch.setattr(monitor.source, "stop", lambda: None)
-    monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
     try:
+        assert monitor.listen_button.isEnabled()
         size = monitor.stop_button.size()
         assert size.width() == size.height()  # round, not a text button
         monitor.listen_button.click()

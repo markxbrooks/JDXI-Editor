@@ -38,7 +38,6 @@ dependencies = [
     "Pillow",
     "numpy",
     "music21",
-    "PyAudio",
     "pyqtdarktheme",
     "darkdetect",
     "SQLAlchemy>=2.0",

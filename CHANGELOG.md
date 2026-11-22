@@ -4,9 +4,27 @@ All notable changes to JDXI-Editor are documented in this file.
 
 # [1.0.0rc2] — 2026-11-19
 
+The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).
+
 Replaces 1.0.0rc1, which never reached PyPI: its tag predated the fix below,
-and the release checks failed. No new features; the hardware caveats under
-1.0.0rc1 still apply.
+and the release checks failed. No new features.
+
+`python -m pytest -m hardware` has since passed on a connected JD-Xi:
+identity, temporary program, digital, analog, drum, effect, and arpeggio
+reads, one restored temporary digital byte, a one-bar playback, and a
+recording capture. The same result is in
+[doc/known-issues.md](doc/known-issues.md). The app stays **Beta**.
+
+### Changed
+
+- **USB recording uses sounddevice.** PyAudio is no longer a dependency.
+  sounddevice's wheels include PortAudio, so an Apple Silicon `pip install`
+  does not compile PyAudio.
+- **SoundFont output on macOS follows the headphone jack.** The built-in
+  output opens as the system default, so CoreAudio uses the jack when
+  headphones are plugged in. A separate device (AirPods, USB, a multi-output
+  device) stays on the index that was selected. Plugging or unplugging the
+  jack while playback is following the system route reopens the stream.
 
 ### Fixed
 
@@ -30,11 +48,10 @@ and the release checks failed. No new features; the hardware caveats under
 
 The first candidate for 1.0. Everything a user can see is listed under 0.9.9
 below; this tag adds no features. It exists so installation and JD-Xi hardware
-can be exercised before 1.0, and the app stays **Beta** until that has
-happened: on the machine this was cut from, the MIDI inputs were empty, so
-identity, a program read and write, digital, analog, drums, effects, a
-pattern, and playback to a JD-Xi are all still unverified. Please report what
-you find.
+can be exercised before 1.0. On the machine this tag was cut from, the MIDI
+inputs were empty, so identity, a program read and write, digital, analog,
+drums, effects, a pattern, and playback to a JD-Xi had not been run. That
+pass is recorded under 1.0.0rc2. The app stays **Beta**.
 
 ### Fixed
 
@@ -58,19 +75,13 @@ you find.
 
 ### Known issues
 
-- **`pip install` on Apple Silicon macOS** fails building PyAudio: PyPI has no
-  macOS arm64 wheel, and on macOS 26/27 the source build cannot link against
-  the newest SDK. The `.dmg` and `.pkg` bundle PyAudio and are unaffected.
-  Build from a checkout with `SDKROOT` pinned to an older SDK — see
-  `deps/wheels/README.md`. Recording will move to `sounddevice`, which needs no
-  compiler, in a later candidate.
 - **The `.deb` version** is `1.0.0rc1`, which dpkg orders *after* `1.0.0`, so
   `apt` will not upgrade a candidate to the finished release. Reinstall rather
   than upgrade.
 
 # [0.9.9] — 2026-11
 
-The notes below are everything a user can see since 0.9.8. This build stays **Beta**. A 1.0.0rc1 tag waits on a pass with a connected JD-Xi. On this machine the MIDI inputs were empty and the only output was `SoundFont (JD-Xi Editor)`, so identity, a program read and write, digital, analog, drums, effects, a pattern, and playback to a JD-Xi were not run.
+The notes below are everything a user can see since 0.9.8. This build stays **Beta**. 1.0.0rc1 and 1.0.0rc2 now exist. The hardware pass they were cut to allow has been run: `python -m pytest -m hardware` passed on a connected JD-Xi, and the result is under 1.0.0rc2 and in [doc/known-issues.md](doc/known-issues.md).
 
 ### Rack skins
 
@@ -89,7 +100,7 @@ The notes below are everything a user can see since 0.9.8. This build stays **Be
 - **Update check**: Once a day, against GitHub Releases, for a build that matches this install.
 - **PySide6**: Required `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 are untested.
 - **picomidi**: Required `>=0.3.0`. The MIDI player's transport uses `picomidi.playback.scheduler` and the engine's per-track volume, transpose, and channel map, none of which are in picomidi 0.2.0; against 0.2.0 the main window does not import at all.
-- **Frozen builds**: FluidSynth, sounddevice (and its PortAudio binaries), and music21's LilyPond support are declared for PyInstaller and py2app. A `pip install` still needs system PortAudio (PyAudio) and a FluidSynth install for SoundFont playback.
+- **Frozen builds**: FluidSynth, sounddevice (and its PortAudio binaries), and music21's LilyPond support are declared for PyInstaller and py2app. SoundFont playback needs a FluidSynth install. PortAudio comes with sounddevice.
 
 # [0.9.8] — 2026-11
 

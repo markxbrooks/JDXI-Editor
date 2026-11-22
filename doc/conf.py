@@ -74,7 +74,9 @@ html_theme_options = {
     'collapse_navigation': False,
     'sticky_navigation': True,
     'includehidden': True,
-    'titles_only': False
+    # Keep the sidebar at the document level; section headings are repeated
+    # across the editor and troubleshooting pages.
+    'titles_only': True
 }
 
 # -- Options for LaTeX output ------------------------------------------------

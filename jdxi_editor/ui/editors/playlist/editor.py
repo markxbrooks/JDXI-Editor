@@ -755,15 +755,20 @@ class PlaylistEditor(QWidget):
             # The same program can be in a playlist several times (one entry per
             # MIDI file), so each row is tied to its playlist item, not the program
             item_id = item_data.get("item_id")
+            program_id = getattr(program, "id", None) if program is not None else None
+            if program_id:
+                bank_letter = program_id[0]
+                try:
+                    program_number = str(int(program_id[1:3])) if len(program_id) >= 3 else ""
+                except ValueError:
+                    program_number = ""
+                program_name = getattr(program, "name", None) or ""
+            else:
+                bank_letter = ""
+                program_number = ""
+                program_name = ""
             row = self.playlist_programs_table.rowCount()
             self.playlist_programs_table.insertRow(row)
-
-            # Extract bank and number from program ID
-            bank_letter = program.id[0] if program.id else ""
-            try:
-                program_number = int(program.id[1:3]) if len(program.id) >= 3 else 0
-            except ValueError:
-                program_number = 0
 
             # Bank
             bank_item = QTableWidgetItem(bank_letter)
@@ -771,12 +776,12 @@ class PlaylistEditor(QWidget):
             self.playlist_programs_table.setItem(row, 0, bank_item)
 
             # Number
-            number_item = QTableWidgetItem(str(program_number))
+            number_item = QTableWidgetItem(program_number)
             number_item.setFlags(number_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.playlist_programs_table.setItem(row, 1, number_item)
 
-            # Program Name
-            name_item = QTableWidgetItem(program.name or "")
+            # Program Name (blank when the song sends no program change)
+            name_item = QTableWidgetItem(program_name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.playlist_programs_table.setItem(row, 2, name_item)
 
@@ -786,7 +791,7 @@ class PlaylistEditor(QWidget):
             # Store playlist_id, program_id and item_id for saving
             midi_file_item.setData(
                 Qt.ItemDataRole.UserRole + 1,
-                {"playlist_id": playlist_id, "program_id": program.id, "item_id": item_id},
+                {"playlist_id": playlist_id, "program_id": program_id, "item_id": item_id},
             )
             midi_file_item.setData(ARTWORK_ROLE, item_data.get("artwork_path"))
             self._show_row_artwork(midi_file_item)
@@ -794,7 +799,7 @@ class PlaylistEditor(QWidget):
 
             # Cheat Preset ComboBox with MIDI info readout
             cheat_cell = self._create_cheat_preset_cell_widget(
-                cheat_preset_id, row, playlist_id, program.id, item_id
+                cheat_preset_id, row, playlist_id, program_id, item_id
             )
             self.playlist_programs_table.setCellWidget(row, 4, cheat_cell)
 
@@ -937,7 +942,7 @@ class PlaylistEditor(QWidget):
         program_id = combo.property("program_id")
         item_id = combo.property("item_id")
 
-        if not playlist_id or not program_id:
+        if not playlist_id or (not program_id and item_id is None):
             return
 
         stored_id = (
@@ -1098,9 +1103,18 @@ class PlaylistEditor(QWidget):
             action.triggered.connect(slot)
             return action
 
+        name_item = table.item(row, 2)
+        program = name_item.data(Qt.ItemDataRole.UserRole) if name_item else None
+        has_program = isinstance(program, JDXiProgram)
         add("Play", lambda: self._play_playlist_program(table.model().index(row, 5)), has_midi)
-        add("Load Program", lambda: self._load_program_from_table(row))
-        add("Open in Program Editor", lambda: self._on_playlist_program_double_clicked(table.item(row, 2)))
+        add("Set Program…", lambda: self.set_track_program(row), item_id is not None)
+        add("Clear Program", lambda: self.clear_track_program(row), has_program)
+        add("Load Program", lambda: self._load_program_from_table(row), has_program)
+        add(
+            "Open in Program Editor",
+            lambda: self._on_playlist_program_double_clicked(table.item(row, 2)),
+            has_program,
+        )
         menu.addSeparator()
         add("Set MIDI File…", lambda: self.choose_track_midi_file(row))
         add("Clear MIDI File", lambda: midi_item.setText(""), has_midi)
@@ -1117,19 +1131,69 @@ class PlaylistEditor(QWidget):
         return menu
 
     def add_program_to_playlist(self) -> None:
-        """Add a program to the selected playlist."""
-        if not self.playlist_editor_combo:
-            return
-
-        # Check if a playlist is selected
-        current_value = self.playlist_editor_combo.value()
-        playlist_id = self._playlist_value_to_id.get(current_value)
+        """Add MIDI files as songs. Each starts with no JD-Xi program."""
+        playlist_id = self._selected_playlist_id()
         if not playlist_id:
             QMessageBox.information(
                 self, "No Playlist Selected", "Please select a playlist first."
             )
             return
-        self.show_select_programs_dialog(playlist_id=playlist_id)
+        paths, _chosen_filter = QFileDialog.getOpenFileNames(
+            self, "Add Songs", "", "MIDI Files (*.mid *.midi)"
+        )
+        if not paths:
+            return
+        self.add_songs(playlist_id, paths)
+
+    def add_songs(self, playlist_id: int, paths: list) -> int:
+        """Append each MIDI file as a song with no program, in the order chosen."""
+        from jdxi_editor.ui.programs.database import get_database
+
+        db = get_database()
+        added = sum(1 for path in paths if db.add_song_to_playlist(playlist_id, path))
+        if added:
+            log.message(f"✅ Added {added} song(s) to playlist")
+            self._after_tracks_changed(playlist_id)
+        return added
+
+    def set_track_program(self, row: int) -> None:
+        """Choose one program for this song. Play will then send a program change."""
+        playlist_id = self._selected_playlist_id()
+        item_id = self._row_item_id(row)
+        if playlist_id is None or item_id is None:
+            return
+        playlist_text = self.playlist_editor_combo.combo_box.currentText()
+        playlist_name = playlist_text.split(" (")[0] if " (" in playlist_text else playlist_text
+        try:
+            from jdxi_editor.ui.programs.database import get_database
+
+            db = get_database()
+            programs = db.get_all_programs()
+        except Exception as e:
+            log.error(f"Error loading programs: {e}")
+            QMessageBox.warning(self, "Error", f"Failed to load programs: {e}")
+            return
+        if not programs:
+            QMessageBox.information(self, "No Programs Available", "There are no programs to set yet.")
+            return
+        dialog = AddProgramsDialog(playlist_name, programs, parent=self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        chosen = dialog.selected_program_ids()
+        if not chosen or not db.set_item_program(item_id, chosen[0]):
+            return
+        self._after_tracks_changed(playlist_id, playing_id=self._playing_item_id())
+
+    def clear_track_program(self, row: int) -> None:
+        """Remove the program from this song, so play sends no program change."""
+        playlist_id = self._selected_playlist_id()
+        item_id = self._row_item_id(row)
+        if playlist_id is None or item_id is None:
+            return
+        from jdxi_editor.ui.programs.database import get_database
+
+        if get_database().set_item_program(item_id, None):
+            self._after_tracks_changed(playlist_id, playing_id=self._playing_item_id())
 
     def show_select_programs_dialog(self, playlist_id: int):
         """Tick one or more programs (with search) and add them to the playlist,
@@ -1305,13 +1369,11 @@ class PlaylistEditor(QWidget):
                 if program_item:
                     program = program_item.data(Qt.ItemDataRole.UserRole)
                     item_id = program_item.data(PLAYLIST_ITEM_ID_ROLE)
-                    if program and isinstance(program, JDXiProgram):
-                        # item_id removes this row's entry, not the first entry
-                        # that uses the same program
-                        if db.remove_program_from_playlist(
-                            playlist_id, program.id, item_id=item_id
-                        ):
-                            deleted_count += 1
+                    program_id = program.id if isinstance(program, JDXiProgram) else None
+                    if item_id is not None and db.remove_program_from_playlist(
+                        playlist_id, program_id, item_id=item_id
+                    ):
+                        deleted_count += 1
 
             if deleted_count > 0:
                 log.message(f"✅ Deleted {deleted_count} program(s) from playlist")
@@ -1335,16 +1397,15 @@ class PlaylistEditor(QWidget):
         if not program_item:
             return
 
-        program = program_item.data(Qt.ItemDataRole.UserRole)
-        if not program:
-            return
+        program = program_item.data(Qt.ItemDataRole.UserRole) if program_item else None
 
         # Get MIDI file path from the MIDI file column
         midi_file_item = self.playlist_programs_table.item(row, 3)
         midi_file_path = midi_file_item.text() if midi_file_item else None
 
-        # Always load the program via MIDI Program Change first
-        self._load_program_from_table(row)
+        # A program change goes out only when this song has a JD-Xi program
+        if isinstance(program, JDXiProgram):
+            self._load_program_from_table(row)
 
         # Load cheat preset if selected (send on Analog Synth channel 3)
         # Add a delay to ensure the main program change is processed first
@@ -1388,9 +1449,8 @@ class PlaylistEditor(QWidget):
                 )
                 return
 
-            log.message(
-                f"🎵 Loading and playing MIDI file: {midi_file_path} for program {program.id}"
-            )
+            song = program.id if isinstance(program, JDXiProgram) else Path(midi_file_path).name
+            log.message(f"🎵 Loading and playing MIDI file: {midi_file_path} for {song}")
 
             # Get the parent instrument to access MidiFileEditor
             parent_instrument = None
@@ -1472,9 +1532,8 @@ class PlaylistEditor(QWidget):
             else:
                 log.warning("⚠️ Could not access parent instrument to load MIDI file")
         else:
-            log.message(
-                f"ℹ️ No MIDI file selected for program {program.id}, only program loaded"
-            )
+            song = program.id if isinstance(program, JDXiProgram) else "this song"
+            log.message(f"ℹ️ No MIDI file selected for {song}")
 
     def _disconnect_playlist_finished(self, midi_file_editor) -> None:
         """Stop *midi_file_editor*'s end-of-song signal from advancing the playlist."""
@@ -1546,6 +1605,11 @@ class PlaylistEditor(QWidget):
         if column != 2:
             return
 
+        program = item.data(Qt.ItemDataRole.UserRole)
+        if not isinstance(program, JDXiProgram):
+            self.set_track_program(item.row())
+            return
+
         log.message("📝 Opening Program Editor from playlist double-click")
 
         # Try to get the parent instrument to show the Program Editor
@@ -1571,7 +1635,6 @@ class PlaylistEditor(QWidget):
                     if existing_editor:
                         # Already open, just raise it
                         # Ensure window is in normal state (not minimized)
-                        from PySide6.QtCore import Qt
                         from PySide6.QtWidgets import QApplication
 
                         window_state = existing_editor.windowState()

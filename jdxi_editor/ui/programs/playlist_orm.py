@@ -266,8 +266,80 @@ class PlaylistORM:
             log.error(traceback.format_exc())
             return False
 
+    def add_song_to_playlist(
+        self, playlist_id: int, midi_file_path: str, position: Optional[int] = None
+    ) -> bool:
+        """
+        Append a song that is only a MIDI file.
+
+        :param playlist_id: Playlist ID
+        :param midi_file_path: Path of the MIDI file
+        :param position: Position in the playlist (appended when omitted)
+        :return: True if the song was added
+        """
+        try:
+            with self.db_session.get_session() as session:
+                playlist = session.query(PlayList).filter_by(id=playlist_id).first()
+                if not playlist:
+                    log.error(scope="PlaylistORM", message=f"Playlist {playlist_id} not found")
+                    return False
+                if position is None:
+                    position = self._next_position(session, playlist_id)
+                item = PlaylistItem(
+                    playlist_id=playlist_id,
+                    program_id=None,
+                    position=position,
+                    midi_file_path=midi_file_path,
+                )
+                session.add(item)
+                log.info(
+                    f"✅ Added song {midi_file_path} to playlist {playlist_id} at position {position}",
+                    scope="PlaylistORM",
+                )
+                return True
+        except Exception as e:
+            log.error(
+                f"❌Failed to add song to playlist {playlist_id}: {e}",
+                scope="PlaylistORM",
+            )
+            return False
+
+    def set_item_program(self, item_id: int, program_id: Optional[str]) -> bool:
+        """
+        Set or clear the JD-Xi program on one song.
+
+        :param item_id: Playlist item ID
+        :param program_id: Program ID, or None to clear it
+        :return: True if the song was updated
+        """
+        try:
+            with self.db_session.get_session() as session:
+                item = session.query(PlaylistItem).filter_by(id=item_id).first()
+                if not item:
+                    return False
+                item.program_id = program_id or None
+                log.info(
+                    f"✅ Song {item_id} program is {item.program_id or 'cleared'}",
+                    scope="PlaylistORM",
+                )
+                return True
+        except Exception as e:
+            log.error(f"❌Failed to set program on song {item_id}: {e}", scope="PlaylistORM")
+            return False
+
     @staticmethod
-    def _find_item(session, playlist_id: int, program_id: str, item_id: Optional[int]):
+    def _next_position(session, playlist_id: int) -> int:
+        """The position after the last song in the playlist (1 when it is empty)."""
+        max_item = (
+            session.query(PlaylistItem)
+            .filter_by(playlist_id=playlist_id)
+            .order_by(PlaylistItem.position.desc())
+            .first()
+        )
+        return (max_item.position + 1) if max_item else 1
+
+    @staticmethod
+    def _find_item(session, playlist_id: int, program_id: Optional[str], item_id: Optional[int]):
         """The playlist item to act on. A program can be in a playlist more than
         once (one entry per MIDI file), so `item_id` picks the exact entry; without
         it, the first entry for the program is used (older callers)."""
@@ -399,7 +471,7 @@ class PlaylistORM:
     def update_playlist_item_midi_file(
         self,
         playlist_id: int,
-        program_id: str,
+        program_id: Optional[str],
         midi_file_path: Optional[str],
         item_id: Optional[int] = None,
     ) -> bool:
@@ -470,7 +542,7 @@ class PlaylistORM:
     def update_playlist_item_cheat_preset(
         self,
         playlist_id: int,
-        program_id: str,
+        program_id: Optional[str],
         cheat_preset_id: Optional[str] = None,
         item_id: Optional[int] = None,
     ) -> bool:

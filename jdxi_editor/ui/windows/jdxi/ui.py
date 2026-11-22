@@ -46,22 +46,8 @@ from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.rack import RackStatusBar
-from jdxi_editor.ui.windows.jdxi.containers import (
-    add_digital_display,
-    add_effects_container,
-    add_favorite_button_container,
-    add_octave_and_arp_buttons,
-    add_program_container,
-    add_sequencer_container,
-    add_slider_container,
-    add_title_container,
-    add_tone_container,
-    build_wheel_label_row,
-    build_wheel_row,
-    create_parts_container,
-    create_program_buttons_row,
-    create_tone_buttons_row,
-)
+from jdxi_editor.ui.windows.jdxi.containers import build_wheel_label_row, build_wheel_row
+from jdxi_editor.ui.windows.jdxi.panel import build_faceplate
 
 
 class JDXiWindow(QMainWindow):
@@ -140,82 +126,11 @@ class JDXiWindow(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
 
-        # --- Single layout to hold the image and overlays
         layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
-        # --- Create container for image and overlays
-        container_widget = QWidget()
-        # Fixed panel height: the image is drawn this tall and the controls are
-        # placed in its coordinates (no stretching, no cropping)
-        container_widget.setFixedHeight(JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT)
-        container_widget.setLayout(QVBoxLayout())
-        container_widget.layout().setContentsMargins(0, 0, 0, 0)
-        container_widget.layout().setSpacing(6)
-
-        # --- Store reference to image label
-        self.image_label = QLabel()
-        self.image_label.setPixmap(draw_instrument_pixmap())
-        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        container_widget.layout().addWidget(self.image_label)
-
-        # --- Add overlaid controls
-        self.digital_display = add_digital_display(
-            container_widget,
-            self,
-            digital_font_family=self.digital_font_family,
-        )
-        add_title_container(container_widget)
-        self.parts_container, self.part_buttons = create_parts_container(
-            parent_widget=self,
-            on_open_d1=lambda: self.show_editor("digital1"),
-            on_open_d2=lambda: self.show_editor("digital2"),
-            on_open_drums=lambda: self.show_editor("drums"),
-            on_open_analog=lambda: self.show_editor("analog"),
-            on_open_arp=lambda: self.show_editor("arpeggio"),
-            on_select_synth=self._select_synth,
-        )
-        self.synth_buttons = {
-            JDXiSynth.DIGITAL_SYNTH_1: self.part_buttons["digital1"],
-            JDXiSynth.DIGITAL_SYNTH_2: self.part_buttons["digital2"],
-            JDXiSynth.ANALOG_SYNTH: self.part_buttons["analog"],
-            JDXiSynth.DRUM_KIT: self.part_buttons["drums"],
-        }
-        self.arp_button = self.part_buttons["arp"]
-
-        (
-            self.octave_down,
-            self.octave_up,
-            self.arpeggiator_button,
-            self.key_hold_button,
-        ) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
-
-        self.vocal_effects_button, self.effects_button = add_effects_container(
-            container_widget,
-            lambda: self.show_editor("vocal_fx"),
-            lambda: self.show_editor("effects"),
-        )
-
-        (self.program_down_button, self.program_up_button) = add_program_container(
-            container_widget, create_program_buttons_row
-        )
-
-        self.tone_down_button, self.tone_up_button = add_tone_container(
-            container_widget,
-            create_tone_buttons_row,
-            self._preset_previous,
-            self._preset_next,
-        )
-        self.sequencer_buttons = add_sequencer_container(
-            container_widget,
-            midi_helper=self.midi_helper,
-            on_context_menu=self._show_favorite_context_menu,
-            on_save_favorite=self._save_favorite,
-        )
-        self.favorite_button = add_favorite_button_container(container_widget)
-        add_slider_container(container_widget, self.midi_helper)
-        layout.addWidget(container_widget)
+        self.faceplate = build_faceplate(self)
+        layout.addWidget(self.faceplate)
 
         # --- Initialize current preset index
         self.current_preset_index = 0
@@ -288,6 +203,91 @@ class JDXiWindow(QMainWindow):
                 status_tip="Where your skin files are kept",
             )
         )
+
+    def showEvent(self, event) -> None:
+        """
+        Give the instrument its proportions once the window is laid out.
+
+        :param event: QShowEvent
+        :return: None
+        """
+        super().showEvent(event)
+        self.apply_instrument_proportions()
+
+    def resizeEvent(self, event) -> None:
+        """
+        Keep the instrument in proportion as the window changes width.
+
+        The JD-Xi is 2.37 : 1, and its panel and keys are a fixed share of
+        its width, so both follow the window rather than staying at the size
+        that happened to be right at 1000 px.
+
+        :param event: QResizeEvent
+        :return: None
+        """
+        super().resizeEvent(event)
+        self.apply_instrument_proportions()
+
+    def apply_instrument_proportions(self) -> None:
+        """
+        Size the panel and the keys for the instrument's current width.
+
+        :return: None
+        """
+        width = self.width()
+        central = self.centralWidget()
+        dimensions = JDXi.UI.Dimensions.INSTRUMENT
+        faceplate = getattr(self, "faceplate", None)
+        panel = dimensions.panel_height_for(width)
+        if faceplate is not None:
+            # it may need more than the ratio asks for, to fit its controls
+            panel = faceplate.apply_width(width)
+        depth = round(width * dimensions.DEPTH_RATIO)
+        keys = max(dimensions.keys_height_for(width) // 2, depth - panel)
+        keyboard = getattr(self, "piano_keyboard", None)
+        if keyboard is not None:
+            keyboard.set_instrument_width(width, keys)
+
+        # Reserve the depth the instrument needs. Without this the window
+        # opens shorter than the panel and the keys together, and Qt squeezes
+        # the panel below its own minimum -- 215 px of a 230 px faceplate,
+        # with the step buttons pushed off the bottom edge.
+        # sizeHint, not height: during the first resize the menu bar is not
+        # shown yet and reports 0, which left the window 20 px short and the
+        # panel squeezed for the rest of the session
+        menu = self.menuBar()
+        chrome = menu.sizeHint().height() if menu is not None else 0
+        wanted = chrome + panel + keys + self._status_bar_padding()
+        # Fixed, not merely a minimum: the instrument is a shape, and a saved
+        # geometry or a drag on the bottom edge would otherwise leave it
+        # floating in a band of empty body. The width stays free and the
+        # depth follows it.
+        #
+        # The shortfall is measured rather than predicted: adding up the menu
+        # bar, the panel, the keys and the status bar's margins was always a
+        # few pixels out, and the panel paid for it by being squeezed past
+        # its own edge. Asking the central widget how short it is converges
+        # in a pass or two and cannot drift.
+        if central is not None:
+            wanted = self.height() + (panel - central.height())
+        if self.minimumHeight() != wanted or self.maximumHeight() != wanted:
+            self.setFixedHeight(wanted)
+
+    def _status_bar_padding(self) -> int:
+        """
+        What the status bar adds around the keyboard.
+
+        :return: int px
+        """
+        status = self.statusBar()
+        if status is None:
+            return 0
+        # From the margins, not from the live heights: measured while the
+        # layout is still settling, the difference is whatever the keyboard
+        # happened to be a moment ago, and the window ends up that much too
+        # tall for good.
+        margins = status.contentsMargins()
+        return margins.top() + margins.bottom()
 
     def _apply_skin(self, skin, remember: bool = True) -> None:
         """
@@ -639,7 +639,7 @@ class JDXiWindow(QMainWindow):
         if isinstance(status_bar, RackStatusBar):
             status_bar.apply_skin()
 
-    def _build_status_layout(self) -> None:
+    def _build_status_layout(self) -> QLayout:
         layout = QVBoxLayout()
         layout.addStretch()
         layout.addLayout(build_wheel_label_row())

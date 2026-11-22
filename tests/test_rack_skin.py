@@ -890,18 +890,22 @@ def test_brushed_metal_prints_ink_and_mounts_its_controls(qapp):
     assert active_round_button_style() == JDXiUIStyle.BUTTON_ROUND
 
 
-@unittest.skip("Skipping test_the_body_and_tabs_follow_the_skin.py due to time taken to run")
 def test_the_body_and_tabs_follow_the_skin(qapp):
     """
     The skin reaches past the panels: the body the editors are mounted on,
     and the tabs standing on it, are the skin's too.
+
+    Asserted against the chassis block alone rather than the whole
+    stylesheet. That block is what carries these colours, and building the
+    sheet for every skin renders a faceplate image per skin, which is what
+    made this slow enough to be switched off.
     """
-    from jdxi_editor.ui.style.editor_style import AppEditorStyle, CHASSIS_MARKER
+    from jdxi_editor.ui.style.editor_style import CHASSIS_MARKER, chassis_rules
 
     for skin in SKINS.values():
         set_active_skin(skin, remember=False)
-        sheet = AppEditorStyle.editor_stylesheet()
-        chassis = sheet[sheet.index(CHASSIS_MARKER) :]
+        chassis = chassis_rules()
+        assert chassis.startswith(CHASSIS_MARKER), skin.skin_id
         assert skin.chassis.body in chassis, skin.skin_id
         assert skin.chassis.surface_alt in chassis, skin.skin_id
         assert skin.chassis.accent in chassis, skin.skin_id

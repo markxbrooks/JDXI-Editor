@@ -3,8 +3,8 @@ Additional Editors
 
 Advanced editing tools and specialized interfaces for professional sound design and performance.
 
-Available Editors
-=================
+Specialized Editors
+===================
 
 * :doc:`Arpeggiator Editor <arpeggiator>` — Sophisticated pattern generation and sequencing
 * :doc:`Effects Editor <effects>` — Master effects processing with reverb, delay, compressor, phaser

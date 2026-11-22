@@ -24,16 +24,12 @@ from jdxi_editor.ui.widgets.midi.slider.lfo import (
 from jdxi_editor.ui.widgets.midi.slider.lfo.shape import LFOShapeSlider
 
 
-def add_slider_container(central_widget, midi_helper):
-    """ad slider container"""
-    slider_container = QWidget(central_widget)
-    slider_container.setGeometry(
-        JDXi.UI.Dimensions.SLIDER.X,
-        JDXi.UI.Dimensions.SLIDER.Y,
-        JDXi.UI.Dimensions.SLIDER.CONTAINER.WIDTH,
-        JDXi.UI.Dimensions.SLIDER.CONTAINER.HEIGHT,
-    )
+def add_slider_container(slider_container: QWidget, midi_helper) -> list:
+    """
+    Add the slider bank to ``slider_container``.
 
+    :return: list the sliders on the panel, left to right
+    """
     main_layout = QVBoxLayout(slider_container)
     main_layout.setContentsMargins(0, 0, 0, 0)
     main_layout.setSpacing(3)
@@ -187,3 +183,15 @@ def add_slider_container(central_widget, midi_helper):
     # Add to main layout
     slider_row_container.setStyleSheet(JDXi.UI.Style.ADSR_DISABLED)
     main_layout.addWidget(slider_row_container)
+    return [
+        filter_cutoff_slider,
+        filter_resonance_slider,
+        amp_level_slider,
+        amp_env_slider,
+        lfo_rate_slider,
+        lfo_pitch_slider,
+        lfo_filter_slider,
+        lfo_amp_slider,
+        delay_slider,
+        reverb_slider,
+    ]
