@@ -97,8 +97,8 @@ class PlaylistItem(Base):
     """
     SQLAlchemy model for the playlist_items table.
 
-    Represents a program within a playlist, including its position,
-    MIDI file path, and cheat preset ID.
+    A song in a playlist: its position, MIDI file, and cheat preset.
+    ``program_id`` is empty when the song sends no program change.
     """
 
     __tablename__ = "playlist_items"
@@ -110,7 +110,7 @@ class PlaylistItem(Base):
     playlist_id = Column(
         Integer, ForeignKey("playlists.id", ondelete="CASCADE"), nullable=False
     )
-    program_id = Column(String, nullable=False)  # References programs.id
+    program_id = Column(String, nullable=True)  # programs.id, or empty for no program change
 
     # Item properties
     position = Column(Integer, nullable=False)

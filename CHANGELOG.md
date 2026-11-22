@@ -75,9 +75,6 @@ pass is recorded under 1.0.0rc2. The app stays **Beta**.
 
 ### Known issues
 
-- **`pip install` on Apple Silicon macOS**, at this tag, fails building
-  PyAudio. Recording later uses sounddevice, whose wheels include PortAudio;
-  see the 1.0.0rc2 notes. The `.dmg` and `.pkg` of this tag bundle PyAudio.
 - **The `.deb` version** is `1.0.0rc1`, which dpkg orders *after* `1.0.0`, so
   `apt` will not upgrade a candidate to the finished release. Reinstall rather
   than upgrade.

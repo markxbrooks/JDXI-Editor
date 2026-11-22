@@ -8,7 +8,7 @@ from picoui.specs.widgets import ButtonSpec
 
 
 def create_parts_container(
-    parent_widget,
+    parts_container: QWidget,
     on_open_d1,
     on_open_d2,
     on_open_drums,
@@ -16,15 +16,11 @@ def create_parts_container(
     on_open_arp,
     on_select_synth,
 ):
-    """Create the Parts Select container widget"""
-    parts_container = QWidget(parent_widget)
-    parts_container.setGeometry(
-        JDXi.UI.Dimensions.PARTS.X,
-        JDXi.UI.Dimensions.PARTS.Y,
-        JDXi.UI.Dimensions.PARTS.WIDTH,
-        JDXi.UI.Dimensions.PARTS.HEIGHT,
-    )
+    """Fill ``parts_container`` with the Parts Select buttons"""
     parts_layout = QVBoxLayout(parts_container)
+    # Fixed rather than the style's: the buttons have to end short of the
+    # Program and Tone buttons beside them on every platform
+    parts_layout.setContentsMargins(11, 11, 14, 11)
     parts_layout.setSpacing(3)
 
     parts_label = QLabel("Parts Select")
@@ -55,7 +51,7 @@ def create_parts_container(
     drums_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DRUM_KIT))
 
     # Button group ensures one active selection
-    button_group = QButtonGroup()
+    button_group = QButtonGroup(parts_container)
     for b in [digital1_button, digital2_button, analog_button, drums_button]:
         button_group.addButton(b)
     button_group.setExclusive(True)

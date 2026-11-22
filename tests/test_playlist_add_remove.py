@@ -99,7 +99,8 @@ class FakeDb:
         return [{"id": 1, "name": "Set", "description": "", "program_count": len(self.items)}]
 
     def get_playlist_programs(self, playlist_id):
-        return [{"item_id": i, "position": n, "program_id": p, "program": PROGRAMS[p],
+        return [{"item_id": i, "position": n, "program_id": p,
+                 "program": PROGRAMS.get(p) if p else None,
                  "midi_file_path": m, "cheat_preset_id": c}
                 for n, (i, p, m, c) in enumerate(self.items, start=1)]
 
@@ -110,6 +111,18 @@ class FakeDb:
         self.items.append([self.next_id, program_id, "", None])
         self.next_id += 1
         return True
+
+    def add_song_to_playlist(self, playlist_id, midi_file_path, position=None):
+        self.items.append([self.next_id, None, midi_file_path, None])
+        self.next_id += 1
+        return True
+
+    def set_item_program(self, item_id, program_id):
+        for row in self.items:
+            if row[0] == item_id:
+                row[1] = program_id or None
+                return True
+        return False
 
     def remove_program_from_playlist(self, playlist_id, program_id, item_id=None):
         before = len(self.items)
@@ -131,29 +144,81 @@ def _ids(ed):
     return [ed._row_item_id(r) for r in range(ed.playlist_programs_table.rowCount())]
 
 
-def test_the_dialog_adds_every_ticked_program_in_order(editor):
+def test_add_to_playlist_adds_the_chosen_midi_files(editor):
     ed, db = editor
-    changed = Mock()
-    ed.playlist_programs_changed.connect(changed)
-
-    def tick_and_accept(dialog):
-        dialog.set_checked("B05")
-        dialog.set_checked("A01")
-        return QDialog.DialogCode.Accepted
-
-    with patch.object(AddProgramsDialog, "exec", tick_and_accept):
+    files = ["one.mid", "two.mid"]
+    with patch(
+        "jdxi_editor.ui.editors.playlist.editor.QFileDialog.getOpenFileNames",
+        return_value=(files, ""),
+    ), patch.object(AddProgramsDialog, "__init__", side_effect=AssertionError("dialog opened")):
         ed.add_program_to_playlist()
-    assert [x[1] for x in db.items] == ["A01", "A02", "B05", "B05", "A01"]
-    assert ed.playlist_programs_table.rowCount() == 5
-    assert ed._selected_playlist_id() == 1
-    changed.assert_called_once()
+    assert [row[1] for row in db.items[-2:]] == [None, None]
+    assert [row[2] for row in db.items[-2:]] == files
+    table = ed.playlist_programs_table
+    assert table.rowCount() == 5
+    assert table.item(3, 0).text() == ""
+    assert table.item(3, 1).text() == ""
+    assert table.item(3, 2).text() == ""
+    assert table.item(3, 3).text() == "one.mid"
 
 
 def test_cancel_adds_nothing(editor):
     ed, db = editor
-    with patch.object(AddProgramsDialog, "exec", return_value=QDialog.DialogCode.Rejected):
+    with patch(
+        "jdxi_editor.ui.editors.playlist.editor.QFileDialog.getOpenFileNames",
+        return_value=([], ""),
+    ):
         ed.add_program_to_playlist()
     assert len(db.items) == 3
+
+
+def test_set_program_uses_the_dialog_and_clear_removes_it(editor):
+    ed, db = editor
+    db.items.append([20, None, "song.mid", None])
+    ed.select_playlist(1)
+    row = _ids(ed).index(20)
+    menu = {action.text(): action for action in ed.build_track_menu(row).actions()}
+    assert menu["Set Program…"].isEnabled()
+    assert not menu["Clear Program"].isEnabled()
+    assert not menu["Load Program"].isEnabled()
+    assert not menu["Open in Program Editor"].isEnabled()
+
+    def tick(dialog):
+        dialog.set_checked("A02")
+        return QDialog.DialogCode.Accepted
+
+    with patch.object(AddProgramsDialog, "exec", tick):
+        ed._on_playlist_program_double_clicked(ed.playlist_programs_table.item(row, 2))
+    assert db.items[-1][1] == "A02"
+    row = _ids(ed).index(20)
+    assert ed.playlist_programs_table.item(row, 2).text() == "Depeche pads"
+    menu = {action.text(): action for action in ed.build_track_menu(row).actions()}
+    assert menu["Clear Program"].isEnabled()
+    assert menu["Load Program"].isEnabled()
+    ed.clear_track_program(row)
+    assert db.items[-1][1] is None
+    row = _ids(ed).index(20)
+    assert ed.playlist_programs_table.item(row, 2).text() == ""
+
+
+def test_a_song_with_no_program_plays_without_a_program_change(editor, tmp_path):
+    ed, db = editor
+    midi = tmp_path / "song.mid"
+    midi.write_text("midi")
+    db.items.append([20, None, str(midi), None])
+    ed.select_playlist(1)
+    row = _ids(ed).index(20)
+    player = Mock()
+    player.midi_load_file_from_path.return_value = True
+    player.transport_controller.duration_seconds = 1.0
+    instrument = Mock()
+    instrument.get_existing_editor.return_value = player
+    ed.get_parent_instrument_callback = lambda: instrument
+    with patch("jdxi_editor.ui.midi.selection_info.send_program_with_expectation") as send:
+        ed._play_playlist_program(ed.playlist_programs_table.model().index(row, 5))
+    send.assert_not_called()
+    player.midi_load_file_from_path.assert_called_once()
+    assert player.midi_load_file_from_path.call_args.args[0] == str(midi)
 
 
 def test_every_row_has_a_remove_button(editor):
@@ -222,3 +287,56 @@ def test_clicking_a_cell_selects_the_whole_track(editor):
     table.setCurrentCell(1, 2)
     assert [i.row() for i in table.selectionModel().selectedRows()] == [1]
     assert ed.move_up_button.isEnabled()
+
+
+def test_an_existing_playlist_can_hold_a_song_with_no_program(tmp_path):
+    import sqlite3
+
+    from jdxi_editor.ui.programs.playlist_orm import PlaylistORM
+
+    path = tmp_path / "old.db"
+    with sqlite3.connect(path) as conn:
+        conn.executescript(
+            """
+            CREATE TABLE programs (id TEXT PRIMARY KEY);
+            INSERT INTO programs (id) VALUES ('A01');
+            CREATE TABLE playlists (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                description TEXT,
+                created_at TIMESTAMP,
+                updated_at TIMESTAMP
+            );
+            CREATE TABLE playlist_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                playlist_id INTEGER NOT NULL,
+                program_id TEXT NOT NULL,
+                position INTEGER NOT NULL,
+                midi_file_path TEXT,
+                cheat_preset_id TEXT,
+                created_at TIMESTAMP,
+                FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+                FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+            );
+            INSERT INTO playlists (id, name) VALUES (1, 'Set');
+            INSERT INTO playlist_items (playlist_id, program_id, position, midi_file_path)
+            VALUES (1, 'A01', 1, 'keep.mid');
+            """
+        )
+    orm = PlaylistORM(path)
+    assert orm.add_song_to_playlist(1, "new.mid")
+    songs = orm.get_playlist_programs(1, get_program_func=lambda _pid: None)
+    assert [(s["program_id"], s["midi_file_path"]) for s in songs] == [
+        ("A01", "keep.mid"),
+        (None, "new.mid"),
+    ]
+    song_id = songs[1]["item_id"]
+    assert orm.set_item_program(song_id, "A01")
+    assert orm.get_playlist_programs(1)[1]["program_id"] == "A01"
+    assert orm.set_item_program(song_id, None)
+    assert orm.get_playlist_programs(1)[1]["program_id"] is None
+    info = sqlite3.connect(path).execute("PRAGMA table_info(playlist_items)").fetchall()
+    program_id = next(column for column in info if column[1] == "program_id")
+    assert program_id[3] == 0
+    keys = sqlite3.connect(path).execute("PRAGMA foreign_key_list(playlist_items)").fetchall()
+    assert any(row[2] == "programs" and row[3] == "program_id" for row in keys)

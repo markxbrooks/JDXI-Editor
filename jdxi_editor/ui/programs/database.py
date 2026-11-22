@@ -88,7 +88,7 @@ class ProgramDatabase:
                 CREATE TABLE IF NOT EXISTS playlist_items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     playlist_id INTEGER NOT NULL,
-                    program_id TEXT NOT NULL,
+                    program_id TEXT,
                     position INTEGER NOT NULL,
                     midi_file_path TEXT,
                     cheat_preset_id TEXT,
@@ -376,6 +376,29 @@ class ProgramDatabase:
             playlist_id, program_id, position
         )
 
+    def add_song_to_playlist(
+        self, playlist_id: int, midi_file_path: str, position: Optional[int] = None
+    ) -> bool:
+        """
+        Append a MIDI file as a song with no JD-Xi program.
+
+        :param playlist_id: Playlist ID
+        :param midi_file_path: Path of the MIDI file
+        :param position: Position in the playlist (appended when omitted)
+        :return: True if the song was added
+        """
+        return self.playlist_orm.add_song_to_playlist(playlist_id, midi_file_path, position)
+
+    def set_item_program(self, item_id: int, program_id: Optional[str]) -> bool:
+        """
+        Set or clear the program on one song.
+
+        :param item_id: Playlist item ID
+        :param program_id: Program ID, or None to clear it
+        :return: True if the song was updated
+        """
+        return self.playlist_orm.set_item_program(item_id, program_id)
+
     def remove_program_from_playlist(
         self, playlist_id: int, program_id: str, item_id: Optional[int] = None
     ) -> bool:
@@ -423,7 +446,7 @@ class ProgramDatabase:
     def update_playlist_item_midi_file(
         self,
         playlist_id: int,
-        program_id: str,
+        program_id: Optional[str],
         midi_file_path: str,
         item_id: Optional[int] = None,
     ) -> bool:
@@ -443,7 +466,7 @@ class ProgramDatabase:
     def update_playlist_item_cheat_preset(
         self,
         playlist_id: int,
-        program_id: str,
+        program_id: Optional[str],
         cheat_preset_id: Optional[str] = None,
         item_id: Optional[int] = None,
     ) -> bool:

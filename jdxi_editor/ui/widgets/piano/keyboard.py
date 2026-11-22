@@ -71,22 +71,13 @@ class PianoKeyboard(QWidget):
         super().__init__(parent)
         self.current_channel = 0  # Default to analog synth channel
 
-        # Set keyboard dimensions
-        self.white_key_width = 35
-        # The keyboard is about 43 % of the JD-Xi's depth (InstrumentDimensions)
-        self.white_key_height = 145
-        self.black_key_width = int(self.white_key_width * 0.6)
-        self.black_key_height = 90  # ~62 % of a white key, as on the JD-Xi
-
         # Define note patterns
         self.white_notes = KEYBOARD_WHITE_NOTES
         self.black_notes = KEYBOARD_BLACK_NOTES
 
-        # Calculate total width
-        total_width = len(self.white_notes) * self.white_key_width
-        self.setFixedSize(
-            total_width + 2, self.white_key_height + 30
-        )  # Added height for labels
+        # Keys sized for an instrument of the default width; the window calls
+        # set_instrument_width when it knows its own
+        self._apply_key_sizes(JDXi.UI.Dimensions.INSTRUMENT.WIDTH)
 
         # Create main layout
         main_layout = QVBoxLayout(self)
@@ -111,8 +102,11 @@ class PianoKeyboard(QWidget):
         main_layout.addLayout(labels_layout)
 
         # Create keyboard container widget
-        keyboard_widget = QWidget()
-        keyboard_widget.setFixedSize(total_width + 2, self.white_key_height + 2)
+        self.keyboard_widget = keyboard_widget = QWidget()
+        keyboard_widget.setFixedSize(
+            len(self.white_notes) * self.white_key_width + 2,
+            self.white_key_height + 2,
+        )
         keyboard_layout = QHBoxLayout(keyboard_widget)
         keyboard_layout.setSpacing(0)
         keyboard_layout.setContentsMargins(1, 1, 1, 1)
@@ -128,6 +122,81 @@ class PianoKeyboard(QWidget):
         self._create_keys(keyboard_widget)
 
         main_layout.addWidget(keyboard_widget)
+
+    #: room above the keys for the drum labels
+    LABEL_HEIGHT = 30
+
+    def _apply_key_sizes(self, instrument_width: int) -> None:
+        """
+        Size the keys for an instrument ``instrument_width`` px wide.
+
+        The JD-Xi's keys run from the wheels to the right edge and are as
+        long as the machine is deep below the panel, so both follow the
+        width rather than being pinned to a number that is only right at one
+        size.
+
+        :param instrument_width: int the instrument's width in px
+        :return: None
+        """
+        dimensions = JDXi.UI.Dimensions.INSTRUMENT
+        span = dimensions.keys_width_for(instrument_width)
+        self.white_key_width = max(18, span // len(self.white_notes))
+        self.white_key_height = max(
+            60, dimensions.keys_height_for(instrument_width) - self.LABEL_HEIGHT
+        )
+        self.black_key_width = int(self.white_key_width * 0.6)
+        # ~62 % of a white key, as on the JD-Xi
+        self.black_key_height = int(self.white_key_height * 0.62)
+        self.setFixedSize(
+            len(self.white_notes) * self.white_key_width + 2,
+            self.white_key_height + self.LABEL_HEIGHT,
+        )
+
+    def _rebuild_keys(self) -> None:
+        """
+        Build the keys again at the current size.
+
+        :return: None
+        """
+        container = getattr(self, "keyboard_widget", None)
+        if container is None:
+            return
+        for key in container.findChildren(PianoKey):
+            container.layout().removeWidget(key)
+            key.setParent(None)
+            key.deleteLater()
+        container.setFixedSize(
+            len(self.white_notes) * self.white_key_width + 2,
+            self.white_key_height + 2,
+        )
+        self._create_keys(container)
+
+    def set_instrument_width(self, instrument_width: int, depth: int = 0) -> None:
+        """
+        Re-size the keys for an instrument ``instrument_width`` px wide.
+
+        Rebuilds the keys, so it returns at once when nothing would change.
+
+        :param instrument_width: int the instrument's width in px
+        :param depth: int the depth the keyboard must fill, labels included;
+            0 to take it from the instrument's own proportions
+        :return: None
+        """
+        before = (self.white_key_width, self.white_key_height)
+        self._apply_key_sizes(instrument_width)
+        if depth:
+            # The panel takes what its controls need, so the keys take the
+            # rest of the instrument's depth: that is what keeps the whole
+            # thing at the JD-Xi's 2.37 : 1 whatever the panel asks for.
+            self.white_key_height = max(60, depth - self.LABEL_HEIGHT)
+            self.black_key_height = int(self.white_key_height * 0.62)
+            self.setFixedSize(
+                len(self.white_notes) * self.white_key_width + 2,
+                self.white_key_height + self.LABEL_HEIGHT,
+            )
+        if (self.white_key_width, self.white_key_height) == before:
+            return
+        self._rebuild_keys()
 
     def apply_skin(self) -> None:
         """

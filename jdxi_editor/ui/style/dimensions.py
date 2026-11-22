@@ -184,6 +184,47 @@ class InstrumentDimensions(Dimensions):
     WIDTH: int = 1000
     PANEL_HEIGHT: int = 230  # control panel above the keys
 
+    # The instrument keeps its shape at whatever width the window takes.
+    # Pinning the panel and the keys to a height instead left the faceplate
+    # 3.00 : 1 once the controls had pushed it past 1000 px wide, against the
+    # 2.37 : 1 of the machine. These are fractions of the width, measured off
+    # a top view: depth, the panel above the keys, and the keys themselves.
+    DEPTH_RATIO: float = 0.420
+    PANEL_RATIO: float = 0.230
+    KEYS_RATIO: float = 0.170
+    #: the keys run from here to the right edge, the wheels taking the rest
+    KEYS_START: float = 0.180
+
+    @classmethod
+    def panel_height_for(cls, width: int) -> int:
+        """
+        How tall the control panel is on an instrument ``width`` px wide.
+
+        :param width: int the instrument's width in px
+        :return: int panel height in px
+        """
+        return max(cls.PANEL_HEIGHT, round(width * cls.PANEL_RATIO))
+
+    @classmethod
+    def keys_height_for(cls, width: int) -> int:
+        """
+        How tall the keyboard is on an instrument ``width`` px wide.
+
+        :param width: int the instrument's width in px
+        :return: int keyboard height in px, labels included
+        """
+        return max(cls.HEIGHT - cls.PANEL_HEIGHT, round(width * cls.KEYS_RATIO))
+
+    @classmethod
+    def keys_width_for(cls, width: int) -> int:
+        """
+        How wide the span of keys is on an instrument ``width`` px wide.
+
+        :param width: int the instrument's width in px
+        :return: int keyboard width in px
+        """
+        return round(width * (1.0 - cls.KEYS_START))
+
 
 class EditorDimensions(Dimensions):
     """EditorDimensions"""
