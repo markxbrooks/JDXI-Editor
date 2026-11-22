@@ -62,6 +62,24 @@ jobs:
           # The tag being released, or the one asked for by hand
           ref: ${{ github.event.inputs.tag || github.ref }}
 
+      # The application comes from the tag; the build system comes from the
+      # default branch. A tag cut before a fix to the build cannot build
+      # itself: v1.0.0 was tagged while the installer script still wrote to
+      # an absolute path in one person's home directory and named every
+      # installer 0.9.6, so the first attempt at these packages compiled
+      # happily and left nothing behind to upload. Only building/ and the
+      # installer script are taken; the version the packages are stamped
+      # with is read from the tag's own jdxi_editor/project.py.
+      #
+      # A release published from a tag made since skips this: its own build
+      # system is already the current one.
+      - name: Build the tag with the current build system
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD -- building jdxi_editor.iss
+          git status --short building jdxi_editor.iss
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
