@@ -25,6 +25,15 @@ on:
 permissions:
   contents: write # uploading assets to the release
 
+env:
+  # The build scripts report their progress with emoji. Windows gives a
+  # non-interactive process cp1252, which has no code point for a broom, so
+  # the Windows build died inside its own "Cleaning previous builds..."
+  # message before it had built anything. UTF-8 mode settles it for stdout
+  # and for the log file the builder opens.
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
+
 jobs:
   build:
     name: ${{ matrix.label }}
@@ -97,14 +106,37 @@ jobs:
             echo "$PWD/$bin" >> "$GITHUB_PATH"
           fi
 
-      # appimagetool is vendored but not on PATH, and the build only looks
-      # for it there. The runners have no FUSE, so it must unpack itself.
-      - name: Let the build find appimagetool (Linux)
+      # The copy of appimagetool beside the Linux build is ignored by git
+      # (.gitignore: appimagetool*), so a checkout never has it and the
+      # AppImage was always skipped here. It is fetched from a tagged
+      # release rather than the rolling "continuous" build, so a release
+      # cannot be made with whatever happened to be published that day.
+      #
+      # The build only looks for it on PATH, and the runners have no FUSE,
+      # so it has to unpack itself to run. A failed download is not fatal:
+      # the .deb is the package that matters, and the build skips the
+      # AppImage by itself when the tool is absent.
+      - name: Fetch appimagetool (Linux)
         if: runner.os == 'Linux'
+        continue-on-error: true
         run: |
+          url=https://github.com/AppImage/appimagetool/releases/download/1.9.0/appimagetool-x86_64.AppImage
+          curl -fsSL --retry 3 -o building/linux/appimagetool "$url"
           chmod +x building/linux/appimagetool
           echo "$PWD/building/linux" >> "$GITHUB_PATH"
           echo "APPIMAGE_EXTRACT_AND_RUN=1" >> "$GITHUB_ENV"
+
+      # The Windows build compiles the installer with Inno Setup, which it
+      # expects at a fixed path under Program Files
+      - name: Inno Setup (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          if [ -f "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" ]; then
+            echo "Inno Setup 6 is already on the runner"
+          else
+            choco install innosetup -y --no-progress
+          fi
 
       - name: Build the macOS disk image
         if: runner.os == 'macOS'
