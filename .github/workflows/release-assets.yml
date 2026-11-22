@@ -72,18 +72,38 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install portaudio
 
-      - name: Install
+      # buildsys refuses to start without the project's own virtualenv, and
+      # looks for a different one per platform: .venv on macOS and Linux,
+      # venv on Windows (building/buildsys/context.py). The build scripts
+      # then call pyinstaller by name rather than through that interpreter,
+      # so the virtualenv goes on PATH as well. py2app is not installed
+      # here: the macOS build pins its own build tools, setuptools 70.3
+      # among them, because later ones break it.
+      - name: Install into the virtualenv the build system expects
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-          python -m pip install pyinstaller py2app
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            python -m venv venv
+            bin="venv/Scripts"
+          else
+            python -m venv .venv
+            bin=".venv/bin"
+          fi
+          "$bin/python" -m pip install --upgrade pip
+          "$bin/python" -m pip install -e . pyinstaller
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cygpath -w "$PWD/$bin" >> "$GITHUB_PATH"
+          else
+            echo "$PWD/$bin" >> "$GITHUB_PATH"
+          fi
 
-      # The vendored appimagetool needs the executable bit, and the runners
-      # have no FUSE, so it has to unpack itself to run
-      - name: Allow appimagetool to run (Linux)
+      # appimagetool is vendored but not on PATH, and the build only looks
+      # for it there. The runners have no FUSE, so it must unpack itself.
+      - name: Let the build find appimagetool (Linux)
         if: runner.os == 'Linux'
         run: |
-          chmod +x building/linux/appimagetool || true
+          chmod +x building/linux/appimagetool
+          echo "$PWD/building/linux" >> "$GITHUB_PATH"
           echo "APPIMAGE_EXTRACT_AND_RUN=1" >> "$GITHUB_ENV"
 
       - name: Build the macOS disk image
