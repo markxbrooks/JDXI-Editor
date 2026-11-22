@@ -2,6 +2,26 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.0] — 2026-11-22
+
+The first stable release. 1.0.0rc2 with the fix below, and no new features.
+The app stays **Beta**: what is known to be wrong with it is collected in
+[doc/known-issues.md](doc/known-issues.md).
+
+### Fixed
+
+- **The right-hand rack ear is painted again.** The strip along the bottom of
+  the instrument keeps room at each end for the cheeks a rack skin paints
+  there, and lays the wheels and the keys out between them. The keys were
+  sized to the window's full width instead, so the strip's contents asked for
+  more room than the strip could be given: Qt handed it its minimum anyway,
+  the surplus hung over the right edge of the window, and the cheek at that
+  end was painted where nothing showed it. The left one starts at the window's
+  edge whatever happens, so the pair went lopsided rather than missing. Only
+  skins whose cheeks are wider than the 28 px of slack in the instrument's
+  design width were affected: JD-Xi Rackmount, Juno-106, Mini Moog, MS-20,
+  ARP 2600, Brushed Metal (70s) and Ivory & Walnut.
+
 # [1.0.0rc2] — 2026-11-19
 
 The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).
