@@ -242,7 +242,17 @@ class JDXiWindow(QMainWindow):
         keys = max(dimensions.keys_height_for(width) // 2, depth - panel)
         keyboard = getattr(self, "piano_keyboard", None)
         if keyboard is not None:
-            keyboard.set_instrument_width(width, keys)
+            # The strip keeps ear_width at each end for the skin's cheeks and
+            # lays the keys out between them, so the keys have that much less
+            # than the window to fill. Sized to the window instead, the keys
+            # alone ask for more than the strip can be given, Qt hands the
+            # strip its minimum anyway, and the surplus hangs over the right
+            # edge of the window -- taking the right cheek, painted at the
+            # strip's far end, out of sight. The left one starts at x=0
+            # whatever happens, so the pair goes lopsided rather than absent.
+            from jdxi_editor.ui.style.rack_skin import active_skin
+
+            keyboard.set_instrument_width(width - 2 * active_skin().ear_width, keys)
 
         # Reserve the depth the instrument needs. Without this the window
         # opens shorter than the panel and the keys together, and Qt squeezes
@@ -302,6 +312,8 @@ class JDXiWindow(QMainWindow):
         set_active_skin(skin, remember=remember)
         self.refresh_instrument_image()
         self.apply_keyboard_area_skin()
+        # Cheeks of a different width leave the keys a different width
+        self.apply_instrument_proportions()
 
     def _show_skin_editor(self) -> None:
         """Open the Skin Editor, or bring it forward."""
@@ -648,9 +660,10 @@ class JDXiWindow(QMainWindow):
         self.midi_out_indicator = LEDIndicator()
 
         row = QHBoxLayout()
-        row.addWidget(QLabel("MIDI IN:"))
+        row.addWidget(QLabel("MIDI"))
+        row.addWidget(QLabel("IN:"))
         row.addWidget(self.midi_in_indicator)
-        row.addWidget(QLabel("MIDI OUT:"))
+        row.addWidget(QLabel("OUT:"))
         row.addWidget(self.midi_out_indicator)
         return row
 
