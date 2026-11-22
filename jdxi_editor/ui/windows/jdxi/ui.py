@@ -45,6 +45,8 @@ from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.rack import RackStatusBar
 from jdxi_editor.ui.windows.jdxi.containers import build_wheel_label_row, build_wheel_row
 from jdxi_editor.ui.windows.jdxi.panel import build_faceplate
+from picoui.helpers.layout import create_layout_with_items
+
 
 class JDXiWindow(QMainWindow):
     """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
@@ -72,7 +74,7 @@ class JDXiWindow(QMainWindow):
         # --- Set up presets
         self.preset_manager = JDXiPresetManager()
         # Initialize synth preset_type
-        self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
+        self.current_synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1
         # --- Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
@@ -646,25 +648,16 @@ class JDXiWindow(QMainWindow):
             status_bar.apply_skin()
 
     def _build_status_layout(self) -> QLayout:
-        layout = QVBoxLayout()
-        layout.addStretch()
-        layout.addLayout(build_wheel_label_row())
-        layout.addStretch()
-        layout.addLayout(build_wheel_row(midi_helper=self.midi_helper))
-        layout.addStretch()
-        layout.addLayout(self._build_midi_indicator_row())
+        layout_items = [build_wheel_label_row(), build_wheel_row(midi_helper=self.midi_helper), self._build_midi_indicator_row()]
+        layout = create_layout_with_items(vertical=True, items=layout_items)
         return layout
 
     def _build_midi_indicator_row(self) -> QLayout:
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
-        row = QHBoxLayout()
-        row.addWidget(QLabel("MIDI"))
-        row.addWidget(QLabel("IN:"))
-        row.addWidget(self.midi_in_indicator)
-        row.addWidget(QLabel("OUT:"))
-        row.addWidget(self.midi_out_indicator)
+        row_widgets = [QLabel("MIDI"), QLabel("IN:"), self.midi_in_indicator, QLabel("OUT:"), self.midi_out_indicator]
+        row = create_layout_with_items(row_widgets, vertical=False)
         return row
 
     def _update_display(self):
