@@ -79,6 +79,12 @@ $ python -m pip install JDXI-Editor
 $ jdxi-editor
 ```
 
+That installs the latest stable release, 0.9.9. pip skips release candidates unless asked, so to try the 1.0 candidate (1.0.0rc2) use `--pre`, adding `--upgrade` if 0.9.9 is already installed:
+
+```bash
+$ python -m pip install --upgrade --pre JDXI-Editor
+```
+
 PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window. 6.10 and 6.11 have not been tried; leave the pin alone until the window opens cleanly on them.
 
 PyAudio needs the PortAudio library before `pip install`: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`. SoundFont playback needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The Audio Monitor listens to an input through sounddevice, which brings its own PortAudio; it does not tap the SoundFont output.
