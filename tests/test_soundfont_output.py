@@ -9,6 +9,7 @@ import threading
 import numpy as np
 
 from jdxi_editor.audio.audio_snapshot import SAMPLE_RATE
+from jdxi_editor.audio import soundfont_output
 from jdxi_editor.audio.soundfont_output import (
     BLOCK_FRAMES,
     SoundfontOutput,
@@ -144,7 +145,15 @@ def test_the_status_name_comes_from_the_stream_device():
     assert opened_output_name(None, devices) == ""
 
 
-def test_start_opens_the_chosen_index_without_starting_the_synth_driver():
+def test_start_opens_the_chosen_index_without_starting_the_synth_driver(monkeypatch):
+    # On macOS an output that looks built-in is opened as the system default
+    # instead of by index. Index 7 is not a real device here, so the name
+    # comes back empty and the index was remapped to None, failing on a Mac
+    # and passing on Linux. Say what the device is; the remapping itself is
+    # covered by the output_device_for tests above.
+    monkeypatch.setattr(
+        soundfont_output, "_coreaudio_transport", lambda label: "usb"
+    )
     events = []
 
     class Synth:
