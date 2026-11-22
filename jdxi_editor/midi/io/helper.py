@@ -123,6 +123,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         self.current_out = None
         self.soundfont_synth = None
         self.soundfont_sfid = None
+        self.soundfont_output = None
         self.soundfont_lock = threading.RLock()
         self.initialized = True
         self._selection_expectation: Optional[MidiSelectionExpectation] = None

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for PlaybackEngine (picomidi.playback.engine).
+Unit tests for PlaybackEngine (picomidi.playback.name).
 
 Lock tempo, ScheduledEvent behavior, transport (pause/resume/stop/seek),
 held-note release and on_event timing without GUI.
@@ -320,8 +320,9 @@ def test_engine_mute_track_keeps_other_tracks_unison_note(clock):
     engine.process_until_now()
     received.clear()
     engine.mute_track(1, True)
-    assert _summary(received) == [("note_off",)]
-    assert engine._held_notes == {(0, 60): {0}}
+    # Shared channel/pitch: no device note-off while track 0 still owns the note
+    assert received == []
+    assert engine._held_notes == {(0, 60): {0: 1}}
     engine.stop()
     assert engine._held_notes == {}
 
@@ -337,13 +338,14 @@ def test_engine_track_velocity_scale(clock):
     assert engine.midi_file.tracks[0][0].velocity == 64
 
 
-def test_engine_velocity_scale_keeps_notes_audible_and_note_offs(clock):
+def test_engine_velocity_scale_zero_suppresses_note_ons(clock):
+    """Scale 0.0 means silence: note-ons are suppressed; note-offs still pass."""
     engine, received = _loaded_engine()
     engine.set_track_velocity_scale(0, 0.0)
     engine.start(0)
     clock.now = 1001.0
     engine.process_until_now()
-    assert [m.velocity for m in received if m.type == "note_on"] == [1, 1]
+    assert [m for m in received if m.type == "note_on"] == []
     assert [m.velocity for m in received if m.type == "note_off"] == [0, 0]
 
     engine.set_track_velocity_scale(0, 1.0)
@@ -448,7 +450,10 @@ def test_engine_chase_respects_suppression_and_mute(clock):
     engine, received = _loaded_engine(_make_patch_change_midi())
     engine.suppress_control_changes = True
     engine.start(1200)
-    assert _summary(received) == [("pc", 7), ("bend", 2000)]
+    # Bank Select goes with the program change; only CC 7 is suppressed
+    assert _summary(received) == [
+        ("cc", 0, 95), ("cc", 32, 64), ("pc", 7), ("bend", 2000)
+    ]
 
     engine, received = _loaded_engine(_make_patch_change_midi())
     engine.mute_channel(0, True)
@@ -591,5 +596,537 @@ def test_engine_bar_beat_follows_time_signature():
     assert engine.nearest_bar_tick(1300) == 1440
     assert engine.nearest_bar_tick(200) == 0
 
+
+def test_engine_seek_backwards_restores_program_and_volume(clock):
+    """Backwards seek past PC/volume restores baseline, not stale later values."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(0)
+    clock.now = 1001.5  # past program 7
+    engine.process_until_now()
+    received.clear()
+    engine.seek_tick(0)
+    summary = _summary(received)
+    assert ("pc", 0) in summary
+    assert ("cc", 7, 100) in summary
+    assert ("bend", 0) in summary
+
+
+def test_engine_seek_before_first_program_sends_defaults_after_later_play(clock):
+    """After playing a later program, seeking before any PC restores program 0."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(1200)
+    assert ("pc", 7) in _summary(received)
+    received.clear()
+    engine.seek_tick(0)
+    assert ("pc", 0) in _summary(received)
+
+
+def test_engine_pause_resume_restores_sustain(clock):
+    """Pause releases sustain; resume re-chases sustain without re-striking notes."""
+    mid = _make_simple_midi()
+    mid.tracks[0].insert(1, Message("control_change", control=64, value=127, time=0))
+    engine, received = _loaded_engine(mid)
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 127 for m in received)
+    engine.pause()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 0 for m in received)
+    note_ons_before = sum(1 for m in received if m.type == "note_on")
+    received.clear()
+    engine.resume()
+    assert any(m.type == "control_change" and m.control == 64 and m.value == 127 for m in received)
+    assert all(m.type != "note_on" for m in received)
+    assert note_ons_before >= 1
+
+
+def test_engine_repeated_notes_on_same_track_need_matching_offs(clock):
+    """Same-track retriggers use a count; first off does not clear the second hold."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    track = MidiTrack()
+    mid.tracks.append(track)
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=240))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=240))
+    engine, received = _loaded_engine(mid)
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {(0, 60): {0: 2}}
+    clock.now = 1000.3  # first note_off at tick 240
+    engine.process_until_now()
+    # First off must not emit a device note-off while count remains
+    assert engine._held_notes == {(0, 60): {0: 1}}
+    assert sum(1 for m in received if m.type == "note_off") == 0
+    clock.now = 1000.6  # second note_off at tick 480
+    engine.process_until_now()
+    assert engine._held_notes == {}
+    assert sum(1 for m in received if m.type == "note_off") == 1
+
+
+def test_engine_shared_channel_file_note_off_keeps_other_track(clock):
+    """A file note-off from one track does not silence another track's held note."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    # Advance only far enough that... both offs are at 480. Mute simulation:
+    # inject logical release of track 1 only via mute (already covered).
+    # Playback note_off from both tracks at same tick: after both, silent.
+    clock.now = 1000.6
+    engine.process_until_now()
+    # Both tracks released → one device note-off
+    assert sum(1 for m in received if m.type == "note_off") == 1
+    assert engine._held_notes == {}
+
+
+def test_engine_load_file_while_playing_releases_notes(clock):
+    """Loading a new file during playback releases sounding notes first."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "note_on" for m in received)
+    received.clear()
+    engine.load_file(_make_simple_midi())
+    assert any(m.type == "note_off" for m in received)
+    assert engine._is_playing is False
+    assert engine._held_notes == {}
+
+
+def test_engine_start_while_playing_releases_prior_notes(clock):
+    """start() while already playing releases notes before repositioning."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.start(0)
+    assert any(m.type == "note_off" for m in received)
+
+
+def test_engine_rejects_midi_type_2():
+    """Type 2 (independent sequences) is rejected explicitly."""
+    mid = MidiFile(type=2, ticks_per_beat=480)
+    mid.tracks.append(MidiTrack())
+    engine = PlaybackEngine()
+    with pytest.raises(ValueError, match="Type 2"):
+        engine.load_file(mid)
+
+
+def test_engine_wall_seconds_until_next_due(clock):
+    """Deadline helper reports delay to the next event and inf when stopped."""
+    import math
+
+    engine, _ = _loaded_engine()
+    assert engine.wall_seconds_until_next_due() == math.inf
+    engine.start(0)
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.0)  # note at t=0
+    clock.now = 1000.1
+    engine.process_until_now()
+    # Next musical event at 0.5 s; position 0.1 s → 0.4 s wall at speed 1
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.4, abs=1e-6)
+    engine.set_speed(2.0)
+    assert engine.wall_seconds_until_next_due() == pytest.approx(0.2, abs=1e-6)
+
+
+def _make_rpn_pitch_bend_sensitivity_midi():
+    """RPN 0,0 (pitch-bend sensitivity) = 12 semitones at tick 0; note later."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    track = MidiTrack()
+    mid.tracks.append(track)
+    track.append(MetaMessage("set_tempo", tempo=500000, time=0))
+    # Select RPN 0,0 then Data Entry MSB=12
+    track.append(Message("control_change", control=101, value=0, channel=0, time=0))
+    track.append(Message("control_change", control=100, value=0, channel=0, time=0))
+    track.append(Message("control_change", control=6, value=12, channel=0, time=0))
+    track.append(Message("control_change", control=38, value=0, channel=0, time=0))
+    # Null RPN
+    track.append(Message("control_change", control=101, value=127, channel=0, time=0))
+    track.append(Message("control_change", control=100, value=127, channel=0, time=0))
+    track.append(Message("note_on", note=60, velocity=64, channel=0, time=480))
+    track.append(Message("note_off", note=60, velocity=0, channel=0, time=480))
+    return mid
+
+
+def _cc_seq(messages):
+    """Extract (control, value) pairs for control-change messages."""
+    return [
+        (m.control, m.value)
+        for m in messages
+        if m.type == "control_change"
+    ]
+
+
+def test_engine_seek_chases_rpn_in_order(clock):
+    """Seeking past an RPN restores select + data-entry in the correct order."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.start(600)
+    ccs = _cc_seq(received)
+    # RPN MSB/LSB, Data Entry MSB/LSB, then null RPN
+    assert ccs[:4] == [(101, 0), (100, 0), (6, 12), (38, 0)]
+    assert ccs[4:6] == [(101, 127), (100, 127)]
+
+
+def test_engine_seek_backwards_restores_rpn_default(clock):
+    """Backwards seek past pitch-bend sensitivity restores the GM default of 2."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.seek_tick(0)
+    ccs = _cc_seq(received)
+    assert (101, 0) in ccs and (100, 0) in ccs
+    assert (6, 2) in ccs  # default sensitivity
+    idx = ccs.index((101, 0))
+    assert ccs[idx : idx + 4] == [(101, 0), (100, 0), (6, 2), (38, 0)]
+
+
+def test_engine_rpn_chase_respects_cc_suppression(clock):
+    """suppress_control_changes skips RPN restoration."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.suppress_control_changes = True
+    engine.start(600)
+    assert _cc_seq(received) == []
+
+
+def test_engine_loop_multi_wrap_recovers_long_stall(clock):
+    """A stall longer than two loop lengths keeps the remainder overshoot."""
+    engine, received = _loaded_engine()
+    engine.set_loop(True, (0, 480))  # 0.5 s loop
+    engine.start(0)
+    # 1.3 s past start → cross end at 0.5 and 1.0; remainder 0.3 into third pass
+    clock.now = 1001.3
+    assert engine.process_until_now() is False
+    assert engine.state == TransportState.PLAYING
+    assert engine.position_seconds == pytest.approx(0.3, abs=1e-6)
+    assert sum(1 for m in received if m.type == "note_on" and m.note == 60) >= 1
+
+
+def test_engine_transpose_shifts_notes_and_release_pitch(clock):
+    """Transpose +12 shifts sounding notes; release uses the sounding pitch."""
+    engine, received = _loaded_engine()
+    engine.set_track_transpose(0, 12)
+    engine.start(0)
+    engine.process_until_now()
+    assert [(m.type, m.note) for m in received if m.type == "note_on"] == [
+        ("note_on", 72)
+    ]
+    assert engine._held_notes == {(0, 72): {0: 1}}
+    engine.stop()
+    assert (received[-1].type, received[-1].note) == ("note_off", 72)
+    assert engine._held_notes == {}
+
+
+def test_engine_transpose_out_of_range_suppresses_note(clock):
+    """Notes that leave 0–127 after transpose are not sent."""
+    engine, received = _loaded_engine()
+    engine.set_track_transpose(0, 80)  # 60+80 = 140
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert [m for m in received if m.type.startswith("note")] == []
+
+
+def test_engine_channel_remap_and_mute_follow_output(clock):
+    """Remapped notes use the output channel; channel mute follows that channel."""
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.start(0)
+    engine.process_until_now()
+    assert all(m.channel == 3 for m in received if hasattr(m, "channel"))
+    assert engine._held_notes == {(3, 60): {0: 1}}
+
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.mute_channel(3, True)
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert received == []
+
+    engine, received = _loaded_engine()
+    engine.set_track_channel_map(0, 3)
+    engine.mute_channel(0, True)  # file channel muted, output is 3
+    engine.start(0)
+    engine.process_until_now()
+    assert any(m.type == "note_on" and m.channel == 3 for m in received)
+
+
+def test_engine_track_volume_stacks_with_velocity_scale(clock):
+    """Track volume multiplies velocity after velocity scale."""
+    engine, received = _loaded_engine(_make_two_track_unison_midi())
+    engine.set_track_velocity_scale(0, 0.5)
+    engine.set_track_volume(0, 0.5)
+    engine.mute_track(1, True)
+    engine.start(0)
+    engine.process_until_now()
+    ons = [m for m in received if m.type == "note_on"]
+    assert len(ons) == 1
+    assert ons[0].velocity == 16  # 64 * 0.5 * 0.5
+
+
+def test_engine_track_volume_zero_suppresses_note_ons(clock):
+    """Volume 0.0 suppresses note-ons; note-offs still pass."""
+    engine, received = _loaded_engine()
+    engine.set_track_volume(0, 0.0)
+    engine.start(0)
+    clock.now = 1001.0
+    engine.process_until_now()
+    assert [m for m in received if m.type == "note_on"] == []
+    assert [m for m in received if m.type == "note_off"]
+
+
+# --- Output-state correctness -------------------------------------------------
+
+
+def _make_shared_channel_volume_midi():
+    """Two tracks on channel 0: earlier CC7=40, later CC7=100."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    t0 = MidiTrack()
+    t1 = MidiTrack()
+    mid.tracks.extend([t0, t1])
+    t0.append(MetaMessage("set_tempo", tempo=500000, time=0))
+    t0.append(Message("control_change", control=7, value=40, channel=0, time=0))
+    t0.append(Message("note_on", note=60, velocity=64, channel=0, time=0))
+    t0.append(Message("note_off", note=60, velocity=0, channel=0, time=960))
+    t1.append(Message("control_change", control=7, value=100, channel=0, time=480))
+    t1.append(Message("note_on", note=62, velocity=64, channel=0, time=0))
+    t1.append(Message("note_off", note=62, velocity=0, channel=0, time=480))
+    return mid
+
+
+def test_engine_mute_shared_channel_restores_earlier_volume(clock):
+    """Muting the latest CC owner on a shared channel restores the earlier value."""
+    engine, received = _loaded_engine(_make_shared_channel_volume_midi())
+    engine.start(0)
+    clock.now = 1000.6  # past track 1's CC7=100
+    engine.process_until_now()
+    assert ("cc", 7, 100) in _summary(received)
+    received.clear()
+    engine.mute_track(1, True)
+    assert ("cc", 7, 40) in _summary(received)
+
+
+def test_engine_stop_preserves_sent_start_zero_rechases_volume(clock):
+    """Stop keeps last-delivered CCs; start(0) diffs toward baseline/file intent."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._sent_controllers[("cc", 0, 7)] == 90
+    engine.stop()
+    assert engine._sent_controllers[("cc", 0, 7)] == 90
+    # Simulate a synth left at a dirty volume, then restart from 0.
+    engine._sent_controllers[("cc", 0, 7)] = 40
+    received.clear()
+    engine.seek_tick(0)
+    engine.start(0)
+    # Chase at tick 0 uses baseline (100) for keys not yet before the cursor;
+    # process_until_now then applies file-at-0 volume 90.
+    assert ("cc", 7, 100) in _summary(received)
+    engine.process_until_now()
+    assert engine._sent_controllers[("cc", 0, 7)] == 90
+
+
+def test_engine_load_file_clears_stale_program_assumption(clock):
+    """Loading a new file after a patch chase does not keep stale sent caches."""
+    engine, received = _loaded_engine(_make_patch_change_midi())
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._sent_controllers[("program", 0)] == 3
+    other = _make_simple_midi()
+    engine.on_event = received.append
+    received.clear()
+    engine.load_file(other)
+    # Sent caches cleared; prior channel re-established toward baselines.
+    assert ("program", 0) not in engine._sent_controllers or engine._output_known
+    assert engine._sent_controllers.get(("program", 0), 0) == 0
+    assert ("pc", 0) in _summary(received) or ("cc", 7, 100) in _summary(received)
+
+
+def test_engine_transpose_while_held_releases_old_pitch(clock):
+    """Live transpose releases the sounding pitch before the map changes."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {(0, 60): {0: 1}}
+    received.clear()
+    engine.set_track_transpose(0, 12)
+    assert (received[-1].type, received[-1].note) == ("note_off", 60)
+    assert engine._held_notes == {}
+
+
+def test_engine_channel_remap_while_held_releases_old_channel(clock):
+    """Live channel remap releases notes on the previous sounding channel."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {(0, 60): {0: 1}}
+    received.clear()
+    engine.set_track_channel_map(0, 3)
+    assert (received[-1].type, received[-1].channel, received[-1].note) == (
+        "note_off",
+        0,
+        60,
+    )
+    assert engine._held_notes == {}
+
+
+def test_engine_pause_dispatches_due_events_before_freeze(clock):
+    """Events due at the pause instant are sent during pause, not on resume."""
+    engine, received = _loaded_engine()
+    engine.start(0)
+    clock.now = 1000.5  # exactly the note_off 60 / note_on 62 boundary
+    # Do not call process_until_now; pause must drain dues first.
+    engine.pause()
+    types = [(m.type, m.note) for m in received if m.type.startswith("note")]
+    assert ("note_on", 60) in types
+    assert ("note_off", 60) in types
+    assert ("note_on", 62) in types
+    # Pause then releases the note that remains sounding (62)
+    assert types[-1] == ("note_off", 62)
+    sent_at_pause = len(received)
+    clock.now = 1010.0
+    engine.resume()
+    engine.process_until_now()
+    assert len(received) == sent_at_pause
+
+
+def test_engine_emit_none_callback_does_not_commit_held(clock):
+    """With no on_event, note-ons are not recorded as delivered."""
+    engine = PlaybackEngine()
+    engine.load_file(_make_simple_midi())
+    engine.on_event = None
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {}
+    assert engine._sent_controllers == {}
+
+
+def test_engine_emit_raising_callback_does_not_commit(clock):
+    """A raising on_event leaves sent/held caches unchanged."""
+
+    def boom(_msg):
+        raise RuntimeError("sink failed")
+
+    engine = PlaybackEngine()
+    engine.load_file(_make_simple_midi())
+    engine.on_event = boom
+    engine.start(0)
+    engine.process_until_now()
+    assert engine._held_notes == {}
+    # Chase/start may have attempted controllers; none committed.
+    assert engine._sent_controllers == {}
+
+
+def test_engine_start_tick_clamped_to_length(clock):
+    """start() clamps start_tick like seek_tick."""
+    engine, _ = _loaded_engine()
+    engine.start(10_000)
+    assert engine.start_tick == engine.length_ticks
+    assert engine._is_playing is True
+
+
+def test_engine_playing_seek_back_restores_pbs_default(clock):
+    """While playing, seek-back restores known pitch-bend sensitivity default."""
+    engine, received = _loaded_engine(_make_rpn_pitch_bend_sensitivity_midi())
+    engine.start(0)
+    engine.process_until_now()
+    received.clear()
+    engine.seek_tick(0)
+    ccs = _cc_seq(received)
+    assert (6, 2) in ccs
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+def _shared_channel_midi(release: Message):
+    """Track 0 holds C4 / sustain from tick 0 and releases at 960; track 1 takes the same channel at 600."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    first, second = MidiTrack(), MidiTrack()
+    mid.tracks.extend([first, second])
+    if release.type == "note_off":
+        first.append(Message("note_on", note=60, velocity=90, channel=0, time=0))
+        second.append(Message("note_on", note=60, velocity=90, channel=0, time=600))
+        second.append(Message("note_off", note=60, velocity=0, channel=0, time=900))
+    else:
+        first.append(Message("control_change", control=64, value=127, channel=0, time=0))
+        second.append(Message("control_change", control=64, value=127, channel=0, time=600))
+        second.append(Message("control_change", control=64, value=0, channel=0, time=900))
+    first.append(release.copy(time=960))
+    return mid
+
+
+@pytest.mark.parametrize(
+    "release",
+    [
+        Message("note_off", note=60, velocity=0, channel=0),
+        Message("control_change", control=64, value=0, channel=0),
+    ],
+    ids=["note_off", "sustain_off"],
+)
+def test_unowned_release_does_not_cut_another_tracks_note(clock, release):
+    """A release whose start was before the start tick must not end another track's note or pedal."""
+    engine, received = _loaded_engine(_shared_channel_midi(release))
+    engine.start(480)  # track 0's note / pedal began before here, so it is not owned
+    received.clear()
+    clock.now += 0.6  # past tick 960 at 120 BPM
+    engine.process_until_now()
+    releases = [
+        m for m in received
+        if m.type == "note_off" or (m.type == "control_change" and m.value == 0)
+    ]
+    assert releases == []  # track 1 still sounds until tick 1500
+
+
+def _bank_change_midi():
+    """Bank 95/64 program 0 at tick 0, then bank 95/65 program 78 at tick 480, plus a volume CC."""
+    mid = MidiFile(type=1, ticks_per_beat=480)
+    track = MidiTrack()
+    mid.tracks.append(track)
+    for delta, lsb, program in ((0, 64, 0), (480, 65, 78)):
+        track.append(Message("control_change", control=0, value=95, channel=1, time=delta))
+        track.append(Message("control_change", control=32, value=lsb, channel=1, time=0))
+        track.append(Message("program_change", program=program, channel=1, time=0))
+    track.append(Message("control_change", control=7, value=50, channel=1, time=0))
+    track.append(Message("note_on", note=60, velocity=90, channel=1, time=0))
+    track.append(Message("note_off", note=60, velocity=0, channel=1, time=480))
+    return mid
+
+
+def _bank_and_program(received):
+    return [
+        (m.control, m.value) if m.type == "control_change" else ("pc", m.program)
+        for m in received
+        if m.type == "program_change"
+        or (m.type == "control_change" and m.control in (0, 32, 7))
+    ]
+
+
+def test_suppressing_control_changes_keeps_bank_select(clock):
+    """Bank Select belongs to the program change: CC suppression must not strip it (wrong bank)."""
+    engine, received = _loaded_engine(_bank_change_midi())
+    engine.suppress_control_changes = True
+    engine.start(0)
+    clock.now += 1.0
+    engine.process_until_now()
+    assert _bank_and_program(received) == [
+        (0, 95), (32, 64), ("pc", 0), (0, 95), (32, 65), ("pc", 78)
+    ]  # CC 7 volume is still suppressed
+
+
+def test_seek_with_control_changes_suppressed_restores_the_bank(clock):
+    engine, received = _loaded_engine(_bank_change_midi())
+    engine.suppress_control_changes = True
+    engine.seek_tick(600)
+    engine.start(600)
+    assert ("pc", 78) in _bank_and_program(received)
+    assert (32, 65) in _bank_and_program(received)
+
+
+def test_suppressing_program_changes_also_drops_bank_select(clock):
+    engine, received = _loaded_engine(_bank_change_midi())
+    engine.suppress_program_changes = True
+    engine.start(0)
+    clock.now += 1.0
+    engine.process_until_now()
+    assert _bank_and_program(received) == [(7, 50)]

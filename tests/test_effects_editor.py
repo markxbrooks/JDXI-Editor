@@ -75,6 +75,23 @@ class TestEffectsCommonEditor(unittest.TestCase):
         self.assertIsNotNone(self.editor)
         self.assertEqual(self.editor.windowTitle(), "Effects")
 
+    def test_panels_are_rack_panels(self):
+        """Title, image, and each effect column sit on a rack faceplate."""
+        from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
+        panels = self.editor.findChildren(RackPanel)
+        title = self.editor.editor_helper.get_title_label()
+        image = self.editor.editor_helper.get_image_label()
+        self.assertTrue(any(p.isAncestorOf(title) and p.isAncestorOf(image) for p in panels))
+        for param in (
+            Effect1Param.EFX1_TYPE,
+            Effect2Param.EFX2_TYPE,
+            DelayParam.DELAY_LEVEL,
+            ReverbParam.REVERB_LEVEL,
+        ):
+            control = self.editor.controls[param]
+            self.assertTrue(any(p.isAncestorOf(control) for p in panels), param)
+
     def test_tabs_exist(self):
         """Test that Effects 1 & 2 and Delay & Reverb tabs are present."""
         tabs = self.editor.tabs

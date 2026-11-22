@@ -162,6 +162,7 @@ def generate_button_style(
     font_size: str = "12px",
     button_padding: int = 4,
     analog: bool = False,
+    cap: bool = False,
 ) -> str:
     """
     Generate address button style dynamically.
@@ -178,15 +179,26 @@ def generate_button_style(
     :param text_color: str The text color
     :param hover: str The hover color
     :param analog: bool Whether is analog colored (blue gradients for hover/checked instead of red)
+    :param cap: bool Shade the idle face lighter at the top, as a turned cap.
+        The checked fill is unchanged, so a lit button stays a lamp.
     """
     # Red-tinted gradients for digital; blue-tinted for analog
     hover_stop = "#000066" if analog else "#660000"
     checked_stop = "#000033" if analog else "#330000"
+    if cap:
+        idle_fill = (
+            "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
+            "stop:0 #3C3C3C, stop:0.42 #1A1A1A, stop:1 #050505);"
+        )
+        idle_border = "#141414"
+    else:
+        idle_fill = f"background-color: {bg};"
+        idle_border = border
     return f"""
             QPushButton {{
                 font-family: {FONT_FAMILY};
-                background-color: {bg};
-                border: {button_border_width}px solid {border};
+                {idle_fill}
+                border: {button_border_width}px solid {idle_border};
                 border-radius: {border_radius}px;
                 color: {text_color};
                 font-family: "{font_family}";
@@ -206,6 +218,23 @@ def generate_button_style(
                 stop:0 {checked_stop}, stop:1 {background_pressed});
             }}
         """
+
+
+def active_round_button_style() -> str:
+    """
+    The round button face for the active skin.
+
+    A skin that mounts its controls gets the turned cap; every other skin
+    keeps the flat disc. Checked state is the same either way.
+
+    :return: str stylesheet
+    """
+    from jdxi_editor.ui.style.jdxi import JDXiUIStyle
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    if active_skin().mounted_controls:
+        return JDXiUIStyle.BUTTON_ROUND_CAP
+    return JDXiUIStyle.BUTTON_ROUND
 
 
 def generate_tab_style(

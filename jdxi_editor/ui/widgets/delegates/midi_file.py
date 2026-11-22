@@ -38,6 +38,12 @@ class MidiFileDelegate(QStyledItemDelegate):
         button = QStyleOptionButton()
         button.rect = option.rect
         button.text = text
+        # The track's cover, if it has one
+        icon = index.data(Qt.ItemDataRole.DecorationRole)
+        if icon is not None and hasattr(icon, "isNull") and not icon.isNull():
+            button.icon = icon
+            side = max(min(option.rect.height() - 6, 24), 0)
+            button.iconSize = QSize(side, side)
         button.state = QStyle.StateFlag.State_Enabled
         if option.state & QStyle.StateFlag.State_Selected:
             button.state |= QStyle.StateFlag.State_HasFocus
@@ -54,6 +60,9 @@ class MidiFileDelegate(QStyledItemDelegate):
     def editorEvent(self, event, model, option, index):
         """Handle mouse clicks to open file dialog."""
         if event.type() == event.Type.MouseButtonPress:
+            # Right-click is the track menu, not the file dialog
+            if event.button() != Qt.MouseButton.LeftButton:
+                return False
             if option.rect.contains(event.pos()):
                 # Check if dialog is already open (singleton)
                 if MidiFileDelegate._dialog_open:

@@ -4,6 +4,7 @@ Uses the same logic as piano.py for consistent LilyPond behavior.
 """
 
 import shutil
+import tempfile
 import time
 import warnings
 from pathlib import Path
@@ -25,6 +26,19 @@ from music21 import (
 from music21.stream import Measure, Opus, Part, Score, Stream
 
 from jdxi_editor.midi.music.track import get_track_names
+
+
+def _lily_workdir() -> Path:
+    """A fresh folder for LilyPond's output whose path has no spaces.
+
+    music21 hands LilyPond the output path in a way that LilyPond splits at
+    spaces, so writing beside a MIDI file in, say, "Oxygene JD-Xi/OxygeneV
+    parts" fails ("cannot find file: JD-Xi/OxygeneV"). The PDF is made here
+    and then moved next to the MIDI file."""
+    base = Path(tempfile.gettempdir())
+    if " " in str(base):
+        base = Path("/tmp")
+    return Path(tempfile.mkdtemp(prefix="jdxi_lily_", dir=str(base)))
 
 
 def short_name(name: str, max_len: int = 12) -> str:
@@ -121,8 +135,8 @@ def export_midi_to_pdf(midi_path: str | Path) -> Optional[str]:
     
     log.message(f"Writing score with {final_note_count} notes to LilyPond")
     
-    # Safe output file name (same as piano.py)
-    safe_output = midi_path.parent / "output_score"
+    # LilyPond works in a folder without spaces; the PDF is moved next to the MIDI file
+    safe_output = _lily_workdir() / "output_score"
     final_file = midi_path.parent / f"{midi_file_stem}.pdf"
 
     # Write PDF via Lilypond - capture the actual output path
@@ -145,11 +159,10 @@ def export_midi_to_pdf(midi_path: str | Path) -> Optional[str]:
         Path(result_path) if result_path else None,  # Path returned by music21
         safe_output.with_suffix(".pdf"),              # Expected location
         Path(str(safe_output) + ".pdf"),              # Alternative naming
-        midi_path.parent / "output_score.pdf",        # Direct path
     ]
-    
-    # Also search for any PDF created recently in the directory
-    recent_pdfs = list(midi_path.parent.glob("output_score*.pdf"))
+
+    # Also search for any PDF LilyPond created in the work folder
+    recent_pdfs = list(safe_output.parent.glob("output_score*.pdf"))
     for pdf in recent_pdfs:
         if pdf not in possible_pdfs:
             possible_pdfs.append(pdf)
@@ -158,6 +171,7 @@ def export_midi_to_pdf(midi_path: str | Path) -> Optional[str]:
         if safe_pdf and safe_pdf.exists():
             log.message(f"Found PDF at: {safe_pdf}")
             shutil.move(str(safe_pdf), str(final_file))
+            shutil.rmtree(safe_output.parent, ignore_errors=True)
             return str(final_file)
     
     # Log what we couldn't find for debugging
@@ -238,8 +252,9 @@ def export_score(midi_file: Path, midi_file_stem: str, score) -> tuple[Path, Pat
 
     _ensure_parts_have_measures(score)
 
-    # Safe output file name
-    safe_output = midi_file.parent / "output_score"
+    # LilyPond works in a folder without spaces (see _lily_workdir); the caller
+    # moves the PDF next to the MIDI file
+    safe_output = _lily_workdir() / "output_score"
 
     result_path = None
     try:
@@ -264,11 +279,10 @@ def export_score(midi_file: Path, midi_file_stem: str, score) -> tuple[Path, Pat
         Path(result_path) if result_path else None,
         safe_output.with_suffix(".pdf"),
         Path(str(safe_output) + ".pdf"),
-        midi_file.parent / "output_score.pdf",
     ]
-    
-    # Also search for any PDF created recently in the directory
-    recent_pdfs = list(midi_file.parent.glob("output_score*.pdf"))
+
+    # Also search for any PDF LilyPond created in the work folder
+    recent_pdfs = list(safe_output.parent.glob("output_score*.pdf"))
     for pdf in recent_pdfs:
         if pdf not in possible_pdfs:
             possible_pdfs.append(pdf)

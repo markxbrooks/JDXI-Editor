@@ -1,6 +1,9 @@
 JDXI-Editor
 ===========
 
+.. warning::
+   `README.md` is the current page. This file is an older copy.
+
 .. image:: ./resources/jdxi_cartoon_600.png
    :alt: Roland JD-Xi Cartoon
 

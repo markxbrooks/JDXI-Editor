@@ -31,6 +31,7 @@ from typing import List, Optional, Tuple
 import rtmidi
 from decologr import Decologr as log
 
+from jdxi_editor.midi.io.backend import open_rtmidi
 from jdxi_editor.midi.io.device import JDXiDevice
 from PySide6.QtCore import QObject
 
@@ -50,8 +51,8 @@ class MidiIOController(QObject):
         :param parent: QObject, parent object for the controller
         """
         super().__init__(parent)
-        self.midi_in = rtmidi.MidiIn()
-        self.midi_out = rtmidi.MidiOut()
+        self.midi_in = open_rtmidi(rtmidi.MidiIn, "input")
+        self.midi_out = open_rtmidi(rtmidi.MidiOut, "output")
         self.input_port_number: Optional[int] = None
         self.output_port_number: Optional[int] = None
         # Request queue, memory mirror and echo guard of the connected JD-Xi;
@@ -224,7 +225,7 @@ class MidiIOController(QObject):
                 self.midi_out.close_port()
                 time.sleep(0.1)  # Give time for the port to be released
 
-            self.midi_out = rtmidi.MidiOut()  # <- reinitialize
+            self.midi_out = open_rtmidi(rtmidi.MidiOut, "output")  # reinitialize
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
             log.parameter(

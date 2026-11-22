@@ -25,7 +25,7 @@ Functionality:
 Usage:
 ------
 This class is typically used within a larger MIDI control application to handle
-preset changes and communicate them to the UI and MIDI engine.
+preset changes and communicate them to the UI and MIDI name.
 
 """
 

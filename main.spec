@@ -1,15 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_all
+
+from jdxi_editor.bundle_imports import COLLECT_ALL, HIDDEN_IMPORTS
 
 block_cipher = None
+
+datas, binaries, hiddenimports = [], [], list(HIDDEN_IMPORTS)
+for package in COLLECT_ALL:
+    extra_datas, extra_binaries, extra_hidden = collect_all(package)
+    datas += extra_datas
+    binaries += extra_binaries
+    hiddenimports += extra_hidden
 
 
 a = Analysis(
     ['jdxi_editor/main.py'],
     pathex=[],
-    binaries=[],
-    datas=[],
-    hiddenimports=[],
+    binaries=binaries,
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -50,11 +50,18 @@ from PySide6.QtGui import (
     QAction,
     QCloseEvent,
     QDesktopServices,
+    QGuiApplication,
     QKeySequence,
     QMouseEvent,
     QShortcut,
 )
-from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QProgressDialog
+from PySide6.QtWidgets import (
+    QApplication,
+    QMenu,
+    QMessageBox,
+    QProgressDialog,
+    QWidget,
+)
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.core.synth.type import JDXiSynth
@@ -72,9 +79,22 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParam
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParam
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
+from jdxi_editor.midi.io.controller_map import (
+    MINILAB3,
+    ControllerProfile,
+    install_user_config,
+)
+from jdxi_editor.midi.io.controller_settings import load_filter_map
+from jdxi_editor.midi.io.external_controller import ExternalControllerInput
 from jdxi_editor.midi.io.input_handler import add_or_replace_program_and_save
 from jdxi_editor.midi.message.roland import JDXiSysEx
-from jdxi_editor.midi.playback.activity import DeviceRefresher
+from jdxi_editor.midi.playback.activity import DeviceRefresher, playback_activity
+from jdxi_editor.update.checker import (
+    STARTUP_DELAY_MS,
+    ReleaseInfo,
+    UpdateChecker,
+    should_auto_check,
+)
 from jdxi_editor.midi.music.pdf_export import export_midi_to_pdf
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.program.program import JDXiProgram
@@ -93,6 +113,7 @@ from jdxi_editor.ui.editors import (
     VocalFXEditor,
 )
 from jdxi_editor.ui.editors.config import EditorConfig
+from jdxi_editor.ui.editors.filter_remote import FilterRemote
 from jdxi_editor.ui.editors.digital.editor import (
     DigitalSynth2Editor,
 )
@@ -114,11 +135,18 @@ from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.windows.jdxi.recent_files import RecentFilesManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box_from_spec
+from jdxi_editor.ui.windows.audio.monitor import AudioMonitorWindow
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
+from jdxi_editor.ui.windows.midi.controller_config import MidiControllerDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.utils.file import documentation_file_path, os_file_open
+
+DOCUMENTATION_URL = "https://markxbrooks.github.io/JDXI-Editor/"
+
+#: How often to look for a hardware controller that was plugged in late
+CONTROLLER_RESCAN_MS = 3000
 from picomidi.constant import Midi
 from picoui.specs.widgets import MessageBoxSpec
 
@@ -148,6 +176,9 @@ class JDXiInstrument(JDXiWindow):
             self._show_midi_config()
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        self._splash_status("Looking for a MIDI controller...", 15)
+        self._init_external_controller()
+        self._splash_status("Loading editors...", 20)
         self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
         self.settings = QSettings("mabsoft", __package_name__)
@@ -234,6 +265,65 @@ class JDXiInstrument(JDXiWindow):
         # Initialize the current preset and synth type
         self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         self.channel = MidiChannel.DIGITAL_SYNTH_1
+        self._init_update_checker()
+
+    def _init_update_checker(self) -> None:
+        """Check GitHub Releases shortly after startup (at most once a day)."""
+        self.update_checker = UpdateChecker(self)
+        self.update_checker.update_available.connect(self._on_update_available)
+        self.update_checker.up_to_date.connect(self._on_up_to_date)
+        self.update_checker.failed.connect(self._on_update_check_failed)
+        self._pending_update: Optional[ReleaseInfo] = None
+        playback_activity().playing_changed.connect(self._on_playing_for_update)
+        if should_auto_check():
+            QTimer.singleShot(
+                STARTUP_DELAY_MS, lambda: self.update_checker.check(manual=False)
+            )
+
+    def on_check_for_updates(self) -> None:
+        """Help → Check for Updates…"""
+        self.statusBar().showMessage("Checking GitHub for updates…", 5000)
+        self.update_checker.check(manual=True)
+
+    def _on_update_available(self, release: ReleaseInfo, manual: bool) -> None:
+        if not manual and playback_activity().is_playing:
+            self._pending_update = release  # don't interrupt a song or pattern
+            return
+        self._show_update_dialog(release)
+
+    def _on_playing_for_update(self, playing: bool) -> None:
+        if not playing and self._pending_update is not None:
+            release, self._pending_update = self._pending_update, None
+            self._show_update_dialog(release)
+
+    def _show_update_dialog(self, release: ReleaseInfo) -> None:
+        from jdxi_editor.ui.dialogs.update import UpdateDialog
+
+        dialog = UpdateDialog(release, self.update_checker.kind, parent=self)
+        dialog.setAttribute(Qt.WA_DeleteOnClose)
+        dialog.open()  # window-modal, doesn't block the event loop
+
+    def _on_up_to_date(self, latest: str, manual: bool) -> None:
+        if manual:
+            from jdxi_editor.project import __program__, __version__
+
+            QMessageBox.information(
+                self,
+                "Check for Updates",
+                f"You're up to date: {__program__} {__version__} is the newest "
+                "release.",
+            )
+
+    def _on_update_check_failed(self, message: str, manual: bool) -> None:
+        log.warning(
+            scope="JDXiInstrument", message=f"Update check failed: {message}"
+        )
+        if manual:
+            QMessageBox.warning(
+                self,
+                "Check for Updates",
+                f"Couldn't check GitHub for updates:\n{message}",
+            )
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
@@ -319,6 +409,7 @@ class JDXiInstrument(JDXiWindow):
         try:
             # Wait for any USB recording threads to avoid "Destroyed while still running"
             self._wait_for_usb_recording_threads()
+            self.external_controller.close()
             self.midi_helper.close_ports()
             self._save_settings()
             event.accept()
@@ -343,6 +434,13 @@ class JDXiInstrument(JDXiWindow):
                     scope="JDXiInstrument",
                     message="Waiting for USB recording to finish before exit...",
                 )
+                thread.wait(5000)
+        # Recordings replaced by a later one (e.g. during a playlist)
+        from jdxi_editor.midi.utils.helpers import _running_threads
+
+        for thread in list(_running_threads):
+            if thread.isRunning():
+                thread.stop_recording()
                 thread.wait(5000)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
@@ -709,16 +807,22 @@ class JDXiInstrument(JDXiWindow):
         self.main_editor.hide()
         self.main_editor.setUpdatesEnabled(False)
         self.main_editor.blockSignals(True)
-        self.show_editor("program")
-        self.show_editor("digital1")
-        self.show_editor("digital2")
-        self.show_editor("analog")
-        self.show_editor("drums")
-        self.show_editor("arpeggio")
-        self.show_editor("effects")
-        self.show_editor("vocal_fx")
-        self.show_editor("pattern")
-        self.show_editor("midi_player")
+        # Editor types opened at startup, in tab order. Not self.editors: that
+        # holds the editor objects register_editor() adds while these open
+        startup_editors = [
+            "program",
+            "digital1",
+            "digital2",
+            "analog",
+            "drums",
+            "arpeggio",
+            "effects",
+            "vocal_fx",
+            "pattern",
+            "midi_player",
+        ]
+        for editor_type in startup_editors:
+            self.show_editor(editor_type)
         self.main_editor.editor_tab_widget.setCurrentIndex(0)
         self.main_editor.blockSignals(False)
         self.main_editor.setUpdatesEnabled(True)
@@ -754,15 +858,18 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         html_file = documentation_file_path("index.html")
-        try:
-            os_file_open(html_file)
-        except Exception as ex:
-            # open browser https://markxbrooks.github.io/JDXI-Editor/
-            webbrowser.open("https://markxbrooks.github.io/JDXI-Editor/")
-            log.exception(
-                scope="JDXiInstrument",
-                message=f" Error {ex} occurred opening documentation",
-            )
+        # A local Sphinx build (make -C doc html) if there is one; app bundles
+        # and fresh checkouts don't have it, so use the published docs
+        if os.path.exists(html_file):
+            try:
+                os_file_open(html_file)
+                return
+            except Exception as ex:
+                log.exception(
+                    scope="JDXiInstrument",
+                    message=f" Error {ex} occurred opening documentation",
+                )
+        webbrowser.open(DOCUMENTATION_URL)
 
     def on_preferences(self):
         """
@@ -1038,9 +1145,43 @@ class JDXiInstrument(JDXiWindow):
         self.log_viewer.raise_()
         log.message(scope="JDXiInstrument", message="Showing LogViewer window")
 
+    def _splash_status(self, message: str, progress: int) -> None:
+        """
+        Show startup progress on the splash screen, if it is still up.
+
+        Startup runs before the event loop, so the splash only repaints when
+        asked to; without this the first message stays up for the whole of it
+        and a slow start cannot be told from a hung one.
+
+        :param message: str what startup is doing now
+        :param progress: int progress bar value, 0-100
+        :return: None
+        """
+        if not (self.splash_status_label and self.splash_progress_bar):
+            return
+        self.splash_status_label.setText(message)
+        self.splash_progress_bar.setValue(progress)
+        QApplication.processEvents()
+
     def _show_midi_config(self) -> None:
         """Show MIDI configuration dialog"""
+        # Offscreen there is nobody to answer a modal dialog, so exec() below
+        # would block for ever. __init__ opens this dialog whenever a JD-Xi was
+        # not auto-connected, which is always the case on a CI runner, under
+        # the test suite, and in scripts/check_installed.py. The editor goes on
+        # starting with MIDI unconfigured, which is what those callers check.
+        if QGuiApplication.platformName() == "offscreen":
+            log.message(
+                scope="JDXiInstrument",
+                message="Offscreen: skipping the MIDI configuration dialog",
+            )
+            return
         try:
+            # The splash screen is frameless and always-on-top, so a modal
+            # dialog opened while it is up is hidden behind it: the application
+            # looks frozen on the splash's last message until it is answered.
+            if self.splash is not None and self.splash.isVisible():
+                self.splash.hide()
             dialog = MIDIConfigDialog(self.midi_helper, parent=self)
             dialog.exec()
 
@@ -1067,15 +1208,142 @@ class JDXiInstrument(JDXiWindow):
         self.midi_debugger.show()
         self.midi_debugger.raise_()
 
+    def _init_external_controller(self) -> None:
+        """
+        Listen to a hardware controller (Arturia MiniLab 3) on its own MIDI input.
+
+        Its knobs drive the open synth editor's filter and its faders the
+        filter envelope; see :mod:`jdxi_editor.midi.io.controller_map`.
+
+        Controller CCs arrive on the RtMidi thread. They must be queued to the
+        GUI thread — FilterRemote is not a QObject, so a direct
+        ``control_changed.connect(filter_remote.on_control_change)`` runs on
+        the MIDI thread and can deadlock during startup when ports open.
+
+        :return: None
+        """
+        # ~/.jdxi_editor/midi_controllers.json, for the user to edit
+        install_user_config()
+        self.external_controller = ExternalControllerInput(self)
+        # Whatever was learnt in the MIDI Controller dialog for the controller
+        # that is plugged in, falling back to that controller's built-in map
+        self.filter_remote = FilterRemote(
+            self._current_editor_tab,
+            cc_map=load_filter_map(profile=self._controller_profile()),
+            effects_editor=self._effects_editor,
+        )
+        self.external_controller.control_changed.connect(
+            self._on_external_control_change,
+            Qt.ConnectionType.QueuedConnection,
+        )
+        # Swapping one controller for another (MiniLab 3 <-> VMX8) swaps maps
+        self.external_controller.ports_changed.connect(
+            lambda _ports: self._apply_controller_profile()
+        )
+        # Defer port open until the event loop is running so splash/UI can
+        # paint and any CC flood from the controller is queued, not inline.
+        QTimer.singleShot(0, self.external_controller.auto_connect)
+        # A controller switched on or plugged in after startup would otherwise
+        # never be found, since auto_connect only runs here
+        self.controller_rescan_timer = QTimer(self)
+        self.controller_rescan_timer.setInterval(CONTROLLER_RESCAN_MS)
+        self.controller_rescan_timer.timeout.connect(self.external_controller.rescan)
+        self.controller_rescan_timer.start()
+
+    def _controller_profile(self) -> ControllerProfile:
+        """
+        Profile of the connected controller, or the MiniLab 3 if none is.
+
+        :return: ControllerProfile
+        """
+        return self.external_controller.profile or MINILAB3
+
+    def _apply_controller_profile(self) -> None:
+        """
+        Give the filter remote the map of the controller now connected.
+
+        :return: None
+        """
+        profile = self._controller_profile()
+        self.filter_remote.cc_map = load_filter_map(profile=profile)
+        log.message(
+            f"External controller map: {profile.label}", scope="JDXiInstrument"
+        )
+
+    def _on_external_control_change(
+        self, channel: int, control: int, value: int
+    ) -> None:
+        """GUI-thread relay for MiniLab (etc.) control changes."""
+        self.filter_remote.on_control_change(channel, control, value)
+
+    def _effects_editor(self) -> Optional[QWidget]:
+        """
+        The Effects editor, or None if it has not been opened.
+
+        Read directly rather than through get_existing_editor, which logs on
+        every call and this runs for every knob movement.
+
+        :return: Optional[QWidget]
+        """
+        return getattr(self, f"{EffectsCommonEditor.__name__.lower()}_instance", None)
+
+    def _current_editor_tab(self) -> Optional[QWidget]:
+        """
+        The main editor's current tab, or None before the main editor exists.
+
+        :return: Optional[QWidget]
+        """
+        if self.main_editor is None:
+            return None
+        return self.main_editor.editor_tab_widget.currentWidget()
+
+    def _show_midi_controller_config(self) -> None:
+        """Open the hardware controller configuration window"""
+        # Pick up a controller plugged in since the last scan
+        self.external_controller.rescan()
+        if not self.midi_controller_config:
+            self.midi_controller_config = MidiControllerDialog(
+                external_controller=self.external_controller,
+                filter_remote=self.filter_remote,
+                parent=self,
+            )
+            self.midi_controller_config.setAttribute(Qt.WA_DeleteOnClose)
+            self.midi_controller_config.destroyed.connect(
+                lambda: setattr(self, "midi_controller_config", None)
+            )
+        self.midi_controller_config.show()
+        self.midi_controller_config.raise_()
+
     def _show_midi_message_monitor(self) -> None:
         """Open MIDI message monitor window"""
+        # Pick up a controller plugged in since the last scan, so the monitor
+        # opens with it already listed
+        self.external_controller.rescan()
         if not self.midi_message_monitor:
             self.midi_message_monitor = MIDIMessageMonitor(
-                midi_helper=self.midi_helper, parent=self
+                midi_helper=self.midi_helper,
+                parent=self,
+                external_controller=self.external_controller,
             )
             self.midi_message_monitor.setAttribute(Qt.WA_DeleteOnClose)
+            # WA_DeleteOnClose deletes the window; drop the stale reference
+            # so the next open creates a new one instead of raising
+            self.midi_message_monitor.destroyed.connect(
+                lambda: setattr(self, "midi_message_monitor", None)
+            )
         self.midi_message_monitor.show()
         self.midi_message_monitor.raise_()
+
+    def _show_audio_monitor(self) -> None:
+        """Open the oscilloscope, VU meters, and spectrum."""
+        if not self.audio_monitor:
+            self.audio_monitor = AudioMonitorWindow(parent=self)
+            self.audio_monitor.setAttribute(Qt.WA_DeleteOnClose)
+            self.audio_monitor.destroyed.connect(
+                lambda: setattr(self, "audio_monitor", None)
+            )
+        self.audio_monitor.show()
+        self.audio_monitor.raise_()
 
     def _show_program_editor(self, _) -> None:
         """Open the ProgramEditor when the digital digital is clicked."""
@@ -1120,7 +1388,7 @@ class JDXiInstrument(JDXiWindow):
         # Get the File menu by finding the action
         file_menu = None
         for action in self.menuBar().actions():
-            if action.text() == "File":
+            if action.text().replace("&", "") == "File":
                 file_menu = action.menu()
                 break
 

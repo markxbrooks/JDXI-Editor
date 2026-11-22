@@ -19,6 +19,7 @@ from decologr import Decologr as log
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.ui.widgets.midi.parameter_send import send_nrpn_map
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -108,23 +109,12 @@ class NRPNSlider(Slider):
 
         self.current_value = value
         self.update_style(value)
-
-        for partial in [1, 2, 3]:
-            param_lsb = self.nrpn_map.get(partial)
-            if param_lsb is None:
-                raise ValueError(f"Invalid partial number: {partial}")
-
-            parameter = (self.nrpn_msb << 7) | param_lsb
-
-            for channel in [0, 1, 2]:
-                if self.param_type == "nrpn":
-                    self.midi_helper.send_nrpn(
-                        parameter=parameter, value=value, channel=channel
-                    )
-                elif self.param_type == "rpn":
-                    self.midi_helper.send_rpn(
-                        parameter=parameter, value=value, channel=channel
-                    )
-                else:
-                    raise ValueError(f"Unsupported parameter type: {self.param_type}")
+        send_nrpn_map(
+            self.midi_helper,
+            self.nrpn_map,
+            value,
+            self.nrpn_msb,
+            self.param_type,
+        )
+        for _partial in (1, 2, 3):
             self.data_request()

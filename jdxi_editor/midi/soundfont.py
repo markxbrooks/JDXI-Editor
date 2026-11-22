@@ -3,7 +3,10 @@ import logging
 import os
 import time
 
-import fluidsynth
+from jdxi_editor.midi.fluidsynth_library import prepare_fluidsynth_library
+
+prepare_fluidsynth_library()  # Windows: point the DLL search at FluidSynth
+import fluidsynth  # noqa: E402
 import mido
 import sounddevice as sd
 from mido import MidiFile

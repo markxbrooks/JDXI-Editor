@@ -12,6 +12,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
+from PySide6.QtCore import QMargins
+
 from jdxi_editor.ui.style.factory import generate_section_group_style
 
 
@@ -41,34 +43,68 @@ BODY_PROPERTY = "jdxiBody"  # set on an editor's root widget (see mark_editor_bo
 FLAT_PROPERTY = "jdxiFlat"  # set on a tab stack nested in a glossy panel (see mark_flat)
 SHEEN_PROPERTY = "jdxiSheen"  # set on an editor's outermost panels (see mark_sheen_panels)
 SHEEN_SLICE = 3  # px of the panel image kept unstretched at each edge (rim, top highlight)
+# The bottom edge keeps more, so a skin can put a stripe there and have it
+# drawn at its own size rather than squashed with the stretched middle
+SHEEN_SLICE_BOTTOM = 6
+# The top edge keeps more than the sides, so a skin can put a header bar
+# there and have it drawn at its own size rather than stretched with the
+# middle. The Jupiter-8's red section bars need it; the others just draw
+# their highlight in the first row or two of it.
+SHEEN_SLICE_TOP = 5
+# Marks the trailing block of the stylesheet that belongs to the skin: the
+# lettering printed on the faceplate. Kept last so it overrides the rules
+# above it, and so switching skin can rewrite it without touching the rest.
+CHASSIS_MARKER = "/* chassis lettering */"
 GLOSS_GRADIENT = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1,"
     " stop:0 #161618, stop:0.5 #0A0A0B, stop:1 #050506)"
 )
 
 
-def body_texture(width: int, height: int, seed: int = 7):
-    """QImage of the matte body: BODY_COLOR with fine random grain."""
+def body_texture(width: int, height: int, seed: int = 7, color: Optional[str] = None):
+    """
+    QImage of the matte body: *color* (the active skin's) with fine grain.
+
+    :param width: int image width
+    :param height: int image height
+    :param seed: int grain seed, so the body is the same every run
+    :param color: Optional[str] body colour; the active skin's when omitted
+    """
     import numpy as np
     from PySide6.QtGui import QColor, QImage
 
+    if color is None:
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        color = active_skin().chassis.body
     rng = np.random.default_rng(seed)  # the same grain every run
-    base = QColor(BODY_COLOR).red()
+    base = QColor(color).red()
+    colour = QColor(color)
     grain = rng.integers(-BODY_GRAIN, BODY_GRAIN + 1, size=(height, width))
-    grey = np.clip(base + grain, 0, 255).astype(np.uint32)
-    argb = np.ascontiguousarray((0xFF << 24) | (grey << 16) | (grey << 8) | grey)
+    red = np.clip(colour.red() + grain, 0, 255).astype(np.uint32)
+    green = np.clip(colour.green() + grain, 0, 255).astype(np.uint32)
+    blue = np.clip(colour.blue() + grain, 0, 255).astype(np.uint32)
+    argb = np.ascontiguousarray((0xFF << 24) | (red << 16) | (green << 8) | blue)
     image = QImage(argb.data, width, height, width * 4, QImage.Format.Format_RGB32)
     return image.copy()  # own the pixels (the numpy buffer goes away)
 
 
 @lru_cache(maxsize=None)
-def _body_grain_file(size: int = 128) -> str:
-    """A tile of the body texture as PNG, for stylesheet background-image."""
+def _body_grain_file(size: int = 128, color: Optional[str] = None) -> str:
+    """
+    A tile of the body texture as PNG, for stylesheet background-image.
+
+    :param size: int tile size in px
+    :param color: Optional[str] body colour; the active skin's when omitted
+    """
+    if color is None:
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        color = active_skin().chassis.body
     folder = Path(tempfile.gettempdir()) / "jdxi_editor_icons"
     folder.mkdir(parents=True, exist_ok=True)
-    path = folder / f"body_grain_{BODY_COLOR.lstrip('#')}_{BODY_GRAIN}_{size}.png"
-    if not path.exists():
-        body_texture(size, size).save(str(path))
+    path = folder / f"body_grain_{color.lstrip('#')}_{BODY_GRAIN}_{size}.png"
+    body_texture(size, size, color=color).save(str(path))
     return path.as_posix()
 
 
@@ -80,28 +116,115 @@ def mark_editor_body(widget) -> None:
     widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
 
-def _gloss_panel_file(width: int = 1000, height: int = 420) -> str:
+@lru_cache(maxsize=None)
+def gloss_panel_file(width: int = 1000, height: int = 420) -> str:
     """
-    The Instrument window's glossy panel (gradient, diagonal sheen, rim and
-    top highlight) as PNG, for stylesheet border-image on editor panels.
+    The active skin's faceplate as PNG, for stylesheet border-image on editor
+    panels.
+
+    The default skin is the Instrument window's glossy panel (gradient,
+    diagonal sheen, rim and top highlight), so this is unchanged until another
+    skin is chosen; see :mod:`jdxi_editor.ui.style.rack_skin`.
     """
+    from PySide6.QtCore import QRectF, Qt
+    from PySide6.QtGui import QImage, QPainter
+
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    skin = active_skin()
     folder = Path(tempfile.gettempdir()) / "jdxi_editor_icons"
     folder.mkdir(parents=True, exist_ok=True)
-    path = folder / f"gloss_panel_{width}x{height}.png"
-    if not path.exists():
-        from PySide6.QtCore import QRectF, Qt
-        from PySide6.QtGui import QImage, QPainter
-
-        from jdxi_editor.ui.image.instrument import draw_gloss_panel
-
-        image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
-        image.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(image)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        draw_gloss_panel(painter, QRectF(0.5, 0.5, width - 1, height - 1), sheen=True)
-        painter.end()
-        image.save(str(path))
+    # The skin is part of the name, so one skin cannot read another's image
+    # back out of the folder
+    path = folder / f"gloss_panel_{skin.skin_id}_{width}x{height}.png"
+    # Always rendered, never reused from disk: the file outlives the run, so
+    # a skin whose painting changed would otherwise keep serving the old
+    # image for ever. The lru_cache already keeps it to once per skin per run.
+    image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
+    image.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    skin.paint_face(painter, QRectF(0.5, 0.5, width - 1, height - 1))
+    painter.end()
+    image.save(str(path))
     return path.as_posix()
+
+
+#: The previous name, kept for anything still calling it
+_gloss_panel_file = gloss_panel_file
+
+
+def chassis_rules() -> str:
+    """
+    Everything in the chrome that belongs to the active skin: the body the
+    editors are mounted on, the tabs standing on it, and the lettering
+    printed on the faceplate.
+
+    These are gathered in one trailing block, after the rules they override,
+    for two reasons. Changing skin can then rewrite the block wholesale
+    instead of trying to substitute colours in place, which would also catch
+    the controls; and it keeps the skin's reach in one readable place.
+
+    Only labels and group text take the faceplate's lettering: tabs, fields
+    and lists are control surfaces standing on the panel, and keep dark
+    backgrounds with light text whatever the chassis is made of. A pale skin
+    therefore needs this rather than an inverted palette.
+
+    A skin that prints ink legends (the brushed plate) also overrides the
+    section rule and title here, which are otherwise the accent. One that
+    mounts its controls shades idle buttons as caps and combo boxes as
+    wells. Checked and focused states are left alone, so a lamp stays red.
+
+    :return: str stylesheet rules, led by :data:`CHASSIS_MARKER`
+    """
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    skin = active_skin()
+    chassis = skin.chassis
+    grain = _body_grain_file(color=chassis.body)
+    plate = ""
+    if skin.ink_legends:
+        plate += f"""
+        QGroupBox {{ border-top: 1px solid {skin.foreground.rule}; }}
+        QGroupBox::title {{ color: {skin.foreground.text}; }}"""
+    if skin.mounted_controls:
+        # Idle only. :checked and :focus stay with the rules above, so Play
+        # and a focused field keep the red lamp.
+        plate += """
+        QPushButton {
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #4A4A46, stop:0.45 #2A2A28, stop:1 #121210);
+            border: 1px solid #121210;
+        }
+        QComboBox {
+            border-top: 1px solid #0E0E0C;
+            border-left: 1px solid #0E0E0C;
+            border-right: 1px solid #6E6E68;
+            border-bottom: 1px solid #8A8A82;
+        }"""
+    return f"""{CHASSIS_MARKER}
+        QLabel, QGroupBox {{ color: {skin.foreground.text}; }}
+        QWidget[{BODY_PROPERTY}="true"] {{
+            background-color: {chassis.body};
+            background-image: url({grain});
+        }}
+        QAbstractItemView, QTextEdit, QPlainTextEdit, QMenu, QToolTip {{
+            background-color: {chassis.surface};
+        }}
+        QTabBar::tab {{
+            background-color: {chassis.surface_alt};
+            color: {AppEditorStyle.TEXT_SECONDARY};
+        }}
+        QTabBar::tab:selected {{
+            background-color: {chassis.surface};
+            color: {AppEditorStyle.TEXT};
+            border-bottom: 2px solid {chassis.accent};
+        }}
+        QTabBar::tab:hover {{
+            color: {AppEditorStyle.TEXT};
+            border-bottom: 2px solid {chassis.accent};
+        }}
+        QTabWidget::pane {{ border: 1px solid {chassis.border}; }}{plate}"""
 
 
 def mark_sheen_panels(editor) -> None:
@@ -112,7 +235,11 @@ def mark_sheen_panels(editor) -> None:
     """
     from PySide6.QtWidgets import QGroupBox, QTabWidget, QWidget
 
-    panel_types = (QGroupBox, QTabWidget)
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
+    # A RackPanel is the faceplate (it paints its own cheeks), so the groups
+    # inside it stay flat sections and do not take the sheen image as well.
+    panel_types = (QGroupBox, QTabWidget, RackPanel)
     for widget in editor.findChildren(QWidget):
         if not isinstance(widget, panel_types) or widget.property(FLAT_PROPERTY):
             continue
@@ -245,6 +372,8 @@ class AppEditorStyle:
     FONT_RULER = "10px"
     FONT_STATUS = "11px"
 
+    MARGINS = QMargins(0, 0, 0, 0)
+
     SPACING_RELATED = 8
     SPACING_GROUP = 14
     PANEL_PADDING = 12
@@ -262,6 +391,15 @@ class AppEditorStyle:
         hover = cls.ACCENT_HOVER if accent is None else accent
         # Section chrome uses metallic red for selected tab underline (digital path)
         section = accent or cls.METALLIC_RED
+        # The panel behind an editor's outermost groups comes from the active
+        # skin, which also says how much of its edge must not be stretched
+        # Every skin keeps its rim inside the same slice, so switching skin is
+        # only a change of image (see rack_skin._restyle_application)
+        panel_slice = SHEEN_SLICE
+        panel_slice_top = SHEEN_SLICE_TOP
+        panel_slice_bottom = SHEEN_SLICE_BOTTOM
+        panel_image = gloss_panel_file()
+        chassis = chassis_rules()
         return f"""
         /* JD-Xi finish: the editor's root is the rough matte body; panels
            (group boxes, tab panes) are glossy black; everything between is
@@ -375,8 +513,8 @@ class AppEditorStyle:
         QGroupBox[{SHEEN_PROPERTY}="true"],
         QTabWidget[{SHEEN_PROPERTY}="true"]::pane {{
             background: transparent;
-            border-width: {SHEEN_SLICE}px;
-            border-image: url({_gloss_panel_file()}) {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} {SHEEN_SLICE} stretch stretch;
+            border-width: {panel_slice_top}px {panel_slice}px {panel_slice_bottom}px {panel_slice}px;
+            border-image: url({panel_image}) {panel_slice_top} {panel_slice} {panel_slice_bottom} {panel_slice} stretch stretch;
         }}
         /* A tab stack marked flat (mark_flat) sits on the glossy panel
            around it. Marked explicitly: a descendant selector would also
@@ -435,6 +573,7 @@ class AppEditorStyle:
         QScrollBar::add-page, QScrollBar::sub-page {{
             background: none;
         }}
+        {chassis}
         """
 
 

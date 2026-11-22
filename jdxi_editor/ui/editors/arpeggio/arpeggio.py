@@ -74,7 +74,7 @@ from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
 from jdxi_editor.ui.widgets.editor.helper import transfer_layout_items
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+# from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.ui.widgets.group import WidgetGroups
 from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -125,6 +125,7 @@ class ArpeggioEditor(BasicEditor):
         self.base_widget.setup_scrollable_content()
 
         # --- Use SimpleEditorHelper for standardized title/image/tab setup
+        from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
         self.editor_helper = SimpleEditorHelper(
             editor=self,
             base_widget=self.base_widget,

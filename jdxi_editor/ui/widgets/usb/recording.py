@@ -6,8 +6,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-
-import pyaudio
 from decologr import Decologr as log
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QPushButton
@@ -137,13 +135,10 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         :param duration_seconds: How long to record; defaults to the file length
         """
         if self.recorder.file_save_recording:
-            recording_rate = "32bit"  # Default to 32-bit recording
+            recording_rate = self.recorder.usb_recording_rates["16bit"]
             try:
-                rate = self.recorder.usb_recording_rates.get(
-                    recording_rate, pyaudio.paInt16
-                )
                 self._start_recording(
-                    recording_rate=rate, duration_seconds=duration_seconds
+                    recording_rate=recording_rate, duration_seconds=duration_seconds
                 )
             except Exception as ex:
                 log.error(f"Error {ex} occurred starting USB recording")
@@ -217,7 +212,7 @@ class USBFileRecordingWidget(JDXiMidiGroup):
 
     def _start_recording(
         self,
-        recording_rate: int = pyaudio.paInt16,
+        recording_rate: str = "int16",
         duration_seconds: Optional[float] = None,
     ):
         """

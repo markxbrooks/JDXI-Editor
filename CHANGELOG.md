@@ -2,8 +2,105 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.0rc2] — 2026-11-19
+
+The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).
+
+Replaces 1.0.0rc1, which never reached PyPI: its tag predated the fix below,
+and the release checks failed. No new features.
+
+`python -m pytest -m hardware` has since passed on a connected JD-Xi:
+identity, temporary program, digital, analog, drum, effect, and arpeggio
+reads, one restored temporary digital byte, a one-bar playback, and a
+recording capture. The same result is in
+[doc/known-issues.md](doc/known-issues.md). The app stays **Beta**.
+
+### Changed
+
+- **USB recording uses sounddevice.** PyAudio is no longer a dependency.
+  sounddevice's wheels include PortAudio, so an Apple Silicon `pip install`
+  does not compile PyAudio.
+- **SoundFont output on macOS follows the headphone jack.** The built-in
+  output opens as the system default, so CoreAudio uses the jack when
+  headphones are plugged in. A separate device (AirPods, USB, a multi-output
+  device) stays on the index that was selected. Plugging or unplugging the
+  jack while playback is following the system route reopens the stream.
+
+### Fixed
+
+- **The editor starts without a MIDI backend.** python-rtmidi raises when it
+  cannot reach the platform's MIDI service (on Linux, whenever `/dev/snd/seq`
+  is absent: containers, minimal installs, CI runners). The editor now treats
+  that as "no ports" and opens, instead of exiting with a traceback from
+  `_rtmidi`.
+
+### Tests
+
+- `librosa` is declared in the `dev` extra: the refine, audio-evidence,
+  arpeggio and likelihood tests import it and failed without it.
+- The tests that read the local `tests/sheep.mid` are marked `slow` and skip
+  when it is absent, as the other sheep tests already did.
+- The pattern loop test allows a CI runner's scheduling jitter on each beat
+  (+-0.1 s) while still failing a dropped or doubled beat, and holds the
+  median gap to the tempo.
+
+# [1.0.0rc1] — 2026-11-19
+
+The first candidate for 1.0. Everything a user can see is listed under 0.9.9
+below; this tag adds no features. It exists so installation and JD-Xi hardware
+can be exercised before 1.0. On the machine this tag was cut from, the MIDI
+inputs were empty, so identity, a program read and write, digital, analog,
+drums, effects, a pattern, and playback to a JD-Xi had not been run. That
+pass is recorded under 1.0.0rc2. The app stays **Beta**.
+
+### Fixed
+
+- **picomidi**: Required `>=0.3.0`. The MIDI player's transport imports
+  `picomidi.playback.scheduler` and calls the engine's per-track volume,
+  transpose, and channel map, none of which exist in picomidi 0.2.0. The floor
+  said `>=0.2.0`, so a fresh install resolved to 0.2.0 and the **main window
+  did not import at all**. Only the released 0.9.9 was unaffected.
+- **Update check**: A pre-release is now ordered before its own release, so
+  `1.0.0rc1 < 1.0.0rc2 < 1.0.0`. The version was read as numbers only, which
+  made 1.0.0rc1 and 1.0.0 indistinguishable: a candidate's testers would never
+  have been offered the finished build.
+- **Windows installer**: Stamped with the project's version. `jdxi_editor.iss`
+  carried a hard-coded `0.9.6`, so every installer since has been mislabelled.
+- **Documentation**: The Sphinx build reads the version from
+  `jdxi_editor/project.py`. It claimed `1.0.0` while the app was on 0.9.9.
+- **Offscreen startup**: The MIDI configuration dialog is skipped when there
+  is no display. `__init__` opens it whenever a JD-Xi was not auto-connected,
+  and `exec()` had nobody to answer it, so the test suite and
+  `scripts/check_installed.py` hung instead of finishing.
+
+### Known issues
+
+- **The `.deb` version** is `1.0.0rc1`, which dpkg orders *after* `1.0.0`, so
+  `apt` will not upgrade a candidate to the finished release. Reinstall rather
+  than upgrade.
+
 # [0.9.9] — 2026-11
-Bumping version for PyPi
+
+The notes below are everything a user can see since 0.9.8. This build stays **Beta**. 1.0.0rc1 and 1.0.0rc2 now exist. The hardware pass they were cut to allow has been run: `python -m pytest -m hardware` passed on a connected JD-Xi, and the result is under 1.0.0rc2 and in [doc/known-issues.md](doc/known-issues.md).
+
+### Rack skins
+
+- **JDXiSkin menu**: The window wears a rack skin. Built-ins include Glossy Black, JD-Xi Red, JD-Xi White, JD-Xi Rack, TR-808, TB-303, TR-909, TR-1000, Jupiter-8, Juno-106, Mini Moog, MC-101, MS-20, SH-101 (grey, red, blue), ARP 2600, Brushed Metal, and Ivory Walnut.
+- **User skins**: A TOML file in `~/.jdxi_editor/skins/` appears in the same menu. `doc/skins/tr1000_user.toml` is an example. The Skin Editor starts a file from any built-in skin. A skin can ask the Audio Monitor for bar meters, needles, or a vintage VU, and can draw MIDI lanes as punched cards.
+
+### Audio
+
+- **Audio Monitor**: Oscilloscope, stereo bar meters, and a spectrum, from an **input** device. It does not hear SoundFont playback. Needles are drawn only when the active skin asks for them.
+- **SoundFont output**: FluidSynth renders samples and sounddevice plays them. MIDI Configuration has an **Audio output** menu. "(Default)" is the system output (the speakers, when those are the Mac's default). Changing the menu while FluidSynth is running reopens that device, and the status names the output PortAudio opened. A short note from `TimGM6mb.sf2` opened the system default (`Mark's AirPods #5`, index 1), `MacBook Pro Speakers` (index 4), and `Multi-Output Device` (index 9). No USB interface was connected. The monitor's input path was left alone.
+
+### Playback, playlists, and install
+
+- **Playlists**: Add, remove, and reorder files, with artwork and playback progress.
+- **MIDI tools**: Phrase finding, track classification, trimming, and remap, beside the existing player.
+- **Update check**: Once a day, against GitHub Releases, for a build that matches this install.
+- **PySide6**: Required `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 are untested.
+- **picomidi**: Required `>=0.3.0`. The MIDI player's transport uses `picomidi.playback.scheduler` and the engine's per-track volume, transpose, and channel map, none of which are in picomidi 0.2.0; against 0.2.0 the main window does not import at all.
+- **Frozen builds**: FluidSynth, sounddevice (and its PortAudio binaries), and music21's LilyPond support are declared for PyInstaller and py2app. SoundFont playback needs a FluidSynth install. PortAudio comes with sounddevice.
 
 # [0.9.8] — 2026-11
 

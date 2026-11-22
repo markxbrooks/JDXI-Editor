@@ -50,7 +50,7 @@ class UiPreferencesDialog(QDialog):
         else:
             theme = "dark"""
         log_settings()
-        self.resize(508, 300)
+        self.resize(508, 360)
 
         self.setWindowTitle("JD-XI Editor settings")
         main_layout = QVBoxLayout(self)
@@ -151,6 +151,30 @@ class UiPreferencesDialog(QDialog):
         self.midi_validation_layout.addWidget(self.midi_validation_label)
         self.midi_validation_layout.addWidget(self.midi_validation_checkbox)
 
+        # --- Automatic update check (on by default)
+        from jdxi_editor.update.checker import (
+            AUTO_CHECK_DEFAULT,
+            AUTO_CHECK_KEY,
+            settings_bool,
+        )
+
+        self.update_check_layout = QHBoxLayout()
+        self.update_check_icon = QLabel()
+        self.update_check_icon.setPixmap(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS).pixmap(self.icon_size)
+        )
+        self.update_check_label = QLabel(
+            "Check GitHub for new releases once a day (on by default):"
+        )
+        self.update_check_checkbox = QCheckBox("Check for updates automatically")
+        self.update_check_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.update_check_checkbox.setChecked(
+            settings_bool(self.settings, AUTO_CHECK_KEY, AUTO_CHECK_DEFAULT)
+        )
+        self.update_check_layout.addWidget(self.update_check_icon)
+        self.update_check_layout.addWidget(self.update_check_label)
+        self.update_check_layout.addWidget(self.update_check_checkbox)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -171,6 +195,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout.addLayout(self.logging_layout)
         main_content_layout.addLayout(self.silence_midi_notes_layout)
         main_content_layout.addLayout(self.midi_validation_layout)
+        main_content_layout.addLayout(self.update_check_layout)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -250,6 +275,11 @@ class UiPreferencesDialog(QDialog):
             settings.setValue(
                 MIDI_SELECTION_VALIDATION_KEY,
                 bool(self.midi_validation_checkbox.isChecked()),
+            )
+            from jdxi_editor.update.checker import AUTO_CHECK_KEY
+
+            settings.setValue(
+                AUTO_CHECK_KEY, bool(self.update_check_checkbox.isChecked())
             )
             settings.sync()
             log_settings()

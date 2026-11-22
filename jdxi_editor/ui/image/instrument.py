@@ -49,42 +49,21 @@ PANEL_SPLIT_GAP = 4
 
 
 def draw_gloss_panel(painter: QPainter, rect: QRectF, sheen: bool) -> None:
-    """A shiny black plastic panel: deep gradient, soft edge, optional sheen."""
-    gradient = QLinearGradient(rect.topLeft(), rect.bottomLeft())
-    gradient.setColorAt(0, QColor(22, 22, 24))
-    gradient.setColorAt(0.5, QColor(10, 10, 11))
-    gradient.setColorAt(1, QColor(4, 4, 5))
-    path = QPainterPath()
-    path.addRoundedRect(rect, 3, 3)
-    painter.fillPath(path, gradient)
-    if sheen:
-        # Diagonal reflection, as the light falls across the left half of the
-        # real panel: lighter to the left of a line leaning from top right
-        painter.save()
-        painter.setClipPath(path)
-        reflection = QPolygonF(
-            [
-                rect.topLeft(),
-                QPointF(rect.left() + rect.width() * 0.86, rect.top()),
-                QPointF(rect.left() + rect.width() * 0.58, rect.bottom()),
-                rect.bottomLeft(),
-            ]
-        )
-        shine = QLinearGradient(rect.topLeft(), rect.bottomRight())
-        shine.setColorAt(0, QColor(255, 255, 255, 22))
-        shine.setColorAt(1, QColor(255, 255, 255, 6))
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(shine)
-        painter.drawPolygon(reflection)
-        painter.restore()
-    # Edge: dark rim with a faint highlight along the top
-    painter.setBrush(Qt.BrushStyle.NoBrush)
-    painter.setPen(QPen(QColor(0, 0, 0), 1))
-    painter.drawPath(path)
-    painter.setPen(QPen(QColor(255, 255, 255, 28), 1))
-    painter.drawLine(
-        QPointF(rect.left() + 3, rect.top() + 1), QPointF(rect.right() - 3, rect.top() + 1)
-    )
+    """
+    A panel of the instrument, in the active skin's material.
+
+    The picture of the instrument wears the same faceplate as the editors, so
+    choosing a skin re-dresses the whole application rather than its panels
+    alone.
+
+    :param painter: QPainter
+    :param rect: QRectF the panel's area
+    :param sheen: bool draw the diagonal reflection (the glossy skin only)
+    :return: None
+    """
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    active_skin().paint_face(painter, rect, sheen=sheen)
 
 
 def draw_instrument_pixmap() -> QPixmap:
@@ -101,6 +80,7 @@ def draw_instrument_pixmap() -> QPixmap:
     # The control panel only: the keyboard is a widget below it
     jdxi_height = JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT
 
+    # The body behind the panels is the skin's too
     pixmap = QPixmap.fromImage(body_texture(jdxi_width, jdxi_height))
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.Antialiasing)  # type: ignore[attr-defined]
@@ -139,8 +119,11 @@ def draw_sequencer(painter: QPainter) -> None:
     step_size = JDXi.UI.Dimensions.SEQUENCER.STEP_SIZE  # Smaller square size
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
-    # Draw horizontal measure lines (white)
-    painter.setPen(QPen(Qt.white, 1))  # type: ignore[attr-defined]
+    # Draw horizontal measure lines, in the skin's silkscreen: white would
+    # all but vanish on a pale faceplate
+    from jdxi_editor.ui.style.rack_skin import active_skin
+
+    painter.setPen(QPen(QColor(active_skin().foreground.text), 1))
     # Three lines (6 px apart, from line_y - 25) ending 6 px above the steps
     line_y = steps_top + 7
     measure_width = (step_size + step_spacing) * 4  # Width of 4 steps

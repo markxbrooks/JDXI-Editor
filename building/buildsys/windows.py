@@ -19,6 +19,7 @@ try:
         __program__,
         __author__,
     )
+    from jdxi_editor.bundle_imports import pyinstaller_args
 except ImportError:
     # Fallback if running from different location
     script_dir = Path(__file__).resolve().parent
@@ -29,6 +30,7 @@ except ImportError:
         __program__,
         __author__,
     )
+    from jdxi_editor.bundle_imports import pyinstaller_args
 
 # Build configuration
 APP_NAME = "JD-Xi Editor.exe"
@@ -88,6 +90,18 @@ def remove_build_dirs():
             shutil.rmtree(path)
 
 
+
+def fluidsynth_binary_args(root: Path) -> list[str]:
+    """Bundle the native FluidSynth DLLs (committed in fluidsynth/bin) at
+    fluidsynth/bin, where jdxi_editor.midi.fluidsynth_library looks."""
+    args: list[str] = []
+    for dll in sorted((root / "fluidsynth" / "bin").glob("*.dll")):
+        args += ["--add-binary", f"{dll}{os.pathsep}fluidsynth/bin"]
+    if not args:
+        log.message("No FluidSynth DLLs in fluidsynth/bin: SoundFont playback needs a separate install")
+    return args
+
+
 def build_with_pyinstaller(project_root):
     """build with pyinstaller"""
     entry_point = project_root / "jdxi_editor" / "main.py"
@@ -102,12 +116,14 @@ def build_with_pyinstaller(project_root):
             "-w",
             "-i", str(icon_file),
             "--hidden-import", "numpy",
+            *pyinstaller_args(),
             "--additional-hooks-dir=.",
             "--paths=env/Lib/site-packages",
             "--noupx",
             "--noconfirm",
             "-n", __package_name__,
             "--clean",
+            *fluidsynth_binary_args(Path(project_root)),
             str(entry_point),
         ]
 
@@ -151,8 +167,10 @@ def run_inno_setup(project_root):
     inno_exe = Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe")
     if not inno_exe.exists():
         raise FileNotFoundError(f"Inno Setup compiler not found: {inno_exe}")
-    cmd = [str(inno_exe), str(iss_file)]
-    log.message("Running Inno Setup...")
+    # The version belongs to jdxi_editor/project.py: without this the .iss
+    # fallback is used and every installer is stamped with the same number
+    cmd = [str(inno_exe), f"/DMyAppVersion={VERSION}", str(iss_file)]
+    log.message(f"Running Inno Setup (version {VERSION})...")
     subprocess.run(cmd, check=True)
 
 

@@ -65,6 +65,7 @@ from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.playlist.editor import PlaylistEditor
+from jdxi_editor.ui.editors.playlist.workspace import PlaylistWorkspace
 from jdxi_editor.ui.editors.playlist.table import PlaylistTable
 from jdxi_editor.ui.editors.preset.type import PresetTitle
 from jdxi_editor.ui.editors.preset.widget import PresetWidget
@@ -72,7 +73,6 @@ from jdxi_editor.ui.editors.program.group import ProgramGroup
 from jdxi_editor.ui.editors.program.helper import create_placeholder_icon
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.editors.program.mixer.section import MixerAttrs, ProgramMixer
-from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.editors.program.user_programs_widget import UserProgramsWidget
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -196,6 +196,7 @@ class ProgramEditor(BasicEditor):
         self.user_programs_widget: Optional[UserProgramsWidget] = None
         self.playlist_widget: Optional[PlaylistTable] = None
         self.playlist_editor_widget: Optional[PlaylistEditor] = None
+        self.playlist_workspace: Optional["PlaylistWorkspace"] = None
         self.setup_ui()
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_sysex_json.connect(self.dispatch_sysex_to_area)
@@ -300,19 +301,31 @@ class ProgramEditor(BasicEditor):
                 scope=self.__class__.__name__,
             )
 
-        # --- Add Playlist tab to main tab widget
+        # --- Playlist tab: the playlists beside the selected playlist's tracks
+        # (one workspace, so selecting a playlist opens it straight away)
         try:
             log.message(
-                "🔨Creating Playlist tab for main window...",
+                "🔨Creating Playlist workspace for main window...",
                 scope=self.__class__.__name__,
             )
             self.playlist_widget = PlaylistTable(
                 parent=self, on_playlist_changed=self._on_playlist_changed
             )
+            self.playlist_editor_widget = PlaylistEditor(
+                midi_helper=self.midi_helper,
+                channel=self.channel,
+                parent=self,
+                on_program_loaded=self._on_playlist_program_loaded,
+                on_refresh_playlist_combo=self._populate_playlist_editor_combo,
+                get_parent_instrument=lambda: self._get_parent_instrument(),
+            )
+            self.playlist_workspace = PlaylistWorkspace(
+                self.playlist_widget, self.playlist_editor_widget, parent=self
+            )
             playlist_icon = JDXi.UI.Icon.get_icon(
                 "mdi.playlist-music", color=JDXi.UI.Style.GREY
             )
-            self.main_tab_widget.addTab(self.playlist_widget, playlist_icon, "Playlist")
+            self.main_tab_widget.addTab(self.playlist_workspace, playlist_icon, "Playlist")
             log.message(
                 f"✅ Added 'Playlist' tab to main window (total tabs: {self.main_tab_widget.count()})",
                 scope=self.__class__.__name__,
@@ -330,56 +343,6 @@ class ProgramEditor(BasicEditor):
                 icon_name="mdi.playlist-music",
             )
             self.main_tab_widget.addTab(placeholder_widget, playlist_icon, "Playlist")
-            log.message(
-                f"✅ Added 'Playlist' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
-
-        # Add Playlist Editor tab to main tab widget
-        try:
-            log.message(
-                "🔨Creating Playlist Editor tab for main window...",
-                scope=self.__class__.__name__,
-            )
-            self.playlist_editor_widget = PlaylistEditor(
-                midi_helper=self.midi_helper,
-                channel=self.channel,
-                parent=self,
-                on_program_loaded=self._on_playlist_program_loaded,
-                on_refresh_playlist_combo=self._populate_playlist_editor_combo,
-                get_parent_instrument=lambda: self._get_parent_instrument(),
-            )
-            playlist_editor_icon = JDXi.UI.Icon.get_icon(
-                "mdi.playlist-edit", color=JDXi.UI.Style.GREY
-            )
-            self.main_tab_widget.addTab(
-                self.playlist_editor_widget, playlist_editor_icon, "Playlist Editor"
-            )
-            log.message(
-                f"✅ Added 'Playlist Editor' tab to main window (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
-        except Exception as e:
-            log.error(
-                f"❌Error creating Playlist Editor tab: {e}",
-                scope=self.__class__.__name__,
-            )
-            import traceback
-
-            log.error(traceback.format_exc())
-            # Create a placeholder widget so the tab still appears
-            placeholder_widget, playlist_editor_icon = create_placeholder_icon(
-                e,
-                error_message="Error loading playlist editor: ",
-                icon_name="mdi.playlist-edit",
-            )
-            self.main_tab_widget.addTab(
-                placeholder_widget, playlist_editor_icon, "Playlist Editor"
-            )
-            log.message(
-                f"✅Added 'Playlist Editor' tab (placeholder) (total tabs: {self.main_tab_widget.count()})",
-                scope=self.__class__.__name__,
-            )
 
         self.setLayout(main_vlayout)
         JDXi.UI.Theme.apply_editor_style(self)
@@ -437,7 +400,6 @@ class ProgramEditor(BasicEditor):
         self.right_hlayout = QHBoxLayout()
         # The mixer sits on its own glossy black panel (its group a section on it)
         self.mixer_panel = create_panel(mixer_group)
-        mark_sheen(self.mixer_panel)
         self.right_hlayout.addWidget(self.mixer_panel)
         self.title_right_vlayout.addLayout(self.right_hlayout)
         self.title_hlayout.addStretch()

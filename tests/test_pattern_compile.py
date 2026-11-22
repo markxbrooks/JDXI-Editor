@@ -198,8 +198,13 @@ def test_pattern_plays_through_shared_transport_and_loops_seamlessly(editor, app
     starts = [t for t, m in editor.sent if m.type == "note_on" and m.channel == 0]
     gaps = [b - a for a, b in zip(starts, starts[1:])]
     assert len(starts) >= 8
-    # Every quarter note 0.25 s apart, including across the loop point
-    assert all(abs(gap - 0.25) < 0.03 for gap in gaps)
+    # Every quarter note 0.25 s apart, including across the loop point. These
+    # are wall-clock times through the Qt event loop, and a shared CI runner
+    # (macOS especially) can stall one delivery by tens of ms, so each gap
+    # gets +-0.1 s: a dropped or doubled beat at the seam (0.5 s or ~0 s)
+    # still fails. The median holds the tempo itself to +-0.02 s.
+    assert all(abs(gap - 0.25) < 0.1 for gap in gaps), gaps
+    assert abs(sorted(gaps)[len(gaps) // 2] - 0.25) < 0.02, gaps
     editor.stop_pattern()
     assert editor.transport_controller.state == TransportState.STOPPED
     assert editor.stop_button.isChecked() and not editor.play_button.isChecked()

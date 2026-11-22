@@ -345,6 +345,24 @@ def parse_sysex_new(data: bytes) -> Dict[str, str]:
     return parsed_data
 
 
+def get_parameter_class(data: bytes) -> Tuple[str, str, Any]:
+    """
+    The area, tone and parameter class a JD-Xi parameter message addresses.
+
+    Unknown addresses fall back to :class:`DrumPartialParam`, as parsing does.
+
+    :param data: bytes framed SysEx message (F0 ... F7)
+    :return: Tuple[str, str, Any] temporary area name, synth tone name and the
+        AddressParameter enum whose ``address`` values are offsets into the data
+    """
+    temporary_area = get_temporary_area(data) or UNKNOWN_AREA
+    synth_tone, _ = _get_tone_from_data(data, temporary_area)
+    parameter_cls = JDXiMapParameterAddress.MAP.get(
+        (temporary_area, synth_tone), DrumPartialParam
+    )
+    return temporary_area, synth_tone, parameter_cls
+
+
 def parse_sysex(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
@@ -355,15 +373,9 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     if len(data) < ParameterLength.ONE_BYTE.value:
         return _return_minimal_metadata(data)
 
-    temporary_area = get_temporary_area(data) or UNKNOWN_AREA
-
-    synth_tone, _ = _get_tone_from_data(data, temporary_area)
+    temporary_area, synth_tone, parameter_cls = get_parameter_class(data)
     log.message(
         f"temporary_area: {temporary_area}, synth_tone: {synth_tone}", silent=True
-    )
-
-    parameter_cls = JDXiMapParameterAddress.MAP.get(
-        (temporary_area, synth_tone), DrumPartialParam
     )
     if parameter_cls is None:
         log.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")

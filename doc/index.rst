@@ -11,9 +11,14 @@ Welcome to JD-Xi Editor's documentation!
    :caption: Contents:
 
    getting-started
+   intro
+   installation
+   usage
+   playing-midi-files
+   known-issues
+   contributing
    editor-windows
    additional-editors
-   playing-midi-files
    troubleshooting
    legal
 

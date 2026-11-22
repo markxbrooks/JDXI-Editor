@@ -16,6 +16,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 from decologr import Decologr as log
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.midi.parameter_send import send_control_change_map
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -92,12 +93,5 @@ class ControlChangeSlider(Slider):
             raise ValueError("Value out of range.")
 
         self.update_style(value)
-
-        for partial in [1, 2, 3]:
-            log.message(self.nrpn_map)
-            cc_number = self.nrpn_map.get(partial)
-            if cc_number is None:
-                raise ValueError("Invalid partial number")
-            for channel in self.channels:  # Or just the channel matching this partial
-                self.midi_helper.send_control_change(cc_number, value, channel=channel)
+        send_control_change_map(self.midi_helper, self.nrpn_map, value, self.channels)
         self.update_style(value)

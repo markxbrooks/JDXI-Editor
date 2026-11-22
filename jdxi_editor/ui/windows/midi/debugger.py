@@ -73,6 +73,13 @@ from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
+from jdxi_editor.ui.widgets.rack import RackPanel
+from jdxi_editor.ui.windows.midi.helpers.sysex_decode import (
+    decode_parameter_dump,
+    frame_sysex,
+    is_roland_dump,
+    parse_hex_line,
+)
 from picomidi.sysex.parameter.address import AddressParameter
 
 def parse_sysex_message(
@@ -124,7 +131,9 @@ class MIDIDebugger(QMainWindow):
 
         # Create central widget
         central = QWidget()
-        self.setCentralWidget(central)
+        # Mounted as a rack unit: the ears are the skin's, and the
+        # skins without them simply draw none
+        self.setCentralWidget(RackPanel(central))
         layout = QVBoxLayout(central)
 
         # Tab widget: SysEx and CC/PC
@@ -380,14 +389,32 @@ class MIDIDebugger(QMainWindow):
             if not line:
                 continue
             try:
-                hex_values = line.split()
-                message = [int(x, 16) for x in hex_values]
-                decoded = self._decode_sysex_15(message)
+                # Accept lines copied from the log: no F0/F7, parsed dict after
+                message = frame_sysex(parse_hex_line(line))
+                if len(message) == 15:
+                    decoded = self._decode_sysex_15(message)
+                elif is_roland_dump(message):
+                    decoded = decode_parameter_dump(message)
+                else:
+                    decoded = self._decode_other(message)
                 self.decoded_text.append(decoded)
             except ValueError as ex:
                 self.decoded_text.append(f"Error parsing line: '{line}' -> {str(ex)}")
             except Exception as ex:
                 self.decoded_text.append(f"Error decoding line: '{line}' -> {str(ex)}")
+
+    def _decode_other(self, message: list) -> str:
+        """
+        Decode a non-parameter SysEx message (e.g. identity request/reply).
+
+        :param message: list[int] framed SysEx bytes
+        :return: str decoded fields, or why it could not be decoded
+        """
+        try:
+            parsed = self.sysex_parser.parse_bytes(bytes(message))
+        except ValueError as ex:
+            return f"Cannot decode {len(message)}-byte message: {ex}"
+        return "\n".join(f"{key}: {value}" for key, value in parsed.items())
 
     def _decode_sysex_15(self, message):
         """Decode a 15-byte Roland address SysEx message."""

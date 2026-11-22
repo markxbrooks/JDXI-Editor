@@ -131,17 +131,17 @@ class TestSheepIntegration(unittest.TestCase):
 
         print(f"Engine has {len(self.player.playback_engine.events)} events from sheep.mid")
         self.assertGreater(len(self.player.playback_engine._tempo_map), 0,
-                          "No tempo map in engine")
+                          "No tempo map in the engine")
         print(f"Engine has {len(self.player.playback_engine._tempo_map)} tempo entries")
     
     def test_tempo_change_timing_calculation(self):
-        """Test that engine has tempo map and can compute time from ticks."""
+        """Test that the engine has a tempo map and can compute time from ticks."""
         self.player.transport_controller.load(self.player.midi_state.file)
 
         engine = self.player.playback_engine
-        self.assertGreater(len(engine._tempo_map), 0, "No tempo map in engine")
+        self.assertGreater(len(engine._tempo_map), 0, "No tempo map in the engine")
 
-        # Use engine's segment-wise time
+        # Use the engine's segment-wise time
         for tick, tempo in sorted(engine._tempo_map.items())[:5]:
             time_sec = engine._tick_to_seconds(tick)
             bpm = MidiTempo.MICROSECONDS_PER_MINUTE / tempo
@@ -164,7 +164,7 @@ class TestSheepIntegration(unittest.TestCase):
         engine.start(0)
 
         tempo_changes_in_buffer = [(t, tempo) for t, tempo in engine._tempo_map.items() if t > 0]
-        print(f"Found {len(tempo_changes_in_buffer)} tempo changes in engine (excluding tick 0)")
+        print(f"Found {len(tempo_changes_in_buffer)} tempo changes in the engine (excluding tick 0)")
 
         start_time = time.time()
         end_time = start_time + 2.0  # Run 2 seconds

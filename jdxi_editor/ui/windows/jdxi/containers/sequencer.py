@@ -20,6 +20,11 @@ from jdxi_editor.ui.style.factory import (
 )
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 
+#: step to step, px, on the 1000 px panel
+STEP_PITCH = 28
+#: the first step starts this far into its host, under the measure lines
+STEPS_INSET = JDXi.UI.Dimensions.SEQUENCER.X - JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X
+
 
 def create_sequencer_buttons_row(
     midi_helper: MidiIOHelper, on_context_menu: Callable, on_save_favorite: Callable
@@ -29,6 +34,7 @@ def create_sequencer_buttons_row(
     sequencer_buttons = []
 
     grid = QGridLayout()
+    grid.setObjectName("step_grid")
     grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
     grid.setGeometry(
         QRect(
@@ -38,7 +44,7 @@ def create_sequencer_buttons_row(
             JDXi.UI.Dimensions.SEQUENCER.GRID.HEIGHT,
         )
     )
-    grid.setHorizontalSpacing(3)
+    grid.setHorizontalSpacing(STEP_PITCH - JDXi.UI.Dimensions.SEQUENCER.SQUARE_SIZE)
 
     for i in range(16):
         button = SequencerSquare(i, midi_helper)
@@ -71,21 +77,15 @@ def create_sequencer_buttons_row(
 
 
 def add_sequencer_container(
-    central_widget,
+    sequencer_container: QWidget,
     # --- create_favorite_button_row,
     midi_helper,
     on_context_menu,
     on_save_favorite,
 ):
     # --- Beginning of sequencer section
-    sequencer_container = QWidget(central_widget)
-    sequencer_container.setGeometry(
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X,
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.Y,
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.WIDTH,
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.HEIGHT,
-    )
     sequencer_container_layout = QHBoxLayout(sequencer_container)
+    sequencer_container_layout.setContentsMargins(STEPS_INSET, 0, 0, 0)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     sequencer_label.setStyleSheet(JDXi.UI.Style.TRANSPARENT)
@@ -102,18 +102,11 @@ def add_sequencer_container(
     return sequencer_buttons  # favorite_button
 
 
-def add_favorite_button_container(central_widget):
-    """Create a circular button to set and unset favorites"""
-    favourites_button_container = QWidget(central_widget)
+def add_favorite_button_container(favourites_button_container: QWidget):
+    """Create a circular button to set and unset favorites, in its container"""
     # Just left of the steps: label above, button level with the steps (as
     # Favorite on the JD-Xi), inside the panel's bottom edge
     # (on the right half of the panel, between its edge and the first step)
-    favourites_button_container.setGeometry(
-        JDXi.UI.Dimensions.SEQUENCER.CONTAINER.X - 30,
-        JDXi.UI.Dimensions.SEQUENCER.STEPS_TOP - 24,
-        34,
-        52,
-    )
     text = "Fav."
     row = QHBoxLayout()
     row.setContentsMargins(0, 0, 0, 0)
@@ -135,7 +128,9 @@ def add_favorite_button_container(central_widget):
     favorite_button.setFixedSize(30, 30)
     favorite_button.setCheckable(True)
     # --- Style the button with brighter hover/border_pressed/selected  states
-    favorite_button.setStyleSheet(JDXi.UI.Style.BUTTON_ROUND)
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
+    favorite_button.setStyleSheet(active_round_button_style())
     favorite_button.setToolTip("Favorite: Mark current settings as a favorite")
     row.addLayout(favourite_button_column)
     favourite_button_column.addWidget(favourite_button_label)

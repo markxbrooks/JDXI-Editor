@@ -13,8 +13,6 @@ import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
-import pyaudio
-
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 from jdxi_editor.midi.utils.helpers import (
     start_recording,
@@ -29,30 +27,23 @@ class TestUSBRecorder(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_pyaudio = MagicMock()
-        self.mock_pyaudio_instance = MagicMock()
-        self.mock_pyaudio.return_value = self.mock_pyaudio_instance
 
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_init_defaults(self, mock_pyaudio_class):
+    def test_init_defaults(self):
         """Test USBRecorder initialization with default values."""
-        mock_pyaudio_class.return_value = MagicMock()
         recorder = USBRecorder()
 
-        self.assertIsNotNone(recorder.p)
         self.assertIsNone(recorder.input_device_index)
         self.assertEqual(recorder.channels, 1)
         self.assertEqual(recorder.rate, 44100)
         self.assertEqual(recorder.frames_per_buffer, 1024)
         self.assertFalse(recorder.file_save_recording)
         self.assertIsNone(recorder.usb_port_input_device_index)
-        self.assertEqual(recorder.usb_recording_rates["16bit"], pyaudio.paInt16)
-        self.assertEqual(recorder.usb_recording_rates["32bit"], pyaudio.paInt32)
+        self.assertEqual(recorder.usb_recording_rates["16bit"], "int16")
+        self.assertEqual(recorder.usb_recording_rates["32bit"], "int16")
+        self.assertEqual(recorder.sample_width, 2)
 
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_init_custom_values(self, mock_pyaudio_class):
+    def test_init_custom_values(self):
         """Test USBRecorder initialization with custom values."""
-        mock_pyaudio_class.return_value = MagicMock()
         recorder = USBRecorder(
             input_device_index=5,
             channels=2,
@@ -65,18 +56,13 @@ class TestUSBRecorder(unittest.TestCase):
         self.assertEqual(recorder.rate, 48000)
         self.assertEqual(recorder.frames_per_buffer, 2048)
 
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_list_devices(self, mock_pyaudio_class):
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_list_devices(self, query):
         """Test listing audio input devices."""
-        mock_pyaudio_instance = MagicMock()
-        mock_pyaudio_class.return_value = mock_pyaudio_instance
-
-        # Mock device info
-        mock_pyaudio_instance.get_device_count.return_value = 3
-        mock_pyaudio_instance.get_device_info_by_index.side_effect = [
-            {"name": "Device 1", "maxInputChannels": 2},
-            {"name": "Device 2", "maxInputChannels": 1},
-            {"name": "Device 3", "maxInputChannels": 0},
+        query.return_value = [
+            {"name": "Device 1", "max_input_channels": 2},
+            {"name": "Device 2", "max_input_channels": 1},
+            {"name": "Device 3", "max_input_channels": 0},
         ]
 
         recorder = USBRecorder()
@@ -86,25 +72,15 @@ class TestUSBRecorder(unittest.TestCase):
         self.assertIn("Device 1", device_list[0])
         self.assertIn("Device 2", device_list[1])
         self.assertIn("Device 3", device_list[2])
-        self.assertEqual(mock_pyaudio_instance.get_device_count.call_count, 1)
+        query.assert_called_once()
 
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_close(self, mock_pyaudio_class):
-        """Test closing the PyAudio instance."""
-        mock_pyaudio_instance = MagicMock()
-        mock_pyaudio_class.return_value = mock_pyaudio_instance
-
+    def test_close(self):
+        """Closing the recorder needs no audio session."""
         recorder = USBRecorder()
-        recorder.close()
+        self.assertIsNone(recorder.close())
 
-        mock_pyaudio_instance.terminate.assert_called_once()
-
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_stop_recording_with_thread(self, mock_pyaudio_class):
+    def test_stop_recording_with_thread(self):
         """Test stopping recording when thread exists."""
-        mock_pyaudio_instance = MagicMock()
-        mock_pyaudio_class.return_value = mock_pyaudio_instance
-
         recorder = USBRecorder()
         mock_thread = MagicMock()
         recorder.usb_recording_thread = mock_thread
@@ -113,14 +89,9 @@ class TestUSBRecorder(unittest.TestCase):
 
         mock_thread.stop_recording.assert_called_once()
 
-    @patch("jdxi_editor.midi.utils.usb_recorder.pyaudio.PyAudio")
-    def test_stop_recording_without_thread(self, mock_pyaudio_class):
+    def test_stop_recording_without_thread(self):
         """Test stopping recording when no thread exists."""
-        mock_pyaudio_instance = MagicMock()
-        mock_pyaudio_class.return_value = mock_pyaudio_instance
-
         recorder = USBRecorder()
-        # Should not raise an exception
         recorder.stop_recording()
 
 
@@ -130,29 +101,21 @@ class TestWavRecordingThread(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.mock_recorder = MagicMock(spec=USBRecorder)
-        self.mock_recorder.p = MagicMock()
         self.mock_recorder.channels = 1
         self.mock_recorder.rate = 44100
         self.mock_recorder.frames_per_buffer = 1024
         self.mock_recorder.input_device_index = 0
+        self.mock_recorder.sample_width = 2
 
-        # Mock device info
-        self.mock_device_info = {
+        self.mock_recorder.input_info.return_value = {
             "name": "Test Device",
-            "maxInputChannels": 2,
-            "defaultSampleRate": 44100.0,
+            "max_input_channels": 2,
+            "default_samplerate": 44100.0,
         }
-        self.mock_recorder.p.get_device_info_by_index.return_value = (
-            self.mock_device_info
-        )
 
-        # Mock stream
         self.mock_stream = MagicMock()
-        self.mock_stream.read.return_value = b"\x00" * 1024  # Mock audio data
-        self.mock_recorder.p.open.return_value = self.mock_stream
-
-        # Mock sample size
-        self.mock_recorder.p.get_sample_size.return_value = 2
+        self.mock_stream.read.return_value = b"\x00" * 1024
+        self.mock_recorder.open_input.return_value = self.mock_stream
 
     def test_init(self):
         """Test WavRecordingThread initialization."""
@@ -160,13 +123,13 @@ class TestWavRecordingThread(unittest.TestCase):
             recorder=self.mock_recorder,
             duration=1.0,
             output_file="/tmp/test.wav",
-            recording_rate=pyaudio.paInt16,
+            recording_rate="int16",
         )
 
         self.assertEqual(thread.recorder, self.mock_recorder)
         self.assertEqual(thread.duration, 1.0)
         self.assertEqual(thread.output_file, "/tmp/test.wav")
-        self.assertEqual(thread.recording_rate, pyaudio.paInt16)
+        self.assertEqual(thread.recording_rate, "int16")
         self.assertFalse(thread.running)
 
     def test_stop_recording(self):
@@ -212,14 +175,7 @@ class TestWavRecordingThread(unittest.TestCase):
             thread.record()
 
             # Verify stream was opened correctly
-            self.mock_recorder.p.open.assert_called_once_with(
-                format=pyaudio.paInt16,
-                channels=self.mock_recorder.channels,
-                rate=self.mock_recorder.rate,
-                input=True,
-                input_device_index=self.mock_recorder.input_device_index,
-                frames_per_buffer=self.mock_recorder.frames_per_buffer,
-            )
+            self.mock_recorder.open_input.assert_called_once_with()
 
             # Verify stream.read was called expected number of times
             self.assertEqual(
@@ -273,7 +229,7 @@ class TestWavRecordingThread(unittest.TestCase):
 
         # Mock stream open to raise exception
         test_exception = Exception("Stream open failed")
-        self.mock_recorder.p.open.side_effect = test_exception
+        self.mock_recorder.open_input.side_effect = test_exception
 
         # Capture signal emissions
         finished_calls = []
@@ -308,7 +264,7 @@ class TestWavRecordingThread(unittest.TestCase):
         )
 
         # Mock device info to raise exception
-        self.mock_recorder.p.get_device_info_by_index.side_effect = Exception(
+        self.mock_recorder.input_info.side_effect = Exception(
             "Device info failed"
         )
 
@@ -439,7 +395,7 @@ class TestRecordingHelpers(unittest.TestCase):
             usb_recorder=self.mock_recorder,
             file_duration_seconds=10.0,
             usb_file_output_name="/tmp/test.wav",
-            recording_rate=pyaudio.paInt16,
+            recording_rate="int16",
             selected_index=5,
         )
 
@@ -451,7 +407,7 @@ class TestRecordingHelpers(unittest.TestCase):
             recorder=self.mock_recorder,
             duration=20.0,  # file_duration_seconds + 10
             output_file="/tmp/test.wav",
-            recording_rate=pyaudio.paInt16,
+            recording_rate="int16",
         )
 
         # Verify thread was stored
@@ -477,7 +433,7 @@ class TestRecordingHelpers(unittest.TestCase):
             usb_recorder=self.mock_recorder,
             file_duration_seconds=10.0,
             usb_file_output_name="/tmp/test.wav",
-            recording_rate=pyaudio.paInt16,
+            recording_rate="int16",
             selected_index=5,
         )
 

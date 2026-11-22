@@ -76,8 +76,10 @@ def create_jdxi_button_from_spec(
 
 
 def _create_jdxi_button() -> QPushButton:
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
     button = QPushButton()
-    button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+    button.setStyleSheet(active_round_button_style())
     button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
     button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
     return button
@@ -94,8 +96,10 @@ def create_small_sequencer_square_for_channel(ch: int) -> QPushButton:
 
 def create_jdxi_button(tooltip: str = "") -> QPushButton:
     """Create a round JD-Xi styled button with optional tooltip."""
+    from jdxi_editor.ui.style.factory import active_round_button_style
+
     button = QPushButton()
-    button.setStyleSheet(JDXiUIStyle.BUTTON_ROUND)
+    button.setStyleSheet(active_round_button_style())
     button.setFixedWidth(JDXiUIDimensions.BUTTON_ROUND.WIDTH)
     button.setFixedHeight(JDXiUIDimensions.BUTTON_ROUND.HEIGHT)
     button.setToolTip(tooltip)
@@ -149,18 +153,20 @@ def create_round_button_with_label(
     return widget, button
 
 
-def create_panel(*items: Any) -> "QGroupBox":
+def create_panel(*items: Any):
     """
-    One untitled glossy panel (the JD-Xi's shiny black inset) holding several
-    widgets or layouts, stacked. Group boxes inside it draw as flat sections
-    with a title and a thin rule (see AppEditorStyle), so a few large panels
-    replace many small black boxes.
-    """
-    from PySide6.QtWidgets import QGroupBox, QLayout, QVBoxLayout
+    One faceplate holding several widgets or layouts, stacked.
 
-    panel = QGroupBox()
-    layout = QVBoxLayout(panel)
-    layout.setContentsMargins(6, 0, 6, 6)
+    The panel is a :class:`~jdxi_editor.ui.widgets.rack.panel.RackPanel`, so
+    it wears the active skin, cheeks included. Group boxes inside it draw as
+    flat sections with a title and a thin rule (see AppEditorStyle).
+    """
+    from PySide6.QtWidgets import QLayout
+
+    from jdxi_editor.ui.widgets.rack.panel import RackPanel
+
+    panel = RackPanel()
+    layout = panel.layout()
     layout.setSpacing(JDXi.UI.MidiPlayer.SPACING_RELATED)
     for item in items:
         if isinstance(item, QLayout):

@@ -2,10 +2,17 @@
 
 from PyInstaller.utils.hooks import collect_all, collect_dynamic_libs
 
+from jdxi_editor.bundle_imports import COLLECT_ALL, HIDDEN_IMPORTS
+
 datas, binaries, hiddenimports = collect_all('PySide6')
+for package in COLLECT_ALL:
+    extra_datas, extra_binaries, extra_hidden = collect_all(package)
+    datas += extra_datas
+    binaries += extra_binaries
+    hiddenimports += extra_hidden
 
 # Add this manually:
-hiddenimports += ['PySide6.QtDBus']
+hiddenimports += ['PySide6.QtDBus', *HIDDEN_IMPORTS]
 dbus_binaries = collect_dynamic_libs('PySide6.QtDBus')
 binaries += dbus_binaries
 

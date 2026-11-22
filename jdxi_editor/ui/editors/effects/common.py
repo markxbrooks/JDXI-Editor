@@ -91,6 +91,7 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.midi.sysex.sections import SysExSection
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.effects.data import EffectsData
+from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.widgets.editor.base import EditorBaseWidget
@@ -98,7 +99,7 @@ from jdxi_editor.ui.widgets.editor.helper import (
     create_layout_with_inner_layout_and_widgets,
     transfer_layout_items,
 )
-from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
+# from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
 from jdxi_editor.ui.widgets.group import WidgetGroups
 from jdxi_editor.ui.widgets.layout import WidgetLayoutSpec
 from jdxi_editor.ui.widgets.spec import ComboBoxSpec, SliderSpec, SwitchSpec
@@ -218,6 +219,7 @@ class EffectsCommonEditor(BasicEditor):
         self.base_widget.setup_scrollable_content()
 
         # Use SimpleEditorHelper with tabs: "Effects 1 & 2" and "Delay & Reverb"
+        from jdxi_editor.ui.widgets.editor.simple_editor_helper import SimpleEditorHelper
         self.editor_helper = SimpleEditorHelper(
             editor=self,
             base_widget=self.base_widget,
@@ -686,13 +688,13 @@ class EffectsCommonEditor(BasicEditor):
             combos=self._build_combo_boxes(spec.combos),
         )
 
-    def _wrap_section(self, title: str, content: QWidget) -> QGroupBox:
-        """Wrap a section in a QGroupBox for the 2-column grid layout."""
+    def _wrap_section(self, title: str, content: QWidget) -> QWidget:
+        """One rack faceplate for a column, with the section title printed on it."""
         group = QGroupBox(title)
         layout = QVBoxLayout()
         layout.addWidget(content)
         group.setLayout(layout)
-        return group
+        return create_panel(group)
 
     def _create_effect1_section(self):
         """Create Effect 1 section (polymorphic: stacked pages per effect type)."""

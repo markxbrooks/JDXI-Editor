@@ -97,8 +97,8 @@ class PlaylistItem(Base):
     """
     SQLAlchemy model for the playlist_items table.
 
-    Represents a program within a playlist, including its position,
-    MIDI file path, and cheat preset ID.
+    A song in a playlist: its position, MIDI file, and cheat preset.
+    ``program_id`` is empty when the song sends no program change.
     """
 
     __tablename__ = "playlist_items"
@@ -110,12 +110,14 @@ class PlaylistItem(Base):
     playlist_id = Column(
         Integer, ForeignKey("playlists.id", ondelete="CASCADE"), nullable=False
     )
-    program_id = Column(String, nullable=False)  # References programs.id
+    program_id = Column(String, nullable=True)  # programs.id, or empty for no program change
 
     # Item properties
     position = Column(Integer, nullable=False)
     midi_file_path = Column(Text)
     cheat_preset_id = Column(String)
+    # Cover image of the song (album art), shown in the playlist and while it plays
+    artwork_path = Column(Text)
 
     # Timestamps
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -139,6 +141,7 @@ class PlaylistItem(Base):
             "position": self.position,
             "midi_file_path": self.midi_file_path,
             "cheat_preset_id": self.cheat_preset_id,
+            "artwork_path": self.artwork_path,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -162,5 +165,6 @@ class PlaylistItem(Base):
             position=data["position"],
             midi_file_path=data.get("midi_file_path"),
             cheat_preset_id=data.get("cheat_preset_id"),
+            artwork_path=data.get("artwork_path"),
             created_at=created_at or datetime.utcnow(),
         )

@@ -17,6 +17,18 @@ sys.path.insert(0, os.path.abspath('.'))
 
 from picomidi.playback.worker import MidiPlaybackWorker
 
+import pytest
+
+# sheep.mid is a local file (gitignored), so not on CI: a "slow" test (see
+# [tool.pytest.ini_options]) that skips when the file is absent
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(
+        not os.path.exists(os.path.join(os.path.dirname(__file__), "sheep.mid")),
+        reason="tests/sheep.mid not present (local file)",
+    ),
+]
+
 
 def test_tempo_change_processing():
     """Test that tempo changes are processed at the correct times."""

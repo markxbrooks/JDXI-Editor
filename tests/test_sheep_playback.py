@@ -33,6 +33,18 @@ def _get_qapp():
     return app
 
 
+import pytest
+
+SHEEP_MID = os.path.join(os.path.dirname(__file__), "sheep.mid")
+
+# sheep.mid is a local file (gitignored), so not on CI: these are "slow"
+# tests (see [tool.pytest.ini_options]) and skip when the file is absent
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(not os.path.exists(SHEEP_MID), reason="tests/sheep.mid not present (local file)"),
+]
+
+
 class TestSheepPlayback(unittest.TestCase):
     """Test sheep.mid playback with tempo changes"""
     

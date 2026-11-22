@@ -26,11 +26,10 @@ Methods:
 """
 
 import os
-import sys
 
 import qtawesome as qta
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import QObject, Qt, QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -40,11 +39,25 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QVBoxLayout,
 )
 
+from jdxi_editor.audio.soundfont_output import (
+    MIDI_PORT_NAME,
+    SoundfontOutput,
+    chosen_output,
+    opened_output_name,
+    output_devices,
+    sounddevice_available,
+)
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.io.data_requests import (
+    data_requests_enabled,
+    set_data_requests_enabled,
+    stored_data_requests_setting,
+)
 from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     get_hardware_interface,
     get_sf2_path,
@@ -52,11 +65,11 @@ from jdxi_editor.ui.editors.pattern.preset_list_provider import (
     set_hardware_interface,
     set_sf2_path,
     set_use_soundfont_list,
+    soundfont_list_problem,
 )
 from jdxi_editor.ui.editors.helpers.widgets import create_panel
 from jdxi_editor.ui.layout.helper import add_round_button_from_spec
 from jdxi_editor.ui.style import JDXiUIDimensions
-from jdxi_editor.ui.style.editor_style import mark_sheen
 from jdxi_editor.ui.widgets.digital.title import DigitalTitle
 from jdxi_editor.ui.windows.jdxi.helpers.port import (
     filter_excluded_ports,
@@ -70,48 +83,70 @@ SF2_PATH = os.path.expanduser("~/SoundFonts/FluidR3_GM.sf2")
 
 # Top-level imports so py2app/modulegraph includes these in the bundle
 # (lazy imports inside functions are not traced by the dependency analyzer)
+from jdxi_editor.midi.fluidsynth_library import (
+    import_error_message,
+    prepare_fluidsynth_library,
+)
+
 _fluidsynth_err_msg = ""
+prepare_fluidsynth_library()  # Windows: point the DLL search at FluidSynth
 try:
     import fluidsynth as _fluidsynth_module
 except Exception as _fluidsynth_err:
     _fluidsynth_module = None
     _fluidsynth_err_msg = str(_fluidsynth_err)
 
-try:
-    import sounddevice as _sounddevice_module
-except Exception:
-    _sounddevice_module = None
 
-
-def _get_output_devices() -> list[tuple[str, str]]:
+def _get_output_devices() -> list[tuple[str, int]]:
     """
-    Get list of (display_name, device_spec) for audio output devices.
+    Output devices as (display name, sounddevice index).
 
-    On macOS: device_spec is the name (for CoreAudio).
-    On Windows/Linux: device_spec is "index:HostApi:Name" (for PortAudio).
-    Requires sounddevice.
+    :return: list
     """
-    if _sounddevice_module is None:
-        return []
-    try:
-        devices = _sounddevice_module.query_devices()
-        hostapis = _sounddevice_module.query_hostapis()
-        output_devices = [
-            (i, d) for i, d in enumerate(devices) if d["max_output_channels"] > 0
-        ]
-        result = []
-        for idx, d in output_devices:
-            name = d["name"]
-            if sys.platform != "darwin":
-                hostapi_idx = d.get("hostapi", 0)
-                hostapi_name = hostapis[hostapi_idx].get("name", "Unknown")
-                spec = f"{idx}:{hostapi_name}:{name}"
-                result.append((name, spec))
-            else:
-                result.append((name, name))
-        return result
-    except Exception:
-        return []
+    return output_devices()
+
+
+class _SoundfontRouteWatch(QObject):
+    """Reopen a SoundFont that follows the system output when that route changes."""
+
+    def __init__(self, helper):
+        super().__init__(helper)
+        self._helper = helper
+        self._busy = False
+        self._timer = QTimer(self)
+        self._timer.setInterval(1000)
+        self._timer.timeout.connect(self._check)
+
+    def sync(self) -> None:
+        """Run while the open SoundFont is following the system output."""
+        player = getattr(self._helper, "soundfont_output", None)
+        if player is not None and player.follows_default and player._stream is not None:
+            if not self._timer.isActive():
+                self._timer.start()
+        else:
+            self._timer.stop()
+
+    def _check(self) -> None:
+        if self._busy:
+            return
+        player = getattr(self._helper, "soundfont_output", None)
+        if player is None or not player.follows_default:
+            self._timer.stop()
+            return
+        if not player.take_route_change():
+            return
+        self._busy = True
+        try:
+            player.reopen()
+            self._helper.soundfont_synth = player.synth
+            self._helper.soundfont_sfid = player.sfid
+            callback = player.on_reopened
+            if callback is not None:
+                callback()
+        except Exception as ex:
+            log.error(f"SoundFont output did not follow the new route: {ex}")
+        finally:
+            self._busy = False
 
 
 class MIDIConfigDialog(QDialog):
@@ -130,6 +165,7 @@ class MIDIConfigDialog(QDialog):
         # FluidSynth runtime state (optional), shared with MIDI input forwarding.
         self.fs = getattr(midi_helper, "soundfont_synth", None)
         self.sfid = getattr(midi_helper, "soundfont_sfid", None)
+        self._refreshing_outputs = False
         self.sf2_path = ""
         self._create_ui()
         # Prefill SoundFont path: prefer saved path, else default if file exists
@@ -165,7 +201,6 @@ class MIDIConfigDialog(QDialog):
         # Everything sits on one glossy black panel (its groups sections on it)
         outer_layout = QVBoxLayout(self)
         self.panel = create_panel()
-        mark_sheen(self.panel)
         outer_layout.addWidget(self.panel)
         layout = self.panel.layout()
 
@@ -224,6 +259,17 @@ class MIDIConfigDialog(QDialog):
         self.output_combo.currentIndexChanged.connect(self._on_output_combo_changed)
 
         output_layout.addWidget(self.output_combo)
+
+        self.data_requests_check = QCheckBox("Request data from the JD-Xi")
+        JDXi.UI.Theme.apply_button_mini_style(self.data_requests_check)
+        self.data_requests_check.setToolTip(
+            "Ask the JD-Xi for its current settings when editors open, on "
+            "program changes and on Refresh. Turn off in SoundFont mode or "
+            "when no JD-Xi is connected: nothing would answer. Parameter "
+            "changes are still sent, and an explicit Read still asks."
+        )
+        self.data_requests_check.setChecked(data_requests_enabled())
+        output_layout.addWidget(self.data_requests_check)
         layout.addWidget(output_group)
 
         # Software Synth (FluidSynth)
@@ -238,20 +284,24 @@ class MIDIConfigDialog(QDialog):
         self.use_soundfont_list = QCheckBox("Use SoundFont List")
         JDXi.UI.Theme.apply_button_mini_style(self.use_soundfont_list)
         self.use_soundfont_list.setToolTip(
-            "Use SoundFont drum names (GM percussion) for the Drums row "
-            "in the Pattern editor instead of built-in JD-Xi names"
+            "List the SoundFont's presets in the Digital, Analog and Drums "
+            "preset lists (and GM percussion names in the Pattern editor) "
+            "instead of the built-in JD-Xi presets. Needs the sf2utils package."
         )
         self.use_soundfont_list.setChecked(get_use_soundfont_list())
         self.use_soundfont_list.toggled.connect(self._on_soundfont_list_toggled)
         synth_layout.addWidget(self.use_soundfont_list)
 
-        # Hardware Interface (audio output device for FluidSynth)
+        # Audio output for FluidSynth, distinct from the MIDI Output port
         hw_row = QHBoxLayout()
-        hw_row.addWidget(QLabel("Hardware Interface:"))
+        hw_row.addWidget(QLabel("Audio output:"))
         self.hardware_interface_combo = QComboBox()
         self.hardware_interface_combo.setToolTip(
-            "Audio output device for FluidSynth playback. "
-            "Requires sounddevice (pip install sounddevice)."
+            "Where FluidSynth plays. Changing this while it is running "
+            "reopens that output."
+        )
+        self.hardware_interface_combo.currentIndexChanged.connect(
+            self._on_audio_output_changed
         )
         self._refresh_hardware_devices()
         hw_row.addWidget(self.hardware_interface_combo)
@@ -370,20 +420,39 @@ class MIDIConfigDialog(QDialog):
 
     def _refresh_hardware_devices(self, event=None):
         """refresh hardware devices"""
-        self.hardware_interface_combo.clear()
-        devices = _get_output_devices()
-        if devices:
-            self.hardware_interface_combo.addItem("(Default)", "")
-            for display_name, device_spec in devices:
-                self.hardware_interface_combo.addItem(display_name, device_spec)
-            saved = get_hardware_interface()
-            idx = self.hardware_interface_combo.findText(saved)
-            self.hardware_interface_combo.setCurrentIndex(idx if idx >= 0 else 0)
-        else:
-            self.hardware_interface_combo.addItem(
-                "(sounddevice not installed)",
-                "",
+        combo = self.hardware_interface_combo
+        current = combo.currentText()
+        self._refreshing_outputs = True
+        try:
+            combo.clear()
+            if not sounddevice_available():
+                combo.addItem("(sounddevice not installed)", None)
+                return
+            devices = _get_output_devices()
+            combo.addItem("(Default)", None)
+            for display_name, device_index in devices:
+                combo.addItem(display_name, device_index)
+            chosen = chosen_output(
+                current,
+                get_hardware_interface(),
+                [name for name, _index in devices],
             )
+            idx = combo.findText(chosen) if chosen else 0
+            combo.setCurrentIndex(idx if idx >= 0 else 0)
+        finally:
+            self._refreshing_outputs = False
+
+    def _on_audio_output_changed(self, index: int) -> None:
+        """Remember the output, and reopen it when playback is already running."""
+        if self._refreshing_outputs or index < 0:
+            return
+        name = self.hardware_interface_combo.currentText()
+        if name in ("(Default)", "(sounddevice not installed)", ""):
+            set_hardware_interface("")
+        else:
+            set_hardware_interface(name)
+        if self.fs is not None:
+            self._start_fluidsynth()
 
     def _on_input_combo_changed(self) -> None:
         """On input ComboBox changed, set the DigitalTitle text."""
@@ -437,11 +506,24 @@ class MIDIConfigDialog(QDialog):
                 pass
 
     def _on_soundfont_list_toggled(self, checked: bool) -> None:
-        """Handle SoundFont list checkbox toggle - save immediately and notify listeners."""
+        """Handle SoundFont list checkbox toggle - save immediately and notify listeners.
+
+        Data requests follow the mode until chosen: off for SoundFont, on for
+        the JD-Xi lists; the box can still be changed afterwards."""
+        if stored_data_requests_setting() is None:
+            self.data_requests_check.setChecked(not checked)
         sf_path = self.sf2_edit.text().strip()
         if sf_path and os.path.isfile(sf_path):
             set_sf2_path(sf_path)
         set_use_soundfont_list(checked)
+        problem = soundfont_list_problem() if checked else None
+        if problem:
+            log.warning(scope="MIDIConfigDialog", message=f"SoundFont list unavailable: {problem}")
+            QMessageBox.warning(
+                self,
+                "SoundFont List",
+                f"{problem}\n\nThe preset lists will stay as JD-Xi until this is fixed.",
+            )
 
     def _browse_sf2(self) -> None:
         start_dir = os.path.expanduser("~/SoundFonts")
@@ -461,77 +543,98 @@ class MIDIConfigDialog(QDialog):
 
     def _start_fluidsynth(self) -> None:
         if _fluidsynth_module is None:
-            if "Couldn't find" in _fluidsynth_err_msg:
-                msg = "FluidSynth library not found (install libfluidsynth, e.g. brew install fluid-synth)"
-            else:
-                msg = "FluidSynth not installed: pip install pyfluidsynth"
-            self.fs_status.setText(msg)
+            self.fs_status.setText(import_error_message(_fluidsynth_err_msg))
             return
-        Synth = _fluidsynth_module.Synth
-
+        if not sounddevice_available():
+            self.fs_status.setText("sounddevice is not installed")
+            return
+        sf_path = self.sf2_edit.text().strip()
+        if not sf_path:
+            self.fs_status.setText("Please select a SoundFont first.")
+            return
+        device = self.hardware_interface_combo.currentData()
+        if not isinstance(device, int):
+            device = None
         try:
-            sf_path = self.sf2_edit.text().strip()
-            if not sf_path:
-                self.fs_status.setText("Please select a SoundFont first.")
-                return
-
-            fs = getattr(self.midi_helper, "soundfont_synth", None)
-            if fs is None:
-                fs = Synth()
-                device_name = self.hardware_interface_combo.currentText()
-                if device_name and device_name not in (
-                    "(Default)",
-                    "(sounddevice not installed)",
-                ):
-                    if sys.platform == "darwin":
-                        # macOS: use CoreAudio with specific device (accepts device name)
-                        try:
-                            fs.setting("audio.coreaudio.device", device_name)
-                            fs.start(driver="coreaudio")
-                        except Exception as ex:
-                            log.warning(
-                                f"Could not set CoreAudio device '{device_name}': {ex}"
-                            )
-                            fs.start(driver="coreaudio")  # fallback to default
-                    else:
-                        # Windows/Linux: use PortAudio with "index:HostApi:Name" format
-                        device_spec = self.hardware_interface_combo.currentData()
-                        try:
-                            if isinstance(device_spec, str) and ":" in device_spec:
-                                fs.setting("audio.driver", "portaudio")
-                                fs.setting("audio.portaudio.device", device_spec)
-                                fs.start(driver="portaudio")
-                            else:
-                                fs.start()
-                        except Exception as ex:
-                            log.warning(f"Could not set PortAudio device: {ex}")
-                            fs.start()
-                else:
-                    fs.start(
-                        driver="coreaudio" if sys.platform == "darwin" else None
-                    )
-                self.midi_helper.soundfont_synth = fs
-                self.fs = fs
-
-            self.sfid = fs.sfload(sf_path)
-            self.midi_helper.soundfont_sfid = self.sfid
-            fs.program_select(0, self.sfid, 0, 0)
-            self.fs_status.setText("FluidSynth: started")
-
+            self._close_soundfont()
+            player = SoundfontOutput(self.midi_helper.soundfont_lock)
+            sfid = player.start(sf_path, device)
         except Exception as ex:
+            self._close_soundfont()
             self.fs_status.setText(f"FluidSynth error: {ex}")
             log.error(f"FluidSynth error: {ex}")
+            return
+        self.midi_helper.soundfont_output = player
+        self.midi_helper.soundfont_synth = player.synth
+        self.midi_helper.soundfont_sfid = sfid
+        self.fs = player.synth
+        self.sfid = sfid
+        player.on_reopened = self._note_opened_output
+        self._note_opened_output()
+        self._ensure_route_watch()
+        # The SoundFont's MIDI port has just appeared
+        self._refresh_ports_keeping_selection()
 
-    def _stop_fluidsynth(self) -> None:
-        try:
+    def _note_opened_output(self) -> None:
+        """Name the output PortAudio actually opened."""
+        player = getattr(self.midi_helper, "soundfont_output", None)
+        if player is None:
+            return
+        where = opened_output_name(player.opened_device(), output_devices())
+        where = where or "the default output"
+        if player.midi_port is not None:
+            self.fs_status.setText(
+                f"FluidSynth: started on {where} · MIDI Output '{MIDI_PORT_NAME}' available"
+            )
+        else:
+            self.fs_status.setText(
+                f"FluidSynth: started on {where} (no MIDI port on this system)"
+            )
+
+    def _ensure_route_watch(self) -> None:
+        watch = getattr(self.midi_helper, "_soundfont_route_watch", None)
+        if watch is None:
+            watch = _SoundfontRouteWatch(self.midi_helper)
+            self.midi_helper._soundfont_route_watch = watch
+        watch.sync()
+
+    def closeEvent(self, event):
+        player = getattr(self.midi_helper, "soundfont_output", None)
+        if player is not None and player.on_reopened == self._note_opened_output:
+            player.on_reopened = None
+        super().closeEvent(event)
+
+    def _refresh_ports_keeping_selection(self) -> None:
+        """Re-list the ports (the SoundFont's comes and goes with FluidSynth),
+        keeping the ports chosen in the dialog where they still exist."""
+        chosen_in = self.input_combo.currentText()
+        chosen_out = self.output_combo.currentText()
+        self.refresh_ports()
+        for combo, chosen in ((self.input_combo, chosen_in), (self.output_combo, chosen_out)):
+            index = combo.findText(chosen)
+            if chosen and index >= 0:
+                combo.setCurrentIndex(index)
+
+    def _close_soundfont(self) -> None:
+        player = getattr(self.midi_helper, "soundfont_output", None)
+        if player is not None:
+            player.stop()
+        else:
             fs = getattr(self.midi_helper, "soundfont_synth", None)
             if fs is not None:
                 fs.delete()
-                self.midi_helper.soundfont_synth = None
-                self.midi_helper.soundfont_sfid = None
-                self.fs = None
-                self.sfid = None
-                self.fs_status.setText("FluidSynth: stopped")
+        self.midi_helper.soundfont_output = None
+        self.midi_helper.soundfont_synth = None
+        self.midi_helper.soundfont_sfid = None
+        self.fs = None
+        self.sfid = None
+        self._ensure_route_watch()
+
+    def _stop_fluidsynth(self) -> None:
+        try:
+            self._close_soundfont()
+            self.fs_status.setText("FluidSynth: stopped")
+            self._refresh_ports_keeping_selection()
         except Exception as ex:
             self.fs_status.setText(f"Stop error: {ex}")
             log.error(f"FluidSynth stop error: {ex}")
@@ -542,9 +645,20 @@ class MIDIConfigDialog(QDialog):
             if fs is None:
                 self.fs_status.setText("Start FluidSynth first.")
                 return
-            # Middle C test
-            fs.noteon(0, 60, 110)
-            fs.noteoff(0, 60)
+            lock = self.midi_helper.soundfont_lock
+
+            def play(on: bool) -> None:
+                current = getattr(self.midi_helper, "soundfont_synth", None)
+                if current is not fs:
+                    return
+                with lock:
+                    if on:
+                        fs.noteon(0, 60, 110)
+                    else:
+                        fs.noteoff(0, 60)
+
+            play(True)
+            QTimer.singleShot(300, lambda: play(False))
             self.fs_status.setText("Test note triggered.")
         except Exception as ex:
             self.fs_status.setText(f"Test error: {ex}")
@@ -600,6 +714,7 @@ class MIDIConfigDialog(QDialog):
 
     def accept(self):
         set_use_soundfont_list(self.use_soundfont_list.isChecked())
+        set_data_requests_enabled(self.data_requests_check.isChecked())
         sf_path = self.sf2_edit.text().strip()
         if sf_path:
             set_sf2_path(sf_path)

@@ -68,9 +68,6 @@ class DigitalTitle(DigitalDisplayBase):
             octave=0,
         )
 
-    def __del__(self):
-        print(f"{self.__class__.__name__} was deleted")
-
     def _rebuild_lines(self, tone_name: str) -> None:
         """Lines: status (if any), tone name, BANK/PC detail (if any)."""
         self._tone = tone_name

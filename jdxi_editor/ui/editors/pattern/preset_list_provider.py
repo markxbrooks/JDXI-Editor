@@ -146,6 +146,26 @@ def set_hardware_interface(name: str) -> None:
     settings.sync()
 
 
+def soundfont_list_problem() -> Optional[str]:
+    """Why the SoundFont preset lists cannot be used, or None when they can.
+    Checked when the option is switched on, so the reason is shown instead of
+    a silent fall-back to the JD-Xi lists."""
+    try:
+        import sf2utils  # noqa: F401
+    except ImportError:
+        return (
+            "The sf2utils package is not installed, so preset names cannot be read "
+            "from the SoundFont. Install it with: pip install sf2utils "
+            "(or the project's 'soundfont' extra)."
+        )
+    path = _sf2_path()
+    if not path:
+        return "No SoundFont file is set. Choose one under SoundFont (SF2/SF3)."
+    if not os.path.isfile(path):
+        return f"The SoundFont file was not found: {path}"
+    return None
+
+
 def _load_sf2_presets(sf2_path: str) -> List[tuple]:
     """Load (bank, preset, name) from .sf2 using sf2utils. Skips EOP."""
     from decologr import Decologr as log
@@ -155,6 +175,7 @@ def _load_sf2_presets(sf2_path: str) -> List[tuple]:
         with open(sf2_path, "rb") as f:
             sf2 = Sf2File(f)
             presets = [(p.bank, p.preset, p.name) for p in sf2.presets if p.name != "EOP"]
+            presets.sort(key=lambda bpn: (bpn[0], bpn[1]))  # bank, then program: 001 is program 1
             log.debug(f"Loaded {len(presets)} presets from {sf2_path}")
             return presets
     except ImportError as e:
@@ -197,12 +218,17 @@ def get_preset_list_for_synth_type(
         drum_presets = [(b, p, n) for b, p, n in presets if b == 128]
         if not drum_presets:
             drum_presets = [(b, p, n) for b, p, n in presets if b != 0][:16]
+        # SoundFont bank 128 is the percussion bank inside the file, not a
+        # Bank Select value (MIDI allows 0-127): a GM drum kit is chosen by
+        # Program Change on the drum channel, where FluidSynth uses bank 128
+        # by itself. MSB 128 also made Bank() raise and the Drums editor fail
+        # to open.
         return [
             {
                 "id": f"{i + 1:03d}",
                 "name": name,
                 "category": "SoundFont",
-                "msb": "128",
+                "msb": "0",
                 "lsb": "0",
                 "pc": str(prog + 1),
             }

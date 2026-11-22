@@ -183,17 +183,17 @@ def test_clicking_a_segment_plays_that_song(playlist):
     assert _header(playlist, 3) == "▶"
 
 
-def test_sorting_keeps_the_playing_song(playlist):
+def test_clicking_a_column_header_does_not_change_the_playing_order(playlist):
+    """Column sorting is off: a sorted view would play in another order than
+    the saved one. Tracks are reordered with Move Up/Down (test_playlist_order)."""
     _play_row(playlist, 0)  # Intro
     table = playlist.playlist_programs_table
-    table.sortItems(2, Qt.SortOrder.DescendingOrder)  # Verse, Talk, Outro, Intro
+    assert not table.isSortingEnabled()
+    table.horizontalHeader().sectionClicked.emit(2)
     playlist._refresh_playlist_progress()
-    assert playlist._current_playlist_row == 3
-    assert _header(playlist, 3) == "▶"
-    progress = playlist.playlist_progress
-    assert progress.segments._titles[-1] == "Intro — intro.mid"
-    assert progress.current == 2
-    assert progress.next_label.text() == "Last song"
+    assert playlist._current_playlist_row == 0
+    assert _header(playlist, 0) == "▶"
+    assert playlist.playlist_progress.segments._titles[0] == "Intro — intro.mid"
 
 
 def test_segment_tooltip_names_the_song(app):

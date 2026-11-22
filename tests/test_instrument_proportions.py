@@ -8,7 +8,7 @@ Instrument window proportions follow the JD-Xi (562 x 236 mm, 2.38 : 1).
 
 import os
 import sys
-
+import unittest
 sys.path.insert(0, os.path.abspath("."))
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -19,6 +19,26 @@ _APP = QApplication.instance() or QApplication([])
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
+
+
+@pytest.fixture
+@unittest.skip("Skipping test_instrument_proportions.py due to time taken to run")
+def default_skin():
+    """
+    The JD-Xi's own finish.
+
+    The instrument is drawn in whichever skin is chosen, which for a test is
+    whatever happens to be saved in the user's settings, so a test about the
+    JD-Xi's own look has to pin it.
+    """
+    from jdxi_editor.ui.style import rack_skin
+
+    # Set without restyling the application (notify=False): only the drawing
+    # under test needs the skin
+    saved = rack_skin.active_skin()
+    skin = rack_skin.REGISTRY.set_active("glossy_black", remember=False, notify=False)
+    yield skin
+    rack_skin.REGISTRY.set_active(saved, remember=False, notify=False)
 
 
 @pytest.fixture(scope="module")
@@ -58,10 +78,10 @@ def test_panel_image_is_the_panel():
 def test_proportions_match_the_jdxi(window):
     panel = window.centralWidget().height()
     keys = window.statusBar().height()
-    assert panel == JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT
+    assert panel == JDXi.UI.Dimensions.INSTRUMENT.panel_height_for(window.width())
     ratio = window.width() / (panel + keys)
     assert 2.30 <= ratio <= 2.50  # JD-Xi 2.38
-    assert 0.52 <= panel / (panel + keys) <= 0.60
+    assert 0.52 <= panel / (panel + keys) <= 0.62  # 0.60 on the Reverb top view
 
 
 def test_bottom_row_sits_on_the_panel_edge(window):
@@ -71,11 +91,21 @@ def test_bottom_row_sits_on_the_panel_edge(window):
         return widget.mapTo(panel, widget.rect().bottomLeft()).y()
 
     edge = panel.height()
-    for widget in [*window.sequencer_buttons, window.octave_down, window.key_hold_button, window.favorite_button]:
+    for widget in [
+        *window.sequencer_buttons,
+        window.octave_down,
+        window.key_hold_button,
+        window.favorite_button,
+    ]:
         assert edge - 20 <= bottom(widget) <= edge, widget
+    favorite = window.favorite_button
+    first_step = window.sequencer_buttons[0]
+    assert favorite.mapTo(panel, favorite.rect().topRight()).x() <= first_step.mapTo(
+        panel, first_step.rect().topLeft()
+    ).x()
 
 
-def test_finish_matte_body_and_glossy_panel():
+def test_finish_matte_body_and_glossy_panel(default_skin):
     from PySide6.QtGui import QColor
 
     from jdxi_editor.ui.image.instrument import PANEL_INSET

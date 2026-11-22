@@ -60,7 +60,10 @@ from jdxi_editor.ui.editors.synth.specs import (
     DRUM_KIT_SPECS,
     ENGINE_KEYWORDS,
     INSTRUMENT_FAMILY_SPECS,
-    preset_match_text,
+    any_keyword_in,
+    engine_image_basenames,
+    preset_image_basenames,
+    preset_match_texts,
     InstrumentDescriptor,
 )
 from jdxi_editor.ui.preset.helper import JDXiPresetHelper
@@ -739,7 +742,7 @@ class SynthEditor(SynthBase):
             return
 
         # Extract name and type from InstrumentDescriptor
-        # Use engine as name (e.g., "fm", "jd") or extract from raw_text
+        # Use name as name (e.g., "fm", "jd") or extract from raw_text
         name = descriptor.engine
 
         # Special handling for drum kits: Extract model number (e.g., "909", "808", "707", "cr-78")
@@ -768,27 +771,16 @@ class SynthEditor(SynthBase):
                     name = descriptor.engine
 
         # Special handling: Check for specific engine names in raw_text that might not be detected
-        # This ensures "JP8" matches "jp8.png" even if engine is "jupiter"
-        text_lower = descriptor.raw_text.lower()
-        engine_name_patterns = {
-            "jp8": ["jp8", "jupiter8"],
-            "juno": ["juno", "jn"],
-            "jd": ["jd"],
-            "fm": ["fm"],
-            "tb": ["tb", "tb-303", "303"],
-            "mg": ["mg", "minimoog"],
-            "sh": ["sh", "sh-101", "101"],
-            "d-50": ["d-50", "d50"],
-            "vp-330": ["vp-330", "vp330"],
-            "mks": ["mks", "mks-50"],
-            "mc": ["mc", "mc-202", "202"],
-        }
+        # This ensures "JP8" matches "jp8.png" even if the family was detected first.
+        # ENGINE_KEYWORDS is the single source of truth here; the icon filename
+        # aliases (e.g. "tb" -> "tb-303.png") live in ENGINE_IMAGE_ALIASES.
+        text_lower = preset_match_texts(descriptor.raw_text)
 
         # Check if any engine name pattern matches in the text (only for non-drum)
         if descriptor.category != "drum":
-            for engine_name, patterns in engine_name_patterns.items():
-                if any(pattern in text_lower for pattern in patterns):
-                    name = engine_name
+            for engine_spec in ENGINE_KEYWORDS:
+                if any_keyword_in(text_lower, engine_spec.keywords):
+                    name = engine_spec.name
                     break
 
         if not name:
@@ -802,8 +794,13 @@ class SynthEditor(SynthBase):
         # Use family as type (e.g., "piano", "pad", "bass")
         type_ = descriptor.family
 
-        if name and type_:
-            image_loaded = self._try_load_specific_or_generic_image(name, type_)
+        # Either one is enough: an name with no recognized family still has
+        # its own artwork ("Sweep JD 1" -> jd.png), and so does a family with
+        # no recognized name.
+        if name or type_:
+            image_loaded = self._try_load_specific_or_generic_image(
+                name, type_, descriptor.raw_text
+            )
         else:
             image_loaded = False
 
@@ -866,13 +863,13 @@ class SynthEditor(SynthBase):
         return ""
 
     def _parse_instrument_text(self, text: str) -> Optional[InstrumentDescriptor]:
-        text_lower = preset_match_text(text)
+        text_lower = preset_match_texts(text)
 
         # --------------------------------------------------
         # 1. Drum kits (highest priority)
         # --------------------------------------------------
         for spec in DRUM_KIT_SPECS:
-            if any(kw in text_lower for kw in spec.keywords):
+            if any_keyword_in(text_lower, spec.keywords):
                 return InstrumentDescriptor(
                     category="drum",
                     family=spec.family,
@@ -884,16 +881,16 @@ class SynthEditor(SynthBase):
         # 2. Detect synth engine
         # --------------------------------------------------
         engine = None
-        for engine_name, keywords in ENGINE_KEYWORDS.items():
-            if any(kw in text_lower for kw in keywords):
-                engine = engine_name
+        for engine_spec in ENGINE_KEYWORDS:
+            if any_keyword_in(text_lower, engine_spec.keywords):
+                engine = engine_spec.name
                 break
 
         # --------------------------------------------------
         # 3. Detect synth family
         # --------------------------------------------------
         for spec in INSTRUMENT_FAMILY_SPECS:
-            if any(kw in text_lower for kw in spec.keywords):
+            if any_keyword_in(text_lower, spec.keywords):
                 return InstrumentDescriptor(
                     category="synth",
                     family=spec.family,
@@ -901,13 +898,95 @@ class SynthEditor(SynthBase):
                     raw_text=text,
                 )
 
+        # --------------------------------------------------
+        # 4. No family, but a known name is enough to pick artwork
+        #    ("Sweep JD 1" -> jd.png rather than the default image)
+        # --------------------------------------------------
+        if engine:
+            return InstrumentDescriptor(
+                category="synth",
+                family=None,
+                engine=engine,
+                raw_text=text,
+            )
+
         log.warning(
             scope=self.__class__.__name__,
             message=f"Unrecognized instrument preset: {text}",
         )
         return None
 
-    def _try_load_specific_or_generic_image(self, name: str, type_: str) -> bool:
+    def _icon_path(self, basename: str) -> str:
+        """
+        Absolute path of an icon in the current instrument folder.
+
+        :param basename: Filename without extension.
+        :return: Absolute path to ``<basename>.png``.
+        """
+        return resource_path(
+            os.path.join("resources", self.instrument_icon_folder, f"{basename}.png")
+        )
+
+    def _resolve_icon_path(self, path: str) -> Optional[str]:
+        """
+        Resolve *path*, ignoring filename case.
+
+        Artwork is not always named in lower case ("JD Piano.png"), which only
+        matters on case-sensitive filesystems: the lookup would miss the file on
+        Linux while working on macOS and Windows.
+
+        :param path: Candidate absolute path.
+        :return: The path that exists, or None.
+        """
+        if not path:
+            return None
+        if os.path.exists(path):
+            return path
+        directory, filename = os.path.split(path)
+        try:
+            entries = os.listdir(directory)
+        except OSError:
+            return None
+        for entry in entries:
+            if entry.lower() == filename.lower():
+                return os.path.join(directory, entry)
+        return None
+
+    def _preset_image_paths(self, preset_text: str) -> list:
+        """
+        Candidate paths for artwork named after the preset itself.
+
+        Lets "164: Trem EP 1" pick up "trem-ep.png" ahead of the family image,
+        so dropping in a file named after a preset is all it takes.
+
+        :param preset_text: Preset label (may be empty).
+        :return: list of absolute paths, most specific first.
+        """
+        if not preset_text:
+            return []
+        return [
+            self._icon_path(basename)
+            for basename in preset_image_basenames(preset_text)
+        ]
+
+    def _name_image_paths(self, name: str) -> list:
+        """
+        Build the candidate image paths for an instrument/engine name.
+
+        Each name is expanded through its known filename aliases, so an name
+        detected as ``tb`` matches ``tb.png``, ``tb-303.png``, ``tb303.png`` or
+        ``303.png`` depending on which artwork a resource folder ships.
+
+        :param name: Detected name or instrument name (may be empty).
+        :return: list of absolute paths, most specific first.
+        """
+        return [
+            self._icon_path(basename) for basename in engine_image_basenames(name)
+        ]
+
+    def _try_load_specific_or_generic_image(
+        self, name: str, type_: str, preset_text: str = ""
+    ) -> bool:
         try:
             if not self.instrument_icon_folder:
                 log.error(
@@ -917,11 +996,28 @@ class SynthEditor(SynthBase):
                 return False
 
             # Build list of paths to try (in order of preference)
-            paths_to_try = []
+            # 0. Artwork named after the preset itself always wins: it is more
+            #    specific than the family image ("trem-ep.png" over "piano.png")
+            #    and than the name image ("jd piano.png" over "jd.png").
+            paths_to_try = self._preset_image_paths(preset_text)
 
-            # Special case: For piano family, prioritize piano.png over engine-specific images
+            # PCM samples belong to the fictional JDXV, so its artwork comes
+            # ahead of the family picture ("E. Grand" -> jdxv.png, not
+            # piano.png; "Bright Strat" -> jdxv.png, not strat.png). A file
+            # named after the preset itself still wins, above.
+            if name == "jdxv":
+                paths_to_try.extend(self._name_image_paths(name))
+                if type_:
+                    paths_to_try.append(
+                        resource_path(
+                            os.path.join(
+                                "resources", self.instrument_icon_folder, f"{type_}.png"
+                            )
+                        )
+                    )
+            # Special case: For piano family, prioritize piano.png over name-specific images
             # This ensures "JD Piano 1" matches piano.png instead of jd.png
-            if type_ == "piano":
+            elif type_ == "piano":
                 # 1. Try piano.png first (family image)
                 paths_to_try.append(
                     resource_path(
@@ -930,15 +1026,8 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-                # 2. Then try specific name image as fallback (e.g., "jd.png")
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # 2. Then try specific name images as fallback (e.g., "jd.png")
+                paths_to_try.extend(self._name_image_paths(name))
             # Special case: For guitar family, prioritize strat.png over other images
             # This ensures guitar presets (179-184) match strat.png
             elif type_ == "guitar":
@@ -950,15 +1039,8 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-                # 2. Then try specific name image as fallback
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # 2. Then try specific name images as fallback
+                paths_to_try.extend(self._name_image_paths(name))
                 # 3. Finally try generic guitar.png as fallback
                 paths_to_try.append(
                     resource_path(
@@ -967,10 +1049,10 @@ class SynthEditor(SynthBase):
                         )
                     )
                 )
-            # Special case: For FM engine synths, prioritize fm.png over family images
+            # Special case: For FM name synths, prioritize fm.png over family images
             # This ensures FM synths (155, 156, 237) match fm.png instead of bass.png or brass.png
             elif name == "fm":
-                # 1. Try fm.png first (engine image)
+                # 1. Try fm.png first (name image)
                 paths_to_try.append(
                     resource_path(
                         os.path.join("resources", self.instrument_icon_folder, "fm.png")
@@ -986,16 +1068,9 @@ class SynthEditor(SynthBase):
                         )
                     )
             else:
-                # Default behavior: Try specific name image first, then generic type image
-                # 1. Try specific name image (e.g., "trem.png")
-                if name:
-                    paths_to_try.append(
-                        resource_path(
-                            os.path.join(
-                                "resources", self.instrument_icon_folder, f"{name}.png"
-                            )
-                        )
-                    )
+                # Default behavior: Try specific name images first, then generic type image
+                # 1. Try specific name images (e.g., "tb.png", "tb-303.png")
+                paths_to_try.extend(self._name_image_paths(name))
 
                 # 2. Try generic type image (e.g., "pad.png" if type_ is "pad")
                 if type_:
@@ -1016,9 +1091,22 @@ class SynthEditor(SynthBase):
                 message=f"Instrument icon folder: {self.instrument_icon_folder}",
             )
 
-            # Try primary path first, then secondary, etc.
-            primary_path = paths_to_try[0] if paths_to_try else None
-            secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
+            # Try every candidate in order, not just the first two: pick the
+            # first path that exists so later fallbacks (e.g. "guitar.png" or an
+            # aliased name icon such as "tb-303.png") are not dropped.
+            existing = [
+                resolved
+                for resolved in (self._resolve_icon_path(path) for path in paths_to_try)
+                if resolved
+            ]
+            if existing:
+                primary_path = existing[0]
+                secondary_path = existing[1] if len(existing) > 1 else None
+            else:
+                # Nothing matched; hand the first candidate over so
+                # load_and_set_image falls back to the default image.
+                primary_path = paths_to_try[0] if paths_to_try else None
+                secondary_path = paths_to_try[1] if len(paths_to_try) > 1 else None
 
             return self.load_and_set_image(primary_path, secondary_path)
         except Exception as ex:

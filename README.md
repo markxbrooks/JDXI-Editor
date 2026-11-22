@@ -16,6 +16,7 @@
 ## 🎛️ Features of JDXI-Editor for Roland JD-Xi Synthesizer
 - **On-Screen Keyboard**: Easily play and test sounds from your JD-Xi.
 - **Preset Selection with Search**: Quickly find and load presets.
+- **Playlist Cheat Preset**: When playing a playlist entry, this option sends the selected Digital Synth tone's bank select and Program Change to the Analog Synth MIDI channel (channel 3), about two seconds after the entry's normal program change. It selects a tone on that channel; it does not copy patch data into the Analog Synth.
 - **Octave Shifting**: Adjust octave ranges for precise sound control.
 - **Digital & Analog Synth Editors**: Edit JD-Xi's digital and analog synths directly.
 - **Drum Part Editor**: Customize drum sounds and patterns 🥁.
@@ -23,7 +24,9 @@
 - **Vocal Effects Editor**: Vocoder and Auto-Pitch with polymorphic UI.
 - **Pattern Editor**: 4×16 step sequencer with MIDI load/save, part muting, and USB recording.
 - **MIDI File Player**: Load MIDI files, classify tracks, assign channels, play with JD-Xi or FluidSynth.
-- **SoundFont Support**: Use .sf2/.sf3 for playback without hardware.
+- **SoundFont Support**: Use .sf2/.sf3 for playback without hardware. The Audio output menu chooses the device FluidSynth plays through.
+- **Audio Monitor**: Oscilloscope, stereo meters, and a spectrum from an audio **input**. It does not hear the SoundFont.
+- **Rack skins**: A JDXiSkin menu of instrument faces, plus TOML skins you keep in `~/.jdxi_editor/skins/`.
 - **MIDI Debugger**: Monitor and debug MIDI messages efficiently.
 
 ---
@@ -61,15 +64,15 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 ## 🚀 Getting Started
 
 
-### MacOS 🖥️
-There is a new build for MacOS Sequoia. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
+### Desktop builds
 
-### Windows 📦
-There is a new build for Windows. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
+The app version is **1.0.0rc2** (`jdxi_editor/project.py`). Download the assets on that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases) when the tag has them. 1.0.0rc1 and 1.0.0rc2 were tagged without downloadable files, so those tags have no `.dmg`, installer, or `.deb`. Install from PyPI with the steps below, or check out the tag and follow [Building](doc/building.md). What the candidate contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
 
-### Linux 📦
-There is a new build for Linux. See the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.9.6).
+1.0.0rc2 is the current candidate for 1.0. It adds no features over 0.9.9. The app stays Beta. The hardware suite has been run on a connected JD-Xi; the result is in [Known issues](doc/known-issues.md).
 
+### A JD-Xi, and playback without one
+
+MIDI Configuration chooses the JD-Xi's input and output. `python -m pytest -m hardware` passed on a connected JD-Xi: identity, temporary program, digital, analog, drum, effect, and arpeggio reads, one restored temporary digital byte, a one-bar playback, and a recording capture. SoundFont playback and the Audio Monitor do not need a JD-Xi. The monitor listens to an audio input and does not hear the SoundFont.
 
 ### Python 🐍
 JD-Xi Editor is on PyPI (Python 3.10 to 3.12). Install it in a virtual environment and start it with `jdxi-editor`:
@@ -81,7 +84,9 @@ $ python -m pip install JDXI-Editor
 $ jdxi-editor
 ```
 
-PyAudio needs the PortAudio library: on macOS `brew install portaudio`, on Debian/Ubuntu `sudo apt install portaudio19-dev`, before the `pip install`. The FluidSynth player needs FluidSynth itself (`brew install fluid-synth`, `sudo apt install fluidsynth`).
+PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 have not been tried.
+
+Recording and SoundFont playback use sounddevice, whose wheels include PortAudio. SoundFont playback also needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to the finished release. Reinstall instead.
 
 To run from a checkout instead (for development):
 
@@ -98,11 +103,12 @@ $ python -m jdxi_editor.main
 
 ## Features and Usage
 
-See **[Features and Usage](https://github.com/markxbrooks/JDXI-Editor/blob/main/doc/features-and-usage.md)** for:
+See **[Features and Usage](doc/features-and-usage.md)** for:
 
-- **Recent changes** — Arpeggiator SysEx sync, Effects Editor, Vocal Effects
-- **Patch loading and saving** — .jsz, .msz, .json, .syx formats; save/load flow
-- **SoundFont usage** — FluidSynth for playback, preset list from .sf2/.sf3
+- **Patch loading and saving** — `.jsz`, `.msz`, `.json`, and `.syx`. Loading a patch sends it to the instrument.
+- **SoundFont usage** — FluidSynth playback, and the preset list read from an `.sf2` or `.sf3`.
+
+Caveats for this candidate are in **[Known issues](doc/known-issues.md)**.
 
 ---
 
@@ -122,8 +128,8 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Analog & Digital Synths**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/analog_synth.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/analog_synth_600.gif" alt="Analog Synth" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/analog_synth.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/analog_synth_600.png" alt="Analog Synth" />
 </a>
 
 &nbsp;
@@ -135,31 +141,44 @@ https://markxbrooks.github.io/JDXI-Editor/
 &nbsp;
 
 **Drum Editor**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/drum_editor.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/drum_editor_600.gif" alt="Drum Editor" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/drum_editor.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/drum_editor_600.png" alt="Drum Editor" />
 </a>
 
 &nbsp;
 
-**Midi File Player**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/midi_player.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/midi_player_600.gif" alt="Midi File Player" />
+**MIDI File Player**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/midi_player.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/midi_player_600.png" alt="MIDI File Player" />
 </a>
 
 &nbsp;
 
 **Pattern Sequencer**  
-<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/pattern.gif">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/pattern_600.gif" alt="Pattern Sequencer" />
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/pattern.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/pattern_600.png" alt="Pattern Sequencer" />
 </a>
 
 &nbsp;
 
-**Effects and Arpeggiator**  
+**Effects**  
 <a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/effects.png">
-  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/effects_600.png" alt="Effects and Arpeggiator" />
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/effects_600.png" alt="Effects" />
 </a>
 
+&nbsp;
+
+**Vocal Effects**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/vocal_effects.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/vocal_effects_600.png" alt="Vocal Effects" />
+</a>
+
+&nbsp;
+
+**Arpeggiator**  
+<a href="https://github.com/markxbrooks/JDXI-Editor/blob/main/resources/arpeggiator.png">
+  <img src="https://raw.githubusercontent.com/markxbrooks/JDXI-Editor/main/resources/arpeggiator_600.png" alt="Arpeggiator" />
+</a>
 
 ---
 
@@ -202,60 +221,37 @@ JDXI-Editor provides preset selection, synth editing, drum part customization, e
 ### 💡 Contribute and Share Feedback
 JDXI-Editor is a growing project! 
 - ⭐ Star this repository to support its development.
-- 🛠️ Contribute features or report issues via [GitHub Issues](https://github.com/markxbrooks/JDXI-Editor/issues).
+- 🛠️ Contribute features or report issues via [GitHub Issues](https://github.com/markxbrooks/JDXI-Editor/issues). See [CONTRIBUTING.md](CONTRIBUTING.md) for tests and builds.
 
 ---
 
 ## Building
 
+Packages are built from a checkout. Notes, the Linux command, a sample build log, and the research snippets live in [doc/building.md](doc/building.md).
+
+Mac disk image:
+
 ```bash
-python -m building.buildsys 2>&1 | head -50
-
-Building on: linux
-Project root: /home/brooks/PycharmProjects/JDXI-Editor
-╭─────────── linux builder ────────────╮
-│  linux builder Application Starting  │
-╰──────────────────────────────────────╯
-[02/10/26 23:12:10] INFO                        ℹ️ linux builder starting up with log file /home/brooks/.linux builder/logs/linux builder-10Feb2026-23-12-10.log...                                                         
-                    INFO                        ℹ️ 🎹 JD-Xi Editor v0.9.6 - Linux Build System                                                                                                                              
-                    INFO                        ℹ️ ==================================================                                                                                                                       
-                    INFO                        ℹ️                                                                                                                                                                          
-                             🧹 Cleaning previous builds...                                                                                                                                                                
-                    INFO                        ℹ️                                                                                                                                                                          
-                             📦 Building with PyInstaller...                                                                                                                                                               
-                    INFO                        ℹ️   This may take a few minutes... 
-```
-
-Mac .dmg package
-```commandline
 python3 -m building.buildsys --dmg
 ```
 
-Mac .app
-```commandline
+Mac application:
+
+```bash
 python3 -m building.buildsys --app
 ```
 
-Mac .pkg
-```commandline
+Mac installer package:
+
+```bash
 python3 -m building.buildsys --pkg
 ```
 
-Linux .deb or .Appimage
-```commandline
-python3 -m building.buildsys # builds both with no flag
-```
+Windows:
 
-Windows 
-```commandline
-python -m building.buildsys
-```
-or ]
-```
+```powershell
 .\building\scripts\build.ps1
 ```
-
-
 
 ## 🙏 Credits
 

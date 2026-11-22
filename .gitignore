@@ -51,6 +51,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+doc/*
 
 # PyInstaller
 #  Usually these files are written by address python script from address template
@@ -210,3 +211,13 @@ cython_debug/
 # Roland's manuals: keep locally, link to roland.com instead of redistributing
 doc/JD-Xi_ParameterGuide_*.pdf
 doc/JD-Xi_MIDI_Imple*
+
+# deps/ above is Linux build scratch, and wheels/ comes from the Python
+# template: both would hide deps/wheels entirely. Keep its README (the
+# wheelhouse convention and the macOS SDKROOT recipe) and go on ignoring the
+# wheels themselves, which are per-interpreter and per-architecture.
+!deps/
+deps/*
+!deps/wheels/
+deps/wheels/*
+!deps/wheels/README.md

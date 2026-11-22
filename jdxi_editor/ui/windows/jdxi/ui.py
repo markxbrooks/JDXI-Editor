@@ -20,11 +20,11 @@ Methods:
 
 
 import re
-from typing import Union
+from typing import Callable, Optional, Union
 
 from decologr import Decologr as log
 from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon, QKeySequence
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QMainWindow, QMessageBox
 
 from jdxi_editor.core.synth.factory import create_synth_data
@@ -42,22 +42,9 @@ from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
-from jdxi_editor.ui.windows.jdxi.containers import (
-    add_digital_display,
-    add_effects_container,
-    add_favorite_button_container,
-    add_octave_and_arp_buttons,
-    add_program_container,
-    add_sequencer_container,
-    add_slider_container,
-    add_title_container,
-    add_tone_container,
-    build_wheel_label_row,
-    build_wheel_row,
-    create_parts_container,
-    create_program_buttons_row,
-    create_tone_buttons_row,
-)
+from jdxi_editor.ui.widgets.rack import RackStatusBar
+from jdxi_editor.ui.windows.jdxi.containers import build_wheel_label_row, build_wheel_row
+from jdxi_editor.ui.windows.jdxi.panel import build_faceplate
 
 
 class JDXiWindow(QMainWindow):
@@ -71,6 +58,8 @@ class JDXiWindow(QMainWindow):
         self.log_viewer = None
         self.midi_debugger = None
         self.midi_message_monitor = None
+        self.audio_monitor = None
+        self.midi_controller_config = None
         self.old_pos = None
         # JDXi.UI.Theme.apply_dark_theme()
         self.preset_helpers = None
@@ -107,6 +96,10 @@ class JDXiWindow(QMainWindow):
         self._load_digital_font()
 
         # --- Create UI
+        # The bottom strip is part of the instrument, ears and all. It has to
+        # be installed before anything asks for statusBar(): setStatusBar
+        # deletes the bar it replaces, and everything inside it with it.
+        self.setStatusBar(RackStatusBar(self))
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
@@ -130,204 +123,394 @@ class JDXiWindow(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
 
-        # --- Single layout to hold the image and overlays
         layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
-        # --- Create container for image and overlays
-        container_widget = QWidget()
-        # Fixed panel height: the image is drawn this tall and the controls are
-        # placed in its coordinates (no stretching, no cropping)
-        container_widget.setFixedHeight(JDXi.UI.Dimensions.INSTRUMENT.PANEL_HEIGHT)
-        container_widget.setLayout(QVBoxLayout())
-        container_widget.layout().setContentsMargins(0, 0, 0, 0)
-        container_widget.layout().setSpacing(6)
-
-        # --- Store reference to image label
-        self.image_label = QLabel()
-        self.image_label.setPixmap(draw_instrument_pixmap())
-        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        container_widget.layout().addWidget(self.image_label)
-
-        # --- Add overlaid controls
-        self.digital_display = add_digital_display(
-            container_widget,
-            self,
-            digital_font_family=self.digital_font_family,
-        )
-        add_title_container(container_widget)
-        self.parts_container, self.part_buttons = create_parts_container(
-            parent_widget=self,
-            on_open_d1=lambda: self.show_editor("digital1"),
-            on_open_d2=lambda: self.show_editor("digital2"),
-            on_open_drums=lambda: self.show_editor("drums"),
-            on_open_analog=lambda: self.show_editor("analog"),
-            on_open_arp=lambda: self.show_editor("arpeggio"),
-            on_select_synth=self._select_synth,
-        )
-        self.synth_buttons = {
-            JDXiSynth.DIGITAL_SYNTH_1: self.part_buttons["digital1"],
-            JDXiSynth.DIGITAL_SYNTH_2: self.part_buttons["digital2"],
-            JDXiSynth.ANALOG_SYNTH: self.part_buttons["analog"],
-            JDXiSynth.DRUM_KIT: self.part_buttons["drums"],
-        }
-        self.arp_button = self.part_buttons["arp"]
-
-        (
-            self.octave_down,
-            self.octave_up,
-            self.arpeggiator_button,
-            self.key_hold_button,
-        ) = add_octave_and_arp_buttons(container_widget, self._midi_send_octave)
-
-        self.vocal_effects_button, self.effects_button = add_effects_container(
-            container_widget,
-            lambda: self.show_editor("vocal_fx"),
-            lambda: self.show_editor("effects"),
-        )
-
-        (self.program_down_button, self.program_up_button) = add_program_container(
-            container_widget, create_program_buttons_row
-        )
-
-        self.tone_down_button, self.tone_up_button = add_tone_container(
-            container_widget,
-            create_tone_buttons_row,
-            self._preset_previous,
-            self._preset_next,
-        )
-        self.sequencer_buttons = add_sequencer_container(
-            container_widget,
-            midi_helper=self.midi_helper,
-            on_context_menu=self._show_favorite_context_menu,
-            on_save_favorite=self._save_favorite,
-        )
-        self.favorite_button = add_favorite_button_container(container_widget)
-        add_slider_container(container_widget, self.midi_helper)
-        layout.addWidget(container_widget)
+        self.faceplate = build_faceplate(self)
+        layout.addWidget(self.faceplate)
 
         # --- Initialize current preset index
         self.current_preset_index = 0
+
+    def _menu_action(
+        self,
+        text: str,
+        slot: Callable,
+        shortcut: Optional[Union[QKeySequence, QKeySequence.StandardKey, str]] = None,
+        icon: Optional[QIcon] = None,
+        status_tip: Optional[str] = None,
+    ) -> QAction:
+        """Menu item with a shortcut that works while any editor window is focused."""
+        action = QAction(icon, text, self) if icon is not None else QAction(text, self)
+        if shortcut is not None:
+            action.setShortcut(QKeySequence(shortcut))
+            action.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
+        if status_tip:
+            action.setStatusTip(status_tip)
+        action.triggered.connect(slot)
+        return action
+
+    def _add_skin_menu(self, menu) -> None:
+        """
+        A "JDXiSkin" submenu: the faceplate the panels and displays wear, the
+        Skin Editor, and the folder of the user's own skins.
+
+        :param menu: QMenu the menu to add the submenu to
+        :return: None
+        """
+        self._skin_submenu = menu.addMenu("&JDXiSkin")
+        self._populate_skin_menu()
+
+    def _populate_skin_menu(self) -> None:
+        """
+        Fill the JDXiSkin submenu, again after a skin is added.
+
+        :return: None
+        """
+        from PySide6.QtGui import QActionGroup
+
+        from jdxi_editor.ui.style.rack_skin import SKINS, active_skin
+
+        submenu = self._skin_submenu
+        submenu.clear()
+        group = QActionGroup(submenu)
+        group.setExclusive(True)
+        current = active_skin().skin_id
+        for skin_id, skin in SKINS.items():
+            action = QAction(skin.label, submenu)
+            action.setCheckable(True)
+            action.setChecked(skin_id == current)
+            action.triggered.connect(
+                lambda _checked=False, chosen=skin_id: self._apply_skin(chosen)
+            )
+            group.addAction(action)
+            submenu.addAction(action)
+        submenu.addSeparator()
+        submenu.addAction(
+            self._menu_action(
+                "Skin &Editor...",
+                self._show_skin_editor,
+                status_tip="Make a skin of your own from any skin",
+            )
+        )
+        submenu.addAction(
+            self._menu_action(
+                "Open User Skins &Folder",
+                self._open_user_skins_folder,
+                status_tip="Where your skin files are kept",
+            )
+        )
+
+    def showEvent(self, event) -> None:
+        """
+        Give the instrument its proportions once the window is laid out.
+
+        :param event: QShowEvent
+        :return: None
+        """
+        super().showEvent(event)
+        self.apply_instrument_proportions()
+
+    def resizeEvent(self, event) -> None:
+        """
+        Keep the instrument in proportion as the window changes width.
+
+        The JD-Xi is 2.37 : 1, and its panel and keys are a fixed share of
+        its width, so both follow the window rather than staying at the size
+        that happened to be right at 1000 px.
+
+        :param event: QResizeEvent
+        :return: None
+        """
+        super().resizeEvent(event)
+        self.apply_instrument_proportions()
+
+    def apply_instrument_proportions(self) -> None:
+        """
+        Size the panel and the keys for the instrument's current width.
+
+        :return: None
+        """
+        width = self.width()
+        central = self.centralWidget()
+        dimensions = JDXi.UI.Dimensions.INSTRUMENT
+        faceplate = getattr(self, "faceplate", None)
+        panel = dimensions.panel_height_for(width)
+        if faceplate is not None:
+            # it may need more than the ratio asks for, to fit its controls
+            panel = faceplate.apply_width(width)
+        depth = round(width * dimensions.DEPTH_RATIO)
+        keys = max(dimensions.keys_height_for(width) // 2, depth - panel)
+        keyboard = getattr(self, "piano_keyboard", None)
+        if keyboard is not None:
+            keyboard.set_instrument_width(width, keys)
+
+        # Reserve the depth the instrument needs. Without this the window
+        # opens shorter than the panel and the keys together, and Qt squeezes
+        # the panel below its own minimum -- 215 px of a 230 px faceplate,
+        # with the step buttons pushed off the bottom edge.
+        # sizeHint, not height: during the first resize the menu bar is not
+        # shown yet and reports 0, which left the window 20 px short and the
+        # panel squeezed for the rest of the session
+        menu = self.menuBar()
+        chrome = menu.sizeHint().height() if menu is not None else 0
+        wanted = chrome + panel + keys + self._status_bar_padding()
+        # Fixed, not merely a minimum: the instrument is a shape, and a saved
+        # geometry or a drag on the bottom edge would otherwise leave it
+        # floating in a band of empty body. The width stays free and the
+        # depth follows it.
+        #
+        # The shortfall is measured rather than predicted: adding up the menu
+        # bar, the panel, the keys and the status bar's margins was always a
+        # few pixels out, and the panel paid for it by being squeezed past
+        # its own edge. Asking the central widget how short it is converges
+        # in a pass or two and cannot drift.
+        if central is not None:
+            wanted = self.height() + (panel - central.height())
+        if self.minimumHeight() != wanted or self.maximumHeight() != wanted:
+            self.setFixedHeight(wanted)
+
+    def _status_bar_padding(self) -> int:
+        """
+        What the status bar adds around the keyboard.
+
+        :return: int px
+        """
+        status = self.statusBar()
+        if status is None:
+            return 0
+        # From the margins, not from the live heights: measured while the
+        # layout is still settling, the difference is whatever the keyboard
+        # happened to be a moment ago, and the window ends up that much too
+        # tall for good.
+        margins = status.contentsMargins()
+        return margins.top() + margins.bottom()
+
+    def _apply_skin(self, skin, remember: bool = True) -> None:
+        """
+        Wear ``skin`` everywhere: chrome, and the picture of the instrument.
+
+        The instrument is drawn once into a pixmap, so it has to be drawn
+        again; the chrome follows the skin by itself.
+
+        :param skin: str | JDXiSkin a key of rack_skin.SKINS, or a skin (one
+            the Skin Editor is trying on)
+        :param remember: bool store the choice for next time
+        :return: None
+        """
+        from jdxi_editor.ui.style.rack_skin import set_active_skin
+
+        set_active_skin(skin, remember=remember)
+        self.refresh_instrument_image()
+        self.apply_keyboard_area_skin()
+
+    def _show_skin_editor(self) -> None:
+        """Open the Skin Editor, or bring it forward."""
+        from jdxi_editor.ui.windows.skin.editor import SkinEditorWindow
+
+        editor = getattr(self, "skin_editor", None)
+        if editor is None:
+            editor = SkinEditorWindow(
+                parent=self,
+                wear=lambda skin, remember: self._apply_skin(skin, remember=remember),
+                saved=self._skin_saved,
+            )
+            editor.setAttribute(Qt.WA_DeleteOnClose)
+            editor.destroyed.connect(lambda: setattr(self, "skin_editor", None))
+            self.skin_editor = editor
+        editor.show()
+        editor.raise_()
+
+    def _skin_saved(self, skin) -> None:
+        """A skin saved in the Skin Editor: offer it, and wear it."""
+        self._apply_skin(skin.skin_id)
+        self._populate_skin_menu()
+
+    def _open_user_skins_folder(self) -> None:
+        """Show the folder of the user's skin files, making it if need be."""
+        from PySide6.QtCore import QUrl
+        from PySide6.QtGui import QDesktopServices
+
+        from jdxi_editor.ui.style.user_skins import USER_SKIN_DIR
+
+        USER_SKIN_DIR.mkdir(parents=True, exist_ok=True)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(USER_SKIN_DIR)))
+
+    def refresh_instrument_image(self) -> None:
+        """
+        Draw the instrument again in the current skin.
+
+        :return: None
+        """
+        if getattr(self, "image_label", None) is None:
+            return
+        self.image_label.setPixmap(draw_instrument_pixmap())
 
     def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
 
         # --- File menu
-        file_menu = menubar.addMenu("File")
+        file_menu = menubar.addMenu("&File")
 
-        load_midi_file_action = QAction("Load MIDI file", self)
-        load_midi_file_action.triggered.connect(self._midi_file_load)
-        file_menu.addAction(load_midi_file_action)
-
-        save_midi_file_action = QAction("Save MIDI file", self)
-        save_midi_file_action.triggered.connect(self._midi_file_save)
-        file_menu.addAction(save_midi_file_action)
-
-        save_midi_file_as_action = QAction("Save MIDI file As...", self)
-        save_midi_file_as_action.triggered.connect(self._midi_file_save_as)
-        file_menu.addAction(save_midi_file_as_action)
-
-        open_midi_as_pdf_action = QAction("Open current MIDI as PDF", self)
-        open_midi_as_pdf_action.triggered.connect(self._open_current_midi_as_pdf)
-        file_menu.addAction(open_midi_as_pdf_action)
+        file_menu.addAction(
+            self._menu_action(
+                "&Load MIDI file",
+                self._midi_file_load,
+                QKeySequence.StandardKey.Open,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "&Save MIDI file",
+                self._midi_file_save,
+                QKeySequence.StandardKey.Save,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "Save MIDI file &As...",
+                self._midi_file_save_as,
+                QKeySequence.StandardKey.SaveAs,
+            )
+        )
+        file_menu.addAction(
+            self._menu_action(
+                "Open current MIDI as &PDF",
+                self._open_current_midi_as_pdf,
+                "Ctrl+P",
+            )
+        )
 
         file_menu.addSeparator()
 
-        load_program_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED), "Load Program...", self
+        file_menu.addAction(
+            self._menu_action(
+                "Load P&rogram...",
+                lambda: self.show_editor("program"),
+                "Ctrl+Shift+O",
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FOLDER_OPENED),
+            )
         )
-        load_program_action.triggered.connect(lambda: self.show_editor("program"))
-        file_menu.addAction(load_program_action)
 
         load_preset_action = QAction("Load Preset...", self)
         load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
         # file_menu.addAction(load_preset_action)
 
-        load_action = QAction("Load Patch...", self)
-        load_action.triggered.connect(self._patch_load)
-        file_menu.addAction(load_action)
-
-        save_action = QAction("Save Patch...", self)
-        save_action.triggered.connect(self._patch_save)
-        file_menu.addAction(save_action)
-
-        file_menu.addSeparator()
-
-        dump_settings_action = QAction("Dump Settings to Synth", self)
-        dump_settings_action.triggered.connect(self._dump_settings_to_synth)
-        file_menu.addAction(dump_settings_action)
+        file_menu.addAction(
+            self._menu_action("Load &Patch...", self._patch_load, "Ctrl+Alt+O")
+        )
+        file_menu.addAction(
+            self._menu_action("Save Patc&h...", self._patch_save, "Ctrl+Alt+S")
+        )
 
         file_menu.addSeparator()
 
-        quit_action = QAction("Quit", self)
-        quit_action.triggered.connect(self.close)
-        file_menu.addAction(quit_action)
+        file_menu.addAction(
+            self._menu_action(
+                "&Dump Settings to Synth",
+                self._dump_settings_to_synth,
+                "Ctrl+Shift+D",
+            )
+        )
+
+        file_menu.addSeparator()
+
+        file_menu.addAction(self._menu_action("&Quit", self.close, "Ctrl+Q"))
 
         # --- Edit menu
-        edit_menu = menubar.addMenu("Edit")
+        edit_menu = menubar.addMenu("&Edit")
 
-        midi_config_action = QAction("MIDI Configuration...", self)
-        midi_config_action.triggered.connect(self._show_midi_config)
-        edit_menu.addAction(midi_config_action)
+        edit_menu.addAction(
+            self._menu_action(
+                "&MIDI Configuration...",
+                self._show_midi_config,
+                "Ctrl+Shift+M",
+            )
+        )
+
+        edit_menu.addAction(
+            self._menu_action(
+                "MIDI &Controller...",
+                self._show_midi_controller_config,
+                "Ctrl+Shift+K",
+                status_tip="Set up a hardware controller to drive the filter",
+            )
+        )
 
         edit_menu.addSeparator()
 
-        update_db_action = QAction("Update User Program Database", self)
-        update_db_action.triggered.connect(self._update_user_program_database)
-        edit_menu.addAction(update_db_action)
+        self._add_skin_menu(edit_menu)
+
+        edit_menu.addSeparator()
+
+        edit_menu.addAction(
+            self._menu_action(
+                "&Update User Program Database",
+                self._update_user_program_database,
+                "Ctrl+Shift+U",
+            )
+        )
 
     def _create_parts_menu(self) -> None:
         """Create editors menu"""
-        self.parts_menu = self.menuBar().addMenu("Parts")
+        self.parts_menu = self.menuBar().addMenu("&Parts")
 
-        digital1_action = QAction("Digital Synth 1", self)
-        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
-        self.parts_menu.addAction(digital1_action)
-
-        digital2_action = QAction("Digital Synth 2", self)
-        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-        self.parts_menu.addAction(digital2_action)
-
-        digital3_action = QAction("Digital Synth 3", self)
-        digital3_action.triggered.connect(lambda: self.show_editor("digital3"))
-        self.parts_menu.addAction(digital3_action)
-
-        drums_action = QAction("Drums", self)
-        drums_action.triggered.connect(lambda: self.show_editor("drums"))
-        self.parts_menu.addAction(drums_action)
-
-        analog_action = QAction("Analog Synth", self)
-        analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
-        self.parts_menu.addAction(analog_action)
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &1", lambda: self.show_editor("digital1"), "Ctrl+1"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &2", lambda: self.show_editor("digital2"), "Ctrl+2"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "Digital Synth &3", lambda: self.show_editor("digital3"), "Ctrl+3"
+            )
+        )
+        self.parts_menu.addAction(
+            self._menu_action("&Drums", lambda: self.show_editor("drums"), "Ctrl+4")
+        )
+        self.parts_menu.addAction(
+            self._menu_action(
+                "&Analog Synth", lambda: self.show_editor("analog"), "Ctrl+5"
+            )
+        )
 
     def _create_effects_menu(self) -> None:
         """Create editors menu"""
-        self.effects_menu = self.menuBar().addMenu("Effects")
+        self.effects_menu = self.menuBar().addMenu("Effe&cts")
 
-        effects_action = QAction("Effects", self)
-        effects_action.triggered.connect(lambda: self.show_editor("effects"))
-        self.effects_menu.addAction(effects_action)
-
-        vocal_effects_action = QAction("Vocal FX", self)
-        vocal_effects_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
-        self.effects_menu.addAction(vocal_effects_action)
+        self.effects_menu.addAction(
+            self._menu_action("&Effects", lambda: self.show_editor("effects"), "Ctrl+6")
+        )
+        self.effects_menu.addAction(
+            self._menu_action(
+                "&Vocal FX", lambda: self.show_editor("vocal_fx"), "Ctrl+7"
+            )
+        )
 
     def _create_playback_menu(self) -> None:
         # --- Create editors menu
-        playback_menu = self.menuBar().addMenu("Playback")
+        playback_menu = self.menuBar().addMenu("P&layback")
 
-        # --- Add MIDI file action
-        midi_file_action = QAction("MIDI File", self)
-        midi_file_action.triggered.connect(lambda: self.show_editor("midi_player"))
-        playback_menu.addAction(midi_file_action)
-
-        arpeggiator_action = playback_menu.addAction("Arpeggiator")
-        arpeggiator_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
-        sequencer_action = playback_menu.addAction("Pattern Sequencer")
-        sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
+        playback_menu.addAction(
+            self._menu_action(
+                "&MIDI File", lambda: self.show_editor("midi_player"), "Ctrl+8"
+            )
+        )
+        playback_menu.addAction(
+            self._menu_action(
+                "&Arpeggiator", lambda: self.show_editor("arpeggio"), "Ctrl+9"
+            )
+        )
+        playback_menu.addAction(
+            self._menu_action(
+                "&Pattern Sequencer", lambda: self.show_editor("pattern"), "Ctrl+0"
+            )
+        )
 
     def _create_debug_menu(self) -> None:
         # --- Add debug menu
@@ -343,6 +526,10 @@ class JDXiWindow(QMainWindow):
         midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.debug_menu.addAction(midi_monitor_action)
 
+        audio_monitor_action = QAction("Audio Monitor", self)
+        audio_monitor_action.triggered.connect(self._show_audio_monitor)
+        self.debug_menu.addAction(audio_monitor_action)
+
         # --- Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
@@ -357,40 +544,54 @@ class JDXiWindow(QMainWindow):
         menubar = self.menuBar()
 
         # --- Help menu
-        self.help_menu = menubar.addMenu("Help")
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        self.help_menu.addAction(log_viewer_action)
-
-        # --- Add MIDI debugger action (SysEx decoder)
-        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._show_midi_debugger)
-        self.help_menu.addAction(midi_debugger_action)
-
-        # --- Add MIDI message monitor action
-        midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
-        self.help_menu.addAction(midi_monitor_action)
-
-        # --- Add About window action
-        about_help_action = QAction("About", self)
-        about_help_action.triggered.connect(self._show_about_help)
-        self.help_menu.addAction(about_help_action)
-
-        preferences_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS), "Preferences", self
+        self.help_menu = menubar.addMenu("&Help")
+        self.help_menu.addAction(
+            self._menu_action("&Log Viewer", self._show_log_viewer, "Ctrl+Shift+L")
         )
-        preferences_action.setStatusTip("Show the Preferences window")
-        preferences_action.triggered.connect(self.on_preferences)
-        self.help_menu.addAction(preferences_action)
-
-        documentation_action = QAction(
-            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS), "Documentation", self
+        self.help_menu.addAction(
+            self._menu_action(
+                "MIDI &SysEx Debugger", self._show_midi_debugger, "Ctrl+Shift+Y"
+            )
         )
-        documentation_action.setStatusTip(f"Show {__program__} documentation")
-        documentation_action.triggered.connect(self.on_documentation)
-
-        self.help_menu.addAction(documentation_action)
+        self.help_menu.addAction(
+            self._menu_action(
+                "MIDI &Monitor", self._show_midi_message_monitor, "Ctrl+Alt+M"
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "Audio &Monitor", self._show_audio_monitor, "Ctrl+Alt+A"
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action("&About", self._show_about_help, "Ctrl+Shift+A")
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "&Preferences",
+                self.on_preferences,
+                "Ctrl+,",
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS),
+                "Show the Preferences window",
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "Check for &Updates…",
+                self.on_check_for_updates,
+                "Ctrl+Alt+U",
+                status_tip="Look for a newer release on GitHub",
+            )
+        )
+        self.help_menu.addAction(
+            self._menu_action(
+                "&Documentation",
+                self.on_documentation,
+                QKeySequence.StandardKey.HelpContents,
+                JDXi.UI.Icon.get_icon(JDXi.UI.Icon.HELP_RHOMBUS),
+                f"Show {__program__} documentation",
+            )
+        )
 
         # --- Add Main Editor window action
         main_editor_action = QAction("Main Editor", self)
@@ -410,12 +611,32 @@ class JDXiWindow(QMainWindow):
         # --- Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        # Keyboard area: the same matte body colour as around the panel
-        from jdxi_editor.ui.image.instrument import BODY_COLOR
+        self.apply_keyboard_area_skin()
 
-        status_bar.setStyleSheet(f"background-color: {BODY_COLOR};")
+    def apply_keyboard_area_skin(self) -> None:
+        """
+        Dress the keyboard area in the active skin.
 
-    def _build_status_layout(self) -> None:
+        The wheels, indicators and keys sit on the instrument's body, so the
+        strip behind them is the skin's body colour, as it is around the
+        panel above.
+
+        :return: None
+        """
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        skin = active_skin()
+        self.statusBar().setStyleSheet(
+            f"QStatusBar {{ background-color: {skin.chassis.body}; }}"
+            f"QStatusBar QLabel {{ color: {skin.foreground.text}; }}"
+        )
+        if getattr(self, "piano_keyboard", None) is not None:
+            self.piano_keyboard.apply_skin()
+        status_bar = self.statusBar()
+        if isinstance(status_bar, RackStatusBar):
+            status_bar.apply_skin()
+
+    def _build_status_layout(self) -> QLayout:
         layout = QVBoxLayout()
         layout.addStretch()
         layout.addLayout(build_wheel_label_row())
@@ -611,6 +832,9 @@ class JDXiWindow(QMainWindow):
     def on_preferences(self):
         raise NotImplementedError("to be implemented in subclass")
 
+    def on_check_for_updates(self):
+        raise NotImplementedError("to be implemented in subclass")
+
     def show_editor(self, param: str):
         raise NotImplementedError("to be implemented in subclass")
 
@@ -624,6 +848,9 @@ class JDXiWindow(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_midi_message_monitor(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_audio_monitor(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_log_viewer(self):

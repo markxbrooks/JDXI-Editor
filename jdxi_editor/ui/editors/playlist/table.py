@@ -12,11 +12,13 @@ Classes:
 from typing import Any, Callable, Optional
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QPoint, Qt, Signal
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QMenu,
     QMessageBox,
     QPushButton,
     QTableWidget,
@@ -34,6 +36,8 @@ class PlaylistTable(QWidget):
 
     # Signal emitted when a playlist is created, deleted, or updated
     playlist_changed = Signal()
+    # The selected playlist changed (its ID, or None)
+    playlist_selected = Signal(object)
 
     def __init__(
         self,
@@ -52,6 +56,8 @@ class PlaylistTable(QWidget):
         # UI components
         self.create_playlist_button: Optional[QPushButton] = None
         self.delete_playlist_button: Optional[QPushButton] = None
+        self.rename_playlist_button: Optional[QPushButton] = None
+        self.duplicate_playlist_button: Optional[QPushButton] = None
         self.refresh_playlist_button: Optional[QPushButton] = None
         self.playlist_table: Optional[QTableWidget] = None
 
@@ -76,6 +82,20 @@ class PlaylistTable(QWidget):
             self.create_new_playlist,
             button_layout,
             name="create_playlist",
+        )
+        self._add_round_action_button(
+            JDXi.UI.Icon.PENCIL,
+            "Rename",
+            self.rename_selected_playlist,
+            button_layout,
+            name="rename_playlist",
+        )
+        self._add_round_action_button(
+            JDXi.UI.Icon.COPY,
+            "Duplicate",
+            self.duplicate_selected_playlist,
+            button_layout,
+            name="duplicate_playlist",
         )
         self._add_round_action_button(
             JDXi.UI.Icon.TRASH_FILL,
@@ -116,11 +136,22 @@ class PlaylistTable(QWidget):
             3, QHeaderView.ResizeMode.ResizeToContents
         )  # Programs
 
+        # One playlist at a time: selecting it opens it beside the list
+        self.playlist_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.playlist_table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.playlist_table.itemSelectionChanged.connect(
+            lambda: self.playlist_selected.emit(self.selected_playlist_id())
+        )
+
         # Connect item changed to save edits
         self.playlist_table.itemChanged.connect(self._on_playlist_item_changed)
 
         # Connect double-click to edit playlist
         self.playlist_table.itemDoubleClicked.connect(self._on_playlist_selected)
+
+        # Right-click a playlist (or the empty space below) for its actions
+        self.playlist_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.playlist_table.customContextMenuRequested.connect(self._show_playlist_menu)
 
         layout.addWidget(self.playlist_table)
 
@@ -196,6 +227,7 @@ class PlaylistTable(QWidget):
             log.error(traceback.format_exc())
             all_playlists = []
 
+        keep_id = self.selected_playlist_id()
         # Disable sorting while populating to prevent data misalignment
         was_sorting_enabled = self.playlist_table.isSortingEnabled()
         self.playlist_table.setSortingEnabled(False)
@@ -244,6 +276,8 @@ class PlaylistTable(QWidget):
         finally:
             # Re-enable sorting if it was enabled before
             self.playlist_table.setSortingEnabled(was_sorting_enabled)
+        if keep_id is not None:
+            self.select_playlist_id(keep_id)
 
         log.message(
             f"✅ Populated playlist table with {len(all_playlists)} playlists",
@@ -274,6 +308,126 @@ class PlaylistTable(QWidget):
                     "Error",
                     f"Failed to create playlist '{name}'. It may already exist.",
                 )
+
+    # --- Selection, rename, duplicate -----------------------------------------
+
+    def selected_playlist(self) -> Optional[dict]:
+        if not self.playlist_table:
+            return None
+        rows = self.playlist_table.selectionModel().selectedRows()
+        item = self.playlist_table.item(rows[0].row(), 0) if rows else None
+        return item.data(Qt.ItemDataRole.UserRole) if item is not None else None
+
+    def selected_playlist_id(self) -> Optional[int]:
+        playlist = self.selected_playlist()
+        return playlist["id"] if playlist else None
+
+    def select_playlist_id(self, playlist_id: Optional[int]) -> None:
+        """Select the row of `playlist_id` (None clears the selection)."""
+        if not self.playlist_table:
+            return
+        if playlist_id is None:
+            self.playlist_table.clearSelection()
+            return
+        for row in range(self.playlist_table.rowCount()):
+            item = self.playlist_table.item(row, 0)
+            playlist = item.data(Qt.ItemDataRole.UserRole) if item else None
+            if playlist and playlist["id"] == playlist_id:
+                self.playlist_table.selectRow(row)
+                return
+
+    def rename_selected_playlist(self) -> None:
+        """Rename the selected playlist (the name cell can still be edited in place)."""
+        from PySide6.QtWidgets import QInputDialog
+
+        from jdxi_editor.ui.programs.database import get_database
+
+        playlist = self.selected_playlist()
+        if not playlist:
+            QMessageBox.information(self, "No Selection", "Please select a playlist to rename.")
+            return
+        name, ok = QInputDialog.getText(self, "Rename Playlist", "New name:", text=playlist["name"] or "")
+        name = name.strip()
+        if not ok or not name or name == playlist["name"]:
+            return
+        if get_database().update_playlist(playlist["id"], name=name):
+            self.populate_table()
+            self.select_playlist_id(playlist["id"])
+            self._notify_playlist_changed()
+        else:
+            QMessageBox.warning(self, "Error", f"Could not rename the playlist to '{name}'. The name may already be used.")
+
+    def duplicate_selected_playlist(self) -> None:
+        """Copy the selected playlist, tracks included, under a new name."""
+        from PySide6.QtWidgets import QInputDialog
+
+        from jdxi_editor.ui.programs.database import get_database
+
+        playlist = self.selected_playlist()
+        if not playlist:
+            QMessageBox.information(self, "No Selection", "Please select a playlist to duplicate.")
+            return
+        name, ok = QInputDialog.getText(
+            self, "Duplicate Playlist", "Name of the copy:", text=f"{playlist['name']} (copy)"
+        )
+        name = name.strip()
+        if not ok or not name:
+            return
+        new_id = get_database().duplicate_playlist(playlist["id"], name)
+        if new_id:
+            self.populate_table()
+            self._notify_playlist_changed()
+            self.select_playlist_id(new_id)
+        else:
+            QMessageBox.warning(self, "Error", f"Could not create '{name}'. The name may already be used.")
+
+    def _show_playlist_menu(self, pos: QPoint) -> None:
+        row = self.playlist_table.indexAt(pos).row()
+        if row >= 0:
+            self.playlist_table.selectRow(row)
+        self.build_playlist_menu(on_playlist=row >= 0).exec(
+            self.playlist_table.viewport().mapToGlobal(pos)
+        )
+
+    def build_playlist_menu(self, on_playlist: bool = True) -> QMenu:
+        """The right-click menu: actions on the selected playlist (when the
+        click was on one), and New Playlist."""
+        menu = QMenu(self)
+        has_one = on_playlist and self.selected_playlist_id() is not None
+
+        def add(text, icon, slot, enabled=True):
+            action = menu.addAction(JDXi.UI.Icon.get_icon(icon, color=JDXi.UI.Style.FOREGROUND), text)
+            action.setEnabled(enabled)
+            action.triggered.connect(slot)
+
+        add("Rename…", JDXi.UI.Icon.PENCIL, self.rename_selected_playlist, has_one)
+        add("Edit Description…", JDXi.UI.Icon.PENCIL, self.edit_selected_description, has_one)
+        add("Duplicate…", JDXi.UI.Icon.COPY, self.duplicate_selected_playlist, has_one)
+        add("Delete…", JDXi.UI.Icon.TRASH_FILL, self.delete_selected_playlist, has_one)
+        menu.addSeparator()
+        add("New Playlist…", JDXi.UI.Icon.PLUS_CIRCLE, self.create_new_playlist)
+        return menu
+
+    def edit_selected_description(self) -> None:
+        """Change the selected playlist's description."""
+        from PySide6.QtWidgets import QInputDialog
+
+        playlist = self.selected_playlist()
+        if not playlist:
+            return
+        text, ok = QInputDialog.getText(
+            self, "Edit Description", f"Description of '{playlist['name']}':",
+            text=playlist.get("description") or "",
+        )
+        if not ok:
+            return
+        from jdxi_editor.ui.programs.database import get_database
+
+        if get_database().update_playlist(playlist["id"], description=text.strip()):
+            self.populate_table()  # keeps the selection
+            self._notify_playlist_changed()
+        else:
+            QMessageBox.warning(self, "Error", "Failed to save the description.")
 
     def refresh_playlists(self) -> None:
         """Refresh the playlist table."""

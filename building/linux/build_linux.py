@@ -37,6 +37,7 @@ DIST_DIR = PROJECT_ROOT / "dist" / "linux"
 # Import project metadata
 sys.path.insert(0, str(PROJECT_ROOT))
 from jdxi_editor.project import __version__, __package_name__, __program__, __author__
+from jdxi_editor.bundle_imports import pyinstaller_args
 
 # Build configuration
 APP_NAME = "jdxi-editor"
@@ -153,6 +154,7 @@ def build_with_pyinstaller():
         "--collect-all=decologr",
         "--hidden-import=picomidi",
         "--collect-all=decologr",
+        *pyinstaller_args(),
         # Collect other packages
         "--collect-submodules=jdxi_editor",
         "--collect-data=jdxi_editor",

@@ -38,21 +38,37 @@ dependencies = [
     "Pillow",
     "numpy",
     "music21",
-    "PyAudio",
     "pyqtdarktheme",
     "darkdetect",
     "SQLAlchemy>=2.0",
     "decologr",
-    # 0.2.0: the first release that ships picomidi's subpackages (core,
-    # playback, sysex, ...); 0.1.2 contains the top-level package only
-    "picomidi>=0.2.0",
+    # 0.3.0: the first release that ships picomidi.playback.scheduler and
+    # PlaybackEngine.set_track_volume / set_track_transpose /
+    # set_track_channel_map, which jdxi_editor/midi/playback/transport.py
+    # imports and calls. 0.2.0 ships the subpackages (core, playback, sysex,
+    # ...) but not those, so the main window will not import against it.
+    "picomidi>=0.3.0",
     "pyfluidsynth",
+    # Audio monitor and FluidSynth device selection. The PortAudio binaries
+    # ship inside this package and have to be present when the app is frozen.
+    "sounddevice>=0.4.0",
+    # User skins are TOML files (ui/style/user_skins.py); tomllib is in the
+    # standard library from Python 3.11
+    "tomli>=1.1.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
 soundfont = ["sf2utils>=1.0.0", "sounddevice>=0.4.0"]
 plots = ["matplotlib"]
-dev = ["pytest>=8", "mypy", "black", "isort", "flake8"]
+# soundfile: tests/test_refine.py, test_audio_evidence.py and
+# test_arpeggio_refine.py write a WAV to tmp_path and read it back. Its
+# wheels bundle libsndfile for macOS, Linux and Windows, so no system
+# package is needed. Undeclared, it was present only as a transitive
+# dependency of a local librosa install, and CI failed at collection.
+# librosa: the same tests reach scripts/midi_parts/evidence.py, which imports
+# it (constant-Q evidence); undeclared, they failed on the runners with
+# ModuleNotFoundError.
+dev = ["pytest>=8", "mypy", "black", "isort", "flake8", "soundfile", "librosa"]
 
 [project.urls]
 Homepage = "https://github.com/markxbrooks/JDXI-Editor"

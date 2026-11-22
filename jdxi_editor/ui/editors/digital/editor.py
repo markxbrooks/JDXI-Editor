@@ -234,8 +234,6 @@ class DigitalSynthEditor(BaseSynthEditor):
         icon_row = JDXi.UI.Icon.create_generic_musical_icon_row()
         transfer_layout_items(icon_row, icon_row_container)
         container_layout.addLayout(icon_row_container)
-        # --- Add partials panel directly to container
-        container_layout.addWidget(self.partials_panel)
         container_layout.setSpacing(
             JDXi.UI.Dimensions.EDITOR_DIGITAL.SPACING
         )  # Minimal spacing instead of stretch
@@ -311,7 +309,18 @@ class DigitalSynthEditor(BaseSynthEditor):
             send_midi_parameter=self.send_midi_parameter, midi_helper=midi_helper
         )
         self._add_tab(key=Digital.Tab.MISC, widget=self.tone_modify_section)
-        container_layout.addWidget(self.tab_widget)
+        # The partial selectors and the tabs share one faceplate, cheeks included.
+        # The pane stays flat so it does not draw a second sheen over that face.
+        from jdxi_editor.ui.editors.helpers.widgets import create_panel
+        from jdxi_editor.ui.style.editor_style import mark_flat
+
+        mark_flat(self.tab_widget)
+        face = create_panel(self.partials_panel, self.tab_widget)
+        face.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        face.layout().setStretch(1, 1)
+        container_layout.addWidget(face)
         self._add_partial_clipboard_row(container_layout)
 
     def _add_partial_clipboard_row(self, layout) -> None:

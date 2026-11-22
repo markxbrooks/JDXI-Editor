@@ -1,11 +1,54 @@
 """
 USBRecorder
+
+Records an input with sounddevice and writes a 16-bit WAV. sounddevice's
+wheels carry PortAudio, so this does not use PyAudio.
 """
 
 import wave
 
-import pyaudio
 from decologr import Decologr as log
+
+#: Bytes per sample. The stream is int16; the widget's "32bit" label records
+#: the same width.
+SAMPLE_WIDTH = 2
+
+
+def _sounddevice():
+    """The sounddevice module, or None when it did not import."""
+    try:
+        import sounddevice as module
+    except Exception:
+        return None
+    return module
+
+
+def _query_devices():
+    """sounddevice's device list, or None when it cannot be queried."""
+    module = _sounddevice()
+    if module is None:
+        return None
+    try:
+        return module.query_devices()
+    except Exception:
+        return None
+
+
+class _PcmStream:
+    """A sounddevice input whose ``read`` returns PCM bytes."""
+
+    def __init__(self, stream) -> None:
+        self._stream = stream
+
+    def read(self, frames: int) -> bytes:
+        data, _overflowed = self._stream.read(frames)
+        return bytes(data)
+
+    def stop_stream(self) -> None:
+        self._stream.stop()
+
+    def close(self) -> None:
+        self._stream.close()
 
 
 class USBRecorder:
@@ -23,44 +66,74 @@ class USBRecorder:
         """
         Initializes the recorder with the specified settings.
         """
-        self.p = pyaudio.PyAudio()
         self.input_device_index = input_device_index
         self.channels = channels
         self.rate = rate
         self.frames_per_buffer = frames_per_buffer
         self.file_save_recording: bool = False  # Default to false
         self.usb_port_input_device_index = None
-        self.usb_recording_rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
+        self.sample_width = SAMPLE_WIDTH
+        self.usb_recording_rates = {"16bit": "int16", "32bit": "int16"}
 
     def list_devices(self):
         """Prints a list of available audio input devices."""
         log.message("[USBRecorder] Available audio input devices:")
+        devices = _query_devices()
+        if devices is None:
+            return []
         device_list = []
-        for i in range(self.p.get_device_count()):
-            info = self.p.get_device_info_by_index(i)
+        for index, info in enumerate(devices):
             device_info = (
-                f"{i}: {info['name']} (input channels: {info['maxInputChannels']})"
+                f"{index}: {info['name']} (input channels: {info['max_input_channels']})"
             )
             log.info(device_info)
             device_list.append(device_info)
         return device_list
 
+    def input_info(self, index: int) -> dict:
+        """
+        Name, input-channel count and default sample rate of device *index*.
+
+        :param index: int sounddevice device index
+        :return: dict
+        """
+        devices = _query_devices()
+        if devices is None:
+            raise RuntimeError("sounddevice is not installed")
+        info = devices[index]
+        return {
+            "name": str(info["name"]),
+            "max_input_channels": int(info["max_input_channels"]),
+            "default_samplerate": float(info["default_samplerate"]),
+        }
+
+    def open_input(self) -> _PcmStream:
+        """
+        Open the selected input as 16-bit PCM.
+
+        :return: _PcmStream
+        """
+        module = _sounddevice()
+        if module is None:
+            raise RuntimeError("sounddevice is not installed")
+        stream = module.RawInputStream(
+            device=self.input_device_index,
+            channels=self.channels,
+            samplerate=self.rate,
+            blocksize=self.frames_per_buffer,
+            dtype="int16",
+        )
+        stream.start()
+        return _PcmStream(stream)
+
     def record(self, duration, output_file, rate="16bit"):
         """
         Records audio for the specified duration and saves to a .wav file.
         """
-        rates = {"16bit": pyaudio.paInt16, "32bit": pyaudio.paInt32}
-        rate = rates.get(rate, pyaudio.paInt16)
+        del rate  # the stream is int16 whichever label the caller passes
         log.message("[USBRecorder] Recording...")
         try:
-            stream = self.p.open(
-                format=rate,
-                channels=1,  # self.channels,
-                rate=self.rate,
-                input=True,
-                input_device_index=self.input_device_index,
-                frames_per_buffer=self.frames_per_buffer,
-            )
+            stream = self.open_input()
         except Exception as e:
             log.error(f"[USBRecorder] Unable to open stream: {e}")
             return
@@ -69,8 +142,7 @@ class USBRecorder:
 
         try:
             for _ in range(0, int(self.rate / self.frames_per_buffer * duration)):
-                data = stream.read(self.frames_per_buffer)
-                frames.append(data)
+                frames.append(stream.read(self.frames_per_buffer))
         except Exception as ex:
             log.error(f"[USBRecorder] Error while recording: {ex}")
 
@@ -85,15 +157,15 @@ class USBRecorder:
 
         with wave.open(output_file, "wb") as f:
             f.setnchannels(self.channels)
-            f.setsampwidth(self.p.get_sample_size(pyaudio.paInt16))
+            f.setsampwidth(self.sample_width)
             f.setframerate(self.rate)
             f.writeframes(b"".join(frames))
 
         print(f"[USBRecorder] File successfully saved to {output_file}")
 
     def close(self):
-        """Closes the PyAudio instance."""
-        self.p.terminate()
+        """Nothing to shut down; sounddevice keeps no session object."""
+        return None
 
     def stop_recording(self):
         """

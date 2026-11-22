@@ -146,8 +146,9 @@ class Slider(QWidget):
         # Apply initial value for both vertical and horizontal (was only set for horizontal)
         self.slider.setValue(initial_value)
         self._update_value_label()
-        self.slider.valueChanged.connect(self.value_changed.emit)
-        # self.spinbox.valueChanged.connect(self.value_changed.emit)
+        # valueChanged is already re-emitted by _on_valueChanged (connected above);
+        # connecting it here too emitted every change twice, so each slider move
+        # sent its parameter to the JD-Xi twice.
 
     def setLabel(self, text: str):
         if hasattr(self, "label"):

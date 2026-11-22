@@ -122,15 +122,15 @@ Technical Specifications
 ========================
 
 **System Requirements**
-   - **Operating System**: macOS 10.14+, Windows 10+, or Linux (Ubuntu 18.04+)
-   - **Python**: Version 3.8 or higher
-   - **Memory**: 4GB RAM minimum, 8GB recommended
-   - **Storage**: 500MB available space for application and presets
-   - **MIDI Interface**: USB connection to Roland JD-Xi synthesizer
+   See :doc:`installation` for Python requirements and the platforms currently
+   exercised in CI. Hardware editing requires a connected JD-Xi and working
+   MIDI input/output ports; local MIDI-file playback can instead use
+   FluidSynth with a configured SoundFont.
 
 **Performance Characteristics**
-   - **Latency**: Ultra-low latency MIDI communication (< 5ms)
-   - **Refresh Rate**: 60fps real-time parameter updates
+   MIDI response and audio latency depend on the operating system, MIDI
+   backend, audio device, and connected hardware. No fixed latency or display
+   refresh-rate guarantee is made.
    - **Memory Usage**: Optimized for minimal system resource consumption
    - **Stability**: Robust error handling and automatic recovery
 

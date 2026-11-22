@@ -58,17 +58,68 @@ def test_notes_keep_length_and_pitch():
 
 
 def test_track_without_notes_draws_nothing():
-    mid = _file()
-    widget = MidiTrackWidget(mid.tracks[0], 0, mid.length, 480)
-    widget.resize(300, MidiPlayerStyle.TRACK_HEIGHT)
-    image = widget.render_track_to_pixmap().toImage()
-    background = QColor(MidiPlayerStyle.BACKGROUND).rgb()
-    # Everything but the row separator is background
-    assert all(
-        image.pixel(x, y) == background
-        for x in range(0, 300, 7)
-        for y in range(0, MidiPlayerStyle.TRACK_HEIGHT - 2, 5)
-    )
+    from jdxi_editor.ui.style.rack_skin import active_skin, set_active_skin
+
+    previous = active_skin().skin_id
+    set_active_skin("glossy_black", remember=False)
+    try:
+        mid = _file()
+        widget = MidiTrackWidget(mid.tracks[0], 0, mid.length, 480)
+        widget.resize(300, MidiPlayerStyle.TRACK_HEIGHT)
+        image = widget.render_track_to_pixmap().toImage()
+        background = QColor(MidiPlayerStyle.BACKGROUND).rgb()
+        # Everything but the row separator is background
+        assert all(
+            image.pixel(x, y) == background
+            for x in range(0, 300, 7)
+            for y in range(0, MidiPlayerStyle.TRACK_HEIGHT - 2, 5)
+        )
+    finally:
+        set_active_skin(previous, remember=False)
+
+
+@pytest.mark.parametrize("skin_id", ["brushed_70s", "minimoog"])
+def test_punched_card_lanes(skin_id):
+    from jdxi_editor.ui.style.rack_skin import active_skin, set_active_skin
+
+    previous = active_skin().skin_id
+    set_active_skin(skin_id, remember=False)
+    try:
+        mid = _file()
+        widget = MidiTrackWidget(mid.tracks[1], 1, mid.length, 480)
+        widget.resize(300, MidiPlayerStyle.TRACK_HEIGHT)
+        image = widget.render_track_to_pixmap().toImage()
+        card = image.pixelColor(10, 10)
+        assert card.red() > 240 and card.green() > 240 and card.blue() > 240
+        holes = [
+            image.pixelColor(x, y)
+            for x in range(0, 300, 2)
+            for y in range(4, MidiPlayerStyle.TRACK_HEIGHT - 4, 2)
+        ]
+        assert any(c.red() < 40 and c.green() < 40 and c.blue() < 40 for c in holes)
+
+        viewer = MidiTrackViewer()
+        viewer.resize(400, 240)
+        viewer.show()
+        QApplication.processEvents()
+        shot = viewer.grab().toImage()
+        viewer.close()
+        viewer.set_midi_file(_file())
+        from jdxi_editor.ui.style.rack_skin import active_skin
+
+        ink = active_skin().foreground
+        assert ink.text in viewer._track_name_edits[1].styleSheet()
+        assert ink.text_secondary in viewer._track_part_labels[1].styleSheet()
+        backing = shot.pixelColor(shot.width() // 2, shot.height() // 3)
+        if skin_id == "minimoog":  # the cabinet's walnut
+            assert backing.red() > backing.blue() + 30
+            assert backing.red() > backing.green()
+        else:  # the faceplate's satin aluminium: neutral silver, not wood
+            channels = (backing.red(), backing.green(), backing.blue())
+            assert max(channels) - min(channels) <= 10, backing.name()
+            assert backing.lightness() > 100, backing.name()
+    finally:
+        set_active_skin(previous, remember=False)
 
 
 def test_tempo_track_has_no_channel_selector(viewer):

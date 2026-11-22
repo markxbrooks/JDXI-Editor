@@ -24,7 +24,8 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.style.editor_style import AppEditorStyle
+from jdxi_editor.ui.style.editor_style import AppEditorStyle  # noqa: F401  (re-exported)
+from jdxi_editor.ui.style.rack_skin import active_skin
 from jdxi_editor.ui.widgets.digital.state import JDXiDisplayState
 
 LCD_FONT_FILE = "JdLCD.ttf"
@@ -150,16 +151,28 @@ class DigitalDisplayBase(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, False)
         self.draw_display(painter)
 
+    @property
+    def lcd(self):
+        """
+        The display's colours, from the skin the faceplate is wearing.
+
+        A brushed aluminium panel with a Roland-orange display would read as
+        a mistake, so the screen follows the skin.
+
+        :return: LcdPalette
+        """
+        return active_skin().lcd
+
     def _paint_lcd_panel(self, painter: QPainter) -> None:
-        """Signature LCD bezel: dark red gradient + subtle inner edge."""
-        style = AppEditorStyle
+        """Signature LCD bezel: skin's screen gradient + subtle inner edge."""
+        lcd = self.lcd
         w, h = self.width(), self.height()
 
         gradient = QLinearGradient(0, 0, 0, h)
-        gradient.setColorAt(0.0, QColor(style.LCD_BG_EDGE))
-        gradient.setColorAt(0.35, QColor(style.LCD_BG_MID))
-        gradient.setColorAt(0.55, QColor(style.LCD_BG_GLOW))
-        gradient.setColorAt(1.0, QColor(style.LCD_BG_EDGE))
+        gradient.setColorAt(0.0, QColor(lcd.bg_edge))
+        gradient.setColorAt(0.35, QColor(lcd.bg_mid))
+        gradient.setColorAt(0.55, QColor(lcd.bg_glow))
+        gradient.setColorAt(1.0, QColor(lcd.bg_edge))
 
         painter.setBrush(gradient)
         painter.setPen(QPen(QColor("#0A0505"), 2))
@@ -187,13 +200,13 @@ class DigitalDisplayBase(QWidget):
         for i, text in enumerate(self.display_texts):
             # Primary line (tone) brighter; secondary lines slightly dimmer
             color = (
-                AppEditorStyle.LCD_ORANGE
+                self.lcd.text
                 if i == 0 or (i == 1 and len(self.display_texts) <= 2)
-                else AppEditorStyle.LCD_ORANGE_DIM
+                else self.lcd.text_dim
             )
             # Prefer last non-empty line as hero when upper is a status line
             if len(self.display_texts) >= 2 and i == len(self.display_texts) - 1:
-                color = AppEditorStyle.LCD_ORANGE
+                color = self.lcd.text
             painter.setPen(QPen(QColor(color)))
             rect = QRect(10, y_offset, self.width() - 20, line_h)
             painter.drawText(

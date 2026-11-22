@@ -8,6 +8,7 @@ import mido
 import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import QPoint, Qt, QEvent, QTimer, Signal
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -27,10 +28,25 @@ from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
 from jdxi_editor.ui.widgets.midi.slider.track_velocity import TrackVelocitySlider
 from jdxi_editor.ui.widgets.midi.spin_box.spin_box import MidiSpinBox
 from jdxi_editor.ui.widgets.midi.time_ruler import TimeRulerWidget
-from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget
+from jdxi_editor.ui.widgets.midi.track import (
+    MidiTrackWidget,
+    paint_lane_backing,
+    punched_cards,
+)
 from jdxi_editor.ui.widgets.midi.utils import build_tick_to_seconds, get_first_channel
 from picomidi.constant import Midi
 from picomidi.message.type import MidoMetaMessageType, MidoMessageType
+
+
+class _TrackList(QWidget):
+    """The list behind the lanes. A punched-card skin paints it in wood."""
+
+    def paintEvent(self, _event: QPaintEvent) -> None:
+        if not punched_cards():
+            return
+        painter = QPainter(self)
+        paint_lane_backing(painter, self.rect())
+        painter.end()
 
 
 class MidiTrackViewer(QWidget):
@@ -71,6 +87,7 @@ class MidiTrackViewer(QWidget):
         self.track_channel_spins: dict[int, MidiSpinBox] = {}
         self._track_part_labels: dict[int, QLabel] = {}
         self._track_icon_labels: dict[int, QLabel] = {}
+        self._track_number_labels: dict[int, QLabel] = {}
         # Channel edits wait CHANNEL_EDIT_DELAY_MS so repeated clicks merge
         self._pending_channels: dict[int, int] = {}
         self._channel_edit_timer = QTimer(self)
@@ -83,7 +100,7 @@ class MidiTrackViewer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         # Scrollable content widget
-        self.scroll_content = QWidget()
+        self.scroll_content = _TrackList()
         scroll_layout = QVBoxLayout(self.scroll_content)
         scroll_layout.setSpacing(0)
         scroll_layout.setContentsMargins(0, 0, 0, 0)
@@ -149,6 +166,69 @@ class MidiTrackViewer(QWidget):
         main_layout.addWidget(self.track_zoom_slider)
 
         self.setLayout(main_layout)
+        self.apply_skin()
+
+    def apply_skin(self) -> None:
+        """
+        Show the wood behind the cards when this skin punches them.
+
+        :return: None
+        """
+        clear = "background: transparent;"
+        if punched_cards():
+            self.scroll_area.setAutoFillBackground(False)
+            self.scroll_area.viewport().setAutoFillBackground(False)
+            self.scroll_content.setAutoFillBackground(False)
+            self.scroll_area.setStyleSheet(
+                f"QScrollArea {{ {clear} border: none; }}"
+            )
+            self.scroll_area.viewport().setStyleSheet(clear)
+        else:
+            self.scroll_area.setStyleSheet("")
+            self.scroll_area.viewport().setStyleSheet("")
+        for widget in self.midi_track_widgets.values():
+            widget.refresh_skin()
+        self._style_track_headers()
+        self.scroll_content.update()
+        self.update()
+
+    def _header_text_colors(self) -> tuple:
+        """
+        Text and caption colours of the track headers. On the skin's own
+        backing (walnut, or brushed metal) they are that skin's lettering,
+        so a pale caption does not vanish on silver; otherwise the player's.
+
+        :return: (text, secondary) colours
+        """
+        mp = JDXi.UI.MidiPlayer
+        if punched_cards():
+            from jdxi_editor.ui.style.rack_skin import active_skin
+
+            ink = active_skin().foreground
+            return ink.text, ink.text_secondary
+        return mp.TEXT, mp.TEXT_SECONDARY
+
+    def _style_track_headers(self) -> None:
+        """Colour the track numbers, names and captions for the backing."""
+        mp = JDXi.UI.MidiPlayer
+        text, secondary = self._header_text_colors()
+        for label in self._track_number_labels.values():
+            label.setStyleSheet(f"color: {secondary}; font-size: {mp.FONT_TRACK_SECONDARY};")
+        for edit in self._track_name_edits.values():
+            edit.setStyleSheet(mp.track_name_stylesheet(text))
+            palette = edit.palette()  # the "Unnamed" placeholder
+            palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(secondary))
+            edit.setPalette(palette)
+        for label in self._track_part_labels.values():
+            label.setStyleSheet(mp.track_secondary_stylesheet(secondary))
+
+    def paintEvent(self, _event: QPaintEvent) -> None:
+        """The wood continues under the zoom control, around the list."""
+        if not punched_cards():
+            return
+        painter = QPainter(self)
+        paint_lane_backing(painter, self.rect())
+        painter.end()
 
     def clear(self):
         """Clear the MIDI track view and reset state."""
@@ -172,6 +252,7 @@ class MidiTrackViewer(QWidget):
         self.track_channel_spins.clear()
         self._track_part_labels.clear()
         self._track_icon_labels.clear()
+        self._track_number_labels.clear()
         self._pending_channels.clear()
         self._draggable_rows.clear()
 
@@ -802,6 +883,7 @@ class MidiTrackViewer(QWidget):
         self._track_name_edits = {}
         self._track_part_labels = {}
         self._track_icon_labels = {}
+        self._track_number_labels = {}
         self.track_mute_buttons = {}
         self.track_solo_buttons = {}
         tick_to_seconds = build_tick_to_seconds(midi_file)
@@ -847,6 +929,7 @@ class MidiTrackViewer(QWidget):
                 f"color: {mp.TEXT_SECONDARY}; font-size: {mp.FONT_TRACK_SECONDARY};"
             )
             top_row.addWidget(track_number_label)
+            self._track_number_labels[i] = track_number_label
 
             icon_label = QLabel()
             icon_label.setPixmap(pixmap)
@@ -961,6 +1044,7 @@ class MidiTrackViewer(QWidget):
             self.channel_controls_vlayout.addWidget(draggable_row)
 
         self.channel_controls_vlayout.addStretch()
+        self._style_track_headers()
         self._apply_muted_tracks_to_widgets()
         self._sync_track_mute_solo_buttons()
         self.fit_tracks_to_view()

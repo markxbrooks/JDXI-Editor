@@ -1,3 +1,18 @@
+"""
+py2app configuration for the macOS "JD-Xi Editor.app" bundle.
+
+This is NOT the package definition. pyproject.toml is the single source of
+truth for the project's metadata, version, and dependencies (hatchling builds
+the sdist and wheel that go to PyPI). This file exists only so that
+
+    python setup.py py2app
+
+can freeze the app, and it is driven by building/apple/make_pkg.sh,
+building/apple/make_dmg.sh, and building/apple/build_macos.py. Nothing here is
+uploaded anywhere. Add a runtime dependency to pyproject.toml; add it here only
+when py2app's module graph fails to find it on its own (OPTIONS below).
+"""
+
 import glob
 import re
 import sys
@@ -7,6 +22,7 @@ from pathlib import Path
 # in jdxi_editor or dependencies can exceed Python's default recursion limit
 sys.setrecursionlimit(5000)
 
+from jdxi_editor.bundle_imports import HIDDEN_IMPORTS
 from setuptools import setup, find_packages
 
 # run with
@@ -32,7 +48,7 @@ DATA_FILES = [
 ]  # Include any additional files your app needs
 OPTIONS = {
     'packages': ['jdxi_editor', 'rtmidi', 'decologr', 'picomidi', 'qtawesome',
-                 '_sounddevice_data'],
+                 '_sounddevice_data', 'cffi', 'music21.lily'],
     'argv_emulation': False,
     'iconfile': 'jdxi_icon_512.icns',  # Path to the .icns file
     'includes': ['PySide6',
@@ -51,9 +67,8 @@ OPTIONS = {
                  'picomidi',      # MIDI library
                  'qtawesome',     # Icon library
                  'qtawesome.iconic_font',  # Ensure PySide6 is bundled
-                 'fluidsynth',  # pyfluidsynth: FluidSynth MIDI synth (use includes; fluidsynth pkg shadows .py)
-                 'sounddevice',  # FluidSynth audio output device selection
-                 '_sounddevice'],  # sounddevice CFFI extension
+                 'PySide6.QtNetwork',  # update check (GitHub Releases)
+                 *HIDDEN_IMPORTS],
     "excludes": [
                  'Image',
                  "Carbon",
@@ -79,17 +94,11 @@ setup(
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
-    packages=find_packages(),
-    install_requires=[
-        "PySide6",
-        "python-rtmidi",
-        "qtpy",
-        "qtawesome",
-        "mido",
-        "Pillow",
-        "decologr",
-        "picomidi",
-        "pyfluidsynth",  # provides fluidsynth module; fluidsynth 0.2 pkg conflicts
-        "sounddevice"
-    ],
+    # The two packages this repository ships, as in pyproject.toml's
+    # [tool.hatch.build.targets.wheel] only-include. tests/ is not shipped.
+    packages=find_packages(include=["jdxi_editor*", "picoui*"]),
+    # No install_requires: the dependency list lives in pyproject.toml. The
+    # copy that used to be here had drifted (it asked for qtpy, which the app
+    # does not import, and was missing numpy, music21, SQLAlchemy, and
+    # pyqtdarktheme, darkdetect, and the tomli backport).
 )

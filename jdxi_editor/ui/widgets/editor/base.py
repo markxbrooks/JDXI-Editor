@@ -183,8 +183,18 @@ class EditorBaseWidget(QWidget):
             if self.container_layout is None:
                 self.setup_scrollable_content()
 
-            # Add tab widget to container
-            self.container_layout.addWidget(self.tab_widget)
+            # The tabs sit on one faceplate, cheeks included. The pane stays
+            # flat so it does not draw a second sheen over that face.
+            from jdxi_editor.ui.editors.helpers.widgets import create_panel
+            from jdxi_editor.ui.style.editor_style import mark_flat
+
+            mark_flat(self.tab_widget)
+            face = create_panel(self.tab_widget)
+            face.setSizePolicy(
+                QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+            )
+            face.layout().setStretch(0, 1)
+            self.container_layout.addWidget(face)
 
         return self.tab_widget
 
