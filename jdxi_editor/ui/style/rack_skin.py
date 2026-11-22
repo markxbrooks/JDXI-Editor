@@ -1598,15 +1598,21 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
     from jdxi_editor.ui.widgets.rack.ears import RackEars
     from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
-    for widget in application.allWidgets():
-        # allWidgets() can hand back a widget whose C++ half has already gone:
-        # a window closed moments ago is destroyed on Qt's side while the
-        # Python wrapper waits for the garbage collector. Touching one then
-        # raises RuntimeError at best and takes the process down at worst, and
-        # one dead widget must not stop the rest being restyled. isValid asks
-        # shiboken whether the C++ object is still there, which is cheaper and
-        # safer than provoking the error and catching it; the try below stays
-        # for the window where a widget dies between the check and the call.
+    # Walk the live windows rather than QApplication.allWidgets(). That list
+    # also holds widgets with no parent and widgets already queued for
+    # deletion, and a destructor part-way through still answers isValid, so
+    # restyling off it segfaulted the Linux runners. Anything that matters is
+    # reachable from a window that is still standing.
+    reachable = []
+    for window in application.topLevelWidgets():
+        if not isValid(window):
+            continue
+        reachable.append(window)
+        reachable.extend(window.findChildren(QWidget))
+
+    for widget in reachable:
+        # A widget can still die between the walk and the call: a stylesheet
+        # set on one can take another down with it as the layout is rebuilt.
         if not isValid(widget):
             continue
         try:
