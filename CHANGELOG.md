@@ -2,6 +2,29 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.1] — 2026-11-23
+
+A packaging release: 1.0.0 with the two fixes below. No new features, and no
+change to the application's own code. The app stays **Beta**; what is known
+to be wrong with it is collected in [doc/known-issues.md](doc/known-issues.md).
+
+### Fixed
+
+- **The Audio Monitor hears the input in the packaged Mac app.** macOS does
+  not refuse an app that opens an audio input without declaring why it wants
+  one: it hands it silence. PortAudio opened the stream, the monitor said
+  "Listening", and no samples ever arrived. Running from a checkout was
+  unaffected, because there the permission belongs to the terminal. Both
+  Info.plists now carry `NSMicrophoneUsageDescription`.
+- **The Linux package asks for the libraries it needs.** The `.deb` declared
+  no dependencies at all. The PyInstaller bundle carries Python, Qt and
+  PortAudio, but not the system libraries those load at runtime: without
+  `libasound2` the bundled PortAudio cannot load, so `import sounddevice`
+  fails and the Audio Monitor reports that sounddevice is not installed;
+  without the Qt libraries the application does not start. The renamed
+  64-bit `time_t` packages are given as alternatives, so the package stays
+  installable on Debian 12 and 13 alike.
+
 # [1.0.0] — 2026-11-22
 
 The first stable release. 1.0.0rc2 with the fix below, and no new features.

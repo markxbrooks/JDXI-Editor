@@ -66,19 +66,19 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 
 ### Desktop builds
 
-The app version is **1.0.0** (`jdxi_editor/project.py`), and the [1.0.0 release](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v1.0.0) carries a build for each desktop:
+The app version is **1.0.1** (`jdxi_editor/project.py`), and the [1.0.1 release](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v1.0.1) carries a build for each desktop:
 
 | Platform | Download |
 | --- | --- |
-| macOS | `JD-Xi_Editor_1.0.0_MacOS_Universal.dmg` |
-| Windows | `jdxi_editor-1.0.0_setup_win_x86-64.exe` |
-| Debian, Ubuntu | `jdxi-editor_1.0.0_amd64.deb` |
+| macOS | `JD-Xi_Editor_1.0.1_MacOS_Universal.dmg` |
+| Windows | `jdxi_editor-1.0.1_setup_win_x86-64.exe` |
+| Debian, Ubuntu | `jdxi-editor_1.0.1_amd64.deb` |
 
 Each is built on its own platform from the tag. The `.deb` is amd64; there is no AppImage, and no build for Linux on ARM. Install from PyPI with the steps below instead if you prefer, or check out the tag and follow [Building](doc/building.md). What the release contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md).
 
-Earlier tags have nothing to download: 1.0.0rc1 and 1.0.0rc2 were tagged without files, and the v0.9.6 assets are an older editor, with neither the rack skins nor the Audio output menu.
+The 1.0.0 downloads are still there, but 1.0.1 supersedes them: the Mac app could not hear the audio input, and the `.deb` named none of the system libraries it needs. 1.0.0rc1 and 1.0.0rc2 were tagged without files, and the v0.9.6 assets are an older editor, with neither the rack skins nor the Audio output menu.
 
-1.0.0 is the first stable release. It adds no features over 0.9.9, and fixes one piece of chrome since 1.0.0rc2. The app stays Beta. The hardware suite has been run on a connected JD-Xi; the result is in [Known issues](doc/known-issues.md).
+1.0.0 was the first stable release, adding no features over 0.9.9; 1.0.1 is that release with two packaging fixes and no change to the application's own code. The app stays Beta. The hardware suite has been run on a connected JD-Xi; the result is in [Known issues](doc/known-issues.md).
 
 ### A JD-Xi, and playback without one
 
@@ -96,7 +96,7 @@ $ jdxi-editor
 
 PySide6 is pinned to `>=6.8.1.1,<6.10`. 6.12 crashes the main window when a queued slot receives outgoing MIDI. 6.10 and 6.11 have not been tried.
 
-Recording and SoundFont playback use sounddevice, whose wheels include PortAudio. SoundFont playback also needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to the finished release. Reinstall instead.
+Recording and SoundFont playback use sounddevice, whose wheels include PortAudio. SoundFont playback also needs FluidSynth (`brew install fluid-synth`, `sudo apt install fluidsynth`, or the Windows DLLs shipped with a frozen build). The `.deb` asks apt for the ALSA and Qt libraries it needs; installing it with `sudo apt install ./jdxi-editor_1.0.1_amd64.deb` pulls them in, where `dpkg -i` alone would not. The candidate `.deb` is versioned `1.0.0rc1`, which dpkg orders after `1.0.0`, so apt will not upgrade that package to a finished release. Reinstall instead.
 
 To run from a checkout instead (for development):
 

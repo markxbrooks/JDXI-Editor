@@ -260,12 +260,39 @@ exec /opt/{APP_NAME}/{APP_NAME} "$@"
     # Calculate installed size
     installed_size = sum(f.stat().st_size for f in deb_root.rglob("*") if f.is_file()) // 1024
     
+    # The PyInstaller bundle carries Python, the Qt wheels and PortAudio, but
+    # not the system libraries those load at runtime, so the package has to
+    # ask for them. Without libasound2 the PortAudio that sounddevice bundles
+    # cannot load, the import fails, and the Audio Monitor reports that
+    # sounddevice is not installed; without the Qt libraries the application
+    # does not start at all. These are the same libraries CI installs before
+    # it can run the test suite (.github/workflows/tests.yml).
+    #
+    # Debian 13 and Ubuntu 24.04 renamed several of these for the 64-bit
+    # time_t transition, so each renamed one is given as an alternative: the
+    # new name first, then the old, which keeps the package installable on
+    # both. FluidSynth is only needed for SoundFont playback, which the
+    # editor works without, so it is recommended rather than depended on.
+    depends = ", ".join([
+        "libasound2t64 | libasound2",  # ALSA: PortAudio and python-rtmidi
+        "libegl1",
+        "libgl1",
+        "libxkbcommon0",
+        "libxkbcommon-x11-0",
+        "libxcb-cursor0",  # Qt 6's xcb platform plugin
+        "libfontconfig1",
+        "libdbus-1-3",
+        "libglib2.0-0t64 | libglib2.0-0",
+    ])
+
     # Create control file
     control_content = f"""Package: {APP_NAME}
 Version: {__version__}
 Section: sound
 Priority: optional
 Architecture: amd64
+Depends: {depends}
+Recommends: libfluidsynth3 | libfluidsynth2
 Installed-Size: {installed_size}
 Maintainer: {MAINTAINER}
 Homepage: {HOMEPAGE}
