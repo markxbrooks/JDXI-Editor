@@ -41,6 +41,10 @@ IGNORED_KEYS = {
     SysExSection.JD_XI_HEADER,
     SysExSection.ADDRESS,
     SysExSection.TONE_NAME,
+    # Parser metadata (JDXiSysExParser adds them), not parameters: without
+    # these the editors report them as failed updates
+    "parameter_block",
+    "block_name",
 }
 SYNTH_PARTIAL_MAP = {
     "COMMON": 0,

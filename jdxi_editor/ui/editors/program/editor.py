@@ -1156,7 +1156,9 @@ class ProgramEditor(BasicEditor):
                     """self._update_partial_selection_switch(
                         param, param_value, successes, failures
                     )"""
-                if param.name in [
+                # elif: partial switches are skipped above; they must not fall
+                # through to the generic "SWITCH" branch and count as failures
+                elif param.name in [
                     PartialSelectState.PARTIAL1_SELECT,
                     PartialSelectState.PARTIAL2_SELECT,
                     PartialSelectState.PARTIAL3_SELECT,
