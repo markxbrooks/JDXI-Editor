@@ -85,6 +85,13 @@ OPTIONS = {
         'CFBundleDisplayName': 'JD-Xi Editor',
         'CFBundleExecutable': 'JD-Xi Editor',
         'CFBundleIdentifier': 'com.jdxi.editor',
+        # Without this macOS does not refuse the input, it hands over
+        # silence: PortAudio opens the stream, the Audio Monitor says
+        # "Listening", and no samples ever arrive. The text is what the
+        # system shows when it asks the user to allow it.
+        'NSMicrophoneUsageDescription': (
+            "JD-Xi Editor listens to an audio input so the Audio Monitor can show its level and spectrum, and so a performance can be recorded from the JD-Xi."
+        ),
     },
 }
 

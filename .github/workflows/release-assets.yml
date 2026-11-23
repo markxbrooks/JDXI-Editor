@@ -77,8 +77,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: |
           git fetch --depth=1 origin "${{ github.ref_name }}"
-          git checkout FETCH_HEAD -- building jdxi_editor.iss
-          git status --short building jdxi_editor.iss
+          git checkout FETCH_HEAD -- building jdxi_editor.iss setup.py
+          git status --short building jdxi_editor.iss setup.py
 
       - uses: actions/setup-python@v5
         with:
