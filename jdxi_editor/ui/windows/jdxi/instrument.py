@@ -880,6 +880,11 @@ class JDXiInstrument(JDXiWindow):
         preferences_dialog.ui_setup(preferences_dialog)
         preferences_dialog.setAttribute(Qt.WA_DeleteOnClose)
         preferences_dialog.exec()
+        # Apply Advanced → LilyPond visibility without restarting
+        from jdxi_editor.globals import lilypond_enabled
+
+        if hasattr(self, "open_midi_as_pdf_action") and self.open_midi_as_pdf_action:
+            self.open_midi_as_pdf_action.setVisible(lilypond_enabled())
 
     def get_existing_editor(self, editor_class) -> Optional["SynthEditor"]:
         """

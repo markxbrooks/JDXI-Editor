@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
 )
@@ -50,7 +51,7 @@ class UiPreferencesDialog(QDialog):
         else:
             theme = "dark"""
         log_settings()
-        self.resize(508, 360)
+        self.resize(508, 420)
 
         self.setWindowTitle("JD-XI Editor settings")
         main_layout = QVBoxLayout(self)
@@ -175,6 +176,38 @@ class UiPreferencesDialog(QDialog):
         self.update_check_layout.addWidget(self.update_check_label)
         self.update_check_layout.addWidget(self.update_check_checkbox)
 
+        # --- Advanced features
+        from jdxi_editor.globals import (
+            LILYPOND_ENABLED_DEFAULT,
+            LILYPOND_ENABLED_KEY,
+        )
+        from jdxi_editor.update.checker import settings_bool
+
+        self.advanced_group = QGroupBox("Advanced")
+        advanced_layout = QVBoxLayout(self.advanced_group)
+
+        self.lilypond_layout = QHBoxLayout()
+        self.lilypond_icon = QLabel()
+        self.lilypond_icon.setPixmap(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.FILE_DOCUMENT).pixmap(self.icon_size)
+        )
+        self.lilypond_label = QLabel(
+            "LilyPond PDF export (File → Open current MIDI as PDF):"
+        )
+        self.lilypond_checkbox = QCheckBox("Enable LilyPond PDF export")
+        self.lilypond_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.lilypond_checkbox.setToolTip(
+            "Requires LilyPond installed on this machine. "
+            "When off, the File menu hides “Open current MIDI as PDF”."
+        )
+        self.lilypond_checkbox.setChecked(
+            settings_bool(self.settings, LILYPOND_ENABLED_KEY, LILYPOND_ENABLED_DEFAULT)
+        )
+        self.lilypond_layout.addWidget(self.lilypond_icon)
+        self.lilypond_layout.addWidget(self.lilypond_label)
+        self.lilypond_layout.addWidget(self.lilypond_checkbox)
+        advanced_layout.addLayout(self.lilypond_layout)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setGeometry(QtCore.QRect(150, 250, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -196,6 +229,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout.addLayout(self.silence_midi_notes_layout)
         main_content_layout.addLayout(self.midi_validation_layout)
         main_content_layout.addLayout(self.update_check_layout)
+        main_content_layout.addWidget(self.advanced_group)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
         self.setLayout(main_layout)
@@ -261,6 +295,7 @@ class UiPreferencesDialog(QDialog):
         :return: None
         """
         from jdxi_editor.globals import (
+            LILYPOND_ENABLED_KEY,
             MIDI_SELECTION_VALIDATION_KEY,
             SILENCE_MIDI_NOTE_LOGGING_KEY,
         )
@@ -280,6 +315,9 @@ class UiPreferencesDialog(QDialog):
 
             settings.setValue(
                 AUTO_CHECK_KEY, bool(self.update_check_checkbox.isChecked())
+            )
+            settings.setValue(
+                LILYPOND_ENABLED_KEY, bool(self.lilypond_checkbox.isChecked())
             )
             settings.sync()
             log_settings()

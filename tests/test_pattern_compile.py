@@ -524,3 +524,36 @@ def test_copy_paste_and_duplicate_bar_keep_chords(editor):
     editor._add_measure()
     copied = editor.measure_widgets[1].buttons[0][2]
     assert [n.note for n in copied.note_spec.notes()] == [60, 67]
+
+
+def test_the_playhead_leaves_the_shown_measure_in_place(editor):
+    """
+    Pressing play selects the bar already on show; it must not be detached.
+
+    Re-parenting the grid re-polished every button while holding the GIL, and
+    the playback thread could not send the notes due meanwhile: on the macOS
+    runner the beats after the first came 0.15 s late.
+    """
+    editor._add_measure()
+    widget = editor.pattern_widget
+    shown = widget.measure_widgets[widget.current_measure_index]
+    detached = []
+    shown.setParent = lambda *args: detached.append(args)  # noqa: E731
+    try:
+        widget.select_measure(widget.current_measure_index)
+    finally:
+        del shown.setParent
+    assert detached == []
+    assert widget.sequencer_display.count() == 1
+    assert widget.sequencer_display.itemAt(0).widget() is shown
+
+    # Another bar swaps in alone; the one left is hidden but keeps its parent
+    other = 1 - widget.current_measure_index
+    parent = shown.parentWidget()
+    widget.select_measure(other)
+    assert widget.sequencer_display.count() == 1
+    assert widget.sequencer_display.itemAt(0).widget() is widget.measure_widgets[other]
+    assert shown.parentWidget() is parent and shown.isHidden()
+    widget.select_measure(1 - other)
+    assert widget.sequencer_display.itemAt(0).widget() is shown
+    assert not shown.isHidden()

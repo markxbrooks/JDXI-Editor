@@ -46,7 +46,6 @@ from jdxi_editor.ui.widgets.rack import RackStatusBar
 from jdxi_editor.ui.windows.jdxi.containers import build_wheel_label_row, build_wheel_row
 from jdxi_editor.ui.windows.jdxi.panel import build_faceplate
 
-
 class JDXiWindow(QMainWindow):
     """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
 
@@ -373,13 +372,16 @@ class JDXiWindow(QMainWindow):
                 QKeySequence.StandardKey.SaveAs,
             )
         )
-        file_menu.addAction(
-            self._menu_action(
-                "Open current MIDI as &PDF",
-                self._open_current_midi_as_pdf,
-                "Ctrl+P",
-            )
+        from jdxi_editor.globals import lilypond_enabled
+
+        self.open_midi_as_pdf_action = self._menu_action(
+            "Open current MIDI as &PDF",
+            self._open_current_midi_as_pdf,
+            "Ctrl+P",
+            status_tip="Export the current MIDI file to PDF via LilyPond (Advanced preference)",
         )
+        self.open_midi_as_pdf_action.setVisible(lilypond_enabled())
+        file_menu.addAction(self.open_midi_as_pdf_action)
 
         file_menu.addSeparator()
 
@@ -463,11 +465,6 @@ class JDXiWindow(QMainWindow):
         self.parts_menu.addAction(
             self._menu_action(
                 "Digital Synth &2", lambda: self.show_editor("digital2"), "Ctrl+2"
-            )
-        )
-        self.parts_menu.addAction(
-            self._menu_action(
-                "Digital Synth &3", lambda: self.show_editor("digital3"), "Ctrl+3"
             )
         )
         self.parts_menu.addAction(

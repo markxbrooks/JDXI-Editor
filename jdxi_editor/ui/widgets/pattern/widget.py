@@ -529,16 +529,38 @@ class PatternWidget(QWidget):
             self.measure_strip.set_current(0)
 
     def _show_current_measure(self) -> None:
-        """Remove previous content and show current measure widget in sequencer_display."""
-        while self.sequencer_display.count():
-            item = self.sequencer_display.takeAt(0)
-            if item.widget():
-                item.widget().setParent(None)
+        """
+        Show the current measure's widget in sequencer_display, alone.
+
+        The playhead calls this at play and at every bar change, on the main
+        thread, while the playback scheduler thread waits for the GIL to send
+        the bar's first note. Re-parenting a measure grid re-polishes all its
+        buttons (about 25 ms here, several times that on a slow machine), so a
+        measure already on show is left in place, and one taken off is hidden
+        but keeps its parent: showing it again later costs no re-polish.
+        """
+        current = None
         if 0 <= self.current_measure_index < len(self.measure_widgets):
-            w = self.measure_widgets[self.current_measure_index]
-            self.sequencer_display.addWidget(w)
+            current = self.measure_widgets[self.current_measure_index]
+        shown = (
+            self.sequencer_display.itemAt(0).widget()
+            if self.sequencer_display.count()
+            else None
+        )
+        if shown is not current or self.sequencer_display.count() > 1:
+            while self.sequencer_display.count():
+                item = self.sequencer_display.takeAt(0)
+                if item.widget() is not None and item.widget() is not current:
+                    item.widget().hide()
+            if current is not None:
+                self.sequencer_display.addWidget(current)
+                # Undo an earlier hide(). Only once parented: on a widget with
+                # no parent yet, show() would open it as its own window
+                if current.parentWidget() is not None:
+                    current.show()
+        if current is not None:
             # Refresh all button styles so checked state matches visual (fixes load/switch)
-            self._apply_sequencer_style(w)
+            self._apply_sequencer_style(current)
         if hasattr(self, "step_guide"):
             self.step_guide.update()  # lines follow the measure shown
 
