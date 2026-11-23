@@ -17,6 +17,7 @@ from PySide6.QtWidgets import QApplication
 
 _APP = QApplication.instance() or QApplication([])
 
+
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.pattern.options import DEFAULT_PITCH, DIGITAL_OPTIONS
 

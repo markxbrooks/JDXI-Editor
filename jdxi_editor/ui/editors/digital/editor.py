@@ -652,7 +652,10 @@ class DigitalSynthEditor(BaseSynthEditor):
                     self._update_partial_selection_switch(
                         param, param_value, successes, failures
                     )
-                if param.name in [
+                # elif: a partial switch has been handled above, and must not
+                # also fall through to the generic "SWITCH" branch, which has
+                # no control for it and recorded a failure
+                elif param.name in [
                     PartialSelectState.PARTIAL1_SELECT,
                     PartialSelectState.PARTIAL2_SELECT,
                     PartialSelectState.PARTIAL3_SELECT,

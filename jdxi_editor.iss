@@ -34,8 +34,13 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ;OutputDir=C:\Users\MBrooks\
 ; OutputDir=C:\Users\MBrooks\
-OutputBaseFilename=jdxi_editor-0.9.6_setup_win_x86-64
-OutputDir=C:\Users\markx\jdxi
+; The version comes from jdxi_editor/project.py by way of /DMyAppVersion,
+; so the name follows the release instead of naming 0.9.6 for ever.
+OutputBaseFilename=jdxi_editor-{#MyAppVersion}_setup_win_x86-64
+; Beside the PyInstaller output, inside the checkout: an absolute path in
+; one person's home directory cannot be found on anyone else's machine,
+; and a build runner has nowhere to put it.
+OutputDir=dist
 ;SetupIconFile=C:\Users\MBrooks\projects\\designer\icons\.ico
 SetupIconFile=resources\jdxi_icon.ico
 Compression=lzma

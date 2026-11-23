@@ -9,40 +9,24 @@ import pytest
 os.environ["JDXI_EDITOR_MIDI_CONTROLLERS"] = ""
 
 
-@pytest.fixture(scope="module", autouse=True)
-def _destroy_leftover_windows():
+@pytest.fixture(autouse=True)
+def _flush_deferred_deletes():
     """
-    Delete every top-level widget a test module leaves behind.
+    Carry out the deleteLater() calls a test made, once it has finished.
 
-    Tests end with window.close(), which only hides a window: without
-    WA_DeleteOnClose it stays in QApplication.allWidgets() for the rest of the
-    session. Switching skins restyles every widget there (rack_skin's
-    _restyle_application), so by test_rack_skin.py a single skin change was
-    walking several leaked editors and took minutes, and touching a widget
-    whose C++ half was half-gone crashed the run on the CI runners.
-
-    Module scope, not function scope: many modules share one editor between
-    their tests through a module-scoped fixture. An autouse fixture is set up
-    before, and torn down after, the module's own fixtures.
+    deleteLater() only posts a DeferredDelete event; nothing deletes the
+    widget until an event loop dispatches it, and no test runs one.
+    processEvents() does not count: Qt leaves DeferredDelete events to the
+    loop that posted them. So every editor a test closed and "deleted" stayed
+    alive for the rest of the session. A skin switch restyles every live
+    widget (rack_skin._restyle_application), and after test_drum_editor_ui
+    had left its DrumCommonEditors behind, one switch in test_rack_skin took
+    minutes: the Windows runner spent 55 of its 61 minutes there.
     """
     yield
     try:
         from PySide6.QtCore import QCoreApplication, QEvent
-        from PySide6.QtWidgets import QApplication
-    except ImportError:
+    except ImportError:  # pragma: no cover - PySide6 is a hard dependency
         return
-    app = QApplication.instance()
-    if app is None:
-        return
-    for widget in app.topLevelWidgets():
-        try:
-            widget.close()
-            widget.deleteLater()
-        except RuntimeError:
-            # the C++ object is already gone
-            continue
-    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
-    # Deliver what the module left queued (QTimer.singleShot and the like)
-    # now, so a callback that outlives its widget fails in this module's
-    # teardown rather than inside an unrelated test that happens to run next
-    app.processEvents()
+    if QCoreApplication.instance() is not None:
+        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)

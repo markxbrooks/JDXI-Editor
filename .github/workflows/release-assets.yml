@@ -1,0 +1,194 @@
+# Build the desktop packages and attach them to a release.
+#
+# Each package can only be built on its own platform: py2app makes the macOS
+# disk image, PyInstaller the Windows executable, and PyInstaller with
+# dpkg-deb the Linux .deb (and the AppImage, where appimagetool runs). So the
+# builds run on the three runners rather than anywhere local -- a Mac cannot
+# produce the Windows or the Linux package, and a .deb built on Apple silicon
+# would be arm64 rather than the amd64 nearly every Linux user wants.
+#
+# A release published from a tag gets all three by itself. A tag that was
+# released before this workflow existed can be filled in by hand:
+# Actions > Release assets > Run workflow, with the tag's name.
+
+name: Release assets
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and attach to, e.g. v1.0.0"
+        required: true
+
+permissions:
+  contents: write # uploading assets to the release
+
+env:
+  # The build scripts report their progress with emoji. Windows gives a
+  # non-interactive process cp1252, which has no code point for a broom, so
+  # the Windows build died inside its own "Cleaning previous builds..."
+  # message before it had built anything. UTF-8 mode settles it for stdout
+  # and for the log file the builder opens.
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # one platform failing must not withhold the others
+      matrix:
+        include:
+          - os: macos-latest
+            label: macOS disk image
+            packages: |
+              *.dmg
+          - os: windows-latest
+            label: Windows executable
+            packages: |
+              dist/*.exe
+          - os: ubuntu-latest
+            label: Linux .deb and AppImage
+            packages: |
+              dist/linux/*.deb
+              dist/linux/*.AppImage
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The tag being released, or the one asked for by hand
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      # The application comes from the tag; the build system comes from the
+      # default branch. A tag cut before a fix to the build cannot build
+      # itself: v1.0.0 was tagged while the installer script still wrote to
+      # an absolute path in one person's home directory and named every
+      # installer 0.9.6, so the first attempt at these packages compiled
+      # happily and left nothing behind to upload. Only building/ and the
+      # installer script are taken; the version the packages are stamped
+      # with is read from the tag's own jdxi_editor/project.py.
+      #
+      # A release published from a tag made since skips this: its own build
+      # system is already the current one.
+      - name: Build the tag with the current build system
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD -- building jdxi_editor.iss
+          git status --short building jdxi_editor.iss
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      # ALSA for python-rtmidi, and the libraries Qt loads; dpkg-deb is
+      # already on the runner
+      - name: System libraries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev \
+            libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3
+
+      - name: System libraries (macOS)
+        if: runner.os == 'macOS'
+        run: brew install portaudio
+
+      # buildsys refuses to start without the project's own virtualenv, and
+      # looks for a different one per platform: .venv on macOS and Linux,
+      # venv on Windows (building/buildsys/context.py). The build scripts
+      # then call pyinstaller by name rather than through that interpreter,
+      # so the virtualenv goes on PATH as well. py2app is not installed
+      # here: the macOS build pins its own build tools, setuptools 70.3
+      # among them, because later ones break it.
+      - name: Install into the virtualenv the build system expects
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            python -m venv venv
+            bin="venv/Scripts"
+          else
+            python -m venv .venv
+            bin=".venv/bin"
+          fi
+          "$bin/python" -m pip install --upgrade pip
+          "$bin/python" -m pip install -e . pyinstaller
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cygpath -w "$PWD/$bin" >> "$GITHUB_PATH"
+          else
+            echo "$PWD/$bin" >> "$GITHUB_PATH"
+          fi
+
+      # The copy of appimagetool beside the Linux build is ignored by git
+      # (.gitignore: appimagetool*), so a checkout never has it and the
+      # AppImage was always skipped here. It is fetched from a tagged
+      # release rather than the rolling "continuous" build, so a release
+      # cannot be made with whatever happened to be published that day.
+      #
+      # The build only looks for it on PATH, and the runners have no FUSE,
+      # so it has to unpack itself to run. A failed download is not fatal:
+      # the .deb is the package that matters, and the build skips the
+      # AppImage by itself when the tool is absent.
+      - name: Fetch appimagetool (Linux)
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        run: |
+          url=https://github.com/AppImage/appimagetool/releases/download/1.9.0/appimagetool-x86_64.AppImage
+          curl -fsSL --retry 3 -o building/linux/appimagetool "$url"
+          chmod +x building/linux/appimagetool
+          echo "$PWD/building/linux" >> "$GITHUB_PATH"
+          echo "APPIMAGE_EXTRACT_AND_RUN=1" >> "$GITHUB_ENV"
+
+      # The Windows build compiles the installer with Inno Setup, which it
+      # expects at a fixed path under Program Files
+      - name: Inno Setup (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          if [ -f "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" ]; then
+            echo "Inno Setup 6 is already on the runner"
+          else
+            choco install innosetup -y --no-progress
+          fi
+
+      - name: Build the macOS disk image
+        if: runner.os == 'macOS'
+        run: python -m building.buildsys --dmg
+
+      - name: Build the package
+        if: runner.os != 'macOS'
+        run: python -m building.buildsys
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        shell: bash
+        run: |
+          # A pattern that matches nothing must disappear rather than stand
+          # as a literal filename, and the Windows executable is called
+          # "JD-Xi Editor.exe": the glob is expanded into an array so the
+          # space in that name does not split it in two.
+          shopt -s nullglob
+          files=()
+          while IFS= read -r pattern; do
+            [ -n "$pattern" ] || continue
+            files+=( $pattern )
+          done <<< "${{ matrix.packages }}"
+
+          # Nothing to upload is a failure worth seeing: a build step can
+          # report success having quietly skipped a package
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::No package was built for ${{ matrix.label }}"
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Uploading $file"
+            gh release upload "$TAG" "$file" --clobber
+          done

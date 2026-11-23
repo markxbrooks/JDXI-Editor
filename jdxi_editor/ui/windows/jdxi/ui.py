@@ -18,8 +18,7 @@ Methods:
 
 """
 
-import logging
-import os
+
 import re
 from typing import Callable, Optional, Union
 
@@ -34,13 +33,11 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.project import __package_name__, __program__
-from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.editors.helpers.preset import get_preset_list_number_by_name
 from jdxi_editor.ui.editors.helpers.program import get_program_name_by_id
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.preset.manager import JDXiPresetManager
-from jdxi_editor.ui.style import JDXiUIThemeManager
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
@@ -48,6 +45,7 @@ from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.rack import RackStatusBar
 from jdxi_editor.ui.windows.jdxi.containers import build_wheel_label_row, build_wheel_row
 from jdxi_editor.ui.windows.jdxi.panel import build_faceplate
+from picoui.helpers.layout import create_layout_with_items
 
 
 class JDXiWindow(QMainWindow):
@@ -76,7 +74,7 @@ class JDXiWindow(QMainWindow):
         # --- Set up presets
         self.preset_manager = JDXiPresetManager()
         # Initialize synth preset_type
-        self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
+        self.current_synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1
         # --- Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
@@ -246,7 +244,17 @@ class JDXiWindow(QMainWindow):
         keys = max(dimensions.keys_height_for(width) // 2, depth - panel)
         keyboard = getattr(self, "piano_keyboard", None)
         if keyboard is not None:
-            keyboard.set_instrument_width(width, keys)
+            # The strip keeps ear_width at each end for the skin's cheeks and
+            # lays the keys out between them, so the keys have that much less
+            # than the window to fill. Sized to the window instead, the keys
+            # alone ask for more than the strip can be given, Qt hands the
+            # strip its minimum anyway, and the surplus hangs over the right
+            # edge of the window -- taking the right cheek, painted at the
+            # strip's far end, out of sight. The left one starts at x=0
+            # whatever happens, so the pair goes lopsided rather than absent.
+            from jdxi_editor.ui.style.rack_skin import active_skin
+
+            keyboard.set_instrument_width(width - 2 * active_skin().ear_width, keys)
 
         # Reserve the depth the instrument needs. Without this the window
         # opens shorter than the panel and the keys together, and Qt squeezes
@@ -306,6 +314,8 @@ class JDXiWindow(QMainWindow):
         set_active_skin(skin, remember=remember)
         self.refresh_instrument_image()
         self.apply_keyboard_area_skin()
+        # Cheeks of a different width leave the keys a different width
+        self.apply_instrument_proportions()
 
     def _show_skin_editor(self) -> None:
         """Open the Skin Editor, or bring it forward."""
@@ -376,13 +386,16 @@ class JDXiWindow(QMainWindow):
                 QKeySequence.StandardKey.SaveAs,
             )
         )
-        file_menu.addAction(
-            self._menu_action(
-                "Open current MIDI as &PDF",
-                self._open_current_midi_as_pdf,
-                "Ctrl+P",
-            )
+        from jdxi_editor.globals import lilypond_enabled
+
+        self.open_midi_as_pdf_action = self._menu_action(
+            "Open current MIDI as &PDF",
+            self._open_current_midi_as_pdf,
+            "Ctrl+P",
+            status_tip="Export the current MIDI file to PDF via LilyPond (Advanced preference)",
         )
+        self.open_midi_as_pdf_action.setVisible(lilypond_enabled())
+        file_menu.addAction(self.open_midi_as_pdf_action)
 
         file_menu.addSeparator()
 
@@ -466,11 +479,6 @@ class JDXiWindow(QMainWindow):
         self.parts_menu.addAction(
             self._menu_action(
                 "Digital Synth &2", lambda: self.show_editor("digital2"), "Ctrl+2"
-            )
-        )
-        self.parts_menu.addAction(
-            self._menu_action(
-                "Digital Synth &3", lambda: self.show_editor("digital3"), "Ctrl+3"
             )
         )
         self.parts_menu.addAction(
@@ -640,24 +648,16 @@ class JDXiWindow(QMainWindow):
             status_bar.apply_skin()
 
     def _build_status_layout(self) -> QLayout:
-        layout = QVBoxLayout()
-        layout.addStretch()
-        layout.addLayout(build_wheel_label_row())
-        layout.addStretch()
-        layout.addLayout(build_wheel_row(midi_helper=self.midi_helper))
-        layout.addStretch()
-        layout.addLayout(self._build_midi_indicator_row())
+        layout_items = [build_wheel_label_row(), build_wheel_row(midi_helper=self.midi_helper), self._build_midi_indicator_row()]
+        layout = create_layout_with_items(vertical=True, items=layout_items)
         return layout
 
     def _build_midi_indicator_row(self) -> QLayout:
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
-        row = QHBoxLayout()
-        row.addWidget(QLabel("MIDI IN:"))
-        row.addWidget(self.midi_in_indicator)
-        row.addWidget(QLabel("MIDI OUT:"))
-        row.addWidget(self.midi_out_indicator)
+        row_widgets = [QLabel("MIDI"), QLabel("IN:"), self.midi_in_indicator, QLabel("OUT:"), self.midi_out_indicator]
+        row = create_layout_with_items(row_widgets, vertical=False)
         return row
 
     def _update_display(self):

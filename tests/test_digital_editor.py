@@ -443,6 +443,39 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.assertIn("Common", tab_names)
         self.assertIn("Misc", tab_names)
 
+    def test_common_update_reports_no_false_failures(self):
+        """
+        A COMMON reply updates the partial switches once, and the parser's
+        metadata keys are not mistaken for parameters.
+
+        The partial switches used to fall through to the generic SWITCH
+        branch after being handled, and parameter_block / block_name were
+        looked up as parameters: both were reported as failures.
+        """
+        from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
+
+        sysex_data = filter_sysex_keys(
+            {
+                "TEMPORARY_AREA": "DIGITAL_SYNTH_1",
+                "TONE_LEVEL": 100,
+                "PARTIAL1_SWITCH": 1,
+                "PARTIAL2_SWITCH": 0,
+                "PARTIAL3_SWITCH": 1,
+                "PARTIAL1_SELECT": 1,
+                "parameter_block": "...",
+                "block_name": "DigitalCommonParam",
+            }
+        )
+        successes, failures = [], []
+        self.editor._update_common_controls(1, sysex_data, successes, failures)
+
+        self.assertEqual(failures, [])
+        for name in ("PARTIAL1_SWITCH", "PARTIAL2_SWITCH", "PARTIAL3_SWITCH"):
+            self.assertEqual(successes.count(name), 1, name)
+        switches = self.editor.partials_panel.switches
+        self.assertTrue(switches[DigitalPartial(1)].enable_check.isChecked())
+        self.assertFalse(switches[DigitalPartial(2)].enable_check.isChecked())
+
 
 if __name__ == '__main__':
     unittest.main()

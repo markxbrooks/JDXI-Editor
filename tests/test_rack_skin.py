@@ -25,20 +25,6 @@ from jdxi_editor.ui.style.rack_skin import (  # noqa: E402
 )
 from jdxi_editor.ui.widgets.rack import RackPanel  # noqa: E402
 
-#: Qt's offscreen backend on the CI runners took a SIGSEGV inside
-#: _restyle_application, which walks QApplication.allWidgets() and restyles
-#: each one. Widgets from earlier tests are still alive in the process and
-#: some have had their C++ half destroyed, so the walk can touch freed
-#: memory. rack_skin now asks shiboken.isValid before touching a widget,
-#: which should be the cure, but a segfault cannot be caught from Python and
-#: does not reproduce on macOS, so the test that crashed stays off the
-#: runners until a green matrix shows the guard holds. It still runs locally.
-crashes_on_ci = pytest.mark.skipif(
-    bool(os.environ.get("CI")),
-    reason="segfaults in _restyle_application on the CI runners; runs locally",
-)
-
-
 @pytest.fixture(scope="module")
 def qapp():
     return QApplication.instance() or QApplication([])
@@ -695,7 +681,6 @@ def test_the_stylesheet_image_is_named_after_the_skin(qapp):
 # ----------------------------------------------------------------------
 # The panel
 # ----------------------------------------------------------------------
-@crashes_on_ci
 def test_rack_ears_follow_the_skin(qapp):
     """A strip grows ears with a rack skin and loses them with the default."""
     from PySide6.QtWidgets import QLabel
@@ -983,6 +968,70 @@ def test_the_keyboard_area_follows_the_skin(qapp):
             assert skin.foreground.text_secondary in label, skin.skin_id
     finally:
         window.close()
+
+
+def test_the_keys_are_sized_between_the_skins_cheeks(qapp):
+    """
+    The strip along the bottom keeps ``ear_width`` at each end for the skin's
+    cheeks and lays the keys out between them, so the keys are sized to the
+    width between the cheeks rather than to the window's own.
+
+    Sized to the window, the keys alone asked for more room than the strip
+    could be given. Qt handed the strip its minimum regardless, the surplus
+    hung over the right edge of the window, and the right cheek -- painted at
+    the strip's far end -- went out of sight. The left one starts at x=0
+    whatever happens, so the pair went lopsided rather than missing, and only
+    skins with wide cheeks showed it: 16 px on JD-Xi Rackmount, 26 on the ARP
+    2600, while the 14 of TR-808 still fitted the slack.
+    """
+    from jdxi_editor.ui.windows.jdxi.ui import JDXiWindow
+
+    class Keyboard:
+        """Records the width it is told the instrument has."""
+
+        def __init__(self) -> None:
+            self.given = None
+
+        def set_instrument_width(self, width, keys) -> None:
+            self.given = width
+
+    class Window:
+        """Enough of the window for apply_instrument_proportions to run."""
+
+        apply_instrument_proportions = JDXiWindow.apply_instrument_proportions
+
+        def __init__(self) -> None:
+            self.piano_keyboard = Keyboard()
+
+        def width(self) -> int:
+            return 1000
+
+        def height(self) -> int:
+            return 500
+
+        def centralWidget(self):
+            return None
+
+        def menuBar(self):
+            return None
+
+        def minimumHeight(self) -> int:
+            return 500
+
+        def maximumHeight(self) -> int:
+            return 500
+
+        def setFixedHeight(self, value) -> None:
+            pass
+
+        def _status_bar_padding(self) -> int:
+            return 0
+
+    for skin in SKINS.values():
+        set_active_skin(skin, remember=False)
+        window = Window()
+        window.apply_instrument_proportions()
+        assert window.piano_keyboard.given == 1000 - 2 * skin.ear_width, skin.skin_id
 
 
 def test_the_tool_windows_are_rack_mounted(qapp):

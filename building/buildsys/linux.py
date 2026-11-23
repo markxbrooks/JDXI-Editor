@@ -14,6 +14,17 @@ from pathlib import Path
 
 from decologr import Decologr as log, setup_logging
 
+# decologr raises rather than falling back when rich logging is asked for
+# without rich installed, and rich is nobody's declared dependency: the
+# Linux build died on the runner before it had built anything. Windows
+# keeps the same switch as a plain constant (buildsys/windows.py).
+try:
+    import rich  # noqa: F401
+
+    USE_RICH_LOGGING = True
+except ImportError:
+    USE_RICH_LOGGING = False
+
 # Import project metadata
 try:
     from jdxi_editor.project import (
@@ -44,7 +55,7 @@ CATEGORIES = "AudioVideo;Audio;Midi;Music;"
 
 def build(ctx):
     """Main build entry point called by buildsys."""
-    setup_logging(project_name="linux builder", use_rich=True)
+    setup_logging(project_name="linux builder", use_rich=USE_RICH_LOGGING)
     
     project_root = ctx.project_root
     build_dir = project_root / "build" / "linux"

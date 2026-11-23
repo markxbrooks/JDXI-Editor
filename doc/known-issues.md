@@ -1,6 +1,6 @@
 # Known issues
 
-1.0.0rc2 is a candidate. The app stays Beta. This page restates the caveats already in [CHANGELOG.md](../CHANGELOG.md).
+1.0.0 is the first stable release. The app stays Beta. This page restates the caveats already in [CHANGELOG.md](../CHANGELOG.md).
 
 ## Hardware
 
