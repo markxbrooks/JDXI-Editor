@@ -44,6 +44,7 @@ The choice is remembered in QSettings under ``ui/skin``.
 
 from __future__ import annotations
 
+import gc
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -1598,29 +1599,45 @@ def _restyle_application(_skin: Optional[JDXiSkin] = None) -> None:
     from jdxi_editor.ui.widgets.rack.ears import RackEars
     from jdxi_editor.ui.widgets.rack.panel import RackPanel
 
-    for widget in application.allWidgets():
-        # allWidgets() can hand back a widget whose C++ half has already gone:
-        # a window closed moments ago is destroyed on Qt's side while the
-        # Python wrapper waits for the garbage collector. Touching one then
-        # raises RuntimeError at best and takes the process down at worst, and
-        # one dead widget must not stop the rest being restyled. isValid asks
-        # shiboken whether the C++ object is still there, which is cheaper and
-        # safer than provoking the error and catching it; the try below stays
-        # for the window where a widget dies between the check and the call.
-        if not isValid(widget):
-            continue
-        try:
-            if isinstance(widget, (RackEars, MidiTrackViewer)):
-                widget.apply_skin()
-            elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
-                widget.refresh_skin()
-            sheet = widget.styleSheet()
-            if sheet == previous_cap:
-                widget.setStyleSheet(desired_cap)
-            elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
-                widget.setStyleSheet(repoint(sheet))
-        except RuntimeError:
-            continue
+    # Python's cyclic garbage collector must not run while Qt's widget list is
+    # being walked. allWidgets() hands back raw pointers, and PySide wraps them
+    # one by one: an allocation along the way can start a collection, and a
+    # collection can delete a widget that sat in a reference cycle (closed,
+    # unreferenced, waiting for the collector). Its pointer is still in the
+    # list, PySide then wraps freed memory, and the heap is corrupted:
+    # 0xc0000374 on Windows, SIGSEGV on Linux, inside allWidgets() itself and so
+    # before isValid can help. Collect first, at a safe moment, then hold the
+    # collector off until the walk is done.
+    gc.collect()
+    collector_was_enabled = gc.isenabled()
+    gc.disable()
+    try:
+        for widget in application.allWidgets():
+            # allWidgets() can hand back a widget whose C++ half has already gone:
+            # a window closed moments ago is destroyed on Qt's side while the
+            # Python wrapper waits for the garbage collector. Touching one then
+            # raises RuntimeError at best and takes the process down at worst, and
+            # one dead widget must not stop the rest being restyled. isValid asks
+            # shiboken whether the C++ object is still there, which is cheaper and
+            # safer than provoking the error and catching it; the try below stays
+            # for the window where a widget dies between the check and the call.
+            if not isValid(widget):
+                continue
+            try:
+                if isinstance(widget, (RackEars, MidiTrackViewer)):
+                    widget.apply_skin()
+                elif isinstance(widget, RackPanel) and widget._pinned_skin is None:
+                    widget.refresh_skin()
+                sheet = widget.styleSheet()
+                if sheet == previous_cap:
+                    widget.setStyleSheet(desired_cap)
+                elif sheet and ("gloss_panel_" in sheet or CHASSIS_MARKER in sheet):
+                    widget.setStyleSheet(repoint(sheet))
+            except RuntimeError:
+                continue
+    finally:
+        if collector_was_enabled:
+            gc.enable()
 
     # Repaint by window rather than by widget. Setting a stylesheet already
     # schedules the widget's own repaint, and a window repaints its children,
