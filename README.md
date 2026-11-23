@@ -66,7 +66,17 @@ Phil Collins – *In The Air Tonight* performed on the Roland JD-Xi
 
 ### Desktop builds
 
-The app version is **1.0.0** (`jdxi_editor/project.py`). Download the assets on that tag from the [releases page](https://github.com/markxbrooks/JDXI-Editor/releases) when the tag has them. 1.0.0rc1 and 1.0.0rc2 were tagged without downloadable files, so those tags have no `.dmg`, installer, or `.deb`. Install from PyPI with the steps below, or check out the tag and follow [Building](doc/building.md). What the release contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md). The v0.9.6 assets are an older editor: they have neither the rack skins nor the Audio output menu.
+The app version is **1.0.0** (`jdxi_editor/project.py`), and the [1.0.0 release](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v1.0.0) carries a build for each desktop:
+
+| Platform | Download |
+| --- | --- |
+| macOS | `JD-Xi_Editor_1.0.0_MacOS_Universal.dmg` |
+| Windows | `jdxi_editor-1.0.0_setup_win_x86-64.exe` |
+| Debian, Ubuntu | `jdxi-editor_1.0.0_amd64.deb` |
+
+Each is built on its own platform from the tag. The `.deb` is amd64; there is no AppImage, and no build for Linux on ARM. Install from PyPI with the steps below instead if you prefer, or check out the tag and follow [Building](doc/building.md). What the release contains, and what is known to be wrong with it, is in [CHANGELOG.md](CHANGELOG.md) and [Known issues](doc/known-issues.md).
+
+Earlier tags have nothing to download: 1.0.0rc1 and 1.0.0rc2 were tagged without files, and the v0.9.6 assets are an older editor, with neither the rack skins nor the Audio output menu.
 
 1.0.0 is the first stable release. It adds no features over 0.9.9, and fixes one piece of chrome since 1.0.0rc2. The app stays Beta. The hardware suite has been run on a connected JD-Xi; the result is in [Known issues](doc/known-issues.md).
 
