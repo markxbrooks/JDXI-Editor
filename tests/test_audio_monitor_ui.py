@@ -235,7 +235,7 @@ def test_round_start_and_stop_buttons(monkeypatch):
     # passes only where sounddevice happens to be installed.
     monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
     monitor = AudioMonitor()
-    monkeypatch.setattr(monitor.source, "start", lambda device=None: None)
+    monkeypatch.setattr(monitor.source, "start", lambda device=None: 48_000)
     monkeypatch.setattr(monitor.source, "stop", lambda: None)
     try:
         assert monitor.listen_button.isEnabled()
@@ -243,7 +243,7 @@ def test_round_start_and_stop_buttons(monkeypatch):
         assert size.width() == size.height()  # round, not a text button
         monitor.listen_button.click()
         assert monitor.listen_button.isChecked() and monitor.stop_button.isEnabled()
-        assert monitor.status.text() == "Listening"
+        assert monitor.status.text() == "Listening (48 kHz)"
         monitor.listen_button.click()  # Start again does not stop
         assert monitor.listen_button.isChecked() and monitor._timer.isActive()
         monitor.stop_button.click()
@@ -263,3 +263,24 @@ def test_readout_headings_stay_legible_on_every_skin():
 
     for skin in SKINS.values():
         assert _contrast(_heading_colour(skin), skin.chassis.surface) >= 3.0, skin.skin_id
+
+
+def test_the_analyser_measures_at_the_rate_the_input_opened(monkeypatch):
+    """
+    The JD-Xi's USB audio opens at 44.1 kHz, not the monitor's 48 kHz, and
+    the timebase and spectrum must be measured at the rate actually opened.
+    """
+    from jdxi_editor.audio.audio_source import InputDeviceSource
+
+    monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
+    monitor = AudioMonitor()
+    monkeypatch.setattr(monitor.source, "start", lambda device=None: 44_100)
+    monkeypatch.setattr(monitor.source, "stop", lambda: None)
+    try:
+        monitor.start()
+        assert monitor.analyser.sample_rate == 44_100
+        assert monitor.analyser.spectrum.sample_rate == 44_100
+        assert monitor.status.text() == "Listening (44.1 kHz)"
+    finally:
+        monitor.stop()
+        monitor.close()

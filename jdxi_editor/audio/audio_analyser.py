@@ -57,6 +57,22 @@ class AudioAnalyser:
         self._stop = threading.Event()
         self._thread: Optional[threading.Thread] = None
 
+    def set_sample_rate(self, sample_rate: int) -> None:
+        """
+        The rate the input actually opened at.
+
+        Call while stopped: the timebase window and the spectrum's frequency
+        axis are both measured in samples.
+
+        :param sample_rate: int Hz
+        :return: None
+        """
+        sample_rate = int(sample_rate)
+        if sample_rate == self.sample_rate:
+            return
+        self.sample_rate = sample_rate
+        self.spectrum = SpectrumAnalyser(sample_rate)
+
     def set_timebase(self, timebase_ms: int) -> None:
         """
         How much of the waveform the oscilloscope shows.
