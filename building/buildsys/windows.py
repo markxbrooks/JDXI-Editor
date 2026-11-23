@@ -158,20 +158,28 @@ def compose_dest_dir(project_root, package_name: str):
     return dest_dir
 
 
-def run_inno_setup(project_root):
-    """run inno setup"""
+def render_iss_from_template(project_root, version: str) -> Path:
+    """Write jdxi_editor.iss from jdxi_editor.iss.in with @VERSION@ substituted."""
     package_name = __package_name__
+    template = project_root / f"{package_name}.iss.in"
     iss_file = project_root / f"{package_name}.iss"
-    if not iss_file.exists():
-        raise FileNotFoundError(f"ISS file not found: {iss_file}")
+    if not template.exists():
+        raise FileNotFoundError(f"ISS template not found: {template}")
+    text = template.read_text(encoding="utf-8").replace("@VERSION@", version)
+    iss_file.write_text(text, encoding="utf-8")
+    log.message(f"Rendered {iss_file.name} with version {version}")
+    return iss_file
+
+
+def run_inno_setup(project_root):
+    """Render the .iss from the template, then compile with Inno Setup."""
+    iss_file = render_iss_from_template(project_root, VERSION)
     inno_exe = Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe")
     if not inno_exe.exists():
         raise FileNotFoundError(f"Inno Setup compiler not found: {inno_exe}")
-    # The version belongs to jdxi_editor/project.py: without this the .iss
-    # fallback is used and every installer is stamped with the same number
-    cmd = [str(inno_exe), f"/DMyAppVersion={VERSION}", str(iss_file)]
+    cmd = [str(inno_exe), str(iss_file)]
     log.message(f"Running Inno Setup (version {VERSION})...")
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd, check=True, cwd=project_root)
 
 
 if __name__ == "__main__":
