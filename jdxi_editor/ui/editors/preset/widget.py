@@ -97,7 +97,9 @@ class PresetWidget(QWidget):
 
         # Initialize the combo box with default preset type (Digital Synth 1)
         # This will be called again when preset type changes, but we need initial population
-        QTimer.singleShot(0, self._update_preset_combo_box)
+        # self as the context: the timer is dropped if the widget is deleted
+        # before it fires, instead of calling into a dead combo box
+        QTimer.singleShot(0, self, self._update_preset_combo_box)
 
         # Load Preset (round button + icon + label, centered)
         load_preset_row = QHBoxLayout()

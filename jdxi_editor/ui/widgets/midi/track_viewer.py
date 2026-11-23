@@ -326,7 +326,7 @@ class MidiTrackViewer(QWidget):
 
         viewport_width = self.scroll_area.viewport().width()
         if viewport_width <= 0:
-            QTimer.singleShot(0, self.fit_tracks_to_view)
+            QTimer.singleShot(0, self, self.fit_tracks_to_view)
             return
 
         min_content_width = self.get_track_controls_width() + 200
@@ -345,7 +345,7 @@ class MidiTrackViewer(QWidget):
             widget.cached_width = 0
             widget.update()
         self.ruler.update()
-        QTimer.singleShot(0, self._align_ruler_to_tracks)
+        QTimer.singleShot(0, self, self._align_ruler_to_tracks)
 
     def _align_ruler_to_tracks(self) -> None:
         """Line the ruler up exactly with the track timelines below it."""
@@ -387,7 +387,7 @@ class MidiTrackViewer(QWidget):
                 content_width = max(content_width, viewport_width)
         self.scroll_content.setFixedWidth(content_width)
         self.scroll_content.updateGeometry()
-        QTimer.singleShot(0, self._align_ruler_to_tracks)
+        QTimer.singleShot(0, self, self._align_ruler_to_tracks)
 
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """

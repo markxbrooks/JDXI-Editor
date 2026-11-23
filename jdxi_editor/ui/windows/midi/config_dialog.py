@@ -189,7 +189,7 @@ class MIDIConfigDialog(QDialog):
 
     def showEvent(self, event):
         super().showEvent(event)
-        QTimer.singleShot(0, self._bring_to_front)
+        QTimer.singleShot(0, self, self._bring_to_front)
 
     def _bring_to_front(self):
         self.raise_()

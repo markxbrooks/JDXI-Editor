@@ -161,7 +161,7 @@ class ExternalControllerInput(QObject):
             return self.is_open
         # Kick the first open on the next event-loop turn so callers (startup,
         # rescan) are never inside open_port on the same stack as identify.
-        QTimer.singleShot(0, self._open_next_port)
+        QTimer.singleShot(0, self, self._open_next_port)
         return True
 
     def _open_next_port(self) -> None:

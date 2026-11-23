@@ -1242,7 +1242,9 @@ class JDXiInstrument(JDXiWindow):
         )
         # Defer port open until the event loop is running so splash/UI can
         # paint and any CC flood from the controller is queued, not inline.
-        QTimer.singleShot(0, self.external_controller.auto_connect)
+        QTimer.singleShot(
+            0, self.external_controller, self.external_controller.auto_connect
+        )
         # A controller switched on or plugged in after startup would otherwise
         # never be found, since auto_connect only runs here
         self.controller_rescan_timer = QTimer(self)
