@@ -357,6 +357,11 @@ exec "{python_path_abs}" -m jdxi_editor.main
     <string>{VERSION}</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <!-- Without this macOS hands the app silence rather than refusing it:
+         the stream opens, the Audio Monitor says "Listening", and no
+         samples arrive. -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>JD-Xi Editor listens to an audio input so the Audio Monitor can show its level and spectrum, and so a performance can be recorded from the JD-Xi.</string>
 </dict>
 </plist>
 """
