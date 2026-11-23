@@ -62,6 +62,16 @@ class WavRecordingThread(QThread):
                 f"[WavRecordingThread] Default sample rate = {info['default_samplerate']}"
             )
 
+            if info["max_input_channels"] < 1:
+                error_msg = (
+                    f"[WavRecordingThread] Device {index} "
+                    f"({info.get('name', 'Unknown')}) has no input channels; "
+                    "it is an output device. Select an input such as the JD-Xi "
+                    "USB audio device."
+                )
+                log.error(error_msg)
+                self.recording_error.emit(error_msg)
+                return
             self.recorder.channels = min(
                 self.recorder.channels, info["max_input_channels"]
             )

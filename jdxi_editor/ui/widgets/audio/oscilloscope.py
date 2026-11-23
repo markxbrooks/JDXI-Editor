@@ -15,18 +15,48 @@ from PySide6.QtWidgets import QWidget
 from jdxi_editor.ui.style.rack_skin import active_skin
 
 
-def trace_y(height: float, sample: float, margin: float = 6.0) -> float:
+# How fast the range shrinks back once a loud passage has gone: the share
+# of the excess kept each frame (about a second at 30 frames a second)
+RANGE_RELEASE = 0.9
+
+
+def trace_y(height: float, sample: float, margin: float = 6.0, full_scale: float = 1.0) -> float:
     """
     Screen y of one sample. Positive samples sit above the centre.
 
+    ``full_scale`` is the value drawn at the top and bottom edges. A sample
+    beyond it is held at the edge, so a trace never leaves the chart.
+
     :param height: float widget height
-    :param sample: float about -1..1
+    :param sample: float about -full_scale..full_scale
     :param margin: float px kept clear of the edges
+    :param full_scale: float sample value at the edges, at least 1.0
     :return: float
     """
     mid = height / 2.0
     amp = max(1.0, mid - margin)
-    return mid - float(sample) * amp
+    level = float(sample) / max(1.0, float(full_scale))
+    level = min(1.0, max(-1.0, level))
+    return mid - level * amp
+
+
+def next_full_scale(current: float, peak: float, release: float = RANGE_RELEASE) -> float:
+    """
+    The scope's range after a frame whose largest sample is ``peak``.
+
+    It never drops below 1.0, so an ordinary signal is drawn as it always
+    was. A louder peak widens it at once; afterwards it eases back towards
+    the signal rather than jumping, so the trace does not pump.
+
+    :param current: float the range so far
+    :param peak: float largest absolute sample in the new frame
+    :param release: float share of the excess over the target kept per frame
+    :return: float
+    """
+    target = max(1.0, float(peak))
+    if target >= current:
+        return target
+    return target + (current - target) * release
 
 
 class Oscilloscope(QWidget):
@@ -39,6 +69,8 @@ class Oscilloscope(QWidget):
         self._right: Optional[np.ndarray] = None
         self._persist_left: Optional[np.ndarray] = None
         self._persist_right: Optional[np.ndarray] = None
+        # Sample value drawn at the top and bottom edges (see next_full_scale)
+        self.full_scale = 1.0
 
     def set_waveform(
         self, left: Optional[np.ndarray], right: Optional[np.ndarray]
@@ -54,6 +86,13 @@ class Oscilloscope(QWidget):
         self._persist_right = self._right
         self._left = None if left is None else np.array(left, dtype=np.float32, copy=True)
         self._right = None if right is None else np.array(right, dtype=np.float32, copy=True)
+        # PipeWire and PulseAudio hand over float samples unclipped, so a
+        # boosted input goes past +-1.0; widen the range to keep it on screen
+        peak = 0.0
+        for wave in (self._left, self._right):
+            if wave is not None and wave.size:
+                peak = max(peak, float(np.nanmax(np.abs(wave))))
+        self.full_scale = next_full_scale(self.full_scale, peak)
         self.update()
 
     def paintEvent(self, _event) -> None:
@@ -68,6 +107,10 @@ class Oscilloscope(QWidget):
         self._draw_trace(painter, self._persist_right, QColor(lcd.text_dim))
         self._draw_trace(painter, self._left, QColor(lcd.text))
         self._draw_trace(painter, self._right, QColor(lcd.text))
+        if self.full_scale > 1.005:
+            # The range only widens past full scale, so say by how much
+            painter.setPen(QPen(QColor(lcd.text), 1))
+            painter.drawText(6, 4 + painter.fontMetrics().ascent(), f"\u00b1{self.full_scale:.1f}")
         painter.end()
 
     def _draw_grid(self, painter: QPainter, color: QColor) -> None:
@@ -92,8 +135,10 @@ class Oscilloscope(QWidget):
         count = wave.shape[0]
         for index in range(count):
             x = (index + 0.5) * width / count
-            y_max = trace_y(height, float(wave[index, 1]))
-            y_min = trace_y(height, float(wave[index, 0]))
+            y_max = trace_y(height, float(wave[index, 1]), full_scale=self.full_scale)
+            y_min = trace_y(height, float(wave[index, 0]), full_scale=self.full_scale)
             if y_max > y_min:
                 y_max, y_min = y_min, y_max
-            painter.drawLine(QPointF(x, y_max - 1.0), QPointF(x, y_min + 1.0))
+            top = max(0.0, y_max - 1.0)
+            bottom = min(height, y_min + 1.0)
+            painter.drawLine(QPointF(x, top), QPointF(x, bottom))
