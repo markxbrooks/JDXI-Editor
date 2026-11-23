@@ -16,11 +16,11 @@ class TestResourcePath(unittest.TestCase):
 
     def test_dev_tree_resolves_project_resources(self):
         path = resources.resource_path("resources/splash_screen_540_850v5.png")
-        self.assertTrue(os.path.isabs(path))
-        self.assertTrue(
-            path.endswith(os.path.join("resources", "splash_screen_540_850v5.png"))
-        )
-        self.assertTrue(os.path.isfile(path), f"missing splash asset: {path}")
+        resolved = Path(path)
+        self.assertTrue(resolved.is_absolute())
+        self.assertEqual(resolved.name, "splash_screen_540_850v5.png")
+        self.assertEqual(resolved.parent.name, "resources")
+        self.assertTrue(resolved.is_file(), f"missing splash asset: {path}")
 
     def test_macos_app_bundle_uses_contents_resources(self):
         app_root = Path(__file__).resolve().parent.parent
