@@ -99,11 +99,12 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install portaudio
 
-      # buildsys refuses to start without the project's own virtualenv, and
-      # looks for a different one per platform: .venv on macOS and Linux,
-      # venv on Windows (building/buildsys/context.py). The build scripts
-      # then call pyinstaller by name rather than through that interpreter,
-      # so the virtualenv goes on PATH as well. py2app is not installed
+      # buildsys refuses to start without the project's own virtualenv
+      # (building/buildsys/context.py), which accepts either .venv or venv;
+      # .venv is made here on macOS and Linux, to match the checkout, and
+      # venv on Windows. The build scripts then call pyinstaller by name
+      # rather than through that interpreter, so the virtualenv goes on PATH
+      # as well. py2app is not installed
       # here: the macOS build pins its own build tools, setuptools 70.3
       # among them, because later ones break it.
       - name: Install into the virtualenv the build system expects
