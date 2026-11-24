@@ -14,7 +14,9 @@ import time
 import mido
 import pytest
 
+from jdxi_editor.midi.io.request_queue import Sysex
 from picomidi.message.type import MidoMessageType, MidoMetaMessageType
+
 
 pytestmark = pytest.mark.hardware
 
@@ -30,7 +32,7 @@ def _address_and_size(request: str) -> tuple[bytes, int]:
     from jdxi_editor.midi.io.synth_memory import address_to_linear
 
     data = list(bytes.fromhex(request))
-    if data and data[0] == SYSEX_START:
+    if data and data[0] == Sysex.START:
         data = data[1:]
     assert len(data) >= 15 and data[6] == RQ1_COMMAND
     address = bytes(data[7:11])
@@ -52,9 +54,9 @@ def _dt1_payloads(messages, address_hex: str):
         if getattr(message, "type", None) != "sysex":
             continue
         data = list(message.bytes())
-        if data and data[0] == SYSEX_START:
+        if data and data[0] == Sysex.START:
             data = data[1:]
-        if data and data[-1] == 0xF7:
+        if data and data[-1] == Sysex.END:
             data = data[:-1]
         if roland_address(data, DT1_COMMAND) != address_hex:
             continue

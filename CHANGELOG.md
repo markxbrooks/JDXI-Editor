@@ -2,6 +2,49 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [1.0.1] — 2026-11-23
+
+A packaging release: 1.0.0 with the two fixes below. No new features, and no
+change to the application's own code. The app stays **Beta**; what is known
+to be wrong with it is collected in [doc/known-issues.md](doc/known-issues.md).
+
+### Fixed
+
+- **The Audio Monitor hears the input in the packaged Mac app.** macOS does
+  not refuse an app that opens an audio input without declaring why it wants
+  one: it hands it silence. PortAudio opened the stream, the monitor said
+  "Listening", and no samples ever arrived. Running from a checkout was
+  unaffected, because there the permission belongs to the terminal. Both
+  Info.plists now carry `NSMicrophoneUsageDescription`.
+- **The Linux package asks for the libraries it needs.** The `.deb` declared
+  no dependencies at all. The PyInstaller bundle carries Python, Qt and
+  PortAudio, but not the system libraries those load at runtime: without
+  `libasound2` the bundled PortAudio cannot load, so `import sounddevice`
+  fails and the Audio Monitor reports that sounddevice is not installed;
+  without the Qt libraries the application does not start. The renamed
+  64-bit `time_t` packages are given as alternatives, so the package stays
+  installable on Debian 12 and 13 alike.
+
+# [1.0.0] — 2026-11-22
+
+The first stable release. 1.0.0rc2 with the fix below, and no new features.
+The app stays **Beta**: what is known to be wrong with it is collected in
+[doc/known-issues.md](doc/known-issues.md).
+
+### Fixed
+
+- **The right-hand rack ear is painted again.** The strip along the bottom of
+  the instrument keeps room at each end for the cheeks a rack skin paints
+  there, and lays the wheels and the keys out between them. The keys were
+  sized to the window's full width instead, so the strip's contents asked for
+  more room than the strip could be given: Qt handed it its minimum anyway,
+  the surplus hung over the right edge of the window, and the cheek at that
+  end was painted where nothing showed it. The left one starts at the window's
+  edge whatever happens, so the pair went lopsided rather than missing. Only
+  skins whose cheeks are wider than the 28 px of slack in the instrument's
+  design width were affected: JD-Xi Rackmount, Juno-106, Mini Moog, MS-20,
+  ARP 2600, Brushed Metal (70s) and Ivory & Walnut.
+
 # [1.0.0rc2] — 2026-11-19
 
 The same caveats are collected in [doc/known-issues.md](doc/known-issues.md).

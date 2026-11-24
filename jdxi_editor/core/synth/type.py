@@ -11,12 +11,13 @@ Methods:
     - get_area_code(synth_type): Returns the MIDI area code for a given synth type.
 
 """
+from enum import Enum
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import JDXiSysExOffsetTemporaryToneUMB
 
 
-class JDXiSynth:
+class JDXiSynth(str, Enum):
     """Synth types and their MIDI area codes"""
 
     MASTER = "MASTER"
@@ -24,12 +25,11 @@ class JDXiSynth:
     ANALOG_SYNTH = "ANALOG_SYNTH"
     DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"  # Main digital synth
     DIGITAL_SYNTH_2 = "DIGITAL_SYNTH_2"  # Second digital synth
-    # DIGITAL_SYNTH_3 = "DIGITAL_SYNTH_3"  # 3rd digital synth (!) cheat code
     DRUM_KIT = "DRUM_KIT"
     VOCAL_FX = "VOCAL_FX"
 
     @staticmethod
-    def get_area_code(synth_type: str) -> int:
+    def get_area_code(synth_type: "JDXiSynth") -> int:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
             JDXiSynth.ANALOG_SYNTH: JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH,
@@ -42,7 +42,7 @@ class JDXiSynth:
         return area_codes.get(synth_type)
 
     @staticmethod
-    def midi_channel_number(synth_type: str) -> int:
+    def midi_channel_number(synth_type: "JDXiSynth") -> int:
         """Get MIDI area code for preset preset_type"""
         channels = {
             JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,

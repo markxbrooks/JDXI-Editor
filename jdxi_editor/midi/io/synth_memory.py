@@ -27,7 +27,7 @@ from __future__ import annotations
 import threading
 from typing import Optional, Sequence
 
-from jdxi_editor.midi.io.request_queue import DT1_COMMAND, ROLAND_ID, SYSEX_START
+from jdxi_editor.midi.io.request_queue import DT1_COMMAND, ROLAND_ID, SYSEX_START, Sysex
 
 JDXI_DT1_HEADER = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND])
 SYSEX_END = 0xF7
@@ -76,9 +76,9 @@ class SynthMemory:
         Layout without F0: 41, device, model×4, 12, address×4, data…, checksum[, F7]
         """
         data = list(message)
-        if data and data[0] == SYSEX_START:
+        if data and data[0] == Sysex.START:
             data = data[1:]
-        if data and data[-1] == SYSEX_END:
+        if data and data[-1] == Sysex.END:
             data = data[:-1]
         if len(data) < 13 or data[0] != ROLAND_ID or data[6] != DT1_COMMAND:
             return False

@@ -46,6 +46,29 @@ def copy_input(indata: np.ndarray, scratch: np.ndarray, ring: SampleRing) -> Non
     ring.write(scratch[:count])
 
 
+def describe_open_error(error: Optional[Exception]) -> str:
+    """
+    A message for the status line when no rate or channel count opened.
+
+    PortAudio reports a device that PipeWire or PulseAudio already holds as
+    "Device unavailable" (-9985); that is the usual failure for a raw ALSA
+    ``hw:`` device on a desktop Linux, and the fix is to choose the
+    ``pipewire``, ``default`` or PulseAudio input instead.
+
+    :param error: Optional[Exception] the last failure
+    :return: str
+    """
+    if error is None:
+        return "no input device"
+    text = str(error)
+    if "-9985" in text or "Device unavailable" in text or "busy" in text.lower():
+        return (
+            f"{text}. The device is in use by another program (on Linux usually"
+            " PipeWire or PulseAudio): choose the 'pipewire' or 'default' input"
+        )
+    return text
+
+
 class InputDeviceSource:
     """
     Captures one input device into a :class:`SampleRing`.
@@ -63,6 +86,8 @@ class InputDeviceSource:
         :param block: int frames per callback
         """
         self.ring = ring
+        # The rate asked for; sample_rate becomes the rate that opened
+        self.preferred_rate = int(sample_rate)
         self.sample_rate = int(sample_rate)
         self.block = int(block)
         # Larger than one block: PortAudio may deliver a different count,
@@ -99,15 +124,18 @@ class InputDeviceSource:
                 found.append((str(device["name"]), int(index)))
         return found
 
-    def start(self, device: Optional[int] = None) -> None:
+    def start(self, device: Optional[int] = None) -> int:
         """
         Open the input and start copying.
 
-        Stereo is tried first. A mono device is opened with one channel and
-        duplicated in the callback.
+        The monitor's own rate is tried first, then the device's default
+        rate: a raw ALSA ``hw:`` device does no rate conversion, and the
+        JD-Xi's USB audio input refuses 48 kHz. At each rate stereo is tried
+        first; a mono device is opened with one channel and duplicated in
+        the callback. :attr:`sample_rate` is set to the rate that opened.
 
         :param device: Optional[int] sounddevice index; None is the default
-        :return: None
+        :return: int the sample rate the stream opened at, Hz
         """
         module = _sounddevice()
         if module is None:
@@ -120,22 +148,43 @@ class InputDeviceSource:
             copy_input(indata, scratch, ring)
 
         error = None
-        for channels in (2, 1):
-            try:
-                stream = module.InputStream(
-                    device=device,
-                    channels=channels,
-                    samplerate=self.sample_rate,
-                    blocksize=self.block,
-                    dtype="float32",
-                    callback=callback,
-                )
-                stream.start()
+        for rate in self._rates_to_try(module, device):
+            for channels in (2, 1):
+                try:
+                    stream = module.InputStream(
+                        device=device,
+                        channels=channels,
+                        samplerate=rate,
+                        blocksize=self.block,
+                        dtype="float32",
+                        callback=callback,
+                    )
+                    stream.start()
+                except Exception as ex:
+                    error = ex
+                    continue
                 self._stream = stream
-                return
-            except Exception as ex:
-                error = ex
-        raise RuntimeError(str(error) if error else "no input device")
+                self.sample_rate = rate
+                return rate
+        raise RuntimeError(describe_open_error(error))
+
+    def _rates_to_try(self, module, device: Optional[int]) -> list[int]:
+        """
+        The preferred rate, then the device's default if it differs.
+
+        :param module: the sounddevice module
+        :param device: Optional[int] sounddevice index; None is the default
+        :return: list[int] Hz
+        """
+        rates = [self.preferred_rate]
+        try:
+            info = module.query_devices(device, "input")
+            default = int(round(float(info["default_samplerate"])))
+        except Exception:
+            return rates
+        if default > 0 and default not in rates:
+            rates.append(default)
+        return rates
 
     def stop(self) -> None:
         """

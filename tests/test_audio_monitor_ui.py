@@ -235,7 +235,7 @@ def test_round_start_and_stop_buttons(monkeypatch):
     # passes only where sounddevice happens to be installed.
     monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
     monitor = AudioMonitor()
-    monkeypatch.setattr(monitor.source, "start", lambda device=None: None)
+    monkeypatch.setattr(monitor.source, "start", lambda device=None: 48_000)
     monkeypatch.setattr(monitor.source, "stop", lambda: None)
     try:
         assert monitor.listen_button.isEnabled()
@@ -243,7 +243,7 @@ def test_round_start_and_stop_buttons(monkeypatch):
         assert size.width() == size.height()  # round, not a text button
         monitor.listen_button.click()
         assert monitor.listen_button.isChecked() and monitor.stop_button.isEnabled()
-        assert monitor.status.text() == "Listening"
+        assert monitor.status.text() == "Listening (48 kHz)"
         monitor.listen_button.click()  # Start again does not stop
         assert monitor.listen_button.isChecked() and monitor._timer.isActive()
         monitor.stop_button.click()
@@ -263,3 +263,60 @@ def test_readout_headings_stay_legible_on_every_skin():
 
     for skin in SKINS.values():
         assert _contrast(_heading_colour(skin), skin.chassis.surface) >= 3.0, skin.skin_id
+
+
+def test_the_analyser_measures_at_the_rate_the_input_opened(monkeypatch):
+    """
+    The JD-Xi's USB audio opens at 44.1 kHz, not the monitor's 48 kHz, and
+    the timebase and spectrum must be measured at the rate actually opened.
+    """
+    from jdxi_editor.audio.audio_source import InputDeviceSource
+
+    monkeypatch.setattr(InputDeviceSource, "available", staticmethod(lambda: True))
+    monitor = AudioMonitor()
+    monkeypatch.setattr(monitor.source, "start", lambda device=None: 44_100)
+    monkeypatch.setattr(monitor.source, "stop", lambda: None)
+    try:
+        monitor.start()
+        assert monitor.analyser.sample_rate == 44_100
+        assert monitor.analyser.spectrum.sample_rate == 44_100
+        assert monitor.status.text() == "Listening (44.1 kHz)"
+    finally:
+        monitor.stop()
+        monitor.close()
+
+
+def test_a_trace_past_full_scale_stays_on_the_chart():
+    """PipeWire hands over unclipped floats; a boosted input goes past +-1.0."""
+    from jdxi_editor.ui.widgets.audio.oscilloscope import next_full_scale
+
+    # held at the edges, never beyond them
+    for sample in (1.0, 1.7, 40.0):
+        assert 0.0 <= trace_y(160, sample) <= 160
+        assert 0.0 <= trace_y(160, -sample) <= 160
+    # an ordinary signal is drawn as it always was
+    assert next_full_scale(1.0, 0.8) == 1.0
+    assert trace_y(160, 0.5, full_scale=1.0) == trace_y(160, 0.5)
+    # a loud peak widens the range at once, and it eases back afterwards
+    assert next_full_scale(1.0, 2.5) == 2.5
+    eased = next_full_scale(2.5, 0.5)
+    assert 1.0 < eased < 2.5
+    shrinking = 2.5
+    for _ in range(200):
+        shrinking = next_full_scale(shrinking, 0.5)
+    assert abs(shrinking - 1.0) < 1e-3
+
+
+def test_the_scope_widens_to_fit_a_loud_input():
+    scope = Oscilloscope()
+    try:
+        loud = np.array([[-2.0, 2.0]] * 8, dtype=np.float32)
+        scope.set_waveform(loud, loud)
+        assert scope.full_scale == 2.0
+        # the peak lands at the edge (inside the margin), not off the chart
+        assert trace_y(160, 2.0, full_scale=scope.full_scale) == trace_y(160, 1.0)
+        quiet = np.array([[-0.3, 0.3]] * 8, dtype=np.float32)
+        scope.set_waveform(quiet, quiet)
+        assert 1.0 < scope.full_scale < 2.0
+    finally:
+        scope.close()

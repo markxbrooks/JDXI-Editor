@@ -37,7 +37,7 @@ from contextlib import AbstractContextManager
 from typing import Any, Callable, Iterable, Sequence, Union
 
 from jdxi_editor.midi.io.echo_guard import DEFAULT_ECHO_GUARD, EchoGuard
-from jdxi_editor.midi.io.request_queue import SYSEX_START, SysExRequestQueue
+from jdxi_editor.midi.io.request_queue import SYSEX_START, SysExRequestQueue, Sysex
 from jdxi_editor.midi.io.synth_memory import SynthMemory
 
 PROGRAM_CHANGE_STATUS = 0xC0
@@ -90,7 +90,7 @@ class JDXiDevice:
         if _is_program_change(data):
             self.memory.clear()
             return
-        if data and data[0] != SYSEX_START and data[0] >= 0x80:
+        if data and data[0] != Sysex.START and data[0] >= 0x80:
             return  # other channel messages
         self.requests.notify_reply(data)
         self.memory.record_dt1(data)

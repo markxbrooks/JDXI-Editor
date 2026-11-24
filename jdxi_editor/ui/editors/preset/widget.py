@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from decologr import Decologr as log
 from PySide6.QtCore import Qt, QTimer
+from shiboken6 import isValid
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton
 
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -264,6 +265,10 @@ class PresetWidget(QWidget):
         Update the SearchableFilterableComboBox with current preset list.
         Called when preset type changes.
         """
+        # Also queued with QTimer.singleShot at construction, which can fire
+        # after the widget has been deleted
+        if not isValid(self) or not isValid(self.digital_preset_type_combo):
+            return
         preset_type = self.digital_preset_type_combo.currentText()
         if preset_type in [PresetTitle.DIGITAL_SYNTH1, PresetTitle.DIGITAL_SYNTH2]:
             preset_list = JDXi.UI.Preset.Digital.PROGRAM_CHANGE

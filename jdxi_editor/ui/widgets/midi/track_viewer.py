@@ -8,6 +8,7 @@ import mido
 import qtawesome as qta
 from decologr import Decologr as log
 from PySide6.QtCore import QPoint, Qt, QEvent, QTimer, Signal
+from shiboken6 import isValid
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -321,7 +322,9 @@ class MidiTrackViewer(QWidget):
 
     def fit_tracks_to_view(self) -> None:
         """Scale the timeline so the full MIDI file fits the visible viewer width."""
-        if self.scroll_area is None:
+        # Also run from QTimer.singleShot, which can fire after the viewer
+        # (or its scroll area) has been deleted
+        if not isValid(self) or self.scroll_area is None or not isValid(self.scroll_area):
             return
 
         viewport_width = self.scroll_area.viewport().width()
@@ -349,8 +352,12 @@ class MidiTrackViewer(QWidget):
 
     def _align_ruler_to_tracks(self) -> None:
         """Line the ruler up exactly with the track timelines below it."""
+        # Run from QTimer.singleShot: the viewer or its tracks may have been
+        # deleted since it was queued
+        if not isValid(self):
+            return
         widget = next(iter(self.midi_track_widgets.values()), None)
-        if widget is None or not widget.isVisible():
+        if widget is None or not isValid(widget) or not widget.isVisible():
             return
         left = widget.mapTo(self.scroll_content, QPoint(0, 0)).x()
         right_gap = self.scroll_content.width() - (left + widget.width())

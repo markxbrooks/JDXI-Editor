@@ -39,6 +39,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Optional, Sequence, Union
 
 from decologr import Decologr as log
+from jdxi_editor.midi.io.hexify import hexify
 
 from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 
@@ -47,9 +48,17 @@ RQ1_COMMAND = 0x11
 DT1_COMMAND = 0x12
 SYSEX_START = 0xF0
 
+
+class Sysex:
+    """
+    Sysex Constants
+    """
+    START = 0xF0
+    END = 0xF7
+
+
 REPLY_TIMEOUT = 0.3  # seconds to wait for a DT1 reply before moving on
 REPLY_GAP = 0.005  # pause after a reply before the next request
-
 
 
 def roland_address(data: Sequence[int], command: int) -> Optional[str]:
@@ -60,11 +69,11 @@ def roland_address(data: Sequence[int], command: int) -> Optional[str]:
     Layout without F0: 41, device, model×4, command, address×4, ...
     """
     data = list(data)
-    if data and data[0] == SYSEX_START:
+    if data and data[0] == Sysex.START:
         data = data[1:]
     if len(data) < 11 or data[0] != ROLAND_ID or data[6] != command:
         return None
-    return "".join(f"{b:02x}" for b in data[7:11])
+    return hexify(data, begin=7, end=11)
 
 
 @dataclass

@@ -179,8 +179,11 @@ class AudioMonitor(QWidget):
         """
         device = self.device.currentData()
         try:
+            # The input first: it may open at the device's own rate (44.1 kHz
+            # for the JD-Xi), and the analyser must measure at that rate
+            rate = self.source.start(None if device is None else int(device))
+            self.analyser.set_sample_rate(rate)
             self.analyser.start()
-            self.source.start(None if device is None else int(device))
         except Exception as ex:
             self.source.stop()
             self.analyser.stop()
@@ -189,7 +192,7 @@ class AudioMonitor(QWidget):
             return
         self._timer.start()
         self._set_listening(True)
-        self.status.setText("Listening")
+        self.status.setText(f"Listening ({rate / 1000:g} kHz)")
 
     def stop(self) -> None:
         """
