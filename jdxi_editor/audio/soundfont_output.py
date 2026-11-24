@@ -25,6 +25,7 @@ import numpy as np
 from decologr import Decologr as log
 
 from jdxi_editor.audio.audio_snapshot import SAMPLE_RATE
+from jdxi_editor.audio.portaudio import refresh_devices
 
 BLOCK_FRAMES = 512
 #: Seconds of audio the output keeps queued. The callback runs Python, so it
@@ -495,15 +496,7 @@ class SoundfontOutput:
             self.sfid = sfid
             self._allocate()
             opener = stream_factory or _output_stream
-            self._stream = opener(
-                samplerate=SAMPLE_RATE,
-                channels=2,
-                dtype="float32",
-                blocksize=BLOCK_FRAMES,
-                latency=OUTPUT_LATENCY,
-                device=resolved,
-                callback=self._callback,
-            )
+            self._stream = self._open_stream(opener, resolved)
             self.follows_default = resolved is None
             self._route = default_output_route() if self.follows_default else None
             self.underflows = 0
@@ -518,6 +511,41 @@ class SoundfontOutput:
             self.midi_port = None
             log.warning(f"SoundFont MIDI port not available: {ex}")
         return sfid
+
+    def _open_stream(self, opener: Callable, device: Optional[int]):
+        """
+        Open the output, refreshing PortAudio's device list if it refuses.
+
+        PortAudio reads the hardware once, at startup, so a stream opened
+        after headphones have come and gone asks for a device that has
+        moved or disappeared -- paInternalError, and the same for the
+        default output, whose identity was resolved just as early. One
+        retry on a freshly read device list is the difference between
+        playback following the route and nothing working until restart.
+
+        :param opener: Callable builds the stream
+        :param device: Optional[int] sounddevice index, None for default
+        :return: the open stream
+        """
+
+        def build():
+            return opener(
+                samplerate=SAMPLE_RATE,
+                channels=2,
+                dtype="float32",
+                blocksize=BLOCK_FRAMES,
+                latency=OUTPUT_LATENCY,
+                device=device,
+                callback=self._callback,
+            )
+
+        try:
+            return build()
+        except Exception as ex:
+            log.message(f"Output would not open ({ex}); rereading the devices")
+            if not refresh_devices():
+                raise
+            return build()
 
     def reopen(self) -> int:
         """

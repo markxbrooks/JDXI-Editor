@@ -10,6 +10,8 @@ from typing import List, Optional, Tuple
 
 from decologr import Decologr as log
 
+from jdxi_editor.audio import portaudio
+
 #: Bytes per sample. The stream is int16; the widget's "32bit" label records
 #: the same width.
 SAMPLE_WIDTH = 2
@@ -40,6 +42,10 @@ class _PcmStream:
 
     def __init__(self, stream) -> None:
         self._stream = stream
+        # Registered while recording: refreshing PortAudio's device list
+        # terminates every stream in the process, and losing a take to that
+        # would be worse than a SoundFont that waits for the next attempt.
+        self._hold = portaudio.hold("USB recording")
 
     def read(self, frames: int) -> bytes:
         data, _overflowed = self._stream.read(frames)
@@ -49,6 +55,8 @@ class _PcmStream:
         self._stream.stop()
 
     def close(self) -> None:
+        portaudio.release(self._hold)
+        self._hold = None
         self._stream.close()
 
 

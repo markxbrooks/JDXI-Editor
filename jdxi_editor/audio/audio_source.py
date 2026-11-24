@@ -11,6 +11,7 @@ import numpy as np
 
 from jdxi_editor.audio.audio_buffer import SampleRing
 from jdxi_editor.audio.audio_snapshot import BLOCK_SIZE, SAMPLE_RATE
+from jdxi_editor.audio import portaudio
 
 
 def _sounddevice():
@@ -93,6 +94,9 @@ class InputDeviceSource:
         # Larger than one block: PortAudio may deliver a different count,
         # and the callback still must not allocate.
         self._scratch = np.zeros((max(self.block * 8, 8192), 2), dtype=np.float32)
+        #: Registered while listening, so refreshing PortAudio's device list
+        #: cannot close this stream underneath the monitor
+        self._hold: Optional[int] = None
         self._stream = None
 
     @staticmethod
@@ -164,6 +168,7 @@ class InputDeviceSource:
                     error = ex
                     continue
                 self._stream = stream
+                self._hold = portaudio.hold("Audio Monitor")
                 self.sample_rate = rate
                 return rate
         raise RuntimeError(describe_open_error(error))
@@ -194,6 +199,8 @@ class InputDeviceSource:
         """
         stream = self._stream
         self._stream = None
+        portaudio.release(self._hold)
+        self._hold = None
         if stream is None:
             return
         try:
