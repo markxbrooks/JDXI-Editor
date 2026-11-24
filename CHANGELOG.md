@@ -33,6 +33,14 @@ All notable changes to JDXI-Editor are documented in this file.
   preference, and made three identical-looking entries a guess. The host API
   is used now, and a position only when two devices share both. A preference
   stored under the old labelling still resolves.
+- **The recording inputs are named the same way.** The recorder's device menu
+  led with the PortAudio index, which on Windows was the only thing
+  distinguishing the three entries one device gets -- one per host API, all
+  named identically -- and which moves when the hardware changes. The inputs
+  now carry the host API where the name repeats, and the channel count; the
+  index is still what the device is opened by, and is resolved afresh each
+  time the list is built. The diagnostic listing in the log names the host
+  API too.
 
 # [1.0.1] — 2026-11-23
 
