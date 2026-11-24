@@ -14,6 +14,22 @@ from picomidi.utils.conversion import (
     ms_to_midi_value,
 )
 
+from typing import NewType
+
+MidiValue = NewType("MidiValue", int)
+
+MIDI_VALUE_MIN = 0
+MIDI_VALUE_MAX = 127
+
+
+def midi_value(value: int) -> MidiValue:
+    """Create a validated 7-bit MIDI value."""
+    if not MIDI_VALUE_MIN <= value <= MIDI_VALUE_MAX:
+        raise ValueError(
+            f"MIDI value must be between 0 and 127, got {value}"
+        )
+
+    return MidiValue(value)
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
     """
@@ -212,7 +228,8 @@ class PitchEnvSliderSpinbox(QWidget):
             )
         else:
             converted_value = 64
-        log.message(f"convert_from_envelope: {value} -> {converted_value}")
+        result = midi_value(round(converted_value))
+        log.message(f"{value} -> {result}", scope="convert_from_envelope")
         return converted_value
 
     def _slider_changed(self, value: int) -> None:
