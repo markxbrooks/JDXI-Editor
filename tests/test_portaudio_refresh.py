@@ -25,7 +25,9 @@ from jdxi_editor.audio import portaudio
 from jdxi_editor.audio.soundfont_output import SoundfontOutput, _device_label
 
 #: What CoreAudio answers with once the device it was told about has gone.
-INTERNAL_ERROR = "Error opening OutputStream: Internal PortAudio error [PaErrorCode -9986]"
+INTERNAL_ERROR = (
+    "Error opening OutputStream: Internal PortAudio error [PaErrorCode -9986]"
+)
 
 
 class FakeSounddevice:
@@ -201,8 +203,8 @@ def _listing(*names):
 
 def test_the_retry_resolves_the_index_again_on_the_new_list(monkeypatch):
     """After a reread, the chosen name may sit at a different index."""
-    before = _listing("AirPods", "MacBook Pro Speakers")      # Speakers at 1
-    after = _listing("MacBook Pro Speakers")                   # now at 0
+    before = _listing("AirPods", "MacBook Pro Speakers")  # Speakers at 1
+    after = _listing("MacBook Pro Speakers")  # now at 0
     listings = [before, before, after]
     monkeypatch.setattr(
         "jdxi_editor.audio.soundfont_output.output_devices",
@@ -268,3 +270,103 @@ def test_reopen_keeps_the_choice_while_the_device_is_away(monkeypatch):
     assert player.reopen() == 1
     assert player._opened_with is None, "opened something else by position"
     assert player._requested_name == "Yamaha THRII", "the choice was forgotten"
+
+
+# --- Windows lists one device once per host API ------------------------------
+
+
+class FakeDevices:
+    """A sounddevice stand-in with a fixed device table."""
+
+    def __init__(self, devices, apis) -> None:
+        self._devices = devices
+        self._apis = apis
+
+    def query_devices(self):
+        return self._devices
+
+    def query_hostapis(self):
+        return self._apis
+
+
+def _out(name, hostapi):
+    return {"name": name, "max_output_channels": 2, "hostapi": hostapi}
+
+
+#: What Windows really looks like: the same speakers under three host APIs,
+#: named identically, and the name itself ends in a parenthesis.
+WINDOWS = FakeDevices(
+    [
+        _out("Speakers (Realtek(R) Audio)", 0),
+        _out("Speakers (Realtek(R) Audio)", 1),
+        _out("Speakers (Realtek(R) Audio)", 2),
+        _out("Yamaha THRII", 1),
+    ],
+    [{"name": "MME"}, {"name": "Windows WASAPI"}, {"name": "Windows DirectSound"}],
+)
+
+
+def test_a_repeated_name_is_told_apart_by_its_host_api():
+    from jdxi_editor.audio.soundfont_output import output_devices
+
+    labels = [label for label, _index in output_devices(WINDOWS)]
+    assert labels == [
+        "Speakers (Realtek(R) Audio) (MME)",
+        "Speakers (Realtek(R) Audio) (Windows WASAPI)",
+        "Speakers (Realtek(R) Audio) (Windows DirectSound)",
+        "Yamaha THRII",  # unique, so left alone
+    ]
+    assert len(set(labels)) == len(labels), "two devices share a label"
+
+
+def test_a_name_that_ends_in_a_parenthesis_survives_the_round_trip():
+    """The suffix is recorded, not parsed off, so the real name is intact."""
+    from jdxi_editor.audio.soundfont_output import _unindexed_name, output_devices
+
+    labels = [label for label, _index in output_devices(WINDOWS)]
+    assert _unindexed_name(labels[0]) == "Speakers (Realtek(R) Audio)"
+    assert _unindexed_name(labels[3]) == "Yamaha THRII"
+
+
+def test_two_identical_devices_on_one_host_api_keep_an_index():
+    from jdxi_editor.audio.soundfont_output import output_devices
+
+    twins = FakeDevices(
+        [_out("USB Audio CODEC", 0), _out("USB Audio CODEC", 0)],
+        [{"name": "MME"}],
+    )
+    labels = [label for label, _index in output_devices(twins)]
+    assert labels == ["USB Audio CODEC (MME, 0)", "USB Audio CODEC (MME, 1)"]
+    assert len(set(labels)) == 2
+
+
+def test_a_missing_host_api_still_falls_back_to_the_index():
+    from jdxi_editor.audio.soundfont_output import output_devices
+
+    no_apis = FakeDevices([_out("Output", 9), _out("Output", 9)], [])
+    assert [label for label, _index in output_devices(no_apis)] == [
+        "Output (0)",
+        "Output (1)",
+    ]
+
+
+def test_an_unknown_label_falls_back_to_the_old_index_rule():
+    """A preference stored by an older version still resolves."""
+    from jdxi_editor.audio.soundfont_output import _unindexed_name
+
+    assert _unindexed_name("MacBook Pro Speakers (2)") == "MacBook Pro Speakers"
+
+
+def test_a_preference_stored_under_the_old_label_still_resolves():
+    """It was "(2)" then and is the host API now; the device is the same."""
+    from jdxi_editor.audio.soundfont_output import chosen_output, output_devices
+
+    labels = [label for label, _index in output_devices(WINDOWS)]
+    assert (
+        chosen_output("", "Speakers (Realtek(R) Audio)", labels)
+        == "Speakers (Realtek(R) Audio) (MME)"
+    )
+    # A device that is simply gone still falls back to the default
+    assert chosen_output("", "Focusrite Scarlett", labels) == ""
+    # An explicit default is never overridden by a stored name
+    assert chosen_output("(Default)", "Yamaha THRII", labels) == ""
