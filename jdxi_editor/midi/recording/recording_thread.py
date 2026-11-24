@@ -78,9 +78,24 @@ class WavRecordingThread(QThread):
                 f"[WavRecordingThread] Default sample rate = {info['default_samplerate']}"
             )
 
+            # An output has nothing to capture. Opening it anyway succeeds
+            # on some platforms and records a file of zeroes, which looks
+            # like a broken recorder rather than the wrong device chosen.
+            inputs = int(info.get("max_input_channels") or 0)
+            if inputs <= 0:
+                name = info.get("name") or f"index {index}"
+                message = (
+                    f"The selected device ({name}) has no input channels, so "
+                    "there is nothing to record. Choose an audio input in "
+                    "MIDI Configuration."
+                )
+                log.error(f"[WavRecordingThread] {message}")
+                self.recording_error.emit(message)
+                return
+
             # Prefer stereo when the device supports it (USB amps like THRII
             # often return silence if opened as mono on Windows).
-            max_in = max(1, int(info["max_input_channels"]))
+            max_in = max(1, inputs)
             self.recorder.channels = min(2, max_in)
             self.recorder.rate = int(info["default_samplerate"])
             try:
