@@ -85,6 +85,15 @@ class PianoKey(QPushButton):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
+            if self.is_pressed:
+                return
+            if (
+                self.release_animation.state() != QPropertyAnimation.State.Running
+                and self.press_animation.state() != QPropertyAnimation.State.Running
+            ):
+                # The layout may have moved the key since it was first shown
+                self.original_geometry = self.geometry()
+                self._geometry_initialized = True
             self.is_pressed = True
             self.noteOn.emit(self.note_num)
             self.update()
@@ -108,30 +117,50 @@ class PianoKey(QPushButton):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
-            self.is_pressed = False
-            self.noteOff.emit(self.note_num)
-            self.update()
+            self.release()
 
-            bounce_up = QRect(
-                self.original_geometry.x(),
-                self.original_geometry.y() - 2,
-                self.original_geometry.width(),
-                self.original_geometry.height() + 2,
-            )
+    def hideEvent(self, event) -> None:
+        self.release()
+        super().hideEvent(event)
 
-            bounce_back = self.original_geometry
+    def release(self) -> None:
+        """
+        Let the key up: send its note off and spring it back, once per press.
 
-            self.release_animation.stop()
-            self.release_animation.setDuration(150)
-            self.release_animation.setKeyValues(
-                [
-                    (0.0, self.geometry()),
-                    (0.4, bounce_up),
-                    (1.0, bounce_back),
-                ]
-            )
-            self.release_animation.setEasingCurve(QEasingCurve.OutBounce)
-            self.release_animation.start()
+        :return: None
+        """
+        if not self.is_pressed:
+            return
+        self.is_pressed = False
+        self.noteOff.emit(self.note_num)
+        self.update()
+        self.press_animation.stop()
+        if not self._geometry_initialized:
+            return
+        if not self.isVisible():
+            self.setGeometry(self.original_geometry)
+            return
+
+        bounce_up = QRect(
+            self.original_geometry.x(),
+            self.original_geometry.y() - 2,
+            self.original_geometry.width(),
+            self.original_geometry.height() + 2,
+        )
+
+        bounce_back = self.original_geometry
+
+        self.release_animation.stop()
+        self.release_animation.setDuration(150)
+        self.release_animation.setKeyValues(
+            [
+                (0.0, self.geometry()),
+                (0.4, bounce_up),
+                (1.0, bounce_back),
+            ]
+        )
+        self.release_animation.setEasingCurve(QEasingCurve.OutBounce)
+        self.release_animation.start()
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)

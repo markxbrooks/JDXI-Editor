@@ -30,7 +30,7 @@ This module requires PySide6 and proper integration with the JD-Xi Manager's sig
 """
 
 from decologr import Decologr as log
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QGraphicsDropShadowEffect, QHBoxLayout, QLabel
 
@@ -67,9 +67,19 @@ def drum_label_style(color: str) -> str:
 class PianoKeyboard(QWidget):
     """Widget containing a row of piano keys styled like JD-Xi"""
 
+    noteOn = Signal(int)
+    noteOff = Signal(int)
+
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.current_channel = 0  # Default to analog synth channel
+
+        # Connected here, once: the keys are rebuilt on every resize, by which
+        # time this widget has been moved into the status bar
+        if hasattr(parent, "handle_piano_note_on"):
+            self.noteOn.connect(parent.handle_piano_note_on)
+        if hasattr(parent, "handle_piano_note_off"):
+            self.noteOff.connect(parent.handle_piano_note_off)
 
         # Define note patterns
         self.white_notes = KEYBOARD_WHITE_NOTES
@@ -110,13 +120,6 @@ class PianoKeyboard(QWidget):
         keyboard_layout = QHBoxLayout(keyboard_widget)
         keyboard_layout.setSpacing(0)
         keyboard_layout.setContentsMargins(1, 1, 1, 1)
-
-        # Add shadow effect to keyboard widget
-        shadow_effect = QGraphicsDropShadowEffect()
-        shadow_effect.setBlurRadius(10)
-        shadow_effect.setOffset(5, 5)
-        shadow_effect.setColor(QColor(0, 0, 0, 50))
-        keyboard_widget.setGraphicsEffect(shadow_effect)
 
         # Create keys
         self._create_keys(keyboard_widget)
@@ -162,6 +165,7 @@ class PianoKeyboard(QWidget):
         if container is None:
             return
         for key in container.findChildren(PianoKey):
+            key.release()
             container.layout().removeWidget(key)
             key.setParent(None)
             key.deleteLater()
@@ -234,11 +238,8 @@ class PianoKeyboard(QWidget):
             )
             apply_shadow(key)
             keyboard_widget.layout().addWidget(key)
-
-            if hasattr(self.parent(), "handle_piano_note_on"):
-                key.noteOn.connect(self.parent().handle_piano_note_on)
-            if hasattr(self.parent(), "handle_piano_note_off"):
-                key.noteOff.connect(self.parent().handle_piano_note_off)
+            key.noteOn.connect(self.noteOn)
+            key.noteOff.connect(self.noteOff)
 
         # Add black keys
         black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
@@ -260,11 +261,8 @@ class PianoKeyboard(QWidget):
             )
             black_key.move(x_pos, 0)
             black_key.show()
-
-            if hasattr(self.parent(), "handle_piano_note_on"):
-                black_key.noteOn.connect(self.parent().handle_piano_note_on)
-            if hasattr(self.parent(), "handle_piano_note_off"):
-                black_key.noteOff.connect(self.parent().handle_piano_note_off)
+            black_key.noteOn.connect(self.noteOn)
+            black_key.noteOff.connect(self.noteOff)
 
     def set_midi_channel(self, channel: int) -> None:
         """Set MIDI channel for note messages
