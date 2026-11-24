@@ -20,6 +20,19 @@ All notable changes to JDXI-Editor are documented in this file.
   `WavRecordingThread` opening it anyway, which on some platforms writes a
   file of zeroes. It now names the device and says there is nothing to
   record.
+- **The audio output is remembered by name, not by position.** A sounddevice
+  index is a position in PortAudio's list, which is rebuilt whenever the
+  hardware changes, so reopening by a remembered index could open whichever
+  device had moved into that slot. The name is kept instead and the index
+  resolved from it at every open. A chosen device that has gone falls back to
+  the system default, and the name is kept so the device is taken up again
+  when it returns.
+- **Outputs of the same name are told apart by host API.** Windows lists one
+  device once per host API under the same name, so the list appended the
+  position to tell them apart -- which put a position back into the stored
+  preference, and made three identical-looking entries a guess. The host API
+  is used now, and a position only when two devices share both. A preference
+  stored under the old labelling still resolves.
 
 # [1.0.1] — 2026-11-23
 
