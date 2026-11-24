@@ -40,7 +40,9 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         super().__init__(parent=parent, midi_state=midi_state)
         """constructor"""
         self.group_title: str = "USB Recorder"
-        self.recorder: USBRecorder = USBRecorder(channels=1)
+        # Stereo by default: mono opens succeed on many USB amps (THRII) but
+        # return digital silence; the Audio Monitor uses the same preference.
+        self.recorder: USBRecorder = USBRecorder(channels=2)
         self.file_select: QPushButton = QPushButton()
         self.file_output_name: str = ""
         self.file_record_checkbox: QCheckBox = QCheckBox()
@@ -173,30 +175,41 @@ class USBFileRecordingWidget(JDXiMidiGroup):
 
         usb port selection
 
-        :return: list List of USB devices
+        :return: list List of USB input device labels
         """
-        usb_devices = self.recorder.list_devices()
+        # Only input-capable devices, with the real PortAudio index in itemData
+        # (combo row index != device index when outputs are filtered out).
+        inputs = self.recorder.list_input_devices()
         self.port_select_combo.clear()
-        self.port_select_combo.addItems(usb_devices)
-        self.port_jdxi_auto_connect(usb_devices)
-        return usb_devices
+        labels = []
+        for label, device_index in inputs:
+            self.port_select_combo.addItem(label, device_index)
+            labels.append(label)
+        self.port_auto_connect(labels)
+        return labels
 
-    def port_jdxi_auto_connect(self, usb_devices: list) -> None:
+    def port_auto_connect(self, usb_devices: list) -> None:
         """
-        usb_port_jdxi_auto_connect
+        Auto-select JD-Xi, then Yamaha THR / THRII, then the first input.
 
-        :param usb_devices: list
+        :param usb_devices: list display labels currently in the combo
         :return: None
-
-        Auto-select the first matching device
         """
-        pattern = re.compile(r"jd-?xi", re.IGNORECASE)
-        for i, item in enumerate(usb_devices):
-            if pattern.search(item):
-                self.port_select_combo.setCurrentIndex(i)
-                self.recorder.usb_port_input_device_index = i
-                log.message(f"Auto-selected {item}")
-                break
+        patterns = (
+            re.compile(r"jd-?xi", re.IGNORECASE),
+            re.compile(r"thr\s*i{0,2}\b|yamaha", re.IGNORECASE),
+        )
+        for pattern in patterns:
+            for row, item in enumerate(usb_devices):
+                if pattern.search(item):
+                    self.port_select_combo.setCurrentIndex(row)
+                    device_index = self.port_select_combo.itemData(row)
+                    self.recorder.usb_port_input_device_index = device_index
+                    log.message(f"Auto-selected {item} (device {device_index})")
+                    return
+        if self.port_select_combo.count() > 0:
+            self.port_select_combo.setCurrentIndex(0)
+            self.recorder.usb_port_input_device_index = self.port_select_combo.itemData(0)
 
     def on_usb_file_output_name_changed(self, state: Qt.CheckState):
         """
@@ -240,8 +253,13 @@ class USBFileRecordingWidget(JDXiMidiGroup):
             log.message(f"🎙️ Starting WAV recording to: {self.file_output_name}")
             log.message(f"🎙️ Recording duration: {duration_seconds} seconds")
 
-            selected_index = self.port_select_combo.currentIndex()
-            log.message(f"🎙️ Using USB input device index: {selected_index}")
+            selected_index = self.port_select_combo.currentData()
+            if selected_index is None:
+                selected_index = self.port_select_combo.currentIndex()
+            log.message(
+                f"🎙️ Using USB input device index: {selected_index} "
+                f"({self.port_select_combo.currentText()})"
+            )
 
             start_recording(
                 self.recorder,

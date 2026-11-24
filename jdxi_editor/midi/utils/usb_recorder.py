@@ -6,6 +6,7 @@ wheels carry PortAudio, so this does not use PyAudio.
 """
 
 import wave
+from typing import List, Optional, Tuple
 
 from decologr import Decologr as log
 
@@ -59,12 +60,16 @@ class USBRecorder:
     def __init__(
         self,
         input_device_index: int = None,
-        channels: int = 1,
+        channels: int = 2,
         rate: int = 44100,
         frames_per_buffer: int = 1024,
     ):
         """
         Initializes the recorder with the specified settings.
+
+        Stereo is the default: many USB amps (e.g. Yamaha THRII) open as mono
+        on Windows but then return silence; the Audio Monitor already prefers
+        two channels for the same reason.
         """
         self.input_device_index = input_device_index
         self.channels = channels
@@ -76,7 +81,7 @@ class USBRecorder:
         self.usb_recording_rates = {"16bit": "int16", "32bit": "int16"}
 
     def list_devices(self):
-        """Prints a list of available audio input devices."""
+        """Prints a list of available audio devices (all PortAudio entries)."""
         log.message("[USBRecorder] Available audio input devices:")
         devices = _query_devices()
         if devices is None:
@@ -89,6 +94,26 @@ class USBRecorder:
             log.info(device_info)
             device_list.append(device_info)
         return device_list
+
+    def list_input_devices(self) -> List[Tuple[str, int]]:
+        """
+        Input-capable devices as (display name, PortAudio index).
+
+        Output-only entries are omitted so the UI cannot pick a device that
+        cannot capture (a common cause of silent WAVs).
+        """
+        devices = _query_devices()
+        if devices is None:
+            return []
+        found: List[Tuple[str, int]] = []
+        for index, info in enumerate(devices):
+            max_in = int(info["max_input_channels"])
+            if max_in <= 0:
+                continue
+            name = str(info["name"])
+            label = f"{index}: {name} (in: {max_in})"
+            found.append((label, int(index)))
+        return found
 
     def input_info(self, index: int) -> dict:
         """
@@ -111,20 +136,46 @@ class USBRecorder:
         """
         Open the selected input as 16-bit PCM.
 
+        Tries stereo first when the device reports at least two inputs, then
+        falls back to mono — matching InputDeviceSource in the Audio Monitor.
+
         :return: _PcmStream
         """
         module = _sounddevice()
         if module is None:
             raise RuntimeError("sounddevice is not installed")
-        stream = module.RawInputStream(
-            device=self.input_device_index,
-            channels=self.channels,
-            samplerate=self.rate,
-            blocksize=self.frames_per_buffer,
-            dtype="int16",
+
+        preferred = self.channels if self.channels > 0 else 2
+        channel_tries = []
+        for count in (preferred, 2, 1):
+            if count > 0 and count not in channel_tries:
+                channel_tries.append(count)
+
+        error: Optional[Exception] = None
+        for channels in channel_tries:
+            try:
+                stream = module.RawInputStream(
+                    device=self.input_device_index,
+                    channels=channels,
+                    samplerate=self.rate,
+                    blocksize=self.frames_per_buffer,
+                    dtype="int16",
+                )
+                stream.start()
+                self.channels = channels
+                log.message(
+                    f"[USBRecorder] Opened device {self.input_device_index} "
+                    f"at {self.rate} Hz, {channels} channel(s)"
+                )
+                return _PcmStream(stream)
+            except Exception as ex:
+                error = ex
+                log.message(
+                    f"[USBRecorder] Open with {channels} channel(s) failed: {ex}"
+                )
+        raise RuntimeError(
+            str(error) if error else "Unable to open USB input device"
         )
-        stream.start()
-        return _PcmStream(stream)
 
     def record(self, duration, output_file, rate="16bit"):
         """

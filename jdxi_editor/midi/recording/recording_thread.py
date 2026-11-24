@@ -1,5 +1,6 @@
 """Audio recording thread for capturing audio input."""
 
+import array
 import wave
 
 from decologr import Decologr as log
@@ -7,6 +8,21 @@ from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.utils.usb_recorder import USBRecorder
+
+
+def _pcm_peak_abs(frames: list[bytes]) -> int:
+    """Largest absolute int16 sample across captured PCM blocks."""
+    peak = 0
+    for block in frames:
+        if not block:
+            continue
+        samples = array.array("h")
+        samples.frombytes(block[: len(block) - (len(block) % 2)])
+        for sample in samples:
+            value = sample if sample >= 0 else -sample
+            if value > peak:
+                peak = value
+    return peak
 
 
 class WavRecordingThread(QThread):
@@ -62,9 +78,10 @@ class WavRecordingThread(QThread):
                 f"[WavRecordingThread] Default sample rate = {info['default_samplerate']}"
             )
 
-            self.recorder.channels = min(
-                self.recorder.channels, info["max_input_channels"]
-            )
+            # Prefer stereo when the device supports it (USB amps like THRII
+            # often return silence if opened as mono on Windows).
+            max_in = max(1, int(info["max_input_channels"]))
+            self.recorder.channels = min(2, max_in)
             self.recorder.rate = int(info["default_samplerate"])
             try:
                 stream = self.recorder.open_input()
@@ -128,6 +145,19 @@ class WavRecordingThread(QThread):
 
         if not frames:
             log.message("No audio captured.")
+            self.recording_error.emit("No audio captured from the USB input device.")
+            return
+
+        peak = _pcm_peak_abs(frames)
+        if peak == 0:
+            message = (
+                "Recording completed but the WAV is silent (all samples are zero). "
+                "Check that the correct USB input is selected (e.g. Yamaha THRII), "
+                "that the amp is routing USB audio, and that another app is not "
+                "holding the device exclusively."
+            )
+            log.error(f"[WavRecordingThread] {message}")
+            self.recording_error.emit(message)
             return
 
         try:
@@ -147,7 +177,8 @@ class WavRecordingThread(QThread):
         if isinstance(self.output_file, str) and self.output_file:
             self.recording_finished.emit(self.output_file)
             log.message(
-                f"[WavRecordingThread] File successfully saved to {self.output_file}"
+                f"[WavRecordingThread] File successfully saved to {self.output_file} "
+                f"(peak={peak}, channels={self.recorder.channels})"
             )
         else:
             error_msg = f"Recording completed but output_file is invalid: {type(self.output_file)} - {self.output_file}"

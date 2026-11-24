@@ -33,7 +33,7 @@ class TestUSBRecorder(unittest.TestCase):
         recorder = USBRecorder()
 
         self.assertIsNone(recorder.input_device_index)
-        self.assertEqual(recorder.channels, 1)
+        self.assertEqual(recorder.channels, 2)
         self.assertEqual(recorder.rate, 44100)
         self.assertEqual(recorder.frames_per_buffer, 1024)
         self.assertFalse(recorder.file_save_recording)
@@ -73,6 +73,23 @@ class TestUSBRecorder(unittest.TestCase):
         self.assertIn("Device 2", device_list[1])
         self.assertIn("Device 3", device_list[2])
         query.assert_called_once()
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_list_input_devices_skips_outputs(self, query):
+        """Only devices with input channels are offered to the UI."""
+        query.return_value = [
+            {"name": "Speakers", "max_input_channels": 0},
+            {"name": "THRII", "max_input_channels": 2},
+            {"name": "Mic", "max_input_channels": 1},
+        ]
+
+        recorder = USBRecorder()
+        inputs = recorder.list_input_devices()
+
+        self.assertEqual(len(inputs), 2)
+        self.assertEqual(inputs[0][1], 1)
+        self.assertIn("THRII", inputs[0][0])
+        self.assertEqual(inputs[1][1], 2)
 
     def test_close(self):
         """Closing the recorder needs no audio session."""
@@ -114,7 +131,8 @@ class TestWavRecordingThread(unittest.TestCase):
         }
 
         self.mock_stream = MagicMock()
-        self.mock_stream.read.return_value = b"\x00" * 1024
+        # Non-silent int16 PCM (zeros would be rejected as digital silence)
+        self.mock_stream.read.return_value = b"\x00\x10" * 512
         self.mock_recorder.open_input.return_value = self.mock_stream
 
     def test_init(self):
@@ -218,6 +236,20 @@ class TestWavRecordingThread(unittest.TestCase):
         # So we just verify the method completes without error
         # The exact behavior depends on the duration calculation
         pass  # Test passes if no exception is raised
+
+    def test_record_rejects_digital_silence(self):
+        """All-zero PCM must surface as an error (silent THRII WAVs)."""
+        self.mock_stream.read.return_value = b"\x00" * 1024
+        thread = WavRecordingThread(
+            recorder=self.mock_recorder,
+            duration=0.1,
+            output_file="/tmp/silent.wav",
+        )
+        errors = []
+        thread.recording_error.connect(errors.append)
+        thread.record()
+        self.assertEqual(len(errors), 1)
+        self.assertIn("silent", errors[0].lower())
 
     def test_record_stream_open_error(self):
         """Test recording when stream opening fails."""

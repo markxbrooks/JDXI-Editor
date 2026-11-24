@@ -27,6 +27,14 @@ def app():
     return QCoreApplication.instance() or QCoreApplication([])
 
 
+@pytest.fixture(autouse=True)
+def clear_running_threads():
+    """Avoid leftover MagicMocks from other modules' start_recording patches."""
+    helpers._running_threads.clear()
+    yield
+    helpers._running_threads.clear()
+
+
 def _fake_record(self):
     """Record until stopped (or ~2 s), then report the file once."""
     self.running = True
