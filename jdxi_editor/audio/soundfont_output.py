@@ -6,7 +6,6 @@ own audio driver is left closed, so a device name never has to match
 CoreAudio's list.
 """
 
-import re
 import sys
 import threading
 from ctypes import (
@@ -25,7 +24,11 @@ import numpy as np
 from decologr import Decologr as log
 
 from jdxi_editor.audio.audio_snapshot import SAMPLE_RATE
-from jdxi_editor.audio.portaudio import refresh_devices
+from jdxi_editor.audio.portaudio import (
+    label_devices,
+    plain_name,
+    refresh_devices,
+)
 
 BLOCK_FRAMES = 512
 #: Seconds of audio the output keeps queued. The callback runs Python, so it
@@ -70,8 +73,10 @@ def output_devices(module=_INSTALLED) -> list[tuple[str, int]]:
     """
     Output devices as ``(display name, sounddevice index)``.
 
-    A repeated name is shown with its index. ``module=None`` reports that
-    sounddevice is absent. Omit ``module`` to query the installed library.
+    A repeated name is told apart by its host API; see
+    :func:`~jdxi_editor.audio.portaudio.label_devices`. ``module=None``
+    reports that sounddevice is absent. Omit ``module`` to query the
+    installed library.
 
     :param module: sounddevice, or None when the library did not import
     :return: list
@@ -88,47 +93,7 @@ def output_devices(module=_INSTALLED) -> list[tuple[str, int]]:
     except Exception:
         apis = []
 
-    found = []
-    for index, device in enumerate(devices):
-        if int(device["max_output_channels"]) > 0:
-            found.append((str(device["name"]), _host_api_name(device, apis), int(index)))
-
-    names = [name for name, _api, _index in found]
-    with_api = [(name, api) for name, api, _index in found]
-    labelled = []
-    plain: dict[str, str] = {}
-    for name, api, index in found:
-        if names.count(name) == 1:
-            label = name
-        elif api and with_api.count((name, api)) == 1:
-            # Windows lists one device once per host API, under the same
-            # name each time: "Speakers (Realtek(R) Audio)" appears for
-            # WASAPI, MME and DirectSound alike. The API is what tells them
-            # apart, and unlike a position it does not move.
-            label = f"{name} ({api})"
-        elif api:
-            label = f"{name} ({api}, {index})"
-        else:
-            label = f"{name} ({index})"
-        labelled.append((label, index))
-        plain[label] = name
-    _plain_names.clear()
-    _plain_names.update(plain)
-    return labelled
-
-
-def _host_api_name(device, apis: list) -> str:
-    """
-    Name of the host API a device belongs to, or ``""``.
-
-    :param device: a sounddevice device record
-    :param apis: the result of ``query_hostapis()``
-    :return: str
-    """
-    try:
-        return str(apis[int(device["hostapi"])]["name"])
-    except Exception:
-        return ""
+    return label_devices(devices, apis, "max_output_channels")
 
 
 def chosen_output(current: str, saved: str, labels: list[str]) -> str:
@@ -221,15 +186,6 @@ def default_output_route() -> Optional[tuple]:
 
 
 _BUILTIN_OUTPUT_NAMES = {"macbook pro speakers", "external headphones"}
-_INDEX_SUFFIX = re.compile(r" \(\d+\)$")
-
-#: The device's own name for each label :func:`output_devices` handed out.
-#: A label may carry the host API, and a position after it, to tell devices
-#: of the same name apart. That suffix is this module's own doing, and it is
-#: recorded rather than parsed back off, because a trailing parenthesis is
-#: not a reliable sign of one: "Speakers (Realtek(R) Audio)" is a real
-#: Windows device name.
-_plain_names: dict[str, str] = {}
 
 # CoreAudio four-character selectors.
 _SCOPE_GLOBAL = 0x676C6F62  # 'glob'
@@ -300,20 +256,10 @@ def _unindexed_name(label: str) -> str:
     """
     A device's own name, without the suffix added for a repeated one.
 
-    Looked up in :data:`_plain_names`, so no parenthesis in a genuine device
-    name is ever mistaken for the suffix. A label this module did not hand
-    out -- one built by hand, or stored by an older version -- falls back to
-    dropping a trailing `` (index)``.
-
     :param label: str device label
     :return: str
     """
-    if not label:
-        return ""
-    plain = _plain_names.get(label)
-    if plain is not None:
-        return plain
-    return _INDEX_SUFFIX.sub("", label)
+    return plain_name(label)
 
 
 def _builtin_output_name(label: str) -> bool:

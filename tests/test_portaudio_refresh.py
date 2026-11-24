@@ -370,3 +370,34 @@ def test_a_preference_stored_under_the_old_label_still_resolves():
     assert chosen_output("", "Focusrite Scarlett", labels) == ""
     # An explicit default is never overridden by a stored name
     assert chosen_output("(Default)", "Yamaha THRII", labels) == ""
+
+
+def test_listing_the_inputs_does_not_forget_the_output_labels():
+    """
+    Inputs and outputs are labelled by the same code and share the record of
+    what each label's device is really called. Emptying that record per
+    listing would leave an output label to be guessed at, and a guess at
+    "External Headphones (MME)" is what decides, on macOS, whether the
+    system route is followed.
+    """
+    from jdxi_editor.audio.portaudio import label_devices, plain_name
+    from jdxi_editor.audio.soundfont_output import output_devices
+
+    out_label = output_devices(WINDOWS)[0][0]
+    label_devices(
+        [
+            {
+                "name": "Microphone (Realtek(R) Audio)",
+                "max_input_channels": 2,
+                "hostapi": 0,
+            },
+            {
+                "name": "Microphone (Realtek(R) Audio)",
+                "max_input_channels": 2,
+                "hostapi": 1,
+            },
+        ],
+        [{"name": "MME"}, {"name": "Windows WASAPI"}],
+        "max_input_channels",
+    )
+    assert plain_name(out_label) == "Speakers (Realtek(R) Audio)"

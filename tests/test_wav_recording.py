@@ -13,13 +13,13 @@ import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
-from jdxi_editor.midi.utils.usb_recorder import USBRecorder
-from jdxi_editor.midi.utils.helpers import (
-    start_recording,
-    on_usb_recording_finished,
-    on_usb_recording_error,
-)
 from jdxi_editor.midi.recording.recording_thread import WavRecordingThread
+from jdxi_editor.midi.utils.helpers import (
+    on_usb_recording_error,
+    on_usb_recording_finished,
+    start_recording,
+)
+from jdxi_editor.midi.utils.usb_recorder import USBRecorder
 
 
 class TestUSBRecorder(unittest.TestCase):
@@ -90,6 +90,127 @@ class TestUSBRecorder(unittest.TestCase):
         self.assertEqual(inputs[0][1], 1)
         self.assertIn("THRII", inputs[0][0])
         self.assertEqual(inputs[1][1], 2)
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_hostapis")
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_an_input_repeated_per_host_api_is_told_apart(self, query, hostapis):
+        """
+        Windows lists one input once per host API, named identically.
+
+        The three THRII entries used to differ only by the leading PortAudio
+        index, which moves when the hardware changes and tells the reader
+        nothing. The host API does neither.
+        """
+        hostapis.return_value = [
+            {"name": "MME"},
+            {"name": "Windows WASAPI"},
+            {"name": "Windows DirectSound"},
+        ]
+        query.return_value = [
+            {"name": "Speakers", "max_input_channels": 0, "hostapi": 0},
+            {"name": "Line In (Yamaha THR-II)", "max_input_channels": 2, "hostapi": 0},
+            {"name": "Line In (Yamaha THR-II)", "max_input_channels": 2, "hostapi": 1},
+            {"name": "Line In (Yamaha THR-II)", "max_input_channels": 2, "hostapi": 2},
+            {"name": "JD-Xi", "max_input_channels": 2, "hostapi": 0},
+        ]
+
+        inputs = USBRecorder().list_input_devices()
+
+        self.assertEqual(
+            [label for label, _index in inputs],
+            [
+                "Line In (Yamaha THR-II) (MME) (in: 2)",
+                "Line In (Yamaha THR-II) (Windows WASAPI) (in: 2)",
+                "Line In (Yamaha THR-II) (Windows DirectSound) (in: 2)",
+                "JD-Xi (in: 2)",  # the only one of its name, so left alone
+            ],
+        )
+        # The index is still what the device is opened by, and it is the
+        # real PortAudio index, not the row: the output was skipped.
+        self.assertEqual([index for _label, index in inputs], [1, 2, 3, 4])
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_hostapis")
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_a_name_that_ends_in_a_parenthesis_is_not_mistaken_for_a_suffix(
+        self, query, hostapis
+    ):
+        """A real Windows name ends in one, so the plain name is recorded."""
+        from jdxi_editor.audio.portaudio import plain_name
+
+        hostapis.return_value = [{"name": "MME"}, {"name": "Windows WASAPI"}]
+        query.return_value = [
+            {
+                "name": "Microphone (Realtek(R) Audio)",
+                "max_input_channels": 2,
+                "hostapi": 0,
+            },
+            {
+                "name": "Microphone (Realtek(R) Audio)",
+                "max_input_channels": 2,
+                "hostapi": 1,
+            },
+        ]
+
+        labels = [label for label, _index in USBRecorder().list_input_devices()]
+
+        self.assertEqual(len(set(labels)), 2, "two inputs share a label")
+        for label in labels:
+            self.assertEqual(plain_name(label), "Microphone (Realtek(R) Audio)")
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_hostapis")
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_identical_inputs_on_one_host_api_keep_a_position(self, query, hostapis):
+        """Two of the same interface: the position is the last resort."""
+        hostapis.return_value = [{"name": "MME"}]
+        query.return_value = [
+            {"name": "USB Audio CODEC", "max_input_channels": 2, "hostapi": 0},
+            {"name": "USB Audio CODEC", "max_input_channels": 2, "hostapi": 0},
+        ]
+
+        labels = [label for label, _index in USBRecorder().list_input_devices()]
+
+        self.assertEqual(
+            labels,
+            ["USB Audio CODEC (MME, 0) (in: 2)", "USB Audio CODEC (MME, 1) (in: 2)"],
+        )
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_hostapis")
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_the_auto_connect_patterns_still_match_the_labels(self, query, hostapis):
+        """
+        The widget picks a device by matching its label with a regular
+        expression, so a change to the labelling has to keep those matching.
+        """
+        import re
+
+        hostapis.return_value = [{"name": "MME"}, {"name": "Windows WASAPI"}]
+        query.return_value = [
+            {"name": "JD-Xi", "max_input_channels": 2, "hostapi": 0},
+            {"name": "JD-Xi", "max_input_channels": 2, "hostapi": 1},
+            {"name": "Yamaha THR30II", "max_input_channels": 2, "hostapi": 0},
+        ]
+        patterns = (
+            re.compile(r"jd-?xi", re.IGNORECASE),
+            re.compile(r"thr\s*i{0,2}\b|yamaha", re.IGNORECASE),
+        )
+
+        labels = [label for label, _index in USBRecorder().list_input_devices()]
+
+        self.assertTrue(patterns[0].search(labels[0]))
+        self.assertTrue(patterns[1].search(labels[2]))
+
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_hostapis")
+    @patch("jdxi_editor.midi.utils.usb_recorder._query_devices")
+    def test_the_diagnostic_listing_names_the_host_api(self, query, hostapis):
+        """list_devices is for reading a log, so it keeps the position too."""
+        hostapis.return_value = [{"name": "Core Audio"}]
+        query.return_value = [
+            {"name": "Mic", "max_input_channels": 1, "hostapi": 0},
+        ]
+
+        lines = USBRecorder().list_devices()
+
+        self.assertEqual(lines, ["0: Mic [Core Audio] (input channels: 1)"])
 
     def test_close(self):
         """Closing the recorder needs no audio session."""
@@ -196,9 +317,7 @@ class TestWavRecordingThread(unittest.TestCase):
             self.mock_recorder.open_input.assert_called_once_with()
 
             # Verify stream.read was called expected number of times
-            self.assertEqual(
-                self.mock_stream.read.call_count, expected_iterations
-            )
+            self.assertEqual(self.mock_stream.read.call_count, expected_iterations)
 
             # Verify stream was stopped and closed
             self.mock_stream.stop_stream.assert_called_once()
@@ -209,9 +328,7 @@ class TestWavRecordingThread(unittest.TestCase):
             mock_wave_file.setnchannels.assert_called_once_with(
                 self.mock_recorder.channels
             )
-            mock_wave_file.setframerate.assert_called_once_with(
-                self.mock_recorder.rate
-            )
+            mock_wave_file.setframerate.assert_called_once_with(self.mock_recorder.rate)
             mock_wave_file.writeframes.assert_called_once()
 
         finally:
@@ -296,9 +413,7 @@ class TestWavRecordingThread(unittest.TestCase):
         )
 
         # Mock device info to raise exception
-        self.mock_recorder.input_info.side_effect = Exception(
-            "Device info failed"
-        )
+        self.mock_recorder.input_info.side_effect = Exception("Device info failed")
 
         # Capture signal emissions
         error_calls = []
@@ -443,9 +558,7 @@ class TestRecordingHelpers(unittest.TestCase):
         )
 
         # Verify thread was stored
-        self.assertEqual(
-            self.mock_recorder.usb_recording_thread, mock_thread
-        )
+        self.assertEqual(self.mock_recorder.usb_recording_thread, mock_thread)
 
         # Verify signals were connected
         mock_thread.recording_finished.connect.assert_called_once()
@@ -457,7 +570,9 @@ class TestRecordingHelpers(unittest.TestCase):
     @patch("jdxi_editor.midi.utils.helpers.WavRecordingThread")
     @patch("jdxi_editor.midi.utils.helpers.show_message_box_from_spec")
     @patch("jdxi_editor.midi.utils.helpers.log")
-    def test_start_recording_exception(self, mock_log, mock_show_box, mock_thread_class):
+    def test_start_recording_exception(
+        self, mock_log, mock_show_box, mock_thread_class
+    ):
         """Test start_recording when exception occurs."""
         mock_thread_class.side_effect = Exception("Thread creation failed")
 

@@ -19,10 +19,11 @@ with :func:`holding`, and a refresh is refused while a holder is active
 rather than silencing a recording in progress.
 """
 
+import re
 import threading
 from contextlib import contextmanager
 from itertools import count
-from typing import Iterator, Optional
+from typing import Callable, Iterator, Optional
 
 from decologr import Decologr as log
 
@@ -130,3 +131,109 @@ def refresh_devices(module=None) -> bool:
             return False
     log.message("Audio device list refreshed", scope=_SCOPE)
     return True
+
+
+# --- Naming a device so the name survives the hardware changing --------------
+#
+# An index is a position in the list PortAudio built at startup, so it is the
+# one thing about a device that does not last. The name does, and on Windows
+# the host API goes with it: one device is listed once per API, under exactly
+# the same name each time, so the name alone is not enough to tell three
+# entries apart in a menu either.
+
+_INDEX_SUFFIX = re.compile(r" \(\d+\)$")
+
+#: The device's own name for each label :func:`label_devices` has handed out.
+#: A label may carry the host API, and a position after it, to tell devices of
+#: the same name apart. That suffix is ours, and it is recorded here rather
+#: than parsed back off, because a trailing parenthesis is not a reliable sign
+#: of one: "Speakers (Realtek(R) Audio)" is a real Windows device name.
+#:
+#: Entries are kept, not cleared per listing: inputs and outputs are labelled
+#: by the same code, and emptying the map on one listing would leave the
+#: other's labels to be guessed at by :data:`_INDEX_SUFFIX`.
+_plain_names: dict[str, str] = {}
+
+
+def host_api_name(device, apis: list) -> str:
+    """
+    Name of the host API a device belongs to, or ``""``.
+
+    :param device: a sounddevice device record
+    :param apis: the result of ``query_hostapis()``
+    :return: str
+    """
+    try:
+        return str(apis[int(device["hostapi"])]["name"])
+    except Exception:
+        return ""
+
+
+def label_devices(
+    devices,
+    apis: list,
+    channels_key: str,
+    suffix: Optional[Callable[[dict], str]] = None,
+) -> list[tuple[str, int]]:
+    """
+    Devices with at least one channel, as ``(label, index)``.
+
+    A name that occurs once is the label. A repeated one is told apart by its
+    host API, and only when that is repeated too -- a pair of identical
+    interfaces -- by its position, which is the last resort because it moves.
+
+    :param devices: the result of ``query_devices()``
+    :param apis: the result of ``query_hostapis()``; ``[]`` is tolerated
+    :param channels_key: str "max_input_channels" or "max_output_channels"
+    :param suffix: Optional[Callable] extra text for a label, from the record
+    :return: list[tuple[str, int]]
+    """
+    found = []
+    for index, device in enumerate(devices):
+        try:
+            channels = int(device[channels_key])
+        except Exception:
+            continue
+        if channels <= 0:
+            continue
+        found.append(
+            (str(device["name"]), host_api_name(device, apis), int(index), device)
+        )
+
+    names = [name for name, _api, _index, _device in found]
+    with_api = [(name, api) for name, api, _index, _device in found]
+    labelled = []
+    for name, api, index, device in found:
+        if names.count(name) == 1:
+            label = name
+        elif api and with_api.count((name, api)) == 1:
+            label = f"{name} ({api})"
+        elif api:
+            label = f"{name} ({api}, {index})"
+        else:
+            label = f"{name} ({index})"
+        if suffix is not None:
+            label += suffix(device)
+        labelled.append((label, index))
+        _plain_names[label] = name
+    return labelled
+
+
+def plain_name(label: str) -> str:
+    """
+    A device's own name, without the suffix added for a repeated one.
+
+    Looked up in :data:`_plain_names`, so no parenthesis in a genuine device
+    name is ever mistaken for the suffix. A label this module did not hand
+    out -- one built by hand, or stored by an older version -- falls back to
+    dropping a trailing `` (index)``.
+
+    :param label: str device label
+    :return: str
+    """
+    if not label:
+        return ""
+    plain = _plain_names.get(label)
+    if plain is not None:
+        return plain
+    return _INDEX_SUFFIX.sub("", label)

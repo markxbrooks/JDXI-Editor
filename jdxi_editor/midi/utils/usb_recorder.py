@@ -37,6 +37,25 @@ def _query_devices():
         return None
 
 
+def _query_hostapis() -> list:
+    """
+    sounddevice's host APIs, or ``[]``.
+
+    Windows lists one device once per host API under an identical name, so
+    the API is what tells those entries apart. An empty list is tolerated:
+    the labelling falls back to the position.
+
+    :return: list
+    """
+    module = _sounddevice()
+    if module is None:
+        return []
+    try:
+        return list(module.query_hostapis())
+    except Exception:
+        return []
+
+
 class _PcmStream:
     """A sounddevice input whose ``read`` returns PCM bytes."""
 
@@ -89,15 +108,25 @@ class USBRecorder:
         self.usb_recording_rates = {"16bit": "int16", "32bit": "int16"}
 
     def list_devices(self):
-        """Prints a list of available audio devices (all PortAudio entries)."""
+        """
+        Logs every PortAudio entry, and returns the lines.
+
+        This one is for diagnosing a report, not for choosing from, so it
+        keeps the position and names the host API: the same device appears
+        once per API on Windows, and which one was picked matters.
+        """
         log.message("[USBRecorder] Available audio input devices:")
         devices = _query_devices()
         if devices is None:
             return []
+        apis = _query_hostapis()
         device_list = []
         for index, info in enumerate(devices):
+            api = portaudio.host_api_name(info, apis)
+            where = f" [{api}]" if api else ""
             device_info = (
-                f"{index}: {info['name']} (input channels: {info['max_input_channels']})"
+                f"{index}: {info['name']}{where} "
+                f"(input channels: {info['max_input_channels']})"
             )
             log.info(device_info)
             device_list.append(device_info)
@@ -105,23 +134,27 @@ class USBRecorder:
 
     def list_input_devices(self) -> List[Tuple[str, int]]:
         """
-        Input-capable devices as (display name, PortAudio index).
+        Input-capable devices as (display label, PortAudio index).
 
         Output-only entries are omitted so the UI cannot pick a device that
         cannot capture (a common cause of silent WAVs).
+
+        The label is the device's name, told apart by host API when Windows
+        lists it more than once, and the input-channel count. It used to lead
+        with the PortAudio index, which was the only thing distinguishing
+        three identical Windows entries and meant nothing to anyone reading
+        the menu; the index is still what is selected with, in the combo's
+        item data.
         """
         devices = _query_devices()
         if devices is None:
             return []
-        found: List[Tuple[str, int]] = []
-        for index, info in enumerate(devices):
-            max_in = int(info["max_input_channels"])
-            if max_in <= 0:
-                continue
-            name = str(info["name"])
-            label = f"{index}: {name} (in: {max_in})"
-            found.append((label, int(index)))
-        return found
+        return portaudio.label_devices(
+            devices,
+            _query_hostapis(),
+            "max_input_channels",
+            suffix=lambda info: f" (in: {int(info['max_input_channels'])})",
+        )
 
     def input_info(self, index: int) -> dict:
         """
