@@ -22,7 +22,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import pytest
 
 from jdxi_editor.audio import portaudio
-from jdxi_editor.audio.soundfont_output import SoundfontOutput
+from jdxi_editor.audio.soundfont_output import SoundfontOutput, _device_label
 
 #: What CoreAudio answers with once the device it was told about has gone.
 INTERNAL_ERROR = "Error opening OutputStream: Internal PortAudio error [PaErrorCode -9986]"
@@ -185,3 +185,86 @@ def test_a_refreshed_list_that_still_fails_reports_the_second_error(monkeypatch)
             midi_port_factory=lambda synth: None,
         )
     assert len(attempts) == 2
+
+
+# --- The chosen device is a name, not a position -----------------------------
+#
+# An index is a position in PortAudio's list, which is rebuilt whenever the
+# hardware changes. Remembering one across a change opens whatever has since
+# moved into that slot -- the wrong jack, silently -- or nothing at all.
+
+
+def _listing(*names):
+    """``output_devices()`` style listing: ``(label, index)`` pairs."""
+    return [(name, index) for index, name in enumerate(names)]
+
+
+def test_the_retry_resolves_the_index_again_on_the_new_list(monkeypatch):
+    """After a reread, the chosen name may sit at a different index."""
+    before = _listing("AirPods", "MacBook Pro Speakers")      # Speakers at 1
+    after = _listing("MacBook Pro Speakers")                   # now at 0
+    listings = [before, before, after]
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_devices",
+        lambda: listings.pop(0) if len(listings) > 1 else after,
+    )
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_device_for",
+        lambda index, devices: index,
+    )
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.refresh_devices", lambda: True
+    )
+    asked = []
+
+    def opener(**kwargs):
+        asked.append(kwargs["device"])
+        if len(asked) == 1:
+            raise RuntimeError(INTERNAL_ERROR)
+        return FakeStream(**kwargs)
+
+    player = _player()
+    player.start(
+        "ignored.sf2",
+        1,  # the Speakers, as the list stood
+        stream_factory=opener,
+        synth_factory=FakeSynth,
+        midi_port_factory=lambda synth: None,
+    )
+    assert player._requested_name == "MacBook Pro Speakers"
+    assert asked == [1, 0], "the retry reused the stale index"
+    player.stop()
+
+
+def test_a_device_that_has_gone_falls_back_to_the_default(monkeypatch):
+    """Not to whatever now occupies its old position."""
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_devices",
+        lambda: _listing("Studio Monitors"),  # the old index 0 is someone else
+    )
+    player = _player()
+    player._requested_name = "Yamaha THRII"
+    assert player._resolve_device() is None
+
+
+def test_reopen_keeps_the_choice_while_the_device_is_away(monkeypatch):
+    """So it is taken up again when the dock is plugged back in."""
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_devices",
+        lambda: _listing("MacBook Pro Speakers"),
+    )
+    monkeypatch.setattr(
+        "jdxi_editor.audio.soundfont_output.output_device_for",
+        lambda index, devices: index,
+    )
+    player = _player()
+    player._sf_path = "ignored.sf2"
+    player._requested_name = "Yamaha THRII"
+    player.start = lambda path, device, **kw: (  # noqa: E731
+        setattr(player, "_opened_with", device),
+        setattr(player, "_requested_name", _device_label(device, [])),
+        1,
+    )[-1]
+    assert player.reopen() == 1
+    assert player._opened_with is None, "opened something else by position"
+    assert player._requested_name == "Yamaha THRII", "the choice was forgotten"

@@ -457,6 +457,9 @@ class SoundfontOutput:
         self._route: Optional[tuple] = None
         self._sf_path = ""
         self._requested_device: Optional[int] = None
+        #: Name of the chosen output. The index is resolved from this at
+        #: every open, never remembered across one.
+        self._requested_name = ""
         self.on_reopened: Optional[Callable[[], None]] = None
 
     def start(
@@ -486,7 +489,9 @@ class SoundfontOutput:
         self.stop()
         self._sf_path = sf_path
         self._requested_device = device
-        resolved = output_device_for(device, output_devices())
+        # The index is a position in PortAudio's list, good only until the
+        # hardware changes; the name is what the choice really was.
+        self._requested_name = _device_label(device, output_devices())
         synth = (synth_factory or _new_synth)()
         self.synth = synth
         try:
@@ -496,7 +501,7 @@ class SoundfontOutput:
             self.sfid = sfid
             self._allocate()
             opener = stream_factory or _output_stream
-            self._stream = self._open_stream(opener, resolved)
+            self._stream, resolved = self._open_stream(opener)
             self.follows_default = resolved is None
             self._route = default_output_route() if self.follows_default else None
             self.underflows = 0
@@ -512,24 +517,52 @@ class SoundfontOutput:
             log.warning(f"SoundFont MIDI port not available: {ex}")
         return sfid
 
-    def _open_stream(self, opener: Callable, device: Optional[int]):
+    def _resolve_device(self) -> Optional[int]:
         """
-        Open the output, refreshing PortAudio's device list if it refuses.
+        The index to open now, for the device whose name was chosen.
+
+        Looked up afresh every time. An index is a position in PortAudio's
+        list, and that list is rebuilt whenever the hardware changes, so a
+        remembered one can point at a different device or at nothing. A
+        chosen device that has gone falls back to the system default
+        rather than to whatever now sits at its old position.
+
+        :return: Optional[int] sounddevice index, None for the default
+        """
+        devices = output_devices()
+        name = self._requested_name
+        if not name:
+            # Either the default was asked for, or the index given is not in
+            # the list at all. Honour what the caller passed; second-guessing
+            # an explicit index is not this method's business.
+            return output_device_for(self._requested_device, devices)
+        index = next((i for label, i in devices if label == name), None)
+        if index is None:
+            log.warning(
+                f"The chosen output ({name}) is not there; using the default"
+            )
+            return None
+        return output_device_for(index, devices)
+
+    def _open_stream(self, opener: Callable):
+        """
+        Open the output, rereading PortAudio's device list if it refuses.
 
         PortAudio reads the hardware once, at startup, so a stream opened
         after headphones have come and gone asks for a device that has
         moved or disappeared -- paInternalError, and the same for the
         default output, whose identity was resolved just as early. One
-        retry on a freshly read device list is the difference between
-        playback following the route and nothing working until restart.
+        retry on a freshly read list is the difference between playback
+        following the route and nothing working until restart. The index is
+        resolved again for that retry: the reread is what moves it.
 
         :param opener: Callable builds the stream
-        :param device: Optional[int] sounddevice index, None for default
-        :return: the open stream
+        :return: tuple (the open stream, the index it opened)
         """
 
         def build():
-            return opener(
+            device = self._resolve_device()
+            stream = opener(
                 samplerate=SAMPLE_RATE,
                 channels=2,
                 dtype="float32",
@@ -538,6 +571,7 @@ class SoundfontOutput:
                 device=device,
                 callback=self._callback,
             )
+            return stream, device
 
         try:
             return build()
@@ -556,7 +590,16 @@ class SoundfontOutput:
 
         :return: int SoundFont id
         """
-        return self.start(self._sf_path, self._requested_device)
+        name = self._requested_name
+        devices = output_devices() if name else []
+        device = next((i for label, i in devices if label == name), None)
+        sfid = self.start(self._sf_path, device)
+        if name and device is None:
+            # Away for the moment -- a dock unplugged, AirPods asleep. Keep
+            # the choice so it is taken up again when the device comes back,
+            # instead of settling on the default for good.
+            self._requested_name = name
+        return sfid
 
     def take_route_change(self) -> bool:
         """
@@ -685,6 +728,19 @@ class SoundfontOutput:
                 )
             copy_s16(pcm[: count * 2], outdata[done : done + count])
             done += count
+
+
+def _device_label(index: Optional[int], devices: list[tuple[str, int]]) -> str:
+    """
+    The label listed for an index, or ``""`` for the default.
+
+    :param index: Optional[int] sounddevice index
+    :param devices: list of ``(label, index)``
+    :return: str
+    """
+    if index is None:
+        return ""
+    return next((label for label, device in devices if device == index), "")
 
 
 def _new_synth():
