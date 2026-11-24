@@ -2,6 +2,25 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
+# [Unreleased]
+
+### Fixed
+
+- **SoundFont playback survives a change of audio output.** PortAudio reads
+  the audio hardware once, when it starts, and never looks again, so a
+  session that outlives a change to it -- AirPods connecting, headphones
+  unplugged -- asked for devices by positions that had moved or gone and got
+  `paInternalError` (-9986), the default output included. Playback stopped
+  following the route, and every later attempt to start the SoundFont failed
+  until the application was restarted. The output now rereads the devices
+  once and retries. Because that closes every stream in the process, the
+  Audio Monitor and the USB recorder register theirs, and a reread is
+  refused while either is listening.
+- **Recording refuses a device with no inputs.** Choosing an output left
+  `WavRecordingThread` opening it anyway, which on some platforms writes a
+  file of zeroes. It now names the device and says there is nothing to
+  record.
+
 # [1.0.1] — 2026-11-23
 
 A packaging release: 1.0.0 with the two fixes below. No new features, and no
