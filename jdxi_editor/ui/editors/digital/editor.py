@@ -929,7 +929,7 @@ class DigitalSynthEditor(BaseSynthEditor):
                     control = pwm_widget.mod_depth_control
 
         if control:
-            with blocked_signals:
+            with blocked_signals(control):
                 control.setValue(new_value)
             if pe and getattr(pe, DigitalTabName.OSCILLATOR, None):
                 pwm_widget = pe.oscillator_tab.widget_for(

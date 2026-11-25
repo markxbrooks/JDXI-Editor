@@ -10,9 +10,11 @@ from PySide6.QtWidgets import QWidget
 @contextmanager
 def blocked_signals(widget: QWidget):
     """Temporarily block Qt signals for a widget within the context."""
-    if hasattr(widget, "blockSignals"):
-        try:
-            widget.blockSignals(True)
-            yield
-        finally:
+    blockable = hasattr(widget, "blockSignals")
+    if blockable:
+        widget.blockSignals(True)
+    try:
+        yield
+    finally:
+        if blockable:
             widget.blockSignals(False)

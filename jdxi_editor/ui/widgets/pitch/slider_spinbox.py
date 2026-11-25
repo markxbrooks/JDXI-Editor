@@ -214,7 +214,7 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: None
         """
         envelope_value = self.convert_to_envelope(value)
-        with blocked_signals:
+        with blocked_signals(self.spinbox):
             self.spinbox.setValue(int(envelope_value))
         self.envelope_changed.emit(
             {self.param.get_envelope_param_type(): envelope_value}
