@@ -2,7 +2,11 @@
 
 All notable changes to JDXI-Editor are documented in this file.
 
-# [Unreleased]
+# [1.0.2] — 2026-11-24
+
+Audio output handling, and a crash on data arriving from the JD-Xi. The app
+stays **Beta**; what is known to be wrong with it is collected in
+[doc/known-issues.md](doc/known-issues.md).
 
 ### Fixed
 
@@ -41,6 +45,17 @@ All notable changes to JDXI-Editor are documented in this file.
   index is still what the device is opened by, and is resolved afresh each
   time the list is built. The diagnostic listing in the log names the host
   API too.
+- **A pitch-envelope parameter from the JD-Xi no longer raises.**
+  `blocked_signals` is a context manager, and one call site used it without
+  passing the widget, so incoming SysEx for a digital partial's pitch
+  envelope failed with `AttributeError`. The pitch-envelope widget had the
+  same slip, where the raise came before the widget emitted: dragging a
+  slider left the spinbox stale and never sent the parameter to the synth,
+  which looked like a dead control rather than an error.
+- **Connecting to the MIDI helper's signals no longer trips PySide's Sort
+  Warning.** `MidiIOHelper` inherits signals from two `QObject` bases, and
+  one slot was being appended to its metaobject at connect time, ahead of
+  the outgoing handler's signals. It is declared with `@Slot(str)` now.
 
 # [1.0.1] — 2026-11-23
 
