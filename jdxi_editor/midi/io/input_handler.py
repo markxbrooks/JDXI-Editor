@@ -26,7 +26,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 import mido
 from decologr import Decologr as log
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Slot
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.data.address.address import JDXiSysExAddressStartMSB as AreaMSB
@@ -197,6 +197,9 @@ class MidiInHandler(MidiIOController):
                 scope=self.__class__.__name__,
             )
 
+    # Declared, so it is not appended to MidiIOHelper's metaobject at connect
+    # time ahead of MidiOutHandler's signals (PySide's "Sort Warning")
+    @Slot(str)
     def _emit_device_sysex_json(self, payload: str) -> None:
         """
         Emit SysEx JSON from the JD-Xi to the editors.

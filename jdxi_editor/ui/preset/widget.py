@@ -156,7 +156,7 @@ class InstrumentPresetWidget(QWidget):
             self.layout = QVBoxLayout()
             # Set proper margins and spacing to match PresetWidget
             self.layout.setContentsMargins(
-                *JDXi.UI.Style.PADDING_MARGINS
+                *JDXi                .UI.Style.PADDING_MARGINS
             )
             self.layout.setSpacing(JDXi.UI.Style.SPACING)
             self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)

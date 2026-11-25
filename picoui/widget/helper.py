@@ -28,6 +28,8 @@ from picoui.specs.widgets import (ButtonSpec, CheckBoxSpec, ComboBoxSpec,
                                   GroupBoxSpec, LabelSpec, LineEditSpec,
                                   LogoSpec, SpinBoxSpec, TabSpec,
                                   wayland_safe_file_dialog_options, BaseSpinBoxSpec)
+
+LABEL_MIN_WIDTH = 50
 TSpinBox = TypeVar("TSpinBox", QSpinBox, QDoubleSpinBox)
 
 TSpinBoxSpec = TypeVar("TSpinBoxSpec", SpinBoxSpec, DoubleSpinBoxSpec)
@@ -311,6 +313,7 @@ def create_combo_row(
     combo = create_combo_box(all_items_label, items, slot, sort_items=sort_items)
     widgets = [label_widget, combo]
     row = create_row_with_widgets(widgets)
+    label_widget.setMinimumWidth(LABEL_MIN_WIDTH)
     return row, combo
 
 

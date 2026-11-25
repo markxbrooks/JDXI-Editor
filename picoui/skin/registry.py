@@ -138,6 +138,7 @@ class SkinRegistry:
         """
         Use `skin` (or the skin with that id) from now on.
 
+        :param skin: str, Skin
         :param remember: save the choice in the store
         :param notify: tell the listeners (e.g. restyle the application)
         :return: the skin now in use

@@ -8,12 +8,9 @@ and ensuring consistent styling across the application.
 from typing import Optional
 
 import qdarktheme
-import qtawesome
 from decologr import Decologr as log
 from PySide6.QtCore import QObject
 from PySide6.QtWidgets import QApplication, QWidget
-
-from jdxi_editor.ui.style import JDXiUIDimensions
 from jdxi_editor.ui.style.editor_style import AppEditorStyle, mark_editor_body
 from jdxi_editor.ui.style.jdxi import JDXiUIStyle
 

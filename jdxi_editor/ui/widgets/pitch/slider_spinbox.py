@@ -16,6 +16,11 @@ from picomidi.utils.conversion import (
 
 from typing import NewType
 
+from picoui.helpers.layout import create_layout_with_items
+from picoui.signals.signals_blocked import blocked_signals
+from picoui.specs.widgets import DoubleSpinBoxSpec, SpinBoxSpec
+from picoui.widget.helper import create_double_spinbox_from_spec, create_spinbox_from_spec
+
 MidiValue = NewType("MidiValue", int)
 
 MIDI_VALUE_MIN = 0
@@ -30,41 +35,6 @@ def midi_value(value: int) -> MidiValue:
         )
 
     return MidiValue(value)
-
-def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
-    """
-    Create a spinbox with specified range and suffix
-
-    :param min_value: int
-    :param max_value: int
-    :param suffix: str
-    :param value: int
-    :return: QSpinBox
-    """
-    sb = QSpinBox()
-    sb.setRange(min_value, max_value)
-    sb.setSuffix(suffix)
-    sb.setValue(value)
-    return sb
-
-
-def create_double_spinbox(
-    min_value: float, max_value: float, step: float, value: int
-) -> QDoubleSpinBox:
-    """
-    Create a double spinbox with specified range, step, and initial value.
-
-    :param min_value: int
-    :param max_value: int
-    :param step: float
-    :param value: int
-    :return: QDoubleSpinBox
-    """
-    sb = QDoubleSpinBox()
-    sb.setRange(min_value, max_value)
-    sb.setSingleStep(step)
-    sb.setValue(value)
-    return sb
 
 
 class PitchEnvSliderSpinbox(QWidget):
@@ -140,20 +110,24 @@ class PitchEnvSliderSpinbox(QWidget):
             EnvelopeParameter.SUSTAIN_LEVEL,
             EnvelopeParameter.PEAK_LEVEL,
         ]:
-            self.spinbox = create_double_spinbox(
-                min_value=min_value, max_value=max_value, step=0.01, value=spin_initial
+            self.spinbox_spec = DoubleSpinBoxSpec(
+                min_val=min_value,
+                max_val=max_value,
+                step=0.01,
+                value=spin_initial
             )
+            self.spinbox = create_double_spinbox_from_spec(spin_spec=self.spinbox_spec)
         else:
-            self.spinbox = create_spinbox(
-                min_value=int(min_value),
-                max_value=int(max_value),
+            self.spinbox_spec = SpinBoxSpec(
+                min_val=int(min_value),
+                max_val=int(max_value),
                 suffix=units,
                 value=value,
             )
+            self.spinbox = create_spinbox_from_spec(spin_spec=self.spinbox_spec)
         self.spinbox.setRange(min_value, max_value)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.slider)
+        layout = create_layout_with_items(items=[self.slider])
         if show_spinbox:
             layout.addWidget(self.spinbox)
         self.setLayout(layout)
@@ -240,9 +214,8 @@ class PitchEnvSliderSpinbox(QWidget):
         :return: None
         """
         envelope_value = self.convert_to_envelope(value)
-        self.spinbox.blockSignals(True)
-        self.spinbox.setValue(envelope_value)
-        self.spinbox.blockSignals(False)
+        with blocked_signals:
+            self.spinbox.setValue(int(envelope_value))
         self.envelope_changed.emit(
             {self.param.get_envelope_param_type(): envelope_value}
         )
@@ -283,10 +256,8 @@ class PitchEnvSliderSpinbox(QWidget):
         if midi_value is None:
             log.error(f"convert_from_envelope({value}) returned None")
             return
-
-        self.slider.blockSignals(True)
-        self.slider.setValue(int(midi_value))
-        self.slider.blockSignals(False)
+        with blocked_signals(self.slider):
+            self.slider.setValue(int(midi_value))
         self.envelope_changed.emit({self.param.get_envelope_param_type(): envelope_value})
         self.valueChanged.emit(self.value())
 
@@ -327,16 +298,13 @@ class PitchEnvSliderSpinbox(QWidget):
 
         :param midi_value: int 0-127 as sent by the JD-Xi
         """
-        try:
-            self.slider.blockSignals(True)
-            self.spinbox.blockSignals(True)
-            self.slider.setValue(int(midi_value))
-            self.spinbox.setValue(self.convert_to_envelope(int(midi_value)))
-        except RuntimeError:
-            pass
-        finally:
-            self.slider.blockSignals(False)
-            self.spinbox.blockSignals(False)
+        with blocked_signals(self.slider):
+            with blocked_signals(self.spinbox):
+                try:
+                    self.slider.setValue(int(midi_value))
+                    self.spinbox.setValue(int(self.convert_to_envelope(int(midi_value))))
+                except RuntimeError:
+                    pass
 
     def value(self) -> float:
         """

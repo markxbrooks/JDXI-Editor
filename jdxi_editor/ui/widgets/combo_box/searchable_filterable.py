@@ -25,6 +25,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QSizePolicy
 
 from jdxi_editor.ui.common import JDXi, QWidget
 from picoui.helpers import create_form_layout, create_header_row
+from picoui.signals.signals_blocked import blocked_signals
 from picoui.widget.helper import (
     create_combo_row,
     create_line_edit,
@@ -111,7 +112,7 @@ class SearchableFilterableComboBox(QWidget):
         self._bank_filter_func = bank_filter_func or self._default_bank_filter
 
         # --- Mapping from filtered combo box index to original value index
-        self._filtered_to_original: List[int] = []
+        self._filtered_to_original: list[int] = []
 
         # --- Current filter state
         self._current_search_text = ""
@@ -122,7 +123,7 @@ class SearchableFilterableComboBox(QWidget):
         self.bank_combo = None
 
         # --- Search box (optional; set when show_search=True and search row exists)
-        self.search_box: Optional[QLineEdit] = None
+        self.search_box: QLineEdit | None = None
 
         layout = create_form_layout(parent=self)
         top_bar, self.label_widget = create_header_row(label, show_label, spacing=4)
@@ -182,7 +183,7 @@ class SearchableFilterableComboBox(QWidget):
     def set_combo_dimensions(self, widget: QWidget):
         """set combo box dimensions"""
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        widget.setMaximumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
+        widget.setMinimumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
         widget.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
 
     def _create_search_row(
@@ -246,44 +247,40 @@ class SearchableFilterableComboBox(QWidget):
     def _populate_combo(self) -> None:
         """Populate the combo box based on current filters."""
         # Block signals during population to prevent spurious valueChanged emissions
-        self.combo_box.blockSignals(True)
+        with blocked_signals(self.combo_box):
+            # --- Clear existing items and mapping
+            self.combo_box.clear()
+            self._filtered_to_original.clear()
 
-        # --- Clear existing items and mapping
-        self.combo_box.clear()
-        self._filtered_to_original.clear()
+            # --- Filter options
+            filtered_options = []
+            for i, option in enumerate(self._full_options):
+                # Apply search filter
+                if self._current_search_text:
+                    if not re.search(self._current_search_text, option, re.IGNORECASE):
+                        continue
 
-        # --- Filter options
-        filtered_options = []
-        for i, option in enumerate(self._full_options):
-            # Apply search filter
-            if self._current_search_text:
-                if not re.search(self._current_search_text, option, re.IGNORECASE):
-                    continue
+                # --- Apply bank filter
+                if self._current_bank:
+                    if not self._bank_filter_func(option, self._current_bank):
+                        continue
 
-            # --- Apply bank filter
-            if self._current_bank:
-                if not self._bank_filter_func(option, self._current_bank):
-                    continue
+                # --- Apply category filter
+                if self._current_category:
+                    if not self._category_filter_func(option, self._current_category):
+                        continue
 
-            # --- Apply category filter
-            if self._current_category:
-                if not self._category_filter_func(option, self._current_category):
-                    continue
+                # --- Option passes all filters
+                filtered_options.append(option)
+                self._filtered_to_original.append(i)
 
-            # --- Option passes all filters
-            filtered_options.append(option)
-            self._filtered_to_original.append(i)
+            # --- Add filtered items to combo box
+            for option in filtered_options:
+                self.combo_box.addItem(option)
 
-        # --- Add filtered items to combo box
-        for option in filtered_options:
-            self.combo_box.addItem(option)
-
-        # --- Select first item by default to avoid -1 index
-        if filtered_options:
-            self.combo_box.setCurrentIndex(0)
-
-        # --- Restore signals
-        self.combo_box.blockSignals(False)
+            # --- Select first item by default to avoid -1 index
+            if filtered_options:
+                self.combo_box.setCurrentIndex(0)
 
     def _on_combo_index_changed(self, filtered_index: int) -> None:
         """
@@ -331,9 +328,8 @@ class SearchableFilterableComboBox(QWidget):
         # --- Find position in filtered list
         if original_index in self._filtered_to_original:
             filtered_index = self._filtered_to_original.index(original_index)
-            self.combo_box.blockSignals(True)
-            self.combo_box.setCurrentIndex(filtered_index)
-            self.combo_box.blockSignals(False)
+            with blocked_signals(self.combo_box):
+                self.combo_box.setCurrentIndex(filtered_index)
         else:
             log.warning(
                 f"Value {value} (original_index={original_index}) not in filtered list. "
@@ -373,12 +369,10 @@ class SearchableFilterableComboBox(QWidget):
         """Enable or disable the widget."""
         super().setEnabled(enabled)
         self.combo_box.setEnabled(enabled)
-        if self.search_box:
-            self.search_box.setEnabled(enabled)
-        if self.category_combo:
-            self.category_combo.setEnabled(enabled)
-        if self.bank_combo:
-            self.bank_combo.setEnabled(enabled)
+        optional_widgets = [self.search_box, self.category_combo, self.bank_combo]
+        for widget in optional_widgets:
+            if widget:
+                widget.setEnabled(enabled)
 
     def setVisible(self, visible: bool) -> None:
         """Show or hide the widget."""
@@ -416,13 +410,12 @@ class SearchableFilterableComboBox(QWidget):
             self._categories = categories
             # Update category combo if it exists
             if self.category_combo:
-                self.category_combo.blockSignals(True)
-                self.category_combo.clear()
-                self.category_combo.addItem("All Categories")
-                for cat in self._categories:
-                    self.category_combo.addItem(cat)
-                self.category_combo.setCurrentIndex(0)
-                self.category_combo.blockSignals(False)
+                with blocked_signals(self.category_combo):
+                    self.category_combo.clear()
+                    self.category_combo.addItem("All Categories")
+                    for cat in self._categories:
+                        self.category_combo.addItem(cat)
+                    self.category_combo.setCurrentIndex(0)
                 self._current_category = ""
         
         # Clear search and repopulate
