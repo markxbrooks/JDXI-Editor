@@ -92,7 +92,7 @@ def output_devices(module=_INSTALLED) -> list[tuple[str, int]]:
         apis = list(source.query_hostapis())
     except Exception:
         apis = []
-    log.message(f"device list {devices}")
+    # log.message(f"device list {devices}")
     return label_devices(devices, apis, "max_output_channels")
 
 
