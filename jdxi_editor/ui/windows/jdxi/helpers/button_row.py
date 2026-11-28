@@ -3,6 +3,7 @@ from typing import Union
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from jdxi_editor.core.jdxi import JDXi
+from jdxi_editor.ui.widgets.label_click import make_label_clickable
 from picoui.specs.widgets import ButtonSpec
 
 # Fallback tooltips when not using ButtonSpec
@@ -67,4 +68,6 @@ def create_button_row(
     button.setToolTip(tooltip)
 
     row.addWidget(button)
+    # Clicking the part name works like clicking its button
+    make_label_clickable(label, button)
     return row, button
