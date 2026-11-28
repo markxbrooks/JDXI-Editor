@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from decologr import Decologr as log
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLabel, QPushButton
 
 from jdxi_editor.core.jdxi import JDXi
@@ -88,7 +88,8 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         )
         grid.addLayout(usb_port_layout, row, 0)
         self.port_select_combo = QComboBox()
-        self.populate_devices()
+        # Listed when the recorder is first shown: PortAudio is slow to start
+        self._devices_listed = False
         grid.addWidget(self.port_select_combo, row, 1, 1, 2)
         spec = self.specs["buttons"]["usb_port_refresh"]
         self.port_refresh_devices_button = create_jdxi_button_from_spec(
@@ -168,6 +169,12 @@ class USBFileRecordingWidget(JDXiMidiGroup):
         )
         if is_enabled:
             self.update_auto_wav_filename()
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        if not getattr(self, "_devices_listed", True):
+            self._devices_listed = True
+            QTimer.singleShot(0, self, self.populate_devices)
 
     def populate_devices(self) -> list:
         """
