@@ -32,11 +32,16 @@ try:
         __package_name__,
         __program__,
         __author__,
+        package_version,  # «1.0.0~rc1» for dpkg / rpm (they put «1.0.0rc1» after 1.0.0)
     )
     from jdxi_editor.bundle_imports import pyinstaller_args
 except ImportError:
     # Will be set from context
     __version__ = "0.0.0"
+
+    def package_version(version: str) -> str:
+        return version
+
     __package_name__ = "jdxi_editor"
     __program__ = "JD-Xi Editor"
     __author__ = "Mark Brooks"
@@ -287,7 +292,7 @@ exec /opt/{APP_NAME}/{APP_NAME} "$@"
 
     # Create control file
     control_content = f"""Package: {APP_NAME}
-Version: {__version__}
+Version: {package_version(__version__)}
 Section: sound
 Priority: optional
 Architecture: amd64
@@ -313,7 +318,7 @@ gtk-update-icon-cache /usr/share/icons/hicolor 2>/dev/null || true
     postinst_path.chmod(0o755)
     
     # Build the package
-    deb_file = dist_dir / f"{APP_NAME}_{__version__}_amd64.deb"
+    deb_file = dist_dir / f"{APP_NAME}_{package_version(__version__)}_amd64.deb"
     result = subprocess.run(
         ["dpkg-deb", "--build", "--root-owner-group", str(deb_root), str(deb_file)],
         capture_output=True, text=True
@@ -398,7 +403,7 @@ exec "${{APPDIR}}/usr/lib/{APP_NAME}/{APP_NAME}" "$@"
         shutil.copy(icon_src, usr_share_icons / f"{APP_NAME}.png")
     
     # Build AppImage
-    appimage_file = dist_dir / f"{APP_NAME}-{__version__}-x86_64.AppImage"
+    appimage_file = dist_dir / f"{APP_NAME}-{package_version(__version__)}-x86_64.AppImage"
     
     env = os.environ.copy()
     env["ARCH"] = "x86_64"
