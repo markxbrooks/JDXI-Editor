@@ -117,3 +117,14 @@ class SynthMemory:
         with self._lock:
             self._bytes.clear()
             self._sections.clear()
+
+    def forget(self, ranges: Sequence[tuple[int, int]]) -> None:
+        """Forget the bytes (and sections) in linear [start, end) *ranges*."""
+        def inside(linear: int) -> bool:
+            return any(start <= linear < end for start, end in ranges)
+
+        with self._lock:
+            for linear in [k for k in self._bytes if inside(k)]:
+                del self._bytes[linear]
+            for linear in [k for k in self._sections if inside(k)]:
+                del self._sections[linear]

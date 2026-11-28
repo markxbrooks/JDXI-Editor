@@ -99,6 +99,7 @@ class SysExRequestQueue:
         self._message_gap = message_gap
         self._items: deque[_Item] = deque()
         self._pending: set[bytes] = set()  # queued or awaiting reply
+        self._awaiting_data: Optional[bytes] = None  # the request awaiting its reply
         self._cond = threading.Condition()
         self._reply = threading.Event()
         self._awaiting: Optional[str] = None
@@ -128,9 +129,16 @@ class SysExRequestQueue:
         return queued
 
     def notify_reply(self, data: Sequence[int]) -> None:
-        """Report incoming SysEx; a DT1 at the awaited address ends the wait."""
+        """Report incoming SysEx; a DT1 at the awaited address ends the wait.
+
+        The request is no longer pending from this moment: the same request
+        made now (a read starting after this reply) is sent again, instead of
+        being dropped as a duplicate while the queue pauses after the reply."""
         address = roland_address(data, DT1_COMMAND)
         if address is not None and address == self._awaiting:
+            with self._cond:
+                if self._awaiting_data is not None:
+                    self._pending.discard(self._awaiting_data)
             self._reply.set()
 
     def clear(self) -> int:
@@ -177,6 +185,7 @@ class SysExRequestQueue:
 
     def _process(self, item: _Item) -> None:
         self._reply.clear()
+        self._awaiting_data = item.data
         self._awaiting = item.reply_address
         try:
             self._send(item.data)
@@ -190,6 +199,7 @@ class SysExRequestQueue:
                     f"No reply to RQ1 at {item.reply_address}", scope="SysExRequestQueue"
                 )
             self._awaiting = None
+            self._awaiting_data = None
             with self._cond:
                 self._pending.discard(item.data)
         else:
