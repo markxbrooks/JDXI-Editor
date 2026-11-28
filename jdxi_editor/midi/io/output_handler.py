@@ -25,6 +25,7 @@ from PySide6.QtCore import Signal
 
 from jdxi_editor.globals import silence_midi_note_logging
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
+from jdxi_editor.midi.io import program_channel
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.message import (
     ControlChangeMessage,
@@ -310,6 +311,7 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0-15).
         :return: True if successful, False otherwise.
         """
+        channel = program_channel.route(channel)  # the JD-Xi's Program Ctrl Ch
         log.message(scope="MidiOutHandler", message="=====Sending program change====")
         log.parameter(scope="MidiOutHandler", message="program", parameter=program)
         log.parameter(scope="MidiOutHandler", message="channel", parameter=channel)
@@ -508,6 +510,7 @@ class MidiOutHandler(MidiIOController):
         :param program: int Program number.
         :return: bool True if all messages are sent successfully, False otherwise.
         """
+        channel = program_channel.route(channel)  # the JD-Xi's Program Ctrl Ch
         try:
             import time
 

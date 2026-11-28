@@ -27,6 +27,8 @@ os.environ["JDXI_EDITOR_MIDI_CONTROLLERS"] = ""
 # JD-Xis come and go between tests on the one shared helper
 # (tests/test_connection.py turns the check on)
 os.environ.setdefault("JDXI_SILENCE_CHECK", "0")
+# The instrument window does not poll the JD-Xi (tests/test_follow.py drives it)
+os.environ.setdefault("JDXI_FOLLOW", "0")
 
 import rtmidi
 

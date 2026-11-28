@@ -19,7 +19,9 @@ def build_wheel_label_row():
     return label_layout
 
 
-def build_wheel_row(midi_helper):
+def build_wheel_row(midi_helper, owner=None):
+    """The pitch and mod wheels; *owner* (the main window) keeps them as
+    pitch_wheel and mod_wheel, for the follower to mirror the JD-Xi's."""
     wheel_layout = QHBoxLayout()
     wheel_layout.addStretch()
 
@@ -27,9 +29,12 @@ def build_wheel_row(midi_helper):
     pitch_wheel.setMinimumWidth(20)
     wheel_layout.addWidget(pitch_wheel)
     wheel_layout.addStretch()
-    mod_wheel = ModWheel(midi_helper=midi_helper, bidirectional=True)
+    mod_wheel = ModWheel(midi_helper=midi_helper, bidirectional=False)
     mod_wheel.setMinimumWidth(20)
     wheel_layout.addWidget(mod_wheel)
 
     wheel_layout.addStretch()
+    if owner is not None:
+        owner.pitch_wheel = pitch_wheel
+        owner.mod_wheel = mod_wheel
     return wheel_layout

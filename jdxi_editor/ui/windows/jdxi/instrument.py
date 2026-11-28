@@ -384,6 +384,18 @@ class JDXiInstrument(JDXiWindow):
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         self._setup_connection()
+        self._setup_follower()
+
+    def _setup_follower(self) -> None:
+        """
+        Follow what is changed on the JD-Xi itself: tone names, octave, sliders, keys.
+
+        :return: None
+        """
+        from jdxi_editor.ui.windows.jdxi.follow import InstrumentFollower
+
+        self.follower = InstrumentFollower(self)
+        self.follower.start()
 
     def _setup_connection(self) -> None:
         """
@@ -459,6 +471,9 @@ class JDXiInstrument(JDXiWindow):
         :return: None
         """
         try:
+            follower = getattr(self, "follower", None)
+            if follower is not None:
+                follower.stop()
             # Wait for any USB recording threads to avoid "Destroyed while still running"
             self._wait_for_usb_recording_threads()
             self.external_controller.close()
@@ -616,10 +631,16 @@ class JDXiInstrument(JDXiWindow):
         """
         program number
 
-        :param channel: int midi channel (discarded)
+        :param channel: int MIDI channel (1-16)
         :param program_number: int Program number
         :return: None
         """
+        from jdxi_editor.midi.io import program_channel
+
+        if channel != program_channel.channel() + 1:
+            # a tone chosen for one part (its channel), not the program: the
+            # follower reads that part again
+            return
         self.current_program_number = program_number + 1
         self.data_request()
         self._update_display()
@@ -636,9 +657,23 @@ class JDXiInstrument(JDXiWindow):
         )
         self.current_synth_type = synth_type
         self.channel = JDXiSynth.midi_channel_number(synth_type)
+        follower = getattr(self, "follower", None)
+        if follower is not None:
+            follower.poll_now()  # the part's tone, octave and slider values
         self._update_synth_button_styles()
+        previous = getattr(self, "preset_helper", None)
         self.preset_helper = self.get_preset_helper_for_current_synth()
-        self.preset_helper.preset_changed.connect(self.midi_helper.send_program_change)
+        if previous is not self.preset_helper:  # connected once per helper
+            if previous is not None:
+                try:
+                    previous.preset_changed.disconnect(
+                        self.midi_helper.send_program_change
+                    )
+                except (RuntimeError, TypeError):
+                    pass
+            self.preset_helper.preset_changed.connect(
+                self.midi_helper.send_program_change
+            )
 
     def _update_synth_button_styles(self):
         """Update styles for synth buttons based on selection."""
@@ -738,7 +773,8 @@ class JDXiInstrument(JDXiWindow):
             self.channel,
         )
         preset_helper.load_preset_by_program_change(
-            self.current_preset_index, self.current_synth_type
+            self.current_preset_index + 1,  # the preset's number (001...), not its index
+            self.current_synth_type,
         )
 
     def _preset_previous(self) -> None:
@@ -2298,6 +2334,9 @@ class JDXiInstrument(JDXiWindow):
         """Update octave-related UI elements"""
         self.octave_down.setChecked(self.current_octave < 0)
         self.octave_up.setChecked(self.current_octave > 0)
+        keyboard = getattr(self, "piano_keyboard", None)
+        if keyboard is not None and hasattr(keyboard, "show_middle_c"):
+            keyboard.show_middle_c(self.current_octave)
         self._update_display()
         log.message(
             scope="JDXiInstrument",
@@ -2325,6 +2364,9 @@ class JDXiInstrument(JDXiWindow):
             self.midi_in_indicator.set_active(self.midi_helper.midi_in is not None)
             self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
             self._save_settings()
+            follower = getattr(self, "follower", None)
+            if follower is not None:
+                follower.read_all()  # the newly connected JD-Xi's state
         except Exception as ex:
             log.error(
                 message="Error setting MIDI ports", exception=ex, scope="JDXiInstrument"
@@ -2352,10 +2394,10 @@ class JDXiInstrument(JDXiWindow):
 
         :return: None
         """
-        for slider in getattr(self, "panel_sliders", None) or []:
-            reset = getattr(slider, "reset_to_neutral", None)
-            if callable(reset) and not slider.slider.isSliderDown():
-                reset()
+        slider = (getattr(self, "panel_sliders", None) or {}).get("envelope")
+        reset = getattr(slider, "reset_to_neutral", None)
+        if callable(reset) and not slider.slider.isSliderDown():
+            reset()
 
     def _midi_send_failed(self, reason: str) -> None:
         """
@@ -2389,11 +2431,30 @@ class JDXiInstrument(JDXiWindow):
                 scope="JDXiInstrument",
                 message=f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})",
             )
+            # the part shown; Drums have no octave (Digital 1 then)
+            from jdxi_editor.ui.windows.jdxi.follow import ANALOG_OCTAVE
+
+            umb, lsb = {
+                JDXiSynth.DIGITAL_SYNTH_2: (
+                    JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_2,
+                    DigitalCommonParam.OCTAVE_SHIFT.lsb,
+                ),
+                JDXiSynth.ANALOG_SYNTH: (
+                    JDXiSysExOffsetTemporaryToneUMB.ANALOG_SYNTH,
+                    ANALOG_OCTAVE,
+                ),
+            }.get(
+                getattr(self, "current_synth_type", None),
+                (
+                    JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+                    DigitalCommonParam.OCTAVE_SHIFT.lsb,
+                ),
+            )
             address = JDXiSysExAddress(
                 msb=JDXiSysExAddressStartMSB.TEMPORARY_TONE,
-                umb=JDXiSysExOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+                umb=umb,
                 lmb=JDXiSysExOffsetProgramLMB.COMMON,
-                lsb=DigitalCommonParam.OCTAVE_SHIFT.lsb,
+                lsb=lsb,
             )
             sysex_message = JDXiSysEx(
                 sysex_address=address,

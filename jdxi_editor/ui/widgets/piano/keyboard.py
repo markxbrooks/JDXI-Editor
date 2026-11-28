@@ -228,6 +228,7 @@ class PianoKeyboard(QWidget):
             shadow.setColor(QColor(0, 0, 0, 80))
             widget.setGraphicsEffect(shadow)
 
+        self._keys_by_note = {}
         # First create all white keys
         for _, note in enumerate(self.white_notes):
             key = PianoKey(
@@ -238,6 +239,7 @@ class PianoKeyboard(QWidget):
             )
             apply_shadow(key)
             keyboard_widget.layout().addWidget(key)
+            self._keys_by_note[note] = key
             key.noteOn.connect(self.noteOn)
             key.noteOff.connect(self.noteOff)
 
@@ -254,6 +256,7 @@ class PianoKeyboard(QWidget):
                 height=self.black_key_height,
             )
             black_key.setParent(keyboard_widget)
+            self._keys_by_note[note] = black_key
             apply_shadow(black_key)
 
             x_pos = (pos * self.white_key_width) + (
@@ -263,6 +266,27 @@ class PianoKeyboard(QWidget):
             black_key.show()
             black_key.noteOn.connect(self.noteOn)
             black_key.noteOff.connect(self.noteOff)
+
+        self.show_middle_c(0)
+
+    MIDDLE_C = 60
+
+    def show_middle_c(self, octave: int = 0) -> None:
+        """
+        Mark the key that sounds middle C (C4) on the JD-Xi at *octave*.
+
+        With Octave +1 it is the lower C, with -1 the top one; beyond the 37
+        keys (+2, -2...) no key is marked.
+
+        :param octave: int the octave shift
+        :return: None
+        """
+        target = self.MIDDLE_C - 12 * int(octave or 0)
+        for note, key in self._keys_by_note.items():
+            marked = note == target
+            if key.middle_c != marked:
+                key.middle_c = marked
+                key.update()
 
     def set_midi_channel(self, channel: int) -> None:
         """Set MIDI channel for note messages

@@ -122,7 +122,30 @@ def parse_parameters(data: bytes, parameter_type: Iterable) -> Dict[str, int]:
     :param parameter_type: Iterable Type
     :return: Dict[str, int]
     """
+    start, count = _data_window(data)
+    if start or count <= 4:
+        # A DT1 for part of the block (one parameter, from the JD-Xi or a reply
+        # to a small request): only the parameters it holds, read where they
+        # are. Read as a whole block, every other parameter came out 0 and the
+        # editors set them all to 0.
+        found = {}
+        for param in parameter_type:
+            address = getattr(param, "address", None)
+            if address is None or not start <= address < start + count:
+                continue
+            found[param.name] = get_parameter_value(data, param, offset=12 - start)
+        return found
     return {param.name: get_parameter_value(data, param) for param in parameter_type}
+
+
+def _data_window(data: bytes) -> Tuple[int, int]:
+    """(address LSB, number of data bytes) of a DT1 with F0 ... F7."""
+    try:
+        if len(data) < 14:
+            return 0, 0
+        return int(data[11]), max(0, len(data) - 14)
+    except (TypeError, ValueError):
+        return 0, len(data)
 
 
 def get_parameter_value(data: bytes, param: AddressParameter, offset: int = 12) -> int:

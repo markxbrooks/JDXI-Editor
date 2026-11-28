@@ -30,6 +30,7 @@ class WheelWidget(QWidget):
         self.setMinimumSize(40, 100)
         self.setMouseTracking(True)
         self._drag_active = False
+        self._showing = False  # moved by show_value: nothing is sent
 
         # Smooth snap-back animation
         self.snap_animation = QPropertyAnimation(self, b"value")
@@ -41,7 +42,8 @@ class WheelWidget(QWidget):
 
     def set_value(self, value: float) -> None:
         """
-        set_value
+        Move the wheel (mouse, snap-back animation): valueChanged is emitted and
+        the subclasses send it to the JD-Xi.
 
         :param value: float
         :return: None
@@ -49,8 +51,22 @@ class WheelWidget(QWidget):
         clamped = max(-1.0 if self.bidirectional else 0.0, min(1.0, value))
         if clamped != self._value:
             self._value = clamped
-            self.valueChanged.emit(self._value)
             self.update()
+            if not self._showing:
+                self.valueChanged.emit(self._value)
+
+    def show_value(self, value: float) -> None:
+        """Show where the JD-Xi's own wheel is, without sending anything back;
+        ignored while the wheel is held with the mouse."""
+        if self._drag_active:
+            return
+        if self.snap_animation.state() == QPropertyAnimation.State.Running:
+            self.snap_animation.stop()
+        self._showing = True
+        try:
+            WheelWidget.set_value(self, value)
+        finally:
+            self._showing = False
 
     value = Property(float, get_value, set_value)
 

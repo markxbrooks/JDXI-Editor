@@ -70,7 +70,7 @@ def test_env_goes_back_to_the_middle_with_every_program(app):
     slider = AmpEnvelopeSlider(helper)
     slider.setValueSilently(20)
     window = SimpleNamespace(
-        panel_sliders=[slider],
+        panel_sliders={"envelope": slider},
         midi_in_indicator=SimpleNamespace(blink=lambda: None),
         midi_out_indicator=SimpleNamespace(blink=lambda: None),
     )

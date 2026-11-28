@@ -84,7 +84,7 @@ def _rect(widget: QWidget, face: QWidget) -> QRect:
 
 
 def _sliders(window) -> list:
-    return [slider.findChild(QSlider) or slider for slider in window.panel_sliders]
+    return [slider.findChild(QSlider) or slider for slider in window.panel_sliders.values()]
 
 
 def _part_buttons(window) -> list:

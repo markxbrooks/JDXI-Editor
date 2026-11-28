@@ -648,7 +648,7 @@ class JDXiWindow(QMainWindow):
             status_bar.apply_skin()
 
     def _build_status_layout(self) -> QLayout:
-        layout_items = [build_wheel_label_row(), build_wheel_row(midi_helper=self.midi_helper), self._build_midi_indicator_row()]
+        layout_items = [build_wheel_label_row(), build_wheel_row(midi_helper=self.midi_helper, owner=self), self._build_midi_indicator_row()]
         layout = create_layout_with_items(vertical=True, items=layout_items)
         return layout
 
