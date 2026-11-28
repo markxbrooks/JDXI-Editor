@@ -16,10 +16,13 @@ Example:
     >>> transport.play()
 """
 
+import sys
 import threading
+import time
 from typing import Callable, Optional
 
 import mido
+from decologr import Decologr as log
 from PySide6.QtCore import QCoreApplication, QObject, QTimer, Signal
 
 from jdxi_editor.midi.playback.activity import playback_activity
@@ -27,6 +30,96 @@ from picomidi.playback.engine import PlaybackEngine, TransportState
 from picomidi.playback.scheduler import PlaybackScheduler
 
 POSITION_INTERVAL_MS = 50
+
+# The last part of a wait, done in short sleeps (Windows): a timed wait on an
+# event ends on the system timer's tick (15.6 ms), a short sleep does not
+FINE_WAIT_S = 0.020
+FINE_STEP_S = 0.001
+
+
+class PreciseClockEngine(PlaybackEngine):
+    """
+    PlaybackEngine on time.perf_counter().
+
+    The engine reads time.monotonic(), which on Windows before Python 3.13
+    moves in 15.6 ms steps: woken on time, the engine saw an older time and
+    sent the note later (measured on Windows 11: ~8 ms late on average, up to
+    19 ms). perf_counter() is precise to the microsecond everywhere.
+    """
+
+    @staticmethod
+    def _now() -> float:
+        return time.perf_counter()
+
+
+class _PreciseWaitScheduler(PlaybackScheduler):
+    """
+    PlaybackScheduler whose waits end on time on Windows too.
+
+    An Event.wait() there ends on the 15.6 ms timer tick, so the wait is an
+    Event.wait() for all but its last 20 ms, then 1 ms sleeps that still look
+    for a wake (pause, seek…) between them. Other systems: as is.
+    """
+
+    def _wait_for_wake(self, timeout):
+        if timeout is None or sys.platform != "win32" or timeout <= 0:
+            return super()._wait_for_wake(timeout)
+        deadline = time.perf_counter() + timeout
+        coarse = timeout - FINE_WAIT_S
+        if coarse > 0 and self._wake.wait(coarse):
+            self._wake.clear()
+            return
+        while not self._wake.is_set() and not self._stop.is_set():
+            remaining = deadline - time.perf_counter()
+            if remaining <= 0:
+                break
+            time.sleep(min(remaining, FINE_STEP_S))
+        self._wake.clear()
+
+
+class _PlayingTimerResolution:
+    """
+    Precise timers while playing.
+
+    Windows: 1 ms timer resolution (timeBeginPeriod); a thread's timed wait
+    otherwise ends on the 15.6 ms tick and the scheduler wakes up late.
+    macOS: a latency-critical activity, so the system does not throttle the
+    timers (App Nap, timer coalescing: notes were up to 150 ms late).
+    Elsewhere nothing is needed.
+    """
+
+    def __init__(self) -> None:
+        self._on = False
+        self._activity = None
+
+    def set(self, on: bool) -> None:
+        if on == self._on:
+            return
+        if sys.platform == "darwin":
+            from jdxi_editor.utils import macos_activity
+
+            if on:
+                self._activity = macos_activity.begin("JD-Xi Editor is playing MIDI")
+            else:
+                macos_activity.end(self._activity)
+                self._activity = None
+            self._on = on
+            return
+        if sys.platform != "win32":
+            return
+        try:
+            import ctypes
+
+            winmm = ctypes.WinDLL("winmm")
+            result = (winmm.timeBeginPeriod if on else winmm.timeEndPeriod)(1)
+            if result != 0:  # TIMERR_NOERROR
+                log.warning(
+                    f"timer resolution request returned {result}",
+                    scope="TransportController",
+                )
+            self._on = on
+        except (OSError, AttributeError) as ex:
+            log.warning(f"Timer resolution not set: {ex}", scope="TransportController")
 
 
 class TransportController(QObject):
@@ -71,9 +164,12 @@ class TransportController(QObject):
         """
         super().__init__(parent)
         del scheduler_interval_ms  # legacy kw-only compatibility
-        self.engine = engine or PlaybackEngine()
+        self.engine = engine or PreciseClockEngine()
         self.send = send
         self.engine.on_event = self._on_engine_event
+        # (channel, note) keys sounding on the instrument: one voice per key
+        self._sounding: dict[tuple[int, int], float] = {}
+        self._timer_resolution = _PlayingTimerResolution()
         # Engine calls (and so MIDI sends) are serialised across both threads
         self._lock = threading.RLock()
         self._loaded = False
@@ -362,17 +458,67 @@ class TransportController(QObject):
         if self._scheduler is not None:
             self._scheduler.stop()
             self._scheduler = None
+        self._timer_resolution.set(False)
 
     # --- Internals ----------------------------------------------------------
 
     def _on_engine_event(self, msg: mido.Message) -> None:
-        if self.send is not None:
-            self.send(msg)
+        if self.send is None:
+            return
+        for out in self._one_voice_per_key(msg):
+            self.send(out)
+
+    # A second note-on this soon after the first on the same key is the same
+    # note played by a doubled track (left/right copies): dropped, not retriggered
+    DOUBLED_WITHIN_S = 0.03
+
+    def _one_voice_per_key(
+        self, msg: mido.Message, now: Optional[float] = None
+    ) -> list[mido.Message]:
+        """
+        Never start a second voice on a key that is already sounding.
+
+        Two tracks on one channel playing the same note send two note-ons and,
+        by design of the engine, a single note-off when the last one ends. The
+        JD-Xi starts a voice per note-on and a note-off may end only one of
+        them: the other hangs until Panic.
+
+        - The same note started at the same moment by another track (within
+          DOUBLED_WITHIN_S): the second note-on is dropped, as if the part
+          were played once. Retriggering it cut every note of a doubled bass
+          on the mono Analog part.
+        - A later note-on on a key still sounding: the note is retriggered,
+          its note-off first, still one voice for the one note-off to come.
+        """
+        if now is None:
+            now = time.perf_counter()
+        if msg.type == "note_on" and msg.velocity > 0:
+            key = (msg.channel, msg.note)
+            started = self._sounding.get(key)
+            self._sounding[key] = now
+            if started is not None:
+                if now - started < self.DOUBLED_WITHIN_S:
+                    self._sounding[key] = started
+                    return []
+                return [
+                    mido.Message(
+                        "note_off", channel=msg.channel, note=msg.note, velocity=0
+                    ),
+                    msg,
+                ]
+        elif msg.type in ("note_off", "note_on"):
+            self._sounding.pop((msg.channel, msg.note), None)
+        elif msg.type == "control_change" and msg.control in (120, 123):
+            # All Sound Off / All Notes Off
+            self._sounding = {
+                key: t for key, t in self._sounding.items() if key[0] != msg.channel
+            }
+        return [msg]
 
     def _ensure_scheduler(self) -> None:
         if self._scheduler is not None and self._scheduler.is_running:
             return
-        self._scheduler = PlaybackScheduler(
+        self._scheduler = _PreciseWaitScheduler(
             self.engine,
             lock=self._lock,
             on_ended=self._on_scheduler_ended_from_thread,
@@ -400,6 +546,7 @@ class TransportController(QObject):
     def _after_command(self) -> None:
         """Publish state and position, and run the position timer only while playing."""
         playing = self.engine.state == TransportState.PLAYING
+        self._timer_resolution.set(playing)
         if playing and not self._position_timer.isActive():
             self._position_timer.start()
         elif not playing:
