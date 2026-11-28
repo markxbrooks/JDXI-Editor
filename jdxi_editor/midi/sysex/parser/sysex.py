@@ -295,7 +295,7 @@ class JDXiSysExParser:
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            log.info(scope="JDXiSysExParser", message="Correct JD-Xi header found")
+            log.debug(scope="JDXiSysExParser", message="Correct JD-Xi header found")
 
         self.sysex_dict = parse_sysex(self.sysex_data)
         message_ir = self.parse_to_ir()

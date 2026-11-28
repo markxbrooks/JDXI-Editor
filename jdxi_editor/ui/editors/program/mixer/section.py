@@ -305,7 +305,7 @@ class ProgramMixer(SynthBase):
 
     def update_tone_name_for_synth(self, tone_name: str, synth_type: str) -> None:
         """Update tone name for synth"""
-        log.message(f"Update tone name triggered: {tone_name} {synth_type}")
+        log.debug(f"Update tone name triggered: {tone_name} {synth_type}")
 
         label = self.label_widgets.get(synth_type)
         if label:

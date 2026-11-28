@@ -122,7 +122,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
     :param name: str
     :return: Optional[str]
     """
-    log.message(f"Searching for program name: {name}")
+    log.debug(f"Searching for program name: {name}")
     for program in JDXiUIProgramList.list_rom_and_user_programs():
         if name in program.name:
             return getattr(program, "id", None)
