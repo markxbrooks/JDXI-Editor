@@ -3,8 +3,8 @@ Module: log_viewer
 ==================
 
 This module provides a graphical log viewer using PySide6. The `LogViewer` class is a
-QMainWindow-based widget that displays the log file written by Decologr in a styled QTextEdit
-widget. It automatically refreshes to show new log entries.
+QMainWindow-based widget that displays the log file written by Decologr. It
+automatically refreshes to show new log entries.
 
 Classes:
 --------
@@ -12,14 +12,19 @@ Classes:
 
 Features:
 ---------
-- Dark theme with a modern red-accented styling.
+- Dark theme with a modern red-accented styling, in fixed-width text so the
+  columns line up; the emoji Decologr puts before each message are left out
+  (the level column already says it).
+- Two tabs: every line, and the lines that deserve attention (warnings,
+  errors and what follows them, e.g. a traceback).
 - Automatically reads and displays the log file written by Decologr. Each run
   writes a file named after the time it started, rotated at 1MB, so the file to
   read is taken from the installed log handler rather than from a fixed path
   (see :func:`resolve_log_file`).
 - Refreshes periodically to show new log entries, and follows the file across
-  rotation.
-- Provides a "Clear Log" button to reset the log digital.
+  rotation. It reads bytes and holds a line still being written, so no line
+  is broken or shown twice.
+- Provides a "Clear Log" button: the lines written from then on appear.
 - Auto-scrolls to the bottom to show the latest entries.
 
 Usage Example:
@@ -30,15 +35,31 @@ Usage Example:
 """
 
 import logging
+import re
 from pathlib import Path
 from typing import Optional
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QTextEdit
+from PySide6.QtGui import QFont, QFontDatabase
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPlainTextEdit,
+    QPushButton,
+    QTabWidget,
+)
 
-from jdxi_editor.project import __package_name__
+from jdxi_editor.log_files import LOG_KEEP_DAYS, log_dir
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.widgets.rack import RackPanel
+
+ATTENTION = ("WARNING", "ERROR", "CRITICAL")
+_ENTRY = re.compile(r"^\[\d\d:\d\d:\d\d\]\s+(\w+)")
+_EMOJI = re.compile(
+    "[\U0001F000-\U0001FAFF\u2139\u2600-\u27BF\u2B00-\u2BFF\uFE0F\u200D]+ ?"
+)
+MAX_LINES = 20000  # the view keeps the newest lines (the file keeps them all)
 
 
 def log_directory() -> Path:
@@ -47,7 +68,7 @@ def log_directory() -> Path:
 
     :return: Path
     """
-    return Path.home() / f".{__package_name__}" / "logs"
+    return log_dir()
 
 
 def resolve_log_file(log_dir: Optional[Path] = None) -> Optional[Path]:
@@ -82,6 +103,43 @@ def resolve_log_file(log_dir: Optional[Path] = None) -> Optional[Path]:
     return max(current or candidates, key=lambda path: path.stat().st_mtime)
 
 
+def fixed_font() -> QFont:
+    """A fixed-width font for the log lines."""
+    font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+    font.setFamilies(
+        ["Consolas", "Cascadia Mono", "Menlo", "DejaVu Sans Mono", font.family()]
+    )
+    font.setStyleHint(QFont.StyleHint.Monospace)
+    font.setFixedPitch(True)
+    font.setPointSize(10)
+    return font
+
+
+def clean(line: str) -> str:
+    """The line without the emoji Decologr puts before each message."""
+    return _EMOJI.sub("", line)
+
+
+def needs_attention(
+    lines: list[str], following: bool = False
+) -> tuple[list[str], bool]:
+    """
+    The lines with a level from WARNING up, with the lines that continue them.
+
+    :param lines: list[str] log lines
+    :param following: bool the line before *lines* continued a warning or an error
+    :return: (the lines kept, whether the last line continues one)
+    """
+    kept = []
+    for line in lines:
+        match = _ENTRY.match(line)
+        if match:
+            following = match.group(1).upper() in ATTENTION
+        if following and line.strip():
+            kept.append(line)
+    return kept, following
+
+
 class LogViewer(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
         super().__init__(parent)
@@ -93,8 +151,10 @@ class LogViewer(QMainWindow):
 
         self.log_file = resolve_log_file()
 
-        # Track the last position we read from in the file
-        self.last_position = 0
+        self.last_position = 0  # bytes already read
+        self._partial = b""  # a line still being written
+        self._following = False  # the last line read continues a warning or an error
+        self._attention_count = 0
         # Track refresh mode: True = fast (500ms), False = slow (30s)
         self.fast_refresh_mode = True
 
@@ -102,11 +162,13 @@ class LogViewer(QMainWindow):
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
 
-        # Create log text area
-        self.log_text = QTextEdit()
-        self.log_text.setLineWrapMode(QTextEdit.NoWrap)
-        self.log_text.setReadOnly(True)
-        layout.addWidget(self.log_text)
+        self.tabs = QTabWidget()
+        self.log_text = self._text_view()
+        self.attention_text = self._text_view()
+        self.tabs.addTab(self.log_text, "All")
+        self.tabs.addTab(self.attention_text, "")
+        self._update_attention_title()
+        layout.addWidget(self.tabs)
 
         # Create button layout
         button_layout = QHBoxLayout()
@@ -125,6 +187,10 @@ class LogViewer(QMainWindow):
 
         layout.addLayout(button_layout)
 
+        layout.addWidget(
+            QLabel(f"Log files older than {LOG_KEEP_DAYS} days are deleted at start")
+        )
+
         # Set central widget
         # Mounted as a rack unit: the ears are the skin's, and the
         # skins without them simply draw none
@@ -138,22 +204,29 @@ class LogViewer(QMainWindow):
         self.refresh_timer.timeout.connect(self.refresh_log_file)
         self.refresh_timer.start(500)  # Start with fast refresh (500ms)
 
+    def _text_view(self) -> QPlainTextEdit:
+        view = QPlainTextEdit()
+        view.setReadOnly(True)
+        view.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        view.setMaximumBlockCount(MAX_LINES)
+        view.setFont(fixed_font())
+        return view
+
+    def _update_attention_title(self) -> None:
+        self.tabs.setTabText(1, f"Warnings and errors ({self._attention_count})")
+
     def load_log_file(self):
-        """Load the entire log file into the text widget"""
+        """Read the whole file again."""
+        self.log_text.clear()
+        self.attention_text.clear()
+        self.last_position, self._partial, self._following = 0, b"", False
+        self._attention_count = 0
+        self._update_attention_title()
         if self.log_file is None or not self.log_file.exists():
             self.log_text.setPlainText(self._no_log_file_message())
             return
-        try:
-            with open(self.log_file, "r", encoding="utf-8", errors="replace") as f:
-                content = f.read()
-                self.log_text.setPlainText(content)
-                self.last_position = f.tell()
-                self._scroll_to_end()
-            self.setWindowTitle(f"Log Viewer - {self.log_file.name}")
-        except OSError as ex:
-            self.log_text.setPlainText(
-                f"Error reading log file: {ex}\n\nLog file path: {self.log_file}"
-            )
+        self.setWindowTitle(f"Log Viewer - {self.log_file.name}")
+        self.refresh_log_file()
 
     def _no_log_file_message(self) -> str:
         """
@@ -173,25 +246,15 @@ class LogViewer(QMainWindow):
             message.append("logging starts.")
         return "\n".join(message)
 
-    def _scroll_to_end(self) -> None:
-        """
-        Scroll the view to the newest entry.
-
-        :return: None
-        """
-        cursor = self.log_text.textCursor()
-        cursor.movePosition(cursor.MoveOperation.End)
-        self.log_text.setTextCursor(cursor)
-
     def refresh_log_file(self):
-        """Read new lines from the log file and append them"""
+        """Append the complete lines written since the last read."""
         if self.log_file is None or not self.log_file.exists():
             # The file is only named once per run, so a missing one means
             # logging has only just started, or the file was rotated away
             self.log_file = resolve_log_file()
             if self.log_file is None:
                 return
-            self.last_position = 0
+            self.last_position, self._partial = 0, b""
 
         try:
             # Rotation moves the file that was being read to "....log.1" and
@@ -200,20 +263,38 @@ class LogViewer(QMainWindow):
             if self.log_file.stat().st_size < self.last_position:
                 self.load_log_file()
                 return
-
-            with open(self.log_file, "r", encoding="utf-8", errors="replace") as f:
+            # positions in bytes: the emoji are several bytes
+            with open(self.log_file, "rb") as f:
                 f.seek(self.last_position)
-                new_content = f.read()
-                if new_content:
-                    self.log_text.moveCursor(
-                        self.log_text.textCursor().MoveOperation.End
-                    )
-                    self.log_text.insertPlainText(new_content)
-                    self.last_position = f.tell()
-                    self._scroll_to_end()
+                data = f.read()
+                self.last_position = f.tell()
         except OSError:
             # The file may be locked or have just been rotated away
-            pass
+            return
+        if not data:
+            return
+        data = self._partial + data
+        complete, newline, self._partial = data.rpartition(b"\n")
+        if not newline:
+            self._partial = data
+            return
+        lines = [
+            clean(line) for line in complete.decode("utf-8", "replace").splitlines()
+        ]
+        self._append(self.log_text, lines)
+        kept, self._following = needs_attention(lines, self._following)
+        if kept:
+            self._attention_count += sum(1 for line in kept if _ENTRY.match(line))
+            self._append(self.attention_text, kept)
+            self._update_attention_title()
+
+    @staticmethod
+    def _append(view: QPlainTextEdit, lines: list[str]) -> None:
+        bar = view.verticalScrollBar()
+        at_end = bar.value() >= bar.maximum() - 2
+        view.appendPlainText("\n".join(lines))
+        if at_end:  # follow the new lines, unless the user scrolled up to read
+            bar.setValue(bar.maximum())
 
     def toggle_refresh_mode(self):
         """Toggle between fast refresh (500ms) and slow refresh (30s)"""
@@ -230,9 +311,11 @@ class LogViewer(QMainWindow):
         self.refresh_timer.start()
 
     def clear_log(self):
-        """Clear the log digital"""
+        """Empty the view; only the lines written from now on appear (the file is untouched)."""
         self.log_text.clear()
-        self.last_position = 0
+        self.attention_text.clear()
+        self._attention_count = 0
+        self._update_attention_title()
 
     def closeEvent(self, event):
         """Stop the refresh timer when window is closed"""

@@ -81,8 +81,19 @@ def main() -> None:
     try:
         # --- Set up logging first
         settings = QSettings(__organization_name__, __program__)
-        log_level = int(str(settings.value("log_level", logging.DEBUG)))
+        # one log file per start, in ~/.jdxi_editor/logs, kept two weeks
+        from jdxi_editor.log_files import (
+            LOG_KEEP_DAYS,
+            apply_log_level,
+            prune_logs,
+            saved_level,
+        )
+
+        pruned = prune_logs()
         logger = setup_logging(use_rich=False, project_name="jdxi_editor")  # @@@
+        apply_log_level(saved_level(settings), logger)  # Preferences: log level
+        if pruned:
+            logger.info(f"Deleted {pruned} log files older than {LOG_KEEP_DAYS} days")
 
         # --- Create application
         app = QApplication(sys.argv)

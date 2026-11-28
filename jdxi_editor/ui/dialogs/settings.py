@@ -68,17 +68,16 @@ class UiPreferencesDialog(QDialog):
         self.log_level_combo.addItems(self.log_levels.keys())
         # Load the log level from QSettings
         # self.load_log_level_from_settings()
-        log_level = int(self.settings.value("log_level", logging.DEBUG))
-        # Reverse lookup: find the key name for the numeric value
-        try:
-            level_name = next((k for k, v in self.log_levels.items() if v == log_level))
-        except StopIteration:
-            level_name = "DEBUG"  # default
-        index = list(self.log_levels.keys()).index(level_name)
-        if index >= 0:
-            self.log_level_combo.setCurrentIndex(index)
-        # Connect the combo box to a function that updates QSettings
-        self.log_level_combo.currentIndexChanged.connect(self.update_log_level)
+        from jdxi_editor.log_files import saved_level
+
+        level = saved_level(self.settings)
+        self.log_level_combo.setCurrentIndex(
+            list(self.log_levels.values()).index(level)
+        )
+        # the signal gives the row: the level is the row's value
+        self.log_level_combo.currentIndexChanged.connect(
+            lambda row: self.update_log_level(list(self.log_levels.values())[row])
+        )
 
         self.log_level_layout = QHBoxLayout(self)
         self.log_icon = QLabel()
@@ -294,21 +293,12 @@ class UiPreferencesDialog(QDialog):
         """
         Update log level for the current logger and all handlers
         """
+        from jdxi_editor.log_files import apply_log_level
+
         log.parameter("level", level)
-        logger = logging.getLogger(__package_name__)
-        logger.setLevel(level)
-
-        for handler in logger.handlers:
-            handler.setLevel(level)
-
-        # Also apply to root logger and its handlers (optional, if you use root logging)
-        logging.root.setLevel(level)
-        for handler in logging.root.handlers:
-            handler.setLevel(level)
-
+        apply_log_level(level)
         self.settings.setValue("log_level", level)
         self.settings.sync()
-        print(f"✅ Updated log level to {logging.getLevelName(level)}")
 
     def on_save_settings(self):
         """
