@@ -740,7 +740,15 @@ class MidiInHandler(MidiIOController):
             )
             return
 
+        # The window re-reads the shown part every 2 s while the JD-Xi is
+        # quiet: the same program each time. Write the database (and rename)
+        # only when something changed.
+        known = (program.id, program.name, program.pc, program.msb, program.lsb,
+                 program.digital_1, program.digital_2, program.analog, program.drums)
+        if known == getattr(self, "_last_auto_added", None):
+            return
         if add_or_replace_program_and_save(program):
+            self._last_auto_added = known
             log.message(
                 f"✅ Auto-added program: {program.id}", scope=self.__class__.__name__
             )
