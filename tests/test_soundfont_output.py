@@ -289,8 +289,12 @@ def test_the_real_port_is_listed_as_a_midi_output(tmp_path):
     import pytest
 
     mido = pytest.importorskip("mido")
+    import rtmidi
+
     from jdxi_editor.audio import soundfont_output as module
 
+    if rtmidi.MidiOut.__name__ == "FakeMidiOut":
+        pytest.skip("the tests run on in-memory MIDI ports (JDXI_TEST_REAL_MIDI=1 for the real ones)")
     if module._fluidsynth_module is None:
         pytest.skip("fluidsynth is not installed")
     fonts = glob.glob(os.path.expanduser("~/SoundFonts/**/*.sf2"), recursive=True)
