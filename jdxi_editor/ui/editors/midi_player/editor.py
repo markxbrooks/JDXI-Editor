@@ -182,6 +182,7 @@ class MidiFilePlayer(SynthEditor):
         self.event_suppression_group: EventSuppressionGroup = EventSuppressionGroup(
             parent=self, midi_state=self.midi_state
         )
+        self._fit_applied = False  # Fit to the JD-Xi applied to this file
         self.classification_group: ClassificationGroup = ClassificationGroup(
             parent=self, midi_state=self.midi_state
         )
@@ -388,6 +389,95 @@ class MidiFilePlayer(SynthEditor):
                 self.specs["message_box"]["error_detect_drums"],
                 message=f"An error occurred while detecting drum tracks:\n\n{ex}",
             )
+
+    def fit_tracks_to_jdxi(self) -> None:
+        """Propose a JD-Xi part for every track with notes, to check and apply."""
+        if not self._validate_midi_loaded():
+            return
+        from jdxi_editor.ui.editors.midi_player.fit_jdxi import (
+            FitDialog,
+            note_tracks,
+            propose,
+            summary,
+        )
+
+        tracks = note_tracks(self.midi_state.file)
+        drums = self._detect_drum_tracks()
+        proposal = propose(tracks, drums, self._classify_tracks(drums))
+        # once applied (or a file already on the JD-Xi's parts) the dialog
+        # starts from the parts as they are
+        as_now = self._fit_applied or summary(self.midi_state.file)[1]
+        dialog = FitDialog(
+            tracks,
+            proposal,
+            parent=self,
+            start_as_now=as_now,
+            midi_file=self.midi_state.file,
+        )
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        spins = self.midi_file.midi_track_viewer.track_channel_spins
+        for index, channel in dialog.changes().items():
+            spin = spins.get(index)
+            if spin is not None:
+                spin.setValue(channel)  # applied like an edit by hand
+        self.midi_file.midi_track_viewer.flush_pending_edits()
+        self._apply_part_sounds(dialog.sounds())
+        self._fit_applied = True
+        self._refresh_fit_summary()
+
+    def _apply_part_sounds(self, sounds: dict[int, tuple[int, int]]) -> None:
+        """
+        Give the parts their sounds (Fit to the JD-Xi): on each part's channel
+        the file's program changes and bank selects go, and the part's main
+        track starts with the chosen JD-Xi preset; sent to the JD-Xi too.
+
+        :param sounds: part channel (1-based) -> (preset number, main track index)
+        """
+        if not sounds:
+            return
+        from jdxi_editor.midi.track import gm_map
+        from jdxi_editor.ui.editors.midi_player.fit_jdxi import (
+            part_presets,
+            preset_wire,
+        )
+
+        viewer = self.midi_file.midi_track_viewer
+        tracks = dict(enumerate(viewer.midi_file.tracks))
+        changed: dict[int, mido.MidiTrack] = {}
+        for channel, (number, main) in sounds.items():
+            ch = channel + Midi.channel.DISPLAY_TO_BINARY
+            msb, lsb, program = preset_wire(part_presets(channel)[number - 1])
+            for index, track in tracks.items():
+                if any(
+                    getattr(msg, "channel", None) == ch
+                    and (
+                        msg.type == "program_change"
+                        or (msg.type == "control_change" and msg.control in (0, 32))
+                    )
+                    for msg in track
+                ):
+                    tracks[index] = changed[index] = gm_map.strip_program_changes(
+                        track, ch
+                    )
+            if main in tracks:
+                tracks[main] = changed[main] = gm_map.with_sound(
+                    tracks[main], ch, msb, lsb, program
+                )
+            if self.midi_helper is not None:
+                self.midi_helper.send_bank_select_and_program_change(
+                    channel=ch, bank_msb=msb, bank_lsb=lsb, program=program
+                )
+        if changed:
+            viewer._update_tracks_in_place(changed)
+
+    def _refresh_fit_summary(self) -> None:
+        """What the JD-Xi plays of the file, in the Fit to the JD-Xi group."""
+        from jdxi_editor.ui.editors.midi_player.fit_jdxi import summary
+
+        group = getattr(self, "classification_group", None)
+        if group is not None and getattr(group, "summary_label", None) is not None:
+            group.set_summary(*summary(self.midi_state.file))
 
     def classify_and_assign_tracks(self) -> None:
         """classify and assign tracks"""
@@ -1006,6 +1096,7 @@ class MidiFilePlayer(SynthEditor):
                 set(self.midi_file.midi_track_viewer.soloed_channels)
             )
         midi_file = self.midi_state.file
+        self._refresh_fit_summary()
         if midi_file is not None:
             self.mute_channels_group.set_used_channels(
                 {
@@ -1139,6 +1230,11 @@ class MidiFilePlayer(SynthEditor):
         log.message(
             f"Suppress MIDI Program Changes = {self.midi_state.suppress_program_changes}"
         )
+        self._sync_transport_settings()
+
+    def on_block_foreign_program_changes_toggled(self, state: Qt.CheckState) -> None:
+        """Block the file's program changes that do not choose a JD-Xi sound (General MIDI ones)."""
+        self.midi_state.block_foreign_program_changes = state == JDXi.UI.Constants.CHECKED
         self._sync_transport_settings()
 
     def on_suppress_control_changes_toggled(self, state: Qt.CheckState):
@@ -1333,6 +1429,7 @@ class MidiFilePlayer(SynthEditor):
         self.transport_controller.load(self.midi_state.file)
         self._sync_transport_settings()
         self._loop_points = (None, None)
+        self._fit_applied = False
         self.playback_options.set_loop_points(None, None)
         self.midi_file.midi_track_viewer.ruler.set_loop_marks(None, None)
         self._refresh_program_change_markers()
@@ -1806,6 +1903,7 @@ class MidiFilePlayer(SynthEditor):
         self.transport_controller.set_suppression(
             program_changes=self.midi_state.suppress_program_changes,
             control_changes=self.midi_state.suppress_control_changes,
+            foreign_program_changes=self.midi_state.block_foreign_program_changes,
         )
 
     def _on_transport_state_changed(self, state: TransportState) -> None:

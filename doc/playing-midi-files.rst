@@ -27,8 +27,9 @@ Basic workflow
 
 1. Open **MIDI File Player** and load a ``.mid`` or ``.midi`` file through the
    File menu or drag-and-drop.
-2. Review each track's channel. **Detect Drums** and **Classify Tracks** can
-   suggest assignments; confirm the results before playback.
+2. For a general MIDI file, use **Fit to the JD-Xi** › **Assign tracks to
+   parts…** to put its tracks on the JD-Xi's parts and choose their sounds;
+   confirm the results before playback.
 3. Select the intended output and play the file. For hardware, listen to the
    JD-Xi; for FluidSynth, check the configured audio output.
 4. To edit steps, use **Load into Pattern Editor**. Save the resulting pattern
@@ -38,8 +39,8 @@ Channel assignment conventions
 ------------------------------
 
 The default routing uses MIDI channels 1, 2, 3, and 10 for the JD-Xi's four
-parts. Classification and preset helpers may assign channels automatically;
-they are starting points, not a substitute for checking the track headers.
+parts. **Assign tracks to parts…** and **Starting sounds** are starting
+points, not a substitute for checking the track headers.
 When multiple tracks share a channel, MIDI channel-level messages and note
 state can affect more than one track.
 

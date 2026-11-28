@@ -29,6 +29,8 @@ class MidiPlaybackState:
     suppress_program_changes: bool = field(
         default=False
     )  # False = send PCs so inserted PCs are heard
+    # program changes that do not choose a JD-Xi sound (General MIDI ones): not sent
+    block_foreign_program_changes: bool = field(default=True)
     custom_tempo_force: bool = field(default=False)
     custom_tempo: int = field(
         default=Midi.tempo.BPM_162_USEC

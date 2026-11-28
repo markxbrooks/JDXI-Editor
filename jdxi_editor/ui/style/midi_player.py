@@ -128,6 +128,10 @@ class MidiPlayerStyle(AppEditorStyle):
             background-color: {cls.BACKGROUND};
             color: {cls.BORDER_HOVER};
         }}
+        QPushButton[part="true"] {{
+            border: 1px solid {cls.BORDER_HOVER};
+            font-weight: bold;
+        }}
         QPushButton:hover {{
             border-color: {cls.BORDER_HOVER};
         }}

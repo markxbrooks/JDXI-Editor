@@ -3,25 +3,50 @@ MIDI File Player
 
 The MIDI File Player loads Standard MIDI Files and plays them through the
 selected MIDI output. That output can be a connected JD-Xi or FluidSynth when
-software playback is configured. The player also provides track
-classification, channel assignment, and a path into the Pattern Editor.
+software playback is configured. The player also fits a file to the JD-Xi's
+parts, and provides a path into the Pattern Editor.
 
 Load and route a file
 ---------------------
 
 1. Open a ``.mid`` or ``.midi`` file from the File menu, or drag it into the
    player.
-2. Check each track's channel in its header. **Detect Drums** and **Classify
-   Tracks** can help propose assignments; assignments can be changed in the
-   track list.
-3. **Apply Presets** inserts JD-Xi presets for the selected channels. Confirm
-   those choices on the instrument before playback.
+2. The **Fit to the JD-Xi** group says what of the file the JD-Xi plays. For a
+   general MIDI file, use **Assign tracks to parts…** (below).
+3. **Starting sounds** gives the parts a sound to start from, also written into
+   the file: Digital 1 Picked Bass, Digital 2 Piano, Analog JP8 Strings.
 4. Select the intended MIDI output and start playback.
 
-The default JD-Xi part mapping is channel 1 (Digital 1), channel 2 (Digital
-2), channel 3 (Analog), and channel 10 (Drums). Automatic classification is
-heuristic, so inspect channels and track names before sending a file to the
-instrument.
+The JD-Xi plays four parts, each on its own channel: channel 1 (Digital 1),
+channel 2 (Digital 2), channel 3 (Analog), and channel 10 (Drums). Notes on any
+other channel are not heard.
+
+Fit to the JD-Xi
+----------------
+
+**Assign tracks to parts…** proposes a part for each track that plays notes, in
+a table you can change before **Apply**: the drum tracks to Drums; for each
+melodic part the one track recognised best for it (the bass to Digital 1, keys
+or guitars to Digital 2, strings to Analog); the other tracks are not played.
+**None played** sets every track to "Not played", **Proposal** and **As now**
+switch between the proposal and the parts the tracks are on. The proposal is
+heuristic, so check it before sending a file to the instrument.
+
+**Sounds of the parts**, under the table, picks for each part the JD-Xi preset
+closest to the General MIDI instrument of its main track. On Apply it takes the
+place of the file's program changes on that part and is sent to the JD-Xi. Each
+can be changed, or left **Unchanged**.
+
+Channels and the event filter
+-----------------------------
+
+Each channel has a mute (**M**) and a solo (**S**) button. With any channel
+soloed, only the soloed ones play; the mutes come back when the solos go off.
+A track without a name shows, in grey, the instrument it plays.
+
+In the event filter, **GM** (on by default) blocks the file's program changes
+that do not choose a JD-Xi sound: General MIDI ones would change the parts'
+sounds. **PC** blocks all program changes, **CC** all control changes.
 
 Use FluidSynth
 --------------

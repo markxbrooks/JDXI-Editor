@@ -122,6 +122,10 @@ class _PlayingTimerResolution:
             log.warning(f"Timer resolution not set: {ex}", scope="TransportController")
 
 
+# Bank Select MSBs that choose JD-Xi sounds: programs, drum kits, analog and digital tones
+JDXI_BANK_MSB = frozenset({85, 86, 94, 95})
+
+
 class TransportController(QObject):
     """
     Transport for MIDI file playback.
@@ -169,6 +173,10 @@ class TransportController(QObject):
         self.engine.on_event = self._on_engine_event
         # (channel, note) keys sounding on the instrument: one voice per key
         self._sounding: dict[tuple[int, int], float] = {}
+        # program changes that do not choose a JD-Xi sound are not sent (see
+        # _jdxi_program_change); the last Bank Select MSB sent on each channel
+        self.block_foreign_program_changes = True
+        self._bank_msb: dict[int, int] = {}
         self._timer_resolution = _PlayingTimerResolution()
         # Engine calls (and so MIDI sends) are serialised across both threads
         self._lock = threading.RLock()
@@ -254,6 +262,7 @@ class TransportController(QObject):
             state = self.engine.state if keep_position else TransportState.STOPPED
             position = self.engine.position_tick if keep_position else 0
             self.engine.stop()
+            self._bank_msb.clear()  # the new file's banks: its chase sends them again
             self.engine.load_file(midi_file)
             if not keep_position:
                 self._loop_range_ticks = None
@@ -443,9 +452,21 @@ class TransportController(QObject):
                     track_index, channels.get(track_index)
                 )
 
-    def set_suppression(self, program_changes: bool, control_changes: bool) -> None:
-        """Choose whether program changes / control changes in the file are sent."""
+    def set_suppression(
+        self,
+        program_changes: bool,
+        control_changes: bool,
+        foreign_program_changes: Optional[bool] = None,
+    ) -> None:
+        """
+        Choose whether program changes / control changes in the file are sent.
+
+        :param foreign_program_changes: block the program changes that do not
+            choose a JD-Xi sound (None: leave as it is)
+        """
         with self._lock:
+            if foreign_program_changes is not None:
+                self.block_foreign_program_changes = foreign_program_changes
             self.engine.suppress_program_changes = program_changes
             self.engine.suppress_control_changes = control_changes
 
@@ -465,8 +486,27 @@ class TransportController(QObject):
     def _on_engine_event(self, msg: mido.Message) -> None:
         if self.send is None:
             return
+        if not self._jdxi_program_change(msg):
+            return
         for out in self._one_voice_per_key(msg):
             self.send(out)
+
+    def _jdxi_program_change(self, msg: mido.Message) -> bool:
+        """
+        Whether *msg* may go to the JD-Xi as far as program changes go.
+
+        A program change chooses a JD-Xi sound only after a JD-Xi Bank Select
+        (MSB 85 programs, 86 drum kits, 94 analog tones, 95 digital tones). The
+        General MIDI ones of a file made for another instrument (no bank, or
+        MSB 0 / 120 / 121) pick a sound of whatever bank the part is in:
+        another sound than the one set in the editors, unsaved edits lost.
+        With block_foreign_program_changes they are not sent.
+        """
+        if msg.type == "control_change" and msg.control == 0:
+            self._bank_msb[msg.channel] = msg.value
+        elif msg.type == "program_change" and self.block_foreign_program_changes:
+            return self._bank_msb.get(msg.channel) in JDXI_BANK_MSB
+        return True
 
     # A second note-on this soon after the first on the same key is the same
     # note played by a doubled track (left/right copies): dropped, not retriggered

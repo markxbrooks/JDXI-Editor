@@ -1,5 +1,5 @@
 """
-Track Classification group - Detect Drums, Classify Tracks, Apply Presets.
+Fit to the JD-Xi group: what of the file the JD-Xi plays, assign tracks to parts, starting sounds.
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from decologr import Decologr as log
 from PySide6.QtCore import QMargins
-from PySide6.QtWidgets import QGroupBox, QPushButton
+from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout
 
 from jdxi_editor.core.jdxi import JDXi
 from jdxi_editor.midi.playback.state import MidiPlaybackState
@@ -31,29 +31,31 @@ class ClassificationGroup(JDXiMidiGroup):
         midi_state: MidiPlaybackState | None = None,
     ):
         super().__init__(parent=parent, midi_state=midi_state)
-        self.detect_drums_button: QPushButton | None = None
-        self.classify_tracks_button: QPushButton | None = None
+        self.fit_tracks_button: QPushButton | None = None
         self.apply_presets_button: QPushButton | None = None
+        self.summary_label: QLabel | None = None
         self.setup_ui()
 
     def _build_group(self) -> QGroupBox:
-        """Build the Track Classification group: one row of compact buttons."""
+        """Fit to the JD-Xi: what of the file the JD-Xi plays, then one row of
+        actions (propose the parts for the tracks; the parts' sounds)."""
         mp = JDXi.UI.MidiPlayer
+        self.summary_label = QLabel("Load a MIDI file: this says which of its tracks the JD-Xi plays.")
+        self.summary_label.setWordWrap(True)
+        self.summary_label.setObjectName("fitSummary")
+        self.summary_label.setToolTip((
+            "The JD-Xi plays four parts, each on its channel: Digital 1 (1), Digital 2 (2), "
+            "Analog (3), Drums (10). Notes on other channels are not heard."))
         buttons, items = [], []
-        for key in ("detect_drums", "classify_tracks", "apply_presets"):
+        for key in ("fit_tracks", "apply_presets"):
             spec = self.specs["buttons"][key]
-            # Round button + label, as the other panel actions
             item, button = create_round_button_with_label(
                 spec.label, spec.icon, spec.slot, spec.tooltip
             )
             buttons.append(button)
             items.append(item)
-        (
-            self.detect_drums_button,
-            self.classify_tracks_button,
-            self.apply_presets_button,
-        ) = buttons
-        layout = create_layout_with_items(
+        self.fit_tracks_button, self.apply_presets_button = buttons
+        row = create_layout_with_items(
             items=items,
             vertical=False,
             start_stretch=False,
@@ -61,8 +63,18 @@ class ClassificationGroup(JDXiMidiGroup):
             margins=QMargins(0, 0, 0, 0),
             spacing=mp.SPACING_RELATED,
         )
-        group, _ = create_group_with_layout(label="Track Classification", layout=layout)
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(mp.SPACING_RELATED)
+        layout.addWidget(self.summary_label)
+        layout.addLayout(row)
+        group, _ = create_group_with_layout(label="Fit to the JD-Xi", layout=layout)
         return group
+
+    def set_summary(self, text: str, ready: bool) -> None:
+        """What the JD-Xi plays of the file (green when it plays all of it)."""
+        self.summary_label.setText(text)
+        self.summary_label.setStyleSheet("color: #6fcf8f;" if ready else "")
 
     def _on_apply_presets_clicked(self) -> None:
         """Log and delegate to parent.apply_channel_presets."""
@@ -78,25 +90,20 @@ class ClassificationGroup(JDXiMidiGroup):
         self.parent.apply_channel_presets()
 
     def _build_button_specs(self) -> dict[str, ButtonSpec]:
-        """Build Detect Drums, Classify Tracks, Apply Presets button specs."""
+        """Propose the parts for the tracks; the parts' sounds."""
         return {
-            "detect_drums": ButtonSpec(
-                label="Detect Drums",
-                tooltip="Analyze MIDI file and assign Channel 10 to detected drum tracks",
-                icon=JDXi.UI.Icon.DRUM,
-                slot=self.parent.detect_and_assign_drum_tracks,
-                checkable=False
-            ),
-            "classify_tracks": ButtonSpec(
-                label="Classify Tracks",
-                tooltip="Classify non-drum tracks into Bass (Ch 1), Keys/Guitars (Ch 2), and Strings (Ch 3)",
+            "fit_tracks": ButtonSpec(
+                label="Assign tracks to parts…",
+                tooltip=("Propose a JD-Xi part for every track (drums, bass, keys, strings "
+                           "recognised from the notes), to check and apply"),
                 icon=JDXi.UI.Icon.MUSIC_NOTES,
-                slot=self.parent.classify_and_assign_tracks,
+                slot=self.parent.fit_tracks_to_jdxi,
                 checkable=False
             ),
             "apply_presets": ButtonSpec(
-                label="Apply Presets",
-                tooltip="Insert JD-Xi presets per channel: Ch 1→Picked Bass, Ch 2→Piano, Ch 3→JP8 Strings",
+                label="Starting sounds",
+                tooltip=("Give the parts a sound to start from, also written into the file: "
+                           "Digital 1 Picked Bass, Digital 2 Piano, Analog JP8 Strings"),
                 icon=JDXi.UI.Icon.MUSIC_NOTES,
                 slot=self._on_apply_presets_clicked,
                 checkable=False

@@ -233,16 +233,13 @@ def test_unused_channels_dimmed_and_classification_is_one_row(tmp_path):
         buttons = editor.mute_channels_group.mute_channel_buttons
         assert buttons[1].property("unused") is False
         assert buttons[2].property("unused") is True
+        assert "Digital 1" in buttons[1].toolTip() and buttons[1].property("part") is True
+        assert "no JD-Xi part" in buttons[5].toolTip() and buttons[5].property("part") is False
         group = editor.classification_group
-        tops = {
-            b.geometry().top()
-            for b in (
-                group.detect_drums_button,
-                group.classify_tracks_button,
-                group.apply_presets_button,
-            )
-        }
+        tops = {b.geometry().top() for b in (group.fit_tracks_button, group.apply_presets_button)}
         assert len(tops) == 1  # one row
+        # the file's only notes are on channel 1: ready for the JD-Xi
+        assert group.summary_label.text().startswith("Ready for the JD-Xi")
         assert not hasattr(group, "apply_all_track_changes_button")
     finally:
         editor.transport_controller.shutdown()

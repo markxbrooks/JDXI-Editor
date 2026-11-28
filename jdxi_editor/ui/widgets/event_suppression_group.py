@@ -35,6 +35,7 @@ class EventSuppressionGroup(JDXiMidiGroup):
         super().__init__(parent=parent, midi_state=midi_state)
         self.midi_suppress_program_changes_checkbox: QCheckBox | None = None
         self.midi_suppress_control_changes_checkbox: QCheckBox | None = None
+        self.midi_block_gm_program_changes_checkbox: QCheckBox | None = None
         self.spacing = 30
         self.setup_ui()
 
@@ -46,16 +47,16 @@ class EventSuppressionGroup(JDXiMidiGroup):
         self.midi_suppress_control_changes_checkbox = create_checkbox_from_spec(
             spec=self.specs["check_box"]["midi_suppress_cc_spec"]
         )
+        self.midi_block_gm_program_changes_checkbox = create_checkbox_from_spec(
+            spec=self.specs["check_box"]["midi_block_gm_pc_spec"]
+        )
         widgets = [
+            self.midi_block_gm_program_changes_checkbox,
             self.midi_suppress_program_changes_checkbox,
             self.midi_suppress_control_changes_checkbox,
         ]
-        JDXi.UI.Theme.apply_button_mini_style(
-            self.midi_suppress_program_changes_checkbox
-        )
-        JDXi.UI.Theme.apply_button_mini_style(
-            self.midi_suppress_control_changes_checkbox
-        )
+        for checkbox in widgets:
+            JDXi.UI.Theme.apply_button_mini_style(checkbox)
         layout = create_layout_with_items(
             items=widgets,
             vertical=False,
@@ -78,6 +79,14 @@ class EventSuppressionGroup(JDXiMidiGroup):
         if not self.midi_state:
             raise ValueError("EventSuppressionGroup requires midi_state")
         return {
+            "midi_block_gm_pc_spec": CheckBoxSpec(
+                label="GM",
+                tooltip="Block the program changes that do not choose a JD-Xi sound "
+                "(General MIDI ones): they would change the parts' sounds",
+                checked_state=self.midi_state.block_foreign_program_changes,
+                slot=self.parent.on_block_foreign_program_changes_toggled,
+                style=JDXiUIStyle.PARTIAL_SWITCH,
+            ),
             "midi_suppress_pc_spec": CheckBoxSpec(
                 label="PC",
                 tooltip="Suppress MIDI Program Changes",
