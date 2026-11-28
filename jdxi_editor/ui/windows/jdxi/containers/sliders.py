@@ -99,7 +99,9 @@ def add_slider_container(slider_container: QWidget, midi_helper) -> list:
 
     amp_env_slider = AmpEnvelopeSlider(midi_helper, label="Env")
     amp_env_slider.setToolTip(
-        "Amp Envelope: Sets the amplifier envelope depth for all MIDI channels"
+        "Amp Envelope: shorter or longer than the program's envelope, for all "
+        "MIDI channels (in the middle: the program as saved; back there with "
+        "every program)"
     )
 
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")

@@ -2279,13 +2279,32 @@ class JDXiInstrument(JDXiWindow):
                 message="Error setting MIDI ports", exception=ex, scope="JDXiInstrument"
             )
 
-    def _midi_blink_input(self, _):
+    def _midi_blink_input(self, message):
         """Handle incoming MIDI messages and flash indicator"""
         self.midi_in_indicator.blink()
+        if getattr(message, "type", None) == "program_change":
+            self._reset_envelope_slider()  # chosen on the JD-Xi
 
-    def _midi_blink_output(self, _):
+    def _midi_blink_output(self, message):
         """handle outgoing message blink"""
         self.midi_out_indicator.blink()
+        try:
+            status = int(list(message)[0])
+        except (TypeError, ValueError, IndexError):
+            return
+        if 0xC0 <= status <= 0xCF:
+            self._reset_envelope_slider()  # a program or tone chosen here
+
+    def _reset_envelope_slider(self) -> None:
+        """
+        A program loads as saved: the Env slider, relative to it, back to the middle.
+
+        :return: None
+        """
+        for slider in getattr(self, "panel_sliders", None) or []:
+            reset = getattr(slider, "reset_to_neutral", None)
+            if callable(reset) and not slider.slider.isSliderDown():
+                reset()
 
     def _midi_send_failed(self, reason: str) -> None:
         """
