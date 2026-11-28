@@ -136,7 +136,16 @@ class MidiPlayerStyle(AppEditorStyle):
             border-color: {cls.ACCENT};
             color: {cls.TEXT};
         }}
+        QPushButton[silenced="true"] {{
+            border: 1px solid {cls.ACCENT};
+            color: {cls.ACCENT};
+        }}
         """
+
+    @classmethod
+    def channel_solo_stylesheet(cls) -> str:
+        """Channel solo squares: like the mute ones, amber (SOLO) when on."""
+        return cls.channel_mute_stylesheet().replace(cls.ACCENT, cls.SOLO)
 
     @classmethod
     def track_toggle_stylesheet(cls, checked_color: str) -> str:

@@ -979,6 +979,14 @@ class MidiFilePlayer(SynthEditor):
         # Update player's muted channels state
         self.midi_state.muted_channels = self.get_muted_channels()
 
+    def _toggle_channel_solo(self, channel: int, is_solo: bool) -> None:
+        """
+        Solo or un-solo a MIDI channel (1-16): with any channel soloed only the soloed ones play.
+        """
+        if self.midi_file and self.midi_file.midi_track_viewer:
+            self.midi_file.midi_track_viewer.toggle_channel_solo(channel, is_solo)
+        self.midi_state.muted_channels = self.get_muted_channels()
+
     def _sync_mute_buttons_from_track_viewer(self) -> None:
         """
         Sync mute channel buttons in the USB file controls with the track viewer's state.
@@ -994,6 +1002,9 @@ class MidiFilePlayer(SynthEditor):
                 btn.blockSignals(True)
                 btn.setChecked(channel in muted_channels)
                 btn.blockSignals(False)
+            self.mute_channels_group.set_soloed_channels(
+                set(self.midi_file.midi_track_viewer.soloed_channels)
+            )
         midi_file = self.midi_state.file
         if midi_file is not None:
             self.mute_channels_group.set_used_channels(
@@ -1855,10 +1866,9 @@ class MidiFilePlayer(SynthEditor):
         """
         get_muted_channels
 
-        :return: None
-        Get the muted channels from the MIDI track viewer.
+        :return: the channels (1-16) that do not play: muted, or silenced by another channel's solo
         """
-        muted_channels_raw = self.midi_file.midi_track_viewer.get_muted_channels()
+        muted_channels_raw = self.midi_file.midi_track_viewer.get_silenced_channels()
         muted_channels = {int(c) for c in muted_channels_raw if not isinstance(c, set)}
         log.parameter("Muted channels", muted_channels)
         for channel in muted_channels:

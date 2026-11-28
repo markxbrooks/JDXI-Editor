@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 
+from jdxi_editor.midi.track.instrument import instrument_hint
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.preset.tone.digital.list import JDXiPresetToneListDigital
 from jdxi_editor.ui.widgets.midi.draggable_track_row import DraggableTrackRow
@@ -83,6 +84,7 @@ class MidiTrackViewer(QWidget):
 
         # To track muted channels
         self.muted_channels: set[int] = set()
+        self.soloed_channels: set[int] = set()  # 1-16: when any, only these play
         # Per-track editors for batch apply
         self._track_name_edits: dict[int, QLineEdit] = {}
         self.track_channel_spins: dict[int, MidiSpinBox] = {}
@@ -242,6 +244,7 @@ class MidiTrackViewer(QWidget):
             if btn.isChecked():
                 btn.setChecked(False)
         self.muted_channels.clear()
+        self.soloed_channels.clear()
         self.muted_tracks.clear()
         self.solo_track = None
         self._pre_solo_muted_tracks = None
@@ -309,6 +312,7 @@ class MidiTrackViewer(QWidget):
             if btn.isChecked():
                 btn.setChecked(False)
         self.muted_channels.clear()
+        self.soloed_channels.clear()
         self.muted_tracks.clear()
 
         # Remove track widgets
@@ -417,9 +421,34 @@ class MidiTrackViewer(QWidget):
                 )
             )
 
-        # Notify all track widgets
+        self._notify_channel_mutes()
+
+    def toggle_channel_solo(self, channel: int, is_solo: bool) -> None:
+        """
+        Solo a MIDI channel: while one or more channels are soloed only those play.
+        The channels' own mutes stay as they were.
+
+        :param channel: int MIDI channel (1-16)
+        :param is_solo: bool is the channel soloed?
+        """
+        if is_solo:
+            self.soloed_channels.add(channel)
+        else:
+            self.soloed_channels.discard(channel)
+        self._notify_channel_mutes()
+
+    def get_silenced_channels(self) -> set[int]:
+        """The channels that do not play (1-16): the muted ones and, with a solo, the others."""
+        silenced = set(self.muted_channels)
+        if self.soloed_channels:
+            silenced |= set(range(1, 17)) - self.soloed_channels
+        return silenced
+
+    def _notify_channel_mutes(self) -> None:
+        """Grey the silenced channels' notes in the lanes and tell the player."""
+        silenced = self.get_silenced_channels()
         for widget in self.midi_track_widgets.values():
-            widget.update_muted_channels(self.muted_channels)
+            widget.update_muted_channels(silenced)
         self.mute_changed.emit()
 
     def select_track(self, track_index: int) -> None:
@@ -436,7 +465,6 @@ class MidiTrackViewer(QWidget):
         Called when the global mute state is updated.
         """
         self.muted_channels = muted_channels
-        print(f"Muted channels updated: {self.muted_channels}")
         self.update()  # trigger repaint or UI change if needed
 
     def _apply_muted_tracks_to_widgets(self) -> None:
@@ -947,7 +975,10 @@ class MidiTrackViewer(QWidget):
             track_name_line_edit = QLineEdit()
             track_name_line_edit.setText(track_name.strip())
             track_name_line_edit.setCursorPosition(0)  # show the start of long names
-            track_name_line_edit.setPlaceholderText("Unnamed")
+            # no name in the file: what the track plays, in grey (the file
+            # is not changed; typing a name writes one)
+            hint = instrument_hint(track)
+            track_name_line_edit.setPlaceholderText(hint if hint else "Unnamed")
             track_name_line_edit.setToolTip("Track name (applied on Enter or when you click away)")
             track_name_line_edit.editingFinished.connect(
                 lambda tr=i, le=track_name_line_edit: self._on_name_edited(tr, le.text())

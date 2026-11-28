@@ -247,3 +247,25 @@ def test_unused_channels_dimmed_and_classification_is_one_row(tmp_path):
     finally:
         editor.transport_controller.shutdown()
         editor.close()
+
+
+def test_a_track_without_a_name_shows_what_it_plays():
+    """No name in the file: the instrument, in grey (GM program, or the file's
+    instrument name; channel 10: drums) instead of «Unnamed»."""
+    from jdxi_editor.midi.track.instrument import instrument_hint
+
+    flute = mido.MidiTrack([mido.Message("program_change", channel=2, program=73, time=0),
+                            mido.Message("note_on", channel=2, note=72, time=0)])
+    named = mido.MidiTrack([mido.MetaMessage("instrument_name", name="Tubular Bells", time=0)])
+    drums = mido.MidiTrack([mido.Message("note_on", channel=9, note=36, time=0)])
+    assert instrument_hint(flute) == "Flute"
+    assert instrument_hint(named) == "Tubular Bells"
+    assert instrument_hint(drums) == "Drums"
+    assert instrument_hint(mido.MidiTrack()) is None
+    song = _file()
+    song.tracks.append(flute)
+    viewer = MidiTrackViewer()
+    viewer.set_midi_file(song)
+    edit = viewer._track_name_edits[2]
+    assert edit.text() == "" and edit.placeholderText() == "Flute"
+    assert viewer._track_name_edits[1].text() == "Lead"  # a real name stays
