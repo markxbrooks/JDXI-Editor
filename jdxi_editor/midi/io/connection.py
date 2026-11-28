@@ -119,7 +119,7 @@ class MIDIConnection:
 
     @property
     def device_version(self) -> str:
-        """Get device firmware version"""
+        """The Identity Reply's software revision level (not the firmware version)"""
         if self.device_info:
-            return self.device_info.version_string
+            return self.device_info.revision_string
         return "unknown"

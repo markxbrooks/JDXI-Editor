@@ -3,7 +3,7 @@ JD-Xi Device Information Module
 
 This module defines the `DeviceInfo` class, which represents identity_request information
 for a Roland JD-Xi synthesizer. It provides utilities for checking manufacturer
-and model identity_request, extracting firmware version, and constructing an instance
+and model identity_request, reading the software revision level, and constructing an instance
 from a MIDI Identity Reply message.
 
 Usage Example:
@@ -12,16 +12,16 @@ Usage Example:
 >>> device = DeviceInfo.from_identity_reply(identity_data)
 >>> device is not None
 True
->>> device.version_string
-'v0.03'
+>>> device.revision_string
+'00 03 00 00'
 >>> device.is_jdxi
 True
 
 Classes:
 --------
 - DeviceInfo: Represents JD-Xi device information, including manufacturer, model,
-  and firmware version. Provides utility properties for checking if the device
-  is a JD-Xi and formatting the version string.
+  and software revision level. Provides utility properties for checking if the device
+  is a JD-Xi and formatting the revision.
 
 Methods:
 --------
@@ -31,8 +31,10 @@ Methods:
     Returns `True` if the device manufacturer is Roland.
 - `is_jdxi -> bool`
     Returns `True` if the device is identified as a JD-Xi.
-- `version_string -> str`
-    Returns the firmware version as a formatted string.
+- `revision_string -> str`
+    Returns the software revision level of the Identity Reply as hex bytes.
+    It is not the firmware version the JD-Xi shows (a JD-Xi with firmware
+    1.52 replies 00 03 00 00: the third release), so it is not presented as one.
 
 Dependencies:
 -------------
@@ -56,7 +58,7 @@ class DeviceInfo:
     manufacturer: List[int]  # Roland = [0x41]
     family: List[int]  # JD-Xi = [0x0E, 0x03]
     model: List[int]  # JD-Xi model identifier
-    version: List[int]  # Software version [Major, Minor, Patch, Build]
+    version: List[int]  # Software Revision Level, 4 bytes (not the firmware version)
 
     @property
     def is_roland(self) -> bool:
@@ -69,19 +71,21 @@ class DeviceInfo:
         return self.is_roland and self.family == [0x0E, 0x03]
 
     @property
-    def version_string(self) -> str:
-        """Format the version number as a string (e.g., 'v1.03')."""
-        if len(self.version) >= 2:
-            return f"v{self.version[0]}.{self.version[1]:02d}"
+    def revision_string(self) -> str:
+        """The Identity Reply's software revision level as hex bytes (e.g. '00 03 00 00').
+
+        Not the firmware version shown on the JD-Xi (1.52 replies 00 03 00 00)."""
+        if self.version:
+            return " ".join(f"{byte:02X}" for byte in self.version)
         return "unknown"
 
     @property
     def to_string(self) -> str:
         """Generate a readable string describing the device."""
         if self.is_jdxi:
-            return f"Device: Roland JD-Xi, Firmware: {self.version_string}"
+            return f"Device: Roland JD-Xi, software revision {self.revision_string}"
         elif self.is_roland:
-            return f"Device: Roland, Firmware: {self.version_string}"
+            return f"Device: Roland, software revision {self.revision_string}"
         return "Unknown device"
 
     @classmethod
@@ -125,7 +129,7 @@ class DeviceInfo:
                     data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_2],
                     data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_3],
                     data[JDXi.Midi.SYSEX.IDENTITY.LAYOUT.SOFTWARE.REVISION_4],
-                ],  # Firmware Version
+                ],  # Software Revision Level (not the firmware version)
             )
         except Exception:
             return None
