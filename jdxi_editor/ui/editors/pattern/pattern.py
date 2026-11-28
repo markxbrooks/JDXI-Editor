@@ -1145,10 +1145,10 @@ class PatternSequenceEditor(PatternUI):
         ticks_per_step = ppq // 4  # 16th notes
 
         track.append(
-            MetaMessage(MidoMetaMessageType.SET_TEMPO, tempo=bpm2tempo(self.timing_bpm))
+            MetaMessage(MidoMetaMessageType.SET_TEMPO.value, tempo=bpm2tempo(self.timing_bpm))
         )
         track.append(
-            MetaMessage(MidoMetaMessageType.TIME_SIGNATURE, numerator=4, denominator=4)
+            MetaMessage(MidoMetaMessageType.TIME_SIGNATURE.value, numerator=4, denominator=4)
         )
 
         events = []
