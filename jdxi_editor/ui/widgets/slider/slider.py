@@ -35,7 +35,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.common import JDXi, QVBoxLayout, QWidget
 from jdxi_editor.ui.style import JDXiUIDimensions
 
-
 TICK_COLOR = "#3A3A3C"  # graduations: a dark grey, visible on the glossy panels without standing out
 
 
@@ -104,6 +103,7 @@ class Slider(QWidget):
         self.slider.setMinimum(min_value)
         self.slider.setMaximum(max_value)
         self.slider.valueChanged.connect(self._on_valueChanged)
+        self.previous = initial_value  # the value before the latest one, for undo
         self._emitted_value: int | None = None
         self._drag_timer = QTimer(self)
         self._drag_timer.setSingleShot(True)
@@ -191,8 +191,15 @@ class Slider(QWidget):
         self._emit(value)
 
     def _emit(self, value: int) -> None:
+        self.valueChanged.emit(
+            value
+        )  # listeners read previous: the value before this one
+        if self.signalsBlocked():
+            from jdxi_editor.ui.editors.history import note_external_value
+
+            note_external_value(self)
+        self.previous = value
         self._emitted_value = value
-        self.valueChanged.emit(value)
 
     def _emit_pending(self) -> None:
         """Send the latest value if it has not gone out yet (drag tick or release)."""
@@ -265,11 +272,17 @@ class Slider(QWidget):
 
     def setValueSilently(self, value: int):
         """Set current value without emitting signals (use when updating from MIDI)"""
+        before = self.slider.value()
         self.slider.blockSignals(True)
         self.slider.setValue(value)
         self.slider.blockSignals(False)
         self._emitted_value = self.slider.value()
         self._update_value_label()
+        if self.slider.value() != before:
+            from jdxi_editor.ui.editors.history import note_external_value
+
+            note_external_value(self)
+            self.previous = self.slider.value()
 
     def setEnabled(self, enabled: bool):
         """Set enabled state"""

@@ -38,6 +38,7 @@ class Switch(QWidget):
         super().__init__(parent)
         self.values = values
         self.current_index = 0
+        self.previous = 0  # the value before the latest one, for undo
         self.setToolTip(tooltip)
         layout = QHBoxLayout()
         layout.setSpacing(5)
@@ -59,14 +60,23 @@ class Switch(QWidget):
         self.current_index = (self.current_index + 1) % len(self.values)
         self.button.setText(self.values[self.current_index])
         self.valueChanged.emit(self.current_index)
+        self.previous = self.current_index
 
     def setValue(self, value: int | float) -> None:
-        """Set current value"""
+        """Set current value. With signals blocked this is a value from the JD-Xi."""
         idx = int(value)
-        if 0 <= idx < len(self.values):
-            self.current_index = idx
-            self.button.setText(self.values[idx])
-            self.button.setChecked(idx > 0)
+        if not 0 <= idx < len(self.values) or idx == self.current_index:
+            return
+        self.current_index = idx
+        self.button.setText(self.values[idx])
+        self.button.setChecked(idx > 0)
+        if self.signalsBlocked():
+            from jdxi_editor.ui.editors.history import note_external_value
+
+            note_external_value(self)
+        else:
+            self.valueChanged.emit(self.current_index)
+        self.previous = self.current_index
 
     def setLabel(self, text: str) -> None:
         """Set label text"""

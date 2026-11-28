@@ -92,9 +92,14 @@ class SpinBox(QWidget):
         self.spin_box.setMaximumWidth(150)
         from jdxi_editor.ui.text_size import scale
 
-        self.spin_box.setMaximumHeight(int(round(25 * scale())))  # taller with a larger text size
+        self.spin_box.setMaximumHeight(
+            int(round(25 * scale()))
+        )  # taller with a larger text size
 
         # Connect combo box index change to emit mapped value
+        self.previous = (
+            self.spin_box.value()
+        )  # the value before the latest one, for undo
         self.spin_box.valueChanged.connect(self._on_valueChanged)
         self.setVisible(True)
 
@@ -102,6 +107,11 @@ class SpinBox(QWidget):
     def _on_valueChanged(self, value: int) -> None:
         """Emit the corresponding value when the selected value changes."""
         self.valueChanged.emit(value)
+        if self.signalsBlocked():
+            from jdxi_editor.ui.editors.history import note_external_value
+
+            note_external_value(self)
+        self.previous = value
 
     def setValue(self, value: int) -> None:
         """Set spin box index based on the value."""

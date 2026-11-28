@@ -628,6 +628,10 @@ class SynthEditor(SynthBase):
             scope=self.__class__.__name__,
             message=f"Program change {program} detected on channel {channel}, requesting data update",
         )
+        history = getattr(self, "history", None)
+        # the sound is being replaced: the old steps no longer apply
+        if history is not None:
+            history.reset()
         self.device_refresher.schedule()
 
     def _handle_control_change(self, channel: int, control: int, value: int):

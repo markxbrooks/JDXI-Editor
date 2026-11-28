@@ -178,10 +178,7 @@ class SynthBase(QWidget):
 
         def _valid_address(obj) -> Optional[JDXiSysExAddress]:
             addr = getattr(obj, "address", None)
-            if (
-                isinstance(addr, JDXiSysExAddress)
-                and hasattr(addr, "add_offset")
-            ):
+            if isinstance(addr, JDXiSysExAddress) and hasattr(addr, "add_offset"):
                 return addr
             return None
 
@@ -362,7 +359,9 @@ class SynthBase(QWidget):
         ok = export_editor_to_syx(self, self._midi_helper, file_path)
         if ok:
             self._part_syx_path = file_path
-            log.message(f"Exported part SysEx to {file_path}", scope=self.__class__.__name__)
+            log.message(
+                f"Exported part SysEx to {file_path}", scope=self.__class__.__name__
+            )
         return ok
 
     def import_part_syx(self, file_path: Optional[str] = None) -> bool:
@@ -594,8 +593,10 @@ class SynthBase(QWidget):
         merged = dict(self.controls.items()) if self.controls else {}
         for section in self.findChildren(SectionBaseWidget):
             owner = section.parentWidget()
-            while owner is not None and owner is not self and not isinstance(
-                owner, PartialPanel
+            while (
+                owner is not None
+                and owner is not self
+                and not isinstance(owner, PartialPanel)
             ):
                 owner = owner.parentWidget()
             if owner is not self:
@@ -699,6 +700,7 @@ class SynthBase(QWidget):
         :param display_value: int Display value from the UI control
         :return: None
         """
+        self._record_edit(param, display_value)
         try:
             # --- Send MIDI message
             if not address:
@@ -709,6 +711,24 @@ class SynthBase(QWidget):
                 log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
             log.error(f"Error handling parameter {param.name}: {ex}")
+
+    def _record_edit(self, param: AddressParameter, display_value: int) -> None:
+        """A control the user moved. A value from the JD-Xi arrives with signals blocked, so it is not recorded."""
+        from jdxi_editor.ui.editors.history import history_of
+
+        history = history_of(self)
+        if history is None or history.replaying:
+            return
+        widget = self.controls.get(param) if self.controls is not None else None
+        if widget is None:
+            return
+        old = getattr(widget, "previous", display_value)
+        try:
+            history.record(
+                widget, int(round(float(old))), int(round(float(display_value)))
+            )
+        except (TypeError, ValueError):
+            return
 
     def _create_parameter_slider(
         self,

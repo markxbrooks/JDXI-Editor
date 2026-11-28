@@ -114,10 +114,30 @@ class ComboBox(QWidget):
         self.combo_box.setMaximumWidth(350)
         from jdxi_editor.ui.text_size import scale
 
-        self.combo_box.setMaximumHeight(int(round(25 * scale())))  # taller with a larger text size
+        self.combo_box.setMaximumHeight(
+            int(round(25 * scale()))
+        )  # taller with a larger text size
 
         # Connect combo box index change to emit mapped value
         self.combo_box.currentIndexChanged.connect(self._on_valueChanged)
+        self.previous = self.edit_value()  # the value before the latest one, for undo
+
+    def _mapped(self, index: int):
+        if self.values:
+            if 0 <= index < len(self.values):
+                return self.values[index]
+            return None
+        return int(index)
+
+    def edit_value(self) -> int:
+        """The value valueChanged sends, which is not always the combo's index."""
+        mapped = self._mapped(self.combo_box.currentIndex())
+        if mapped is None:
+            return 0
+        try:
+            return int(mapped)
+        except (TypeError, ValueError):
+            return 0
 
     @Slot(int)
     def _on_valueChanged(self, index: int) -> None:
@@ -125,11 +145,18 @@ class ComboBox(QWidget):
 
         :param index: int
         """
-        if self.values:
-            if 0 <= index < len(self.values):
-                self.valueChanged.emit(self.values[index])
-        else:
-            self.valueChanged.emit(int(index))
+        mapped = self._mapped(index)
+        if mapped is None:
+            return
+        self.valueChanged.emit(mapped)
+        if self.signalsBlocked():
+            from jdxi_editor.ui.editors.history import note_external_value
+
+            note_external_value(self)
+        try:
+            self.previous = int(mapped)
+        except (TypeError, ValueError):
+            self.previous = mapped
 
     def setLabelVisible(self, visible: bool) -> None:
         """Show or hide the label dynamically.

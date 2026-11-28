@@ -258,6 +258,9 @@ class AnalogSynthEditor(BaseSynthEditor):
                 self.controls.update(section.controls)
 
         self.add_tabs()
+        from jdxi_editor.ui.editors.history import install_edit_history
+
+        install_edit_history(self)
         log.message(
             scope=self.__class__.__name__,
             message=f"[_create_sections] done [self.controls keys:] {list(self.controls.keys()) if self.controls else []}",

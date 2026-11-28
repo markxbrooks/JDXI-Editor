@@ -9,7 +9,7 @@ Sizes are lines in Studio. "Needs" lists the v2 modules the feature imports.
 
 | Feature | Studio module | Lines | Needs | Decision |
 |---|---|---|---|---|
-| Undo / redo / reload | `history.py` | 587 | nothing | Reimplement first |
+| Undo / redo / reload | `history.py` | 587 | nothing | Done: Digital, Analog, Drum |
 | SuperNATURAL partial tools | `partial_tools.py` | 271 | nothing | Reimplement, after undo |
 | PCM wave browser | `wave_browser.py` | 320 | nothing | Reimplement, after undo |
 | Randomize a tone | `randomize_dialog.py` | 126 | nothing | Reimplement, after undo |
@@ -22,13 +22,15 @@ Sizes are lines in Studio. "Needs" lists the v2 modules the feature imports.
 
 ## Reimplement
 
-**Undo / redo / reload.** `history.py` imports nothing from v2, and the
-other editing features build on it: A/B compare stores its snapshots through
-it, and the wave browser, randomize and partial tools each make one undo step.
-The Editor's tone editors have no undo. The work is to record a user's change
-at the point where an editor sends a parameter, and to leave out values read
-from the JD-Xi (Studio does this by blocking signals while it applies them).
-Reload puts back every value as it was before its first change.
+**Undo / redo / reload.** Done, in `jdxi_editor/ui/editors/history.py`, on the
+Digital, Analog and Drum editors. A change is recorded where a control sends a
+parameter. A value applied with the control's signals blocked came from the
+JD-Xi and is not a step. A drag of one slider is one step. Reload puts back
+every value as it was before its first change. A program change clears the
+steps, because the sound they belong to has been replaced. Studio's warning
+before a new sound discards edits is not part of this: the Editor still
+replaces the sound, and the steps are cleared. The wave browser, randomize and
+partial tools can each make one step through `begin_group` / `end_group`.
 
 **SuperNATURAL partial tools, the PCM wave browser and randomize.** None of
 them imports v2. They work on the three partials of a Digital tone:
@@ -83,7 +85,7 @@ only with a translator to keep it current.
 
 ## Order
 
-1. Undo / redo / reload in the Digital, Analog and Drum editors.
+1. Undo / redo / reload in the Digital, Analog and Drum editors. Done.
 2. Partial tools, the wave browser and randomize for Digital tones.
 3. A/B compare.
 4. The Save on the JD-Xi wizard, with hardware tests.

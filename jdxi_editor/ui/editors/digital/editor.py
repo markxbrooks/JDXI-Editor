@@ -248,6 +248,9 @@ class DigitalSynthEditor(BaseSynthEditor):
         )
         self._add_tab(key=Digital.Tab.PRESETS, widget=instrument_widget)
         self._setup_partial_tabs(container_layout, self.midi_helper)
+        from jdxi_editor.ui.editors.history import install_edit_history
+
+        install_edit_history(self)
         self._ui_setup = True
 
     def set_style(self):
