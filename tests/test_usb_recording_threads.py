@@ -37,7 +37,7 @@ def clear_running_threads():
 
 def _fake_record(self):
     """Record until stopped (or ~2 s), then report the file once."""
-    self.running = True
+    self.running = not self.stop_requested  # as record() does
     for _ in range(200):
         if not self.running:
             break
@@ -79,3 +79,18 @@ def test_replaced_recording_is_stopped_and_kept_alive(app):
             second.wait(3000)
         assert _wait_until(lambda: finished == ["first.wav", "second.wav"])
         assert _wait_until(lambda: not helpers._running_threads)
+
+
+def test_a_stop_before_the_thread_starts_is_not_lost(app):
+    """On a slow machine the next song can stop a recording whose thread has
+    not run yet: the stop must hold when record() begins."""
+    finished = []
+    with patch.object(WavRecordingThread, "record", _fake_record):
+        thread = WavRecordingThread(
+            recorder=SimpleNamespace(), duration=10, output_file="early.wav", recording_rate=0
+        )
+        thread.recording_finished.connect(finished.append)
+        thread.stop_recording()  # before start()
+        thread.start()
+        assert thread.wait(2000)  # not the ~10 s of an unstopped recording
+        assert _wait_until(lambda: finished == ["early.wav"])

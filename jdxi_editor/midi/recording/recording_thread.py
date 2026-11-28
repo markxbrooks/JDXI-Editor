@@ -43,6 +43,9 @@ class WavRecordingThread(QThread):
     ):
         super().__init__(parent)
         self.recorder = recorder
+        # a stop asked before record() starts (the thread not scheduled yet)
+        # must hold when record() begins
+        self.stop_requested = False
         self.recording_rate = recording_rate
         self.duration = duration
         self.output_file = output_file
@@ -126,7 +129,7 @@ class WavRecordingThread(QThread):
             self.recording_error.emit(error_msg)
             return
 
-        self.running = True
+        self.running = not self.stop_requested
         frames = []
 
         try:
@@ -206,5 +209,6 @@ class WavRecordingThread(QThread):
 
         :return: None
         """
+        self.stop_requested = True
         self.running = False
         log.message("[WavRecordingThread] Stop signal received.")
