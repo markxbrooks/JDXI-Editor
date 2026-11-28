@@ -79,11 +79,14 @@ def test_a_write_the_port_refuses_is_not_held():
         assert helper.send_raw_message(list(_WRITE)) is False
         assert helper.device.memory.read(bytes.fromhex("19420003"), 1) is None
         assert helper.device.memory.read(_ADDRESS, 3) == bytes([0, 1, 2])
+        assert helper.device.state.pending_count() == 0
+        assert not helper.device.state.is_confirmed(bytes.fromhex("19420003"))
         assert told and "unplugged" in told[0]
     finally:
         helper.midi_send_failed.disconnect(told.append)
         helper.midi_out = saved_out
         helper.device.memory.clear()
+        helper.device.state.program_changed()
 
 
 def test_sent_write_updates_memory():
@@ -140,3 +143,61 @@ def test_helper_reports_traffic_to_its_device():
     finally:
         helper.midi_out = saved_out
         helper.device.memory.clear()
+
+
+def test_a_reply_asked_for_before_a_write_keeps_the_written_value():
+    """RQ1, then the editor writes Cutoff, then the reply (with the old Cutoff) arrives:
+    the reply carries the written value, so the editor does not jump back."""
+    from jdxi_editor.midi.io.device import JDXiDevice
+
+    now = [0.0]
+    device = JDXiDevice(lambda m: None)
+    device.clock = lambda: now[0]
+    rq1 = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7")
+    device.sent(rq1)
+    now[0] = 1.0
+    device.sent(bytes.fromhex("F0 41 10 00 00 00 0E 12 19 42 00 21 6E 16 F7"))  # Cutoff 110
+    values = [0] * 0x40
+    values[0x21] = 44  # the value before the write
+    body = [0x41, 0x10, 0, 0, 0, 0x0E, 0x12, 0x19, 0x42, 0, 0] + values
+    reply = body + [(128 - sum(body[7:]) % 128) % 128]
+    fixed = device.fresh(reply)
+    assert fixed[11 + 0x21] == 110
+    assert (sum(fixed[7:-1]) + fixed[-1]) % 128 == 0  # checksum made again
+    # a reply asked for after the write: left as the JD-Xi sent it (the check sees what it holds)
+    now[0] = 2.0
+    device.sent(rq1)
+    assert device.fresh(reply) is None
+    # a DT1 the JD-Xi sends by itself (a knob turned): left as it is
+    assert device.fresh(bytes.fromhex("F0 41 10 00 00 00 0E 12 19 42 00 21 30 4C F7")) is None
+
+
+def test_a_request_without_reply_long_ago_is_not_matched():
+    from jdxi_editor.midi.io.device import JDXiDevice
+
+    now = [0.0]
+    device = JDXiDevice(lambda m: None)
+    device.clock = lambda: now[0]
+    device.sent(bytes.fromhex("F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"))  # no reply
+    now[0] = 30.0
+    device.sent(bytes.fromhex("F0 41 10 00 00 00 0E 12 19 42 00 21 6E 16 F7"))
+    now[0] = 31.0
+    values = [0] * 0x40
+    body = [0x41, 0x10, 0, 0, 0, 0x0E, 0x12, 0x19, 0x42, 0, 0] + values
+    assert device.fresh(body + [(128 - sum(body[7:]) % 128) % 128]) is None
+
+
+def test_order_not_time_tells_a_write_after_the_request():
+    """On Windows the clock moves in ~16 ms steps: a request and a write sent one after the
+    other have the same time, the order still tells which came first."""
+    from jdxi_editor.midi.io.device import JDXiDevice
+
+    device = JDXiDevice(lambda m: None)
+    device.clock = lambda: 5.0  # one tick for everything
+    device.sent(bytes.fromhex("F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"))
+    device.sent(bytes.fromhex("F0 41 10 00 00 00 0E 12 19 42 00 21 6E 16 F7"))
+    values = [0] * 0x40
+    values[0x21] = 44
+    body = [0x41, 0x10, 0, 0, 0, 0x0E, 0x12, 0x19, 0x42, 0, 0] + values
+    fixed = device.fresh(body + [(128 - sum(body[7:]) % 128) % 128])
+    assert fixed is not None and fixed[11 + 0x21] == 110

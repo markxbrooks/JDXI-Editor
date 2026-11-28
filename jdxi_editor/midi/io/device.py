@@ -34,18 +34,21 @@ Example:
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
+import time
 from typing import Any, Callable, Iterable, Optional, Sequence, Union
 
 from jdxi_editor.midi.io.echo_guard import DEFAULT_ECHO_GUARD, EchoGuard
 from jdxi_editor.midi.io.request_queue import (
     DT1_COMMAND,
     ROLAND_ID,
+    RQ1_COMMAND,
     SysExRequestQueue,
     Sysex,
 )
 from jdxi_editor.midi.io.synth_memory import SynthMemory, address_to_linear
 
 PROGRAM_CHANGE_STATUS = 0xC0
+REPLY_WINDOW_S = 2.0  # a reply comes within milliseconds; older requests are not matched
 
 
 def _is_program_change(message: Sequence[int]) -> bool:
@@ -102,6 +105,18 @@ class JDXiDevice:
         # Shared by default: the scope is per thread, and the input handler
         # and output handler must agree on it
         self.echo_guard = echo_guard or DEFAULT_ECHO_GUARD
+        from jdxi_editor.midi.io.synth_state import SynthState
+
+        self.state = SynthState()  # what the JD-Xi confirmed, apart from what was sent
+        # A reply can be on its way while the editor writes the same parameter:
+        # when the RQ1 left before the DT1, the reply holds the value from
+        # before the write. The order lets fresh() tell such bytes; a counter,
+        # since the clock is too coarse on Windows (~16 ms) to order a request
+        # and a write sent one after the other.
+        self._sequence = 0
+        self._requested: dict[int, tuple[int, float]] = {}  # RQ1 start -> (order, when sent)
+        self._written: dict[int, tuple[int, int, float]] = {}  # address -> (value, order, when)
+        self.clock: Callable[[], float] = time.monotonic
 
     # --- Requests ---------------------------------------------------------
 
@@ -130,6 +145,7 @@ class JDXiDevice:
             return  # other channel messages
         self.requests.notify_reply(data)
         self.memory.record_dt1(data)
+        self.state.received(data)
 
     def before_send(self, message: Sequence[int]) -> bool:
         """False if *message* must not be sent (a DT1 echoing received data)."""
@@ -140,8 +156,53 @@ class JDXiDevice:
         data = [int(b) for b in message]
         if _is_program_change(data):
             self._program_changed(data[0] & 0x0F)
-        else:
-            self.memory.record_dt1(data)
+            return
+        self.memory.record_dt1(data)
+        self.state.sent(data)
+        body = _roland_body(data)
+        if body is None:
+            return
+        now = self.clock()
+        self._sequence += 1
+        order = self._sequence
+        start = address_to_linear(body[7:11])
+        if body[6] == RQ1_COMMAND:
+            self._requested[start] = (order, now)
+        elif body[6] == DT1_COMMAND:
+            for offset, value in enumerate(body[11:-1]):
+                self._written[start + offset] = (int(value), order, now)
+            if len(self._written) > 4096:  # only recent writes matter
+                self._written = {
+                    k: v for k, v in self._written.items() if now - v[2] < 10.0
+                }
+
+    def fresh(self, message: Sequence[int]) -> Optional[list]:
+        """
+        A reply (DT1) with the bytes the editor wrote after asking for it put back.
+
+        :return: the reply without F0/F7 and with its checksum made again, or
+            None when nothing is to change
+        """
+        body = _roland_body(message)
+        if body is None or body[6] != DT1_COMMAND:
+            return None
+        start = address_to_linear(body[7:11])
+        request = self._requested.pop(start, None)
+        if request is None or self.clock() - request[1] > REPLY_WINDOW_S:
+            # not a reply to a request (sent by the JD-Xi itself), or to one
+            # that got no reply long ago
+            return None
+        values = body[11:-1]
+        changed = False
+        for offset, value in enumerate(values):
+            written = self._written.get(start + offset)
+            if written is not None and written[1] > request[0] and written[0] != value:
+                values[offset] = written[0]
+                changed = True
+        if not changed:
+            return None
+        checksum = (128 - sum(body[7:11] + values) % 128) % 128
+        return body[:11] + values + [checksum]
 
     def send_failed(self, message: Sequence[int]) -> None:
         """
@@ -154,7 +215,11 @@ class JDXiDevice:
         if body is None or body[6] != DT1_COMMAND:
             return
         start = address_to_linear(body[7:11])
-        self.memory.forget([(start, start + len(body[11:-1]))])
+        span = [(start, start + len(body[11:-1]))]
+        self.memory.forget(span)
+        self.state.program_changed(span)  # neither confirmed nor pending there
+        for offset in range(len(body[11:-1])):
+            self._written.pop(start + offset, None)
 
     def _program_changed(self, channel: int) -> None:
         """
@@ -167,8 +232,16 @@ class JDXiDevice:
         ranges = PROGRAM_CHANGE_AREAS[channel]
         if ranges is None:
             self.memory.clear()
-        else:
-            self.memory.forget(ranges)
+            self._written.clear()
+            self.state.program_changed()
+            return
+        self.memory.forget(ranges)
+        self._written = {
+            k: v
+            for k, v in self._written.items()
+            if not any(s <= k < e for s, e in ranges)
+        }
+        self.state.program_changed(ranges)
 
 
 def device_for(owner: Any) -> JDXiDevice:

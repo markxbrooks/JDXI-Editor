@@ -278,6 +278,11 @@ class MidiInHandler(MidiIOController):
             }
 
             if message.type == MidoMessageType.SYSEX.value:
+                # A reply asked for before the editor wrote some of its
+                # parameters: those bytes are the editor's (see JDXiDevice.fresh)
+                fixed = self.device.fresh(message.data)
+                if fixed is not None:
+                    message = mido.Message("sysex", data=fixed)
                 # Lets the request queue send the next RQ1 and keeps the
                 # memory mirror that patches are saved from
                 self.device.received(message.data)
