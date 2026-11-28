@@ -22,9 +22,12 @@ def add_round_button(icon_enum, text: str, slot, layout: QHBoxLayout):
 
 def add_round_button_from_spec(spec: ButtonSpec) -> QPushButton:
     """Uses a Spec to add a round button + icon/label row (Transport style). Returns the button."""
-    return add_round_button(
+    button = add_round_button(
         icon_enum=spec.icon,
         text=spec.label,
         slot=spec.slot,
         layout=spec.layout,
     )
+    if spec.tooltip:
+        button.setToolTip(spec.tooltip)
+    return button

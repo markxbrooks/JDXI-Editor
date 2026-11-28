@@ -9,11 +9,15 @@ Connect a JD-Xi
 2. Start JD-Xi Editor and open **MIDI Configuration** from the application
    menu.
 3. Choose the JD-Xi MIDI input and output ports. Input receives MIDI from the
-   instrument; output sends parameter changes and notes to it.
-4. Leave **Request data from the JD-Xi** enabled for hardware use, then close
+   instrument; output sends parameter changes and notes to it. The JD-Xi's
+   ports are listed first, marked ★; **Find the JD-Xi** chooses them.
+4. **Test connection** asks the instrument who it is. The line at the top of
+   the dialog says whether the JD-Xi replied, another instrument replied, or
+   nothing replied. It runs by itself when the dialog opens with ports open.
+5. Leave **Request data from the JD-Xi** enabled for hardware use, then close
    the dialog with **OK**. If the device was connected after the dialog
    opened, choose **Refresh Ports** and select its ports.
-5. Open the editor you want to use and request/read the current data before
+6. Open the editor you want to use and request/read the current data before
    editing. Change one parameter and confirm that the instrument responds.
 
 If the editor shows no JD-Xi ports, close other MIDI applications that may

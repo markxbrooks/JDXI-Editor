@@ -38,3 +38,13 @@ def test_reconnecting_opens_new_ports():
     assert helper.midi_in is not old_in and helper.midi_out is not old_out
     assert helper.midi_in.is_port_open() and helper.midi_out.is_port_open()
     assert getattr(helper.midi_in, "_callback", None) == helper.midi_callback
+
+
+def test_the_dialog_lists_the_ports_through_ports_of_its_own():
+    from jdxi_editor.ui.windows.midi.config_dialog import list_midi_ports
+
+    helper = Mock()
+    helper.get_input_ports.side_effect = AssertionError("not through the helper's port")
+    helper.get_output_ports.side_effect = AssertionError("not through the helper's port")
+    inputs, outputs = list_midi_ports(helper)
+    assert inputs and outputs  # the test ports (tests/conftest.py)

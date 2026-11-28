@@ -57,6 +57,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QApplication,
+    QDialog,
     QMenu,
     QMessageBox,
     QProgressDialog,
@@ -173,7 +174,8 @@ class JDXiInstrument(JDXiWindow):
             not self.midi_helper.current_in_port
             or not self.midi_helper.current_out_port
         ):
-            self._show_midi_config()
+            # once the main window is shown (not over the splash, mid start-up)
+            QTimer.singleShot(0, self, self._show_midi_config)
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self._splash_status("Looking for a MIDI controller...", 15)
@@ -1276,7 +1278,12 @@ class JDXiInstrument(JDXiWindow):
             if self.splash is not None and self.splash.isVisible():
                 self.splash.hide()
             dialog = MIDIConfigDialog(self.midi_helper, parent=self)
-            dialog.exec()
+            if dialog.exec() == QDialog.DialogCode.Accepted:
+                self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+                self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+                follower = getattr(self, "follower", None)
+                if follower is not None:
+                    follower.read_all()  # the newly connected JD-Xi's state
 
         except Exception as ex:
             log.error(
