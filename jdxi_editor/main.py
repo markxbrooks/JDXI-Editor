@@ -87,6 +87,11 @@ def main() -> None:
         # --- Create application
         app = QApplication(sys.argv)
 
+        # --- Garbage collection on the main thread only (see main_thread_gc)
+        from jdxi_editor.ui import main_thread_gc
+
+        main_thread_gc.install(app)
+
         from jdxi_editor.ui.widgets.digital.base import load_lcd_font
 
         load_lcd_font()

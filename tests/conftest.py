@@ -14,6 +14,7 @@ JDXI_TEST_REAL_MIDI=1.
 
 from __future__ import annotations
 
+import gc
 import os
 from typing import Callable, Optional
 
@@ -138,6 +139,15 @@ def pytest_configure(config) -> None:
     if not _wants_real_midi(config):
         rtmidi.MidiIn = FakeMidiIn
         rtmidi.MidiOut = FakeMidiOut
+    # As in the app, no garbage collection in other threads (the request
+    # queue's): a cycle holding Qt objects collected there crashes Qt
+    gc.disable()
+
+
+def pytest_runtest_teardown(item, nextitem) -> None:
+    from jdxi_editor.ui.main_thread_gc import collect_if_due
+
+    collect_if_due()
 
 
 _HELPER_METHODS = (
