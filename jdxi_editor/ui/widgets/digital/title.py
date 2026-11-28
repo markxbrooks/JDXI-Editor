@@ -48,10 +48,12 @@ class DigitalTitle(DigitalDisplayBase):
         # Lazy import to avoid circular dependency
         from jdxi_editor.core.jdxi import JDXi
 
+        from jdxi_editor.ui.text_size import scale
+
         super().__init__(digital_font_family, parent)
-        self.setMinimumSize(
+        self.setMinimumSize(  # taller with a larger text size (the lines are)
             JDXi.UI.Dimensions.DIGITAL_TITLE.WIDTH,
-            JDXi.UI.Dimensions.DIGITAL_TITLE.HEIGHT,
+            int(round(JDXi.UI.Dimensions.DIGITAL_TITLE.HEIGHT * scale())),
         )
         self.show_upper_text = show_upper_text
         self._wire_detail: str = ""

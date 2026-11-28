@@ -176,6 +176,26 @@ class UiPreferencesDialog(QDialog):
         self.update_check_layout.addWidget(self.update_check_label)
         self.update_check_layout.addWidget(self.update_check_checkbox)
 
+        # --- Text size: the text only (knobs, graphs and spacing stay); from the next start
+        from jdxi_editor.ui import text_size
+
+        self.text_size_layout = QHBoxLayout()
+        self.text_size_icon = QLabel()
+        self.text_size_icon.setPixmap(
+            JDXi.UI.Icon.get_icon(JDXi.UI.Icon.SETTINGS).pixmap(self.icon_size)
+        )
+        self.text_size_label = QLabel("Text size (from the next start):")
+        self.text_size_combo = QComboBox()
+        for value, name in text_size.SIZES.items():
+            self.text_size_combo.addItem(f"{name} ({value}%)", value)
+        current = int(self.settings.value(text_size.SETTING, 100) or 100)
+        self.text_size_combo.setCurrentIndex(
+            max(0, self.text_size_combo.findData(current))
+        )
+        self.text_size_layout.addWidget(self.text_size_icon)
+        self.text_size_layout.addWidget(self.text_size_label)
+        self.text_size_layout.addWidget(self.text_size_combo)
+
         # --- Advanced features
         from jdxi_editor.globals import (
             LILYPOND_ENABLED_DEFAULT,
@@ -229,6 +249,7 @@ class UiPreferencesDialog(QDialog):
         main_content_layout.addLayout(self.silence_midi_notes_layout)
         main_content_layout.addLayout(self.midi_validation_layout)
         main_content_layout.addLayout(self.update_check_layout)
+        main_content_layout.addLayout(self.text_size_layout)
         main_content_layout.addWidget(self.advanced_group)
         main_widget.setLayout(main_content_layout)
         main_layout.addWidget(self.buttonBox)
@@ -302,6 +323,11 @@ class UiPreferencesDialog(QDialog):
 
         settings = self.settings
         try:
+            from jdxi_editor.ui import text_size
+
+            settings.setValue(
+                text_size.SETTING, int(self.text_size_combo.currentData() or 100)
+            )
             settings.setValue("logging", bool(self.logging_checkbox.isChecked()))
             settings.setValue(
                 SILENCE_MIDI_NOTE_LOGGING_KEY,

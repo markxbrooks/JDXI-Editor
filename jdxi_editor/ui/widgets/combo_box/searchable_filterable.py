@@ -184,7 +184,9 @@ class SearchableFilterableComboBox(QWidget):
         """set combo box dimensions"""
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         widget.setMinimumWidth(JDXi.UI.Dimensions.Combo.WIDTH)
-        widget.setMaximumHeight(JDXi.UI.Dimensions.Combo.HEIGHT)
+        from jdxi_editor.ui.text_size import scale
+
+        widget.setMaximumHeight(int(round(JDXi.UI.Dimensions.Combo.HEIGHT * scale())))
 
     def _create_search_row(
         self, search_label: str, search_placeholder: str, use_analog_style: bool

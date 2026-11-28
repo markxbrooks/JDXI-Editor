@@ -90,7 +90,9 @@ class SpinBox(QWidget):
         # Ensure label width consistency
         # self.setMinimumWidth(250)
         self.spin_box.setMaximumWidth(150)
-        self.spin_box.setMaximumHeight(25)
+        from jdxi_editor.ui.text_size import scale
+
+        self.spin_box.setMaximumHeight(int(round(25 * scale())))  # taller with a larger text size
 
         # Connect combo box index change to emit mapped value
         self.spin_box.valueChanged.connect(self._on_valueChanged)

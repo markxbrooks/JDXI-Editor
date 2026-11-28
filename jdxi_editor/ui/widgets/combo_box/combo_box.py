@@ -112,7 +112,9 @@ class ComboBox(QWidget):
 
         # Ensure label width consistency
         self.combo_box.setMaximumWidth(350)
-        self.combo_box.setMaximumHeight(25)
+        from jdxi_editor.ui.text_size import scale
+
+        self.combo_box.setMaximumHeight(int(round(25 * scale())))  # taller with a larger text size
 
         # Connect combo box index change to emit mapped value
         self.combo_box.currentIndexChanged.connect(self._on_valueChanged)

@@ -192,10 +192,13 @@ class DigitalDisplayBase(QWidget):
             font_size = 13
         else:
             font_size = 16
+        from jdxi_editor.ui.text_size import scale
+
         display_font = lcd_font(font_size, bold=True, primary=self.digital_font_family)
+        display_font.setPointSizeF(font_size * scale())  # Preferences › Text size
         painter.setFont(display_font)
 
-        line_h = 22 if len(self.display_texts) > 2 else 28
+        line_h = int(round((22 if len(self.display_texts) > 2 else 28) * scale()))
         y_offset = 8
         for i, text in enumerate(self.display_texts):
             # Primary line (tone) brighter; secondary lines slightly dimmer
