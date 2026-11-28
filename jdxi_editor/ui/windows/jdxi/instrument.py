@@ -369,6 +369,7 @@ class JDXiInstrument(JDXiWindow):
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_message_incoming.connect(self._midi_blink_input)
         self.midi_helper.midi_message_outgoing.connect(self._midi_blink_output)
+        self.midi_helper.midi_send_failed.connect(self._midi_send_failed)
         self.midi_helper.update_tone_name.connect(
             lambda tone_name, synth_type: self.set_tone_name_by_type(
                 tone_name, synth_type
@@ -2285,6 +2286,19 @@ class JDXiInstrument(JDXiWindow):
     def _midi_blink_output(self, _):
         """handle outgoing message blink"""
         self.midi_out_indicator.blink()
+
+    def _midi_send_failed(self, reason: str) -> None:
+        """
+        A message did not go out: say so until the next status message.
+
+        :param reason: str why the port refused it
+        :return: None
+        """
+        self.statusBar().showMessage(
+            f"A change could not be sent to the JD-Xi ({reason or '?'}): the "
+            "JD-Xi may hold another value than the editors show.",
+            0,
+        )
 
     def _midi_send_octave(self, direction: int) -> Union[None, bool]:
         """

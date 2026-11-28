@@ -47,6 +47,7 @@ class MidiOutHandler(MidiIOController):
     """Helper class for MIDI communication with the JD-Xi."""
 
     midi_message_outgoing = Signal(object)
+    midi_send_failed = Signal(str)  # a message the port refused: the reason
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -164,7 +165,13 @@ class MidiOutHandler(MidiIOController):
                         silent=False,
                     )
                 # Send the message
-                self.midi_out.send_message(message)
+                try:
+                    self.midi_out.send_message(message)
+                except Exception as send_error:
+                    # Recorded above as held by the JD-Xi: it is not
+                    self.device.send_failed(message_bytes)
+                    self.midi_send_failed.emit(str(send_error))
+                    raise
                 self.midi_message_outgoing.emit(message)
                 return True
 

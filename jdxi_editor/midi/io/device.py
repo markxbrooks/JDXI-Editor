@@ -34,17 +34,54 @@ Example:
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
-from typing import Any, Callable, Iterable, Sequence, Union
+from typing import Any, Callable, Iterable, Optional, Sequence, Union
 
 from jdxi_editor.midi.io.echo_guard import DEFAULT_ECHO_GUARD, EchoGuard
-from jdxi_editor.midi.io.request_queue import SYSEX_START, SysExRequestQueue, Sysex
-from jdxi_editor.midi.io.synth_memory import SynthMemory
+from jdxi_editor.midi.io.request_queue import (
+    DT1_COMMAND,
+    ROLAND_ID,
+    SysExRequestQueue,
+    Sysex,
+)
+from jdxi_editor.midi.io.synth_memory import SynthMemory, address_to_linear
 
 PROGRAM_CHANGE_STATUS = 0xC0
 
 
 def _is_program_change(message: Sequence[int]) -> bool:
     return bool(message) and int(message[0]) & 0xF0 == PROGRAM_CHANGE_STATUS
+
+
+def _roland_body(message: Sequence[int]) -> Optional[list]:
+    """The Roland message without F0/F7: 41, device, model×4, command, address×4, data…, checksum."""
+    data = [int(b) for b in message]
+    if data and data[0] == Sysex.START:
+        data = data[1:]
+    if data and data[-1] == Sysex.END:
+        data = data[:-1]
+    if len(data) < 12 or data[0] != ROLAND_ID:
+        return None
+    return data
+
+
+def _area(start_hex: str, end_hex: str) -> tuple[int, int]:
+    return (
+        address_to_linear(bytes.fromhex(start_hex)),
+        address_to_linear(bytes.fromhex(end_hex)),
+    )
+
+
+#: What a program change replaces, by MIDI channel (0-based, the JD-Xi's
+#: defaults): on a part's channel only that part's tone (its temporary tone
+#: area and its Program Part entry); on channel 16 the whole program (None).
+#: Channels the JD-Xi does not play change nothing it holds.
+PROGRAM_CHANGE_AREAS: dict[int, Optional[list[tuple[int, int]]]] = {
+    0: [_area("19010000", "19210000"), _area("18002000", "18002100")],  # Digital 1
+    1: [_area("19210000", "19420000"), _area("18002100", "18002200")],  # Digital 2
+    2: [_area("19420000", "19700000"), _area("18002200", "18002300")],  # Analog
+    9: [_area("19700000", "1A000000"), _area("18002300", "18002400")],  # Drums
+    15: None,  # the program
+}
 
 
 class JDXiDevice:
@@ -83,12 +120,11 @@ class JDXiDevice:
         A message from the JD-Xi (SysEx with or without F0/F7, or channel data).
 
         A DT1 reply lets the queue send its next request and is recorded in
-        memory; a program change replaces the temporary program, so memory is
-        cleared.
+        memory; a program change forgets what it replaced.
         """
         data = [int(b) for b in message]
         if _is_program_change(data):
-            self.memory.clear()
+            self._program_changed(data[0] & 0x0F)
             return
         if data and data[0] != Sysex.START and data[0] >= 0x80:
             return  # other channel messages
@@ -103,9 +139,36 @@ class JDXiDevice:
         """A message the editor sent: what the synth now holds."""
         data = [int(b) for b in message]
         if _is_program_change(data):
-            self.memory.clear()
+            self._program_changed(data[0] & 0x0F)
         else:
             self.memory.record_dt1(data)
+
+    def send_failed(self, message: Sequence[int]) -> None:
+        """
+        *message* was recorded by sent() but did not go out.
+
+        What it would have written is not known any more, so it is forgotten
+        rather than counted as held by the JD-Xi.
+        """
+        body = _roland_body(message)
+        if body is None or body[6] != DT1_COMMAND:
+            return
+        start = address_to_linear(body[7:11])
+        self.memory.forget([(start, start + len(body[11:-1]))])
+
+    def _program_changed(self, channel: int) -> None:
+        """
+        Forget what a program change on *channel* replaced.
+
+        A tone change on one part used to forget the whole program.
+        """
+        if channel not in PROGRAM_CHANGE_AREAS:
+            return  # a channel the JD-Xi does not play
+        ranges = PROGRAM_CHANGE_AREAS[channel]
+        if ranges is None:
+            self.memory.clear()
+        else:
+            self.memory.forget(ranges)
 
 
 def device_for(owner: Any) -> JDXiDevice:

@@ -68,6 +68,17 @@ class TestRequestQueue(unittest.TestCase):
         self.assertTrue(self.queue.wait_idle(1.0))
         self.assertEqual(self.sent, [_RQ1_ANALOG])
 
+    def test_a_request_after_the_reply_is_sent_again(self):
+        """A read starting just after the reply (the queue still pausing) gets its own reply."""
+        self.queue._reply_gap = 0.3
+        self.queue.submit([_RQ1_ANALOG])
+        self.assertTrue(_wait_for(lambda: len(self.sent) == 1))
+        self.queue.notify_reply(_DT1_ANALOG)  # answered: the queue pauses 0.3 s
+        self.assertEqual(self.queue.submit([_RQ1_ANALOG]), 1)
+        self.assertTrue(_wait_for(lambda: len(self.sent) == 2))
+        self.queue.notify_reply(_DT1_ANALOG)
+        self.assertTrue(self.queue.wait_idle(2.0))
+
     def test_next_request_waits_for_the_reply(self):
         self.queue.submit([_RQ1_ANALOG, _RQ1_DIGITAL1])
         self.assertTrue(_wait_for(lambda: len(self.sent) == 1))

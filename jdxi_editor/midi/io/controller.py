@@ -241,16 +241,47 @@ class MidiIOController(QObject):
         """
         Close MIDI ports
 
+        A port whose device went away (a JD-Xi unplugged or switched off) may
+        refuse to close (Windows: «error closing Windows MM MIDI input port»).
+        Such a port opens again but receives nothing, so it is replaced.
+
         :return: None
         """
-        if self.midi_in.is_port_open():
-            self.midi_in.close_port()
-            time.sleep(0.1)
-        if self.midi_out.is_port_open():
-            self.midi_out.close_port()
-            time.sleep(0.1)
+        for name in ("midi_in", "midi_out"):
+            port = getattr(self, name, None)
+            try:
+                if port is not None and port.is_port_open():
+                    port.close_port()
+                    time.sleep(0.1)
+            except Exception as ex:
+                log.warning(
+                    f"Closing {name} failed ({ex}): a new port replaces it",
+                    scope="MidiIOController",
+                )
+                self._replace_port(name)
         self.input_port_number = None
         self.output_port_number = None
+
+    def _replace_port(self, name: str) -> None:
+        """
+        Put a new rtmidi port in place of ``name``, set up as the first one.
+
+        :param name: str "midi_in" or "midi_out"
+        :return: None
+        """
+        factory = rtmidi.MidiIn if name == "midi_in" else rtmidi.MidiOut
+        port = open_rtmidi(factory, "input" if name == "midi_in" else "output")
+        setattr(self, name, port)
+        if name == "midi_in":
+            try:
+                port.ignore_types(sysex=False, timing=True, active_sense=True)
+                callback = getattr(self, "midi_callback", None)
+                if callback is not None:
+                    port.set_callback(callback)
+            except Exception as ex:
+                log.warning(
+                    f"Setting up the new MIDI input: {ex}", scope="MidiIOController"
+                )
 
     @property
     def is_input_open(self) -> bool:

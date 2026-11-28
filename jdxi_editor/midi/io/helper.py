@@ -821,9 +821,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         """
         try:
             self.close_ports()
-            self.connect_port_names(in_port, out_port)
-            self.open_output_port(out_port)
-            self.reopen_input_port_name(in_port)
+            # New rtmidi ports every time: one whose device went away (JD-Xi
+            # switched off or unplugged) may fail to close or open (Windows:
+            # «error closing Windows MM MIDI input port»), or open and
+            # receive nothing
+            self._replace_port("midi_in")
+            self._replace_port("midi_out")
+            # connect_port_names opens both ports and checks them; opening
+            # them again here reported success whatever had happened
+            if not self.connect_port_names(in_port, out_port):
+                return False
+            if hasattr(self, "midi_callback"):
+                self.midi_in.set_callback(self.midi_callback)
             return True
         except Exception as ex:
             log.error(f"Error {ex} occurred reconnecting ports", scope="MidiIOHelper")
