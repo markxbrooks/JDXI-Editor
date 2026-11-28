@@ -6,6 +6,7 @@ range and program-change markers, and is the place to seek (click/drag)
 and to move or delete program changes (drag/right-click a marker handle).
 """
 
+import bisect
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -30,6 +31,102 @@ RULER_MIN_HEIGHT = 34
 MIN_LABEL_SPACING = 28  # px between bar numbers; fewer bars are numbered when zoomed out
 MIN_BEAT_SPACING = 6  # px between beat ticks before they are hidden
 MARKER_GROUP_PX = 6  # markers closer than this share one flag and label
+
+
+MAX_GRID_BARS = 2000  # beyond this the ruler shows seconds
+
+
+@dataclass
+class BarLine:
+    """A bar on the ruler: where it starts, its number, and the time signature
+    when one starts there (None otherwise)."""
+
+    seconds: float
+    bar: int
+    signature: Optional[tuple[int, int]] = None
+
+
+def _conductor(midi_file: mido.MidiFile) -> tuple[list, list, int]:
+    """Tempo changes [(tick, µs per beat)], time signatures [(tick, num, den)] and
+    the last tick of *midi_file*, from all its tracks (as the playback engine
+    reads them: one entry per tick, the last one wins)."""
+    tempos: dict[int, int] = {}
+    signatures: dict[int, tuple[int, int]] = {}
+    end = 0
+    for track in midi_file.tracks:
+        tick = 0
+        for msg in track:
+            tick += msg.time
+            if msg.type == "set_tempo":
+                tempos[tick] = msg.tempo
+            elif msg.type == "time_signature":
+                signatures[tick] = (msg.numerator, msg.denominator)
+        end = max(end, tick)
+    tempos.setdefault(0, 500_000)
+    signatures.setdefault(0, (4, 4))
+    return (sorted(tempos.items()), [(t, n, d) for t, (n, d) in sorted(signatures.items())], end)
+
+
+def bar_grid(midi_file: mido.MidiFile) -> tuple[list[BarLine], list[float]]:
+    """The bars and beats of *midi_file*, in seconds, following its time
+    signatures and tempo changes.
+
+    Bars are counted as the playback engine counts them (``bar_beat_at_tick``,
+    the position shown in the player and «Snap to bars»): at a change of time
+    signature a new bar starts, and an unfinished bar before it still counts.
+    Returns ([], []) when the file has more than MAX_GRID_BARS bars.
+    """
+    tpb = midi_file.ticks_per_beat or 480
+    tempos, signatures, end_tick = _conductor(midi_file)
+    # seconds at each tempo change
+    starts = [0.0]
+    for (t0, tempo), (t1, _) in zip(tempos, tempos[1:]):
+        starts.append(starts[-1] + mido.tick2second(t1 - t0, tpb, tempo))
+
+    tempo_ticks = [t for t, _ in tempos]
+
+    def seconds(tick: float) -> float:
+        k = max(0, bisect.bisect_right(tempo_ticks, tick) - 1)
+        return starts[k] + mido.tick2second(tick - tempos[k][0], tpb, tempos[k][1])
+
+    bars: list[BarLine] = []
+    beats: list[float] = []
+    number = 1
+    for k, (start, num, den) in enumerate(signatures):
+        stop = signatures[k + 1][0] if k + 1 < len(signatures) else max(end_tick, start + 1)
+        beat_ticks = tpb * 4 / den
+        bar_ticks = beat_ticks * num
+        tick = float(start)
+        first = True
+        while tick < stop - 1e-6:
+            if len(bars) > MAX_GRID_BARS:
+                return [], []
+            bars.append(BarLine(seconds(tick), number, (num, den) if first else None))
+            first = False
+            bar_end = min(tick + bar_ticks, stop)
+            beat = tick + beat_ticks
+            while beat < bar_end - 1e-6:
+                beats.append(seconds(beat))
+                beat += beat_ticks
+            number += 1
+            tick += bar_ticks
+    # the same signature again is not a change
+    for line in bars[1:]:
+        if line.signature is not None and line.signature == _signature_before(bars, line):
+            line.signature = None
+    if bars and bars[0].signature == (4, 4) and all(b.signature is None for b in bars[1:]):
+        bars[0].signature = None  # plain 4/4 throughout: nothing to say
+    return bars, beats
+
+
+def _signature_before(bars: list[BarLine], line: BarLine) -> Optional[tuple[int, int]]:
+    current = None
+    for b in bars:
+        if b is line:
+            return current
+        if b.signature is not None:
+            current = b.signature
+    return current
 
 
 @dataclass
@@ -68,18 +165,31 @@ class TimeRulerWidget(QWidget):
         self._markers: list[RulerMarker] = []
         self._playhead_seconds: Optional[float] = None
         self._loop_range: Optional[tuple[float, float]] = None
+        self._loop_marks: tuple[Optional[float], Optional[float]] = (None, None)
         self._loop_enabled = False
         # Interaction state
         self._dragging_marker: Optional[RulerMarker] = None
         self._drag_seconds: Optional[float] = None
         self._scrubbing = False
+        self._grid: Optional[tuple[list[BarLine], list[float]]] = None
 
     # --- Data -----------------------------------------------------------------
 
-    def set_midi_file(self, midi_file: mido.MidiFile) -> None:
+    def set_midi_file(self, midi_file: mido.MidiFile, length: float | None = None) -> None:
         self.midi_file = midi_file
-        self.midi_file_cached_total_length = self.midi_file.length
+        # *length* when the caller knows it (mido's length reads the whole file)
+        self.midi_file_cached_total_length = midi_file.length if length is None else length
+        self._grid = None  # worked out again at the next paint
         self.update()
+
+    def grid(self) -> tuple[list[BarLine], list[float]]:
+        """The file's bars and beats (see bar_grid), worked out once per file."""
+        if self._grid is None:
+            try:
+                self._grid = bar_grid(self.midi_file) if self.midi_file else ([], [])
+            except Exception:  # an odd file: the ruler falls back to seconds
+                self._grid = ([], [])
+        return self._grid
 
     @property
     def duration(self) -> float:
@@ -98,6 +208,12 @@ class TimeRulerWidget(QWidget):
         """Show the A–B range (None = whole file) and whether looping is on."""
         self._loop_range = loop_range
         self._loop_enabled = enabled
+        self.update()
+
+    def set_loop_marks(self, a: Optional[float], b: Optional[float]) -> None:
+        """The A and B points as they are set: one shows at once, before the
+        other makes the range (A alone used to show nothing)."""
+        self._loop_marks = (a, b)
         self.update()
 
     def add_marker(
@@ -230,16 +346,6 @@ class TimeRulerWidget(QWidget):
 
     # --- Painting -------------------------------------------------------------
 
-    def _tempo_bpm(self) -> float:
-        """First set_tempo in the file, or 120 BPM."""
-        if not self.midi_file:
-            return 120.0
-        for track in self.midi_file.tracks:
-            for msg in track:
-                if msg.type == "set_tempo":
-                    return 60_000_000 / float(msg.tempo)
-        return 120.0
-
     def paintEvent(self, event: QPaintEvent) -> None:
         if not self.midi_file:
             return
@@ -267,21 +373,17 @@ class TimeRulerWidget(QWidget):
     def _paint_bar_beat_grid(
         self, painter: QPainter, width: int, height: int, duration: float
     ) -> None:
-        """Draw bars (major) and beats (minor); fall back to seconds if needed."""
+        """Bars (numbered) and beats, with the file's time signatures and tempo
+        changes; the time signature where it starts (when not 4/4 throughout).
+        Seconds when the file has no usable bars."""
         mp = JDXi.UI.MidiPlayer
-        bpm = self._tempo_bpm()
-        beats_per_bar = 4
-        seconds_per_beat = 60.0 / bpm if bpm > 0 else 0.5
-        seconds_per_bar = seconds_per_beat * beats_per_bar
-
         bar_pen = QPen(QColor(mp.BORDER_HOVER))
         bar_pen.setWidth(1)
-        beat_pen = QPen(QColor(mp.BORDER_HOVER))
-        beat_pen.setWidth(1)
         label_pen = QPen(QColor(mp.TEXT_SECONDARY))
+        minor_pen = QPen(QColor(mp.BORDER))
+        bars, beats = self.grid()
 
-        if seconds_per_bar <= 0 or duration / seconds_per_bar > 2000:
-            # Degenerate / huge — fall back to seconds
+        if not bars:
             spacing = width / duration
             for second in range(int(duration) + 1):
                 x = int(second * spacing)
@@ -291,35 +393,33 @@ class TimeRulerWidget(QWidget):
                     painter.setPen(label_pen)
                     painter.drawText(x + 2, height - 4, f"{second}s")
                 elif spacing >= 4:
-                    painter.setPen(beat_pen)
+                    painter.setPen(bar_pen)
                     painter.drawLine(x, height - 5, x, height)
             return
 
-        bar_px = seconds_per_bar / duration * width
-        label_every = self._label_interval(bar_px, painter, duration / seconds_per_bar)
-        minor_pen = QPen(QColor(mp.BORDER))
-        bar = 0
-        t = 0.0
-        while t <= duration + 1e-6:
-            x = int(t / duration * width)
-            if bar % label_every == 0:
-                painter.setPen(beat_pen)
+        shown = [b for b in bars if b.seconds <= duration + 1e-6]
+        bar_px = width / max(1, len(shown)) if shown else width
+        label_every = self._label_interval(bar_px, painter, len(shown))
+        if beats and width / (len(beats) + len(shown)) >= MIN_BEAT_SPACING:
+            painter.setPen(minor_pen)
+            for bt in beats:
+                if bt > duration:
+                    break
+                bx = int(bt / duration * width)
+                painter.drawLine(bx, height - 5, bx, height)
+        for index, line in enumerate(shown):
+            x = int(line.seconds / duration * width)
+            text = f"{line.bar}"
+            if line.signature is not None:
+                text += f"  {line.signature[0]}/{line.signature[1]}"
+            if index % label_every == 0 or line.signature is not None:
+                painter.setPen(bar_pen)
                 painter.drawLine(x, 0, x, height)
                 painter.setPen(label_pen)
-                painter.drawText(x + 3, height - 4, f"{bar + 1}")
+                painter.drawText(x + 3, height - 4, text)
             else:
                 painter.setPen(minor_pen)
                 painter.drawLine(x, height - 10, x, height)
-            if bar_px / beats_per_bar >= MIN_BEAT_SPACING:
-                painter.setPen(minor_pen)
-                for beat in range(1, beats_per_bar):
-                    bt = t + beat * seconds_per_beat
-                    if bt > duration:
-                        break
-                    bx = int(bt / duration * width)
-                    painter.drawLine(bx, height - 5, bx, height)
-            bar += 1
-            t += seconds_per_bar
 
     @staticmethod
     def _label_interval(bar_px: float, painter: QPainter, bar_count: float) -> int:
@@ -332,6 +432,15 @@ class TimeRulerWidget(QWidget):
         return interval
 
     def _paint_loop_region(self, painter: QPainter, height: int) -> None:
+        if self._loop_range is None:
+            # a single point set so far: its line and letter
+            for seconds, letter in zip(self._loop_marks, "AB"):
+                if seconds is None:
+                    continue
+                x = self._x_for(seconds)
+                painter.setPen(QPen(QColor(JDXi.UI.Style.ACCENT_ANALOG), 2))
+                painter.drawLine(x, 0, x, height)
+                painter.drawText(x + 3, height // 2 + 4, letter)
         if self._loop_range is None and not self._loop_enabled:
             return
         start, end = self._loop_range or (0.0, self.duration)

@@ -1323,6 +1323,7 @@ class MidiFilePlayer(SynthEditor):
         self._sync_transport_settings()
         self._loop_points = (None, None)
         self.playback_options.set_loop_points(None, None)
+        self.midi_file.midi_track_viewer.ruler.set_loop_marks(None, None)
         self._refresh_program_change_markers()
         self.calculate_duration()
         self.calculate_tick_duration()
@@ -1637,6 +1638,7 @@ class MidiFilePlayer(SynthEditor):
         else:
             self._loop_points = (a, b)
             self.playback_options.set_loop_points(a, b)
+            self.midi_file.midi_track_viewer.ruler.set_loop_marks(a, b)
 
     # --- Trim ---------------------------------------------------------------
 
@@ -1710,6 +1712,7 @@ class MidiFilePlayer(SynthEditor):
     def midi_loop_clear(self, *_args) -> None:
         """Forget the A–B range so Loop repeats the whole song."""
         self._loop_points = (None, None)
+        self.midi_file.midi_track_viewer.ruler.set_loop_marks(None, None)
         self.transport_controller.clear_loop_range()
 
     def _on_transport_loop_changed(self) -> None:
@@ -1720,7 +1723,9 @@ class MidiFilePlayer(SynthEditor):
         if loop_range is not None:
             self._loop_points = loop_range
         self.playback_options.set_loop_points(*self._loop_points)
-        self.midi_file.midi_track_viewer.ruler.set_loop_region(loop_range, enabled)
+        ruler = self.midi_file.midi_track_viewer.ruler
+        ruler.set_loop_marks(*self._loop_points)
+        ruler.set_loop_region(loop_range, enabled)
 
     def on_playback_speed_changed(self, percent: int) -> None:
         """Speed spin box (percent of the file's tempo)."""
