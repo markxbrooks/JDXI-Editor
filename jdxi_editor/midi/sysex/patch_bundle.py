@@ -65,11 +65,21 @@ def section_from_dt1(dt1: bytes) -> dict:
     return section
 
 
-def write_memory_sections(memory: SynthMemory, folder: Path) -> set[str]:
-    """Write every complete patch section in *memory*; returns their addresses."""
+def write_memory_sections(
+    memory: SynthMemory, folder: Path, only: Optional[set[str]] = None
+) -> set[str]:
+    """
+    Write every complete patch section in *memory*; returns their addresses.
+
+    :param only: when given, the 4-byte addresses (hex, e.g. ``"19420000"``) that a
+        read of the JD-Xi has just confirmed: the other sections in memory may be
+        from before (the editor controls are used for them, as the user was told)
+    """
     written: set[str] = set()
     for address, size in memory.sections():
         if address[0] not in PATCH_AREAS:
+            continue
+        if only is not None and bytes(address).hex() not in only:
             continue
         dt1 = memory.section_dt1(address, size)
         if dt1 is None:
@@ -151,3 +161,39 @@ def section_param_dt1s(section: dict) -> list[bytes]:
             data = split_16bit_value_to_nibbles(value)
         messages.append(build_dt1(linear_to_address(base + int(param.address)), data))
     return messages
+
+
+BUNDLE_MIDI_NAME = "bundle.mid"
+BUNDLE_MIDI_MAX_BYTES = 32 * 1024 * 1024  # a song; more is not a MIDI file
+
+
+def extract_bundle_midi(zip_ref, folder: Path) -> Optional[Path]:
+    """
+    Copy the first MIDI file of a .msz bundle into *folder*, under a name of our own.
+
+    The name inside the ZIP is never used as a path: «../../x.mid» or an absolute
+    path would write outside *folder* (zip slip). Oversized entries are refused.
+
+    :param zip_ref: an open zipfile.ZipFile
+    :return: the file written, or None when the bundle has no usable MIDI file
+    """
+    entries = [info for info in zip_ref.infolist()
+               if not info.is_dir() and info.filename.lower().endswith(".mid")]
+    if not entries:
+        return None
+    entry = entries[0]
+    if entry.file_size > BUNDLE_MIDI_MAX_BYTES:
+        log.warning(f"MIDI file in bundle too large: {entry.file_size} bytes", scope="patch_bundle")
+        return None
+    folder = Path(folder).resolve()
+    folder.mkdir(parents=True, exist_ok=True)
+    target = (folder / BUNDLE_MIDI_NAME).resolve()
+    if target.parent != folder:  # cannot happen with our own name: kept as a guard
+        return None
+    with zip_ref.open(entry) as source:
+        data = source.read(BUNDLE_MIDI_MAX_BYTES + 1)
+    if len(data) > BUNDLE_MIDI_MAX_BYTES:
+        return None
+    target.write_bytes(data)
+    return target
+

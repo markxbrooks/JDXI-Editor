@@ -768,12 +768,25 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             if not self.open_input_port(in_port):
                 return False
             if not self.open_output_port(out_port):
+                # half a connection shows as connected: the input goes too
+                self._close_quietly("midi_in")
                 return False
             return True
 
         except Exception as ex:
             log.error(f"Error setting MIDI ports: {str(ex)}", scope="MidiIOHelper")
+            self._close_quietly("midi_in")
+            self._close_quietly("midi_out")
             return False
+
+    def _close_quietly(self, name: str) -> None:
+        """Close the port held in *name* (midi_in / midi_out) if it is open."""
+        port = getattr(self, name, None)
+        try:
+            if port is not None and port.is_port_open():
+                port.close_port()
+        except Exception as ex:  # closing is a clean-up: log, go on
+            log.warning(f"Closing {name}: {ex}", scope="MidiIOHelper")
 
     def connect_port_names(self, in_port: str, out_port: str) -> bool:
         """
@@ -794,8 +807,13 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 log.parameter("MIDI in_port", in_port, scope="MidiIOHelper")
                 log.parameter("MIDI out_port", out_port, scope="MidiIOHelper")
                 return False
-            self.set_midi_ports(in_port, out_port)
-            # Verify connection
+            if not self.set_midi_ports(in_port, out_port):
+                log.message(
+                    f"JD-Xi MIDI ports did not open: {in_port} / {out_port}",
+                    level=logging.WARNING,
+                    scope="MidiIOHelper",
+                )
+                return False
             log.parameter(
                 "Successfully connected to JD-Xi MIDI:", in_port, scope="MidiIOHelper"
             )
@@ -848,9 +866,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             # Find JD-Xi ports
             jdxi_in_port = find_jdxi_port(self.get_input_ports())
             jdxi_out_port = find_jdxi_port(self.get_output_ports())
-            self.connect_port_names(jdxi_in_port, jdxi_out_port)
-            # self.identify_device()
-            return True
+            return self.connect_port_names(jdxi_in_port, jdxi_out_port)
         except Exception as ex:
             log.error(
                 f"Error auto-connecting to JD-Xi: {str(ex)}", scope="MidiIOHelper"

@@ -48,12 +48,14 @@ from jdxi_editor.midi.io.device import device_for
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.midi.sysex.patch_bundle import (
     convert_editor_sections,
+    extract_bundle_midi,
     write_memory_sections,
 )
 from jdxi_editor.midi.sysex.request.read_session import (
     ReadResult,
     SectionStatus,
     address_from_rq1_hex,
+    normalize_address,
     collect_editor_requests,
     patch_section_requests,
     sections_from_requests,
@@ -287,6 +289,15 @@ class PatchManager(QMainWindow):
                 self._allow_partial_save = True
                 self._handle_action()
 
+    def _confirmed_sections(self) -> Optional[set[str]]:
+        """After a read that did not complete: the sections it confirmed, the only ones
+        taken from the synth's memory (the others may be from before: the controls'
+        values are saved for them, as the question says). None: no such read."""
+        result = self._last_read_result
+        if result is None or result.complete:
+            return None
+        return {normalize_address(s.address) for s in result.sections if s.status == SectionStatus.OK}
+
     def _confirm_partial_save(self, result: ReadResult) -> bool:
         missing = [
             s.label
@@ -400,7 +411,9 @@ class PatchManager(QMainWindow):
                 # ones (exact bytes, raw MIDI values); the rest are converted
                 # from the controls' display units to raw MIDI values
                 memory_sections = write_memory_sections(
-                    device_for(self.midi_helper).memory, temp_folder
+                    device_for(self.midi_helper).memory,
+                    temp_folder,
+                    only=self._confirmed_sections(),
                 )
                 converted = convert_editor_sections(temp_folder, memory_sections)
                 log.message(
@@ -461,23 +474,13 @@ class PatchManager(QMainWindow):
                 if file_path.endswith(".msz"):
                     try:
                         with zipfile.ZipFile(file_path, "r") as zip_ref:
-                            midi_files = [
-                                f for f in zip_ref.namelist() if f.endswith(".mid")
-                            ]
-                            if (
-                                midi_files
-                                and self.parent
-                                and hasattr(self.parent, "get_existing_editor")
-                            ):
-                                # Extract MIDI file to temp location
-                                midi_file_name = midi_files[0]  # Use first MIDI file
-                                temp_midi_path = temp_folder / midi_file_name
-                                with zip_ref.open(midi_file_name) as midi_source:
-                                    temp_midi_path.parent.mkdir(
-                                        parents=True, exist_ok=True
-                                    )
-                                    with open(temp_midi_path, "wb") as midi_dest:
-                                        midi_dest.write(midi_source.read())
+                            # Under a name of our own: the name in the ZIP is
+                            # not a path to trust (see extract_bundle_midi)
+                            temp_midi_path = None
+                            if self.parent and hasattr(self.parent, "get_existing_editor"):
+                                temp_midi_path = extract_bundle_midi(zip_ref, temp_folder)
+                            if temp_midi_path is not None:
+                                midi_file_name = temp_midi_path.name
 
                                 # Load MIDI file into editor
                                 midi_file_editor = self.parent.get_existing_editor(
