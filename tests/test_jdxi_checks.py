@@ -160,6 +160,9 @@ class JDXi:
                 self.helper.close_ports()
             except Exception:
                 pass
+        else:
+            self.fake.detach()
+            self.device.state.program_changed()
 
 
 @pytest.fixture(params=["simulated", pytest.param("hardware", marks=pytest.mark.hardware)])

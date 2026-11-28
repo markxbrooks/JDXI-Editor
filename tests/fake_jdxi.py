@@ -33,6 +33,7 @@ class FakeJDXi(QObject):
         self.reply.connect(
             lambda data: helper._handle_midi_message(mido.Message("sysex", data=data))
         )
+        self._saved_ports = {name: getattr(helper, name, None) for name in ("midi_out", "midi_in")}
         for name in ("midi_out", "midi_in"):
             port = Mock()
             port.is_port_open.return_value = True
@@ -41,6 +42,13 @@ class FakeJDXi(QObject):
         helper.send_midi_message = lambda message: self.send(
             list(message.to_message_list())
         )
+
+    def detach(self) -> None:
+        """Give the helper back its ports and sends (it is a singleton shared by later tests)."""
+        for name, port in self._saved_ports.items():
+            setattr(self.helper, name, port)
+        for name in ("send_raw_message", "send_midi_message"):
+            self.helper.__dict__.pop(name, None)
 
     @staticmethod
     def _number(address) -> int:
