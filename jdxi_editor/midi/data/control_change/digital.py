@@ -87,11 +87,8 @@ class DigitalControlChange:
             2: 22,  # Partial 2
             3: 23,  # Partial 3
         },
-        "LFO_Rate": {
-            1: 21,  # Partial 1
-            2: 22,  # Partial 2
-            3: 23,  # Partial 3
-        },
+        # (LFO Rate is a Control Change, 16-18: see CC above; an NRPN entry here
+        # copied LFO Amp Depth's 21-23)
     }
 
     @staticmethod
