@@ -383,6 +383,57 @@ class JDXiInstrument(JDXiWindow):
         # ctrl-R for data request
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+        self._setup_connection()
+
+    def _setup_connection(self) -> None:
+        """
+        Follow whether the JD-Xi answers, beside the MIDI lamps.
+
+        :return: None
+        """
+        from jdxi_editor.midi.io.connection import connection_for
+
+        self.connection = connection_for(self.midi_helper)
+        if self.connection is None:
+            return
+        self.connection.changed.connect(self._connection_changed)
+        self.connection.poll()
+        self._connection_changed(self.connection.state)
+
+    def _connection_changed(self, state: str) -> None:
+        """
+        Show the connection state, and say so when the JD-Xi comes or goes.
+
+        :param state: str one of the connection.STATES
+        :return: None
+        """
+        from jdxi_editor.midi.io import connection as conn
+
+        text, tip = {
+            conn.OFFLINE: ("Offline", "No JD-Xi: the MIDI ports are closed, or it does not answer"),
+            conn.DETECTED: ("Checking…", "MIDI ports open: asking the device who it is"),
+            conn.VERIFYING: ("Checking…", "Identity Request sent: waiting for the JD-Xi"),
+            conn.ONLINE: ("JD-Xi", "The JD-Xi answered: reading and writing"),
+            conn.UNSTABLE: (
+                "JD-Xi ?",
+                "Some requests went unanswered: writes still go out; read again to check",
+            ),
+        }.get(state, ("", ""))
+        label = getattr(self, "connection_label", None)
+        if label is not None:
+            label.setText(text)
+            label.setToolTip(tip)
+        if getattr(self, "midi_in_indicator", None) is not None:
+            self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+            self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        message = {
+            conn.ONLINE: "JD-Xi connected: it answered the Identity Request.",
+            conn.UNSTABLE: "The JD-Xi did not answer some requests: read it again to check.",
+        }.get(state)
+        if state == conn.OFFLINE and self.connection is not None and self.connection.ever_online:
+            message = "The JD-Xi stopped answering: offline until it answers again."
+        if message:
+            self.statusBar().showMessage(message, 8000)
 
     def _forward_sysex_to_vocal_effects_editor(self, json_sysex_data: str) -> None:
         """Forward COMMON and VOCAL_EFFECT SysEx to Vocal Effects Editor."""

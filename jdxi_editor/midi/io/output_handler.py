@@ -279,8 +279,7 @@ class MidiOutHandler(MidiIOController):
                 message="sending identity_request request message: "
                 f"{type(identity_request_bytes_list)} {identity_request_bytes_list}",
             )
-            self.send_raw_message(identity_request_bytes_list)
-            return True
+            return bool(self.send_raw_message(identity_request_bytes_list))
         except (ValueError, TypeError, OSError, IOError) as ex:
             log.error(
                 scope="MidiOutHandler",

@@ -185,6 +185,9 @@ class MidiInHandler(MidiIOController):
         :param message: list[Any]
         :param data: Any
         """
+        connection = getattr(self, "_jdxi_connection", None)
+        if connection is not None:
+            connection.heard()  # the JD-Xi is still there
         try:
             message_content, data = message
             p = mido.Parser()
@@ -394,6 +397,17 @@ class MidiInHandler(MidiIOController):
         if message.type == "clock":
             return
 
+    def _identity_to_connection(self, message: mido.Message) -> None:
+        """An Identity Reply: the connection learns whether a JD-Xi is there."""
+        try:
+            from jdxi_editor.midi.io.connection import connection_for
+
+            connection = connection_for(self)
+            if connection is not None:
+                connection.identity_seen(list(message.data))
+        except Exception as ex:  # never in the way of the MIDI input
+            log.debug(f"identity not passed on: {ex}", scope="MidiInHandler")
+
     def _handle_sysex_message(self, message: mido.Message, preset_data: dict) -> None:
         try:
             if not (message.type == "sysex" and len(message.data) > 6):
@@ -403,6 +417,7 @@ class MidiInHandler(MidiIOController):
             offset = JDXiSysExIdentityLayout.ID.SUB2 - 1
             if message.data[offset] == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY:
                 self.sysex_parser.parse_identity_request(message)
+                self._identity_to_connection(message)
                 return
 
             # --- Build raw SysEx ---
@@ -469,6 +484,7 @@ class MidiInHandler(MidiIOController):
                 == JDXi.Midi.SYSEX.IDENTITY.CONST.SUB2_IDENTITY_REPLY
             ):
                 self.sysex_parser.parse_identity_request(message)
+                self._identity_to_connection(message)
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)

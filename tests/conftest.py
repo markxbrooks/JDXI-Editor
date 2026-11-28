@@ -23,6 +23,10 @@ import pytest
 # Tests check the built-in controller maps, not the user's edited copy in
 # ~/.jdxi_editor/midi_controllers.json
 os.environ["JDXI_EDITOR_MIDI_CONTROLLERS"] = ""
+# A JD-Xi silent for seconds is not taken for switched off: the simulated
+# JD-Xis come and go between tests on the one shared helper
+# (tests/test_connection.py turns the check on)
+os.environ.setdefault("JDXI_SILENCE_CHECK", "0")
 
 import rtmidi
 

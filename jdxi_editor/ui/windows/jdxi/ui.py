@@ -656,7 +656,16 @@ class JDXiWindow(QMainWindow):
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
-        row_widgets = [QLabel("MIDI"), QLabel("IN:"), self.midi_in_indicator, QLabel("OUT:"), self.midi_out_indicator]
+        self.connection_label = QLabel("Offline")
+        self.connection_label.setToolTip("No JD-Xi: the MIDI ports are closed")
+        row_widgets = [
+            QLabel("MIDI"),
+            QLabel("IN:"),
+            self.midi_in_indicator,
+            QLabel("OUT:"),
+            self.midi_out_indicator,
+            self.connection_label,
+        ]
         row = create_layout_with_items(row_widgets, vertical=False)
         return row
 

@@ -398,7 +398,23 @@ class PatchReadSession(QObject):
             f"Patch read session finished: {result.ok_count}/{len(result.sections)} ok — {result.summary()}",
             scope="PatchReadSession",
         )
+        self._tell_connection(result)
         self.finished.emit(result)
+
+    def _tell_connection(self, result: ReadResult) -> None:
+        """A whole reading: answers arrive; a partial one: some did not (UNSTABLE)."""
+        try:
+            from jdxi_editor.midi.io.connection import connection_for
+
+            connection = connection_for(self._midi_helper)
+            if connection is None or not result.sections:
+                return
+            if result.complete:
+                connection.reading_complete()
+            else:
+                connection.request_unanswered()
+        except Exception as ex:  # never in the way of the reading
+            log.debug(f"connection not told: {ex}", scope="PatchReadSession")
 
     def _disconnect(self) -> None:
         if not self._connected or self._connected_signal is None:
