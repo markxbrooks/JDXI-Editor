@@ -22,7 +22,7 @@ Usage Example:
 This module requires PySide6 to be installed.
 """
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -55,6 +55,10 @@ class Slider(QWidget):
 
     valueChanged = Signal(int)
     value_changed = valueChanged  # alias for pythonic IF
+
+    #: While the handle is dragged, valueChanged (and so the MIDI message) goes
+    #: out at most this often; the first move and the release go out at once
+    DRAG_EMIT_INTERVAL_MS = 25
 
     def __init__(
         self,
@@ -100,6 +104,12 @@ class Slider(QWidget):
         self.slider.setMinimum(min_value)
         self.slider.setMaximum(max_value)
         self.slider.valueChanged.connect(self._on_valueChanged)
+        self._emitted_value: int | None = None
+        self._drag_timer = QTimer(self)
+        self._drag_timer.setSingleShot(True)
+        self._drag_timer.setInterval(self.DRAG_EMIT_INTERVAL_MS)
+        self._drag_timer.timeout.connect(self._emit_pending)
+        self.slider.sliderReleased.connect(self._emit_pending)
 
         # Set size policy for vertical sliders
         if vertical:
@@ -146,9 +156,7 @@ class Slider(QWidget):
         # Apply initial value for both vertical and horizontal (was only set for horizontal)
         self.slider.setValue(initial_value)
         self._update_value_label()
-        # valueChanged is already re-emitted by _on_valueChanged (connected above);
-        # connecting it here too emitted every change twice, so each slider move
-        # sent its parameter to the JD-Xi twice.
+        self._emitted_value = self.slider.value()
 
     def setLabel(self, text: str):
         if hasattr(self, "label"):
@@ -166,9 +174,33 @@ class Slider(QWidget):
         self.update()
 
     def _on_valueChanged(self, value: int):
-        """Handle slider value changes"""
+        """
+        Update the label at once and emit valueChanged once per change.
+
+        While the handle is dragged the emission is throttled to
+        DRAG_EMIT_INTERVAL_MS, so a fast drag does not queue a message per
+        pixel; the final value is always sent.
+        """
         self._update_value_label()
+        if self.slider.isSliderDown():
+            if not self._drag_timer.isActive():
+                self._emit(value)
+                self._drag_timer.start()
+            return
+        self._drag_timer.stop()
+        self._emit(value)
+
+    def _emit(self, value: int) -> None:
+        self._emitted_value = value
         self.valueChanged.emit(value)
+
+    def _emit_pending(self) -> None:
+        """Send the latest value if it has not gone out yet (drag tick or release)."""
+        value = self.slider.value()
+        if value != self._emitted_value:
+            self._emit(value)
+            if self.slider.isSliderDown():
+                self._drag_timer.start()
 
     def _update_value_label(self):
         """Update the value label using current format function"""
@@ -236,6 +268,7 @@ class Slider(QWidget):
         self.slider.blockSignals(True)
         self.slider.setValue(value)
         self.slider.blockSignals(False)
+        self._emitted_value = self.slider.value()
         self._update_value_label()
 
     def setEnabled(self, enabled: bool):
