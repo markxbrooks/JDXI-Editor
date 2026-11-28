@@ -2215,6 +2215,10 @@ class JDXiInstrument(JDXiWindow):
             )
             preset_number = self.settings.value("last_preset/preset_num", 0, type=int)
 
+            # Settings store 1-based numbers; 0 (nothing saved yet) would index
+            # the last preset of the list instead of falling back
+            if preset_number < 1:
+                return "INIT PATCH"
             # Get preset name - adjust index to be 0-based
             if synth_type == JDXiSynth.ANALOG_SYNTH:
                 return JDXiUIPreset.Analog.ENUMERATED[

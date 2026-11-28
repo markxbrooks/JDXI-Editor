@@ -204,8 +204,10 @@ class ProgramCommonParam(AddressParameter):
         127,
         description="Volume of the program",
     )  # Program Level (0-127)
+    # Program Tempo is 4 nibbled bytes at 00 11-00 14 (MIDI Implementation p. 9);
+    # 00 17 is reserved and ignored by the JD-Xi
     PROGRAM_TEMPO = ParameterSpec(
-        0x17,
+        0x11,
         500,
         30000,
         500,
@@ -216,17 +218,17 @@ If the SYSTEM parameter Sync Mode is set to SLAVE, only “MIDI” can be select
 (Since the tempo is synchronized to an external device, it’s not possible to change the tempo
 from the JD-Xi.)""",
     )  # Program Tempo (500-30000: 5.00-300.00 BPM)
+    # Addresses from the MIDI Implementation, Program Common (p. 9):
+    # 00 16 Vocal Effect, 00 1C Vocal Effect Number, 00 1D Vocal Effect Part
     VOCAL_EFFECT = ParameterSpec(
-        0x1C,
+        0x16,
         0,
         2,
         0,
         2,
-    )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH) — JD-Xi offset 0x1C
-    # UNVERIFIED: JD-Xi guide does not document Vocal Effect preset (1–21).
-    # Address 0x1B is reserve; placeholder until correct offset is found.
+    )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
     VOCAL_EFFECT_NUMBER = ParameterSpec(
-        0x1B, 0, 20, 0, 20
+        0x1C, 0, 20, 0, 20
     )  # Vocal Effect Number (0-20: 1-21)
     VOCAL_EFFECT_PART = ParameterSpec(
         0x1D, 0, 1, 0, 1
@@ -274,7 +276,7 @@ from the JD-Xi.)""",
         :return: str The digital text
         """
         if self == self.AUTO_NOTE_SWITCH:
-            return ["OFF", "---", "ON"][value]
+            return ["OFF", "ON"][value]
         elif self.is_switch:
             return "ON" if value else "OFF"
         return str(value)
@@ -286,11 +288,6 @@ from the JD-Xi.)""",
         """
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Special handling for ring switch
-        if self == self.AUTO_NOTE_SWITCH and value == 1:
-            # Skip over the "---" value
-            value = 2
 
         # Regular range check
         if value < self.min_val or value > self.max_val:

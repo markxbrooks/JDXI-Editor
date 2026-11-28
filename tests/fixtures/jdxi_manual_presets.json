@@ -1,0 +1,2833 @@
+{
+ "digital": [
+  {
+   "id": "001",
+   "name": "JP8 Strings1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 1
+  },
+  {
+   "id": "002",
+   "name": "Soft Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 2
+  },
+  {
+   "id": "003",
+   "name": "JP8 Strings2",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 3
+  },
+  {
+   "id": "004",
+   "name": "JUNO Str 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 4
+  },
+  {
+   "id": "005",
+   "name": "Oct Strings",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 5
+  },
+  {
+   "id": "006",
+   "name": "Brite Str 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 6
+  },
+  {
+   "id": "007",
+   "name": "Boreal Pad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 7
+  },
+  {
+   "id": "008",
+   "name": "JP8 Strings3",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 8
+  },
+  {
+   "id": "009",
+   "name": "JP8 Strings4",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 9
+  },
+  {
+   "id": "010",
+   "name": "Hollow Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 10
+  },
+  {
+   "id": "011",
+   "name": "LFO Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 11
+  },
+  {
+   "id": "012",
+   "name": "Hybrid Str",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 12
+  },
+  {
+   "id": "013",
+   "name": "Awakening 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 13
+  },
+  {
+   "id": "014",
+   "name": "Cincosoft 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 14
+  },
+  {
+   "id": "015",
+   "name": "Bright Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 15
+  },
+  {
+   "id": "016",
+   "name": "Analog Str 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 16
+  },
+  {
+   "id": "017",
+   "name": "Soft ResoPd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 17
+  },
+  {
+   "id": "018",
+   "name": "HPF Poly 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 18
+  },
+  {
+   "id": "019",
+   "name": "BPF Poly",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 19
+  },
+  {
+   "id": "020",
+   "name": "Sweep Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 20
+  },
+  {
+   "id": "021",
+   "name": "Soft Pad 2",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 21
+  },
+  {
+   "id": "022",
+   "name": "Sweep JD 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 22
+  },
+  {
+   "id": "023",
+   "name": "FltSweep Pd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 23
+  },
+  {
+   "id": "024",
+   "name": "HPF Pad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 24
+  },
+  {
+   "id": "025",
+   "name": "HPF SweepPd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 25
+  },
+  {
+   "id": "026",
+   "name": "KOff Pad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 26
+  },
+  {
+   "id": "027",
+   "name": "Sweep Pad 2",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 27
+  },
+  {
+   "id": "028",
+   "name": "TrnsSweepPad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 28
+  },
+  {
+   "id": "029",
+   "name": "Revalation 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 29
+  },
+  {
+   "id": "030",
+   "name": "LFO CarvePd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 30
+  },
+  {
+   "id": "031",
+   "name": "RETROX 139 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 31
+  },
+  {
+   "id": "032",
+   "name": "LFO ResoPad1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 32
+  },
+  {
+   "id": "033",
+   "name": "PLS Pad 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 33
+  },
+  {
+   "id": "034",
+   "name": "PLS Pad 2",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 34
+  },
+  {
+   "id": "035",
+   "name": "Trip 2 Mars1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 35
+  },
+  {
+   "id": "036",
+   "name": "Reso S&H Pd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 36
+  },
+  {
+   "id": "037",
+   "name": "SideChainPd1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 37
+  },
+  {
+   "id": "038",
+   "name": "PXZoon 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 38
+  },
+  {
+   "id": "039",
+   "name": "Psychoscilo1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 39
+  },
+  {
+   "id": "040",
+   "name": "Fantasy 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 40
+  },
+  {
+   "id": "041",
+   "name": "D-50 Stack 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 41
+  },
+  {
+   "id": "042",
+   "name": "Organ Pad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 42
+  },
+  {
+   "id": "043",
+   "name": "Bell Pad",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 43
+  },
+  {
+   "id": "044",
+   "name": "Dreaming 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 44
+  },
+  {
+   "id": "045",
+   "name": "Syn Sniper 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 45
+  },
+  {
+   "id": "046",
+   "name": "Strings 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 46
+  },
+  {
+   "id": "047",
+   "name": "D-50 Pizz 1",
+   "category": "Strings/Pad",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 47
+  },
+  {
+   "id": "048",
+   "name": "Super Saw 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 48
+  },
+  {
+   "id": "049",
+   "name": "S-SawStacLd1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 49
+  },
+  {
+   "id": "050",
+   "name": "Tekno Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 50
+  },
+  {
+   "id": "051",
+   "name": "Tekno Lead 2",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 51
+  },
+  {
+   "id": "052",
+   "name": "Tekno Lead 3",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 52
+  },
+  {
+   "id": "053",
+   "name": "OSC-SyncLd 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 53
+  },
+  {
+   "id": "054",
+   "name": "WaveShapeLd1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 54
+  },
+  {
+   "id": "055",
+   "name": "JD RingMod 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 55
+  },
+  {
+   "id": "056",
+   "name": "Buzz Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 56
+  },
+  {
+   "id": "057",
+   "name": "Buzz Lead 2",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 57
+  },
+  {
+   "id": "058",
+   "name": "SawBuzz Ld 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 58
+  },
+  {
+   "id": "059",
+   "name": "Sqr Buzz Ld1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 59
+  },
+  {
+   "id": "060",
+   "name": "Tekno Lead 4",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 60
+  },
+  {
+   "id": "061",
+   "name": "Dist Flt TB1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 61
+  },
+  {
+   "id": "062",
+   "name": "Dist TB Sqr1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 62
+  },
+  {
+   "id": "063",
+   "name": "Glideator 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 63
+  },
+  {
+   "id": "064",
+   "name": "Vintager 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 64
+  },
+  {
+   "id": "065",
+   "name": "Hover Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 65
+  },
+  {
+   "id": "066",
+   "name": "Saw Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 66
+  },
+  {
+   "id": "067",
+   "name": "Saw+Tri Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 67
+  },
+  {
+   "id": "068",
+   "name": "PortaSaw Ld1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 68
+  },
+  {
+   "id": "069",
+   "name": "Reso Saw Ld",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 69
+  },
+  {
+   "id": "070",
+   "name": "SawTrap Ld 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 70
+  },
+  {
+   "id": "071",
+   "name": "Fat GR Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 71
+  },
+  {
+   "id": "072",
+   "name": "Pulstar Ld",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 72
+  },
+  {
+   "id": "073",
+   "name": "Slow Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 73
+  },
+  {
+   "id": "074",
+   "name": "AnaVox Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 74
+  },
+  {
+   "id": "075",
+   "name": "Square Ld 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 75
+  },
+  {
+   "id": "076",
+   "name": "Square Ld 2",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 76
+  },
+  {
+   "id": "077",
+   "name": "Sqr Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 77
+  },
+  {
+   "id": "078",
+   "name": "Sqr Trap Ld1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 78
+  },
+  {
+   "id": "079",
+   "name": "Sine Lead 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 79
+  },
+  {
+   "id": "080",
+   "name": "Tri Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 80
+  },
+  {
+   "id": "081",
+   "name": "Tri Stac Ld1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 81
+  },
+  {
+   "id": "082",
+   "name": "5th SawLead1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 82
+  },
+  {
+   "id": "083",
+   "name": "Sweet 5th 1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 83
+  },
+  {
+   "id": "084",
+   "name": "4th Syn Lead",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 84
+  },
+  {
+   "id": "085",
+   "name": "Maj Stack Ld",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 85
+  },
+  {
+   "id": "086",
+   "name": "MinStack Ld1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 86
+  },
+  {
+   "id": "087",
+   "name": "Chubby Lead1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 87
+  },
+  {
+   "id": "088",
+   "name": "CuttingLead1",
+   "category": "Lead",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 88
+  },
+  {
+   "id": "089",
+   "name": "Seq Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 89
+  },
+  {
+   "id": "090",
+   "name": "Reso Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 90
+  },
+  {
+   "id": "091",
+   "name": "TB Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 91
+  },
+  {
+   "id": "092",
+   "name": "106 Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 92
+  },
+  {
+   "id": "093",
+   "name": "FilterEnvBs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 93
+  },
+  {
+   "id": "094",
+   "name": "JUNO Sqr Bs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 94
+  },
+  {
+   "id": "095",
+   "name": "Reso Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 95
+  },
+  {
+   "id": "096",
+   "name": "JUNO Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 96
+  },
+  {
+   "id": "097",
+   "name": "MG Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 97
+  },
+  {
+   "id": "098",
+   "name": "106 Bass 3",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 98
+  },
+  {
+   "id": "099",
+   "name": "Reso Bass 3",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 99
+  },
+  {
+   "id": "100",
+   "name": "Detune Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 100
+  },
+  {
+   "id": "101",
+   "name": "MKS-50 Bass1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 101
+  },
+  {
+   "id": "102",
+   "name": "Sweep Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 102
+  },
+  {
+   "id": "103",
+   "name": "MG Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 103
+  },
+  {
+   "id": "104",
+   "name": "MG Bass 3",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 104
+  },
+  {
+   "id": "105",
+   "name": "ResRubber Bs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 105
+  },
+  {
+   "id": "106",
+   "name": "R&B Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 106
+  },
+  {
+   "id": "107",
+   "name": "Reso Bass 4",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 107
+  },
+  {
+   "id": "108",
+   "name": "Wide Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 108
+  },
+  {
+   "id": "109",
+   "name": "Chow Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 109
+  },
+  {
+   "id": "110",
+   "name": "Chow Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 110
+  },
+  {
+   "id": "111",
+   "name": "SqrFilterBs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 111
+  },
+  {
+   "id": "112",
+   "name": "Reso Bass 5",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 112
+  },
+  {
+   "id": "113",
+   "name": "Syn Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 113
+  },
+  {
+   "id": "114",
+   "name": "ResoSawSynBs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 114
+  },
+  {
+   "id": "115",
+   "name": "Filter Bass1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 115
+  },
+  {
+   "id": "116",
+   "name": "SeqFltEnvBs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 116
+  },
+  {
+   "id": "117",
+   "name": "DnB Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 117
+  },
+  {
+   "id": "118",
+   "name": "UnisonSynBs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 118
+  },
+  {
+   "id": "119",
+   "name": "Modular Bs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 119
+  },
+  {
+   "id": "120",
+   "name": "Monster Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 120
+  },
+  {
+   "id": "121",
+   "name": "Monster Bs 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 121
+  },
+  {
+   "id": "122",
+   "name": "Monster Bs 3",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 122
+  },
+  {
+   "id": "123",
+   "name": "Monster Bs 4",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 123
+  },
+  {
+   "id": "124",
+   "name": "Square Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 124
+  },
+  {
+   "id": "125",
+   "name": "106 Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 125
+  },
+  {
+   "id": "126",
+   "name": "5th Stac Bs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 126
+  },
+  {
+   "id": "127",
+   "name": "SqrStacSynBs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 127
+  },
+  {
+   "id": "128",
+   "name": "MC-202 Bs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 64,
+   "pc": 128
+  },
+  {
+   "id": "129",
+   "name": "TB Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 1
+  },
+  {
+   "id": "130",
+   "name": "Square Bs 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 2
+  },
+  {
+   "id": "131",
+   "name": "SH-101 Bs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 3
+  },
+  {
+   "id": "132",
+   "name": "R&B Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 4
+  },
+  {
+   "id": "133",
+   "name": "MG Bass 4",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 5
+  },
+  {
+   "id": "134",
+   "name": "Seq Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 6
+  },
+  {
+   "id": "135",
+   "name": "Tri Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 7
+  },
+  {
+   "id": "136",
+   "name": "BPF Syn Bs 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 8
+  },
+  {
+   "id": "137",
+   "name": "BPF Syn Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 9
+  },
+  {
+   "id": "138",
+   "name": "Low Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 10
+  },
+  {
+   "id": "139",
+   "name": "Low Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 11
+  },
+  {
+   "id": "140",
+   "name": "Kick Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 12
+  },
+  {
+   "id": "141",
+   "name": "SinDetuneBs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 13
+  },
+  {
+   "id": "142",
+   "name": "Organ Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 14
+  },
+  {
+   "id": "143",
+   "name": "Growl Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 15
+  },
+  {
+   "id": "144",
+   "name": "Talking Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 16
+  },
+  {
+   "id": "145",
+   "name": "LFO Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 17
+  },
+  {
+   "id": "146",
+   "name": "LFO Bass 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 18
+  },
+  {
+   "id": "147",
+   "name": "Crack Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 19
+  },
+  {
+   "id": "148",
+   "name": "Wobble Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 20
+  },
+  {
+   "id": "149",
+   "name": "Wobble Bs 2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 21
+  },
+  {
+   "id": "150",
+   "name": "Wobble Bs 3",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 22
+  },
+  {
+   "id": "151",
+   "name": "Wobble Bs 4",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 23
+  },
+  {
+   "id": "152",
+   "name": "SideChainBs1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 24
+  },
+  {
+   "id": "153",
+   "name": "SideChainBs2",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 25
+  },
+  {
+   "id": "154",
+   "name": "House Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 26
+  },
+  {
+   "id": "155",
+   "name": "FM Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 27
+  },
+  {
+   "id": "156",
+   "name": "4Op FM Bass1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 28
+  },
+  {
+   "id": "157",
+   "name": "Ac. Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 29
+  },
+  {
+   "id": "158",
+   "name": "Fingerd Bs 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 30
+  },
+  {
+   "id": "159",
+   "name": "Picked Bass",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 31
+  },
+  {
+   "id": "160",
+   "name": "Fretless Bs",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 32
+  },
+  {
+   "id": "161",
+   "name": "Slap Bass 1",
+   "category": "Bass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 33
+  },
+  {
+   "id": "162",
+   "name": "JD Piano 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 34
+  },
+  {
+   "id": "163",
+   "name": "E. Grand 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 35
+  },
+  {
+   "id": "164",
+   "name": "Trem EP 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 36
+  },
+  {
+   "id": "165",
+   "name": "FM E. Piano 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 37
+  },
+  {
+   "id": "166",
+   "name": "FM E. Piano 2",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 38
+  },
+  {
+   "id": "167",
+   "name": "Vib Wurly 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 39
+  },
+  {
+   "id": "168",
+   "name": "Pulse Clav",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 40
+  },
+  {
+   "id": "169",
+   "name": "Clav",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 41
+  },
+  {
+   "id": "170",
+   "name": "70's E. Organ",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 42
+  },
+  {
+   "id": "171",
+   "name": "House Org 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 43
+  },
+  {
+   "id": "172",
+   "name": "House Org 2",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 44
+  },
+  {
+   "id": "173",
+   "name": "Bell 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 45
+  },
+  {
+   "id": "174",
+   "name": "Bell 2",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 46
+  },
+  {
+   "id": "175",
+   "name": "Organ Bell",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 47
+  },
+  {
+   "id": "176",
+   "name": "Vibraphone 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 48
+  },
+  {
+   "id": "177",
+   "name": "Steel Drum",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 49
+  },
+  {
+   "id": "178",
+   "name": "Harp 1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 50
+  },
+  {
+   "id": "179",
+   "name": "Ac. Guitar",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 51
+  },
+  {
+   "id": "180",
+   "name": "Bright Strat",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 52
+  },
+  {
+   "id": "181",
+   "name": "Funk Guitar1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 53
+  },
+  {
+   "id": "182",
+   "name": "Jazz Guitar",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 54
+  },
+  {
+   "id": "183",
+   "name": "Dist Guitar1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 55
+  },
+  {
+   "id": "184",
+   "name": "D. Mute Gtr1",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 56
+  },
+  {
+   "id": "185",
+   "name": "E. Sitar",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 57
+  },
+  {
+   "id": "186",
+   "name": "Sitar Drone",
+   "category": "Keyboard",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 58
+  },
+  {
+   "id": "187",
+   "name": "FX 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 59
+  },
+  {
+   "id": "188",
+   "name": "FX 2",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 60
+  },
+  {
+   "id": "189",
+   "name": "FX 3",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 61
+  },
+  {
+   "id": "190",
+   "name": "Tuned Winds1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 62
+  },
+  {
+   "id": "191",
+   "name": "Bend Lead 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 63
+  },
+  {
+   "id": "192",
+   "name": "RiSER 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 64
+  },
+  {
+   "id": "193",
+   "name": "Rising SEQ 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 65
+  },
+  {
+   "id": "194",
+   "name": "Scream Saw",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 66
+  },
+  {
+   "id": "195",
+   "name": "Noise SEQ 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 67
+  },
+  {
+   "id": "196",
+   "name": "Syn Vox 1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 68
+  },
+  {
+   "id": "197",
+   "name": "JD SoftVox",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 69
+  },
+  {
+   "id": "198",
+   "name": "Vox Pad",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 70
+  },
+  {
+   "id": "199",
+   "name": "VP-330 Chr",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 71
+  },
+  {
+   "id": "200",
+   "name": "Orch Hit",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 72
+  },
+  {
+   "id": "201",
+   "name": "Philly Hit",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 73
+  },
+  {
+   "id": "202",
+   "name": "House Hit",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 74
+  },
+  {
+   "id": "203",
+   "name": "O'Skool Hit1",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 75
+  },
+  {
+   "id": "204",
+   "name": "Punch Hit",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 76
+  },
+  {
+   "id": "205",
+   "name": "Tao Hit",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 77
+  },
+  {
+   "id": "206",
+   "name": "SEQ Saw 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 78
+  },
+  {
+   "id": "207",
+   "name": "SEQ Sqr",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 79
+  },
+  {
+   "id": "208",
+   "name": "SEQ Tri 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 80
+  },
+  {
+   "id": "209",
+   "name": "SEQ 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 81
+  },
+  {
+   "id": "210",
+   "name": "SEQ 2",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 82
+  },
+  {
+   "id": "211",
+   "name": "SEQ 3",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 83
+  },
+  {
+   "id": "212",
+   "name": "SEQ 4",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 84
+  },
+  {
+   "id": "213",
+   "name": "Sqr Reso Plk",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 85
+  },
+  {
+   "id": "214",
+   "name": "Pluck Synth1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 86
+  },
+  {
+   "id": "215",
+   "name": "Paperclip 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 87
+  },
+  {
+   "id": "216",
+   "name": "Sonar Pluck1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 88
+  },
+  {
+   "id": "217",
+   "name": "SqrTrapPlk 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 89
+  },
+  {
+   "id": "218",
+   "name": "TB Saw Seq 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 90
+  },
+  {
+   "id": "219",
+   "name": "TB Sqr Seq 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 91
+  },
+  {
+   "id": "220",
+   "name": "JUNO Key",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 92
+  },
+  {
+   "id": "221",
+   "name": "Analog Poly1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 93
+  },
+  {
+   "id": "222",
+   "name": "Analog Poly2",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 94
+  },
+  {
+   "id": "223",
+   "name": "Analog Poly3",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 95
+  },
+  {
+   "id": "224",
+   "name": "Analog Poly4",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 96
+  },
+  {
+   "id": "225",
+   "name": "JUNO Octavr1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 97
+  },
+  {
+   "id": "226",
+   "name": "EDM Synth 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 98
+  },
+  {
+   "id": "227",
+   "name": "Super Saw 2",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 99
+  },
+  {
+   "id": "228",
+   "name": "S-Saw Poly",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 100
+  },
+  {
+   "id": "229",
+   "name": "Trance Key 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 101
+  },
+  {
+   "id": "230",
+   "name": "S-Saw Pad 1",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 102
+  },
+  {
+   "id": "231",
+   "name": "7th Stac Syn",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 103
+  },
+  {
+   "id": "232",
+   "name": "S-SawStc Syn",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 104
+  },
+  {
+   "id": "233",
+   "name": "Trance Key 2",
+   "category": "Seq",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 105
+  },
+  {
+   "id": "234",
+   "name": "Analog Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 106
+  },
+  {
+   "id": "235",
+   "name": "Reso Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 107
+  },
+  {
+   "id": "236",
+   "name": "Soft Brass 1",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 108
+  },
+  {
+   "id": "237",
+   "name": "FM Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 109
+  },
+  {
+   "id": "238",
+   "name": "Syn Brass 1",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 110
+  },
+  {
+   "id": "239",
+   "name": "Syn Brass 2",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 111
+  },
+  {
+   "id": "240",
+   "name": "JP8 Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 112
+  },
+  {
+   "id": "241",
+   "name": "Soft SynBrs1",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 113
+  },
+  {
+   "id": "242",
+   "name": "Soft SynBrs2",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 114
+  },
+  {
+   "id": "243",
+   "name": "EpicSlow Brs",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 115
+  },
+  {
+   "id": "244",
+   "name": "JUNO Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 116
+  },
+  {
+   "id": "245",
+   "name": "Poly Brass",
+   "category": "Brass",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 117
+  },
+  {
+   "id": "246",
+   "name": "Voc:Ensemble",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 118
+  },
+  {
+   "id": "247",
+   "name": "Voc:5thStack",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 119
+  },
+  {
+   "id": "248",
+   "name": "Voc:Robot",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 120
+  },
+  {
+   "id": "249",
+   "name": "Voc:Saw",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 121
+  },
+  {
+   "id": "250",
+   "name": "Voc:Sqr",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 122
+  },
+  {
+   "id": "251",
+   "name": "Voc:Rise Up",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 123
+  },
+  {
+   "id": "252",
+   "name": "Voc:Auto Vib",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 124
+  },
+  {
+   "id": "253",
+   "name": "Voc:PitchEnv",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 125
+  },
+  {
+   "id": "254",
+   "name": "Voc:VP-330",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 126
+  },
+  {
+   "id": "255",
+   "name": "Voc:Noise",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 127
+  },
+  {
+   "id": "256",
+   "name": "Init Tone",
+   "category": "FX/Other",
+   "msb": 95,
+   "lsb": 65,
+   "pc": 128
+  }
+ ],
+ "analog": [
+  {
+   "id": "001",
+   "name": "Toxic Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 1
+  },
+  {
+   "id": "002",
+   "name": "Sub Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 2
+  },
+  {
+   "id": "003",
+   "name": "Backwards 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 3
+  },
+  {
+   "id": "004",
+   "name": "Fat as That1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 4
+  },
+  {
+   "id": "005",
+   "name": "Saw+Sub Bs 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 5
+  },
+  {
+   "id": "006",
+   "name": "Saw Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 6
+  },
+  {
+   "id": "007",
+   "name": "Pulse Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 7
+  },
+  {
+   "id": "008",
+   "name": "ResoSaw Bs 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 8
+  },
+  {
+   "id": "009",
+   "name": "ResoSaw Bs 2",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 9
+  },
+  {
+   "id": "010",
+   "name": "AcidSaw SEQ1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 10
+  },
+  {
+   "id": "011",
+   "name": "Psy Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 11
+  },
+  {
+   "id": "012",
+   "name": "Dist TB Bs 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 12
+  },
+  {
+   "id": "013",
+   "name": "Sqr Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 13
+  },
+  {
+   "id": "014",
+   "name": "Tri Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 14
+  },
+  {
+   "id": "015",
+   "name": "Snake Glide1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 15
+  },
+  {
+   "id": "016",
+   "name": "Soft Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 16
+  },
+  {
+   "id": "017",
+   "name": "Tear Drop 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 17
+  },
+  {
+   "id": "018",
+   "name": "Slo worn 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 18
+  },
+  {
+   "id": "019",
+   "name": "Dist LFO Bs1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 19
+  },
+  {
+   "id": "020",
+   "name": "ResoPulseBs1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 20
+  },
+  {
+   "id": "021",
+   "name": "Squelchy 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 21
+  },
+  {
+   "id": "022",
+   "name": "DnB Wobbler1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 22
+  },
+  {
+   "id": "023",
+   "name": "OffBeat Wob1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 23
+  },
+  {
+   "id": "024",
+   "name": "Chilled Wob",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 24
+  },
+  {
+   "id": "025",
+   "name": "Bouncy Bass1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 25
+  },
+  {
+   "id": "026",
+   "name": "PulseOfLife1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 26
+  },
+  {
+   "id": "027",
+   "name": "PWM Base 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 27
+  },
+  {
+   "id": "028",
+   "name": "Pumper Bass1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 28
+  },
+  {
+   "id": "029",
+   "name": "ClickerBass1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 29
+  },
+  {
+   "id": "030",
+   "name": "Psy Bass 2",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 30
+  },
+  {
+   "id": "031",
+   "name": "HooverSuprt1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 31
+  },
+  {
+   "id": "032",
+   "name": "Celoclip 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 32
+  },
+  {
+   "id": "033",
+   "name": "Tri Fall Bs1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 33
+  },
+  {
+   "id": "034",
+   "name": "808 Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 34
+  },
+  {
+   "id": "035",
+   "name": "House Bass 1",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 35
+  },
+  {
+   "id": "036",
+   "name": "Psy Bass 3",
+   "category": "Bass",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 36
+  },
+  {
+   "id": "037",
+   "name": "Reel 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 37
+  },
+  {
+   "id": "038",
+   "name": "PortaSaw Ld1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 38
+  },
+  {
+   "id": "039",
+   "name": "Porta Lead 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 39
+  },
+  {
+   "id": "040",
+   "name": "Analog Tp 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 40
+  },
+  {
+   "id": "041",
+   "name": "Tri Lead 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 41
+  },
+  {
+   "id": "042",
+   "name": "Sine Lead 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 42
+  },
+  {
+   "id": "043",
+   "name": "Saw Buzz 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 43
+  },
+  {
+   "id": "044",
+   "name": "Buzz Saw Ld1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 44
+  },
+  {
+   "id": "045",
+   "name": "Laser Lead 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 45
+  },
+  {
+   "id": "046",
+   "name": "Saw & Per 1",
+   "category": "Lead",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 46
+  },
+  {
+   "id": "047",
+   "name": "Insect 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 47
+  },
+  {
+   "id": "048",
+   "name": "Sqr SEQ 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 48
+  },
+  {
+   "id": "049",
+   "name": "ZipPhase 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 49
+  },
+  {
+   "id": "050",
+   "name": "Stinger 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 50
+  },
+  {
+   "id": "051",
+   "name": "3 Oh 3",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 51
+  },
+  {
+   "id": "052",
+   "name": "Sus Zap 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 52
+  },
+  {
+   "id": "053",
+   "name": "Bowouch 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 53
+  },
+  {
+   "id": "054",
+   "name": "Resocut 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 54
+  },
+  {
+   "id": "055",
+   "name": "LFO FX",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 55
+  },
+  {
+   "id": "056",
+   "name": "Fall Synth 1",
+   "category": "Synth",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 56
+  },
+  {
+   "id": "057",
+   "name": "Twister 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 57
+  },
+  {
+   "id": "058",
+   "name": "Analog Kick1",
+   "category": "Percussion/Drums",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 58
+  },
+  {
+   "id": "059",
+   "name": "Zippers 1",
+   "category": "Percussion/Drums",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 59
+  },
+  {
+   "id": "060",
+   "name": "Zippers 2",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 60
+  },
+  {
+   "id": "061",
+   "name": "Zippers 3",
+   "category": "Percussion/Drums",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 61
+  },
+  {
+   "id": "062",
+   "name": "Siren Hell 1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 62
+  },
+  {
+   "id": "063",
+   "name": "SirenFX/Mod1",
+   "category": "FX",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 63
+  },
+  {
+   "id": "064",
+   "name": "Init Tone",
+   "category": "Init",
+   "msb": 94,
+   "lsb": 64,
+   "pc": 64
+  }
+ ],
+ "drum": [
+  {
+   "id": "001",
+   "name": "TR-909 Kit 1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 1
+  },
+  {
+   "id": "002",
+   "name": "TR-808 Kit 1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 2
+  },
+  {
+   "id": "003",
+   "name": "707&727 Kit1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 3
+  },
+  {
+   "id": "004",
+   "name": "CR-78 Kit 1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 4
+  },
+  {
+   "id": "005",
+   "name": "TR-606 Kit 1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 5
+  },
+  {
+   "id": "006",
+   "name": "TR-626 Kit 1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 6
+  },
+  {
+   "id": "007",
+   "name": "EDM Kit 1",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 7
+  },
+  {
+   "id": "008",
+   "name": "Drum&Bs Kit1",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 8
+  },
+  {
+   "id": "009",
+   "name": "Techno Kit 1",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 9
+  },
+  {
+   "id": "010",
+   "name": "House Kit 1",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 10
+  },
+  {
+   "id": "011",
+   "name": "Hiphop Kit 1",
+   "category": "Hip-Hop & R&B",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 11
+  },
+  {
+   "id": "012",
+   "name": "R&B Kit 1",
+   "category": "Hip-Hop & R&B",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 12
+  },
+  {
+   "id": "013",
+   "name": "TR-909 Kit 2",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 13
+  },
+  {
+   "id": "014",
+   "name": "TR-909 Kit 3",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 14
+  },
+  {
+   "id": "015",
+   "name": "TR-808 Kit 2",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 15
+  },
+  {
+   "id": "016",
+   "name": "TR-808 Kit 3",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 16
+  },
+  {
+   "id": "017",
+   "name": "TR-808 Kit 4",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 17
+  },
+  {
+   "id": "018",
+   "name": "808&909 Kit1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 18
+  },
+  {
+   "id": "019",
+   "name": "808&909 Kit2",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 19
+  },
+  {
+   "id": "020",
+   "name": "707&727 Kit2",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 20
+  },
+  {
+   "id": "021",
+   "name": "909&7*7 Kit1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 21
+  },
+  {
+   "id": "022",
+   "name": "808&7*7 Kit1",
+   "category": "Classic Roland Drum Machines",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 22
+  },
+  {
+   "id": "023",
+   "name": "EDM Kit 2",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 23
+  },
+  {
+   "id": "024",
+   "name": "Techno Kit 2",
+   "category": "Electronic Dance Music (EDM) Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 24
+  },
+  {
+   "id": "025",
+   "name": "Hiphop Kit 2",
+   "category": "Hip-Hop & R&B",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 25
+  },
+  {
+   "id": "026",
+   "name": "80's Kit 1",
+   "category": "Decade-Based Kits",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 26
+  },
+  {
+   "id": "027",
+   "name": "90's Kit 1",
+   "category": "Decade-Based Kits",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 27
+  },
+  {
+   "id": "028",
+   "name": "Noise Kit 1",
+   "category": "Miscellaneous & Experimental",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 28
+  },
+  {
+   "id": "029",
+   "name": "Pop Kit 1",
+   "category": "Miscellaneous & Experimental",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 29
+  },
+  {
+   "id": "030",
+   "name": "Pop Kit 2",
+   "category": "Miscellaneous & Experimental",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 30
+  },
+  {
+   "id": "031",
+   "name": "Rock Kit",
+   "category": "Acoustic & Live Drum Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 31
+  },
+  {
+   "id": "032",
+   "name": "Jazz Kit",
+   "category": "Acoustic & Live Drum Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 32
+  },
+  {
+   "id": "033",
+   "name": "Latin Kit",
+   "category": "Acoustic & Live Drum Styles",
+   "msb": 86,
+   "lsb": 64,
+   "pc": 33
+  }
+ ],
+ "_source": "Roland JD-Xi Parameter Guide (JD-Xi_ParameterGuide_e01_W.pdf), Preset Tone List / Preset Drum Kit List, pp. 44-47"
+}

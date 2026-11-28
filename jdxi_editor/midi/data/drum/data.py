@@ -40,8 +40,7 @@ DRUM_PARTIAL_NAMES = [
     "A4",
     "Bb4",
     "B4",
-    "C5",
-    "C#5",
+    "C5",  # key 72, the last drum partial (MIDI Implementation: keys 36-72)
 ]
 DRUM_ADDRESSES = (
     b"\x19\x70\x00\x00",

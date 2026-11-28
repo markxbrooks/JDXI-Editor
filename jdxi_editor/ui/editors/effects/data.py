@@ -189,7 +189,7 @@ class VocalEffectsData:
     # Tooltips for vocal effect controls
     vocal_effect_tooltips = {
         "VOCAL_EFFECT": "Vocal effect type: OFF, VOCODER, or AUTO-PITCH",
-        "VOCAL_EFFECT_NUMBER": "Vocal effect preset (1–21). Address unverified in JD-Xi guide.",
+        "VOCAL_EFFECT_NUMBER": "Vocal effect preset (1–21).",
         "VOCAL_EFFECT_PART": "Vocal effect part: Part 1 or Part 2",
         "AUTO_NOTE_SWITCH": "Enable or bypass auto note correction",
         "PROGRAM_LEVEL": "Program output level (0–127)",

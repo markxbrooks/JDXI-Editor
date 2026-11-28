@@ -114,8 +114,16 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
         # Initialize parent classes - this will initialize QObject once through MRO
         # Since both MidiInHandler and MidiOutHandler inherit from MidiIOController (QObject),
-        # Python's MRO ensures QObject.__init__ is only called once
-        super().__init__(parent)
+        # Python's MRO ensures QObject.__init__ is only called once.
+        # If it fails (e.g. no MIDI backend: rtmidi cannot open ALSA/WinMM), QObject
+        # is already initialized on the shared instance and a retry would raise
+        # "can't initialize QObject twice"; drop the instance so the next call
+        # starts from a fresh object.
+        try:
+            super().__init__(parent)
+        except Exception:
+            type(self)._instance = None
+            raise
 
         # Set additional attributes
         self.midi_messages = []

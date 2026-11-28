@@ -145,7 +145,7 @@ class Effect1Param(AddressParameter):
         0,
         127,
         description="Depth of delay applied to the sound from effect 1.",
-        display_name="EFX1 Level (0-127)",
+        display_name="EFX1 Delay Send Level (0-127)",
     )
     EFX1_REVERB_SEND_LEVEL = ParameterSpec(
         0x03,
